@@ -1,0 +1,17 @@
+Crystal
+Type Cuboid
+DiffractionDecayModel Linear
+Dimensions 100 200 100
+AngleP 293.23
+AngleL 39.32
+PixelsPerMicron 0.1
+# AbsEnergyThreshold 0.9
+
+AbsCoefCalc rdv3
+Unitcell 78.54 78.54 37.77 84 102 90
+NumResidues 129
+NumMonomers 8
+SolventHeavyConc Li 850 Na 110 Cl 10 
+ProteinHeavyAtoms S 10
+SolventFraction 0.5
+        

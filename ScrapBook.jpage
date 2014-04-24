@@ -1,0 +1,129 @@
+
+
+raddose3D.BeamExperimental be = new raddose3D.BeamExperimentalPGM(
+		"testESRFBeam.pgm", 
+		1e12, 
+		10.0, 
+		5.0, 
+		5.0);
+
+
+
+raddose3D.BeamExperimentalPGM.getXYIntensityList("testESRFBeam.pgm");
+
+
+bt.testHorizontal();
+bt.testVertical();
+bt.testBoth();
+
+
+static double f(double x, double y) { 
+	return x * (y+y); 
+} 
+
+	// trapezoid rule 
+static double trapezoid(double a, double b, int N) {
+	double h = (b - a) / N; 
+	double sum = 0.5 * h * (f(a,a) + f(b,b)); 
+	double sum1 = 0.5 * h * (f(a,a) + f(b,b)); 
+	
+	for (int k = 1; k < N; k++) { 
+		sum = sum + h * f(a + h*k, a); 
+		for(int j = 1; j < N; j++) { 
+			sum1 = sum1 + h * f(a + h*k, a + j*k); 
+			}
+		}
+	
+	return sum + sum1;
+}
+
+ org.apache.commons.math3.special.Erf.erf(3)
+
+ 
+ double t = 3.0;
+ y = t.clone();
+ y
+ 
+ double[] p = new double[3];
+ p = {1,2,3};
+ p
+ 
+ 
+ String[] test;
+ test = new String[2];
+ test[0] = "test";
+ test[0].concat(", test2");
+ 
+ 
+ System.getProperty("os.name")
+ 
+ //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+ THIS IS THE OLD ROTATION LOOP USING ALL-IN-ONE ROTATION TO AVOID SUBSEQUENT ROTATION STEP ERRORS PILLING UP:
+ 
+	else 
+	for ( deltaPhi = myWedge.getStartAng(); deltaPhi <= myWedge.getEndAng(); deltaPhi +=  myWedge.getAngRes()){	
+
+		double displaceXthisIteration = myWedge.getStartX() + myWedge.getTransX()*(deltaPhi - myWedge.getStartAng());
+		double displaceYthisIteration = myWedge.getStartY() + myWedge.getTransY()*(deltaPhi - myWedge.getStartAng());
+
+		double nSteps = (myWedge.getEndAng() - myWedge.getStartAng()) / myWedge.getAngRes() + 1;
+		//Rotate the vertices of the crystal
+		int vertInd = 0;				
+		double newVertices[][] = arrayClone(vertexList);
+		for (double[] vertex : this.vertexList.clone()){ 
+			newVertices[vertInd][0] = vertex[0]*Math.cos(Math.toRadians(deltaPhi)) - vertex[2]*Math.sin(Math.toRadians(deltaPhi)); //Problem is that clone() does not clone the contents of the array... need to implement my own method to do this
+			newVertices[vertInd][1] = vertex[1];
+			newVertices[vertInd][2] = vertex[0]*Math.sin(Math.toRadians(deltaPhi)) + vertex[2]*Math.cos(Math.toRadians(deltaPhi));				
+
+			newVertices[vertInd][0] += displaceXthisIteration;
+			newVertices[vertInd][1] += displaceYthisIteration;
+
+			vertInd += 1;
+		}
+		for(int i=0; i<this.crystSize[0]; i++){
+			for(int j=0; j<this.crystSize[1]; j++){
+				for(int k=0; k<this.crystSize[2]; k++){ 
+
+					// Rotating crystal to deltaPhi radians 
+					double[] newCoords = new double[3];
+
+					newCoords[0] = crystCoord[i][j][k][0]*Math.cos(Math.toRadians(deltaPhi)) - crystCoord[i][j][k][2]*Math.sin(Math.toRadians(deltaPhi));
+					newCoords[1] = crystCoord[i][j][k][1];
+					newCoords[2] = crystCoord[i][j][k][0]*Math.sin(Math.toRadians(deltaPhi)) + crystCoord[i][j][k][2]*Math.cos(Math.toRadians(deltaPhi));
+
+					newCoords[0] += displaceXthisIteration;
+					newCoords[1] += displaceYthisIteration;
+
+					double depth = this.findDepth(newCoords, newVertices );
+
+					//Assigning exposure (joules incident) and dose (J/kg abssorbed) to the voxel.
+					double voxExp = myWedge.getBeam().beamIntensity(newCoords[0], newCoords[1])* // Unattenuated beam intensity (J/um^2/s)
+							Math.pow(crystalRes, -2)*myWedge.getTotSec()/nSteps* //Area in um^2 of a voxel * time per angular step
+							Math.exp(-1*depth*this.coefCalc.getAttCoef()); // Attenuates the beam for absorption.
+
+					double voxDose =  expToDose(voxExp); // Mgy
+
+					//Data for avDose 
+					if (voxDose != 0){
+						avDose += voxDose;
+						if(dose[i][j][k] == 0){
+							expVoxels += 1;
+						}
+					}
+
+					exp[i][j][k] +=  voxExp;
+					dose[i][j][k] += voxDose;
+
+					// Find maxDose
+					if (dose[i][j][k] > maxDose){
+						maxDose = dose[i][j][k];
+					}
+
+					//Dose Histogram generation:
+					updateDoseHist(i, j, k, voxExp);
+
+				}
+			}
+		}
+	}
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

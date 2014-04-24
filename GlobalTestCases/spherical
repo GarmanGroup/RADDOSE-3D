@@ -1,0 +1,14 @@
+
+
+Crystal 
+Type Spherical
+Dimensions 100 
+
+Beam 
+Type TopHat
+Flux 2e12
+Energy 12.4 
+Collimation Rectangular 120 120
+
+Wedge 0 360 
+ExposureTime 100 

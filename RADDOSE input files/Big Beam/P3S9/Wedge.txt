@@ -1,0 +1,148 @@
+# Collect Burn Strategy
+
+Wedge 0 60
+ExposureTime 1.2
+AngularResolution 1
+StartOffset 0.0 0.0
+TranslatePerDegree 0.0 0
+RotAxBeamOffset 0
+
+Wedge 0 360
+ExposureTime 150
+AngularResolution 1
+StartOffset 0.0 0.0
+TranslatePerDegree 0.0 0
+RotAxBeamOffset 0
+
+Wedge 0 60
+ExposureTime 1.2
+AngularResolution 1
+StartOffset 0.0 0.0
+TranslatePerDegree 0.0 0
+RotAxBeamOffset 0
+
+Wedge 0 360
+ExposureTime 150
+AngularResolution 1
+StartOffset 0.0 0.0
+TranslatePerDegree 0.0 0
+RotAxBeamOffset 0
+
+Wedge 0 60
+ExposureTime 1.2
+AngularResolution 1
+StartOffset 0.0 0.0
+TranslatePerDegree 0.0 0
+RotAxBeamOffset 0
+
+Wedge 0 360
+ExposureTime 150
+AngularResolution 1
+StartOffset 0.0 0.0
+TranslatePerDegree 0.0 0
+RotAxBeamOffset 0
+
+Wedge 0 60
+ExposureTime 1.2
+AngularResolution 1
+StartOffset 0.0 0.0
+TranslatePerDegree 0.0 0
+RotAxBeamOffset 0
+
+Wedge 0 360
+ExposureTime 150
+AngularResolution 1
+StartOffset 0.0 0.0
+TranslatePerDegree 0.0 0
+RotAxBeamOffset 0
+
+Wedge 0 60
+ExposureTime 1.2
+AngularResolution 1
+StartOffset 0.0 0.0
+TranslatePerDegree 0.0 0
+RotAxBeamOffset 0
+
+Wedge 0 360
+ExposureTime 150
+AngularResolution 1
+StartOffset 0.0 0.0
+TranslatePerDegree 0.0 0
+RotAxBeamOffset 0
+
+Wedge 0 60
+ExposureTime 1.2
+AngularResolution 1
+StartOffset 0.0 0.0
+TranslatePerDegree 0.0 0
+RotAxBeamOffset 0
+
+Wedge 0 360
+ExposureTime 150
+AngularResolution 1
+StartOffset 0.0 0.0
+TranslatePerDegree 0.0 0
+RotAxBeamOffset 0
+
+Wedge 0 60
+ExposureTime 1.2
+AngularResolution 1
+StartOffset 0.0 0.0
+TranslatePerDegree 0.0 0
+RotAxBeamOffset 0
+
+Wedge 0 360
+ExposureTime 150
+AngularResolution 1
+StartOffset 0.0 0.0
+TranslatePerDegree 0.0 0
+RotAxBeamOffset 0
+
+Wedge 0 60
+ExposureTime 1.2
+AngularResolution 1
+StartOffset 0.0 0.0
+TranslatePerDegree 0.0 0
+RotAxBeamOffset 0
+
+Wedge 0 360
+ExposureTime 150
+AngularResolution 1
+StartOffset 0.0 0.0
+TranslatePerDegree 0.0 0
+RotAxBeamOffset 0
+
+Wedge 0 60
+ExposureTime 1.2
+AngularResolution 1
+StartOffset 0.0 0.0
+TranslatePerDegree 0.0 0
+RotAxBeamOffset 0
+
+Wedge 0 360
+ExposureTime 150
+AngularResolution 1
+StartOffset 0.0 0.0
+TranslatePerDegree 0.0 0
+RotAxBeamOffset 0
+
+Wedge 0 60
+ExposureTime 1.2
+AngularResolution 1
+StartOffset 0.0 0.0
+TranslatePerDegree 0.0 0
+RotAxBeamOffset 0
+
+Wedge 0 360
+ExposureTime 150
+AngularResolution 1
+StartOffset 0.0 0.0
+TranslatePerDegree 0.0 0
+RotAxBeamOffset 0
+
+Wedge 0 60
+ExposureTime 1.2
+AngularResolution 1
+StartOffset 0.0 0.0
+TranslatePerDegree 0.0 0
+RotAxBeamOffset 0

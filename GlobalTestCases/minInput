@@ -1,0 +1,13 @@
+Crystal
+Type Cuboid
+Dimensions 100 1e2 10.0e1
+        
+Beam
+Type Gaussian
+Flux 2e11
+FWHM 70 20
+Energy 12.1
+Collimation Rectangular 100 100
+        
+Wedge 0 362
+ExposureTime 150

@@ -1,0 +1,33 @@
+
+
+CrystalType Cuboid
+CrystalPixPerUM 0.019
+CrystDim 100 100 100	
+CrystP 0
+CrystL 0
+HistRange 0.1 30.1
+HistNBins 11
+FineHistRange 0.1 100.1
+FineHistNBins 1002
+DDMType Simple
+CoefCalcType Dummy
+
+BeamType  Gaussian
+WedgeAngRes  42.5
+WedgeStartAng  0
+WedgeEndAng 720
+WedgeTotSec 120
+BeamFlux  1e12
+BeamEnergy  12.658
+BeamSize 50 50
+BeamFWHM 25 25
+RotAxBeamOffset 0
+WedgeStart  0 0
+WedgeTrans  0 0
+
+
+CELL 78.54 78.54 37.77 90 90 90
+NRES 129
+NMON 8
+SATM Li 850 Na 110 Cl 10 
+PATM S 10

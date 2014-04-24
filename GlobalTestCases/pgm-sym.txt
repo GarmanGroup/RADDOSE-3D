@@ -1,0 +1,18 @@
+Crystal
+Type Cuboid
+Dimensions 100 200 10
+PixelsPerMicron 0.25
+DDM Simple
+        
+Beam
+Type Experimentalpgm
+File pgmloctest.pgm
+PixelSize 10 10
+Flux 5e11
+FWHM 20 20
+Energy 12.1
+Collimation Rectangular 100 100
+        
+Wedge 0 180
+AngularResolution 180
+ExposureTime 60

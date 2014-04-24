@@ -1,0 +1,26 @@
+# DoseDistr
+# Med Beam mx1426 FWHM 25 40
+# P1S10
+
+Crystal
+Type Cuboid
+DiffractionDecayModel Simple
+Dimensions 130 130 130
+AngleP 35
+AngleL 45
+PixelsPerMicron 0.5
+CoefCalc RDV3
+NumMonomers 24
+NumResidues 51
+ProteinHeavyAtoms Zn 2 S 6
+SolventHeavyConc P 425
+UnitCell 78.02 78.02 78.02
+SolventFraction 0.6436
+
+Beam
+Type Gaussian
+Flux 1.33e11
+FWHM 25 40
+Energy 13.2
+Collimation Rectangular 120 120
+

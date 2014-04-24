@@ -1,0 +1,23 @@
+List of test cases:
+
+Testing if it breaks (Check all methods)
+	Crystal:
+		type
+		ddm
+		coefcalc
+		P & L
+	Wedge:
+		Multiple Wedges
+		StartOffset
+		Translate
+		RotAxBeamOffset
+	Beam:	
+		type
+
+Testing special cases:
+	1) Even exposure/dose
+	2) equivalence of images w/o rotation and images every 360 (0,360, 720, 1080, 1440...)
+	3) Even exposure made up from multiple wedges (4 quadrants, no rotation)
+	4) 360 deg rotation, compare to 720
+	
+	

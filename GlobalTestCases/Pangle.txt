@@ -1,0 +1,31 @@
+
+
+Crystal 
+Type Cuboid
+Dimensions 100 400 100
+AngleP 45
+AngleL 0
+PixelsPerMicron 0.1
+#HistRange 0.1 45.1
+#HistBins 11
+#AbsEnergyThreshold 0.95
+
+CoefCalc Dummy
+
+Beam 
+Type Gaussian
+Flux 1e12 
+FWHM 20 20
+Energy 12.4 
+Collimation Rectangular 20 20 
+
+Wedge 0 90
+ExposureTime 120
+StartOffset -75 -75 0
+TranslatePerDegree 1 1 0
+
+
+
+
+
+

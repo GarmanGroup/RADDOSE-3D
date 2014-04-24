@@ -1,0 +1,23 @@
+# DoseDistr
+# BigBeam
+# P3S10
+
+Crystal
+Type Cuboid
+DiffractionDecayModel Simple
+Dimensions 126 126 110
+PixelsPerMicron 0.5
+CoefCalc RDV3
+NumMonomers 24
+NumResidues 51
+ProteinHeavyAtoms Zn 2 S 6
+SolventHeavyConc P 425
+UnitCell 78.02 78.02 78.02
+SolventFraction 0.6436
+
+Beam
+Type Gaussian
+Flux 1.57e12
+FWHM 115 115
+Energy 13.2
+Collimation Rectangular 120 120

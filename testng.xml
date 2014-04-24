@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Filename: testng.xml
+-->
+<!DOCTYPE suite SYSTEM "http://beust.com/testng/testng-1.0.dtd" >
+<suite name="Raddose3D" verbose="1">
+ <test name="Continuous Integration Test">
+  <packages>
+   <package name="se.raddo.raddose3D.tests" />
+  </packages>
+ </test>
+</suite>

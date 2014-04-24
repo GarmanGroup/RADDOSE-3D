@@ -1,0 +1,29 @@
+Crystal
+Type Cuboid
+DiffractionDecayModel Linear
+Dimensions 53.54 146.236 24.22
+AngleP 293.23
+AngleL 39.32
+PixelsPerMicron 0.38
+
+AbsCoefCalc rdv3
+Unitcell 78.54 78.54 37.77 84 102 90
+NumResidues 129
+NumMonomers 8
+SolventHeavyConc Li 850 Na 110 Cl 10 
+ProteinHeavyAtoms S 10
+SolventFraction 0.5
+        
+Beam
+Type Gaussian
+Flux 2e12
+FWHM 8 12
+Energy 12.1
+Collimation Rectangular 16 24
+        
+Wedge -78 362
+ExposureTime 159.2
+AngularResolution 5.4
+StartOffset 8.12 -67.321
+TranslatePerDegree -0.04 0.3
+RotAxBeamOffset 5

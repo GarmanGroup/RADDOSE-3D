@@ -1,0 +1,15 @@
+Crystal
+Type Cuboid
+Dimensions 100 100 100
+PixelsPerMicron 0.5
+DDM Simple
+        
+Beam
+Type Gaussian
+Flux 5e11
+FWHM 20 20
+Energy 12.1
+Collimation Rectangular 40 40
+        
+Wedge 0 360
+ExposureTime 60
