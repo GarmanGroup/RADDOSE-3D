@@ -11,8 +11,6 @@ import java.util.Scanner;
 
 /**
  * Class to input PGM files taken with an in-line camera facing the beam.
- * 
- * @author Oliver Zeldin
  */
 public class BeamExperimentalpgm extends BeamExperimental {
 
@@ -114,6 +112,7 @@ public class BeamExperimentalpgm extends BeamExperimental {
         //System.out.print(pgmData[row][col] + " ");
       }
     }
+    scan.close();
 
     try {
       fileInputStream.close();
