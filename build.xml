@@ -283,7 +283,7 @@
 
  <path id="pmd.classpath">
   <pathelement location="${build}"/>
-  <fileset dir="/raddose/pmd-bin-5.1.0/lib/">
+  <fileset dir="lib/pmd-5.1.0">
    <include name="*.jar"/>
   </fileset>
  </path>
