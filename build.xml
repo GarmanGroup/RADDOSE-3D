@@ -242,7 +242,7 @@
   <taskdef name="pmd" classname="net.sourceforge.pmd.ant.PMDTask" classpathref="pmd.classpath"/>
   <pmd shortFilenames="true">
    <sourceLanguage name="java" version="1.6"/>
-   <ruleset>lib/pmd/raddose-ruleset.xml</ruleset>
+   <ruleset>lib/pmd-5.1.0/raddose-ruleset.xml</ruleset>
    <formatter type="xml" toFile="${checkstyle.output.dir}/pmd_errors.xml"/>
    <fileset dir="src">
     <include name="**/*.java"/>
