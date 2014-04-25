@@ -798,11 +798,9 @@ public class Count {
 
     <rule deprecated="true" ref="rulesets/java/unnecessary.xml/UnnecessaryConversionTemporary" />
     <rule deprecated="true" ref="rulesets/java/unnecessary.xml/UnnecessaryReturn" />
-    <rule deprecated="true" ref="rulesets/java/unnecessary.xml/UnnecessaryFinalModifier" />
     <rule deprecated="true" ref="rulesets/java/unnecessary.xml/UselessOverridingMethod" />
     <rule deprecated="true" ref="rulesets/java/unnecessary.xml/UselessOperationOnImmutable" />
     <rule deprecated="true" ref="rulesets/java/unnecessary.xml/UnusedNullCheckInEquals" />
-    <rule deprecated="true" ref="rulesets/java/unnecessary.xml/UselessParentheses" />
 
     <rule name="ProperCloneImplementation"
    		language="java"
@@ -934,7 +932,7 @@ The NPath complexity of a method is the number of acyclic execution paths throug
 A threshold of 200 is generally considered the point where measures should be taken to reduce 
 complexity and increase readability.
    </description>
-     <priority>3</priority>
+     <priority>5</priority>
     <example>
  <![CDATA[
 void bar() {	// this is something more complex than it needs to be,
@@ -4071,35 +4069,6 @@ Class names should always begin with an upper case character.
 public class Foo {}
 ]]>
       </example>
-    </rule>
-
-    <rule name="AbstractNaming"
-   		language="java"
-    		 since="1.4"
-          message="Abstract classes should be named 'AbstractXXX'"
-          class="net.sourceforge.pmd.lang.rule.XPathRule"
-          externalInfoUrl="http://pmd.sourceforge.net/pmd-5.1.0/rules/java/naming.html#AbstractNaming">
-       <description>
-Abstract classes should be named 'AbstractXXX'.
-       </description>
-        <priority>3</priority>
-        <properties>
-            <property name="xpath">
-                <value>
-                    <![CDATA[
-//ClassOrInterfaceDeclaration
- [@Abstract='true' and @Interface='false']
- [not (starts-with(@Image,'Abstract'))]
-                    ]]>
-                </value>
-            </property>
-        </properties>
-       <example>
-<![CDATA[
-public abstract class Foo { // should be AbstractFoo
-}
-]]>
-       </example>
     </rule>
 
     <rule name="AvoidDollarSigns"
