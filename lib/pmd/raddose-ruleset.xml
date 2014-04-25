@@ -1256,63 +1256,6 @@ public class Foo extends Bar {
    </example>
 </rule>
 
-    <rule
-        name="TooManyMethods"
-   		language="java"
-        since="4.2"
-        class="net.sourceforge.pmd.lang.rule.XPathRule"
-        message="This class has too many methods, consider refactoring it."
-        externalInfoUrl="http://pmd.sourceforge.net/pmd-5.1.0/rules/java/codesize.html#TooManyMethods">
-        <description>
-            <![CDATA[
-A class with too many methods is probably a good suspect for refactoring, in order to reduce its complexity and find a way to
-have more fine grained objects.
-            ]]>
-        </description>
-        <priority>3</priority>
-        <properties>
-                <property name="maxmethods" type="Integer" description="The method count reporting threshold" min="1" max="1000" value="10"/>
-                <property name="xpath">
-                <value>
-                    <!--  FIXME: Refine XPath to discard 'get' and 'set' methods with Block no more than 3 lines,
-                                something like this:
-                                    not (
-                                            (
-                                                starts-with(@Image,'get')
-                                                or
-                                                starts-with(@Image,'set')
-                                                or
-                                                starts-with(@Image,'is')
-                                            )
-                                            and (
-                                                    (
-                                                        (../Block/attribute::endLine)
-                                                         -
-                                                        (../Block/attribute::beginLine)
-                                                    ) <= 3
-                                            )
-                                        )
-                                This will avoid discarding 'real' method...
-                     -->
-                    <![CDATA[
- //ClassOrInterfaceDeclaration/ClassOrInterfaceBody
-     [
-      count(descendant::MethodDeclarator[
-         not (
-                starts-with(@Image,'get')
-                or
-                starts-with(@Image,'set')
-                or
-                starts-with(@Image,'is')
-            )
-      ]) > $maxmethods
-   ]
-                    ]]>
-                </value>
-            </property>
-        </properties>
-    </rule>
-
     <rule name="CouplingBetweenObjects"
     		  since="1.04"
         message="High amount of different objects as members denotes a high coupling"
@@ -1436,7 +1379,7 @@ K.J. Lieberherr and I.M. Holland. Assuring good style for object-oriented progra
 http://www.ccs.neu.edu/home/lieber/LoD.html;
 http://en.wikipedia.org/wiki/Law_of_Demeter
         </description>
-        <priority>3</priority>
+        <priority>5</priority>
         <example>
 <![CDATA[
 public class Foo {
@@ -3271,25 +3214,7 @@ public class HelloWorldBean {
       ]]>
     </example>
   </rule>
- 	 
-    <rule name="GodClass"
-        language="java"
-        since="5.0"
-        message="Possible God class"
-        class="net.sourceforge.pmd.lang.java.rule.design.GodClassRule"
-        externalInfoUrl="http://pmd.sourceforge.net/pmd-5.1.0/rules/java/design.html#GodClass">
-        <description>
-The God Class rule detects the God Class design flaw using metrics. God classes do too many things,
-are very big and overly complex. They should be split apart to be more object-oriented.
-The rule uses the detection strategy described in "Object-Oriented Metrics in Practice".
-The violations are reported against the entire class. See also the references:
-Michele Lanza and Radu Marinescu. Object-Oriented Metrics in Practice:
-Using Software Metrics to Characterize, Evaluate, and Improve the Design
-of Object-Oriented Systems. Springer, Berlin, 1 edition, October 2006. Page 80.
-        </description>
-        <priority>3</priority>
-    </rule>
-    
+ 	     
     <rule name="AvoidProtectedMethodInFinalClassNotExtending"
    		language="java"
              since="5.1"
@@ -4034,7 +3959,7 @@ public class Foo {
     <description>
 Fields, local variables, or parameter names that are very short are not helpful to the reader.
     </description>
-    <priority>3</priority>
+    <priority>5</priority>
       <properties>
           <property name="xpath">
               <value>
@@ -4056,41 +3981,6 @@ public class Something {
 			r += q;
 		}
 	}
-}
-]]>
-    </example>
-  </rule>
-
-  <rule name="LongVariable"
-   		language="java"
-  		  since="0.3"
-        message="Avoid excessively long variable names like {0}"
-        class="net.sourceforge.pmd.lang.rule.XPathRule"
-          externalInfoUrl="http://pmd.sourceforge.net/pmd-5.1.0/rules/java/naming.html#LongVariable">
-    <description>
-Fields, formal arguments, or local variable names that are too long can make the code difficult to follow.
-    </description>
-      <priority>3</priority>
-      <properties>
-          <property name="minimum" type="Integer" description="The variable length reporting threshold" min="1" max="100" value="17"/>
-          <property name="xpath">
-              <value>
-                  <![CDATA[
-//VariableDeclaratorId[string-length(@Image) > $minimum]
-                  ]]>
-              </value>
-          </property>
-      </properties>
-    <example>
-<![CDATA[
-public class Something {
-	int reallyLongIntName = -3;  			// VIOLATION - Field
-	public static void main( String argumentsList[] ) { // VIOLATION - Formal
-		int otherReallyLongName = -5; 		// VIOLATION - Local
-		for (int interestingIntIndex = 0;	// VIOLATION - For
-             interestingIntIndex < 10;
-             interestingIntIndex ++ ) {
-    }
 }
 ]]>
     </example>
@@ -4429,35 +4319,6 @@ public class ClassInDefaultPackage {
     </example>
   </rule>
 
-    <rule name="PackageCase"
-   		language="java"
-            since="3.3"
-            message="Package name contains upper case characters"
-            class="net.sourceforge.pmd.lang.rule.XPathRule"
-          externalInfoUrl="http://pmd.sourceforge.net/pmd-5.1.0/rules/java/naming.html#PackageCase">
-        <description>
-Detects when a package definition contains uppercase characters.
-        </description>
-        <priority>3</priority>
-          <properties>
-              <property name="xpath">
-                  <value>
-                      <![CDATA[
-//PackageDeclaration/Name[lower-case(@Image)!=@Image]
-                      ]]>
-                  </value>
-              </property>
-          </properties>
-        <example>
-    <![CDATA[
-package com.MyCompany;  // should be lowercase name
-
-public class SomeClass {
-}
-    ]]>
-        </example>
-      </rule>
-
     <rule name="MisleadingVariableName"
    		language="java"
           since="3.4"
@@ -4525,35 +4386,6 @@ public boolean isFoo(); 	// ok
 public boolean getFoo(boolean bar); // ok, unless checkParameterizedMethods=true
      ]]></example>
     </rule>
-
-    <rule 	name="ShortClassName"
-   		language="java"
-            since="5.0"
-            message="A Classname should have a minimum of five characters"
-            class="net.sourceforge.pmd.lang.rule.XPathRule"
-          	externalInfoUrl="http://pmd.sourceforge.net/pmd-5.1.0/rules/java/naming.html#ShortClassName">
-        <description>
-        	<![CDATA[
-Classnames with fewer than five characters are not recommended.
-			]]>
-        </description>
-        <priority>4</priority>
-          <properties>
-              <property name="xpath">
-                  <value>
-                      <![CDATA[
-//ClassOrInterfaceDeclaration[string-length(@Image) < 5]
-                      ]]>
-                  </value>
-              </property>
-          </properties>
-        <example>
-    <![CDATA[
-public class Foo {
-}
-    ]]>
-        </example>
-      </rule>
 
    <rule name="GenericsNaming"
          language="java"
@@ -5816,37 +5648,6 @@ public boolean test(String s) {
     </example>
     </rule>
 
-	<rule   name="AvoidStringBufferField"
-   		language="java"
-	      since="4.2"
-        	message="StringBuffers can grow quite a lot, and so may become a source of memory leak (if the owning class has a long life time)."
-        	class="net.sourceforge.pmd.lang.rule.XPathRule"
-        	externalInfoUrl="http://pmd.sourceforge.net/pmd-5.1.0/rules/java/strings.html#AvoidStringBufferField">
-    <description>
-		<![CDATA[
-StringBuffers/StringBuilders can grow considerably, and so may become a source of memory leaks
-if held within objects with long lifetimes.
-		]]>
-    </description>
-    <priority>3</priority>
-    <properties>
-        <property name="xpath">
-            <value>
-<![CDATA[
-//FieldDeclaration/Type/ReferenceType/ClassOrInterfaceType[@Image = 'StringBuffer' or @Image = 'StringBuilder']
-]]>
-			</value>
-		</property>
-		</properties>
-    	<example>
-<![CDATA[
-public class Foo {
-	private StringBuffer buffer;	// potential memory leak as an instance variable;
-}
-]]>
-		</example>
-	</rule>
-
     <rule name="MethodReturnsInternalArray"
     	    since="2.2"
           message="Returning ''{0}'' may expose an internal array."
@@ -6187,71 +5988,6 @@ public class Test {
 				]]>
 			</example>
 		</rule>
-
-  <rule name="UselessParentheses"
-  		language="java"
-        since="5.0"
-        message="Useless parentheses."
-        class="net.sourceforge.pmd.lang.rule.XPathRule"
-        externalInfoUrl="http://pmd.sourceforge.net/pmd-5.1.0/rules/java/unnecessary.html#UselessParentheses">
-    <description>Useless parentheses should be removed.</description>
-    <priority>4</priority>
-    <properties>
-       <property name="xpath">
-          <value>
-          <![CDATA[
-//Expression/PrimaryExpression/PrimaryPrefix/Expression[count(*)=1 and count(./CastExpression)=0 and count(./ConditionalExpression[@Ternary='true'])=0]
-|
-//Expression/ConditionalAndExpression/PrimaryExpression/PrimaryPrefix/Expression[
-    count(*)=1 and
-    count(./CastExpression)=0 and
-    count(./EqualityExpression/MultiplicativeExpression)=0 and
-    count(./ConditionalOrExpression)=0]
-|
-//Expression/ConditionalOrExpression/PrimaryExpression/PrimaryPrefix/Expression[
-    count(*)=1 and
-    count(./CastExpression)=0 and
-    count(./EqualityExpression/MultiplicativeExpression)=0]
-|
-//Expression/ConditionalExpression/PrimaryExpression/PrimaryPrefix/Expression[
-    count(*)=1 and
-    count(./CastExpression)=0 and
-    count(./EqualityExpression)=0]
-|
-//Expression/AdditiveExpression[not(./PrimaryExpression/PrimaryPrefix/Literal[@StringLiteral = 'true'])]/PrimaryExpression/PrimaryPrefix/Expression[
-    count(*)=1 and
-    not(./CastExpression) and
-    not(./ConditionalExpression) and
-    not(./ShiftExpression)]
-|
-//Expression/EqualityExpression/PrimaryExpression/PrimaryPrefix/Expression[
-    count(*)=1 and
-    count(./CastExpression)=0 and
-    count(./AndExpression)=0 and
-    count(./InclusiveOrExpression)=0 and
-    count(./ExclusiveOrExpression)=0 and
-    count(./ConditionalAndExpression)=0 and
-    count(./ConditionalOrExpression)=0]
-          ]]>
-          </value>
-       </property>
-    </properties>
-    <example>
-    <![CDATA[
-public class Foo {
-
-   private int _bar1;
-   private Integer _bar2;
-
-   public void setBar(int n) {
-      _bar1 = Integer.valueOf((n)); // here
-      _bar2 = (n); // and here
-   }
-
-}
-    ]]>
-    </example>
-  </rule>
   
   <rule name="UnusedPrivateField"
   		since="0.1"
@@ -6341,30 +6077,4 @@ public class Foo {
     </example>
   </rule>
 
-    <rule name="UnusedModifier"
-          language="java"
-          since="1.02"
-          message="Avoid modifiers which are implied by the context"
-          class="net.sourceforge.pmd.lang.java.rule.unusedcode.UnusedModifierRule"
-          externalInfoUrl="http://pmd.sourceforge.net/pmd-5.1.0/rules/java/unusedcode.html#UnusedModifier">
-     <description>
-Fields in interfaces are automatically public static final, and methods are public abstract.
-Classes or interfaces nested in an interface are automatically public and static (all nested interfaces are automatically static).
-For historical reasons, modifiers which are implied by the context are accepted by the compiler, but are superfluous.
-     </description>
-        <priority>3</priority>
-     <example>
- <![CDATA[
-public interface Foo {
-  public abstract void bar(); 		// both abstract and public are ignored by the compiler
-  public static final int X = 0; 	// public, static, and final all ignored
-  public static class Bar {} 		// public, static ignored
-  public static interface Baz {} 	// ditto
-}
-public class Bar {
-  public static interface Baz {} // static ignored
-}
- ]]>
-     </example>
-     </rule>
  </ruleset>
