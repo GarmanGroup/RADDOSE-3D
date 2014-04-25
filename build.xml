@@ -242,18 +242,7 @@
   <taskdef name="pmd" classname="net.sourceforge.pmd.ant.PMDTask" classpathref="pmd.classpath"/>
   <pmd shortFilenames="true">
    <sourceLanguage name="java" version="1.6"/>
-    <ruleset>java-basic</ruleset>
-    <ruleset>java-empty</ruleset>
-    <ruleset>java-finalizers</ruleset>
-    <ruleset>java-imports</ruleset>
-    <ruleset>java-naming</ruleset>
-    <ruleset>java-optimizations</ruleset>
-    <ruleset>java-strictexception</ruleset>
-    <ruleset>java-strings</ruleset>
-    <ruleset>java-sunsecure</ruleset>
-    <ruleset>java-typeresolution</ruleset>
-    <ruleset>java-unnecessary</ruleset>
-    <ruleset>java-unusedcode</ruleset>
+   <ruleset>lib/pmd/raddose-ruleset.xml</ruleset>
    <formatter type="xml" toFile="${checkstyle.output.dir}/pmd_errors.xml"/>
    <fileset dir="src">
     <include name="**/*.java"/>
