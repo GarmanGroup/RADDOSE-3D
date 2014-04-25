@@ -804,6 +804,25 @@ public class Count {
     <rule deprecated="true" ref="rulesets/java/unnecessary.xml/UnusedNullCheckInEquals" />
     <rule deprecated="true" ref="rulesets/java/unnecessary.xml/UselessParentheses" />
 
+    <rule name="ProperCloneImplementation"
+   		language="java"
+    		since="1.4"
+         message="Object clone() should be implemented with super.clone()"
+         class="net.sourceforge.pmd.lang.rule.XPathRule"
+          externalInfoUrl="http://pmd.sourceforge.net/pmd-5.1.0/rules/java/clone.html#ProperCloneImplementation">
+     <description>
+Object clone() should be implemented with super.clone().
+     </description>
+     <priority>2</priority>
+     <properties>
+         <property name="xpath">
+             <value>
+                 <![CDATA[
+//MethodDeclarator
+[@Image = 'clone']
+[count(FormalParameters/*) = 0]
+[count(../Block//*[
+    (self::AllocationExpression) and
     (./ClassOrInterfaceType/@Image = ancestor::
 ClassOrInterfaceDeclaration[1]/@Image)
   ])> 0
@@ -1294,7 +1313,6 @@ have more fine grained objects.
         </properties>
     </rule>
 
-
     <rule name="CouplingBetweenObjects"
     		  since="1.04"
         message="High amount of different objects as members denotes a high coupling"
@@ -1446,6 +1464,7 @@ public class Foo {
         </example>
     </rule>
     
+
   <rule name="UseUtilityClass"
   		  since="0.3"
         message="All methods are static.  Consider using a utility class instead. Alternatively, you could add a private constructor or make the class abstract to silence this warning."
@@ -3303,7 +3322,7 @@ public final class Foo {
  ]]>
          </example>
        </rule>
-
+    
  <rule name="EmptyCatchBlock"
   		  language="java"
   	  	  since="0.1"
@@ -4579,7 +4598,6 @@ public interface GenericDao<EF extends BaseModel, K extends Serializable> {
      ]]></example>
     </rule>
 
-
     <rule name="LocalVariableCouldBeFinal"
     	 since="2.2"
 	    message="Local variable ''{0}'' could be declared final"
@@ -5412,7 +5430,6 @@ public void bar() {
 		</example>
 	</rule>
 
-
     <rule name="AvoidDuplicateLiterals"
     	  since="1.0"
         message="The String literal {0} appears {1} times in this file; the first occurrence is on line {2}"
@@ -5971,7 +5988,7 @@ public void methodThrowingException() throws Exception {
       	]]>
       </example>
     </rule> 
-	
+    
     <rule name="UnnecessaryConversionTemporary"
     		 since="0.1"
           message="Avoid unnecessary temporaries when converting primitives to Strings"
@@ -6350,5 +6367,4 @@ public class Bar {
  ]]>
      </example>
      </rule>
-
-</ruleset>
+ </ruleset>
