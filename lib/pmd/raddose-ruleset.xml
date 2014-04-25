@@ -3903,43 +3903,6 @@ public class Foo {
 		  ]]></example>
     </rule>
 
-
-  <rule name="ShortVariable"
-   		language="java"
-  		  since="0.3"
-        message="Avoid variables with short names like {0}"
-        class="net.sourceforge.pmd.lang.rule.XPathRule"
-          externalInfoUrl="http://pmd.sourceforge.net/pmd-5.1.0/rules/java/naming.html#ShortVariable">
-    <description>
-Fields, local variables, or parameter names that are very short are not helpful to the reader.
-    </description>
-    <priority>5</priority>
-      <properties>
-          <property name="xpath">
-              <value>
-                  <![CDATA[
-//VariableDeclaratorId[string-length(@Image) < 3]
- [not(ancestor::ForInit)]
- [not((ancestor::FormalParameter) and (ancestor::TryStatement))]
-                  ]]>
-              </value>
-          </property>
-      </properties>
-    <example>
-<![CDATA[
-public class Something {
-	private int q = 15; 						// field - too short
-	public static void main( String as[] ) {  	// formal arg - too short
-		int r = 20 + q; 						// local var - too short
-		for (int i = 0; i < 10; i++) { 			// not a violation (inside 'for' loop)
-			r += q;
-		}
-	}
-}
-]]>
-    </example>
-  </rule>
-
   <rule name="ShortMethodName"
    		language="java"
   		  since="0.3"
