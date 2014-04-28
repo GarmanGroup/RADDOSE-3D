@@ -7,8 +7,6 @@ import java.util.Map;
 /**
  * The BeamFactory class sits between the parser and the actual beam classes. It
  * allows easy testing of the parser and extensibility for new beam types.
- * 
- * @author Markus Gerstel
  */
 public class BeamFactory {
 
@@ -42,7 +40,7 @@ public class BeamFactory {
     }
 
     String trimmedBeamName = beamName.trim();
-    if (trimmedBeamName.equals("")) {
+    if ("".equals(trimmedBeamName)) {
       throw new RuntimeException("BeamFactory: beamName is empty");
     }
 
@@ -50,7 +48,7 @@ public class BeamFactory {
 
     String beamClassName, alternativeBeamClassName;
 
-    if (trimmedBeamName.indexOf(".") == -1) {
+    if (trimmedBeamName.indexOf('.') == -1) {
       beamClassName = "Beam"
           .concat(trimmedBeamName.substring(0, 1).toUpperCase())
           .concat(trimmedBeamName.substring(1).toLowerCase());
@@ -108,14 +106,37 @@ public class BeamFactory {
     try {
       return (Beam) beamConstructor.newInstance(properties);
     } catch (InstantiationException e) {
-      throw new RuntimeException("Error during beam instantiation of "
-          + beamClassName + ": " + e.getCause().getMessage(), e.getCause());
+      throw new BeamFactoryException("Error during beam instantiation of "
+          + beamClassName + ": " + e.getCause().getMessage(), e);
     } catch (IllegalAccessException e) {
-      throw new RuntimeException("Error during beam creation of "
+      throw new BeamFactoryException("Error during beam creation of "
           + beamClassName + ": Illegal access exception", e);
     } catch (InvocationTargetException e) {
-      throw new RuntimeException("Error during beam invocation of "
-          + beamClassName + ": " + e.getCause().getMessage(), e.getCause());
+      throw new BeamFactoryException("Error during beam invocation of "
+          + beamClassName + ": " + e.getCause().getMessage(), e);
+    }
+  }
+
+  /**
+   * Exception for when the requested Beam type class could not be instantiated.
+   */
+  private class BeamFactoryException extends RuntimeException {
+    /**
+     * Unique exception serial
+     */
+    private static final long serialVersionUID = 6831150255787484147L;
+
+    /**
+     * Basic exception constructor. Takes a string and another exception holding
+     * the stack trace.
+     * 
+     * @param string
+     *          Reason why the exception was thrown.
+     * @param e
+     *          Original exception holding the stack trace.
+     */
+    public BeamFactoryException(final String string, final Throwable e) {
+      super(string, e);
     }
   }
 }
