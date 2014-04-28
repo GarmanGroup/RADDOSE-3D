@@ -174,7 +174,6 @@ public class Wedge {
    * 
    * @param deltaPhi
    *          angle of rotation in radians
-   * @return
    */
   public Double getTransX(final double deltaPhi) {
     return getTransX() * (deltaPhi - getStartAng());
@@ -185,7 +184,6 @@ public class Wedge {
    * 
    * @param deltaPhi
    *          angle of rotation in radians
-   * @return
    */
   public Double getTransY(final double deltaPhi) {
     return getTransY() * (deltaPhi - getStartAng());
@@ -196,7 +194,6 @@ public class Wedge {
    * 
    * @param deltaPhi
    *          angle of rotation in radians
-   * @return
    */
   public Double getTransZ(final double deltaPhi) {
     return getTransZ() * (deltaPhi - getStartAng());

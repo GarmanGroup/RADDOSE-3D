@@ -19,23 +19,23 @@ public class DatabaseConnector {
    * Lock to ensure only one thread can access a single connection. More
    * flexible than 'synchronized'.
    */
-  private final Lock       lock      = new ReentrantLock();
+  private final Lock       lock           = new ReentrantLock();
   /** Connection handler. */
-  private Connection       conn      = null;
+  private Connection       conn;
 
   /** Milliseconds to wait when trying to reconnect to the database. */
-  private static final int RECONNECT = 30000;
+  private static final int RECONNECT_WAIT = 30000;
 
   /** Connection credentials. */
-  private String           connUser  = null;
+  private String           connUser;
   /** Connection credentials. */
-  private String           connPass  = null;
+  private String           connPass;
 
   /**
    * Version ID of currently running RADDOSE-3D instance. Use via
    * getVersionNumber()-getter.
    */
-  private Long             version   = null;
+  private Long             version;
 
   /** Types for BLOB output. */
   public enum OutputType {
@@ -130,7 +130,7 @@ public class DatabaseConnector {
     } catch (SQLException s) {
       // Catch one exception, try backing off 30 seconds
       try {
-        Thread.sleep(RECONNECT);
+        Thread.sleep(RECONNECT_WAIT);
       } catch (InterruptedException i) {
         // ignore
       }

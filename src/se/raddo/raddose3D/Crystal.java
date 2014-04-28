@@ -84,7 +84,6 @@ public abstract class Crystal {
    * @param voxCoord
    * @param deltaPhi
    * @param myWedge
-   * @return
    */
   public abstract double findDepth(double[] voxCoord, double deltaPhi,
       Wedge myWedge);
@@ -99,7 +98,6 @@ public abstract class Crystal {
    * @param i
    * @param j
    * @param k
-   * @return
    */
   public abstract double[] getCrystCoord(int i, int j, int k);
 
@@ -109,7 +107,6 @@ public abstract class Crystal {
    * @param i
    * @param j
    * @param k
-   * @return
    */
   public abstract boolean isCrystalAt(int i, int j, int k);
 
@@ -146,22 +143,16 @@ public abstract class Crystal {
   /**
    * Return a description of at least crystal size, initial orientation, and the
    * voxel resolution.
-   * 
-   * @return
    */
   public abstract String crystalInfo();
 
   /**
    * Return the size of the bounding box of the crystal in voxels.
-   * 
-   * @return
    */
   public abstract int[] getCrystSizeVoxels();
 
   /**
    * Return the size of the bounding box of the crystal in um.
-   * 
-   * @return
    */
   public abstract double[] getCrystSizeUM();
 
@@ -171,7 +162,6 @@ public abstract class Crystal {
    * @param i
    * @param j
    * @param k
-   * @return
    */
   public abstract double getDose(int i, int j, int k);
 
@@ -181,7 +171,6 @@ public abstract class Crystal {
    * @param i
    * @param j
    * @param k
-   * @return
    */
   public abstract double getFluence(int i, int j, int k);
 
@@ -191,14 +180,11 @@ public abstract class Crystal {
    * @param i
    * @param j
    * @param k
-   * @return
    */
   public abstract double getElastic(int i, int j, int k);
 
   /**
    * Return the resolution of the crystal in 1/um.
-   * 
-   * @return
    */
   public abstract double getCrystalPixPerUM();
 
