@@ -2,9 +2,9 @@ package se.raddo.raddose3D;
 
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Vector;
 
 /**
  * RADDOSE-3D main class for command line invocation.
@@ -17,13 +17,13 @@ public final class RD3D {
   /** Array of command line parameters. */
   private final String[]    commandLineParams;
   /** List of prepared input modules for the simulation. */
-  private Vector<Input>     inputs               = new Vector<Input>();
+  private ArrayList<Input>  inputs               = new ArrayList<Input>();
   /** List of prepared output modules for the simulation. */
-  private Vector<Output>    outputs              = new Vector<Output>();
+  private ArrayList<Output> outputs              = new ArrayList<Output>();
   /** Experiment class for the simulation. */
   private Experiment        exp                  = new Experiment();
   /** Common prefix for output files. */
-  private String            prefix               = null;
+  private String            prefix;
 
   /**
    * Private class constructor. Only the class itself needs to instantiate it.
@@ -113,17 +113,17 @@ public final class RD3D {
       // Comparisons here are case sensitive
       String command = commandLineParams[i];
 
-      if (command.equals("-V") || command.toLowerCase().equals("--version")) {
+      if ("-V".equals(command) || "--version".equalsIgnoreCase(command)) {
         Version.printVersionInformation();
         System.exit(0);
 
-      } else if (command.equals("-?") || command.equals("/?")
-          || command.toLowerCase().equals("--help")) {
+      } else if ("-?".equals(command) || "/?".equals(command)
+          || "--help".equalsIgnoreCase(command)) {
         printCommandlineHelp();
         System.exit(0);
 
-      } else if (command.toLowerCase().equals("-p")
-          || command.toLowerCase().equals("--prefix")) {
+      } else if ("-p".equalsIgnoreCase(command)
+          || "--prefix".equalsIgnoreCase(command)) {
         if ((i + 1) >= commandLineParams.length) {
           System.err.println("No output prefix given");
         } else {
@@ -320,7 +320,7 @@ public final class RD3D {
 
     System.out.println();
     System.out
-    .println("==========================================================");
+        .println("==========================================================");
     System.out.println("Please cite:");
     System.out.println(" Zeldin, Gerstel, Garman. (2013). J. Appl. Cryst. 46,"
         + " 1225-1230.");
@@ -338,10 +338,10 @@ public final class RD3D {
    *         no valid destination was given.
    */
   private Writer parseOutputDestinations(final String[] destinations) {
-    Vector<Writer> writers = new Vector<Writer>();
+    ArrayList<Writer> writers = new ArrayList<Writer>();
 
     for (String destination : destinations) {
-      if (destination.equalsIgnoreCase("-")) {
+      if ("-".equalsIgnoreCase(destination)) {
         writers.add(new WriterConsole());
       } else {
         String filename = prefix.concat(destination);

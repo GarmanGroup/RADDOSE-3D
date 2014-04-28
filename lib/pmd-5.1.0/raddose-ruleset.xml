@@ -4325,7 +4325,7 @@ public void foo2 (final String param) {	// better, do stuff with param never ass
     <description>
 New objects created within loops should be checked to see if they can created outside them and reused.
     </description>
-      <priority>3</priority>
+      <priority>5</priority>
     <example>
 <![CDATA[
 public class Something {
