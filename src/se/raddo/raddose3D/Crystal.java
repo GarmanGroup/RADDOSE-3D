@@ -3,6 +3,9 @@ package se.raddo.raddose3D;
 import java.util.Map;
 import java.util.Vector;
 
+/**
+ * Crystal abstract class
+ */
 public abstract class Crystal {
 
   /** Constant for data fields in Map constructors: X dimension in um. */
@@ -41,7 +44,8 @@ public abstract class Crystal {
    * of individual voxel exposure events and can also inspect the Crystal object
    * after each image and and wedge.
    */
-  private Vector<ExposeObserver> exposureObservers             = new Vector<ExposeObserver>();
+  private Vector<ExposeObserver> exposureObservers
+                = new Vector<ExposeObserver>();
 
   /**
    * An single, common ExposureSummary object to which a reference can be
