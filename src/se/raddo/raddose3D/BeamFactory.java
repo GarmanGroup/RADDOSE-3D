@@ -33,15 +33,15 @@ public class BeamFactory {
     // 1. Do some sanity checks on the passed parameters
 
     if (beamName == null) {
-      throw new RuntimeException("BeamFactory: beamName set to null");
+      throw new BeamFactoryException("BeamFactory: beamName set to null");
     }
     if (properties == null) {
-      throw new RuntimeException("BeamFactory: properties set to null");
+      throw new BeamFactoryException("BeamFactory: properties set to null");
     }
 
     String trimmedBeamName = beamName.trim();
     if ("".equals(trimmedBeamName)) {
-      throw new RuntimeException("BeamFactory: beamName is empty");
+      throw new BeamFactoryException("BeamFactory: beamName is empty");
     }
 
     // 2. Construct the class name of the requested beam type
@@ -76,16 +76,16 @@ public class BeamFactory {
         beamClass = Class.forName(alternativeBeamClassName);
         beamClassName = alternativeBeamClassName;
       } catch (ClassNotFoundException e2) {
-        throw new RuntimeException("Could not initialize beam of type "
+        throw new BeamFactoryException("Could not initialize beam of type "
             + beamName + ": Class " + beamClassName
-            + " not found.", e1);
+            + " not found.", e2);
       }
     }
 
     // 4. A class has been found. Check that it is an implementation of Beam.
 
     if (!Beam.class.isAssignableFrom(beamClass)) {
-      throw new RuntimeException("Could not initialize beam of type "
+      throw new BeamFactoryException("Could not initialize beam of type "
           + beamName + ": Class " + beamClassName
           + " is not an implementation of Beam.");
     }
@@ -96,7 +96,7 @@ public class BeamFactory {
     try {
       beamConstructor = beamClass.getConstructor(Map.class);
     } catch (NoSuchMethodException e) {
-      throw new RuntimeException("Error initializing beam of type "
+      throw new BeamFactoryException("Error initializing beam of type "
           + beamName + ": Class " + beamClassName
           + " does not have a property constructor.", e);
     }
@@ -120,15 +120,25 @@ public class BeamFactory {
   /**
    * Exception for when the requested Beam type class could not be instantiated.
    */
-  private class BeamFactoryException extends RuntimeException {
+  private static class BeamFactoryException extends RuntimeException {
     /**
-     * Unique exception serial
+     * Unique exception serial.
      */
     private static final long serialVersionUID = 6831150255787484147L;
 
     /**
-     * Basic exception constructor. Takes a string and another exception holding
-     * the stack trace.
+     * Basic exception constructor. Takes only a string.
+     * 
+     * @param string
+     *          Reason why the exception was thrown.
+     */
+    public BeamFactoryException(final String string) {
+      super(string);
+    }
+
+    /**
+     * Exception constructor taking a string and another exception holding a
+     * stack trace.
      * 
      * @param string
      *          Reason why the exception was thrown.
