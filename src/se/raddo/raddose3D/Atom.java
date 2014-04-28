@@ -18,12 +18,14 @@ public class Atom
   /**
    * Absorption edge K, L, M in Angstroms
    */
-  private double              absorptionEdgeK, absorptionEdgeL, absorptionEdgeM;
+  private double              absorptionEdgeK, absorptionEdgeL,
+      absorptionEdgeM;
 
   /**
    * Array (of four) for K, L, M, N edges
    */
-  private double[]            absorptionEdgeKCoeff, absorptionEdgeLCoeff, absorptionEdgeMCoeff, absorptionEdgeNCoeff;
+  private double[]            absorptionEdgeKCoeff, absorptionEdgeLCoeff,
+      absorptionEdgeMCoeff, absorptionEdgeNCoeff;
 
   /**
    * Atomic weight
@@ -33,7 +35,8 @@ public class Atom
   /**
    * Array of four for coherent and incoherent scattering
    */
-  private double[]            coherentScatteringCoeff, incoherentScatteringCoeff;
+  private double[]            coherentScatteringCoeff,
+      incoherentScatteringCoeff;
 
   /**
    * L2 and L3 variables
@@ -43,37 +46,37 @@ public class Atom
   /**
    * Atomic mass unit in grams
    */
-  private static final double ATOMIC_MASS_UNIT = 1.66E-24;
+  private static final double ATOMIC_MASS_UNIT     = 1.66E-24;
   /**
    * LJ_1 variable from Fortran, used to correct atomic elements < 29 Z
    */
-  private static final double LJ_1             = 1.160;
+  private static final double LJ_1                 = 1.160;
   /**
    * LJ_2 variable from Fortran, used to correct atomic elements < 29 Z
    */
-  private static final double LJ_2             = 1.41;
+  private static final double LJ_2                 = 1.41;
 
   /**
    * Number of expansions of the polynomial
    */
-  private static final int POLYNOMIAL_EXPANSION = 4;
-  
+  private static final int    POLYNOMIAL_EXPANSION = 4;
+
   /**
    * Occurrences - number of times this atom is found in the protein
    */
   public double               macromolecularOccurrence;
-  
+
   /**
    * Hetatms - number of times this atom is found in the protein, should also
    * be included in macromolecular occurrence
    */
-  public double               hetatmOccurrence = 0;
-  
+  public double               hetatmOccurrence     = 0;
+
   /**
    * Concentration of this atom in the solvent
    */
   public double               solventConcentration;
-  
+
   /**
    * Number of atoms of this type in the solvent,
    * calculated from solvent concentration
@@ -84,7 +87,8 @@ public class Atom
    * calculated cross-sections
    */
 
-  public double               photoelectricCrossSection, totalCrossSection, coherentCrossSection;
+  public double               photoelectricCrossSection, totalCrossSection,
+      coherentCrossSection;
 
   /**
    * Create new atom with element name & atomic number.
@@ -123,7 +127,8 @@ public class Atom
    * @param edgeL L edge energy
    * @param edgeM M edge energy
    */
-  public void setAbsorptionEdges(final double edgeK, final double edgeL, final double edgeM)
+  public void setAbsorptionEdges(final double edgeK, final double edgeL,
+      final double edgeM)
   {
     this.absorptionEdgeK = edgeK;
     this.absorptionEdgeL = edgeL;
@@ -148,7 +153,8 @@ public class Atom
    * @param k2 k2
    * @param k3 k3
    */
-  public void setAbsorptionKEdgeCoeffs(final double k0, final double k1, final double k2,
+  public void setAbsorptionKEdgeCoeffs(final double k0, final double k1,
+      final double k2,
       final double k3)
   {
     this.absorptionEdgeKCoeff = new double[POLYNOMIAL_EXPANSION];
@@ -168,7 +174,8 @@ public class Atom
    * @param l2 l2
    * @param l3 l3
    */
-  public void setAbsorptionLEdgeCoeffs(final double l0, final double l1, final double l2,
+  public void setAbsorptionLEdgeCoeffs(final double l0, final double l1,
+      final double l2,
       final double l3)
   {
     this.absorptionEdgeLCoeff = new double[POLYNOMIAL_EXPANSION];
@@ -188,7 +195,8 @@ public class Atom
    * @param m2 m2
    * @param m3 m3
    */
-  public void setAbsorptionMEdgeCoeffs(final double m0, final double m1, final double m2,
+  public void setAbsorptionMEdgeCoeffs(final double m0, final double m1,
+      final double m2,
       final double m3)
   {
     this.absorptionEdgeMCoeff = new double[POLYNOMIAL_EXPANSION];
@@ -208,7 +216,8 @@ public class Atom
    * @param n2 n2
    * @param n3 n3
    */
-  public void setAbsorptionNEdgeCoeffs(final double n0, final double n1, final double n2,
+  public void setAbsorptionNEdgeCoeffs(final double n0, final double n1,
+      final double n2,
       final double n3)
   {
     this.absorptionEdgeNCoeff = new double[POLYNOMIAL_EXPANSION];
@@ -250,7 +259,8 @@ public class Atom
    * @param incoh2 incoh2
    * @param incoh3 incoh3
    */
-  public void setIncoherentScatteringCoeffs(final double incoh0, final double incoh1,
+  public void setIncoherentScatteringCoeffs(final double incoh0,
+      final double incoh1,
       final double incoh2, final double incoh3)
   {
     this.incoherentScatteringCoeff = new double[POLYNOMIAL_EXPANSION];

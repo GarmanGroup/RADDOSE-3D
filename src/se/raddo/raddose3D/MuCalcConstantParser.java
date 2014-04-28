@@ -15,144 +15,151 @@ public class MuCalcConstantParser {
   protected static final String MUCALC_FILE        = "constants/MuCalcConstants.txt";
 
   /**
-   * Array of Atom objects containing all elements listed in Constants file
-   * Atom count - number of atoms in this array
+   * Array of Atom objects containing all elements listed in Constants file.
    */
   public Atom[]                 atoms;
+
+  /**
+   * Atom count - number of atoms in this array.
+   */
   public int                    atomCount;
+
+  /**
+   * Total atoms in period table.
+   */
   private static final int      TOTAL_ATOMS        = 111;
 
   /**
-   * element name
+   * element name.
    */
   private static final int      ELEMENT_NAME       = 0;
   /**
-   * atomic number
+   * atomic number.
    */
   private static final int      ATOMIC_NUMBER      = 1;
   /**
-   * K edge in Angstroms
+   * K edge in Angstroms.
    */
   private static final int      EDGE_K             = 2;
   /**
-   * L edge in Angstroms
+   * L edge in Angstroms.
    */
   private static final int      EDGE_L             = 3;
   /**
-   * M edge in Angstroms
+   * M edge in Angstroms.
    */
   private static final int      EDGE_M             = 4;
 
   /**
-   * K coefficient 0 in polynomial expansion
+   * K coefficient 0 in polynomial expansion.
    */
   private static final int      K_COEFF_0          = 5;
   /**
-   * K coefficient 1
+   * K coefficient 1.
    */
   private static final int      K_COEFF_1          = 6;
   /**
-   * K coefficient 2
+   * K coefficient 2.
    */
   private static final int      K_COEFF_2          = 7;
   /**
-   * K coefficient 3
+   * K coefficient 3.
    */
   private static final int      K_COEFF_3          = 8;
 
   /**
-   * L coefficient 0 in polynomial expansion
+   * L coefficient 0 in polynomial expansion.
    */
   private static final int      L_COEFF_0          = 9;
   /**
-   * L coefficient 1
+   * L coefficient 1.
    */
   private static final int      L_COEFF_1          = 10;
   /**
-   * L coefficient 2
+   * L coefficient 2.
    */
   private static final int      L_COEFF_2          = 11;
   /**
-   * L coefficient 3
+   * L coefficient 3.
    */
   private static final int      L_COEFF_3          = 12;
 
   /**
-   * M coefficient 0 in polynomial expansion
+   * M coefficient 0 in polynomial expansion.
    */
   private static final int      M_COEFF_0          = 13;
   /**
-   * M coefficient 1
+   * M coefficient 1.
    */
   private static final int      M_COEFF_1          = 14;
   /**
-   * M coefficient 2
+   * M coefficient 2.
    */
   private static final int      M_COEFF_2          = 15;
   /**
-   * M coefficient 3
+   * M coefficient 3.
    */
   private static final int      M_COEFF_3          = 16;
   /**
-   * N coefficient 0 for polynomial expansion
+   * N coefficient 0 for polynomial expansion.
    */
   private static final int      N_COEFF_0          = 17;
   /**
-   * N coefficient 1
+   * N coefficient 1.
    */
   private static final int      N_COEFF_1          = 18;
   /**
-   * N coefficient 2
+   * N coefficient 2.
    */
   private static final int      N_COEFF_2          = 19;
   /**
-   * N coefficient 3
+   * N coefficient 3.
    */
   private static final int      N_COEFF_3          = 20;
   /**
-   * N coefficient 4
+   * N coefficient 4.
    */
   private static final int      ATOMIC_WEIGHT      = 23;
 
   /**
-   * Coherent coefficient 0 for polynomial expansion
+   * Coherent coefficient 0 for polynomial expansion.
    */
   private static final int      COHERENT_COEFF_0   = 24;
   /**
-   * Coherent coefficient 1
+   * Coherent coefficient 1.
    */
   private static final int      COHERENT_COEFF_1   = 25;
   /**
-   * Coherent coefficient 2
+   * Coherent coefficient 2.
    */
   private static final int      COHERENT_COEFF_2   = 26;
   /**
-   * Coherent coefficient 3
+   * Coherent coefficient 3.
    */
   private static final int      COHERENT_COEFF_3   = 27;
 
   /**
-   * Incoherent coefficient 0 for polynomial expansion
+   * Incoherent coefficient 0 for polynomial expansion.
    */
   private static final int      INCOHERENT_COEFF_0 = 28;
   /**
-   * Incoherent coefficient 1
+   * Incoherent coefficient 1.
    */
   private static final int      INCOHERENT_COEFF_1 = 29;
   /**
-   * Incoherent coefficient 2
+   * Incoherent coefficient 2.
    */
   private static final int      INCOHERENT_COEFF_2 = 30;
   /**
-   * Incoherent coefficient 3
+   * Incoherent coefficient 3.
    */
   private static final int      INCOHERENT_COEFF_3 = 31;
   /**
-   * L2
+   * L2.
    */
   private static final int      L2                 = 36;
   /**
-   * L3
+   * L3.
    */
   private static final int      L3                 = 37;
 
@@ -308,7 +315,8 @@ public class MuCalcConstantParser {
       if (higher == lower + 1)
       {
         System.out
-            .println("Warning: Atomic number within range but no data available for particular Z.");
+            .println("Warning: Atomic number within range but"
+                + "no data available for particular Z.");
         return null;
       }
 
