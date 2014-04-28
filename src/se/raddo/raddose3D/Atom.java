@@ -21,19 +21,12 @@ public class Atom
   public double[]   absorptionEdgeMCoeff;
   public double[]   absorptionEdgeNCoeff;
   
-  public double     density;
-  public double     conversionConstant;
   public double     atomicWeight;
   
   public double[]   coherentScatteringCoeff;
   public double[]   incoherentScatteringCoeff;
   
-  public double     kEdgeBeta1;
-  public double     kEdgeAlpha1;
-  public double     lEdgeBeta1;
-  public double     lEdgeAlpha1;
-  
-  public double     l2, l3, lj3, fek, fel;
+  public double     l2, l3;
   
   public static final double    ATOMIC_MASS_UNIT    = 1.66E-24; // in grams
   public static final double        LJ_1                 = 1.160;
@@ -79,10 +72,8 @@ public class Atom
     this.absorptionEdgeM = edgeM;
   }
   
-  public void setAtomicConstants(double dens, double conversion, double atweight)
+  public void setAtomicConstants(double atweight)
   {
-    this.density = dens;
-    this.conversionConstant = conversion;
     this.atomicWeight = atweight;
   }
   
@@ -145,22 +136,12 @@ public class Atom
     incoherentScatteringCoeff[2] = incoh2;
     incoherentScatteringCoeff[3] = incoh3; 
   }
+
   
-  public void setAlphaBetaEdges(double kb1, double ka1, double lb1, double la1)
-  {
-    this.kEdgeAlpha1 = ka1;
-    this.kEdgeBeta1 = kb1;
-    this.lEdgeAlpha1 = la1;
-    this.lEdgeBeta1 = lb1;
-  }
-  
-  public void setLsLJsFEKsFELs(double ltwo, double lthree, double ljthree, double feck, double fell)
+  public void setLs(double ltwo, double lthree)
   {
     this.l2 = ltwo;
     this.l3 = lthree;
-    this.lj3 = ljthree;
-    this.fek = feck;
-    this.fel = fell;
   }
   
   public double totalAtoms()

@@ -7,22 +7,77 @@ import java.io.*;
  */
 
 public class MuCalcConstantParser {
+
   
-  // Two constants LJ_1, LJ_2 involved in correcting for L-edges since McMaster uses the L1-edge.
-  
-  // Location of MuCalcConstants library.
-  
-  protected static final String     MUCALC_FILE          = "constants/MuCalcConstants.txt";
-  
-  public Atom[]                    atoms;
-  public int                       atomCount;
-  
+  /**
+   * Location of MuCalcConstants library.
+   */
+
+  protected static final String MUCALC_FILE        = "constants/MuCalcConstants.txt";
+
+  /**
+   * Array of Atom objects containing all elements listed in Constants file
+   * Atom count - number of atoms in this array
+   */
+  public Atom[]                 atoms;
+  public int                    atomCount;
+  private static int            TOTAL_ATOMS         = 111;
+
+  /**
+   * Positions of variables in constant file
+   */
+
+  private static int            ELEMENT_NAME       = 0;
+  private static int            ATOMIC_NUMBER      = 1;
+  private static int            EDGE_K             = 2;
+  private static int            EDGE_L             = 3;
+  private static int            EDGE_M             = 4;
+
+  private static int            K_COEFF_0          = 5;
+  private static int            K_COEFF_1          = 6;
+  private static int            K_COEFF_2          = 7;
+  private static int            K_COEFF_3          = 8;
+
+  private static int            L_COEFF_0          = 9;
+  private static int            L_COEFF_1          = 10;
+  private static int            L_COEFF_2          = 11;
+  private static int            L_COEFF_3          = 12;
+
+  private static int            M_COEFF_0          = 13;
+  private static int            M_COEFF_1          = 14;
+  private static int            M_COEFF_2          = 15;
+  private static int            M_COEFF_3          = 16;
+
+  private static int            N_COEFF_0          = 17;
+  private static int            N_COEFF_1          = 18;
+  private static int            N_COEFF_2          = 19;
+  private static int            N_COEFF_3          = 20;
+
+  private static int            ATOMIC_WEIGHT      = 23;
+
+  private static int            COHERENT_COEFF_0   = 24;
+  private static int            COHERENT_COEFF_1   = 25;
+  private static int            COHERENT_COEFF_2   = 26;
+  private static int            COHERENT_COEFF_3   = 27;
+
+  private static int            INCOHERENT_COEFF_0 = 28;
+  private static int            INCOHERENT_COEFF_1 = 29;
+  private static int            INCOHERENT_COEFF_2 = 30;
+  private static int            INCOHERENT_COEFF_3 = 31;
+
+  private static int            L2                 = 36;
+  private static int            L3                 = 37;
+
+  /**
+   * Constructor - reads in constant file & populates atom array.
+   */
   public MuCalcConstantParser()
   {
-    atoms = new Atom[100]; // TODO: allocate according to number of lines.
-    
-    BufferedReader br = null; InputStreamReader isr = null;
-    
+    atoms = new Atom[TOTAL_ATOMS];
+
+    BufferedReader br = null;
+    InputStreamReader isr = null;
+
     try {
       FileInputStream is = new FileInputStream(MUCALC_FILE);
       isr = new InputStreamReader(is);
@@ -30,13 +85,13 @@ public class MuCalcConstantParser {
     } catch (FileNotFoundException e) {
       // give up
       System.out.println("Cannot find atom library file. Have you deleted it?");
-      
+
       e.printStackTrace();
       return;
-    }        // Read in constants file, consider some kind of error checking
-    
+    } // Read in constants file, consider some kind of error checking
+
     String line;
-    int i=0;
+    int i = 0;
     int totalLines = 0;
     try {
       while ((line = br.readLine()) != null)
@@ -44,42 +99,75 @@ public class MuCalcConstantParser {
         totalLines++;
         // ignore commented out lines.
         if (Character.toString(line.charAt(0)).equals("#"))
+        {
           continue;
-        
-  // array containing all those numbers from the calculator file
+        }
+
+        // array containing all those numbers from the calculator file
         String[] components = line.split("\t", -1);
 
-        for (int j=0; j < components.length; j++)
+        for (int j = 0; j < components.length; j++)
         {
-          // set components to -1 if they're empty, because otherwise Java gets upset.
+          // set components to -1 if they're empty, because
+          // otherwise Java gets upset.
           String component = components[j];
           if (component.equals(""))
+          {
             components[j] = "-1";
+          }
         }
-        
+
         // Setting all the properties of the new atom.
-        // component[x] where the values of x are in order as listed in the constants file.
-        
+        // component[x] where the values of x are in order
+        // as listed in the constants file.
+
         try
         {
-          atoms[i] = new Atom(components[1], Integer.parseInt(components[0]));
-          atoms[i].setAbsorptionEdges(Double.parseDouble(components[2]), Double.parseDouble(components[3]), Double.parseDouble(components[4]));
-          atoms[i].setAbsorptionKEdgeCoeffs(Double.parseDouble(components[5]), Double.parseDouble(components[6]), Double.parseDouble(components[7]), Double.parseDouble(components[8]));
-          atoms[i].setAbsorptionLEdgeCoeffs(Double.parseDouble(components[9]), Double.parseDouble(components[10]), Double.parseDouble(components[11]), Double.parseDouble(components[12]));
-          atoms[i].setAbsorptionMEdgeCoeffs(Double.parseDouble(components[13]), Double.parseDouble(components[14]), Double.parseDouble(components[15]), Double.parseDouble(components[16]));
-          atoms[i].setAbsorptionNEdgeCoeffs(Double.parseDouble(components[17]), Double.parseDouble(components[18]), Double.parseDouble(components[19]), Double.parseDouble(components[20]));
-          atoms[i].setAtomicConstants(Double.parseDouble(components[21]), Double.parseDouble(components[22]), Double.parseDouble(components[23]));
-          atoms[i].setCoherentScatteringCoeffs(Double.parseDouble(components[24]), Double.parseDouble(components[25]), Double.parseDouble(components[26]), Double.parseDouble(components[27]));
-          atoms[i].setIncoherentScatteringCoeffs(Double.parseDouble(components[28]), Double.parseDouble(components[29]), Double.parseDouble(components[30]), Double.parseDouble(components[31]));
-          atoms[i].setAlphaBetaEdges(Double.parseDouble(components[32]), Double.parseDouble(components[33]), Double.parseDouble(components[34]), Double.parseDouble(components[35]));
-          atoms[i].setLsLJsFEKsFELs(Double.parseDouble(components[36]), Double.parseDouble(components[37]), Double.parseDouble(components[38]), Double.parseDouble(components[39]), Double.parseDouble(components[40]));
-        }
-        catch (NumberFormatException e)
+          atoms[i] = new Atom(components[ELEMENT_NAME],
+              Integer.parseInt(components[ATOMIC_NUMBER]));
+          atoms[i].setAbsorptionEdges(Double.parseDouble(components[EDGE_K]),
+              Double.parseDouble(components[EDGE_L]),
+              Double.parseDouble(components[EDGE_M]));
+          atoms[i].setAbsorptionKEdgeCoeffs(
+              Double.parseDouble(components[K_COEFF_0]),
+              Double.parseDouble(components[K_COEFF_1]),
+              Double.parseDouble(components[K_COEFF_2]),
+              Double.parseDouble(components[K_COEFF_3]));
+          atoms[i].setAbsorptionLEdgeCoeffs(
+              Double.parseDouble(components[L_COEFF_0]),
+              Double.parseDouble(components[L_COEFF_1]),
+              Double.parseDouble(components[L_COEFF_2]),
+              Double.parseDouble(components[L_COEFF_3]));
+          atoms[i].setAbsorptionMEdgeCoeffs(
+              Double.parseDouble(components[M_COEFF_0]),
+              Double.parseDouble(components[M_COEFF_1]),
+              Double.parseDouble(components[M_COEFF_2]),
+              Double.parseDouble(components[M_COEFF_3]));
+          atoms[i].setAbsorptionNEdgeCoeffs(
+              Double.parseDouble(components[N_COEFF_0]),
+              Double.parseDouble(components[N_COEFF_1]),
+              Double.parseDouble(components[N_COEFF_2]),
+              Double.parseDouble(components[N_COEFF_3]));
+          atoms[i].setAtomicConstants(Double
+              .parseDouble(components[ATOMIC_WEIGHT]));
+          atoms[i].setCoherentScatteringCoeffs(
+              Double.parseDouble(components[COHERENT_COEFF_0]),
+              Double.parseDouble(components[COHERENT_COEFF_1]),
+              Double.parseDouble(components[COHERENT_COEFF_2]),
+              Double.parseDouble(components[COHERENT_COEFF_3]));
+          atoms[i].setIncoherentScatteringCoeffs(
+              Double.parseDouble(components[INCOHERENT_COEFF_0]),
+              Double.parseDouble(components[INCOHERENT_COEFF_1]),
+              Double.parseDouble(components[INCOHERENT_COEFF_2]),
+              Double.parseDouble(components[INCOHERENT_COEFF_3]));
+          atoms[i].setLs(Double.parseDouble(components[L2]),
+              Double.parseDouble(components[L3]));
+        } catch (NumberFormatException e)
         {
           System.out.println("Could not parse line " + totalLines);
           e.printStackTrace();
         }
-        
+
         i++;
       }
     } catch (NumberFormatException e) {
@@ -87,75 +175,84 @@ public class MuCalcConstantParser {
     } catch (IOException e) {
       e.printStackTrace();
     }
-    
+
     try {
       br.close();
     } catch (IOException e) {
       e.printStackTrace();
     }
-    
 
     if (isr != null)
+    {
       try {
         isr.close();
       } catch (IOException e1) {
         // TODO Auto-generated catch block
         e1.printStackTrace();
       }
+    }
     
     atomCount = i;
   }
-  
+
   /**
    * Q chop algorithm to quickly find an atom with a given atomic number Z.
    * * Your job is to check for a NULL return.
+   * 
+   * @param z atomic number
+   * @return associated Atom object
    */
   public Atom findAtomWithZ(double z)
   {
     int lower = 0;
     int higher = atomCount - 1;
-    int new_bound = (higher + lower) / 2;
-    
+    int newBound = (higher + lower) / 2;
+
     if (z < atoms[lower].atomicNumber || z > atoms[higher].atomicNumber)
     {
-      System.out.println("Warning: Atomic number asked for which is out of range.");
+      System.out
+          .println("Warning: Atomic number asked for which is out of range.");
       return null;
     }
-    
-    while (atoms[new_bound].atomicNumber != z)
+
+    while (atoms[newBound].atomicNumber != z)
     {
       if (higher == lower + 1)
       {
-        System.out.println("Warning: Atomic number within range but no data available for particular Z.");
+        System.out
+            .println("Warning: Atomic number within range but no data available for particular Z.");
         return null;
       }
-      
-      if (atoms[new_bound].atomicNumber > z)
-        higher = new_bound;
-      else if (atoms[new_bound].atomicNumber < z)
-        lower = new_bound;
-      
-      new_bound = (higher + lower) / 2;
+
+      if (atoms[newBound].atomicNumber > z)
+        higher = newBound;
+      else if (atoms[newBound].atomicNumber < z)
+        lower = newBound;
+
+      newBound = (higher + lower) / 2;
     }
-    
+
     return atoms[new_bound];
   }
-  
+
   /**
-   * A bit of a slower algorithm to find atom with a given name. If you have the atomic number, use findAtomWithZ instead.
+   * A bit of a slower algorithm to find atom with a given name. If you have the
+   * atomic number, use findAtomWithZ instead.
    * Your job is to check for a NULL return.
+   * 
    * @param atomName
    * @return Atom object
    */
   public Atom findAtomWithName(String atomName)
   {
-    for (int i=0; i < atoms.length; i++)
+    for (int i = 0; i < atoms.length; i++)
     {
       if (atoms[i].elementName.equals(atomName.toUpperCase()))
         return atoms[i];
     }
-    
-    System.out.println("Warning: Atom with name " + atomName + " cannot be found in atom dictionary.");
+
+    System.out.println("Warning: Atom with name " + atomName
+        + " cannot be found in atom dictionary.");
     return null;
   }
 }
