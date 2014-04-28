@@ -7,48 +7,84 @@ package se.raddo.raddose3D;
 public class Atom
 {
   /**
-   * These are the constants derived from the text file
+   * Element name
    */
   public String               elementName;
+  /**
+   * Atomic number
+   */
   public int                  atomicNumber;
 
-  private double              absorptionEdgeK;
-  private double              absorptionEdgeL;
-  private double              absorptionEdgeM;
+  /**
+   * Absorption edge K, L, M in Angstroms
+   */
+  private double              absorptionEdgeK, absorptionEdgeL, absorptionEdgeM;
 
-  private double[]            absorptionEdgeKCoeff;
-  private double[]            absorptionEdgeLCoeff;
-  private double[]            absorptionEdgeMCoeff;
-  private double[]            absorptionEdgeNCoeff;
+  /**
+   * Array (of four) for K, L, M, N edges
+   */
+  private double[]            absorptionEdgeKCoeff, absorptionEdgeLCoeff, absorptionEdgeMCoeff, absorptionEdgeNCoeff;
 
+  /**
+   * Atomic weight
+   */
   public double               atomicWeight;
 
-  private double[]            coherentScatteringCoeff;
-  private double[]            incoherentScatteringCoeff;
+  /**
+   * Array of four for coherent and incoherent scattering
+   */
+  private double[]            coherentScatteringCoeff, incoherentScatteringCoeff;
 
+  /**
+   * L2 and L3 variables
+   */
   private double              l2, l3;
 
-  private static final double ATOMIC_MASS_UNIT = 1.66E-24; // in grams
+  /**
+   * Atomic mass unit in grams
+   */
+  private static final double ATOMIC_MASS_UNIT = 1.66E-24;
+  /**
+   * LJ_1 variable from Fortran, used to correct atomic elements < 29 Z
+   */
   private static final double LJ_1             = 1.160;
+  /**
+   * LJ_2 variable from Fortran, used to correct atomic elements < 29 Z
+   */
   private static final double LJ_2             = 1.41;
 
   /**
-   * Occurrences - number of times this atom is found in the protein,
-   * hetatms (for PDB only) or solvent
+   * Number of expansions of the polynomial
    */
-
+  private static final int POLYNOMIAL_EXPANSION = 4;
+  
+  /**
+   * Occurrences - number of times this atom is found in the protein
+   */
   public double               macromolecularOccurrence;
+  
+  /**
+   * Hetatms - number of times this atom is found in the protein, should also
+   * be included in macromolecular occurrence
+   */
   public double               hetatmOccurrence = 0;
+  
+  /**
+   * Concentration of this atom in the solvent
+   */
   public double               solventConcentration;
+  
+  /**
+   * Number of atoms of this type in the solvent,
+   * calculated from solvent concentration
+   */
   public double               solventOccurrence;
 
   /**
    * calculated cross-sections
    */
 
-  public double               photoelectricCrossSection;
-  public double               totalCrossSection;
-  public double               coherentCrossSection;
+  public double               photoelectricCrossSection, totalCrossSection, coherentCrossSection;
 
   /**
    * Create new atom with element name & atomic number.
@@ -56,7 +92,7 @@ public class Atom
    * @param name element name
    * @param number atomic number
    */
-  public Atom(String name, int number)
+  public Atom(final String name, final int number)
   {
     elementName = name;
     atomicNumber = number;
@@ -74,7 +110,7 @@ public class Atom
    * @param name element name
    * @param number atomic number
    */
-  public void setCoreParameters(String name, int number)
+  public void setCoreParameters(final String name, final int number)
   {
     this.elementName = name;
     this.atomicNumber = number;
@@ -87,7 +123,7 @@ public class Atom
    * @param edgeL L edge energy
    * @param edgeM M edge energy
    */
-  public void setAbsorptionEdges(double edgeK, double edgeL, double edgeM)
+  public void setAbsorptionEdges(final double edgeK, final double edgeL, final double edgeM)
   {
     this.absorptionEdgeK = edgeK;
     this.absorptionEdgeL = edgeL;
@@ -99,7 +135,7 @@ public class Atom
    * 
    * @param atweight atomic weight
    */
-  public void setAtomicConstants(double atweight)
+  public void setAtomicConstants(final double atweight)
   {
     this.atomicWeight = atweight;
   }
@@ -112,10 +148,10 @@ public class Atom
    * @param k2 k2
    * @param k3 k3
    */
-  public void setAbsorptionKEdgeCoeffs(double k0, double k1, double k2,
-      double k3)
+  public void setAbsorptionKEdgeCoeffs(final double k0, final double k1, final double k2,
+      final double k3)
   {
-    this.absorptionEdgeKCoeff = new double[4];
+    this.absorptionEdgeKCoeff = new double[POLYNOMIAL_EXPANSION];
 
     absorptionEdgeKCoeff[0] = k0;
     absorptionEdgeKCoeff[1] = k1;
@@ -132,10 +168,10 @@ public class Atom
    * @param l2 l2
    * @param l3 l3
    */
-  public void setAbsorptionLEdgeCoeffs(double l0, double l1, double l2,
-      double l3)
+  public void setAbsorptionLEdgeCoeffs(final double l0, final double l1, final double l2,
+      final double l3)
   {
-    this.absorptionEdgeLCoeff = new double[4];
+    this.absorptionEdgeLCoeff = new double[POLYNOMIAL_EXPANSION];
 
     absorptionEdgeLCoeff[0] = l0;
     absorptionEdgeLCoeff[1] = l1;
@@ -152,10 +188,10 @@ public class Atom
    * @param m2 m2
    * @param m3 m3
    */
-  public void setAbsorptionMEdgeCoeffs(double m0, double m1, double m2,
-      double m3)
+  public void setAbsorptionMEdgeCoeffs(final double m0, final double m1, final double m2,
+      final double m3)
   {
-    this.absorptionEdgeMCoeff = new double[4];
+    this.absorptionEdgeMCoeff = new double[POLYNOMIAL_EXPANSION];
 
     absorptionEdgeMCoeff[0] = m0;
     absorptionEdgeMCoeff[1] = m1;
@@ -172,10 +208,10 @@ public class Atom
    * @param n2 n2
    * @param n3 n3
    */
-  public void setAbsorptionNEdgeCoeffs(double n0, double n1, double n2,
-      double n3)
+  public void setAbsorptionNEdgeCoeffs(final double n0, final double n1, final double n2,
+      final double n3)
   {
-    this.absorptionEdgeNCoeff = new double[4];
+    this.absorptionEdgeNCoeff = new double[POLYNOMIAL_EXPANSION];
 
     absorptionEdgeNCoeff[0] = n0;
     absorptionEdgeNCoeff[1] = n1;
@@ -193,10 +229,10 @@ public class Atom
    * @param coh2 coh2
    * @param coh3 coh3
    */
-  public void setCoherentScatteringCoeffs(double coh0, double coh1,
-      double coh2, double coh3)
+  public void setCoherentScatteringCoeffs(final double coh0, final double coh1,
+      final double coh2, final double coh3)
   {
-    this.coherentScatteringCoeff = new double[4];
+    this.coherentScatteringCoeff = new double[POLYNOMIAL_EXPANSION];
 
     coherentScatteringCoeff[0] = coh0;
     coherentScatteringCoeff[1] = coh1;
@@ -214,10 +250,10 @@ public class Atom
    * @param incoh2 incoh2
    * @param incoh3 incoh3
    */
-  public void setIncoherentScatteringCoeffs(double incoh0, double incoh1,
-      double incoh2, double incoh3)
+  public void setIncoherentScatteringCoeffs(final double incoh0, final double incoh1,
+      final double incoh2, final double incoh3)
   {
-    this.incoherentScatteringCoeff = new double[4];
+    this.incoherentScatteringCoeff = new double[POLYNOMIAL_EXPANSION];
 
     incoherentScatteringCoeff[0] = incoh0;
     incoherentScatteringCoeff[1] = incoh1;
@@ -270,7 +306,7 @@ public class Atom
    * @param edge String indicating which edge coefficient (K, L, M, N, C, I).
    * @return corresponding edge coefficient.
    */
-  public double edgeCoefficient(int num, String edge)
+  public double edgeCoefficient(final int num, final String edge)
   {
     switch (edge.toCharArray()[0])
     {
@@ -300,7 +336,7 @@ public class Atom
    * @param edge String indicating which edge coefficient (K, L, M, N, C, I).
    * @return value of bax
    */
-  public double baxForEdge(double energy, String edge)
+  public double baxForEdge(final double energy, final String edge)
   {
     // calculation from logarithmic coefficients in McMaster tables.
 
@@ -330,7 +366,7 @@ public class Atom
    * 
    * @param energy
    */
-  public void calculateMu(double energy)
+  public void calculateMu(final double energy)
   {
     if (energy < absorptionEdgeK && energy > absorptionEdgeK - 0.001)
     {

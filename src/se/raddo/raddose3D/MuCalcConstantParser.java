@@ -8,7 +8,6 @@ import java.io.*;
 
 public class MuCalcConstantParser {
 
-  
   /**
    * Location of MuCalcConstants library.
    */
@@ -21,52 +20,141 @@ public class MuCalcConstantParser {
    */
   public Atom[]                 atoms;
   public int                    atomCount;
-  private static int            TOTAL_ATOMS         = 111;
+  private static final int      TOTAL_ATOMS        = 111;
 
   /**
-   * Positions of variables in constant file
+   * element name
    */
+  private static final int      ELEMENT_NAME       = 0;
+  /**
+   * atomic number
+   */
+  private static final int      ATOMIC_NUMBER      = 1;
+  /**
+   * K edge in Angstroms
+   */
+  private static final int      EDGE_K             = 2;
+  /**
+   * L edge in Angstroms
+   */
+  private static final int      EDGE_L             = 3;
+  /**
+   * M edge in Angstroms
+   */
+  private static final int      EDGE_M             = 4;
 
-  private static final int            ELEMENT_NAME       = 0;
-  private static final int            ATOMIC_NUMBER      = 1;
-  private static final int            EDGE_K             = 2;
-  private static final int            EDGE_L             = 3;
-  private static final int            EDGE_M             = 4;
+  /**
+   * K coefficient 0 in polynomial expansion
+   */
+  private static final int      K_COEFF_0          = 5;
+  /**
+   * K coefficient 1
+   */
+  private static final int      K_COEFF_1          = 6;
+  /**
+   * K coefficient 2
+   */
+  private static final int      K_COEFF_2          = 7;
+  /**
+   * K coefficient 3
+   */
+  private static final int      K_COEFF_3          = 8;
 
-  private static final int            K_COEFF_0          = 5;
-  private static final int            K_COEFF_1          = 6;
-  private static final int            K_COEFF_2          = 7;
-  private static final int            K_COEFF_3          = 8;
+  /**
+   * L coefficient 0 in polynomial expansion
+   */
+  private static final int      L_COEFF_0          = 9;
+  /**
+   * L coefficient 1
+   */
+  private static final int      L_COEFF_1          = 10;
+  /**
+   * L coefficient 2
+   */
+  private static final int      L_COEFF_2          = 11;
+  /**
+   * L coefficient 3
+   */
+  private static final int      L_COEFF_3          = 12;
 
-  private static final int            L_COEFF_0          = 9;
-  private static final int            L_COEFF_1          = 10;
-  private static final int            L_COEFF_2          = 11;
-  private static final int            L_COEFF_3          = 12;
+  /**
+   * M coefficient 0 in polynomial expansion
+   */
+  private static final int      M_COEFF_0          = 13;
+  /**
+   * M coefficient 1
+   */
+  private static final int      M_COEFF_1          = 14;
+  /**
+   * M coefficient 2
+   */
+  private static final int      M_COEFF_2          = 15;
+  /**
+   * M coefficient 3
+   */
+  private static final int      M_COEFF_3          = 16;
+  /**
+   * N coefficient 0 for polynomial expansion
+   */
+  private static final int      N_COEFF_0          = 17;
+  /**
+   * N coefficient 1
+   */
+  private static final int      N_COEFF_1          = 18;
+  /**
+   * N coefficient 2
+   */
+  private static final int      N_COEFF_2          = 19;
+  /**
+   * N coefficient 3
+   */
+  private static final int      N_COEFF_3          = 20;
+  /**
+   * N coefficient 4
+   */
+  private static final int      ATOMIC_WEIGHT      = 23;
 
-  private static final int            M_COEFF_0          = 13;
-  private static final int            M_COEFF_1          = 14;
-  private static final int            M_COEFF_2          = 15;
-  private static final int            M_COEFF_3          = 16;
+  /**
+   * Coherent coefficient 0 for polynomial expansion
+   */
+  private static final int      COHERENT_COEFF_0   = 24;
+  /**
+   * Coherent coefficient 1
+   */
+  private static final int      COHERENT_COEFF_1   = 25;
+  /**
+   * Coherent coefficient 2
+   */
+  private static final int      COHERENT_COEFF_2   = 26;
+  /**
+   * Coherent coefficient 3
+   */
+  private static final int      COHERENT_COEFF_3   = 27;
 
-  private static final int            N_COEFF_0          = 17;
-  private static final int            N_COEFF_1          = 18;
-  private static final int            N_COEFF_2          = 19;
-  private static final int            N_COEFF_3          = 20;
-
-  private static final int            ATOMIC_WEIGHT      = 23;
-
-  private static final int            COHERENT_COEFF_0   = 24;
-  private static final int            COHERENT_COEFF_1   = 25;
-  private static final int            COHERENT_COEFF_2   = 26;
-  private static final int            COHERENT_COEFF_3   = 27;
-
-  private static final int            INCOHERENT_COEFF_0 = 28;
-  private static final int            INCOHERENT_COEFF_1 = 29;
-  private static final int            INCOHERENT_COEFF_2 = 30;
-  private static final int            INCOHERENT_COEFF_3 = 31;
-
-  private static final int            L2                 = 36;
-  private static final int            L3                 = 37;
+  /**
+   * Incoherent coefficient 0 for polynomial expansion
+   */
+  private static final int      INCOHERENT_COEFF_0 = 28;
+  /**
+   * Incoherent coefficient 1
+   */
+  private static final int      INCOHERENT_COEFF_1 = 29;
+  /**
+   * Incoherent coefficient 2
+   */
+  private static final int      INCOHERENT_COEFF_2 = 30;
+  /**
+   * Incoherent coefficient 3
+   */
+  private static final int      INCOHERENT_COEFF_3 = 31;
+  /**
+   * L2
+   */
+  private static final int      L2                 = 36;
+  /**
+   * L3
+   */
+  private static final int      L3                 = 37;
 
   /**
    * Constructor - reads in constant file & populates atom array.
@@ -191,7 +279,7 @@ public class MuCalcConstantParser {
         e1.printStackTrace();
       }
     }
-    
+
     atomCount = i;
   }
 
@@ -225,9 +313,13 @@ public class MuCalcConstantParser {
       }
 
       if (atoms[newBound].atomicNumber > z)
+      {
         higher = newBound;
+      }
       else if (atoms[newBound].atomicNumber < z)
+      {
         lower = newBound;
+      }
 
       newBound = (higher + lower) / 2;
     }
@@ -240,7 +332,7 @@ public class MuCalcConstantParser {
    * atomic number, use findAtomWithZ instead.
    * Your job is to check for a NULL return.
    * 
-   * @param atomName
+   * @param atomName element name
    * @return Atom object
    */
   public Atom findAtomWithName(String atomName)
