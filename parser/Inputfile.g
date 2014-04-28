@@ -51,6 +51,7 @@ scope {
 	String 			crystalType;
 	int 			crystalCoefCalc;
 	CoefCalc		crystalCoefCalcClass;
+	String			pdb;
 	Double			cellA;
 	Double			cellB;
 	Double			cellC;
@@ -69,19 +70,36 @@ scope {
     HashMap<Object, Object> crystalProperties;
 	}
 @init { 
-$crystal::crystalCoefCalc = 1; // 0 = error, 1 = Simple, 2 = RDV2
+$crystal::crystalCoefCalc = 2; // 0 = error, 1 = Simple, 2 = DEFAULT, 3 = RDV2, 4 = PDB
 		$crystal::crystalProperties = new HashMap<Object, Object>();
 }
 @after { 
 if ($crystal::crystalCoefCalc == 1) {
   $crystal::crystalCoefCalcClass = new CoefCalcAverage();
 }
-if ($crystal::crystalCoefCalc == 2) {
+if ($crystal::crystalCoefCalc == 2)
+{
+  $crystal::crystalCoefCalcClass = new CoefCalcCompute($crystal::cellA, $crystal::cellB, $crystal::cellC, $crystal::cellAl, $crystal::cellBe, $crystal::cellGa,
+  													$crystal::numMon, $crystal::numRes, $crystal::numRNA, $crystal::numDNA,
+  													$crystal::heavyProteinAtomNames, $crystal::heavyProteinAtomNums,
+  													$crystal::heavySolutionConcNames, $crystal::heavySolutionConcNums,
+  													$crystal::solFrac);
+}
+
+if ($crystal::crystalCoefCalc == 3) {
   $crystal::crystalCoefCalcClass = new CoefCalcRaddose($crystal::cellA, $crystal::cellB, $crystal::cellC, $crystal::cellAl, $crystal::cellBe, $crystal::cellGa,
   													$crystal::numMon, $crystal::numRes, $crystal::numRNA, $crystal::numDNA,
   													$crystal::heavyProteinAtomNames, $crystal::heavyProteinAtomNums,
   													$crystal::heavySolutionConcNames, $crystal::heavySolutionConcNums,
   													$crystal::solFrac);
+}
+if ($crystal::crystalCoefCalc == 4)
+{
+  if ($crystal::heavySolutionConcNames.size() > 0)
+  	$crystal::crystalCoefCalcClass = new CoefCalcPDB($crystal::pdb, $crystal::heavySolutionConcNames, $crystal::heavySolutionConcNums);
+  else
+	$crystal::crystalCoefCalcClass = new CoefCalcPDB($crystal::pdb);
+  													  													
 }
 
 $crystal::crystalProperties.put(Crystal.CRYSTAL_COEFCALC, $crystal::crystalCoefCalcClass);
@@ -116,6 +134,7 @@ crystalLine
 	| s=heavySolutionConc	{ $crystal::heavySolutionConcNames	= $s.names;
 							  $crystal::heavySolutionConcNums	= $s.num;	}
 	| t=solventFraction		{ $crystal::solFrac					= $t.solFrac; }
+	| u=pdb					{ $crystal::pdb						= $u.pdb; }
 	;
 
 	
@@ -140,11 +159,15 @@ ABSCOEFCALC : (('A'|'a')('B'|'b')('S'|'s'))?('C'|'c')('O'|'o')('E'|'e')('F'|'f')
 crystalCoefcalcKeyword returns [int value]
 	: DUMMY   { $value = 1;}
 	| AVERAGE { $value = 1;}
-	| RD      { $value = 2;}
+	| DEFAULT { $value = 2;}
+	| RD      { $value = 3;}
+	| PDB	  { $value = 4;}
 	;
 DUMMY : ('D'|'d')('U'|'u')('M'|'m')('M'|'m')('Y'|'y') ;
+DEFAULT	: ('D'|'d')('E'|'e')('F'|'f')('A'|'a')('U'|'u')('L'|'l')('T'|'t');
 AVERAGE : ('A'|'a')('V'|'v')('E'|'e')('R'|'r')('A'|'a')('G'|'g')('E'|'e') ;
 RD : ('R'|'r')('D'|'d')(('V'|'v')('2'|'3'))? ;
+PDB : ('E'|'e')('X'|'x')('P'|'p');
 
 crystalDim returns [Map<Object, Object> properties]
 @init { 
@@ -221,6 +244,10 @@ SOLVENTHEAVYCONC : ('S'|'s')('O'|'o')('L'|'l')('V'|'v')('E'|'e')('N'|'n')('T'|'t
 solventFraction returns [double solFrac]
 	: SOLVENTFRACTION a=FLOAT {$solFrac = Double.parseDouble($a.text);};
 SOLVENTFRACTION : ('S'|'s')('O'|'o')('L'|'l')('V'|'v')('E'|'e')('N'|'n')('T'|'t')('F'|'f')('R'|'r')('A'|'a')('C'|'c')('T'|'t')('I'|'i')('O'|'o')('N'|'n') ;
+
+pdb returns [String pdb]
+	: PDBNAME a=STRING {$pdb = $a.text;};
+PDBNAME : ('P'|'p')('D'|'d')('B'|'b') ;
 
 // ------------------------------------------------------------------
 beam returns [Beam bObj]

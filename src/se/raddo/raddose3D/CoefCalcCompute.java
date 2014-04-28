@@ -3,8 +3,6 @@ package se.raddo.raddose3D;
 import java.util.List;
 import java.lang.Math;
 
-import se.raddo.raddose3D.parser.MuCalcConstantParser;
-
 /**
  * @author Helen Ginn
  */
@@ -16,38 +14,37 @@ public class CoefCalcCompute extends CoefCalc
    */
   private double                absCoeff, attCoeff, elasCoeff, density, cellVolume;
 
-  public static final double    PI        =  3.141592653589793;
    
   /*
    * Protein, RNA, DNA densities and other constants
    */
-  
-  public static final double    PROTEIN_DENSITY     = 1.35; // g/ml
-  public static final double    RNA_DENSITY         = 2.0;  // g/ml
-  public static final double    DNA_DENSITY         = 2.0;  // g/ml
-  public static final double    ATOMIC_MASS_UNIT    = 1.66E-24; // in grams
-  public static final double    AVOGADRO_NUM        = 6.022e+23;
-  public static final double    AMINO_ACID_AVE_MASS = 110.0;
-  public static final double    DNA_NUCLEOTIDE_MASS = 312.0;
-  public static final double    RNA_NUCLEOTIDE_MASS = 321.0;
-  public static final double    ANGSTROMS_TO_ML     = 1E-24;
-  public static final double    WATER_CONCENTRATION = 55555;
-  private static final long UNITSPERMILLIUNIT   = 1000L;
-  
-  /*
-   * Properties which will be updated when this class is used to calculate the coefficients.
-   */
-  
-  public double                 macromolecularMass;
-  
+  public static final double    PI        =  3.141592653589793;
+  protected static final double    PROTEIN_DENSITY     = 1.35; // g/ml
+  protected static final double    RNA_DENSITY         = 2.0;  // g/ml
+  protected static final double    DNA_DENSITY         = 2.0;  // g/ml
+  // RNA and DNA density are dubious...
+  protected static final double    HETATM_DENSITY      = 1.35;
+  protected static final double    ATOMIC_MASS_UNIT    = 1.66E-24; // in grams
+  protected static final double    AVOGADRO_NUM        = 6.022e+23;
+  protected static final double    AMINO_ACID_AVE_MASS = 110.0;
+  protected static final double    DNA_NUCLEOTIDE_MASS = 312.0;
+  protected static final double    RNA_NUCLEOTIDE_MASS = 321.0;
+  protected static final double    ANGSTROMS_TO_ML     = 1E-24;
+  protected static final double    WATER_CONCENTRATION = 55555;
+  protected static final long      UNITSPERMILLIUNIT   = 1000L;
+
+  protected double                 numAminoAcids = 0;
+  protected double                 numRNA = 0;
+  protected double                 numDNA = 0;
+  protected int                    numMonomers = 1;
   
   /*
    * Our friendly parser which is going to look after our element constants for us.
    */
   
-  private static MuCalcConstantParser  parser;
+  protected static MuCalcConstantParser  parser;
   
-  public CoefCalcCompute() throws Exception
+  public CoefCalcCompute()
   {
     parser = new MuCalcConstantParser();
   }
@@ -57,7 +54,6 @@ public class CoefCalcCompute extends CoefCalc
   {
       // density is easy. Loop through all atoms and calculate total mass.
       // then express as g / cm-3.
-      
       double mass = 0;
     
       for (int i=0; i < parser.atomCount; i++)
@@ -155,7 +151,6 @@ public class CoefCalcCompute extends CoefCalc
     if (gamma == null)
       gamma = 90.0;
     
-    
     double cellVolume = this.cellVolume(cellA, cellB, cellC, alpha, beta, gamma);
     
     this.calculateAtomOccurrences(numMonomers, numResidues, numRNA, numDNA, solventFraction, heavyProteinAtomNames, heavyProteinAtomNums, heavySolutionConcNames, heavySolutionConcNums, cellVolume);
@@ -163,58 +158,58 @@ public class CoefCalcCompute extends CoefCalc
   }
   
   /**
-   * Calculate the macromolecular mass (etc.) and add the appropriate numbers of atom occurrences to the parser's atom array.
+   * Calculating solvent fraction from numbers of amino acids, RNA residues and DNA residues in the unit cell.
+   * Also takes into account any hetatms from a PDB entry. These are assumed to have a density of protein
+   * but this might be worth changing... would not apply correctly to heavy metals.
+   * @return
    */
-  public void calculateAtomOccurrences(int numMonomers, int numResidues, int numRNA, int numDNA, double solventFraction, List<String> heavyProteinAtomNames, List<Double> heavyProteinAtomNums, List<String> heavySolvConcNames, List<Double> heavySolvConcNums, double cellVolume)
+  public double calculateSolventFractionFromNums()
   {
-    // Start by dealing with heavy atom in the protein and adding these to the unit cell.
-    
-    for (int i=0; i < heavyProteinAtomNames.size(); i++)
-    {
-       Atom heavyAtom = parser.findAtomWithName(heavyProteinAtomNames.get(i));
-       
-       // note: heavy atoms are provided per monomer, so multiply by number of monomers.
-       heavyAtom.macromolecularOccurrence += heavyProteinAtomNums.get(i) * numMonomers;
-    }
+ // Protein, RNA, DNA masses are calculated and then weighted to fit the unit cell.
 
-    // Combine concentrations of heavy atoms in the solvent and add these to the unit cell.
+    double protein_mass = ATOMIC_MASS_UNIT * AMINO_ACID_AVE_MASS * numAminoAcids * numMonomers;
+    protein_mass /= cellVolume * PROTEIN_DENSITY * ANGSTROMS_TO_ML;
+
+    double RNA_mass = ATOMIC_MASS_UNIT * RNA_NUCLEOTIDE_MASS * numRNA * numMonomers;
+    RNA_mass /= cellVolume * RNA_DENSITY * ANGSTROMS_TO_ML;
+
+    double DNA_mass = ATOMIC_MASS_UNIT * DNA_NUCLEOTIDE_MASS * numDNA * numMonomers;
+    DNA_mass /= cellVolume * DNA_DENSITY * ANGSTROMS_TO_ML;
+
+    // heteroatom mass only used in PDBs, otherwise this value is 0 anyway.
     
-    for (int i=0; i < heavySolvConcNames.size(); i++)
+    double hetatm_mass = 0;
+    
+    for (int i=0; i < parser.atomCount; i++)
     {
-       Atom heavyAtom = parser.findAtomWithName(heavySolvConcNames.get(i));
-       
-       heavyAtom.solventConcentration += heavySolvConcNums.get(i);
+      hetatm_mass += ATOMIC_MASS_UNIT * parser.atoms[i].hetatmOccurrence * parser.atoms[i].atomicWeight;
     }
     
-    // If the solvent fraction has not been specified.
+    hetatm_mass /= cellVolume * HETATM_DENSITY * ANGSTROMS_TO_ML;
+    
+    // We estimate the solvent fraction from the remaining mass to be found in the crystal. Magic!
+    
+    double solventFraction = 1 - protein_mass - RNA_mass - DNA_mass - hetatm_mass;
+    
+    // sanity check
     if (solventFraction < 0)
-    {
-      // Protein, RNA, DNA masses are calculated and then weighted to fit the unit cell.
-
-      double protein_mass = ATOMIC_MASS_UNIT * AMINO_ACID_AVE_MASS * numResidues * numMonomers;
-      protein_mass /= cellVolume * PROTEIN_DENSITY * ANGSTROMS_TO_ML;
-
-      double RNA_mass = ATOMIC_MASS_UNIT * RNA_NUCLEOTIDE_MASS * numRNA * numMonomers;
-      RNA_mass /= cellVolume * RNA_DENSITY * ANGSTROMS_TO_ML;
-
-      double DNA_mass = ATOMIC_MASS_UNIT * DNA_NUCLEOTIDE_MASS * numDNA * numMonomers;
-      DNA_mass /= cellVolume * DNA_DENSITY * ANGSTROMS_TO_ML;
-
-      // We estimate the solvent fraction from the remaining mass to be found in the crystal. Magic!
-      
-      solventFraction = 1 - protein_mass - RNA_mass - DNA_mass;
-      
-      // sanity check
-      if (solventFraction < 0)
-        System.out.println("Warning: Solvent mass calculated as a negative number...");
-      
-      System.out.println("Solvent fraction determined as " + solventFraction * 100 + "%.");
-    }
+      System.out.println("Warning: Solvent mass calculated as a negative number...");
     
-    // Convert solvent concentrations in unit cell to solvent no. of atoms (loop round all atoms)
-    // Also need to know number of non-water atoms in the solvent in order to calculate a displacement.
-    // 1 Angstrom = 1E-27 litres.
+    System.out.println("Solvent fraction determined as " + solventFraction * 100 + "%.");
     
+    return solventFraction;
+  }
+  
+  /**
+   * Convert solvent concentrations in unit cell to solvent no. of atoms (loop round all atoms)
+    Also need to know number of non-water atoms in the solvent in order to calculate a displacement.
+     1 Angstrom = 1E-27 litres.
+    
+   * @param solventFraction
+   */
+  public void calculateSolventWater(double solventFraction)
+  {
+  
     double nonWaterAtoms = 0;
     
     for (int i=0; i < parser.atomCount; i++)
@@ -239,8 +234,58 @@ public class CoefCalcCompute extends CoefCalc
     Atom oxygen = parser.findAtomWithZ(8);
     oxygen.solventOccurrence += waterMolecules;
     
+  }
+  
+  /**
+   * Combine concentrations of heavy atoms in the solvent and add these to the unit cell.
+   * @param heavySolvConcNames
+   * @param heavySolvConcNums
+   */
+  public void addSolventConcentrations(List<String> heavySolvConcNames, List<Double> heavySolvConcNums)
+  {
+    for (int i=0; i < heavySolvConcNames.size(); i++)
+    {
+       Atom heavyAtom = parser.findAtomWithName(heavySolvConcNames.get(i));
+       
+       heavyAtom.solventConcentration += heavySolvConcNums.get(i);
+    }
+  }
+  
+  /**
+   * Calculate the macromolecular mass (etc.) and add the appropriate numbers of atom occurrences to the parser's atom array.
+   */
+  public void calculateAtomOccurrences(int numMonomers, int numResidues, int numRNA, int numDNA, double solventFraction, List<String> heavyProteinAtomNames, List<Double> heavyProteinAtomNums, List<String> heavySolvConcNames, List<Double> heavySolvConcNums, double cellVolume)
+  {
+    // Start by dealing with heavy atom in the protein and adding these to the unit cell.
+    
+    for (int i=0; i < heavyProteinAtomNames.size(); i++)
+    {
+       Atom heavyAtom = parser.findAtomWithName(heavyProteinAtomNames.get(i));
+       
+       // note: heavy atoms are provided per monomer, so multiply by number of monomers.
+       heavyAtom.macromolecularOccurrence += heavyProteinAtomNums.get(i) * numMonomers;
+    }
+
+    // Combine concentrations of heavy atoms in the solvent and add these to the unit cell.
+    
+    addSolventConcentrations(heavySolvConcNames, heavySolvConcNums);
+
+    this.numAminoAcids = numResidues;
+    this.numRNA = numRNA;
+    this.numDNA = numDNA;
+    
+    // If the solvent fraction has not been specified.
+    if (solventFraction <= 0)
+    {
+      solventFraction = calculateSolventFractionFromNums();
+    }
+    
+    calculateSolventWater(solventFraction);
+    
     // Atom preparation...
     
+    Atom hydrogen = parser.findAtomWithZ(1);
+    Atom oxygen = parser.findAtomWithZ(8);
     Atom carbon = parser.findAtomWithZ(6);
     Atom nitrogen = parser.findAtomWithZ(7);
     Atom phosphorus = parser.findAtomWithZ(15);
@@ -270,35 +315,35 @@ public class CoefCalcCompute extends CoefCalc
     oxygen.macromolecularOccurrence += 6 * numRNA * numMonomers;
     hydrogen.macromolecularOccurrence += 11.75 * numRNA * numMonomers;
     phosphorus.macromolecularOccurrence += 1 * numRNA * numMonomers;
+    
   }
-
+ 
   /**
-   * Calculate cell volume from cell dimensions and unit cell angles. Converted from Fortran code.
+   * Calculate cell volume from cell dimensions and unit cell angles.
    */
- public double cellVolume(double cellA, double cellB, double cellC, double cellAlpha, double cellBeta, double cellGamma)
+ 
+  public double cellVolume(double cellA, double cellB, double cellC, double cellAlpha, double cellBeta, double cellGamma)
   {
     double alpha = cellAlpha * PI / 180;
     double beta = cellBeta * PI / 180;
     double gamma = cellGamma * PI / 180;
-    
+
     double ult = 1.0 + 2.0 * Math.cos(alpha) * Math.cos(beta) * Math.cos(gamma) - Math.pow(Math.cos(alpha), 2.0) - Math.pow(Math.cos(beta), 2.0) - Math.pow(Math.cos(gamma), 2.0);
-     
+
     if (ult < 0.0)
       System.out.println("Warning: error calculating unit cell volume - please check inputs.");
-    
-    System.out.println(cellA + ", " + cellB + ", " + cellC);
-    
+
     double cellVol = cellA * cellB * cellC * Math.sqrt(ult);
-    
+
     // This result below is what Fortran thought of a 78.27 x 78.27 x 78.27 (cubic) unit cell
     // instead of our value now of 479497.1 Angstroms cubed
     // resulting in an error between the calculations.
-  //  double cellVol = 460286.7; Angstrom cubed
-    
+    //  double cellVol = 460286.7; Angstrom cubed
+
     cellVolume = cellVol;
-    
+
     System.out.println("Cell volume: " + cellVolume + " Angstroms cubed");
-    
+
     return cellVol;
   }
 }

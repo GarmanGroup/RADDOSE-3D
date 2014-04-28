@@ -45,6 +45,7 @@ public class Atom
    */
   
   public double macromolecularOccurrence;
+  public double hetatmOccurrence = 0;
   public double solventConcentration;
   public double solventOccurrence;
   
