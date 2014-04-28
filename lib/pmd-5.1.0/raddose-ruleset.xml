@@ -4295,27 +4295,6 @@ public interface GenericDao<EF extends BaseModel, K extends Serializable> {
      ]]></example>
     </rule>
 
-    <rule name="LocalVariableCouldBeFinal"
-    	 since="2.2"
-	    message="Local variable ''{0}'' could be declared final"
-          class="net.sourceforge.pmd.lang.java.rule.optimizations.LocalVariableCouldBeFinalRule"
-          externalInfoUrl="http://pmd.sourceforge.net/pmd-5.1.0/rules/java/optimizations.html#LocalVariableCouldBeFinal">
-      <description>
-A local variable assigned only once can be declared final.
-      </description>
-        <priority>3</priority>
-      <example>
-  <![CDATA[
-public class Bar {
-	public void foo () {
-		String txtA = "a"; 		// if txtA will not be assigned again it is better to do this:
-		final String txtB = "b";
-	}
-}
-  ]]>
-      </example>
-      </rule>
-
     <rule name="MethodArgumentCouldBeFinal"
     		 since="2.2"
           message="Parameter ''{0}'' is not assigned and could be declared final"

@@ -117,7 +117,7 @@ public final class RaddoseServer {
               .getJobIDWithPriorityGreaterOrEqual(workers.size() + 1);
           if (nextJob != null) {
             for (Raddose3DWorker r : workers) {
-              if (nextJob == r.getJobID()) {
+              if (r.getJobID().equals(nextJob)) {
                 nextJob = null;
               }
             }

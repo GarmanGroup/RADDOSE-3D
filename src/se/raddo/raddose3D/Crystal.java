@@ -188,7 +188,6 @@ public abstract class Crystal {
 
   /**
    * Return the resolution of the crystal in 1/um.
-   * 
    */
   public abstract double getCrystalPixPerUM();
 

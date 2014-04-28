@@ -3,8 +3,6 @@ package se.raddo.raddose3D;
 /**
  * Beam interface for an MX beam, that can interact with expose and output
  * methods.
- * 
- * @author Oliver Zeldin
  */
 
 public interface Beam {
@@ -40,7 +38,7 @@ public interface Beam {
    * @param coordX
    * @param coordY
    * @param offAxisUM
-   * @return beam intensity in joules/um^2/s.
+   * @return Beam intensity at position X, Y in joules/um^2/s
    */
   public double beamIntensity(double coordX, double coordY, double offAxisUM);
 

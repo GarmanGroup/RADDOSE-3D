@@ -21,8 +21,6 @@ import se.raddo.raddose3D.parser.InputfileParser;
 /**
  * Class for testing parser actions on an input file.
  * This is not a unit test file, but for manually debugging the parser.
- * 
- * @author Markus Gerstel
  */
 public class ParserTestClass {
 
@@ -67,10 +65,11 @@ public class ParserTestClass {
 
     List<String> errors = parser.getErrors();
     if (errors.size() > 0) {
-      String errorString = "Parser found " + errors.size()
-          + " errors in input:\n";
+      StringBuffer errorString = new StringBuffer();
+      errorString.append("Parser found " + errors.size()
+          + " errors in input:\n");
       for (String e : errors) {
-        errorString += "\n" + e;
+        errorString.append("\n" + e);
       }
       System.err.println(errorString);
     }
@@ -80,7 +79,7 @@ public class ParserTestClass {
     new ParserTestClass();
   }
 
-  private class TestCrystalFactory extends CrystalFactory {
+  private static class TestCrystalFactory extends CrystalFactory {
     public TestCrystalFactory() {
     }
 
@@ -93,7 +92,7 @@ public class ParserTestClass {
     }
   }
 
-  private class TestBeamFactory extends BeamFactory {
+  private static class TestBeamFactory extends BeamFactory {
     public TestBeamFactory() {
     }
 
@@ -106,7 +105,7 @@ public class ParserTestClass {
     }
   }
 
-  private class InputParserTestInit implements Initializer {
+  private static class InputParserTestInit implements Initializer {
     public InputParserTestInit() {
     }
 

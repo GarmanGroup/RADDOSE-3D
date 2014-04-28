@@ -28,14 +28,16 @@ public class ExperimentYielder implements Output {
 
   @Override
   public void close() {
+    // Nothing to close.
   }
 
   /**
    * Class that forces thread switching during exposure.
    */
-  private class ExposeYielder implements ExposeObserver {
+  private static class ExposeYielder implements ExposeObserver {
     @Override
     public void register(final Crystal c) {
+      // Nothing to register.
     }
 
     @Override
@@ -49,6 +51,7 @@ public class ExperimentYielder implements Output {
         final double totalDose, final double fluence,
         final double relativeDiffractionEfficiency,
         final double absorbedEnergy, final double elastic) {
+      // Nothing to observe.
     }
 
     @Override
@@ -59,6 +62,7 @@ public class ExperimentYielder implements Output {
     @Override
     public void summaryObservation(final int i, final int j, final int k,
         final double totalDose) {
+      // Nothing to summarize.
     }
 
     @Override

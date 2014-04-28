@@ -63,7 +63,7 @@ public class CrystalBasicTests {
 
   @Test(groups = { "advanced" })
   /** Checks that both initialising and incrementing the dose array works correctly.*/
-  public void TestAddDose() {
+  public void testAddDose() {
     ArrayList<Crystal> cl = generateCrystals();
     for (Crystal c : cl) {
       c.addDose(1, 2, 3, 0.1);
@@ -81,7 +81,7 @@ public class CrystalBasicTests {
    * Checks that both initializing and incrementing the fluence array works
    * correctly.
    */
-  public void TestAddFluence() {
+  public void testAddFluence() {
     ArrayList<Crystal> cl = generateCrystals();
     for (Crystal c : cl) {
       c.addFluence(1, 2, 3, 0.1);
