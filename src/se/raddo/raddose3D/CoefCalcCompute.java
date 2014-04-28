@@ -30,7 +30,7 @@ public class CoefCalcCompute extends CoefCalc {
   public static final double     PARALLEL_ANGLE                  = 180;
 
   /**
-   * Percentage convertion
+   * Percentage conversion.
    */
   public static final double     PERCENTAGE_CONVERSION           = 100;
 
@@ -427,10 +427,14 @@ public class CoefCalcCompute extends CoefCalc {
    * Calculate the macromolecular mass (etc.) and add the appropriate numbers of
    * atom occurrences to the parser's atom array.
    */
-  public void calculateAtomOccurrences(final int numMonomers, final int numResidues,
-      final int numRNAresidues, final int numDNAresidues, double solventFraction,
-      final List<String> heavyProteinAtomNames, final List<Double> heavyProteinAtomNums,
-      final List<String> heavySolvConcNames, final List<Double> heavySolvConcNums) {
+  public void calculateAtomOccurrences(final int numMonomers,
+      final int numResidues,
+      final int numRNAresidues, final int numDNAresidues,
+      double solventFraction,
+      final List<String> heavyProteinAtomNames,
+      final List<Double> heavyProteinAtomNums,
+      final List<String> heavySolvConcNames,
+      final List<Double> heavySolvConcNums) {
 
     // Start by dealing with heavy atom in the
     // protein and adding these to the unit cell.
