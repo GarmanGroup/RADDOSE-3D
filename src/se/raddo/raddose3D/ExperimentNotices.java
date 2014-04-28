@@ -1,7 +1,7 @@
 package se.raddo.raddose3D;
 
 /**
- * Classes implementing both this and the {@link Output) interface can subscribe
+ * Classes implementing both this and the {@link Output} interface can subscribe
  * to {@link Experiment} and receive out-of-band notices, such as warnings and
  * citation information.
  */

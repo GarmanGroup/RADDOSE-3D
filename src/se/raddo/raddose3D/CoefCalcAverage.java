@@ -63,11 +63,11 @@ public class CoefCalcAverage extends CoefCalc {
   @Override
   public String toString() {
     return String.format(
-        "Dummy crystal coefficients used.\n"
-            + "Absorption coefficient: %.2e /um.\n"
-            + "Attenuation coefficient: %.2e /um.\n"
-            + "Elastic coefficient: %.2e /um.\n"
-            + "Density: %.2f g/ml.\n",
+        "Dummy crystal coefficients used.%n"
+            + "Absorption coefficient: %.2e /um.%n"
+            + "Attenuation coefficient: %.2e /um.%n"
+            + "Elastic coefficient: %.2e /um.%n"
+            + "Density: %.2f g/ml.%n",
         ABSORPTION_COEFFICIENT, ATTENUATION_COEFFICIENT, ELASTIC_COEFFICIENT,
         DENSITY);
   }

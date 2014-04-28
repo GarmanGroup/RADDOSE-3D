@@ -127,7 +127,7 @@ public class CoefCalcPDB extends CoefCalcCompute
    * @param occupancy
    * @param elementSymbol
    * @param inputLine
-   * @return
+   * @return occupancy of atom
    */
   public double checkOccupancyAndElementName(String occupancy, String elementSymbol, String inputLine)
   {
@@ -211,7 +211,7 @@ public class CoefCalcPDB extends CoefCalcCompute
     
     occupancy = occupancy.trim();
     elementSymbol = elementSymbol.trim();
-    elementSymbol.toUpperCase();
+    elementSymbol = elementSymbol.toUpperCase();
     String residueName = inputLine.substring(17, 20).trim().toUpperCase();
 
     if (residueName.equals("HOH"))
@@ -242,7 +242,7 @@ public class CoefCalcPDB extends CoefCalcCompute
     
     occupancy = occupancy.trim();
     elementSymbol = elementSymbol.trim();
-    elementSymbol.toUpperCase();
+    elementSymbol = elementSymbol.toUpperCase();
     
     double occupancy_num = this.checkOccupancyAndElementName(occupancy, elementSymbol, inputLine);
     
@@ -353,7 +353,8 @@ public class CoefCalcPDB extends CoefCalcCompute
     
     try
     {
-      in = new BufferedReader(new InputStreamReader(pdbConnection.getInputStream()));
+      InputStreamReader isr = new InputStreamReader(pdbConnection.getInputStream());
+      in = new BufferedReader(isr);
     }
     catch (FileNotFoundException e)
     {

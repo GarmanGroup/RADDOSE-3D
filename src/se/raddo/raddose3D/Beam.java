@@ -40,7 +40,7 @@ public interface Beam {
    * @param coordX
    * @param coordY
    * @param offAxisUM
-   * @return
+   * @return beam intensity in joules/um^2/s.
    */
   public double beamIntensity(double coordX, double coordY, double offAxisUM);
 

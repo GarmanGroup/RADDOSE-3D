@@ -1,7 +1,6 @@
 package se.raddo.raddose3D;
 
 import java.util.List;
-import java.lang.Math;
 
 /**
  * @author Helen Ginn
@@ -42,7 +41,7 @@ public class CoefCalcCompute extends CoefCalc
    * Our friendly parser which is going to look after our element constants for us.
    */
   
-  protected static MuCalcConstantParser  parser;
+  protected MuCalcConstantParser  parser;
   
   public CoefCalcCompute()
   {
@@ -116,11 +115,11 @@ public class CoefCalcCompute extends CoefCalc
   {
     return String.format(
         "Crystal coefficients calculated with Raddose-3D "
-            + "(Paithankar et al., 2009). \n"
-            + "Absorption Coefficient: %.2e /um.\n"
-            + "Attenuation Coefficient: %.2e /um.\n"
-            + "Elastic Coefficient: %.2e /um.\n"
-            + "Density: %.2f g/ml.\n",
+            + "(Paithankar et al., 2009). %n"
+            + "Absorption Coefficient: %.2e /um.%n"
+            + "Attenuation Coefficient: %.2e /um.%n"
+            + "Elastic Coefficient: %.2e /um.%n"
+            + "Density: %.2f g/ml.%n",
         absCoeff, attCoeff, elasCoeff, density);
   }
 
@@ -161,7 +160,7 @@ public class CoefCalcCompute extends CoefCalc
    * Calculating solvent fraction from numbers of amino acids, RNA residues and DNA residues in the unit cell.
    * Also takes into account any hetatms from a PDB entry. These are assumed to have a density of protein
    * but this might be worth changing... would not apply correctly to heavy metals.
-   * @return
+   * @return solvent fraction of crystal
    */
   public double calculateSolventFractionFromNums()
   {
