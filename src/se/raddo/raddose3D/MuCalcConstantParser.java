@@ -232,7 +232,7 @@ public class MuCalcConstantParser {
       newBound = (higher + lower) / 2;
     }
 
-    return atoms[new_bound];
+    return atoms[newBound];
   }
 
   /**
