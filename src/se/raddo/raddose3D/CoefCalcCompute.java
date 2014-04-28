@@ -6,8 +6,7 @@ import java.util.List;
  * @author Helen Ginn
  */
 
-public class CoefCalcCompute extends CoefCalc
-{
+public class CoefCalcCompute extends CoefCalc {
   /**
    * Identified coefficients and density from last program run. Final variables.
    */
@@ -22,14 +21,14 @@ public class CoefCalcCompute extends CoefCalc
   /**
    * Right angle.
    */
-  public static final double    RIGHT_ANGLE = 90;
-  
+  public static final double     RIGHT_ANGLE         = 90;
+
   /**
    * Parallel angle.
    */
-  
-  public static final double    PARALLEL_ANGLE = 180;
-  
+
+  public static final double     PARALLEL_ANGLE      = 180;
+
   /**
    * Protein density in g/ml.
    */
@@ -44,22 +43,22 @@ public class CoefCalcCompute extends CoefCalc
    * DNA density in g/ml.
    */
   protected static final double  DNA_DENSITY         = 2.0;
-  
+
   /**
    * Density of heteroatoms.
    */
   protected static final double  HETATM_DENSITY      = 1.35;
-  
+
   /**
    * Atomic mass unit in grams.
    */
   protected static final double  ATOMIC_MASS_UNIT    = 1.66E-24;
-  
+
   /**
    * Avogadro's number.
    */
   protected static final double  AVOGADRO_NUM        = 6.022e+23;
-  
+
   /**
    * Average weight of an amino acid.
    */
@@ -118,8 +117,7 @@ public class CoefCalcCompute extends CoefCalc
   /**
    * Simple constructor.
    */
-  public CoefCalcCompute()
-  {
+  public CoefCalcCompute() {
     parser = new MuCalcConstantParser();
   }
 
@@ -127,14 +125,12 @@ public class CoefCalcCompute extends CoefCalc
    * Calculate cross-sections from the associated parser's atom array.
    */
   @Override
-  public void updateCoefficients(final Wedge w, final Beam b)
-  {
+  public void updateCoefficients(final Wedge w, final Beam b) {
     // density is easy. Loop through all atoms and calculate total mass.
     // then express as g / cm-3.
     double mass = 0;
 
-    for (int i = 0; i < parser.atomCount; i++)
-    {
+    for (int i = 0; i < parser.atomCount; i++) {
       double addition = parser.atoms[i].totalMass();
 
       mass += addition;
@@ -150,8 +146,7 @@ public class CoefCalcCompute extends CoefCalc
 
     // take cross section contributions from each individual atom weighted by the cell volume
 
-    for (int i = 0; i < parser.atomCount; i++)
-    {
+    for (int i = 0; i < parser.atomCount; i++) {
       parser.atoms[i].calculateMu(energy);
 
       crossSectionPhotoElectric += parser.atoms[i].totalAtoms()
@@ -171,8 +166,7 @@ public class CoefCalcCompute extends CoefCalc
    * Returns absorption coefficient.
    */
   @Override
-  public double getAbsorptionCoefficient()
-  {
+  public double getAbsorptionCoefficient() {
     return absCoeff;
   }
 
@@ -180,8 +174,7 @@ public class CoefCalcCompute extends CoefCalc
    * Returns attenuation coefficient.
    */
   @Override
-  public double getAttenuationCoefficient()
-  {
+  public double getAttenuationCoefficient() {
     return attCoeff;
   }
 
@@ -189,8 +182,7 @@ public class CoefCalcCompute extends CoefCalc
    * Returns elastic coefficient.
    */
   @Override
-  public double getElasCoef()
-  {
+  public double getElasCoef() {
     return elasCoeff;
   }
 
@@ -198,8 +190,7 @@ public class CoefCalcCompute extends CoefCalc
    * Returns density coefficient.
    */
   @Override
-  public double getDensity()
-  {
+  public double getDensity() {
     return density;
   }
 
@@ -208,8 +199,7 @@ public class CoefCalcCompute extends CoefCalc
    * coefficient and density.
    */
   @Override
-  public String toString()
-  {
+  public String toString() {
     return String.format(
         "Crystal coefficients calculated with Raddose-3D "
             + "(Paithankar et al., 2009). %n"
@@ -233,8 +223,7 @@ public class CoefCalcCompute extends CoefCalc
       final List<Double> heavyProteinAtomNums,
       final List<String> heavySolutionConcNames,
       final List<Double> heavySolutionConcNums,
-      final Double solventFraction)
-  {
+      final Double solventFraction) {
     parser = new MuCalcConstantParser();
 
     Double alpha = cellAlpha;
@@ -266,8 +255,7 @@ public class CoefCalcCompute extends CoefCalc
    * 
    * @return solvent fraction of crystal
    */
-  public double calculateSolventFractionFromNums()
-  {
+  public double calculateSolventFractionFromNums() {
     // Protein, RNA, DNA masses are calculated and then weighted to fit the unit cell.
 
     double protein_mass = ATOMIC_MASS_UNIT * AMINO_ACID_AVE_MASS
@@ -286,8 +274,7 @@ public class CoefCalcCompute extends CoefCalc
 
     double hetatm_mass = 0;
 
-    for (int i = 0; i < parser.atomCount; i++)
-    {
+    for (int i = 0; i < parser.atomCount; i++) {
       hetatm_mass += ATOMIC_MASS_UNIT * parser.atoms[i].hetatmOccurrence
           * parser.atoms[i].atomicWeight;
     }
@@ -301,9 +288,10 @@ public class CoefCalcCompute extends CoefCalc
         - hetatm_mass;
 
     // sanity check
-    if (solventFraction < 0)
+    if (solventFraction < 0) {
       System.out
           .println("Warning: Solvent mass calculated as a negative number...");
+    }
 
     System.out.println("Solvent fraction determined as " + solventFraction
         * 100 + "%.");
@@ -325,8 +313,7 @@ public class CoefCalcCompute extends CoefCalc
 
     double nonWaterAtoms = 0;
 
-    for (int i = 0; i < parser.atomCount; i++)
-    {
+    for (int i = 0; i < parser.atomCount; i++) {
       double conc = parser.atoms[i].solventConcentration;
       double atomCount = conc * 1E-3 * AVOGADRO_NUM * cellVolume * 1E-27
           * solventFraction;
@@ -359,10 +346,9 @@ public class CoefCalcCompute extends CoefCalc
    * @param heavySolvConcNums
    */
   public void addSolventConcentrations(List<String> heavySolvConcNames,
-      List<Double> heavySolvConcNums)
-  {
-    for (int i = 0; i < heavySolvConcNames.size(); i++)
-    {
+      List<Double> heavySolvConcNums) {
+
+    for (int i = 0; i < heavySolvConcNames.size(); i++) {
       Atom heavyAtom = parser.findAtomWithName(heavySolvConcNames.get(i));
 
       heavyAtom.solventConcentration += heavySolvConcNums.get(i);
@@ -376,12 +362,11 @@ public class CoefCalcCompute extends CoefCalc
   public void calculateAtomOccurrences(int numMonomers, int numResidues,
       int numRNA, int numDNA, double solventFraction,
       List<String> heavyProteinAtomNames, List<Double> heavyProteinAtomNums,
-      List<String> heavySolvConcNames, List<Double> heavySolvConcNums)
-  {
+      List<String> heavySolvConcNames, List<Double> heavySolvConcNums) {
+
     // Start by dealing with heavy atom in the protein and adding these to the unit cell.
 
-    for (int i = 0; i < heavyProteinAtomNames.size(); i++)
-    {
+    for (int i = 0; i < heavyProteinAtomNames.size(); i++) {
       Atom heavyAtom = parser.findAtomWithName(heavyProteinAtomNames.get(i));
 
       // note: heavy atoms are provided per monomer, so multiply by number of monomers.
@@ -398,8 +383,7 @@ public class CoefCalcCompute extends CoefCalc
     this.numDNA = numDNA;
 
     // If the solvent fraction has not been specified.
-    if (solventFraction <= 0)
-    {
+    if (solventFraction <= 0) {
       solventFraction = calculateSolventFractionFromNums();
     }
 
@@ -446,8 +430,7 @@ public class CoefCalcCompute extends CoefCalc
    */
 
   public double cellVolume(double cellA, double cellB, double cellC,
-      double cellAlpha, double cellBeta, double cellGamma)
-  {
+      double cellAlpha, double cellBeta, double cellGamma) {
     double alpha = cellAlpha * PI / PARALLEL_ANGLE;
     double beta = cellBeta * PI / PARALLEL_ANGLE;
     double gamma = cellGamma * PI / PARALLEL_ANGLE;

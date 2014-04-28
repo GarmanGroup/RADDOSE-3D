@@ -166,8 +166,7 @@ public class MuCalcConstantParser {
   /**
    * Constructor - reads in constant file & populates atom array.
    */
-  public MuCalcConstantParser()
-  {
+  public MuCalcConstantParser() {
     atoms = new Atom[TOTAL_ATOMS];
 
     BufferedReader br = null;
@@ -193,21 +192,18 @@ public class MuCalcConstantParser {
       {
         totalLines++;
         // ignore commented out lines.
-        if (Character.toString(line.charAt(0)).equals("#"))
-        {
+        if (Character.toString(line.charAt(0)).equals("#")) {
           continue;
         }
 
         // array containing all those numbers from the calculator file
         String[] components = line.split("\t", -1);
 
-        for (int j = 0; j < components.length; j++)
-        {
+        for (int j = 0; j < components.length; j++) {
           // set components to -1 if they're empty, because
           // otherwise Java gets upset.
           String component = components[j];
-          if (component.equals(""))
-          {
+          if (component.equals("")) {
             components[j] = "-1";
           }
         }
@@ -216,8 +212,7 @@ public class MuCalcConstantParser {
         // component[x] where the values of x are in order
         // as listed in the constants file.
 
-        try
-        {
+        try {
           atoms[i] = new Atom(components[ELEMENT_NAME],
               Integer.parseInt(components[ATOMIC_NUMBER]));
           atoms[i].setAbsorptionEdges(Double.parseDouble(components[EDGE_K]),
@@ -277,8 +272,7 @@ public class MuCalcConstantParser {
       e.printStackTrace();
     }
 
-    if (isr != null)
-    {
+    if (isr != null) {
       try {
         isr.close();
       } catch (IOException e1) {
@@ -297,35 +291,29 @@ public class MuCalcConstantParser {
    * @param z atomic number
    * @return associated Atom object
    */
-  public Atom findAtomWithZ(double z)
-  {
+  public Atom findAtomWithZ(double z) {
     int lower = 0;
     int higher = atomCount - 1;
     int newBound = (higher + lower) / 2;
 
-    if (z < atoms[lower].atomicNumber || z > atoms[higher].atomicNumber)
-    {
+    if (z < atoms[lower].atomicNumber || z > atoms[higher].atomicNumber) {
       System.out
           .println("Warning: Atomic number asked for which is out of range.");
       return null;
     }
 
-    while (atoms[newBound].atomicNumber != z)
-    {
-      if (higher == lower + 1)
-      {
+    while (atoms[newBound].atomicNumber != z) {
+      if (higher == lower + 1) {
         System.out
             .println("Warning: Atomic number within range but"
                 + "no data available for particular Z.");
         return null;
       }
 
-      if (atoms[newBound].atomicNumber > z)
-      {
+      if (atoms[newBound].atomicNumber > z) {
         higher = newBound;
       }
-      else if (atoms[newBound].atomicNumber < z)
-      {
+      else if (atoms[newBound].atomicNumber < z) {
         lower = newBound;
       }
 
@@ -343,10 +331,8 @@ public class MuCalcConstantParser {
    * @param atomName element name
    * @return Atom object
    */
-  public Atom findAtomWithName(String atomName)
-  {
-    for (int i = 0; i < atoms.length; i++)
-    {
+  public Atom findAtomWithName(String atomName) {
+    for (int i = 0; i < atoms.length; i++) {
       if (atoms[i].elementName.equals(atomName.toUpperCase()))
         return atoms[i];
     }

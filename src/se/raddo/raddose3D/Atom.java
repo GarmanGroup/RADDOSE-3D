@@ -4,8 +4,7 @@ package se.raddo.raddose3D;
  * @author Helen Ginn
  */
 
-public class Atom
-{
+public class Atom {
   /**
    * Element name
    */
@@ -96,8 +95,7 @@ public class Atom
    * @param name element name
    * @param number atomic number
    */
-  public Atom(final String name, final int number)
-  {
+  public Atom(final String name, final int number) {
     elementName = name;
     atomicNumber = number;
     macromolecularOccurrence = 0;
@@ -114,8 +112,7 @@ public class Atom
    * @param name element name
    * @param number atomic number
    */
-  public void setCoreParameters(final String name, final int number)
-  {
+  public void setCoreParameters(final String name, final int number) {
     this.elementName = name;
     this.atomicNumber = number;
   }
@@ -128,8 +125,7 @@ public class Atom
    * @param edgeM M edge energy
    */
   public void setAbsorptionEdges(final double edgeK, final double edgeL,
-      final double edgeM)
-  {
+      final double edgeM) {
     this.absorptionEdgeK = edgeK;
     this.absorptionEdgeL = edgeL;
     this.absorptionEdgeM = edgeM;
@@ -140,8 +136,7 @@ public class Atom
    * 
    * @param atweight atomic weight
    */
-  public void setAtomicConstants(final double atweight)
-  {
+  public void setAtomicConstants(final double atweight) {
     this.atomicWeight = atweight;
   }
 
@@ -155,8 +150,7 @@ public class Atom
    */
   public void setAbsorptionKEdgeCoeffs(final double k0, final double k1,
       final double k2,
-      final double k3)
-  {
+      final double k3) {
     this.absorptionEdgeKCoeff = new double[POLYNOMIAL_EXPANSION];
 
     absorptionEdgeKCoeff[0] = k0;
@@ -176,8 +170,7 @@ public class Atom
    */
   public void setAbsorptionLEdgeCoeffs(final double l0, final double l1,
       final double l2,
-      final double l3)
-  {
+      final double l3) {
     this.absorptionEdgeLCoeff = new double[POLYNOMIAL_EXPANSION];
 
     absorptionEdgeLCoeff[0] = l0;
@@ -197,8 +190,7 @@ public class Atom
    */
   public void setAbsorptionMEdgeCoeffs(final double m0, final double m1,
       final double m2,
-      final double m3)
-  {
+      final double m3) {
     this.absorptionEdgeMCoeff = new double[POLYNOMIAL_EXPANSION];
 
     absorptionEdgeMCoeff[0] = m0;
@@ -218,8 +210,7 @@ public class Atom
    */
   public void setAbsorptionNEdgeCoeffs(final double n0, final double n1,
       final double n2,
-      final double n3)
-  {
+      final double n3) {
     this.absorptionEdgeNCoeff = new double[POLYNOMIAL_EXPANSION];
 
     absorptionEdgeNCoeff[0] = n0;
@@ -239,8 +230,7 @@ public class Atom
    * @param coh3 coh3
    */
   public void setCoherentScatteringCoeffs(final double coh0, final double coh1,
-      final double coh2, final double coh3)
-  {
+      final double coh2, final double coh3) {
     this.coherentScatteringCoeff = new double[POLYNOMIAL_EXPANSION];
 
     coherentScatteringCoeff[0] = coh0;
@@ -261,8 +251,7 @@ public class Atom
    */
   public void setIncoherentScatteringCoeffs(final double incoh0,
       final double incoh1,
-      final double incoh2, final double incoh3)
-  {
+      final double incoh2, final double incoh3) {
     this.incoherentScatteringCoeff = new double[POLYNOMIAL_EXPANSION];
 
     incoherentScatteringCoeff[0] = incoh0;
@@ -277,8 +266,7 @@ public class Atom
    * @param ltwo L2 to be set
    * @param lthree L3 to be set
    */
-  public void setLs(double ltwo, double lthree)
-  {
+  public void setLs(double ltwo, double lthree) {
     this.l2 = ltwo;
     this.l3 = lthree;
   }
@@ -288,8 +276,7 @@ public class Atom
    * 
    * @return total atoms in unit cell
    */
-  public double totalAtoms()
-  {
+  public double totalAtoms() {
     double totalAtoms = this.solventOccurrence + this.macromolecularOccurrence;
 
     return totalAtoms;
@@ -300,8 +287,7 @@ public class Atom
    * 
    * @return total weight of atoms in unit cell
    */
-  public double totalMass()
-  {
+  public double totalMass() {
     double totalAtoms = this.totalAtoms();
     double mass = atomicWeight * totalAtoms * ATOMIC_MASS_UNIT;
 
@@ -316,10 +302,8 @@ public class Atom
    * @param edge String indicating which edge coefficient (K, L, M, N, C, I).
    * @return corresponding edge coefficient.
    */
-  public double edgeCoefficient(final int num, final String edge)
-  {
-    switch (edge.toCharArray()[0])
-    {
+  public double edgeCoefficient(final int num, final String edge) {
+    switch (edge.toCharArray()[0]) {
       case 'K':
         return this.absorptionEdgeKCoeff[num];
       case 'L':
@@ -346,14 +330,12 @@ public class Atom
    * @param edge String indicating which edge coefficient (K, L, M, N, C, I).
    * @return value of bax
    */
-  public double baxForEdge(final double energy, final String edge)
-  {
+  public double baxForEdge(final double energy, final String edge) {
     // calculation from logarithmic coefficients in McMaster tables.
 
     double sum = 0;
 
-    for (int i = 0; i < 4; i++)
-    {
+    for (int i = 0; i < 4; i++) {
       double coefficient = edgeCoefficient(i, edge);
 
       if (coefficient == -1)
@@ -376,24 +358,20 @@ public class Atom
    * 
    * @param energy
    */
-  public void calculateMu(final double energy)
-  {
-    if (energy < absorptionEdgeK && energy > absorptionEdgeK - 0.001)
-    {
+  public void calculateMu(final double energy) {
+    if (energy < absorptionEdgeK && energy > absorptionEdgeK - 0.001) {
       System.out
           .println("Warning: using an energy close to middle of K edge of "
               + elementName);
       return;
     }
-    if (energy < absorptionEdgeL && energy > absorptionEdgeL - 0.001)
-    {
+    if (energy < absorptionEdgeL && energy > absorptionEdgeL - 0.001) {
       System.out
           .println("Warning: using an energy close to middle of L edge of "
               + elementName);
       return;
     }
-    if (energy < absorptionEdgeM && energy > absorptionEdgeM - 0.001)
-    {
+    if (energy < absorptionEdgeM && energy > absorptionEdgeM - 0.001) {
       System.out
           .println("Warning: using an energy close to middle of M edge of "
               + elementName);
@@ -415,25 +393,24 @@ public class Atom
     // correct for L-edges since McMaster uses L1 edge.
     // Use edge jumps for correct X-sections.
 
-    if (atomicNumber <= 29)
-    {
-      if (energy > this.l3 && energy < this.l2)
+    if (atomicNumber <= 29) {
+      if (energy > this.l3 && energy < this.l2) {
         bax /= (LJ_1 * LJ_2);
+      }
 
-      if (energy > this.l2 && energy < this.absorptionEdgeL)
+      if (energy > this.l2 && energy < this.absorptionEdgeL) {
         bax /= LJ_1;
+      }
     }
 
     double bcox = 0;
     double binx = 0;
 
-    if (!(this.coherentScatteringCoeff[0] == -1 || this.coherentScatteringCoeff[0] == 0))
-    {
+    if (!(this.coherentScatteringCoeff[0] == -1 || this.coherentScatteringCoeff[0] == 0)) {
       bcox = baxForEdge(energy, "C");
     }
 
-    if (!(this.coherentScatteringCoeff[0] == -1 || this.coherentScatteringCoeff[0] == 0))
-    {
+    if (!(this.coherentScatteringCoeff[0] == -1 || this.coherentScatteringCoeff[0] == 0)) {
       binx = baxForEdge(energy, "I");
     }
 

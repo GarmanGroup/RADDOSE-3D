@@ -7,8 +7,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.List;
 
-public class CoefCalcPDB extends CoefCalcCompute
-{
+public class CoefCalcPDB extends CoefCalcCompute {
 
   // these variables are important for PDB downloading and parsing.
 
@@ -125,8 +124,7 @@ public class CoefCalcPDB extends CoefCalcCompute
 
     foundCryst1 = true;
 
-    try
-    {
+    try {
       double a = Double.parseDouble(aString);
       double b = Double.parseDouble(bString);
       double c = Double.parseDouble(cString);
@@ -147,8 +145,8 @@ public class CoefCalcPDB extends CoefCalcCompute
 
       System.out.println("Number of monomers: " + numMonomers);
       cellVolume(a, b, c, alpha, beta, gamma);
-    } catch (NumberFormatException e)
-    {
+    }
+    catch (NumberFormatException e) {
       System.out
           .println("Error: CRYST1 line could not"
               + " be parsed, cannot calculate"
@@ -171,8 +169,7 @@ public class CoefCalcPDB extends CoefCalcCompute
    * 
    * @param inputLine
    */
-  public void parseTerLine(final String inputLine)
-  {
+  public void parseTerLine(final String inputLine) {
     foundTer = true; // so ATOM line knows to start 
                      // recording first residue number again on the next line.
 
@@ -188,41 +185,35 @@ public class CoefCalcPDB extends CoefCalcCompute
 
     int residueNumber = -1;
 
-    try
-    {
+    try {
       residueNumber = Integer.parseInt(residueNumString);
-    } catch (NumberFormatException e)
-    {
+    }
+    catch (NumberFormatException e) {
       System.out.println("Warning: TER column does not contain a"
           + "valid residue number, will throw calculation off");
     }
 
     int totalResidues = residueNumber - startResidue + 1;
 
-    if (totalResidues < 0)
-    {
+    if (totalResidues < 0) {
       System.out.println("Warning: Calculated a negative number"
           + "of residues, will throw calculation off");
     }
 
     if (residueName.equals("G") || residueName.equals("A")
-        || residueName.equals("C") || residueName.equals("U"))
-    {
+        || residueName.equals("C") || residueName.equals("U")) {
       // this means it is RNA
 
       numRNA += totalResidues;
 
     }
     else if (residueName.equals("DG") || residueName.equals("DA")
-        || residueName.equals("DC") || residueName.equals("DT"))
-    {
+        || residueName.equals("DC") || residueName.equals("DT")) {
       // this means it is DNA
 
       numDNA += totalResidues;
-
     }
-    else
-    {
+    else {
       // this means it is protein
 
       numAminoAcids += totalResidues;
@@ -238,20 +229,16 @@ public class CoefCalcPDB extends CoefCalcCompute
    * @return occupancy of atom
    */
   public double checkOccupancyAndElementName(final String occupancy,
-      final String elementSymbol, final String inputLine)
-  {
+      final String elementSymbol, final String inputLine) {
     double occupancy_num = 1;
 
-    if (occupancy.length() == 0 && occupancyWarning == false)
-    {
+    if (occupancy.length() == 0 && occupancyWarning == false) {
       System.out
           .println("Warning: occupancy for atom missing, assuming occupancy of 1.0 (message only displayed once)");
       occupancyWarning = true;
     }
-    else
-    {
-      try
-      {
+    else {
+      try {
         occupancy_num = Double.parseDouble(occupancy);
       } catch (NumberFormatException e)
       {
@@ -260,8 +247,7 @@ public class CoefCalcPDB extends CoefCalcCompute
       }
     }
 
-    if (elementSymbol.length() == 0)
-    {
+    if (elementSymbol.length() == 0) {
       System.out
           .println("Warning: element symbol for atom is not present (displayed per atom)");
       System.out.println("For line: " + inputLine);
@@ -287,8 +273,7 @@ public class CoefCalcPDB extends CoefCalcCompute
 
     String presentAlready = inputLine.substring(59, 60);
 
-    if (presentAlready.equals("1"))
-    {
+    if (presentAlready.equals("1")) {
       System.out.println("Ignoring NCS entry");
       return;
     }
@@ -306,13 +291,13 @@ public class CoefCalcPDB extends CoefCalcCompute
    * @param inputLine
    */
 
-  public void parseRemarkLine(String inputLine)
-  {
+  public void parseRemarkLine(String inputLine) {
 
     String symtry = inputLine.substring(13, 19);
 
-    if (symtry.equals("SMTRY1"))
+    if (symtry.equals("SMTRY1")) {
       csSymmetryOperators++;
+    }
   }
 
   /**
@@ -322,8 +307,7 @@ public class CoefCalcPDB extends CoefCalcCompute
    * @param inputLine
    */
 
-  public void parseHetAtomLine(String inputLine)
-  {
+  public void parseHetAtomLine(String inputLine) {
     String occupancy = inputLine.substring(54, 60);
     String elementSymbol = inputLine.substring(76, 78);
 
@@ -332,8 +316,9 @@ public class CoefCalcPDB extends CoefCalcCompute
     elementSymbol = elementSymbol.toUpperCase();
     String residueName = inputLine.substring(17, 20).trim().toUpperCase();
 
-    if (residueName.equals("HOH"))
+    if (residueName.equals("HOH")) {
       return;
+    }
 
     double occupancy_num = this.checkOccupancyAndElementName(occupancy,
         elementSymbol, inputLine);
@@ -357,8 +342,7 @@ public class CoefCalcPDB extends CoefCalcCompute
    * @param inputLine
    */
 
-  public void parseAtomLine(String inputLine)
-  {
+  public void parseAtomLine(String inputLine) {
 
     String occupancy = inputLine.substring(54, 60);
     String elementSymbol = inputLine.substring(76, 78);
@@ -370,23 +354,20 @@ public class CoefCalcPDB extends CoefCalcCompute
     double occupancy_num = this.checkOccupancyAndElementName(occupancy,
         elementSymbol, inputLine);
 
-    if (elementSymbol.equals("H") && !foundHydrogen)
-    {
+    if (elementSymbol.equals("H") && !foundHydrogen) {
       foundHydrogen = true;
       System.out
           .println("Hydrogens have been found under ATOM labels in the PDB file, so hydrogens will not be added separately.");
     }
 
-    if (foundTer)
-    {
+    if (foundTer) {
       foundTer = false;
       String residueNumberString = inputLine.substring(22, 26);
       residueNumberString = residueNumberString.trim();
 
       int residueNumber = -1;
 
-      try
-      {
+      try {
         residueNumber = Integer.parseInt(residueNumberString);
         startResidue = residueNumber;
       } catch (NumberFormatException e)
@@ -407,30 +388,33 @@ public class CoefCalcPDB extends CoefCalcCompute
    * 
    * @param inputLine
    */
-  public void parsePDBLine(String inputLine)
-  {
+  public void parsePDBLine(String inputLine) {
     String directive = inputLine.substring(0, 6);
 
-    if (directive.equals("CRYST1"))
-    {
+    if (directive.equals("CRYST1")) {
       parseCryst1Line(inputLine);
       foundCryst1 = true;
     }
 
-    if (directive.equals("ATOM  "))
+    if (directive.equals("ATOM  ")) {
       parseAtomLine(inputLine);
+    }
 
-    if (directive.equals("HETATM"))
+    if (directive.equals("HETATM")) {
       parseHetAtomLine(inputLine);
+    }
 
-    if (directive.equals("TER   "))
+    if (directive.equals("TER   ")) {
       parseTerLine(inputLine);
+    }
 
-    if (directive.equals("REMARK"))
+    if (directive.equals("REMARK")) {
       parseRemarkLine(inputLine);
+    }
 
-    if (directive.equals("MTRIX1"))
+    if (directive.equals("MTRIX1")) {
       parseMatrixLine(inputLine);
+    }
   }
 
   /**
@@ -440,10 +424,8 @@ public class CoefCalcPDB extends CoefCalcCompute
    * 
    * @param num - number of molecules in unit cell
    */
-  public void multiplyAtoms(int num)
-  {
-    for (int i = 0; i < parser.atomCount; i++)
-    {
+  public void multiplyAtoms(int num) {
+    for (int i = 0; i < parser.atomCount; i++) {
       parser.atoms[i].macromolecularOccurrence *= num;
       parser.atoms[i].hetatmOccurrence *= num;
     }
@@ -457,8 +439,7 @@ public class CoefCalcPDB extends CoefCalcCompute
    * of hydrogen.
    */
 
-  public void calculateHydrogens()
-  {
+  public void calculateHydrogens() {
     int hydrogens = 0;
 
     hydrogens += numAminoAcids * 8;
@@ -475,16 +456,14 @@ public class CoefCalcPDB extends CoefCalcCompute
    * @param pdbName
    * @throws Exception
    */
-  public void downloadPDB(String pdbName) throws Exception
-  {
+  public void downloadPDB(String pdbName) throws Exception {
     String URLString = String.format("%s%s", PDB_DOWNLOAD_LINK, pdbName);
     URL pdbURL = new URL(URLString);
     URLConnection pdbConnection = pdbURL.openConnection();
 
     BufferedReader in = null;
 
-    try
-    {
+    try {
       InputStreamReader isr = new InputStreamReader(
           pdbConnection.getInputStream());
       in = new BufferedReader(isr);
@@ -498,15 +477,13 @@ public class CoefCalcPDB extends CoefCalcCompute
 
     String inputLine;
 
-    while ((inputLine = in.readLine()) != null)
-    {
+    while ((inputLine = in.readLine()) != null) {
       parsePDBLine(inputLine);
     }
 
     in.close();
 
-    if (!foundCryst1)
-    {
+    if (!foundCryst1) {
       System.out
           .println("Could not find CRYST1 line containing unit cell information.");
       throw new Exception();
@@ -536,8 +513,7 @@ public class CoefCalcPDB extends CoefCalcCompute
    * @param pdbName
    */
 
-  public CoefCalcPDB(String pdbName)
-  {
+  public CoefCalcPDB(String pdbName) {
     pdbName = pdbName.toUpperCase();
     parser = new MuCalcConstantParser();
 
@@ -560,8 +536,7 @@ public class CoefCalcPDB extends CoefCalcCompute
    * @param pdbName
    */
   public CoefCalcPDB(String pdbName, List<String> heavySolvConcNames,
-      List<Double> heavySolvConcNums)
-  {
+      List<Double> heavySolvConcNums) {
     pdbName = pdbName.toUpperCase();
     parser = new MuCalcConstantParser();
 
