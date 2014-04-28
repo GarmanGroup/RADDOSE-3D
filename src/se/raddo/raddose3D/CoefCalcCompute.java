@@ -28,7 +28,12 @@ public class CoefCalcCompute extends CoefCalc {
    */
 
   public static final double     PARALLEL_ANGLE      = 180;
-
+  
+  /**
+   * Percentage convertion
+   */
+  public static final double     PERCENTAGE_CONVERSION = 100;
+ 
   /**
    * Protein density in g/ml.
    */
@@ -65,7 +70,7 @@ public class CoefCalcCompute extends CoefCalc {
   protected static final double  AMINO_ACID_AVE_MASS = 110.0;
 
   /**
-   * Average weight of a DNA nucleotide
+   * Average weight of a DNA nucleotide.
    */
   protected static final double  DNA_NUCLEOTIDE_MASS = 312.0;
 
@@ -80,6 +85,12 @@ public class CoefCalcCompute extends CoefCalc {
   protected static final double  ANGSTROMS_TO_ML     = 1E-24;
 
   /**
+   * 1E27
+   */
+  
+  protected static final double  MASS_TO_CELL_VOLUME = 1E27;
+  
+  /**
    * Water concentration in mM.
    */
   protected static final double  WATER_CONCENTRATION = 55555;
@@ -89,6 +100,44 @@ public class CoefCalcCompute extends CoefCalc {
    */
   protected static final long    UNITSPERMILLIUNIT   = 1000L;
 
+  /**
+   * Units per deci-unit.
+   */
+  
+  protected static final long    UNITSPERDECIUNIT    = 10L;
+  
+  /** hydrogens per amino acid */
+  protected static final double    HYDROGENS_PER_AMINO_ACID  = 8;
+  /** carbons per amino acid */
+  protected static final double    CARBONS_PER_AMINO_ACID    = 5;
+  /** nitrogens per amino acid */
+  protected static final double    NITROGENS_PER_AMINO_ACID  = 1.35;
+  /** oxygens per amino acid */
+  protected static final double    OXYGENS_PER_AMINO_ACID    = 1.5;
+  
+  /** hydrogens per RNA nucleotide */
+  protected static final double    HYDROGENS_PER_RNA_NUCLEOTIDE  = 11.25;
+  /** carbons per RNA nucleotide */
+  protected static final double    CARBONS_PER_RNA_NUCLEOTIDE    = 9.5;
+  /** nitrogens per RNA nucleotide */
+  protected static final double    NITROGENS_PER_RNA_NUCLEOTIDE  = 3.75;
+  /** oxygens per RNA nucleotide */
+  protected static final double    OXYGENS_PER_RNA_NUCLEOTIDE    = 7;
+  /** phosphoruses per RNA nucleotide */
+  protected static final double    PHOSPHORUSES_PER_RNA_NUCLEOTIDE    = 1;
+
+  /** hydrogens per DNA nucleotide */
+  protected static final double    HYDROGENS_PER_DNA_NUCLEOTIDE  = 11.75;
+  /** carbons per DNA nucleotide */
+  protected static final double    CARBONS_PER_DNA_NUCLEOTIDE    = 9.75;
+  /** nitrogens per DNA nucleotide */
+  protected static final double    NITROGENS_PER_DNA_NUCLEOTIDE  = 4;
+  /** oxygens per DNA nucleotide */
+  protected static final double    OXYGENS_PER_DNA_NUCLEOTIDE    = 6;
+  /** phosphoruses per DNA nucleotide */
+  protected static final double    PHOSPHORUSES_PER_DNA_NUCLEOTIDE    = 1;
+ 
+  
   /**
    * Number of amino acids.
    */
@@ -123,6 +172,8 @@ public class CoefCalcCompute extends CoefCalc {
 
   /**
    * Calculate cross-sections from the associated parser's atom array.
+   * @param w Wedge object
+   * @param b Beam object
    */
   @Override
   public void updateCoefficients(final Wedge w, final Beam b) {
@@ -136,7 +187,7 @@ public class CoefCalcCompute extends CoefCalc {
       mass += addition;
     }
 
-    density = mass * 1E-3 * 1E30 / (cellVolume * 1000);
+    density = mass * MASS_TO_CELL_VOLUME / (cellVolume * UNITSPERMILLIUNIT);
 
     double energy = b.getPhotonEnergy();
 
@@ -144,17 +195,18 @@ public class CoefCalcCompute extends CoefCalc {
     double crossSectionCoherent = 0;
     double crossSectionTotal = 0;
 
-    // take cross section contributions from each individual atom weighted by the cell volume
+    // take cross section contributions from each individual atom
+    // weighted by the cell volume
 
     for (int i = 0; i < parser.atomCount; i++) {
       parser.atoms[i].calculateMu(energy);
 
       crossSectionPhotoElectric += parser.atoms[i].totalAtoms()
-          * parser.atoms[i].photoelectricCrossSection * 0.1 / cellVolume;
+          * parser.atoms[i].photoelectricCrossSection / cellVolume / UNITSPERDECIUNIT;
       crossSectionCoherent += parser.atoms[i].totalAtoms()
-          * parser.atoms[i].coherentCrossSection * 0.1 / cellVolume;
+          * parser.atoms[i].coherentCrossSection / cellVolume / UNITSPERDECIUNIT;
       crossSectionTotal += parser.atoms[i].totalAtoms()
-          * parser.atoms[i].totalCrossSection * 0.1 / cellVolume;
+          * parser.atoms[i].totalCrossSection / cellVolume / UNITSPERDECIUNIT;
     }
 
     absCoeff = crossSectionPhotoElectric / UNITSPERMILLIUNIT;
@@ -164,6 +216,7 @@ public class CoefCalcCompute extends CoefCalc {
 
   /**
    * Returns absorption coefficient.
+   * @return absorption coefficient
    */
   @Override
   public double getAbsorptionCoefficient() {
@@ -172,6 +225,7 @@ public class CoefCalcCompute extends CoefCalc {
 
   /**
    * Returns attenuation coefficient.
+   * @return attenuation coefficient
    */
   @Override
   public double getAttenuationCoefficient() {
@@ -180,6 +234,7 @@ public class CoefCalcCompute extends CoefCalc {
 
   /**
    * Returns elastic coefficient.
+   * @return elastic coefficient
    */
   @Override
   public double getElasCoef() {
@@ -188,6 +243,7 @@ public class CoefCalcCompute extends CoefCalc {
 
   /**
    * Returns density coefficient.
+   * @return density coefficient
    */
   @Override
   public double getDensity() {
@@ -197,6 +253,7 @@ public class CoefCalcCompute extends CoefCalc {
   /**
    * Returns string containing absorption, attenuation, elastic
    * coefficient and density.
+   * @return descriptive string
    */
   @Override
   public String toString() {
@@ -256,36 +313,37 @@ public class CoefCalcCompute extends CoefCalc {
    * @return solvent fraction of crystal
    */
   public double calculateSolventFractionFromNums() {
-    // Protein, RNA, DNA masses are calculated and then weighted to fit the unit cell.
+    // Protein, RNA, DNA masses are calculated and
+    // then weighted to fit the unit cell.
 
-    double protein_mass = ATOMIC_MASS_UNIT * AMINO_ACID_AVE_MASS
+    double proteinMass = ATOMIC_MASS_UNIT * AMINO_ACID_AVE_MASS
         * numAminoAcids * numMonomers;
-    protein_mass /= cellVolume * PROTEIN_DENSITY * ANGSTROMS_TO_ML;
+    proteinMass /= cellVolume * PROTEIN_DENSITY * ANGSTROMS_TO_ML;
 
-    double RNA_mass = ATOMIC_MASS_UNIT * RNA_NUCLEOTIDE_MASS * numRNA
+    double RNAMass = ATOMIC_MASS_UNIT * RNA_NUCLEOTIDE_MASS * numRNA
         * numMonomers;
-    RNA_mass /= cellVolume * RNA_DENSITY * ANGSTROMS_TO_ML;
+    RNAMass /= cellVolume * RNA_DENSITY * ANGSTROMS_TO_ML;
 
-    double DNA_mass = ATOMIC_MASS_UNIT * DNA_NUCLEOTIDE_MASS * numDNA
+    double DNAMass = ATOMIC_MASS_UNIT * DNA_NUCLEOTIDE_MASS * numDNA
         * numMonomers;
-    DNA_mass /= cellVolume * DNA_DENSITY * ANGSTROMS_TO_ML;
+    DNAMass /= cellVolume * DNA_DENSITY * ANGSTROMS_TO_ML;
 
     // heteroatom mass only used in PDBs, otherwise this value is 0 anyway.
 
-    double hetatm_mass = 0;
+    double hetatmMass = 0;
 
     for (int i = 0; i < parser.atomCount; i++) {
-      hetatm_mass += ATOMIC_MASS_UNIT * parser.atoms[i].hetatmOccurrence
+      hetatmMass += ATOMIC_MASS_UNIT * parser.atoms[i].hetatmOccurrence
           * parser.atoms[i].atomicWeight;
     }
 
-    hetatm_mass /= cellVolume * HETATM_DENSITY * ANGSTROMS_TO_ML;
+    hetatmMass /= cellVolume * HETATM_DENSITY * ANGSTROMS_TO_ML;
 
     // We estimate the solvent fraction from the
     // remaining mass to be found in the crystal. Magic!
 
-    double solventFraction = 1 - protein_mass - RNA_mass - DNA_mass
-        - hetatm_mass;
+    double solventFraction = 1 - proteinMass - RNAMass - DNAMass
+        - hetatmMass;
 
     // sanity check
     if (solventFraction < 0) {
@@ -294,7 +352,7 @@ public class CoefCalcCompute extends CoefCalc {
     }
 
     System.out.println("Solvent fraction determined as " + solventFraction
-        * 100 + "%.");
+        * PERCENTAGE_CONVERSION + "%.");
 
     return solventFraction;
   }
@@ -306,16 +364,15 @@ public class CoefCalcCompute extends CoefCalc {
    * calculate a displacement.
    * 1 Angstrom = 1E-27 litres.
    * 
-   * @param solventFraction
+   * @param solventFraction solvent fraction
    */
-  public void calculateSolventWater(double solventFraction)
-  {
+  public void calculateSolventWater(double solventFraction) {
 
     double nonWaterAtoms = 0;
 
     for (int i = 0; i < parser.atomCount; i++) {
       double conc = parser.atoms[i].solventConcentration;
-      double atomCount = conc * 1E-3 * AVOGADRO_NUM * cellVolume * 1E-27
+      double atomCount = conc * (1 / UNITSPERMILLIUNIT) * AVOGADRO_NUM * cellVolume * (1 / MASS_TO_CELL_VOLUME)
           * solventFraction;
       parser.atoms[i].solventOccurrence += atomCount;
 
@@ -323,17 +380,18 @@ public class CoefCalcCompute extends CoefCalc {
     }
 
     // Calculating number of water molecules.
-    // NOTE: using updated value for concentration of water, 55.555M instead of the 55M in Fortran.
+    // NOTE: using updated value for concentration of water,
+    // 55.555M instead of the 55M in Fortran.
 
-    double waterMolecules = WATER_CONCENTRATION * 1E-3 * AVOGADRO_NUM
-        * cellVolume * 1E-27 * solventFraction - nonWaterAtoms;
+    double waterMolecules = WATER_CONCENTRATION * AVOGADRO_NUM / UNITSPERMILLIUNIT
+        * cellVolume * (1 / MASS_TO_CELL_VOLUME) * solventFraction - nonWaterAtoms;
 
     // Add water molecules to hydrogen and oxygen.
 
-    Atom hydrogen = parser.findAtomWithZ(1);
+    Atom hydrogen = parser.findAtomWithName("H");
     hydrogen.solventOccurrence += waterMolecules * 2;
 
-    Atom oxygen = parser.findAtomWithZ(8);
+    Atom oxygen = parser.findAtomWithName("O");
     oxygen.solventOccurrence += waterMolecules;
 
   }
@@ -391,37 +449,37 @@ public class CoefCalcCompute extends CoefCalc {
 
     // Atom preparation...
 
-    Atom hydrogen = parser.findAtomWithZ(1);
-    Atom oxygen = parser.findAtomWithZ(8);
-    Atom carbon = parser.findAtomWithZ(6);
-    Atom nitrogen = parser.findAtomWithZ(7);
-    Atom phosphorus = parser.findAtomWithZ(15);
+    Atom hydrogen = parser.findAtomWithName("H");
+    Atom oxygen = parser.findAtomWithName("O");
+    Atom carbon = parser.findAtomWithName("C");
+    Atom nitrogen = parser.findAtomWithName("N");
+    Atom phosphorus = parser.findAtomWithName("P");
 
     // Protein atoms: for every amino acid
     // add 5C + 1.35 N + 1.5 O + 8H
 
-    carbon.macromolecularOccurrence += 5 * numResidues * numMonomers;
-    nitrogen.macromolecularOccurrence += 1.35 * numResidues * numMonomers;
-    oxygen.macromolecularOccurrence += 1.5 * numResidues * numMonomers;
-    hydrogen.macromolecularOccurrence += 8 * numResidues * numMonomers;
+    carbon.macromolecularOccurrence += CARBONS_PER_AMINO_ACID * numResidues * numMonomers;
+    nitrogen.macromolecularOccurrence += NITROGENS_PER_AMINO_ACID * numResidues * numMonomers;
+    oxygen.macromolecularOccurrence += OXYGENS_PER_AMINO_ACID * numResidues * numMonomers;
+    hydrogen.macromolecularOccurrence += HYDROGENS_PER_AMINO_ACID * numResidues * numMonomers;
 
     // RNA atoms: for every NTP
     // add 11.25 H + 9.5 C + 3.75 N + 7 O + 1 P.
 
-    carbon.macromolecularOccurrence += 9.5 * numRNA * numMonomers;
-    nitrogen.macromolecularOccurrence += 3.75 * numRNA * numMonomers;
-    oxygen.macromolecularOccurrence += 7 * numRNA * numMonomers;
-    hydrogen.macromolecularOccurrence += 11.25 * numRNA * numMonomers;
-    phosphorus.macromolecularOccurrence += 1 * numRNA * numMonomers;
+    carbon.macromolecularOccurrence += CARBONS_PER_RNA_NUCLEOTIDE * numRNA * numMonomers;
+    nitrogen.macromolecularOccurrence += NITROGENS_PER_RNA_NUCLEOTIDE * numRNA * numMonomers;
+    oxygen.macromolecularOccurrence += OXYGENS_PER_RNA_NUCLEOTIDE * numRNA * numMonomers;
+    hydrogen.macromolecularOccurrence += HYDROGENS_PER_RNA_NUCLEOTIDE * numRNA * numMonomers;
+    phosphorus.macromolecularOccurrence += PHOSPHORUSES_PER_RNA_NUCLEOTIDE * numRNA * numMonomers;
 
     // DNA atoms: for every NTP
     // add 11.75 H + 9.75 C + 4 N + 6 O + 1 P.
 
-    carbon.macromolecularOccurrence += 9.75 * numRNA * numMonomers;
-    nitrogen.macromolecularOccurrence += 4 * numRNA * numMonomers;
-    oxygen.macromolecularOccurrence += 6 * numRNA * numMonomers;
-    hydrogen.macromolecularOccurrence += 11.75 * numRNA * numMonomers;
-    phosphorus.macromolecularOccurrence += 1 * numRNA * numMonomers;
+    carbon.macromolecularOccurrence += CARBONS_PER_DNA_NUCLEOTIDE * numRNA * numMonomers;
+    nitrogen.macromolecularOccurrence += NITROGENS_PER_DNA_NUCLEOTIDE * numRNA * numMonomers;
+    oxygen.macromolecularOccurrence += OXYGENS_PER_DNA_NUCLEOTIDE * numRNA * numMonomers;
+    hydrogen.macromolecularOccurrence += HYDROGENS_PER_DNA_NUCLEOTIDE * numRNA * numMonomers;
+    phosphorus.macromolecularOccurrence += PHOSPHORUSES_PER_DNA_NUCLEOTIDE * numRNA * numMonomers;
 
   }
 

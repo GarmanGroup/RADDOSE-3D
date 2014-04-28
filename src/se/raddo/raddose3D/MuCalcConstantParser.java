@@ -32,11 +32,11 @@ public class MuCalcConstantParser {
   /**
    * element name.
    */
-  private static final int      ELEMENT_NAME       = 0;
+  private static final int      ELEMENT_NAME       = 1;
   /**
    * atomic number.
    */
-  private static final int      ATOMIC_NUMBER      = 1;
+  private static final int      ATOMIC_NUMBER      = 0;
   /**
    * K edge in Angstroms.
    */
