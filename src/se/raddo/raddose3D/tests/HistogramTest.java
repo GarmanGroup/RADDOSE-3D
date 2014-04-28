@@ -8,7 +8,7 @@ import se.raddo.raddose3D.Histogram;
 public class HistogramTest {
 
   @Test
-  public void HistogramInitialization() {
+  public void histogramInitialization() {
     Histogram h = new Histogram(0, 10, 5);
     Assert.assertNotNull(h);
     Assert.assertEquals(h.getObservationCount(), 0);
@@ -18,7 +18,7 @@ public class HistogramTest {
   }
 
   @Test
-  public void HistogramObservationTest() {
+  public void histogramObservationTest() {
     Histogram h = new Histogram(0, 10, 5);
     // Buckets are: x<0 0<=x<2 2<=x<4 4<=x<6 6<=x<8 8<=x<10 x>=10
 
@@ -101,7 +101,7 @@ public class HistogramTest {
   }
 
   @Test
-  public void HistogramValueTest() {
+  public void histogramValueTest() {
     Histogram h = new Histogram(0, 8, 4);
     // Buckets are: x<0 0<=x<2 2<=x<4 4<=x<6 6<=x<8 x>=8
 

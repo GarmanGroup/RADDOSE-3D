@@ -17,7 +17,7 @@ import se.raddo.raddose3D.Wedge;
  */
 
 public class CrystalCuboidTest {
-  final double dblRoundingTolerance = 1e-13;
+  final static double dblRoundingTolerance = 1e-13;
 
   /**
    * Tests value against target. Includes testing for null and nice error

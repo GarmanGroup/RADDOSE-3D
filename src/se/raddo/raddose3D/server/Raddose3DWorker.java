@@ -31,7 +31,7 @@ public class Raddose3DWorker
   private final Object            exitNotification;
 
   /** If the thread crashes the reason is stored here. */
-  private Throwable               crashRecord                = null;
+  private Throwable               crashRecord;
   /** If the thread crash is recorded properly this is set to true. */
   private Boolean                 markedAsCrashed            = false;
 
@@ -142,10 +142,10 @@ public class Raddose3DWorker
       String fileName = String.format("FinalDoseState%d", imageNo);
 
       doseStateRPreviewDB.write("\n"
-          + String.format("graph.out('%s',\n",
+          + String.format("graph.out('%s',%n",
               fileName)
           + " function() {\n"
-          + String.format("  render(%d)\n",
+          + String.format("  render(%d)%n",
               (int) (imageNo * fullCircle / numberOfImages))
           + "})\n");
     }
@@ -155,9 +155,6 @@ public class Raddose3DWorker
     System.out.println("Worker " + jobID + ": Done.");
 
     // Update performance metrics.
-    Long x1 = 0L;
-    Long x2 = 0L;
-
     Vector<Long> cvs = progressEstimate.getCrystalVoxelList();
     Vector<Long> wss = progressEstimate.getWedgeSliceList();
 
@@ -165,6 +162,8 @@ public class Raddose3DWorker
       throw new RuntimeException("Progress Estimate information malformed.");
     }
 
+    Long x1 = 0L;
+    Long x2 = 0L;
     for (int i = 0; i < cvs.size(); i++) {
       x1 += cvs.get(i);
       x2 += cvs.get(i) * wss.get(i);

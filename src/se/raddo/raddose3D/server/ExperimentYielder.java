@@ -51,6 +51,7 @@ public class ExperimentYielder implements Output {
         final double totalDose, final double fluence,
         final double relativeDiffractionEfficiency,
         final double absorbedEnergy, final double elastic) {
+      // Nothing to observe.
     }
 
     @Override
