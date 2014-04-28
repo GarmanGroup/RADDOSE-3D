@@ -12,28 +12,83 @@ public class CoefCalcPDB extends CoefCalcCompute
   
   // these variables are important for PDB downloading and parsing.
   
+  /**
+   * PDB download link stem from pdb.org
+   */
   protected static final String    PDB_DOWNLOAD_LINK   = "http://www.pdb.org/pdb/download/downloadFile.do?fileFormat=pdb&compression=NO&structureId=";
+
+  /**
+   * Found cryst1 line containing unit cell information?
+   */
   protected boolean                foundCryst1 = false;
+  
+  /**
+   * Have we already warned the user that the occupancy column is empty?
+   */
   protected boolean                occupancyWarning = false;
+  
+  /**
+   * Have we found hydrogens in the atomic coordinates? (will be deleted later when using SEQRES lines)
+   */
   protected boolean                foundHydrogen = false;
+  
+  /**
+   * Was the last thing we found a TER line? (will be deleted later when using SEQRES lines)
+   */
   protected boolean                foundTer = true;
+  
+  /**
+   * What was the starting residue of the first ATOM line? (will be deleted later when using SEQRES lines)
+   */
   protected int                    startResidue = -1;
+  
+  /**
+   * How many crystallographic symmetry operators have we found?
+   */
   protected int                    csSymmetryOperators = 0;
+  
+  /**
+   * How many non-crystallographic symmetry operators have we found?
+   */
   protected int                    ncsSymmetryOperators = 1;
 
   /**
-   * This parser extracts the unit cell details from the CRYST1 line.
-   * @param inputLine
+   * Cryst1 default values
+   *
+   */
+  protected static final int cryst1_a_pos = 6;
+  protected static final int cryst1_b_pos = 15;
+  protected static final int cryst1_c_pos = 24;
+  protected static final int cryst1_alpha_pos = 33;
+  protected static final int cryst1_beta_pos = 40;
+  protected static final int cryst1_gamma_pos = 47;
+  protected static final int cryst1_end_pos = 54;
+  
+  
+  /**
+   * TER/ATOM values
    */
   
-  public void parseCryst1Line(String inputLine)
+  protected static final int atom_residue_name_pos = 17;
+  protected static final int atom_residue_name_end_pos = 20;
+  protected static final int atom_residue_num_pos = 22;
+  protected static final int atom_residue_num_end_pos = 26;
+  
+  
+  /**
+   * This parser extracts the unit cell details from the CRYST1 line.
+   * @param inputLine PDB line
+   */
+   public void parseCryst1Line(String inputLine)
   {
-    String a_string = inputLine.substring(6, 15);
-    String b_string = inputLine.substring(15, 24);
-    String c_string = inputLine.substring(24, 33);
-    String alpha_string = inputLine.substring(33, 40);
-    String beta_string = inputLine.substring(40, 47);
-    String gamma_string = inputLine.substring(47, 54);
+    String a_string = inputLine.substring(cryst1_a_pos, cryst1_b_pos);
+    String b_string = inputLine.substring(cryst1_b_pos, cryst1_c_pos);
+    String c_string = inputLine.substring(cryst1_c_pos, cryst1_alpha_pos);
+    String alpha_string = inputLine.substring(cryst1_alpha_pos, cryst1_beta_pos);
+    String beta_string = inputLine.substring(cryst1_beta_pos, cryst1_gamma_pos);
+    String gamma_string = inputLine.substring(cryst1_gamma_pos, cryst1_end_pos);
+    
+    foundCryst1 = true;
     
     try
     {
@@ -44,46 +99,58 @@ public class CoefCalcPDB extends CoefCalcCompute
       double beta = Double.parseDouble(beta_string);
       double gamma = Double.parseDouble(gamma_string);
       
-      // Z value is often mis-calculated in the PDB so we're going to have to ignore these lines.
-      // Tends to be mis-calculated when there is non-crystallographic symmetry involved
+      // Z value is often mis-calculated in the PDB so we're
+      // going to have to ignore these lines. Tends to be mis-calculated
+      // when there is non-crystallographic symmetry involved
       // Instead this will be parsed by the REMARK 290 and MTRIX lines.
+
+      //   numMonomers = Integer.parseInt(z_value);
+      //   numMonomers = 9;
       
-   //   numMonomers = Integer.parseInt(z_value);
-   //   numMonomers = 9;
+      System.out.println("PDB file unit cell: " + a + " " + b + " " +
+          c + " " + alpha + " " + beta + " " + gamma);
       
-      System.out.println("PDB file unit cell: " + a + " " + b + " " + c + " " + alpha + " " + beta + " " + gamma);
       System.out.println("Number of monomers: " + numMonomers);
       cellVolume(a, b, c, alpha, beta, gamma);
     }
     catch (NumberFormatException e)
     {
-      System.out.println("Error: CRYST1 line could not be parsed, cannot calculate cell volume or find Z value.\nCheck CRYST1 line follows standard input format.");
+      System.out.println("Error: CRYST1 line could not be parsed, cannot calculate"
+          + "cell volume or find Z value.%nCheck CRYST1"
+          + "line follows standard input format.");
       foundCryst1 = false;
     }
   }
   
   /**
-   * after finding a Ter, program calculates length of chain from ending and starting chain numbers.
-    this includes disordered residues which, of course, are still present, just not visible
+   * after finding a Ter, program calculates length of chain
+     from ending and starting chain numbers. This includes disordered residues
+     which, of course, are still present, just not visible
      and will contribute to absorption coefficients.
     
-     RNA residues are A U G C, DNA residues are DA DT DG DC, which are used to identify the type of macromolecule.
+     RNA residues are A U G C, DNA residues are DA DT DG DC,
+     which are used to identify the type of macromolecule.
      The number of residues are then added to one of the three bins accordingly.
-     These numbers are used to generate hydrogens if hydrogens have not been found in the ATOM lines.
+     These numbers are used to generate hydrogens if hydrogens
+     have not been found in the ATOM lines.
     
    * @param inputLine
    */
   public void parseTerLine(String inputLine)
   {
-    foundTer = true; // so ATOM line knows to start recording first residue number again on the next line.
-    
-    String residueName = inputLine.substring(17, 20);
-    String residueNumString = inputLine.substring(22, 26);
-    
+    foundTer = true; // so ATOM line knows to start 
+                     // recording first residue number again on the next line.
+
+    String residueName = inputLine.substring(atom_residue_name_pos,
+                                      atom_residue_name_end_pos);
+
+    String residueNumString = inputLine.substring(atom_residue_num_pos,
+                                       atom_residue_num_end_pos);
+
     residueName = residueName.trim().toUpperCase();
-    
+
     residueNumString = residueNumString.trim();
-    
+
     int residueNumber = -1;
     
     try
@@ -92,22 +159,26 @@ public class CoefCalcPDB extends CoefCalcCompute
     }
     catch (NumberFormatException e)
     {
-      System.out.println("Warning: TER column does not contain a valid residue number, will throw calculation off"); 
+      System.out.println("Warning: TER column does not contain a"
+          + "valid residue number, will throw calculation off"); 
     }
-    
+
     int totalResidues = residueNumber - startResidue + 1;
     
     if (totalResidues < 0)
-      System.out.println("Warning: Calculated a negative number of residues, will throw calculation off");
-    
-    if (residueName.equals("G") || residueName.equals("A") || residueName.equals("C") || residueName.equals("U"))
+      System.out.println("Warning: Calculated a negative number"
+          + "of residues, will throw calculation off");
+
+    if (residueName.equals("G") || residueName.equals("A") ||
+        residueName.equals("C") || residueName.equals("U"))
     {
       // this means it is RNA
       
       numRNA += totalResidues;
     
     }
-    else if (residueName.equals("DG") || residueName.equals("DA") || residueName.equals("DC") || residueName.equals("DT"))
+    else if (residueName.equals("DG") || residueName.equals("DA") ||
+        residueName.equals("DC") || residueName.equals("DT"))
     {
       // this means it is DNA
       
@@ -124,9 +195,9 @@ public class CoefCalcPDB extends CoefCalcCompute
   
   /**
    * Sanity check on occupancies & element name
-   * @param occupancy
-   * @param elementSymbol
-   * @param inputLine
+   * @param occupancy occupancy as passed as string from PDB
+   * @param elementSymbol elementSymbol as passed as string from PDB
+   * @param inputLine line from PDB
    * @return occupancy of atom
    */
   public double checkOccupancyAndElementName(String occupancy, String elementSymbol, String inputLine)
