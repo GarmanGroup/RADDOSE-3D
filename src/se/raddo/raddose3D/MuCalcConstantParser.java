@@ -27,46 +27,46 @@ public class MuCalcConstantParser {
    * Positions of variables in constant file
    */
 
-  private static int            ELEMENT_NAME       = 0;
-  private static int            ATOMIC_NUMBER      = 1;
-  private static int            EDGE_K             = 2;
-  private static int            EDGE_L             = 3;
-  private static int            EDGE_M             = 4;
+  private static final int            ELEMENT_NAME       = 0;
+  private static final int            ATOMIC_NUMBER      = 1;
+  private static final int            EDGE_K             = 2;
+  private static final int            EDGE_L             = 3;
+  private static final int            EDGE_M             = 4;
 
-  private static int            K_COEFF_0          = 5;
-  private static int            K_COEFF_1          = 6;
-  private static int            K_COEFF_2          = 7;
-  private static int            K_COEFF_3          = 8;
+  private static final int            K_COEFF_0          = 5;
+  private static final int            K_COEFF_1          = 6;
+  private static final int            K_COEFF_2          = 7;
+  private static final int            K_COEFF_3          = 8;
 
-  private static int            L_COEFF_0          = 9;
-  private static int            L_COEFF_1          = 10;
-  private static int            L_COEFF_2          = 11;
-  private static int            L_COEFF_3          = 12;
+  private static final int            L_COEFF_0          = 9;
+  private static final int            L_COEFF_1          = 10;
+  private static final int            L_COEFF_2          = 11;
+  private static final int            L_COEFF_3          = 12;
 
-  private static int            M_COEFF_0          = 13;
-  private static int            M_COEFF_1          = 14;
-  private static int            M_COEFF_2          = 15;
-  private static int            M_COEFF_3          = 16;
+  private static final int            M_COEFF_0          = 13;
+  private static final int            M_COEFF_1          = 14;
+  private static final int            M_COEFF_2          = 15;
+  private static final int            M_COEFF_3          = 16;
 
-  private static int            N_COEFF_0          = 17;
-  private static int            N_COEFF_1          = 18;
-  private static int            N_COEFF_2          = 19;
-  private static int            N_COEFF_3          = 20;
+  private static final int            N_COEFF_0          = 17;
+  private static final int            N_COEFF_1          = 18;
+  private static final int            N_COEFF_2          = 19;
+  private static final int            N_COEFF_3          = 20;
 
-  private static int            ATOMIC_WEIGHT      = 23;
+  private static final int            ATOMIC_WEIGHT      = 23;
 
-  private static int            COHERENT_COEFF_0   = 24;
-  private static int            COHERENT_COEFF_1   = 25;
-  private static int            COHERENT_COEFF_2   = 26;
-  private static int            COHERENT_COEFF_3   = 27;
+  private static final int            COHERENT_COEFF_0   = 24;
+  private static final int            COHERENT_COEFF_1   = 25;
+  private static final int            COHERENT_COEFF_2   = 26;
+  private static final int            COHERENT_COEFF_3   = 27;
 
-  private static int            INCOHERENT_COEFF_0 = 28;
-  private static int            INCOHERENT_COEFF_1 = 29;
-  private static int            INCOHERENT_COEFF_2 = 30;
-  private static int            INCOHERENT_COEFF_3 = 31;
+  private static final int            INCOHERENT_COEFF_0 = 28;
+  private static final int            INCOHERENT_COEFF_1 = 29;
+  private static final int            INCOHERENT_COEFF_2 = 30;
+  private static final int            INCOHERENT_COEFF_3 = 31;
 
-  private static int            L2                 = 36;
-  private static int            L3                 = 37;
+  private static final int            L2                 = 36;
+  private static final int            L3                 = 37;
 
   /**
    * Constructor - reads in constant file & populates atom array.
