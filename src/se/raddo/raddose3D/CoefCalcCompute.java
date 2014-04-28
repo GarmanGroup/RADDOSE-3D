@@ -16,7 +16,8 @@ public class CoefCalcCompute extends CoefCalc {
   /**
    * Pi.
    */
-  public static final double     PI                              = 3.141592653589793;
+  public static final double     PI 
+                                 = 3.141592653589793;
 
   /**
    * Right angle.
@@ -294,12 +295,15 @@ public class CoefCalcCompute extends CoefCalc {
     Double beta = cellBeta;
     Double gamma = cellGamma;
 
-    if (alpha == null)
+    if (alpha == null) {
       alpha = RIGHT_ANGLE;
-    if (beta == null)
+    }
+    if (beta == null) {
       beta = RIGHT_ANGLE;
-    if (gamma == null)
+    }
+    if (gamma == null) {
       gamma = RIGHT_ANGLE;
+    }
 
     cellVolume(cellA, cellB, cellC, alpha, beta, gamma);
 
@@ -327,13 +331,13 @@ public class CoefCalcCompute extends CoefCalc {
         * numAminoAcids * numMonomers;
     proteinMass /= cellVolume * PROTEIN_DENSITY * ANGSTROMS_TO_ML;
 
-    double RNAMass = ATOMIC_MASS_UNIT * RNA_NUCLEOTIDE_MASS * numRNA
+    double rnaMass = ATOMIC_MASS_UNIT * RNA_NUCLEOTIDE_MASS * numRNA
         * numMonomers;
-    RNAMass /= cellVolume * RNA_DENSITY * ANGSTROMS_TO_ML;
+    rnaMass /= cellVolume * RNA_DENSITY * ANGSTROMS_TO_ML;
 
-    double DNAMass = ATOMIC_MASS_UNIT * DNA_NUCLEOTIDE_MASS * numDNA
+    double dnaMass = ATOMIC_MASS_UNIT * DNA_NUCLEOTIDE_MASS * numDNA
         * numMonomers;
-    DNAMass /= cellVolume * DNA_DENSITY * ANGSTROMS_TO_ML;
+    dnaMass /= cellVolume * DNA_DENSITY * ANGSTROMS_TO_ML;
 
     // heteroatom mass only used in PDBs, otherwise this value is 0 anyway.
 
@@ -349,7 +353,7 @@ public class CoefCalcCompute extends CoefCalc {
     // We estimate the solvent fraction from the
     // remaining mass to be found in the crystal. Magic!
 
-    double solventFraction = 1 - proteinMass - RNAMass - DNAMass
+    double solventFraction = 1 - proteinMass - rnaMass - dnaMass
         - hetatmMass;
 
     // sanity check
@@ -373,7 +377,7 @@ public class CoefCalcCompute extends CoefCalc {
    * 
    * @param solventFraction solvent fraction
    */
-  public void calculateSolventWater(double solventFraction) {
+  public void calculateSolventWater(final double solventFraction) {
 
     double nonWaterAtoms = 0;
 
@@ -410,11 +414,11 @@ public class CoefCalcCompute extends CoefCalc {
    * Combine concentrations of heavy atoms in the solvent and add these to the
    * unit cell.
    * 
-   * @param heavySolvConcNames
-   * @param heavySolvConcNums
+   * @param heavySolvConcNames heavy solvent concentration atom names
+   * @param heavySolvConcNums heavy solvent concentrations in mM.
    */
-  public void addSolventConcentrations(List<String> heavySolvConcNames,
-      List<Double> heavySolvConcNums) {
+  public void addSolventConcentrations(final List<String> heavySolvConcNames,
+      final List<Double> heavySolvConcNums) {
 
     for (int i = 0; i < heavySolvConcNames.size(); i++) {
       Atom heavyAtom = parser.findAtomWithName(heavySolvConcNames.get(i));
@@ -513,9 +517,16 @@ public class CoefCalcCompute extends CoefCalc {
         * numRNA * numMonomers;
 
   }
-
+  
   /**
-   * Calculate cell volume from cell dimensions and unit cell angles.
+   *  Calculate cell volume from cell dimensions and unit cell angles.
+   * @param cellA unit cell dimension a
+   * @param cellB unit cell dimension b
+   * @param cellC unit cell dimension c
+   * @param cellAlpha unit cell angle alpha
+   * @param cellBeta unit cell angle beta
+   * @param cellGamma unit cell angle gamma
+   * @return cell volume in Angstroms cubed.
    */
 
   public double cellVolume(double cellA, double cellB, double cellC,
@@ -528,13 +539,15 @@ public class CoefCalcCompute extends CoefCalc {
         - Math.pow(Math.cos(alpha), 2.0) - Math.pow(Math.cos(beta), 2.0)
         - Math.pow(Math.cos(gamma), 2.0);
 
-    if (ult < 0.0)
+    if (ult < 0.0) {
       System.out
           .println("Warning: error calculating unit cell volume - please check inputs.");
-
+    }
+    
     double cellVol = cellA * cellB * cellC * Math.sqrt(ult);
 
-    // This result below is what Fortran thought of a 78.27 x 78.27 x 78.27 (cubic) unit cell
+    // This result below is what Fortran thought
+    // of a 78.27 x 78.27 x 78.27 (cubic) unit cell
     // instead of our value now of 479497.1 Angstroms cubed
     // resulting in an error between the calculations.
     //  double cellVol = 460286.7; Angstrom cubed
