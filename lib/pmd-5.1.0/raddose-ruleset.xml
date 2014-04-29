@@ -3203,7 +3203,7 @@ or reported.
  ]]>
              </value>
           </property>
-          <property name="allowCommentedBlocks" type="Boolean" description="Empty blocks containing comments will be skipped" value="false"/>
+          <property name="allowCommentedBlocks" type="Boolean" description="Empty blocks containing comments will be skipped" value="true"/>
       </properties>
       <example>
   <![CDATA[
