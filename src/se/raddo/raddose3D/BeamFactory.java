@@ -31,7 +31,10 @@ public class BeamFactory {
    * @throws BeamFactoryException
    *           the requested beam class could not be initialized
    */
-  @SuppressWarnings({ "PMD.CyclomaticComplexity", "PMD.NPathComplexity" })
+  @SuppressWarnings({
+      "PMD.CyclomaticComplexity",
+      "PMD.NPathComplexity",
+      "PMD.PreserveStackTrace" })
   public Beam createBeam(final String beamName,
       final Map<Object, Object> properties)
       throws IllegalArgumentException, BeamFactoryException {
@@ -84,7 +87,7 @@ public class BeamFactory {
       } catch (ClassNotFoundException e2) {
         throw new BeamFactoryException("Could not initialize beam of type "
             + beamName + ": Class " + beamClassName
-            + " not found.", e1); // NOPMD - Stack trace is dropped on purpose
+            + " not found.", e1);
       }
     }
 
