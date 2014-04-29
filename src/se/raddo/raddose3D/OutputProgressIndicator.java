@@ -4,8 +4,6 @@ import java.util.Map;
 
 /**
  * A simple progress indicator for lengthy simulations.
- * 
- * @author Markus Gerstel
  */
 public class OutputProgressIndicator implements Output, ExposeObserver {
   /** Where output should be directed to. */
@@ -52,18 +50,22 @@ public class OutputProgressIndicator implements Output, ExposeObserver {
 
   @Override
   public void publishBeam(final Beam b) {
+    // No implementation required
   }
 
   @Override
   public void publishWedge(final Wedge wdg) {
+    // No implementation required
   }
 
   @Override
   public void close() {
+    // No implementation required
   }
 
   @Override
   public void register(final Crystal c) {
+    // No implementation required
   }
 
   @Override

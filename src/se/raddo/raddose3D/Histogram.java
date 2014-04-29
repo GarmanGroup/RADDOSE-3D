@@ -35,6 +35,7 @@ public class Histogram {
   /** The sum of the observed values per bucket. */
   private double[]     values;
 
+  /** Total number of observations so far. */
   private int          observationCount;
   private double       observationPositionSum;
   private double       observationWeightedSum;

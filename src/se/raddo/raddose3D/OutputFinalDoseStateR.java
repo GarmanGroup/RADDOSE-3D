@@ -7,8 +7,6 @@ import java.util.Map;
 /**
  * Generates R code for visualizing the final dose distribution using the RGL
  * library.
- * 
- * @author Markus Gerstel
  */
 public class OutputFinalDoseStateR implements Output {
 
@@ -48,10 +46,12 @@ public class OutputFinalDoseStateR implements Output {
 
   @Override
   public void publishWedge(final Wedge wdg) {
+    // No implementation required
   }
 
   @Override
   public void publishBeam(final Beam b) {
+    // No implementation required
   }
 
   @Override
@@ -83,7 +83,7 @@ public class OutputFinalDoseStateR implements Output {
     w.write("require(\"misc3d\")\n\n");
 
     w.write("# Three dimensional dose array (MGy)\n");
-    w.write(String.format("dose <- array(0, c(%d, %d, %d))\n",
+    w.write(String.format("dose <- array(0, c(%d, %d, %d))%n",
         csize[0], csize[1], csize[2]));
     for (int k = 0; k < csize[2]; k++) {
       w.write(String.format("dose[,,%d]<-c(", (k + 1)));
@@ -96,7 +96,7 @@ public class OutputFinalDoseStateR implements Output {
           if (dose <= Float.MIN_VALUE) {
             w.write("0");
           } else {
-            w.write("" + dose);
+            w.write(String.valueOf(dose));
           }
         }
       }

@@ -15,8 +15,6 @@ import org.antlr.runtime.RecognitionException;
  * (package raddoseParser) along with an initializer and Crystal/Beam-factories.
  * These can be overridden for testing. This class encapsulates all ANTLR
  * interaction from the rest of the project.
- * 
- * @author Markus Gerstel
  */
 public class InputParser implements Input {
   /** The ANTLR CommonTokenStream that the InputParser works on. */
@@ -73,17 +71,17 @@ public class InputParser implements Input {
     try {
       parser.configfile();
     } catch (RecognitionException e) {
-      throw new InputException(e.toString());
+      throw new InputException(e.toString()); // NOPMD - discard stack trace
     }
 
     List<String> errors = parser.getErrors();
-    if (errors.size() > 0) {
-      String errorString = "Parser found " + errors.size()
-          + " errors in input:\n";
+    if (!errors.isEmpty()) {
+      StringBuffer errorString = new StringBuffer("Parser found "
+          + errors.size() + " errors in input:\n");
       for (String e : errors) {
-        errorString += "\n" + e;
+        errorString.append("\n" + e);
       }
-      throw new InputException(errorString);
+      throw new InputException(errorString.toString());
     }
   }
 }

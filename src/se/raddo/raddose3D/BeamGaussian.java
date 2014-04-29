@@ -11,7 +11,13 @@ import org.apache.commons.math3.distribution.NormalDistribution;
 import java.util.Map;
 
 public class BeamGaussian implements Beam {
-  private final Double photonsPerSec, photonEnergy, fwhmX, fwhmY;
+  private final Double fwhmX, fwhmY;
+
+  /** Beam flux. */
+  private final Double photonsPerSec;
+  
+  /** Beam energy. */
+  private final Double photonEnergy;
 
   /** Horizontal/Vertical collimation. No collimation if set to null. */
   private final Double collXum, collYum;
@@ -137,7 +143,7 @@ public class BeamGaussian implements Beam {
     return String
         .format(
             "Gaussian beam, %swith %.2f by %.2f FWHM "
-                + "(x by y) and %.1e photons per second at %.2f keV.\n",
+                + "(x by y) and %.1e photons per second at %.2f keV.%n",
             collimation,
             fwhmX, fwhmY, photonsPerSec, photonEnergy);
   }

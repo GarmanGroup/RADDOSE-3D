@@ -1,6 +1,7 @@
 package se.raddo.raddose3D;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The Experiment class is a central coordinating class in a simulation.
@@ -11,17 +12,17 @@ import java.util.Vector;
  */
 public class Experiment implements Initializer {
   /** Reference to the currently used crystal object. */
-  private Crystal              currentCrystal;
+  private Crystal            currentCrystal;
 
   /** Reference to the currently defined beam object. */
-  private Beam                 currentBeam;
+  private Beam               currentBeam;
 
   /**
    * List of currently subscribed event listeners. Subclasses of Experiment can
    * gain access to this object via the notifyObserver() methods and the close()
    * method.
    */
-  private final Vector<Output> observers = new Vector<Output>();
+  private final List<Output> observers = new ArrayList<Output>();
 
   /**
    * Cause given Input object to send its object stream to this Experiment.
@@ -153,7 +154,7 @@ public class Experiment implements Initializer {
    * This includes closing any downstream writers such as open files, etc.
    */
   @Override
-  protected void finalize() {
+  protected void finalize() throws Throwable {
     if ((currentBeam != null) || (currentCrystal != null)
         || (!observers.isEmpty())) {
       System.err.println("Experiment has not been closed properly.");
@@ -163,6 +164,7 @@ public class Experiment implements Initializer {
       System.err.println("ExClose: " + (currentBeam == null) + ", "
           + (currentCrystal == null) + ", " + observers.isEmpty() + ".");
     }
+    super.finalize();
   }
 
   @Override

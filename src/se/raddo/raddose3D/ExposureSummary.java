@@ -1,6 +1,7 @@
 package se.raddo.raddose3D;
 
 import java.util.Map;
+import java.util.NavigableMap;
 import java.util.TreeMap;
 
 /**
@@ -9,61 +10,61 @@ import java.util.TreeMap;
  */
 public class ExposureSummary implements ExposeObserver {
   /** How many % are in 100%. */
-  private static final Integer           PERCENT = 100;
+  private static final Integer                PERCENT = 100;
 
   /**
    * A red-black tree for dose observations to identify threshold boundaries.
    */
-  private final TreeMap<Double, Integer> voxelDoses;
+  private final NavigableMap<Double, Integer> voxelDoses;
 
   // per voxel exposure variables exposureObservation()
-  private Double                         totalAbsorbedEnergy;
-  private Double                         diffNum;
-  private Double                         diffDenom;
-  private Double                         wedgeElastic;
+  private Double                              totalAbsorbedEnergy;
+  private Double                              diffNum;
+  private Double                              diffDenom;
+  private Double                              wedgeElastic;
 
   // per image exposure variables imageComplete()
-  private Double                         runningSumDiffDose;
+  private Double                              runningSumDiffDose;
   /** Internal counter of individual exposures. */
-  private int                            images;
+  private int                                 images;
 
   // exposure summary per voxel variables summaryObservation()
-  private Double                         totalDose;
-  private int                            exposedVoxels;
-  private int                            occupiedVoxels;
+  private Double                              totalDose;
+  private int                                 exposedVoxels;
+  private int                                 occupiedVoxels;
 
   // exposure summary variables exposureComplete()
-  private Double                         avgDiffractedDose;
-  private Double                         avgDoseWholeCrystal;
-  private Double                         avgDoseExposedRegion;
-  private Double                         usedVolumeFraction;
-  private Double                         doseInefficiency;
+  private Double                              avgDiffractedDose;
+  private Double                              avgDoseWholeCrystal;
+  private Double                              avgDoseExposedRegion;
+  private Double                              usedVolumeFraction;
+  private Double                              doseInefficiency;
 
   /**
    * Last requested dose quantile.
    * For caching of dose quantile dependent summary statistics.
    */
-  private Double                         cachedDoseQuantile;
+  private Double                              cachedDoseQuantile;
   /**
    * Last calculated absolute dose threshold.
    * For caching of dose quantile dependent summary statistics.
    */
-  private Double                         cachedAbsDoseThreshold;
+  private Double                              cachedAbsDoseThreshold;
   /**
    * The number of voxels found above the absolute dose threshold.
    * For caching of dose quantile dependent summary statistics.
    */
-  private Integer                        cachedVoxelsAboveThreshold;
+  private Integer                             cachedVoxelsAboveThreshold;
   /**
    * Last calculated average dose within dose quantile volume.
    * For caching of dose quantile dependent summary statistics.
    */
-  private Double                         cachedAvgDoseThreshold;
+  private Double                              cachedAvgDoseThreshold;
   /**
    * Last calculated dose contrast.
    * For caching of dose quantile dependent summary statistics.
    */
-  private Double                         cachedDoseContrast;
+  private Double                              cachedDoseContrast;
 
   /**
    * Create an observer object for a crystal that records simple summary
@@ -158,10 +159,6 @@ public class ExposureSummary implements ExposeObserver {
 
   @Override
   public void exposureComplete() {
-    // TODO Calculating the Gini coefficient
-    // (has to be before normalizing find dose)
-    // gini = calcGini(fineHist);
-
     avgDiffractedDose = runningSumDiffDose / images;
 
     // Calculating average dose, dose contrast, used volume, thresholded dose,
@@ -214,7 +211,9 @@ public class ExposureSummary implements ExposeObserver {
     Boolean thresholdFound = false;
 
     for (Map.Entry<Double, Integer> e : voxelDoses.entrySet()) {
-      if (!thresholdFound) {
+      if (thresholdFound) {
+        cachedVoxelsAboveThreshold += e.getValue();
+      } else {
         if (doseSeen < doseCutoff) {
           doseSeen += e.getKey() * e.getValue();
         }
@@ -222,8 +221,6 @@ public class ExposureSummary implements ExposeObserver {
           cachedAbsDoseThreshold = e.getKey();
           thresholdFound = true;
         }
-      } else {
-        cachedVoxelsAboveThreshold += e.getValue();
       }
     }
 

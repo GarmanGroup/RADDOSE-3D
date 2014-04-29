@@ -7,6 +7,8 @@ import java.util.Map;
 /**
  * The BeamFactory class sits between the parser and the actual beam classes. It
  * allows easy testing of the parser and extensibility for new beam types.
+ * 
+ * TODO: Merge BeamFactory, CrystalFactory, OutputFactory and CoefCalcFactory
  */
 public class BeamFactory {
 

@@ -1,13 +1,12 @@
 package se.raddo.raddose3D;
 
 import java.io.BufferedWriter;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 
 /**
  * WriterFile writes all received data to a predefined file.
- * 
- * @author Markus Gerstel
  */
 public class WriterFile implements Writer {
   /** Reference to the output file. */
@@ -26,7 +25,8 @@ public class WriterFile implements Writer {
    */
   public WriterFile(final String filename) throws IOException {
     outFileName = filename;
-    outFile = new BufferedWriter(new FileWriter(filename));
+    outFile = new BufferedWriter(new OutputStreamWriter(
+        new FileOutputStream(filename), "UTF-8"));
   }
 
   @Override

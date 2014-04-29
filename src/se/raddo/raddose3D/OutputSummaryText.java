@@ -1,6 +1,7 @@
 package se.raddo.raddose3D;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
@@ -34,10 +35,10 @@ public class OutputSummaryText implements ExposeObserver, Output,
   private ExposureSummary      expSummary;
 
   /** Counter for seen wedges. */
-  private int                  wedgeNum                  = 0;
+  private Integer              wedgeNum                  = 0;
 
   /** List of references to display. */
-  private Vector<String>       references                = new Vector<String>();
+  private List<String>         references                = new Vector<String>();
 
   /**
    * Generic property constructor for OutputSummaryText class.
@@ -111,10 +112,12 @@ public class OutputSummaryText implements ExposeObserver, Output,
       final int j, final int k, final double addedDose, final double totalDose,
       final double fluence, final double doseDecay,
       final double absorbedEnergy, final double elastic) {
+    // No implementation required
   }
 
   @Override
   public void imageComplete(final int image, final double angle) {
+    // No implementation required
   }
 
   @Override
@@ -132,26 +135,26 @@ public class OutputSummaryText implements ExposeObserver, Output,
     w.write("Wedge " + wedgeNum + ":\n");
     w.write(wdg.wedgeProperties() + crystalCoefCalc.toString() + "\n");
 
-    w.write(String.format("%-42s: %.2f MGy\n",
+    w.write(String.format("%-42s: %.2f MGy%n",
         "Average Diffraction Weighted Dose",
         expSummary.getAvgDiffractedDose()));
-    w.write(String.format("%-42s: %.2e photons\n",
+    w.write(String.format("%-42s: %.2e photons%n",
         "Elastic Yield",
         expSummary.getWedgeElastic()));
-    w.write(String.format("%-42s: %.2e photons/MGy\n",
+    w.write(String.format("%-42s: %.2e photons/MGy%n",
         "Diffraction Efficiency (Elastic Yield/DWD)",
         expSummary.getWedgeElastic() / expSummary.getAvgDiffractedDose()));
 
-    w.write(String.format("%-42s: %.2f MGy\n",
+    w.write(String.format("%-42s: %.2f MGy%n",
         "Average Dose (Whole Crystal)",
         expSummary.getAvgDoseWholeCrystal()));
-    w.write(String.format("%-42s: %.2f MGy\n",
+    w.write(String.format("%-42s: %.2f MGy%n",
         "Average Dose (Exposed Region)",
         expSummary.getAvgDoseExposedRegion()));
-    w.write(String.format("%-42s: %.3f MGy\n",
+    w.write(String.format("%-42s: %.3f MGy%n",
         "Max Dose",
         expSummary.getMaxDose()));
-    w.write(String.format("%-42s: %.2f MGy\n",
+    w.write(String.format("%-42s: %.2f MGy%n",
         String.format(
             "Average Dose (%.1f %% of total absorbed energy threshold"
                 + " (%.2f MGy))",
@@ -159,16 +162,16 @@ public class OutputSummaryText implements ExposeObserver, Output,
             expSummary.getAbsDoseThreshold(absEnThreshold)),
         expSummary.getAvgDoseThreshold(absEnThreshold)));
 
-    w.write(String.format("%-42s: %.2f\n",
+    w.write(String.format("%-42s: %.2f%n",
         "Dose Contrast (Max/Threshold Av.)",
         expSummary.getDoseContrast(absEnThreshold)));
-    w.write(String.format("%-42s: %.1f%%\n",
+    w.write(String.format("%-42s: %.1f%%%n",
         "Used Volume",
         expSummary.getUsedVolumeFraction()));
-    w.write(String.format("%-42s: %.2e J.\n",
+    w.write(String.format("%-42s: %.2e J.%n",
         "Absorbed Energy (this Wedge)",
         expSummary.getAbsEnergyTotal()));
-    w.write(String.format("%-42s: %.1f 1/g\n",
+    w.write(String.format("%-42s: %.1f 1/g%n",
         "Dose Inefficiency (Max Dose/mJ Absorbed)",
         expSummary.getDoseInefficiency()));
 
@@ -194,10 +197,12 @@ public class OutputSummaryText implements ExposeObserver, Output,
 
   @Override
   public void exposureStart(final int imageCount) {
+    // No implementation required
   }
 
   @Override
   public void exposureComplete() {
+    // No implementation required
   }
 
   @Override
@@ -216,6 +221,7 @@ public class OutputSummaryText implements ExposeObserver, Output,
 
   @Override
   public void register(final Crystal c) {
+    // No implementation required
   }
 
   @Override

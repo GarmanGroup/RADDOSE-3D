@@ -4,7 +4,7 @@ import java.util.Map;
 
 /**
  * Dummy Experiment class for fast what-if simulation.
- * Used in runtime estimation.
+ * Used for runtime estimation.
  */
 public class ExperimentDummy extends Experiment {
 
@@ -44,7 +44,7 @@ public class ExperimentDummy extends Experiment {
   /**
    * An internal implementation of a BeamFactory that only creates dummy Beams.
    */
-  private class DummyBeamFactory extends BeamFactory {
+  private static class DummyBeamFactory extends BeamFactory {
     @Override
     public Beam createBeam(final String beamType,
         final Map<Object, Object> properties) {
@@ -54,7 +54,7 @@ public class ExperimentDummy extends Experiment {
     /**
      * An internal minimal implementation of a Beam interface.
      */
-    private class DummyBeam implements Beam {
+    private static class DummyBeam implements Beam {
       @Override
       public double beamIntensity(final double coordX, final double coordY,
           final double offAxisUM) {
@@ -130,15 +130,15 @@ public class ExperimentDummy extends Experiment {
 
         int nx, ny, nz;
         nx = (int) StrictMath.round(xDim * res) + 1;
-        if (yDim != null) {
-          ny = (int) StrictMath.round(yDim * res) + 1;
-        } else {
+        if (yDim == null) {
           ny = nx;
-        }
-        if (zDim != null) {
-          nz = (int) StrictMath.round(zDim * res) + 1;
         } else {
+          ny = (int) StrictMath.round(yDim * res) + 1;
+        }
+        if (zDim == null) {
           nz = nx;
+        } else {
+          nz = (int) StrictMath.round(zDim * res) + 1;
         }
         int[] tempCrystSize = { nx, ny, nz };
         crystSizeVoxels = tempCrystSize; // Final Value
@@ -152,7 +152,7 @@ public class ExperimentDummy extends Experiment {
 
       @Override
       public double[] getCrystCoord(final int i, final int j, final int k) {
-        return null;
+        return null; // NOPMD - Don't use this class for anything useful
       }
 
       @Override
@@ -163,11 +163,13 @@ public class ExperimentDummy extends Experiment {
       @Override
       public void addDose(final int i, final int j, final int k,
           final double doseVox) {
+        // No implementation required
       }
 
       @Override
       public void addFluence(final int i, final int j, final int k,
           final double fluenceVox) {
+        // No implementation required
       }
 
       @Override
@@ -182,7 +184,7 @@ public class ExperimentDummy extends Experiment {
 
       @Override
       public double[] getCrystSizeUM() {
-        return null;
+        return null; // NOPMD - Don't use this class for anything useful
       }
 
       @Override
@@ -202,11 +204,13 @@ public class ExperimentDummy extends Experiment {
 
       @Override
       public void setupDepthFinding(final double angle, final Wedge wedge) {
+        // No implementation required
       }
 
       @Override
       public void addElastic(final int i, final int j, final int k,
           final double elasticIncrease) {
+        // No implementation required
       }
 
       @Override

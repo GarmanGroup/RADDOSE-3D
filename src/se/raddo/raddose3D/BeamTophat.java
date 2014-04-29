@@ -5,13 +5,18 @@ import java.util.Map;
 /**
  * Top Hat beam class that returns a constant value within the beam area, and
  * zero outside.
- * 
- * @author Oliver Zeldin
  */
 
 public class BeamTophat implements Beam {
 
-  private final Double beamXum, beamYum, photonsPerSec, photonEnergy;
+  /** Horizontal and vertical extent of the beam in micrometres. */
+  private final Double beamXum, beamYum;
+  
+  /** Beam flux. */
+  private final Double photonsPerSec;
+  
+  /** Beam energy. */
+  private final Double photonEnergy;
 
   /**
    * Generic property constructor for Top Hat beams. Extracts all required

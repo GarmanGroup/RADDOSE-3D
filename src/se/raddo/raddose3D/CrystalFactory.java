@@ -9,7 +9,7 @@ import java.util.Map;
  * classes. It allows easy testing of the parser and extensibility for new
  * crystal types.
  * 
- * @author Markus Gerstel
+ * TODO: Merge BeamFactory, CrystalFactory, OutputFactory and CoefCalcFactory
  */
 public class CrystalFactory {
 
@@ -30,29 +30,41 @@ public class CrystalFactory {
    *          Map after object creation.
    * @return
    *         the requested Crystal type object
+   * @throws IllegalArgumentException
+   *           the passed parameters are invalid
+   * @throws CrystalFactoryException
+   *           the requested crystal class could not be initialized
    */
+  @SuppressWarnings({
+      "PMD.CyclomaticComplexity",
+      "PMD.NPathComplexity",
+      "PMD.PreserveStackTrace" })
   public Crystal createCrystal(final String crystalName,
-      final Map<Object, Object> properties) {
+      final Map<Object, Object> properties)
+      throws IllegalArgumentException, CrystalFactoryException {
 
     // 1. Do some sanity checks on the passed parameters
 
     if (crystalName == null) {
-      throw new RuntimeException("CrystalFactory: crystalName set to null");
+      throw new IllegalArgumentException(
+          "CrystalFactory: crystalName set to null");
     }
     if (properties == null) {
-      throw new RuntimeException("CrystalFactory: properties set to null");
+      throw new IllegalArgumentException(
+          "CrystalFactory: properties set to null");
     }
 
     String trimmedCrystalName = crystalName.trim();
     if (trimmedCrystalName.equals("")) {
-      throw new RuntimeException("CrystalFactory: crystalName is empty");
+      throw new IllegalArgumentException(
+          "CrystalFactory: crystalName is empty");
     }
 
     // 2. Construct the class name of the requested crystal type
 
     String crystalClassName, alternativeCrystalClassName;
 
-    if (trimmedCrystalName.indexOf(".") == -1) {
+    if (trimmedCrystalName.indexOf('.') == -1) {
       crystalClassName = "Crystal"
           .concat(trimmedCrystalName.substring(0, 1).toUpperCase())
           .concat(trimmedCrystalName.substring(1).toLowerCase());
@@ -80,16 +92,17 @@ public class CrystalFactory {
         crystalClass = Class.forName(alternativeCrystalClassName);
         crystalClassName = alternativeCrystalClassName;
       } catch (ClassNotFoundException e2) {
-        throw new RuntimeException("Could not initialize crystal of type "
-            + crystalName + ": Class " + crystalClassName
-            + " not found.", e1);
+        throw new CrystalFactoryException(
+            "Could not initialize crystal of type "
+                + crystalName + ": Class " + crystalClassName
+                + " not found.", e1);
       }
     }
 
     // 4. A class has been found. Check that it is a subclass of Crystal.
 
     if (!Crystal.class.isAssignableFrom(crystalClass)) {
-      throw new RuntimeException("Could not initialize crystal of type "
+      throw new CrystalFactoryException("Could not initialize crystal of type "
           + crystalName + ": Class " + crystalClassName
           + " is not a subclass of Crystal.");
     }
@@ -100,7 +113,7 @@ public class CrystalFactory {
     try {
       crystalConstructor = crystalClass.getConstructor(Map.class);
     } catch (NoSuchMethodException e) {
-      throw new RuntimeException("Error initializing crystal of type "
+      throw new CrystalFactoryException("Error initializing crystal of type "
           + crystalName + ": Class " + crystalClassName
           + " does not have a property constructor.", e);
     }
@@ -110,14 +123,47 @@ public class CrystalFactory {
     try {
       return (Crystal) crystalConstructor.newInstance(properties);
     } catch (InstantiationException e) {
-      throw new RuntimeException("Error during crystal instantiation of "
+      throw new CrystalFactoryException("Error during crystal instantiation of "
           + crystalClassName + ": " + e.getCause().getMessage(), e.getCause());
     } catch (IllegalAccessException e) {
-      throw new RuntimeException("Error during crystal creation of "
+      throw new CrystalFactoryException("Error during crystal creation of "
           + crystalClassName + ": Illegal access exception", e);
     } catch (InvocationTargetException e) {
-      throw new RuntimeException("Error during crystal invocation of "
+      throw new CrystalFactoryException("Error during crystal invocation of "
           + crystalClassName + ": " + e.getCause().getMessage(), e.getCause());
+    }
+  }
+
+  /**
+   * Exception for when the requested Crystal type class could not be instantiated.
+   */
+  private static class CrystalFactoryException extends RuntimeException {
+    /**
+     * Unique exception serial.
+     */
+    private static final long serialVersionUID = -8223644774855228211L;
+
+    /**
+     * Basic exception constructor. Takes only a string.
+     * 
+     * @param string
+     *          Reason why the exception was thrown.
+     */
+    public CrystalFactoryException(final String string) {
+      super(string);
+    }
+
+    /**
+     * Exception constructor taking a string and another exception holding a
+     * stack trace.
+     * 
+     * @param string
+     *          Reason why the exception was thrown.
+     * @param e
+     *          Original exception holding the stack trace.
+     */
+    public CrystalFactoryException(final String string, final Throwable e) {
+      super(string, e);
     }
   }
 }

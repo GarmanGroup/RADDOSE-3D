@@ -80,7 +80,7 @@ public class Raddose3DWorker
 
   @Override
   public void run() {
-    long startTime = System.currentTimeMillis();
+    long startTime = System.currentTimeMillis(); // NOPMD
 
     System.out.println("Worker " + jobID + " started.");
 
