@@ -154,11 +154,10 @@ public class Experiment implements Initializer {
    * This includes closing any downstream writers such as open files, etc.
    * 
    * @throws Throwable
-   *           passing on upstream finalize() exceptions 
+   *           passing on upstream finalize() exceptions
    */
   @Override
-  protected void finalize() throws Throwable
-  {
+  protected void finalize() throws Throwable {
     if ((currentBeam != null) || (currentCrystal != null)
         || (!observers.isEmpty())) {
       System.err.println("Experiment has not been closed properly.");
