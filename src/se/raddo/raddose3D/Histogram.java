@@ -233,7 +233,9 @@ public class Histogram {
 
   public Double[] getWeightHistogram() {
     Double[] histarray = new Double[bucketCount];
-    System.arraycopy(values, 0, histarray, 0, bucketCount);
+    for (int i = 0; i < bucketCount; i++) {
+      histarray[i] = values[i];
+    }
     return histarray;
   }
 
