@@ -30,7 +30,9 @@ public class Histogram {
   //                        4: 3.5<=x<4.5
   //                        5: x>=4.5
 
+  /** Number of observations per bucket. */
   private int[]        observations;
+  /** The sum of the observed values per bucket. */
   private double[]     values;
 
   private int          observationCount;
@@ -58,7 +60,7 @@ public class Histogram {
   public Histogram(final double rangeMin, final double rangeMax,
       final int buckets) {
     if (rangeMax <= rangeMin) {
-      throw new RuntimeException(
+      throw new IllegalArgumentException(
           "Histogram object could not be created. RangeMin (" + rangeMin
               + ") >= RangeMax (" + rangeMax + ")");
     }
@@ -67,7 +69,7 @@ public class Histogram {
     maxValue = rangeMax;
 
     if (buckets <= 0) {
-      throw new RuntimeException(
+      throw new IllegalArgumentException(
           "Histogram object could not be created. Buckets (" + buckets
               + ") <= 0");
     }
@@ -154,7 +156,7 @@ public class Histogram {
   /**
    * Clears all observations and resets the histogram.
    */
-  public void reset() {
+  public final void reset() {
     observationCount = 0;
     observationPositionSum = 0;
     observationWeightedSum = 0;
@@ -225,20 +227,22 @@ public class Histogram {
 
   public int[] getObservationHistogram() {
     int[] histarray = new int[bucketCount];
-    for (int i = 0; i < bucketCount; i++) {
-      histarray[i] = observations[i];
-    }
+    System.arraycopy(observations, 0, histarray, 0, bucketCount);
     return histarray;
   }
 
   public Double[] getWeightHistogram() {
     Double[] histarray = new Double[bucketCount];
-    for (int i = 0; i < bucketCount; i++) {
-      histarray[i] = values[i];
-    }
+    System.arraycopy(values, 0, histarray, 0, bucketCount);
     return histarray;
   }
 
+  /**
+   * Returns the histogram breakpoints.
+   * 
+   * @return
+   *         Array of numbers, between which the histogram buckets lie.
+   */
   public Double[] getHistogramBreaks() {
     Double[] histarray = new Double[bucketCount];
     histarray[0] = Double.NEGATIVE_INFINITY;
@@ -263,62 +267,5 @@ public class Histogram {
       histarray[i] /= observationWeightSum;
     }
     return histarray;
-  }
-
-  /**
-   * Calculate the Gini coefficient, an inequality measure, of the current
-   * histogram state.
-   * *This code does not work.*
-   * 
-   * @return
-   *         Gini coefficient of the recorded distribution.
-   */
-  @Deprecated
-  public double getGiniCoefficient() {
-    // Calculating the lorentz curve from the fineHist
-    int nBins = bucketCount;
-    double[][] lorentzCurve = new double[nBins][2];
-    lorentzCurve[0][0] = 0;
-    lorentzCurve[0][1] = 0;
-
-    double[] cumulativeWeights = new double[bucketCount];
-    double[] cumulativeWeightedSum = new double[bucketCount];
-
-    cumulativeWeights[0] = 0;
-    cumulativeWeightedSum[0] = 0;
-    for (int n = 1; n < nBins; n++) {
-      cumulativeWeights[n] = cumulativeWeights[n - 1] + observations[n]
-          + values[n];
-      //      lorentzCurve[position][0] = lorentzCurve[position - 1][0]
-      //            + histogram[position - 1][1]; // Cumulative number of voxels
-
-      cumulativeWeightedSum[n] = cumulativeWeightedSum[n - 1]
-          + (observations[n] + values[n]) *
-          (minValue + ((n - 1) * bucketStep));
-      // lorentzCurve[position][1] = lorentzCurve[position - 1][1]
-      //                             + histogram[position - 1][1]
-      //      * histogram[position - 1][0];
-      // Cumulative total dose (dose*number of voxels at that dose)
-    }
-
-    double lorentzArea = 0;
-    for (int n = 1; n < nBins; n++) {
-      lorentzArea += 0.5
-          * (cumulativeWeightedSum[n] + cumulativeWeightedSum[n - 1])
-          * (cumulativeWeights[n] - cumulativeWeights[n - 1]);
-
-      //      lorentzArea += 0.5 * (lorentzCurve[n][1] + lorentzCurve[n - 1][1])
-      //          * (lorentzCurve[n][0] - lorentzCurve[n - 1][0]);
-      // the first bit is + because we're adding parallelograms, not triangles..
-      // Draw it or see lab book!
-    }
-
-    double areaOfEquality =
-        0.5 * cumulativeWeights[bucketCount - 1]
-            * cumulativeWeightedSum[bucketCount - 1];
-    //        0.5 * lorentzCurve[nBins - 1][0] * lorentzCurve[nBins - 1][1];
-
-    double gini = (areaOfEquality - lorentzArea) / areaOfEquality;
-    return gini;
   }
 }

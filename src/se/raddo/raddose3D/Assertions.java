@@ -1,13 +1,11 @@
 package se.raddo.raddose3D;
 
 /**
- * Class that contains a number of validation functions. Objects can be tested
- * against null, objects can be tested whether they are instances of other
- * classes, etc.
- * If the validation fails the function will throw a RuntimeException with a
- * (hopefully) helpful error message.
- * 
- * @author Markus Gerstel
+ * Class that contains a number of argument validation functions. Objects can be
+ * tested against null, objects can be tested whether they are instances of
+ * other classes, etc.
+ * If the validation fails the function will throw an IllegalArgumentException
+ * with a (hopefully) helpful error message.
  */
 public class Assertions {
 
@@ -43,9 +41,9 @@ public class Assertions {
    *          A helpful message that will be included in the runtime exception.
    */
   public void checkIsNotNull(final Object variable,
-      final String errorMessage) {
+      final String errorMessage) throws IllegalArgumentException {
     if (variable == null) {
-      throw new RuntimeException(sourceMessage.concat(errorMessage));
+      throw new IllegalArgumentException(sourceMessage.concat(errorMessage));
     }
   }
 
@@ -65,7 +63,7 @@ public class Assertions {
     if ((variable == null)
         || (classToTest == null)
         || (!classToTest.isAssignableFrom(variable.getClass()))) {
-      throw new RuntimeException(sourceMessage.concat(errorMessage));
+      throw new IllegalArgumentException(sourceMessage.concat(errorMessage));
     }
   }
 }
