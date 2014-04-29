@@ -8,7 +8,6 @@ import java.util.Map;
  * The CrystalFactory class sits between the parser and the actual crystal
  * classes. It allows easy testing of the parser and extensibility for new
  * crystal types.
- * 
  * TODO: Merge BeamFactory, CrystalFactory, OutputFactory and CoefCalcFactory
  */
 public class CrystalFactory {
@@ -135,7 +134,8 @@ public class CrystalFactory {
   }
 
   /**
-   * Exception for when the requested Crystal type class could not be instantiated.
+   * Exception for when the requested Crystal type class could not be
+   * instantiated.
    */
   private static class CrystalFactoryException extends RuntimeException {
     /**

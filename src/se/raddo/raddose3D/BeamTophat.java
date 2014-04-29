@@ -11,10 +11,10 @@ public class BeamTophat implements Beam {
 
   /** Horizontal and vertical extent of the beam in micrometres. */
   private final Double beamXum, beamYum;
-  
+
   /** Beam flux. */
   private final Double photonsPerSec;
-  
+
   /** Beam energy. */
   private final Double photonEnergy;
 

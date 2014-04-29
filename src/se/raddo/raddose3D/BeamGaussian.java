@@ -15,7 +15,7 @@ public class BeamGaussian implements Beam {
 
   /** Beam flux. */
   private final Double photonsPerSec;
-  
+
   /** Beam energy. */
   private final Double photonEnergy;
 
