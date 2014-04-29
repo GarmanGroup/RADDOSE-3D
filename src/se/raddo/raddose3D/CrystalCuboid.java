@@ -225,6 +225,7 @@ public class CrystalCuboid extends Crystal {
 
   }
 
+  @Override
   public String crystalInfo() {
     String st = String
         .format(

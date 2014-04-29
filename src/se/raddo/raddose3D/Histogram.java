@@ -225,12 +225,28 @@ public class Histogram {
     return observationWeightedSum / observationWeightSum;
   }
 
+  /**
+   * Returns an array containing the observed counts for each histogram bucket.
+   * 
+   * @return
+   *         Array containing the observed counts for each histogram bucket.
+   */
   public int[] getObservationHistogram() {
     int[] histarray = new int[bucketCount];
     System.arraycopy(observations, 0, histarray, 0, bucketCount);
     return histarray;
   }
 
+  /**
+   * Returns an array containing the sum of the observed values for each
+   * histogram bucket.
+   * 
+   * @return
+   *         Array containing the sum of the observed values for each histogram
+   *         bucket.
+   */
+  // System.arraycopy is not appropriate due to required type conversion
+  @SuppressWarnings("PMD.AvoidArrayLoops")
   public Double[] getWeightHistogram() {
     Double[] histarray = new Double[bucketCount];
     for (int i = 0; i < bucketCount; i++) {
