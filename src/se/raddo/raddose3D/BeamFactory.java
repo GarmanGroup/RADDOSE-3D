@@ -31,7 +31,7 @@ public class BeamFactory {
    * @throws BeamFactoryException
    *           the requested beam class could not be initialized
    */
-  @SuppressWarnings({"PMD.CyclomaticComplexity", "PMD.NPathComplexity"})
+  @SuppressWarnings({ "PMD.CyclomaticComplexity", "PMD.NPathComplexity" })
   public Beam createBeam(final String beamName,
       final Map<Object, Object> properties)
       throws IllegalArgumentException, BeamFactoryException {
