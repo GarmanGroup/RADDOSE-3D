@@ -1,7 +1,7 @@
 package se.raddo.raddose3D;
 
+import java.util.ArrayList;
 import java.util.Map;
-import java.util.Vector;
 
 /**
  * Crystal abstract class
@@ -44,8 +44,8 @@ public abstract class Crystal {
    * of individual voxel exposure events and can also inspect the Crystal object
    * after each image and and wedge.
    */
-  private Vector<ExposeObserver> exposureObservers
-                = new Vector<ExposeObserver>();
+  private final ArrayList<ExposeObserver> exposureObservers
+                = new ArrayList<ExposeObserver>();
 
   /**
    * An single, common ExposureSummary object to which a reference can be
@@ -389,9 +389,6 @@ public abstract class Crystal {
 
               double voxElasticYield = fluenceToElasticFactor * voxImageFluence;
 
-              // Fluence times the fraction of the beam absorbed by the voxel
-              double absorbedEnergy = voxImageFluence * energyPerFluence;
-
               if (voxImageDose > 0) {
                 addFluence(i, j, k, voxImageFluence);
                 addDose(i, j, k, voxImageDose);
@@ -405,6 +402,9 @@ public abstract class Crystal {
               double interpolatedVoxelDose = totalVoxelDose + voxImageDose / 2;
               double relativeDiffractionEfficiency =
                   getDDM().calcDecay(interpolatedVoxelDose);
+
+              // Fluence times the fraction of the beam absorbed by the voxel
+              double absorbedEnergy = voxImageFluence * energyPerFluence;
 
               for (ExposeObserver eo : exposureObservers) {
                 eo.exposureObservation(anglenum, i, j, k, voxImageDose,

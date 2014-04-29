@@ -429,8 +429,17 @@ public class CrystalCuboid extends Crystal {
     return crystSizeUM;
   }
 
+  /**
+   * Difference of two three-element vectors.
+   * 
+   * @param v1
+   *          Vector A.
+   * @param v2
+   *          Vector B.
+   * @return
+   *         Vector A - B.
+   */
   private static double[] minus(final double[] v1, final double[] v2) {
-
     double[] min = new double[3];
     min[0] = v1[0] - v2[0];
     min[1] = v1[1] - v2[1];
@@ -439,6 +448,16 @@ public class CrystalCuboid extends Crystal {
     return min;
   }
 
+  /**
+   * Dot product of two three-element vectors.
+   * 
+   * @param v1
+   *          Vector A.
+   * @param v2
+   *          Vector B.
+   * @return
+   *         Vector A dot B.
+   */
   private static double dot3(final double[] v1, final double[] v2) {
 
     double[] dot = new double[3];
@@ -446,16 +465,25 @@ public class CrystalCuboid extends Crystal {
     dot[1] = v1[1] * v2[1];
     dot[2] = v1[2] * v2[2];
 
-    double dotP = dot[0] + dot[1] + dot[2];
-    return dotP;
+    return dot[0] + dot[1] + dot[2];
   }
 
-  private static double[] cross3(final double[] a, final double[] b) {
+  /**
+   * Cross product of two three-element vectors.
+   * 
+   * @param v1
+   *          Vector A.
+   * @param v2
+   *          Vector B.
+   * @return
+   *         Vector A x B.
+   */
+  private static double[] cross3(final double[] v1, final double[] v2) {
     double[] cross = new double[3];
 
-    cross[0] = a[1] * b[2] - a[2] * b[1];
-    cross[1] = a[2] * b[0] - a[0] * b[2];
-    cross[2] = a[0] * b[1] - a[1] * b[0];
+    cross[0] = v1[1] * v2[2] - v1[2] * v2[1];
+    cross[1] = v1[2] * v2[0] - v1[0] * v2[2];
+    cross[2] = v1[0] * v2[1] - v1[1] * v2[0];
     return cross;
   }
 

@@ -7,14 +7,14 @@ package se.raddo.raddose3D;
  */
 public class WriterString implements Writer {
   /** All received data is kept in a Stringbuffer. */
-  private StringBuffer data     = new StringBuffer();
+  private final StringBuffer data     = new StringBuffer();
   /** After close() is called further data results in RuntimeExceptions. */
-  private Boolean      readonly = false;
+  private Boolean            readonly = false;
 
   @Override
   public void write(final String s) {
     if (readonly) {
-      throw new RuntimeException("Writer has been closed");
+      throw new IllegalStateException("Writer has been closed");
     }
     data.append(s);
   }
@@ -22,7 +22,7 @@ public class WriterString implements Writer {
   @Override
   public void write(final StringBuffer b) {
     if (readonly) {
-      throw new RuntimeException("Writer has been closed");
+      throw new IllegalStateException("Writer has been closed");
     }
     data.append(b);
   }

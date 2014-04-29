@@ -237,6 +237,7 @@ public class CoefCalcRaddose extends CoefCalc {
           if (scanIN.hasNextDouble()) {
             absCoeff = scanIN.nextDouble() / UNITSPERMILLIUNIT;
           } else {
+            scanIN.close();
             throw new RuntimeException(
                 "Error in Absorption calculation using RDV2");
           }
@@ -247,6 +248,7 @@ public class CoefCalcRaddose extends CoefCalc {
           if (scanIN.hasNextDouble()) {
             elasCoeff = scanIN.nextDouble() / UNITSPERMILLIUNIT;
           } else {
+            scanIN.close();
             throw new RuntimeException(
                 "Error in Elastic calculation using RDV2");
           }
@@ -257,6 +259,7 @@ public class CoefCalcRaddose extends CoefCalc {
           if (scanIN.hasNextDouble()) {
             attCoeff = scanIN.nextDouble() / UNITSPERMILLIUNIT;
           } else {
+            scanIN.close();
             throw new RuntimeException(
                 "Error in Attenuation calculation using RDV2");
           }
@@ -266,11 +269,13 @@ public class CoefCalcRaddose extends CoefCalc {
           if (scanIN.hasNextDouble()) {
             density = scanIN.nextDouble();
           } else {
+            scanIN.close();
             throw new RuntimeException(
                 "Error in density calculation using RDV2");
           }
         }
       }
+      scanIN.close();
       raddoseV2output.close();
 
       String line;

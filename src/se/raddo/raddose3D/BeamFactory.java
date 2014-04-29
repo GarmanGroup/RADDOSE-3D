@@ -26,22 +26,28 @@ public class BeamFactory {
    *          Map after object creation.
    * @return
    *         the requested Beam type object
+   * @throws IllegalArgumentException
+   *           the passed parameters are invalid
+   * @throws BeamFactoryException
+   *           the requested beam class could not be initialized
    */
+  @SuppressWarnings({"PMD.CyclomaticComplexity", "PMD.NPathComplexity"})
   public Beam createBeam(final String beamName,
-      final Map<Object, Object> properties) {
+      final Map<Object, Object> properties)
+      throws IllegalArgumentException, BeamFactoryException {
 
     // 1. Do some sanity checks on the passed parameters
 
     if (beamName == null) {
-      throw new BeamFactoryException("BeamFactory: beamName set to null");
+      throw new IllegalArgumentException("BeamFactory: beamName set to null");
     }
     if (properties == null) {
-      throw new BeamFactoryException("BeamFactory: properties set to null");
+      throw new IllegalArgumentException("BeamFactory: properties set to null");
     }
 
     String trimmedBeamName = beamName.trim();
     if ("".equals(trimmedBeamName)) {
-      throw new BeamFactoryException("BeamFactory: beamName is empty");
+      throw new IllegalArgumentException("BeamFactory: beamName is empty");
     }
 
     // 2. Construct the class name of the requested beam type
@@ -78,7 +84,7 @@ public class BeamFactory {
       } catch (ClassNotFoundException e2) {
         throw new BeamFactoryException("Could not initialize beam of type "
             + beamName + ": Class " + beamClassName
-            + " not found.", e2);
+            + " not found.", e1); // NOPMD - Stack trace is dropped on purpose
       }
     }
 
