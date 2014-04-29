@@ -39,6 +39,8 @@ public class Assertions {
    *          The variable to test.
    * @param errorMessage
    *          A helpful message that will be included in the runtime exception.
+   * @throws IllegalArgumentException
+   *           Thrown if variable is null.
    */
   public void checkIsNotNull(final Object variable,
       final String errorMessage) throws IllegalArgumentException {
@@ -57,9 +59,11 @@ public class Assertions {
    *          class that variable should be an instance of. (e.g: Double.class)
    * @param errorMessage
    *          A helpful message that will be included in the runtime exception.
+   * @throws IllegalArgumentException
+   *           Thrown if variable is not of the correct class or set to null.
    */
   public void checkIsClass(final Object variable, final Class<?> classToTest,
-      final String errorMessage) {
+      final String errorMessage) throws IllegalArgumentException {
     if ((variable == null)
         || (classToTest == null)
         || (!classToTest.isAssignableFrom(variable.getClass()))) {
