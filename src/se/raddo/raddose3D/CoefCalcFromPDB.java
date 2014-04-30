@@ -1,12 +1,14 @@
 package se.raddo.raddose3D;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
+
 
 import se.raddo.raddose3D.MuCalcConstantParser.Atom;
 
@@ -780,39 +782,60 @@ public class CoefCalcFromPDB extends CoefCalcCompute {
    * line.
    * 
    * @param pdbName PDB four letter code
-   * @throws Exception exception
    */
-  public void downloadPDB(final String pdbName) throws Exception {
+  public void downloadPDB(final String pdbName) {
     String urlString = String.format("%s%s", PDB_DOWNLOAD_LINK, pdbName);
-    URL pdbURL = new URL(urlString);
-    URLConnection pdbConnection = pdbURL.openConnection();
+
+    URL pdbURL = null;
+    URLConnection pdbConnection = null;
+
+    try {
+      pdbURL = new URL(urlString);
+    } catch (MalformedURLException e) {
+      System.out.println("URL " + urlString + " is malformed.");
+    }
+    try {
+      pdbConnection = pdbURL.openConnection();
+    } catch (IOException e) {
+      System.out.println("Cannot read from URL.");
+    }
 
     BufferedReader in = null;
 
+    InputStreamReader isr = null;
     try {
-      InputStreamReader isr = new InputStreamReader(
+      isr = new InputStreamReader(
           pdbConnection.getInputStream());
-      in = new BufferedReader(isr);
-    } catch (FileNotFoundException e) {
-      System.out.println("Error: Could not find PDB file " + pdbName
-          + " on pdb.org");
-
-      throw new FileNotFoundException();
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      System.out.println("Cannot read from URL.");
+      e.printStackTrace();
     }
+    in = new BufferedReader(isr);
 
     String inputLine;
 
-    while ((inputLine = in.readLine()) != null) {
-      parsePDBLine(inputLine);
+    try {
+      while ((inputLine = in.readLine()) != null) {
+        parsePDBLine(inputLine);
+      }
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      System.out.println("Cannot read from URL.");
+      e.printStackTrace();
     }
 
-    in.close();
+    try {
+      in.close();
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
 
     if (!foundCryst1) {
       System.out
           .println("Could not find CRYST1 line "
               + "containing unit cell information.");
-      throw new Exception();
     }
 
     System.out.println("Crystallographic symmetry operators: "
@@ -846,14 +869,7 @@ public class CoefCalcFromPDB extends CoefCalcCompute {
 
     Residue.createResidueArray();
 
-    try {
-      downloadPDB(pdbName);
-    } catch (FileNotFoundException e) {
-      // TODO Auto-generated catch block
-      System.out.println("Could not find PDB file");
-    } catch (Exception e) {
-      System.out.println("Caught read-write exception");
-    }
+    downloadPDB(pdbName);
   }
 
   /**

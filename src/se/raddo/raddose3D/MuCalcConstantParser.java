@@ -17,7 +17,7 @@ public class MuCalcConstantParser {
    * 
    * @author magd3052
    */
-  public class Atom {
+  public static class Atom {
     /**
      * Element name.
      */
