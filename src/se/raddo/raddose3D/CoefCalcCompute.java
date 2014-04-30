@@ -138,22 +138,22 @@ public class CoefCalcCompute extends CoefCalc {
   /**
    * Number of amino acids.
    */
-  private double               numAminoAcids                   = 0;
+  private double                 numAminoAcids                   = 0;
 
   /**
    * Number of RNA residues.
    */
-  private double               numRNA                          = 0;
+  private double                 numRNA                          = 0;
 
   /**
    * Number of DNA residues.
    */
-  private double               numDNA                          = 0;
+  private double                 numDNA                          = 0;
 
   /**
    * Number of monomers per unit cell.
    */
-  private int                  numMonomers                     = 1;
+  private int                    numMonomers                     = 1;
 
   /**
    * Parser which is going to look after our atom objects.
@@ -296,7 +296,7 @@ public class CoefCalcCompute extends CoefCalc {
   protected void incrementNumRNA(double increment) {
     this.numRNA += increment;
   }
-  
+
   /**
    * @return the numDNA
    */
@@ -317,7 +317,7 @@ public class CoefCalcCompute extends CoefCalc {
   protected void incrementNumDNA(double increment) {
     this.numDNA += increment;
   }
-  
+
   /**
    * @return the numMonomers
    */
@@ -526,11 +526,21 @@ public class CoefCalcCompute extends CoefCalc {
   /**
    * Calculate the macromolecular mass (etc.) and add the appropriate numbers of
    * atom occurrences to the parser's atom array.
+   * 
+   * @param numMonomers number of monomers
+   * @param numResidues number of amino acid residues
+   * @param numRNAresidues number of RNA residues
+   * @param numDNAresidues number of DNA residues
+   * @param solventFraction solvent fraction
+   * @param heavyProteinAtomNames heavy atom protein element symbols
+   * @param heavyProteinAtomNums heavy atom protein occurrences
+   * @param heavySolvConcNames heavy atom solvent element symbols
+   * @param heavySolvConcNums heavy atom solvent concentrations in mM.
    */
   public void calculateAtomOccurrences(final int numMonomers,
       final int numResidues,
       final int numRNAresidues, final int numDNAresidues,
-      double solventFraction,
+      final double solventFraction,
       final List<String> heavyProteinAtomNames,
       final List<Double> heavyProteinAtomNums,
       final List<String> heavySolvConcNames,
@@ -558,11 +568,13 @@ public class CoefCalcCompute extends CoefCalc {
     this.numDNA = numDNAresidues;
 
     // If the solvent fraction has not been specified.
+    double newSolventFraction = solventFraction;
+
     if (solventFraction <= 0) {
-      solventFraction = calculateSolventFractionFromNums();
+      newSolventFraction = calculateSolventFractionFromNums();
     }
 
-    calculateSolventWater(solventFraction);
+    calculateSolventWater(newSolventFraction);
 
     // Atom preparation...
 
@@ -640,8 +652,9 @@ public class CoefCalcCompute extends CoefCalc {
    * @return cell volume in Angstroms cubed.
    */
 
-  public double cellVolume(double cellA, double cellB, double cellC,
-      double cellAlpha, double cellBeta, double cellGamma) {
+  public double cellVolume(final double cellA, final double cellB,
+      final double cellC,
+      final double cellAlpha, final double cellBeta, final double cellGamma) {
     double alpha = cellAlpha * PI / PARALLEL_ANGLE;
     double beta = cellBeta * PI / PARALLEL_ANGLE;
     double gamma = cellGamma * PI / PARALLEL_ANGLE;
@@ -652,7 +665,8 @@ public class CoefCalcCompute extends CoefCalc {
 
     if (ult < 0.0) {
       System.out
-          .println("Warning: error calculating unit cell volume - please check inputs.");
+          .println("Warning: error calculating unit cell "
+              + "volume - please check inputs.");
     }
 
     double cellVol = cellA * cellB * cellC * Math.sqrt(ult);
