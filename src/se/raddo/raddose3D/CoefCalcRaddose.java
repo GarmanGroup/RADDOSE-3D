@@ -230,7 +230,7 @@ public class CoefCalcRaddose extends CoefCalc {
       while (scanIN.hasNext()) {
         String word = scanIN.next();
         
-        System.out.print(word + " ");
+    // DEBUG    System.out.print(word + " ");
         if (word.equals("Absorption") && scanIN.hasNext("Coefficient")) {
           scanIN.next();
           scanIN.next();
