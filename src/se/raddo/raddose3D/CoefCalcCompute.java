@@ -14,152 +14,152 @@ public class CoefCalcCompute extends CoefCalc {
   /**
    * Identified coefficients and density from last program run. Final variables.
    */
-  private double                 absCoeff, attCoeff, elasCoeff, density,
-                                 cellVolume;
+  private double                absCoeff, attCoeff, elasCoeff, density,
+                                cellVolume;
 
   /**
    * Right angle.
    */
-  public static final double     RIGHT_ANGLE                     = 90;
+  public static final double    RIGHT_ANGLE                     = 90;
 
   /**
    * Parallel angle.
    */
 
-  public static final double     PARALLEL_ANGLE                  = 180;
+  public static final double    PARALLEL_ANGLE                  = 180;
 
   /**
    * Percentage conversion.
    */
-  public static final double     PERCENTAGE_CONVERSION           = 100;
+  public static final double    PERCENTAGE_CONVERSION           = 100;
 
   /**
    * Protein density in g/ml.
    */
-  protected static final double  PROTEIN_DENSITY                 = 1.35;
+  protected static final double PROTEIN_DENSITY                 = 1.35;
 
   /**
    * RNA density in g/ml.
    */
-  protected static final double  RNA_DENSITY                     = 1.3;
+  protected static final double RNA_DENSITY                     = 1.3;
 
   /**
    * DNA density in g/ml.
    */
-  protected static final double  DNA_DENSITY                     = 1.35;
+  protected static final double DNA_DENSITY                     = 1.35;
 
   /**
    * Density of heteroatoms.
    */
-  protected static final double  HETATM_DENSITY                  = 1.35;
+  protected static final double HETATM_DENSITY                  = 1.35;
 
   /**
    * Atomic mass unit in grams.
    */
-  protected static final double  ATOMIC_MASS_UNIT                = 1.66E-24;
+  protected static final double ATOMIC_MASS_UNIT                = 1.66E-24;
 
   /**
    * Avogadro's number.
    */
-  protected static final double  AVOGADRO_NUM                    = 6.022e+23;
+  protected static final double AVOGADRO_NUM                    = 6.022e+23;
 
   /**
    * Average weight of an amino acid.
    */
-  protected static final double  AMINO_ACID_AVE_MASS             = 110.0;
+  protected static final double AMINO_ACID_AVE_MASS             = 110.0;
 
   /**
    * Average weight of a DNA nucleotide.
    */
-  protected static final double  DNA_NUCLEOTIDE_MASS             = 312.0;
+  protected static final double DNA_NUCLEOTIDE_MASS             = 312.0;
 
   /**
    * Average weight of an RNA nucleotide.
    */
-  protected static final double  RNA_NUCLEOTIDE_MASS             = 321.0;
+  protected static final double RNA_NUCLEOTIDE_MASS             = 321.0;
 
   /**
    * Angstroms to ml conversion.
    */
-  protected static final double  ANGSTROMS_TO_ML                 = 1E-24;
+  protected static final double ANGSTROMS_TO_ML                 = 1E-24;
 
   /**
    * conversion factor to make a number bigger. 1E27.
    */
 
-  protected static final double  MASS_TO_CELL_VOLUME             = 1E27;
+  protected static final double MASS_TO_CELL_VOLUME             = 1E27;
 
   /**
    * Water concentration in mM.
    */
-  protected static final double  WATER_CONCENTRATION             = 55555;
+  protected static final double WATER_CONCENTRATION             = 55555;
 
   /**
    * Units per milli-unit.
    */
-  protected static final long    UNITSPERMILLIUNIT               = 1000L;
+  protected static final long   UNITSPERMILLIUNIT               = 1000L;
 
   /**
    * Units per deci-unit.
    */
 
-  protected static final long    UNITSPERDECIUNIT                = 10L;
+  protected static final long   UNITSPERDECIUNIT                = 10L;
 
   /** hydrogens per amino acid. */
-  protected static final double  HYDROGENS_PER_AMINO_ACID        = 8;
+  protected static final double HYDROGENS_PER_AMINO_ACID        = 8;
   /** carbons per amino acid. */
-  protected static final double  CARBONS_PER_AMINO_ACID          = 5;
+  protected static final double CARBONS_PER_AMINO_ACID          = 5;
   /** nitrogens per amino acid. */
-  protected static final double  NITROGENS_PER_AMINO_ACID        = 1.35;
+  protected static final double NITROGENS_PER_AMINO_ACID        = 1.35;
   /** oxygens per amino acid. */
-  protected static final double  OXYGENS_PER_AMINO_ACID          = 1.5;
+  protected static final double OXYGENS_PER_AMINO_ACID          = 1.5;
 
   /** hydrogens per RNA nucleotide. */
-  protected static final double  HYDROGENS_PER_RNA_NUCLEOTIDE    = 11.25;
+  protected static final double HYDROGENS_PER_RNA_NUCLEOTIDE    = 11.25;
   /** carbons per RNA nucleotide. */
-  protected static final double  CARBONS_PER_RNA_NUCLEOTIDE      = 9.5;
+  protected static final double CARBONS_PER_RNA_NUCLEOTIDE      = 9.5;
   /** nitrogens per RNA nucleotide. */
-  protected static final double  NITROGENS_PER_RNA_NUCLEOTIDE    = 3.75;
+  protected static final double NITROGENS_PER_RNA_NUCLEOTIDE    = 3.75;
   /** oxygens per RNA nucleotide. */
-  protected static final double  OXYGENS_PER_RNA_NUCLEOTIDE      = 7;
+  protected static final double OXYGENS_PER_RNA_NUCLEOTIDE      = 7;
   /** phosphoruses per RNA nucleotide. */
-  protected static final double  PHOSPHORUSES_PER_RNA_NUCLEOTIDE = 1;
+  protected static final double PHOSPHORUSES_PER_RNA_NUCLEOTIDE = 1;
 
   /** hydrogens per DNA nucleotide. */
-  protected static final double  HYDROGENS_PER_DNA_NUCLEOTIDE    = 11.75;
+  protected static final double HYDROGENS_PER_DNA_NUCLEOTIDE    = 11.75;
   /** carbons per DNA nucleotide. */
-  protected static final double  CARBONS_PER_DNA_NUCLEOTIDE      = 9.75;
+  protected static final double CARBONS_PER_DNA_NUCLEOTIDE      = 9.75;
   /** nitrogens per DNA nucleotide. */
-  protected static final double  NITROGENS_PER_DNA_NUCLEOTIDE    = 4;
+  protected static final double NITROGENS_PER_DNA_NUCLEOTIDE    = 4;
   /** oxygens per DNA nucleotide. */
-  protected static final double  OXYGENS_PER_DNA_NUCLEOTIDE      = 6;
+  protected static final double OXYGENS_PER_DNA_NUCLEOTIDE      = 6;
   /** phosphoruses per DNA nucleotide. */
-  protected static final double  PHOSPHORUSES_PER_DNA_NUCLEOTIDE = 1;
+  protected static final double PHOSPHORUSES_PER_DNA_NUCLEOTIDE = 1;
 
   /**
    * Number of amino acids.
    */
-  private double                 numAminoAcids                   = 0;
+  private double                numAminoAcids                   = 0;
 
   /**
    * Number of RNA residues.
    */
-  private double                 numRNA                          = 0;
+  private double                numRNA                          = 0;
 
   /**
    * Number of DNA residues.
    */
-  private double                 numDNA                          = 0;
+  private double                numDNA                          = 0;
 
   /**
    * Number of monomers per unit cell.
    */
-  private int                    numMonomers                     = 1;
+  private int                   numMonomers                     = 1;
 
   /**
    * Parser which is going to look after our atom objects.
    */
-  private MuCalcConstantParser parser;
+  private MuCalcConstantParser  parser;
 
   /**
    * Simple constructor.
@@ -366,60 +366,6 @@ public class CoefCalcCompute extends CoefCalc {
   }
 
   /**
-   * Compute results and put them in local variables absCoeff, attCoeff,
-   * elasCoeff and density.
-   *
-   * @param cellA cell dimension a
-   * @param cellB cell dimension b
-   * @param cellC cell dimension c
-   * @param cellAlpha cell angle alpha
-   * @param cellBeta cell angle beta
-   * @param cellGamma cell angle gamma
-   * @param numMonomers number of monomers
-   * @param numResidues number of amino acids
-   * @param numRNA number of RNA residues
-   * @param numDNA number of DNA residues
-   * @param heavyProteinAtomNames heavy atom protein element symbols
-   * @param heavyProteinAtomNums heavy atom protein occurrences
-   * @param heavySolutionConcNames heavy atom solvent element symbols
-   * @param heavySolutionConcNums heavy atom solvent concentrations in mM.
-   * @param solventFraction solvent fraction
-   */
-  public CoefCalcCompute(final Double cellA, final Double cellB,
-      final Double cellC,
-      final Double cellAlpha, final Double cellBeta, final Double cellGamma,
-      final int numMonomers, final int numResidues, final int numRNA,
-      final int numDNA,
-      final List<String> heavyProteinAtomNames,
-      final List<Double> heavyProteinAtomNums,
-      final List<String> heavySolutionConcNames,
-      final List<Double> heavySolutionConcNums,
-      final Double solventFraction) {
-    parser = new MuCalcConstantParser();
-
-    Double alpha = cellAlpha;
-    Double beta = cellBeta;
-    Double gamma = cellGamma;
-
-    if (alpha == null) {
-      alpha = RIGHT_ANGLE;
-    }
-    if (beta == null) {
-      beta = RIGHT_ANGLE;
-    }
-    if (gamma == null) {
-      gamma = RIGHT_ANGLE;
-    }
-
-    cellVolume(cellA, cellB, cellC, alpha, beta, gamma);
-
-    this.calculateAtomOccurrences(numMonomers, numResidues, numRNA, numDNA,
-        solventFraction, heavyProteinAtomNames, heavyProteinAtomNums,
-        heavySolutionConcNames, heavySolutionConcNums);
-
-  }
-
-  /**
    * Calculating solvent fraction from numbers of amino acids, RNA residues and
    * DNA residues in the unit cell.
    * Also takes into account any hetatms from a PDB entry. These are assumed to
@@ -494,9 +440,8 @@ public class CoefCalcCompute extends CoefCalc {
 
     for (int i = 0; i < parser.getAtomCount(); i++) {
       double conc = parser.getAtoms()[i].getSolventConcentration();
-      double atomCount = conc * (1 / UNITSPERMILLIUNIT) * AVOGADRO_NUM
-          * cellVolume * (1 / MASS_TO_CELL_VOLUME)
-          * solventFraction;
+      double atomCount = conc * AVOGADRO_NUM * cellVolume * solventFraction
+          * 1E-3 * 1E-27;
       parser.getAtoms()[i].incrementSolventOccurrence(atomCount);
 
       nonWaterAtoms += atomCount;
@@ -538,123 +483,6 @@ public class CoefCalcCompute extends CoefCalc {
       heavyAtom.setSolventConcentration(heavySolvConcNums.get(i)
           + heavyAtom.getSolventConcentration());
     }
-  }
-
-  /**
-   * Calculate the macromolecular mass (etc.) and add the appropriate numbers of
-   * atom occurrences to the parser's atom array.
-   * 
-   * @param monomers number of monomers
-   * @param numResidues number of amino acid residues
-   * @param numRNAresidues number of RNA residues
-   * @param numDNAresidues number of DNA residues
-   * @param solventFraction solvent fraction
-   * @param heavyProteinAtomNames heavy atom protein element symbols
-   * @param heavyProteinAtomNums heavy atom protein occurrences
-   * @param heavySolvConcNames heavy atom solvent element symbols
-   * @param heavySolvConcNums heavy atom solvent concentrations in mM.
-   */
-  public void calculateAtomOccurrences(final int monomers,
-      final int numResidues,
-      final int numRNAresidues, final int numDNAresidues,
-      final double solventFraction,
-      final List<String> heavyProteinAtomNames,
-      final List<Double> heavyProteinAtomNums,
-      final List<String> heavySolvConcNames,
-      final List<Double> heavySolvConcNums) {
-
-    // Start by dealing with heavy atom in the
-    // protein and adding these to the unit cell.
-
-    for (int i = 0; i < heavyProteinAtomNames.size(); i++) {
-      Atom heavyAtom = parser.findAtomWithName(heavyProteinAtomNames.get(i));
-
-      // note: heavy atoms are provided per monomer,
-      // so multiply by number of monomers.
-      heavyAtom.incrementMacromolecularOccurrence(heavyProteinAtomNums.get(i)
-          * monomers);
-    }
-
-    // Combine concentrations of heavy atoms in the
-    // solvent and add these to the unit cell.
-
-    addSolventConcentrations(heavySolvConcNames, heavySolvConcNums);
-
-    this.numAminoAcids = numResidues;
-    this.numRNA = numRNAresidues;
-    this.numDNA = numDNAresidues;
-
-    // If the solvent fraction has not been specified.
-    double newSolventFraction = solventFraction;
-
-    if (solventFraction <= 0) {
-      newSolventFraction = calculateSolventFractionFromNums();
-    }
-
-    calculateSolventWater(newSolventFraction);
-
-    // Atom preparation...
-
-    Atom hydrogen = parser.findAtomWithName("H");
-    Atom oxygen = parser.findAtomWithName("O");
-    Atom carbon = parser.findAtomWithName("C");
-    Atom nitrogen = parser.findAtomWithName("N");
-    Atom phosphorus = parser.findAtomWithName("P");
-
-    // Protein atoms: for every amino acid
-    // add 5C + 1.35 N + 1.5 O + 8H
-
-    carbon.incrementMacromolecularOccurrence(CARBONS_PER_AMINO_ACID
-        * numResidues
-        * numMonomers);
-    nitrogen.incrementMacromolecularOccurrence(NITROGENS_PER_AMINO_ACID
-        * numResidues
-        * numMonomers);
-    oxygen.incrementMacromolecularOccurrence(OXYGENS_PER_AMINO_ACID
-        * numResidues
-        * numMonomers);
-    hydrogen.incrementMacromolecularOccurrence(HYDROGENS_PER_AMINO_ACID
-        * numResidues
-        * numMonomers);
-
-    // RNA atoms: for every NTP
-    // add 11.25 H + 9.5 C + 3.75 N + 7 O + 1 P.
-
-    carbon.incrementMacromolecularOccurrence(CARBONS_PER_RNA_NUCLEOTIDE
-        * numRNA
-        * numMonomers);
-    nitrogen.incrementMacromolecularOccurrence(NITROGENS_PER_RNA_NUCLEOTIDE
-        * numRNA
-        * numMonomers);
-    oxygen.incrementMacromolecularOccurrence(OXYGENS_PER_RNA_NUCLEOTIDE
-        * numRNA
-        * numMonomers);
-    hydrogen.incrementMacromolecularOccurrence(HYDROGENS_PER_RNA_NUCLEOTIDE
-        * numRNA
-        * numMonomers);
-    phosphorus
-        .incrementMacromolecularOccurrence(PHOSPHORUSES_PER_RNA_NUCLEOTIDE
-            * numRNA * numMonomers);
-
-    // DNA atoms: for every NTP
-    // add 11.75 H + 9.75 C + 4 N + 6 O + 1 P.
-
-    carbon.incrementMacromolecularOccurrence(CARBONS_PER_DNA_NUCLEOTIDE
-        * numRNA
-        * numMonomers);
-    nitrogen.incrementMacromolecularOccurrence(NITROGENS_PER_DNA_NUCLEOTIDE
-        * numRNA
-        * numMonomers);
-    oxygen.incrementMacromolecularOccurrence(OXYGENS_PER_DNA_NUCLEOTIDE
-        * numRNA
-        * numMonomers);
-    hydrogen.incrementMacromolecularOccurrence(HYDROGENS_PER_DNA_NUCLEOTIDE
-        * numRNA
-        * numMonomers);
-    phosphorus
-        .incrementMacromolecularOccurrence(PHOSPHORUSES_PER_DNA_NUCLEOTIDE
-            * numRNA * numMonomers);
-
   }
 
   /**

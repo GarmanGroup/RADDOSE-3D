@@ -79,7 +79,7 @@ if ($crystal::crystalCoefCalc == 1) {
 }
 if ($crystal::crystalCoefCalc == 2)
 {
-  $crystal::crystalCoefCalcClass = new CoefCalcCompute($crystal::cellA, $crystal::cellB, $crystal::cellC, $crystal::cellAl, $crystal::cellBe, $crystal::cellGa,
+  $crystal::crystalCoefCalcClass = new CoefCalcFromParams($crystal::cellA, $crystal::cellB, $crystal::cellC, $crystal::cellAl, $crystal::cellBe, $crystal::cellGa,
   													$crystal::numMon, $crystal::numRes, $crystal::numRNA, $crystal::numDNA,
   													$crystal::heavyProteinAtomNames, $crystal::heavyProteinAtomNums,
   													$crystal::heavySolutionConcNames, $crystal::heavySolutionConcNums,
