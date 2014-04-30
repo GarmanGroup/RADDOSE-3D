@@ -12,34 +12,34 @@ public class MuCalcConstantParser {
     /**
      * Element name.
      */
-    private String               elementName;
+    private String              elementName;
     /**
      * Atomic number.
      */
-    private int                  atomicNumber;
+    private int                 atomicNumber;
 
     /**
      * Absorption edge K, L, M in Angstroms.
      */
     private double              absorptionEdgeK, absorptionEdgeL,
-    absorptionEdgeM;
+                                absorptionEdgeM;
 
     /**
      * Array (of four) for K, L, M, N edges.
      */
     private double[]            absorptionEdgeKCoeff, absorptionEdgeLCoeff,
-    absorptionEdgeMCoeff, absorptionEdgeNCoeff;
+                                absorptionEdgeMCoeff, absorptionEdgeNCoeff;
 
     /**
      * Atomic weight.
      */
-    private double               atomicWeight;
+    private double              atomicWeight;
 
     /**
      * Array of four for coherent and incoherent scattering.
      */
     private double[]            coherentScatteringCoeff,
-    incoherentScatteringCoeff;
+                                incoherentScatteringCoeff;
 
     /**
      * L2 and L3 variables.
@@ -49,49 +49,54 @@ public class MuCalcConstantParser {
     /**
      * Atomic mass unit in grams.
      */
-    private static final double ATOMIC_MASS_UNIT     = 1.66E-24;
+    private static final double ATOMIC_MASS_UNIT          = 1.66E-24;
     /**
      * LJ_1 variable from Fortran, used to correct atomic elements < 29 Z.
      */
-    private static final double LJ_1                 = 1.160;
+    private static final double LJ_1                      = 1.160;
     /**
      * LJ_2 variable from Fortran, used to correct atomic elements < 29 Z.
      */
-    private static final double LJ_2                 = 1.41;
+    private static final double LJ_2                      = 1.41;
+
+    /** Light atom/heavy atom threshold. */
+    private static final int    LIGHT_ATOM_MAX_NUM        = 29;
+    /** Absorption edge room for error. */
+    private static final double ABSORPTION_EDGE_TOLERANCE = 0.001;
 
     /**
      * Number of expansions of the polynomial.
      */
-    private static final int    POLYNOMIAL_EXPANSION = 4;
+    private static final int    POLYNOMIAL_EXPANSION      = 4;
 
     /**
      * Occurrences - number of times this atom is found in the protein.
      */
-    private double               macromolecularOccurrence;
+    private double              macromolecularOccurrence;
 
     /**
      * Hetatms - number of times this atom is found in the protein, should also
      * be included in macromolecular occurrence.
      */
-    private double               hetatmOccurrence     = 0;
+    private double              hetatmOccurrence          = 0;
 
     /**
      * Concentration of this atom in the solvent.
      */
-    private double               solventConcentration;
+    private double              solventConcentration;
 
     /**
      * Number of atoms of this type in the solvent,
      * calculated from solvent concentration.
      */
-    private double               solventOccurrence;
+    private double              solventOccurrence;
 
     /**
      * calculated cross-sections.
      */
 
-    private double               photoelectricCrossSection, totalCrossSection,
-    coherentCrossSection;
+    private double              photoelectricCrossSection, totalCrossSection,
+                                coherentCrossSection;
 
     /**
      * Create new atom with element name & atomic number.
@@ -233,7 +238,8 @@ public class MuCalcConstantParser {
      * @param coh2 coh2
      * @param coh3 coh3
      */
-    public void setCoherentScatteringCoeffs(final double coh0, final double coh1,
+    public void setCoherentScatteringCoeffs(final double coh0,
+        final double coh1,
         final double coh2, final double coh3) {
       this.coherentScatteringCoeff = new double[POLYNOMIAL_EXPANSION];
 
@@ -281,7 +287,8 @@ public class MuCalcConstantParser {
      * @return total atoms in unit cell
      */
     public double totalAtoms() {
-      double totalAtoms = this.solventOccurrence + this.macromolecularOccurrence;
+      double totalAtoms = this.solventOccurrence
+          + this.macromolecularOccurrence;
 
       return totalAtoms;
     }
@@ -322,7 +329,7 @@ public class MuCalcConstantParser {
           return this.incoherentScatteringCoeff[num];
         default:
           System.out
-          .println("ERROR: Something's gone horribly wrong in the code");
+              .println("ERROR: Something's gone horribly wrong in the code");
           return -1;
       }
     }
@@ -356,48 +363,50 @@ public class MuCalcConstantParser {
     }
 
     /**
-     * energy is between two edges; this function finds the corresponding edge and
+     * energy is between two edges; this function finds the corresponding edge
+     * and
      * calculates bax for this edge. Corrects bax if atomic number is below 29,
      * and then uses this to calculate the cross-sections.
      * 
-     * @param energy
+     * @param energy wavelength in Angstroms
      */
     public void calculateMu(final double energy) {
-      if (energy < absorptionEdgeK && energy > absorptionEdgeK - 0.001) {
+      if (energy < absorptionEdgeK && energy > absorptionEdgeK - ABSORPTION_EDGE_TOLERANCE) {
         System.out
-        .println("Warning: using an energy close to middle of K edge of "
-            + elementName);
+            .println("Warning: using an energy close to middle of K edge of "
+                + elementName);
         return;
       }
-      if (energy < absorptionEdgeL && energy > absorptionEdgeL - 0.001) {
+      if (energy < absorptionEdgeL && energy > absorptionEdgeL - ABSORPTION_EDGE_TOLERANCE) {
         System.out
-        .println("Warning: using an energy close to middle of L edge of "
-            + elementName);
+            .println("Warning: using an energy close to middle of L edge of "
+                + elementName);
         return;
       }
-      if (energy < absorptionEdgeM && energy > absorptionEdgeM - 0.001) {
+      if (energy < absorptionEdgeM && energy > absorptionEdgeM - ABSORPTION_EDGE_TOLERANCE) {
         System.out
-        .println("Warning: using an energy close to middle of M edge of "
-            + elementName);
+            .println("Warning: using an energy close to middle of M edge of "
+                + elementName);
         return;
       }
 
       double bax = 0;
 
-      if (energy > absorptionEdgeK)
+      if (energy > absorptionEdgeK) {
         bax = baxForEdge(energy, "K");
-      else if (energy < absorptionEdgeK && energy > absorptionEdgeL)
+      } else if (energy < absorptionEdgeK && energy > absorptionEdgeL) {
         bax = baxForEdge(energy, "L");
-      else if (energy < absorptionEdgeL && energy > absorptionEdgeM)
+      } else if (energy < absorptionEdgeL && energy > absorptionEdgeM) {
         bax = baxForEdge(energy, "M");
-      else if (energy < absorptionEdgeM)
+      } else if (energy < absorptionEdgeM) {
         bax = baxForEdge(energy, "N");
-
+      }
+      
       // Fortran says...
       // correct for L-edges since McMaster uses L1 edge.
       // Use edge jumps for correct X-sections.
 
-      if (atomicNumber <= 29) {
+      if (atomicNumber <= LIGHT_ATOM_MAX_NUM) {
         if (energy > this.l3 && energy < this.l2) {
           bax /= (LJ_1 * LJ_2);
         }
@@ -410,11 +419,13 @@ public class MuCalcConstantParser {
       double bcox = 0;
       double binx = 0;
 
-      if (!(this.coherentScatteringCoeff[0] == -1 || this.coherentScatteringCoeff[0] == 0)) {
+      if (!(this.coherentScatteringCoeff[0] == -1
+      || this.coherentScatteringCoeff[0] == 0)) {
         bcox = baxForEdge(energy, "C");
       }
 
-      if (!(this.coherentScatteringCoeff[0] == -1 || this.coherentScatteringCoeff[0] == 0)) {
+      if (!(this.coherentScatteringCoeff[0] == -1
+      || this.coherentScatteringCoeff[0] == 0)) {
         binx = baxForEdge(energy, "I");
       }
 
@@ -424,7 +435,7 @@ public class MuCalcConstantParser {
       totalCrossSection = btox; // attenuation
       coherentCrossSection = bcox; // elastic
     }
-    
+
     /**
      * @return the elementName
      */
@@ -433,10 +444,10 @@ public class MuCalcConstantParser {
     }
 
     /**
-     * @param elementName the elementName to set
+     * @param _elementName the elementName to set
      */
-    public void setElementName(String elementName) {
-      this.elementName = elementName;
+    public void setElementName(String _elementName) {
+      this.elementName = _elementName;
     }
 
     /**
@@ -447,10 +458,10 @@ public class MuCalcConstantParser {
     }
 
     /**
-     * @param atomicNumber the atomicNumber to set
+     * @param _atomicNumber the atomicNumber to set
      */
-    public void setAtomicNumber(int atomicNumber) {
-      this.atomicNumber = atomicNumber;
+    public void setAtomicNumber(int _atomicNumber) {
+      this.atomicNumber = _atomicNumber;
     }
 
     /**
@@ -461,10 +472,10 @@ public class MuCalcConstantParser {
     }
 
     /**
-     * @param absorptionEdgeK the absorptionEdgeK to set
+     * @param _absorptionEdgeK the absorptionEdgeK to set
      */
-    public void setAbsorptionEdgeK(double absorptionEdgeK) {
-      this.absorptionEdgeK = absorptionEdgeK;
+    public void setAbsorptionEdgeK(double _absorptionEdgeK) {
+      this.absorptionEdgeK = _absorptionEdgeK;
     }
 
     /**
@@ -475,10 +486,10 @@ public class MuCalcConstantParser {
     }
 
     /**
-     * @param absorptionEdgeL the absorptionEdgeL to set
+     * @param _absorptionEdgeL the absorptionEdgeL to set
      */
-    public void setAbsorptionEdgeL(double absorptionEdgeL) {
-      this.absorptionEdgeL = absorptionEdgeL;
+    public void setAbsorptionEdgeL(double _absorptionEdgeL) {
+      this.absorptionEdgeL = _absorptionEdgeL;
     }
 
     /**
@@ -489,10 +500,10 @@ public class MuCalcConstantParser {
     }
 
     /**
-     * @param absorptionEdgeM the absorptionEdgeM to set
+     * @param _absorptionEdgeM the absorptionEdgeM to set
      */
-    public void setAbsorptionEdgeM(double absorptionEdgeM) {
-      this.absorptionEdgeM = absorptionEdgeM;
+    public void setAbsorptionEdgeM(double _absorptionEdgeM) {
+      this.absorptionEdgeM = _absorptionEdgeM;
     }
 
     /**
@@ -503,10 +514,10 @@ public class MuCalcConstantParser {
     }
 
     /**
-     * @param absorptionEdgeKCoeff the absorptionEdgeKCoeff to set
+     * @param _absorptionEdgeKCoeff the absorptionEdgeKCoeff to set
      */
-    public void setAbsorptionEdgeKCoeff(double[] absorptionEdgeKCoeff) {
-      this.absorptionEdgeKCoeff = absorptionEdgeKCoeff;
+    public void setAbsorptionEdgeKCoeff(double[] _absorptionEdgeKCoeff) {
+      this.absorptionEdgeKCoeff = _absorptionEdgeKCoeff;
     }
 
     /**
@@ -517,10 +528,10 @@ public class MuCalcConstantParser {
     }
 
     /**
-     * @param absorptionEdgeLCoeff the absorptionEdgeLCoeff to set
+     * @param _absorptionEdgeLCoeff the absorptionEdgeLCoeff to set
      */
-    public void setAbsorptionEdgeLCoeff(double[] absorptionEdgeLCoeff) {
-      this.absorptionEdgeLCoeff = absorptionEdgeLCoeff;
+    public void setAbsorptionEdgeLCoeff(double[] _absorptionEdgeLCoeff) {
+      this.absorptionEdgeLCoeff = _absorptionEdgeLCoeff;
     }
 
     /**
@@ -531,10 +542,10 @@ public class MuCalcConstantParser {
     }
 
     /**
-     * @param absorptionEdgeMCoeff the absorptionEdgeMCoeff to set
+     * @param _absorptionEdgeMCoeff the absorptionEdgeMCoeff to set
      */
-    public void setAbsorptionEdgeMCoeff(double[] absorptionEdgeMCoeff) {
-      this.absorptionEdgeMCoeff = absorptionEdgeMCoeff;
+    public void setAbsorptionEdgeMCoeff(double[] _absorptionEdgeMCoeff) {
+      this.absorptionEdgeMCoeff = _absorptionEdgeMCoeff;
     }
 
     /**
@@ -545,10 +556,10 @@ public class MuCalcConstantParser {
     }
 
     /**
-     * @param absorptionEdgeNCoeff the absorptionEdgeNCoeff to set
+     * @param _absorptionEdgeNCoeff the absorptionEdgeNCoeff to set
      */
-    public void setAbsorptionEdgeNCoeff(double[] absorptionEdgeNCoeff) {
-      this.absorptionEdgeNCoeff = absorptionEdgeNCoeff;
+    public void setAbsorptionEdgeNCoeff(double[] _absorptionEdgeNCoeff) {
+      this.absorptionEdgeNCoeff = _absorptionEdgeNCoeff;
     }
 
     /**
@@ -559,10 +570,10 @@ public class MuCalcConstantParser {
     }
 
     /**
-     * @param atomicWeight the atomicWeight to set
+     * @param _atomicWeight the atomicWeight to set
      */
-    public void setAtomicWeight(double atomicWeight) {
-      this.atomicWeight = atomicWeight;
+    public void setAtomicWeight(double _atomicWeight) {
+      this.atomicWeight = _atomicWeight;
     }
 
     /**
@@ -573,10 +584,10 @@ public class MuCalcConstantParser {
     }
 
     /**
-     * @param coherentScatteringCoeff the coherentScatteringCoeff to set
+     * @param _coherentScatteringCoeff the coherentScatteringCoeff to set
      */
-    public void setCoherentScatteringCoeff(double[] coherentScatteringCoeff) {
-      this.coherentScatteringCoeff = coherentScatteringCoeff;
+    public void setCoherentScatteringCoeff(double[] _coherentScatteringCoeff) {
+      this.coherentScatteringCoeff = _coherentScatteringCoeff;
     }
 
     /**
@@ -587,10 +598,10 @@ public class MuCalcConstantParser {
     }
 
     /**
-     * @param incoherentScatteringCoeff the incoherentScatteringCoeff to set
+     * @param _incoherentScatteringCoeff the incoherentScatteringCoeff to set
      */
-    public void setIncoherentScatteringCoeff(double[] incoherentScatteringCoeff) {
-      this.incoherentScatteringCoeff = incoherentScatteringCoeff;
+    public void setIncoherentScatteringCoeff(double[] _incoherentScatteringCoeff) {
+      this.incoherentScatteringCoeff = _incoherentScatteringCoeff;
     }
 
     /**
@@ -601,10 +612,10 @@ public class MuCalcConstantParser {
     }
 
     /**
-     * @param l2 the l2 to set
+     * @param _l2 the l2 to set
      */
-    public void setL2(double l2) {
-      this.l2 = l2;
+    public void setL2(double _l2) {
+      this.l2 = _l2;
     }
 
     /**
@@ -615,10 +626,10 @@ public class MuCalcConstantParser {
     }
 
     /**
-     * @param l3 the l3 to set
+     * @param _l3 the l3 to set
      */
-    public void setL3(double l3) {
-      this.l3 = l3;
+    public void setL3(double _l3) {
+      this.l3 = _l3;
     }
 
     /**
@@ -629,12 +640,12 @@ public class MuCalcConstantParser {
     }
 
     /**
-     * @param macromolecularOccurrence the macromolecularOccurrence to set
+     * @param _macromolecularOccurrence the macromolecularOccurrence to set
      */
-    public void setMacromolecularOccurrence(double macromolecularOccurrence) {
-      this.macromolecularOccurrence = macromolecularOccurrence;
+    public void setMacromolecularOccurrence(double _macromolecularOccurrence) {
+      this.macromolecularOccurrence = _macromolecularOccurrence;
     }
-    
+
     /**
      * @param increment the macromolecularOccurrence increment
      */
@@ -650,10 +661,10 @@ public class MuCalcConstantParser {
     }
 
     /**
-     * @param hetatmOccurrence the hetatmOccurrence to set
+     * @param _hetatmOccurrence the hetatmOccurrence to set
      */
-    public void setHetatmOccurrence(double hetatmOccurrence) {
-      this.hetatmOccurrence = hetatmOccurrence;
+    public void setHetatmOccurrence(double _hetatmOccurrence) {
+      this.hetatmOccurrence = _hetatmOccurrence;
     }
 
     /**
@@ -664,19 +675,19 @@ public class MuCalcConstantParser {
     }
 
     /**
-     * @param solventConcentration the solventConcentration to set
+     * @param _solventConcentration the solventConcentration to set
      */
-    public void setSolventConcentration(double solventConcentration) {
-      this.solventConcentration = solventConcentration;
+    public void setSolventConcentration(double _solventConcentration) {
+      this.solventConcentration = _solventConcentration;
     }
 
     /**
      * @param increment the solventConcentration to increment
-     */  
+     */
     public void incrementSolventConcentration(double increment) {
       this.solventConcentration += increment;
     }
-    
+
     /**
      * @return the solventOccurrence
      */
@@ -685,19 +696,19 @@ public class MuCalcConstantParser {
     }
 
     /**
-     * @param solventOccurrence the solventOccurrence to set
+     * @param _solventOccurrence the solventOccurrence to set
      */
-    public void setSolventOccurrence(double solventOccurrence) {
-      this.solventOccurrence = solventOccurrence;
+    public void setSolventOccurrence(double _solventOccurrence) {
+      this.solventOccurrence = _solventOccurrence;
     }
 
     /**
      * @param increment the solventOccurrence to increment
-     */  
+     */
     public void incrementSolventOccurrence(double increment) {
       this.solventOccurrence += increment;
     }
-    
+
     /**
      * @return the photoelectricCrossSection
      */
@@ -706,10 +717,10 @@ public class MuCalcConstantParser {
     }
 
     /**
-     * @param photoelectricCrossSection the photoelectricCrossSection to set
+     * @param _photoelectricCrossSection the photoelectricCrossSection to set
      */
-    public void setPhotoelectricCrossSection(double photoelectricCrossSection) {
-      this.photoelectricCrossSection = photoelectricCrossSection;
+    public void setPhotoelectricCrossSection(double _photoelectricCrossSection) {
+      this.photoelectricCrossSection = _photoelectricCrossSection;
     }
 
     /**
@@ -720,10 +731,10 @@ public class MuCalcConstantParser {
     }
 
     /**
-     * @param totalCrossSection the totalCrossSection to set
+     * @param _totalCrossSection the totalCrossSection to set
      */
-    public void setTotalCrossSection(double totalCrossSection) {
-      this.totalCrossSection = totalCrossSection;
+    public void setTotalCrossSection(double _totalCrossSection) {
+      this.totalCrossSection = _totalCrossSection;
     }
 
     /**
@@ -734,17 +745,19 @@ public class MuCalcConstantParser {
     }
 
     /**
-     * @param coherentCrossSection the coherentCrossSection to set
+     * @param _coherentCrossSection the coherentCrossSection to set
      */
-    public void setCoherentCrossSection(double coherentCrossSection) {
-      this.coherentCrossSection = coherentCrossSection;
+    public void setCoherentCrossSection(double _coherentCrossSection) {
+      this.coherentCrossSection = _coherentCrossSection;
     }
   }
+
   /**
    * Location of MuCalcConstants library.
    */
 
-  protected static final String MUCALC_FILE        = "constants/MuCalcConstants.txt";
+  protected static final String MUCALC_FILE 
+                        = "constants/MuCalcConstants.txt";
 
   /**
    * Array of Atom objects containing all elements listed in Constants file.
@@ -920,8 +933,7 @@ public class MuCalcConstantParser {
     int i = 0;
     int totalLines = 0;
     try {
-      while ((line = br.readLine()) != null)
-      {
+      while ((line = br.readLine()) != null) {
         totalLines++;
         // ignore commented out lines.
         if (Character.toString(line.charAt(0)).equals("#")) {
@@ -984,8 +996,7 @@ public class MuCalcConstantParser {
               Double.parseDouble(components[INCOHERENT_COEFF_3]));
           atoms[i].setLs(Double.parseDouble(components[L2]),
               Double.parseDouble(components[L3]));
-        } catch (NumberFormatException e)
-        {
+        } catch (NumberFormatException e) {
           System.out.println("Could not parse line " + totalLines);
           e.printStackTrace();
         }
@@ -1023,29 +1034,28 @@ public class MuCalcConstantParser {
    * @param z atomic number
    * @return associated Atom object
    */
-  public Atom findAtomWithZ(double z) {
+  public Atom findAtomWithZ(final double z) {
     int lower = 0;
     int higher = atomCount - 1;
     int newBound = (higher + lower) / 2;
 
     if (z < atoms[lower].atomicNumber || z > atoms[higher].atomicNumber) {
       System.out
-      .println("Warning: Atomic number asked for which is out of range.");
+          .println("Warning: Atomic number asked for which is out of range.");
       return null;
     }
 
     while (atoms[newBound].atomicNumber != z) {
       if (higher == lower + 1) {
         System.out
-        .println("Warning: Atomic number within range but"
-            + "no data available for particular Z.");
+            .println("Warning: Atomic number within range but"
+                + "no data available for particular Z.");
         return null;
       }
 
       if (atoms[newBound].atomicNumber > z) {
         higher = newBound;
-      }
-      else if (atoms[newBound].atomicNumber < z) {
+      } else if (atoms[newBound].atomicNumber < z) {
         lower = newBound;
       }
 
@@ -1063,10 +1073,11 @@ public class MuCalcConstantParser {
    * @param atomName element name
    * @return Atom object
    */
-  public Atom findAtomWithName(String atomName) {
+  public Atom findAtomWithName(final String atomName) {
     for (int i = 0; i < atoms.length; i++) {
-      if (atoms[i].elementName.equals(atomName.toUpperCase()))
+      if (atoms[i].elementName.equals(atomName.toUpperCase())) {
         return atoms[i];
+      }
     }
 
     System.out.println("Warning: Atom with name " + atomName
