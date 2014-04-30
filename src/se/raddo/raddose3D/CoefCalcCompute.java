@@ -2,6 +2,8 @@ package se.raddo.raddose3D;
 
 import java.util.List;
 
+import se.raddo.raddose3D.MuCalcConstantParser.Atom;
+
 /**
  * @author Helen Ginn
  */
@@ -43,12 +45,12 @@ public class CoefCalcCompute extends CoefCalc {
   /**
    * RNA density in g/ml.
    */
-  protected static final double  RNA_DENSITY                     = 2.0;
+  protected static final double  RNA_DENSITY                     = 1.3;
 
   /**
    * DNA density in g/ml.
    */
-  protected static final double  DNA_DENSITY                     = 2.0;
+  protected static final double  DNA_DENSITY                     = 1.35;
 
   /**
    * Density of heteroatoms.
@@ -343,7 +345,11 @@ public class CoefCalcCompute extends CoefCalc {
 
     double hetatmMass = 0;
 
-    for (int i = 0; i < parser.atomCount; i++) {
+    // we only care about low atomic weight atoms for hetatms
+    // otherwise heavy atoms would make a very large impact
+    // on reduction of solvent accessible space.
+    
+    for (int i = 0; i < 20; i++) {
       hetatmMass += ATOMIC_MASS_UNIT * parser.atoms[i].hetatmOccurrence
           * parser.atoms[i].atomicWeight;
     }
