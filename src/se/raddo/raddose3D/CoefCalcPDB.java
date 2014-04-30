@@ -636,7 +636,7 @@ public class CoefCalcPDB extends CoefCalcCompute {
     double occupancyNum = this.checkOccupancyAndElementName(occupancy,
         elementSymbol, inputLine);
 
-    Atom proteinAtom = parser.findAtomWithName(elementSymbol);
+    Atom proteinAtom = this.getParser().findAtomWithName(elementSymbol);
     proteinAtom.setMacromolecularOccurrence(proteinAtom
         .getMacromolecularOccurrence() + occupancyNum);
     proteinAtom.setHetatmOccurrence(proteinAtom.getHetatmOccurrence()
@@ -681,12 +681,12 @@ public class CoefCalcPDB extends CoefCalcCompute {
         this.incrementNumDNA(1);
       }
 
-      Atom hydrogen = parser.findAtomWithName("H");
-      Atom oxygen = parser.findAtomWithName("O");
-      Atom carbon = parser.findAtomWithName("C");
-      Atom nitrogen = parser.findAtomWithName("N");
-      Atom phosphorus = parser.findAtomWithName("P");
-      Atom sulphurs = parser.findAtomWithName("S");
+      Atom hydrogen = this.getParser().findAtomWithName("H");
+      Atom oxygen = this.getParser().findAtomWithName("O");
+      Atom carbon = this.getParser().findAtomWithName("C");
+      Atom nitrogen = this.getParser().findAtomWithName("N");
+      Atom phosphorus = this.getParser().findAtomWithName("P");
+      Atom sulphurs = this.getParser().findAtomWithName("S");
 
       hydrogen.setMacromolecularOccurrence(residue.hydrogens
           + hydrogen.getMacromolecularOccurrence());
@@ -746,10 +746,10 @@ public class CoefCalcPDB extends CoefCalcCompute {
    * @param num number of molecules in unit cell
    */
   public void multiplyAtoms(final int num) {
-    for (int i = 0; i < parser.getAtomCount(); i++) {
-      parser.getAtoms()[i].setMacromolecularOccurrence(parser.getAtoms()[i]
+    for (int i = 0; i < this.getParser().getAtomCount(); i++) {
+      this.getParser().getAtoms()[i].setMacromolecularOccurrence(this.getParser().getAtoms()[i]
           .getMacromolecularOccurrence() * num);
-      parser.getAtoms()[i].setHetatmOccurrence(parser.getAtoms()[i]
+      this.getParser().getAtoms()[i].setHetatmOccurrence(this.getParser().getAtoms()[i]
           .getHetatmOccurrence()
           * num);
     }
@@ -770,7 +770,7 @@ public class CoefCalcPDB extends CoefCalcCompute {
     hydrogens += this.getNumRNA() * HYDROGENS_PER_RNA_NUCLEOTIDE;
     hydrogens += this.getNumDNA() * HYDROGENS_PER_DNA_NUCLEOTIDE;
 
-    parser.findAtomWithZ(1).setMacromolecularOccurrence(hydrogens);
+    this.getParser().findAtomWithZ(1).setMacromolecularOccurrence(hydrogens);
   }
 
   /**
@@ -840,7 +840,7 @@ public class CoefCalcPDB extends CoefCalcCompute {
 
   public CoefCalcPDB(final String pdbCode) {
     String pdbName = pdbCode.toUpperCase();
-    parser = new MuCalcConstantParser();
+    this.setParser(new MuCalcConstantParser());
 
     Residue.createResidueArray();
 
@@ -866,7 +866,7 @@ public class CoefCalcPDB extends CoefCalcCompute {
       final List<String> heavySolvConcNames,
       final List<Double> heavySolvConcNums) {
     String pdbNameUpperCase = pdbName.toUpperCase();
-    parser = new MuCalcConstantParser();
+    this.setParser(new MuCalcConstantParser());
 
     Residue.createResidueArray();
 

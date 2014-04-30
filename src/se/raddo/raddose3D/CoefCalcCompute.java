@@ -2,6 +2,7 @@ package se.raddo.raddose3D;
 
 import java.util.List;
 import static java.lang.Math.PI;
+import static se.raddo.raddose3D.MuCalcConstantParser.Atom.LIGHT_ATOM_MAX_NUM;
 
 import se.raddo.raddose3D.MuCalcConstantParser.Atom;
 
@@ -158,7 +159,7 @@ public class CoefCalcCompute extends CoefCalc {
   /**
    * Parser which is going to look after our atom objects.
    */
-  protected MuCalcConstantParser parser;
+  private MuCalcConstantParser parser;
 
   /**
    * Simple constructor.
@@ -265,14 +266,14 @@ public class CoefCalcCompute extends CoefCalc {
   /**
    * @param newnumAminoAcids the numAminoAcids to set
    */
-  protected void setNumAminoAcids(double newnumAminoAcids) {
+  protected void setNumAminoAcids(final double newnumAminoAcids) {
     this.numAminoAcids = newnumAminoAcids;
   }
 
   /**
    * @param increment the numAminoAcids to increment
    */
-  protected void incrementNumAminoAcids(double increment) {
+  protected void incrementNumAminoAcids(final double increment) {
     this.numAminoAcids += increment;
   }
 
@@ -286,14 +287,14 @@ public class CoefCalcCompute extends CoefCalc {
   /**
    * @param newnumRNA the numRNA to set
    */
-  protected void setNumRNA(double newnumRNA) {
+  protected void setNumRNA(final double newnumRNA) {
     this.numRNA = newnumRNA;
   }
 
   /**
    * @param increment the NumRNA to increment
    */
-  protected void incrementNumRNA(double increment) {
+  protected void incrementNumRNA(final double increment) {
     this.numRNA += increment;
   }
 
@@ -307,14 +308,14 @@ public class CoefCalcCompute extends CoefCalc {
   /**
    * @param newnumDNA the numDNA to set
    */
-  protected void setNumDNA(double newnumDNA) {
+  protected void setNumDNA(final double newnumDNA) {
     this.numDNA = newnumDNA;
   }
 
   /**
    * @param increment the numDNA to increment
    */
-  protected void incrementNumDNA(double increment) {
+  protected void incrementNumDNA(final double increment) {
     this.numDNA += increment;
   }
 
@@ -328,7 +329,7 @@ public class CoefCalcCompute extends CoefCalc {
   /**
    * @param newnumMonomers the numMonomers to set
    */
-  protected void setNumMonomers(int newnumMonomers) {
+  protected void setNumMonomers(final int newnumMonomers) {
     this.numMonomers = newnumMonomers;
   }
 
@@ -342,7 +343,7 @@ public class CoefCalcCompute extends CoefCalc {
   /**
    * @param newparser the parser to set
    */
-  protected void setParser(MuCalcConstantParser newparser) {
+  protected void setParser(final MuCalcConstantParser newparser) {
     this.parser = newparser;
   }
 
@@ -367,6 +368,22 @@ public class CoefCalcCompute extends CoefCalc {
   /**
    * Compute results and put them in local variables absCoeff, attCoeff,
    * elasCoeff and density.
+   *
+   * @param cellA cell dimension a
+   * @param cellB cell dimension b
+   * @param cellC cell dimension c
+   * @param cellAlpha cell angle alpha
+   * @param cellBeta cell angle beta
+   * @param cellGamma cell angle gamma
+   * @param numMonomers number of monomers
+   * @param numResidues number of amino acids
+   * @param numRNA number of RNA residues
+   * @param numDNA number of DNA residues
+   * @param heavyProteinAtomNames heavy atom protein element symbols
+   * @param heavyProteinAtomNums heavy atom protein occurrences
+   * @param heavySolutionConcNames heavy atom solvent element symbols
+   * @param heavySolutionConcNums heavy atom solvent concentrations in mM.
+   * @param solventFraction solvent fraction
    */
   public CoefCalcCompute(final Double cellA, final Double cellB,
       final Double cellC,
@@ -436,7 +453,7 @@ public class CoefCalcCompute extends CoefCalc {
     // otherwise heavy atoms would make a very large impact
     // on reduction of solvent accessible space.
 
-    for (int i = 0; i < 20; i++) {
+    for (int i = 0; i < LIGHT_ATOM_MAX_NUM; i++) {
       hetatmMass += ATOMIC_MASS_UNIT
           * parser.getAtoms()[i].getHetatmOccurrence()
           * parser.getAtoms()[i].getAtomicWeight();
@@ -527,7 +544,7 @@ public class CoefCalcCompute extends CoefCalc {
    * Calculate the macromolecular mass (etc.) and add the appropriate numbers of
    * atom occurrences to the parser's atom array.
    * 
-   * @param numMonomers number of monomers
+   * @param monomers number of monomers
    * @param numResidues number of amino acid residues
    * @param numRNAresidues number of RNA residues
    * @param numDNAresidues number of DNA residues
@@ -537,7 +554,7 @@ public class CoefCalcCompute extends CoefCalc {
    * @param heavySolvConcNames heavy atom solvent element symbols
    * @param heavySolvConcNums heavy atom solvent concentrations in mM.
    */
-  public void calculateAtomOccurrences(final int numMonomers,
+  public void calculateAtomOccurrences(final int monomers,
       final int numResidues,
       final int numRNAresidues, final int numDNAresidues,
       final double solventFraction,
@@ -555,7 +572,7 @@ public class CoefCalcCompute extends CoefCalc {
       // note: heavy atoms are provided per monomer,
       // so multiply by number of monomers.
       heavyAtom.incrementMacromolecularOccurrence(heavyProteinAtomNums.get(i)
-          * numMonomers);
+          * monomers);
     }
 
     // Combine concentrations of heavy atoms in the

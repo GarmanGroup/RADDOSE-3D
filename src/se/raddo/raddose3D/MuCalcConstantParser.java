@@ -69,7 +69,7 @@ public class MuCalcConstantParser {
     private static final double LJ_2                      = 1.41;
 
     /** Light atom/heavy atom threshold. */
-    private static final int    LIGHT_ATOM_MAX_NUM        = 29;
+    public static final int    LIGHT_ATOM_MAX_NUM        = 29;
     /** Absorption edge room for error. */
     private static final double ABSORPTION_EDGE_TOLERANCE = 0.001;
 
