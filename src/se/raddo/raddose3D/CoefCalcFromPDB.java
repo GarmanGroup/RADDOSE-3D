@@ -9,7 +9,6 @@ import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
-
 import se.raddo.raddose3D.MuCalcConstantParser.Atom;
 
 /**
@@ -23,6 +22,111 @@ import se.raddo.raddose3D.MuCalcConstantParser.Atom;
 public class CoefCalcFromPDB extends CoefCalcCompute {
 
   /**
+   * PDB download link stem from pdb.org.
+   */
+  protected static final String PDB_DOWNLOAD_LINK         = "http://www.pdb.org/pdb/download/downloadFile.do?"
+                                                              + "fileFormat=pdb&compression=NO&structureId=";
+
+  /**
+   * Found cryst1 line containing unit cell information?
+   */
+  private boolean               foundCryst1;
+
+  /**
+   * Have we already warned the user that the occupancy column is empty?
+   */
+  private boolean               occupancyWarning;
+
+  /**
+   * How many crystallographic symmetry operators have we found?
+   */
+  private int                   csSymmetryOperators;
+
+  /**
+   * How many non-crystallographic symmetry operators have we found?
+   */
+  private int                   ncsSymmetryOperators      = 1;
+
+  /**
+   * Crystal unit cell dimension A - position in PDB file.
+   */
+  protected static final int    CRYST1_A_POS              = 6;
+
+  /**
+   * Crystal unit cell dimension B - position in PDB file.
+   */
+  protected static final int    CRYST1_B_POS              = 15;
+
+  /**
+   * Crystal unit cell dimension C - position in PDB file.
+   */
+  protected static final int    CRYST1_C_POS              = 24;
+
+  /**
+   * Crystal unit cell angle alpha - position in PDB file.
+   */
+  protected static final int    CRYST1_ALPHA_POS          = 33;
+
+  /**
+   * Crystal unit cell angle beta - position in PDB file.
+   */
+  protected static final int    CRYST1_BETA_POS           = 40;
+
+  /**
+   * Crystal unit cell angle gamma - position in PDB file.
+   */
+  protected static final int    CRYST1_GAMMA_POS          = 47;
+
+  /**
+   * Crystal unit cell definition end character.
+   */
+  protected static final int    CRYST1_END_POS            = 54;
+
+  /**
+   * Atom residue name - position in PDB file.
+   */
+  protected static final int    ATOM_RESIDUE_NAME_POS     = 17;
+  /**
+   * End of atom residue name - position in PDB file.
+   */
+  protected static final int    ATOM_RESIDUE_NAME_END_POS = 20;
+  /**
+   * Atom residue number - position in PDB file.
+   */
+  protected static final int    ATOM_RESIDUE_NUM_POS      = 22;
+
+  /**
+   * End of atom residue number - position in PDB file.
+   */
+  protected static final int    ATOM_RESIDUE_NUM_END_POS  = 26;
+
+  /** MATRX1 line - position of coordinates-included flag. */
+  protected static final int    MATRX_FLAG_POS            = 59;
+  /** MATRX1 line - end position of coordinates-included flag. */
+  protected static final int    MATRX_FLAG_END_POS        = 60;
+
+  /** SMTRY1 line position of SMTRY1 keyword. */
+  protected static final int    SMTRY1_POS                = 13;
+  /** SMTRY1 line end position of SMTRY1 keyword. */
+  protected static final int    SMTRY1_END_POS            = 19;
+
+  /** Occupancy position and end. */
+  protected static final int    OCCUPANCY_POS             = 54,
+      OCCUPANCY_END_POS = 60;
+
+  /** Element symbol position and end. */
+  protected static final int    ELEMENT_SYMBOL_POS        = 76,
+      ELEMENT_SYMBOL_END_POS = 78;
+
+  /** Beginning of SEQRES residue names. */
+  protected static final int    SEQRES_START              = 19;
+  /** Length of SEQRES residue name. */
+  protected static final int    SEQRES_RESI_LENGTH        = 3;
+
+  /** Directive first six characters - end pos. */
+  protected static final int    DIRECTIVE_END_POS         = 6;
+
+  /**
    * Residue looks after the 20 amino acids, 4 RNA bases and
    * 4 DNA bases and provides CoefCalcPDB class with their
    * C/H/N/O/S/P content.
@@ -31,9 +135,9 @@ public class CoefCalcFromPDB extends CoefCalcCompute {
    */
   public static class Residue {
     /** 3-letter code identifier found in PDB. */
-    private String               identifier;
+    private final String         identifier;
     /** Numbers of atoms per residue. */
-    private int                  carbons, hydrogens, oxygens, nitrogens,
+    private final int            carbons, hydrogens, oxygens, nitrogens,
                                  sulphurs,
                                  phosphoruses, type;
     /** Static list which holds all residues. */
@@ -377,117 +481,6 @@ public class CoefCalcFromPDB extends CoefCalcCompute {
   // these variables are important for PDB downloading and parsing.
 
   /**
-   * PDB download link stem from pdb.org.
-   */
-  protected static final String PDB_DOWNLOAD_LINK         = "http://www.pdb.org/pdb/download/downloadFile.do?"
-                                                              + "fileFormat=pdb&compression=NO&structureId=";
-
-  /**
-   * Found cryst1 line containing unit cell information?
-   */
-  private boolean               foundCryst1               = false;
-
-  /**
-   * Have we already warned the user that the occupancy column is empty?
-   */
-  private boolean               occupancyWarning          = false;
-
-  /**
-   * Have we found hydrogens in the atomic coordinates? (will be deleted later
-   * when using SEQRES lines)
-   */
-  private boolean               foundHydrogen             = false;
-
-  /**
-   * How many crystallographic symmetry operators have we found?
-   */
-  private int                   csSymmetryOperators       = 0;
-
-  /**
-   * How many non-crystallographic symmetry operators have we found?
-   */
-  private int                   ncsSymmetryOperators      = 1;
-
-  /**
-   * Crystal unit cell dimension A - position in PDB file.
-   */
-  protected static final int    CRYST1_A_POS              = 6;
-
-  /**
-   * Crystal unit cell dimension B - position in PDB file.
-   */
-  protected static final int    CRYST1_B_POS              = 15;
-
-  /**
-   * Crystal unit cell dimension C - position in PDB file.
-   */
-  protected static final int    CRYST1_C_POS              = 24;
-
-  /**
-   * Crystal unit cell angle alpha - position in PDB file.
-   */
-  protected static final int    CRYST1_ALPHA_POS          = 33;
-
-  /**
-   * Crystal unit cell angle beta - position in PDB file.
-   */
-  protected static final int    CRYST1_BETA_POS           = 40;
-
-  /**
-   * Crystal unit cell angle gamma - position in PDB file.
-   */
-  protected static final int    CRYST1_GAMMA_POS          = 47;
-
-  /**
-   * Crystal unit cell definition end character.
-   */
-  protected static final int    CRYST1_END_POS            = 54;
-
-  /**
-   * Atom residue name - position in PDB file.
-   */
-  protected static final int    ATOM_RESIDUE_NAME_POS     = 17;
-  /**
-   * End of atom residue name - position in PDB file.
-   */
-  protected static final int    ATOM_RESIDUE_NAME_END_POS = 20;
-  /**
-   * Atom residue number - position in PDB file.
-   */
-  protected static final int    ATOM_RESIDUE_NUM_POS      = 22;
-
-  /**
-   * End of atom residue number - position in PDB file.
-   */
-  protected static final int    ATOM_RESIDUE_NUM_END_POS  = 26;
-
-  /** MATRX1 line - position of coordinates-included flag. */
-  protected static final int    MATRX_FLAG_POS            = 59;
-  /** MATRX1 line - end position of coordinates-included flag. */
-  protected static final int    MATRX_FLAG_END_POS        = 60;
-
-  /** SMTRY1 line position of SMTRY1 keyword. */
-  protected static final int    SMTRY1_POS                = 13;
-  /** SMTRY1 line end position of SMTRY1 keyword. */
-  protected static final int    SMTRY1_END_POS            = 19;
-
-  /** Occupancy position and end. */
-  protected static final int    OCCUPANCY_POS             = 54,
-      OCCUPANCY_END_POS = 60;
-
-  /** Element symbol position and end. */
-  protected static final int    ELEMENT_SYMBOL_POS        = 76,
-      ELEMENT_SYMBOL_END_POS = 78;
-
-  /** Beginning of SEQRES residue names. */
-  protected static final int    SEQRES_START              = 19;
-  /** Length of SEQRES residue name. */
-  protected static final int    SEQRES_RESI_LENGTH        = 3;
-
-  /** Directive first six characters - end pos. */
-  protected static final int    DIRECTIVE_END_POS         = 6;
-
-  /**
    * This parser extracts the unit cell details from the CRYST1 line.
    * 
    * @param inputLine PDB line
@@ -585,7 +578,7 @@ public class CoefCalcFromPDB extends CoefCalcCompute {
     String presentAlready = inputLine.substring(MATRX_FLAG_POS,
         MATRX_FLAG_END_POS);
 
-    if (presentAlready.equals("1")) {
+    if ("1".equals(presentAlready)) {
       System.out.println("Ignoring NCS entry");
       return;
     }
@@ -607,7 +600,7 @@ public class CoefCalcFromPDB extends CoefCalcCompute {
 
     String symtry = inputLine.substring(SMTRY1_POS, SMTRY1_END_POS);
 
-    if (symtry.equals("SMTRY1")) {
+    if ("SMTRY1".equals(symtry)) {
       csSymmetryOperators++;
     }
   }
@@ -631,7 +624,7 @@ public class CoefCalcFromPDB extends CoefCalcCompute {
         .substring(ATOM_RESIDUE_NAME_POS, ATOM_RESIDUE_NAME_END_POS).trim()
         .toUpperCase();
 
-    if (residueName.equals("HOH")) {
+    if ("HOH".equals(residueName)) {
       return;
     }
 
@@ -718,24 +711,24 @@ public class CoefCalcFromPDB extends CoefCalcCompute {
   public void parsePDBLine(final String inputLine) {
     String directive = inputLine.substring(0, DIRECTIVE_END_POS);
 
-    if (directive.equals("CRYST1")) {
+    if ("CRYST1".equals(directive)) {
       parseCryst1Line(inputLine);
       foundCryst1 = true;
     }
 
-    if (directive.equals("HETATM")) {
+    if ("HETATM".equals(directive)) {
       parseHetAtomLine(inputLine);
     }
 
-    if (directive.equals("SEQRES")) {
+    if ("SEQRES".equals(directive)) {
       parseSeqResLine(inputLine);
     }
 
-    if (directive.equals("REMARK")) {
+    if ("REMARK".equals(directive)) {
       parseRemarkLine(inputLine);
     }
 
-    if (directive.equals("MTRIX1")) {
+    if ("MTRIX1".equals(directive)) {
       parseMatrixLine(inputLine);
     }
   }
@@ -757,24 +750,6 @@ public class CoefCalcFromPDB extends CoefCalcCompute {
           .getHetatmOccurrence()
           * num);
     }
-  }
-
-  /**
-   * Taking the number of protein residues, RNA and DNA residues (from the TER
-   * parsing results) and multiplying
-   * these by average no. of hydrogen atoms per residue, then adding them to the
-   * macromolecular occurrence
-   * of hydrogen.
-   */
-
-  public void calculateHydrogens() {
-    int hydrogens = 0;
-
-    hydrogens += this.getNumAminoAcids() * HYDROGENS_PER_AMINO_ACID;
-    hydrogens += this.getNumRNA() * HYDROGENS_PER_RNA_NUCLEOTIDE;
-    hydrogens += this.getNumDNA() * HYDROGENS_PER_DNA_NUCLEOTIDE;
-
-    this.getParser().findAtomWithZ(1).setMacromolecularOccurrence(hydrogens);
   }
 
   /**
@@ -809,7 +784,6 @@ public class CoefCalcFromPDB extends CoefCalcCompute {
     } catch (IOException e) {
       // TODO Auto-generated catch block
       System.out.println("Cannot read from URL.");
-      e.printStackTrace();
     }
     in = new BufferedReader(isr);
 
@@ -844,10 +818,6 @@ public class CoefCalcFromPDB extends CoefCalcCompute {
         + ncsSymmetryOperators);
 
     this.setNumMonomers(csSymmetryOperators * ncsSymmetryOperators);
-
-    if (!foundHydrogen) {
-      calculateHydrogens();
-    }
 
     multiplyAtoms(this.getNumMonomers());
 

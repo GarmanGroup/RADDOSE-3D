@@ -139,17 +139,17 @@ public class CoefCalcCompute extends CoefCalc {
   /**
    * Number of amino acids.
    */
-  private double                numAminoAcids                   = 0;
+  private double                numAminoAcids;
 
   /**
    * Number of RNA residues.
    */
-  private double                numRNA                          = 0;
+  private double                numRNA;
 
   /**
    * Number of DNA residues.
    */
-  private double                numDNA                          = 0;
+  private double                numDNA;
 
   /**
    * Number of monomers per unit cell.
