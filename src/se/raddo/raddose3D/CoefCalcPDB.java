@@ -480,7 +480,7 @@ public class CoefCalcPDB extends CoefCalcCompute {
   /** Beginning of SEQRES residue names. */
   protected static final int    SEQRES_START              = 19;
   /** Length of SEQRES residue name. */
-  protected static final int    SEQRES_RESI_LENGTH        = 4;
+  protected static final int    SEQRES_RESI_LENGTH        = 3;
 
   /** Directive first six characters - end pos */
   protected static final int    DIRECTIVE_END_POS         = 6;
@@ -520,7 +520,7 @@ public class CoefCalcPDB extends CoefCalcCompute {
       System.out.println("PDB file unit cell: " + a + " " + b + " "
           + c + " " + alpha + " " + beta + " " + gamma);
 
-      System.out.println("Number of monomers: " + numMonomers);
+      System.out.println("Number of monomers: " + this.getNumMonomers());
       cellVolume(a, b, c, alpha, beta, gamma);
     } catch (NumberFormatException e) {
       System.out
@@ -674,11 +674,11 @@ public class CoefCalcPDB extends CoefCalcCompute {
       }
 
       if (residue.type == Residue.TYPE_PROTEIN) {
-        numAminoAcids++;
+        this.incrementNumAminoAcids(1);
       } else if (residue.type == Residue.TYPE_RNA) {
-        numRNA++;
+        this.incrementNumRNA(1);
       } else if (residue.type == Residue.TYPE_DNA) {
-        numDNA++;
+        this.incrementNumDNA(1);
       }
 
       Atom hydrogen = parser.findAtomWithName("H");
@@ -766,9 +766,9 @@ public class CoefCalcPDB extends CoefCalcCompute {
   public void calculateHydrogens() {
     int hydrogens = 0;
 
-    hydrogens += numAminoAcids * HYDROGENS_PER_AMINO_ACID;
-    hydrogens += numRNA * HYDROGENS_PER_RNA_NUCLEOTIDE;
-    hydrogens += numDNA * HYDROGENS_PER_DNA_NUCLEOTIDE;
+    hydrogens += this.getNumAminoAcids() * HYDROGENS_PER_AMINO_ACID;
+    hydrogens += this.getNumRNA() * HYDROGENS_PER_RNA_NUCLEOTIDE;
+    hydrogens += this.getNumDNA() * HYDROGENS_PER_DNA_NUCLEOTIDE;
 
     parser.findAtomWithZ(1).setMacromolecularOccurrence(hydrogens);
   }
@@ -818,13 +818,13 @@ public class CoefCalcPDB extends CoefCalcCompute {
     System.out.println("Non-crystallographic symmetry operators: "
         + ncsSymmetryOperators);
 
-    numMonomers = csSymmetryOperators * ncsSymmetryOperators;
+    this.setNumMonomers(csSymmetryOperators * ncsSymmetryOperators);
 
     if (!foundHydrogen) {
       calculateHydrogens();
     }
 
-    multiplyAtoms(numMonomers);
+    multiplyAtoms(this.getNumMonomers());
 
     double solventFraction = calculateSolventFractionFromNums();
     calculateSolventWater(solventFraction);

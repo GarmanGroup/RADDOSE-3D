@@ -1,6 +1,7 @@
 package se.raddo.raddose3D;
 
 import java.util.List;
+import static java.lang.Math.PI;
 
 import se.raddo.raddose3D.MuCalcConstantParser.Atom;
 
@@ -14,11 +15,6 @@ public class CoefCalcCompute extends CoefCalc {
    */
   private double                 absCoeff, attCoeff, elasCoeff, density,
                                  cellVolume;
-
-  /**
-   * Pi.
-   */
-  public static final double     PI                              = 3.141592653589793;
 
   /**
    * Right angle.
@@ -142,22 +138,22 @@ public class CoefCalcCompute extends CoefCalc {
   /**
    * Number of amino acids.
    */
-  protected double               numAminoAcids                   = 0;
+  private double               numAminoAcids                   = 0;
 
   /**
    * Number of RNA residues.
    */
-  protected double               numRNA                          = 0;
+  private double               numRNA                          = 0;
 
   /**
    * Number of DNA residues.
    */
-  protected double               numDNA                          = 0;
+  private double               numDNA                          = 0;
 
   /**
    * Number of monomers per unit cell.
    */
-  protected int                  numMonomers                     = 1;
+  private int                  numMonomers                     = 1;
 
   /**
    * Parser which is going to look after our atom objects.
@@ -257,6 +253,97 @@ public class CoefCalcCompute extends CoefCalc {
   @Override
   public double getDensity() {
     return density;
+  }
+
+  /**
+   * @return the numAminoAcids
+   */
+  protected double getNumAminoAcids() {
+    return numAminoAcids;
+  }
+
+  /**
+   * @param newnumAminoAcids the numAminoAcids to set
+   */
+  protected void setNumAminoAcids(double newnumAminoAcids) {
+    this.numAminoAcids = newnumAminoAcids;
+  }
+
+  /**
+   * @param increment the numAminoAcids to increment
+   */
+  protected void incrementNumAminoAcids(double increment) {
+    this.numAminoAcids += increment;
+  }
+
+  /**
+   * @return the numRNA
+   */
+  protected double getNumRNA() {
+    return numRNA;
+  }
+
+  /**
+   * @param newnumRNA the numRNA to set
+   */
+  protected void setNumRNA(double newnumRNA) {
+    this.numRNA = newnumRNA;
+  }
+
+  /**
+   * @param increment the NumRNA to increment
+   */
+  protected void incrementNumRNA(double increment) {
+    this.numRNA += increment;
+  }
+  
+  /**
+   * @return the numDNA
+   */
+  protected double getNumDNA() {
+    return numDNA;
+  }
+
+  /**
+   * @param newnumDNA the numDNA to set
+   */
+  protected void setNumDNA(double newnumDNA) {
+    this.numDNA = newnumDNA;
+  }
+
+  /**
+   * @param increment the numDNA to increment
+   */
+  protected void incrementNumDNA(double increment) {
+    this.numDNA += increment;
+  }
+  
+  /**
+   * @return the numMonomers
+   */
+  protected int getNumMonomers() {
+    return numMonomers;
+  }
+
+  /**
+   * @param newnumMonomers the numMonomers to set
+   */
+  protected void setNumMonomers(int newnumMonomers) {
+    this.numMonomers = newnumMonomers;
+  }
+
+  /**
+   * @return the parser
+   */
+  protected MuCalcConstantParser getParser() {
+    return parser;
+  }
+
+  /**
+   * @param newparser the parser to set
+   */
+  protected void setParser(MuCalcConstantParser newparser) {
+    this.parser = newparser;
   }
 
   /**
