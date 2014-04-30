@@ -778,12 +778,12 @@ public class MuCalcConstantParser {
   /**
    * Array of Atom objects containing all elements listed in Constants file.
    */
-  private Atom[]                 atoms;
+  private Atom[]                atoms;
 
   /**
    * Atom count - number of atoms in this array.
    */
-  private int                    atomCount;
+  private int                   atomCount;
 
   /**
    * Total atoms in period table.

@@ -18,8 +18,7 @@ public class CoefCalcCompute extends CoefCalc {
   /**
    * Pi.
    */
-  public static final double     PI 
-                                 = 3.141592653589793;
+  public static final double     PI                              = 3.141592653589793;
 
   /**
    * Right angle.
@@ -211,7 +210,8 @@ public class CoefCalcCompute extends CoefCalc {
           * parser.getAtoms()[i].getCoherentCrossSection() / cellVolume
           / UNITSPERDECIUNIT;
       crossSectionTotal += parser.getAtoms()[i].totalAtoms()
-          * parser.getAtoms()[i].getTotalCrossSection() / cellVolume / UNITSPERDECIUNIT;
+          * parser.getAtoms()[i].getTotalCrossSection() / cellVolume
+          / UNITSPERDECIUNIT;
     }
 
     absCoeff = crossSectionPhotoElectric / UNITSPERMILLIUNIT;
@@ -348,9 +348,10 @@ public class CoefCalcCompute extends CoefCalc {
     // we only care about low atomic weight atoms for hetatms
     // otherwise heavy atoms would make a very large impact
     // on reduction of solvent accessible space.
-    
+
     for (int i = 0; i < 20; i++) {
-      hetatmMass += ATOMIC_MASS_UNIT * parser.getAtoms()[i].getHetatmOccurrence()
+      hetatmMass += ATOMIC_MASS_UNIT
+          * parser.getAtoms()[i].getHetatmOccurrence()
           * parser.getAtoms()[i].getAtomicWeight();
     }
 
@@ -409,7 +410,8 @@ public class CoefCalcCompute extends CoefCalc {
     // Add water molecules to hydrogen and oxygen.
 
     Atom hydrogen = parser.findAtomWithName("H");
-    hydrogen.setSolventOccurrence(hydrogen.getSolventOccurrence() + waterMolecules * 2);
+    hydrogen.setSolventOccurrence(hydrogen.getSolventOccurrence()
+        + waterMolecules * 2);
 
     Atom oxygen = parser.findAtomWithName("O");
     oxygen.setSolventOccurrence(oxygen.getSolventOccurrence() + waterMolecules);
@@ -429,7 +431,8 @@ public class CoefCalcCompute extends CoefCalc {
     for (int i = 0; i < heavySolvConcNames.size(); i++) {
       Atom heavyAtom = parser.findAtomWithName(heavySolvConcNames.get(i));
 
-      heavyAtom.setSolventConcentration(heavySolvConcNums.get(i) + heavyAtom.getSolventConcentration());
+      heavyAtom.setSolventConcentration(heavySolvConcNums.get(i)
+          + heavyAtom.getSolventConcentration());
     }
   }
 
@@ -485,47 +488,62 @@ public class CoefCalcCompute extends CoefCalc {
     // Protein atoms: for every amino acid
     // add 5C + 1.35 N + 1.5 O + 8H
 
-    carbon.incrementMacromolecularOccurrence(CARBONS_PER_AMINO_ACID * numResidues
+    carbon.incrementMacromolecularOccurrence(CARBONS_PER_AMINO_ACID
+        * numResidues
         * numMonomers);
-    nitrogen.incrementMacromolecularOccurrence(NITROGENS_PER_AMINO_ACID * numResidues
+    nitrogen.incrementMacromolecularOccurrence(NITROGENS_PER_AMINO_ACID
+        * numResidues
         * numMonomers);
-    oxygen.incrementMacromolecularOccurrence(OXYGENS_PER_AMINO_ACID * numResidues
+    oxygen.incrementMacromolecularOccurrence(OXYGENS_PER_AMINO_ACID
+        * numResidues
         * numMonomers);
-    hydrogen.incrementMacromolecularOccurrence(HYDROGENS_PER_AMINO_ACID * numResidues
+    hydrogen.incrementMacromolecularOccurrence(HYDROGENS_PER_AMINO_ACID
+        * numResidues
         * numMonomers);
 
     // RNA atoms: for every NTP
     // add 11.25 H + 9.5 C + 3.75 N + 7 O + 1 P.
 
-    carbon.incrementMacromolecularOccurrence(CARBONS_PER_RNA_NUCLEOTIDE * numRNA
+    carbon.incrementMacromolecularOccurrence(CARBONS_PER_RNA_NUCLEOTIDE
+        * numRNA
         * numMonomers);
-    nitrogen.incrementMacromolecularOccurrence(NITROGENS_PER_RNA_NUCLEOTIDE * numRNA
+    nitrogen.incrementMacromolecularOccurrence(NITROGENS_PER_RNA_NUCLEOTIDE
+        * numRNA
         * numMonomers);
-    oxygen.incrementMacromolecularOccurrence(OXYGENS_PER_RNA_NUCLEOTIDE * numRNA
+    oxygen.incrementMacromolecularOccurrence(OXYGENS_PER_RNA_NUCLEOTIDE
+        * numRNA
         * numMonomers);
-    hydrogen.incrementMacromolecularOccurrence(HYDROGENS_PER_RNA_NUCLEOTIDE * numRNA
+    hydrogen.incrementMacromolecularOccurrence(HYDROGENS_PER_RNA_NUCLEOTIDE
+        * numRNA
         * numMonomers);
-    phosphorus.incrementMacromolecularOccurrence(PHOSPHORUSES_PER_RNA_NUCLEOTIDE
-        * numRNA * numMonomers);
+    phosphorus
+        .incrementMacromolecularOccurrence(PHOSPHORUSES_PER_RNA_NUCLEOTIDE
+            * numRNA * numMonomers);
 
     // DNA atoms: for every NTP
     // add 11.75 H + 9.75 C + 4 N + 6 O + 1 P.
 
-    carbon.incrementMacromolecularOccurrence(CARBONS_PER_DNA_NUCLEOTIDE * numRNA
+    carbon.incrementMacromolecularOccurrence(CARBONS_PER_DNA_NUCLEOTIDE
+        * numRNA
         * numMonomers);
-    nitrogen.incrementMacromolecularOccurrence(NITROGENS_PER_DNA_NUCLEOTIDE * numRNA
+    nitrogen.incrementMacromolecularOccurrence(NITROGENS_PER_DNA_NUCLEOTIDE
+        * numRNA
         * numMonomers);
-    oxygen.incrementMacromolecularOccurrence(OXYGENS_PER_DNA_NUCLEOTIDE * numRNA
+    oxygen.incrementMacromolecularOccurrence(OXYGENS_PER_DNA_NUCLEOTIDE
+        * numRNA
         * numMonomers);
-    hydrogen.incrementMacromolecularOccurrence(HYDROGENS_PER_DNA_NUCLEOTIDE * numRNA
+    hydrogen.incrementMacromolecularOccurrence(HYDROGENS_PER_DNA_NUCLEOTIDE
+        * numRNA
         * numMonomers);
-    phosphorus.incrementMacromolecularOccurrence(PHOSPHORUSES_PER_DNA_NUCLEOTIDE
-        * numRNA * numMonomers);
+    phosphorus
+        .incrementMacromolecularOccurrence(PHOSPHORUSES_PER_DNA_NUCLEOTIDE
+            * numRNA * numMonomers);
 
   }
-  
+
   /**
-   *  Calculate cell volume from cell dimensions and unit cell angles.
+   * Calculate cell volume from cell dimensions and unit cell angles.
+   * 
    * @param cellA unit cell dimension a
    * @param cellB unit cell dimension b
    * @param cellC unit cell dimension c
@@ -549,7 +567,7 @@ public class CoefCalcCompute extends CoefCalc {
       System.out
           .println("Warning: error calculating unit cell volume - please check inputs.");
     }
-    
+
     double cellVol = cellA * cellB * cellC * Math.sqrt(ult);
 
     // This result below is what Fortran thought

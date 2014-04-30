@@ -10,8 +10,23 @@ import java.util.List;
 
 import se.raddo.raddose3D.MuCalcConstantParser.Atom;
 
+/**
+ * CoefCalcPDB class takes PDB information and converts
+ * it into atom occurrence information which the superclass,
+ * CoefCalcCompute, uses to calculate the absorption
+ * coefficient.
+ * 
+ * @author magd3052
+ */
 public class CoefCalcPDB extends CoefCalcCompute {
 
+  /**
+   * Residue looks after the 20 amino acids, 4 RNA bases and
+   * 4 DNA bases and provides CoefCalcPDB class with their
+   * C/H/N/O/S/P content.
+   * 
+   * @author magd3052
+   */
   public static class Residue {
     /** 3-letter code identifier found in PDB. */
     private String               identifier;
@@ -19,7 +34,7 @@ public class CoefCalcPDB extends CoefCalcCompute {
     private int                  carbons, hydrogens, oxygens, nitrogens,
                                  sulphurs,
                                  phosphoruses, type;
-    /** Static list which holds all residues */
+    /** Static list which holds all residues. */
     private static List<Residue> residueArray     = new ArrayList<Residue>();
 
     /** Alanine identifier. */
@@ -244,9 +259,9 @@ public class CoefCalcPDB extends CoefCalcCompute {
                                                   DCMP_O = 6, DCMP_S = 0,
                                                   DCMP_P = 1;
 
-    /** identifiers for type of residue */
+    /** identifiers for type of residue. */
     private static final int     TYPE_PROTEIN     = 1, TYPE_RNA = 2,
-        TYPE_DNA = 3;
+                                                  TYPE_DNA = 3;
 
     /**
      * Creates a residue with identifier and light atom constituents.
@@ -259,6 +274,7 @@ public class CoefCalcPDB extends CoefCalcCompute {
      * @param ns no. of nitrogens
      * @param ss no. of sulphurs
      * @param ps no. of phosphoruses
+     * @param typ TYPE_PROTEIN, TYPE_RNA or TYPE_DNA.
      */
     public Residue(final String id, final int cs, final int hs, final int os,
         final int ns, final int ss, final int ps, final int typ) {
@@ -278,8 +294,8 @@ public class CoefCalcPDB extends CoefCalcCompute {
      * creates residue array which is added to the static library of residues
      * for future access.
      */
-    public static void createResidueArray()
-    {
+    public static void createResidueArray() {
+
       new Residue(ALANINE_ID, ALANINE_C, ALANINE_H, ALANINE_O, ALANINE_N,
           ALANINE_S, ALANINE_P, TYPE_PROTEIN);
       new Residue(ARGININE_ID, ARGININE_C, ARGININE_H, ARGININE_O, ARGININE_N,
@@ -443,16 +459,38 @@ public class CoefCalcPDB extends CoefCalcCompute {
    */
   protected static final int    ATOM_RESIDUE_NUM_END_POS  = 26;
 
-  /** Beginning of SEQRES residue names */
+  /** MATRX1 line - position of coordinates-included flag. */
+  protected static final int    MATRX_FLAG_POS            = 59;
+  /** MATRX1 line - end position of coordinates-included flag. */
+  protected static final int    MATRX_FLAG_END_POS        = 60;
 
+  /** SMTRY1 line position of SMTRY1 keyword. */
+  protected static final int    SMTRY1_POS                = 13;
+  /** SMTRY1 line end position of SMTRY1 keyword. */
+  protected static final int    SMTRY1_END_POS            = 19;
+
+  /** Occupancy position and end. */
+  protected static final int    OCCUPANCY_POS             = 54,
+      OCCUPANCY_END_POS = 60;
+
+  /** Element symbol position and end. */
+  protected static final int    ELEMENT_SYMBOL_POS        = 76,
+      ELEMENT_SYMBOL_END_POS = 78;
+
+  /** Beginning of SEQRES residue names. */
   protected static final int    SEQRES_START              = 19;
+  /** Length of SEQRES residue name. */
+  protected static final int    SEQRES_RESI_LENGTH        = 4;
+
+  /** Directive first six characters - end pos */
+  protected static final int    DIRECTIVE_END_POS         = 6;
 
   /**
    * This parser extracts the unit cell details from the CRYST1 line.
    * 
    * @param inputLine PDB line
    */
-  public void parseCryst1Line(String inputLine) {
+  public void parseCryst1Line(final String inputLine) {
     String aString = inputLine.substring(CRYST1_A_POS, CRYST1_B_POS);
     String bString = inputLine.substring(CRYST1_B_POS, CRYST1_C_POS);
     String cString = inputLine.substring(CRYST1_C_POS, CRYST1_ALPHA_POS);
@@ -504,17 +542,16 @@ public class CoefCalcPDB extends CoefCalcCompute {
    */
   public double checkOccupancyAndElementName(final String occupancy,
       final String elementSymbol, final String inputLine) {
-    double occupancy_num = 1;
+    double occupancyNum = 1;
 
-    if (occupancy.length() == 0 && occupancyWarning == false) {
+    if (occupancy.length() == 0 && !occupancyWarning) {
       System.out.println("Warning: occupancy for atom missing, "
           + "assuming occupancy of 1.0 (message only displayed once)");
       occupancyWarning = true;
     } else {
       try {
-        occupancy_num = Double.parseDouble(occupancy);
-      } catch (NumberFormatException e)
-      {
+        occupancyNum = Double.parseDouble(occupancy);
+      } catch (NumberFormatException e) {
         System.out.println("Warning: occupancy column "
             + "does not contain a valid number");
       }
@@ -526,7 +563,7 @@ public class CoefCalcPDB extends CoefCalcCompute {
       System.out.println("For line: " + inputLine);
     }
 
-    return occupancy_num;
+    return occupancyNum;
   }
 
   /**
@@ -543,7 +580,8 @@ public class CoefCalcPDB extends CoefCalcCompute {
 
   public void parseMatrixLine(final String inputLine) {
 
-    String presentAlready = inputLine.substring(59, 60);
+    String presentAlready = inputLine.substring(MATRX_FLAG_POS,
+        MATRX_FLAG_END_POS);
 
     if (presentAlready.equals("1")) {
       System.out.println("Ignoring NCS entry");
@@ -565,7 +603,7 @@ public class CoefCalcPDB extends CoefCalcCompute {
 
   public void parseRemarkLine(final String inputLine) {
 
-    String symtry = inputLine.substring(13, 19);
+    String symtry = inputLine.substring(SMTRY1_POS, SMTRY1_END_POS);
 
     if (symtry.equals("SMTRY1")) {
       csSymmetryOperators++;
@@ -580,13 +618,16 @@ public class CoefCalcPDB extends CoefCalcCompute {
    */
 
   public void parseHetAtomLine(final String inputLine) {
-    String occupancy = inputLine.substring(54, 60);
-    String elementSymbol = inputLine.substring(76, 78);
+    String occupancy = inputLine.substring(OCCUPANCY_POS, OCCUPANCY_END_POS);
+    String elementSymbol = inputLine.substring(ELEMENT_SYMBOL_POS,
+        ELEMENT_SYMBOL_END_POS);
 
     occupancy = occupancy.trim();
     elementSymbol = elementSymbol.trim();
     elementSymbol = elementSymbol.toUpperCase();
-    String residueName = inputLine.substring(17, 20).trim().toUpperCase();
+    String residueName = inputLine
+        .substring(ATOM_RESIDUE_NAME_POS, ATOM_RESIDUE_NAME_END_POS).trim()
+        .toUpperCase();
 
     if (residueName.equals("HOH")) {
       return;
@@ -610,13 +651,14 @@ public class CoefCalcPDB extends CoefCalcCompute {
    * @param inputLine line from PDB
    */
   public void parseSeqResLine(final String inputLine) {
-    String sequenceOnly = inputLine.substring(19, inputLine.length());
+    String sequenceOnly = inputLine.substring(SEQRES_START, inputLine.length());
 
     while (sequenceOnly.length() > 3) {
-      String threeLetters = sequenceOnly.substring(0, 3);
+      String threeLetters = sequenceOnly.substring(0, SEQRES_RESI_LENGTH);
 
       if (threeLetters.equals("   ")) {
-        sequenceOnly = sequenceOnly.substring(4, sequenceOnly.length());
+        sequenceOnly = sequenceOnly.substring(SEQRES_RESI_LENGTH + 1,
+            sequenceOnly.length());
         continue;
       }
 
@@ -626,7 +668,8 @@ public class CoefCalcPDB extends CoefCalcCompute {
         System.out
             .println("Warning: could not decipher PDB three letter code: "
                 + threeLetters);
-        sequenceOnly = sequenceOnly.substring(4, sequenceOnly.length());
+        sequenceOnly = sequenceOnly.substring(SEQRES_RESI_LENGTH + 1,
+            sequenceOnly.length());
         continue;
       }
 
@@ -658,7 +701,8 @@ public class CoefCalcPDB extends CoefCalcCompute {
       sulphurs.setMacromolecularOccurrence(residue.sulphurs
           + sulphurs.getMacromolecularOccurrence());
 
-      sequenceOnly = sequenceOnly.substring(4, sequenceOnly.length());
+      sequenceOnly = sequenceOnly.substring(SEQRES_RESI_LENGTH + 1,
+          sequenceOnly.length());
     }
   }
 
@@ -670,7 +714,7 @@ public class CoefCalcPDB extends CoefCalcCompute {
    * @param inputLine line from pdb
    */
   public void parsePDBLine(final String inputLine) {
-    String directive = inputLine.substring(0, 6);
+    String directive = inputLine.substring(0, DIRECTIVE_END_POS);
 
     if (directive.equals("CRYST1")) {
       parseCryst1Line(inputLine);
@@ -705,7 +749,8 @@ public class CoefCalcPDB extends CoefCalcCompute {
     for (int i = 0; i < parser.getAtomCount(); i++) {
       parser.getAtoms()[i].setMacromolecularOccurrence(parser.getAtoms()[i]
           .getMacromolecularOccurrence() * num);
-      parser.getAtoms()[i].setHetatmOccurrence(parser.getAtoms()[i].getHetatmOccurrence()
+      parser.getAtoms()[i].setHetatmOccurrence(parser.getAtoms()[i]
+          .getHetatmOccurrence()
           * num);
     }
   }
@@ -735,7 +780,7 @@ public class CoefCalcPDB extends CoefCalcCompute {
    * @param pdbName PDB four letter code
    * @throws Exception exception
    */
-  public void downloadPDB(String pdbName) throws Exception {
+  public void downloadPDB(final String pdbName) throws Exception {
     String urlString = String.format("%s%s", PDB_DOWNLOAD_LINK, pdbName);
     URL pdbURL = new URL(urlString);
     URLConnection pdbConnection = pdbURL.openConnection();
@@ -814,10 +859,13 @@ public class CoefCalcPDB extends CoefCalcCompute {
    * and determination of atom constituents in the unit cell.
    * 
    * @param pdbName four letter PDB code
+   * @param heavySolvConcNames solvent element names
+   * @param heavySolvConcNums solvent concentrations in mM.
    */
-  public CoefCalcPDB(String pdbName, List<String> heavySolvConcNames,
-      List<Double> heavySolvConcNums) {
-    pdbName = pdbName.toUpperCase();
+  public CoefCalcPDB(final String pdbName,
+      final List<String> heavySolvConcNames,
+      final List<Double> heavySolvConcNums) {
+    String pdbNameUpperCase = pdbName.toUpperCase();
     parser = new MuCalcConstantParser();
 
     Residue.createResidueArray();
@@ -825,7 +873,7 @@ public class CoefCalcPDB extends CoefCalcCompute {
     this.addSolventConcentrations(heavySolvConcNames, heavySolvConcNums);
 
     try {
-      downloadPDB(pdbName);
+      downloadPDB(pdbNameUpperCase);
     } catch (Exception e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
