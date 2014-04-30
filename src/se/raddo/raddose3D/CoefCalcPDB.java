@@ -702,10 +702,10 @@ public class CoefCalcPDB extends CoefCalcCompute {
    * @param num number of molecules in unit cell
    */
   public void multiplyAtoms(final int num) {
-    for (int i = 0; i < parser.atomCount; i++) {
-      parser.atoms[i].setMacromolecularOccurrence(parser.atoms[i]
+    for (int i = 0; i < parser.getAtomCount(); i++) {
+      parser.getAtoms()[i].setMacromolecularOccurrence(parser.getAtoms()[i]
           .getMacromolecularOccurrence() * num);
-      parser.atoms[i].setHetatmOccurrence(parser.atoms[i].getHetatmOccurrence()
+      parser.getAtoms()[i].setHetatmOccurrence(parser.getAtoms()[i].getHetatmOccurrence()
           * num);
     }
   }

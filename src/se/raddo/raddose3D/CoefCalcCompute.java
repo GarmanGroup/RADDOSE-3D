@@ -184,8 +184,8 @@ public class CoefCalcCompute extends CoefCalc {
     // then express as g / cm-3.
     double mass = 0;
 
-    for (int i = 0; i < parser.atomCount; i++) {
-      double addition = parser.atoms[i].totalMass();
+    for (int i = 0; i < parser.getAtomCount(); i++) {
+      double addition = parser.getAtoms()[i].totalMass();
 
       mass += addition;
     }
@@ -201,17 +201,17 @@ public class CoefCalcCompute extends CoefCalc {
     // take cross section contributions from each individual atom
     // weighted by the cell volume
 
-    for (int i = 0; i < parser.atomCount; i++) {
-      parser.atoms[i].calculateMu(energy);
+    for (int i = 0; i < parser.getAtomCount(); i++) {
+      parser.getAtoms()[i].calculateMu(energy);
 
-      crossSectionPhotoElectric += parser.atoms[i].totalAtoms()
-          * parser.atoms[i].getPhotoelectricCrossSection() / cellVolume
+      crossSectionPhotoElectric += parser.getAtoms()[i].totalAtoms()
+          * parser.getAtoms()[i].getPhotoelectricCrossSection() / cellVolume
           / UNITSPERDECIUNIT;
-      crossSectionCoherent += parser.atoms[i].totalAtoms()
-          * parser.atoms[i].getCoherentCrossSection() / cellVolume
+      crossSectionCoherent += parser.getAtoms()[i].totalAtoms()
+          * parser.getAtoms()[i].getCoherentCrossSection() / cellVolume
           / UNITSPERDECIUNIT;
-      crossSectionTotal += parser.atoms[i].totalAtoms()
-          * parser.atoms[i].getTotalCrossSection() / cellVolume / UNITSPERDECIUNIT;
+      crossSectionTotal += parser.getAtoms()[i].totalAtoms()
+          * parser.getAtoms()[i].getTotalCrossSection() / cellVolume / UNITSPERDECIUNIT;
     }
 
     absCoeff = crossSectionPhotoElectric / UNITSPERMILLIUNIT;
@@ -350,8 +350,8 @@ public class CoefCalcCompute extends CoefCalc {
     // on reduction of solvent accessible space.
     
     for (int i = 0; i < 20; i++) {
-      hetatmMass += ATOMIC_MASS_UNIT * parser.atoms[i].getHetatmOccurrence()
-          * parser.atoms[i].getAtomicWeight();
+      hetatmMass += ATOMIC_MASS_UNIT * parser.getAtoms()[i].getHetatmOccurrence()
+          * parser.getAtoms()[i].getAtomicWeight();
     }
 
     hetatmMass /= cellVolume * HETATM_DENSITY * ANGSTROMS_TO_ML;
@@ -387,12 +387,12 @@ public class CoefCalcCompute extends CoefCalc {
 
     double nonWaterAtoms = 0;
 
-    for (int i = 0; i < parser.atomCount; i++) {
-      double conc = parser.atoms[i].getSolventConcentration();
+    for (int i = 0; i < parser.getAtomCount(); i++) {
+      double conc = parser.getAtoms()[i].getSolventConcentration();
       double atomCount = conc * (1 / UNITSPERMILLIUNIT) * AVOGADRO_NUM
           * cellVolume * (1 / MASS_TO_CELL_VOLUME)
           * solventFraction;
-      parser.atoms[i].incrementSolventOccurrence(atomCount);
+      parser.getAtoms()[i].incrementSolventOccurrence(atomCount);
 
       nonWaterAtoms += atomCount;
     }
