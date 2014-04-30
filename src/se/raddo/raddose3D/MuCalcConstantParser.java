@@ -10,87 +10,87 @@ public class MuCalcConstantParser {
 
   public class Atom {
     /**
-     * Element name
+     * Element name.
      */
-    public String               elementName;
+    private String               elementName;
     /**
-     * Atomic number
+     * Atomic number.
      */
-    public int                  atomicNumber;
+    private int                  atomicNumber;
 
     /**
-     * Absorption edge K, L, M in Angstroms
+     * Absorption edge K, L, M in Angstroms.
      */
     private double              absorptionEdgeK, absorptionEdgeL,
     absorptionEdgeM;
 
     /**
-     * Array (of four) for K, L, M, N edges
+     * Array (of four) for K, L, M, N edges.
      */
     private double[]            absorptionEdgeKCoeff, absorptionEdgeLCoeff,
     absorptionEdgeMCoeff, absorptionEdgeNCoeff;
 
     /**
-     * Atomic weight
+     * Atomic weight.
      */
-    public double               atomicWeight;
+    private double               atomicWeight;
 
     /**
-     * Array of four for coherent and incoherent scattering
+     * Array of four for coherent and incoherent scattering.
      */
     private double[]            coherentScatteringCoeff,
     incoherentScatteringCoeff;
 
     /**
-     * L2 and L3 variables
+     * L2 and L3 variables.
      */
     private double              l2, l3;
 
     /**
-     * Atomic mass unit in grams
+     * Atomic mass unit in grams.
      */
     private static final double ATOMIC_MASS_UNIT     = 1.66E-24;
     /**
-     * LJ_1 variable from Fortran, used to correct atomic elements < 29 Z
+     * LJ_1 variable from Fortran, used to correct atomic elements < 29 Z.
      */
     private static final double LJ_1                 = 1.160;
     /**
-     * LJ_2 variable from Fortran, used to correct atomic elements < 29 Z
+     * LJ_2 variable from Fortran, used to correct atomic elements < 29 Z.
      */
     private static final double LJ_2                 = 1.41;
 
     /**
-     * Number of expansions of the polynomial
+     * Number of expansions of the polynomial.
      */
     private static final int    POLYNOMIAL_EXPANSION = 4;
 
     /**
-     * Occurrences - number of times this atom is found in the protein
+     * Occurrences - number of times this atom is found in the protein.
      */
-    public double               macromolecularOccurrence;
+    private double               macromolecularOccurrence;
 
     /**
      * Hetatms - number of times this atom is found in the protein, should also
-     * be included in macromolecular occurrence
+     * be included in macromolecular occurrence.
      */
-    public double               hetatmOccurrence     = 0;
+    private double               hetatmOccurrence     = 0;
 
     /**
-     * Concentration of this atom in the solvent
+     * Concentration of this atom in the solvent.
      */
-    public double               solventConcentration;
+    private double               solventConcentration;
 
     /**
      * Number of atoms of this type in the solvent,
-     * calculated from solvent concentration
+     * calculated from solvent concentration.
      */
-    public double               solventOccurrence;
+    private double               solventOccurrence;
 
     /**
-     * calculated cross-sections
+     * calculated cross-sections.
      */
 
-    public double               photoelectricCrossSection, totalCrossSection,
+    private double               photoelectricCrossSection, totalCrossSection,
     coherentCrossSection;
 
     /**
@@ -423,6 +423,321 @@ public class MuCalcConstantParser {
       photoelectricCrossSection = bax; // mu, abs coefficient
       totalCrossSection = btox; // attenuation
       coherentCrossSection = bcox; // elastic
+    }
+    
+    /**
+     * @return the elementName
+     */
+    public String getElementName() {
+      return elementName;
+    }
+
+    /**
+     * @param elementName the elementName to set
+     */
+    public void setElementName(String elementName) {
+      this.elementName = elementName;
+    }
+
+    /**
+     * @return the atomicNumber
+     */
+    public int getAtomicNumber() {
+      return atomicNumber;
+    }
+
+    /**
+     * @param atomicNumber the atomicNumber to set
+     */
+    public void setAtomicNumber(int atomicNumber) {
+      this.atomicNumber = atomicNumber;
+    }
+
+    /**
+     * @return the absorptionEdgeK
+     */
+    public double getAbsorptionEdgeK() {
+      return absorptionEdgeK;
+    }
+
+    /**
+     * @param absorptionEdgeK the absorptionEdgeK to set
+     */
+    public void setAbsorptionEdgeK(double absorptionEdgeK) {
+      this.absorptionEdgeK = absorptionEdgeK;
+    }
+
+    /**
+     * @return the absorptionEdgeL
+     */
+    public double getAbsorptionEdgeL() {
+      return absorptionEdgeL;
+    }
+
+    /**
+     * @param absorptionEdgeL the absorptionEdgeL to set
+     */
+    public void setAbsorptionEdgeL(double absorptionEdgeL) {
+      this.absorptionEdgeL = absorptionEdgeL;
+    }
+
+    /**
+     * @return the absorptionEdgeM
+     */
+    public double getAbsorptionEdgeM() {
+      return absorptionEdgeM;
+    }
+
+    /**
+     * @param absorptionEdgeM the absorptionEdgeM to set
+     */
+    public void setAbsorptionEdgeM(double absorptionEdgeM) {
+      this.absorptionEdgeM = absorptionEdgeM;
+    }
+
+    /**
+     * @return the absorptionEdgeKCoeff
+     */
+    public double[] getAbsorptionEdgeKCoeff() {
+      return absorptionEdgeKCoeff;
+    }
+
+    /**
+     * @param absorptionEdgeKCoeff the absorptionEdgeKCoeff to set
+     */
+    public void setAbsorptionEdgeKCoeff(double[] absorptionEdgeKCoeff) {
+      this.absorptionEdgeKCoeff = absorptionEdgeKCoeff;
+    }
+
+    /**
+     * @return the absorptionEdgeLCoeff
+     */
+    public double[] getAbsorptionEdgeLCoeff() {
+      return absorptionEdgeLCoeff;
+    }
+
+    /**
+     * @param absorptionEdgeLCoeff the absorptionEdgeLCoeff to set
+     */
+    public void setAbsorptionEdgeLCoeff(double[] absorptionEdgeLCoeff) {
+      this.absorptionEdgeLCoeff = absorptionEdgeLCoeff;
+    }
+
+    /**
+     * @return the absorptionEdgeMCoeff
+     */
+    public double[] getAbsorptionEdgeMCoeff() {
+      return absorptionEdgeMCoeff;
+    }
+
+    /**
+     * @param absorptionEdgeMCoeff the absorptionEdgeMCoeff to set
+     */
+    public void setAbsorptionEdgeMCoeff(double[] absorptionEdgeMCoeff) {
+      this.absorptionEdgeMCoeff = absorptionEdgeMCoeff;
+    }
+
+    /**
+     * @return the absorptionEdgeNCoeff
+     */
+    public double[] getAbsorptionEdgeNCoeff() {
+      return absorptionEdgeNCoeff;
+    }
+
+    /**
+     * @param absorptionEdgeNCoeff the absorptionEdgeNCoeff to set
+     */
+    public void setAbsorptionEdgeNCoeff(double[] absorptionEdgeNCoeff) {
+      this.absorptionEdgeNCoeff = absorptionEdgeNCoeff;
+    }
+
+    /**
+     * @return the atomicWeight
+     */
+    public double getAtomicWeight() {
+      return atomicWeight;
+    }
+
+    /**
+     * @param atomicWeight the atomicWeight to set
+     */
+    public void setAtomicWeight(double atomicWeight) {
+      this.atomicWeight = atomicWeight;
+    }
+
+    /**
+     * @return the coherentScatteringCoeff
+     */
+    public double[] getCoherentScatteringCoeff() {
+      return coherentScatteringCoeff;
+    }
+
+    /**
+     * @param coherentScatteringCoeff the coherentScatteringCoeff to set
+     */
+    public void setCoherentScatteringCoeff(double[] coherentScatteringCoeff) {
+      this.coherentScatteringCoeff = coherentScatteringCoeff;
+    }
+
+    /**
+     * @return the incoherentScatteringCoeff
+     */
+    public double[] getIncoherentScatteringCoeff() {
+      return incoherentScatteringCoeff;
+    }
+
+    /**
+     * @param incoherentScatteringCoeff the incoherentScatteringCoeff to set
+     */
+    public void setIncoherentScatteringCoeff(double[] incoherentScatteringCoeff) {
+      this.incoherentScatteringCoeff = incoherentScatteringCoeff;
+    }
+
+    /**
+     * @return the l2
+     */
+    public double getL2() {
+      return l2;
+    }
+
+    /**
+     * @param l2 the l2 to set
+     */
+    public void setL2(double l2) {
+      this.l2 = l2;
+    }
+
+    /**
+     * @return the l3
+     */
+    public double getL3() {
+      return l3;
+    }
+
+    /**
+     * @param l3 the l3 to set
+     */
+    public void setL3(double l3) {
+      this.l3 = l3;
+    }
+
+    /**
+     * @return the macromolecularOccurrence
+     */
+    public double getMacromolecularOccurrence() {
+      return macromolecularOccurrence;
+    }
+
+    /**
+     * @param macromolecularOccurrence the macromolecularOccurrence to set
+     */
+    public void setMacromolecularOccurrence(double macromolecularOccurrence) {
+      this.macromolecularOccurrence = macromolecularOccurrence;
+    }
+    
+    /**
+     * @param increment the macromolecularOccurrence increment
+     */
+    public void incrementMacromolecularOccurrence(double increment) {
+      this.macromolecularOccurrence += increment;
+    }
+
+    /**
+     * @return the hetatmOccurrence
+     */
+    public double getHetatmOccurrence() {
+      return hetatmOccurrence;
+    }
+
+    /**
+     * @param hetatmOccurrence the hetatmOccurrence to set
+     */
+    public void setHetatmOccurrence(double hetatmOccurrence) {
+      this.hetatmOccurrence = hetatmOccurrence;
+    }
+
+    /**
+     * @return the solventConcentration
+     */
+    public double getSolventConcentration() {
+      return solventConcentration;
+    }
+
+    /**
+     * @param solventConcentration the solventConcentration to set
+     */
+    public void setSolventConcentration(double solventConcentration) {
+      this.solventConcentration = solventConcentration;
+    }
+
+    /**
+     * @param increment the solventConcentration to increment
+     */  
+    public void incrementSolventConcentration(double increment) {
+      this.solventConcentration += increment;
+    }
+    
+    /**
+     * @return the solventOccurrence
+     */
+    public double getSolventOccurrence() {
+      return solventOccurrence;
+    }
+
+    /**
+     * @param solventOccurrence the solventOccurrence to set
+     */
+    public void setSolventOccurrence(double solventOccurrence) {
+      this.solventOccurrence = solventOccurrence;
+    }
+
+    /**
+     * @param increment the solventOccurrence to increment
+     */  
+    public void incrementSolventOccurrence(double increment) {
+      this.solventOccurrence += increment;
+    }
+    
+    /**
+     * @return the photoelectricCrossSection
+     */
+    public double getPhotoelectricCrossSection() {
+      return photoelectricCrossSection;
+    }
+
+    /**
+     * @param photoelectricCrossSection the photoelectricCrossSection to set
+     */
+    public void setPhotoelectricCrossSection(double photoelectricCrossSection) {
+      this.photoelectricCrossSection = photoelectricCrossSection;
+    }
+
+    /**
+     * @return the totalCrossSection
+     */
+    public double getTotalCrossSection() {
+      return totalCrossSection;
+    }
+
+    /**
+     * @param totalCrossSection the totalCrossSection to set
+     */
+    public void setTotalCrossSection(double totalCrossSection) {
+      this.totalCrossSection = totalCrossSection;
+    }
+
+    /**
+     * @return the coherentCrossSection
+     */
+    public double getCoherentCrossSection() {
+      return coherentCrossSection;
+    }
+
+    /**
+     * @param coherentCrossSection the coherentCrossSection to set
+     */
+    public void setCoherentCrossSection(double coherentCrossSection) {
+      this.coherentCrossSection = coherentCrossSection;
     }
   }
   /**

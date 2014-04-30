@@ -205,13 +205,13 @@ public class CoefCalcCompute extends CoefCalc {
       parser.atoms[i].calculateMu(energy);
 
       crossSectionPhotoElectric += parser.atoms[i].totalAtoms()
-          * parser.atoms[i].photoelectricCrossSection / cellVolume
+          * parser.atoms[i].getPhotoelectricCrossSection() / cellVolume
           / UNITSPERDECIUNIT;
       crossSectionCoherent += parser.atoms[i].totalAtoms()
-          * parser.atoms[i].coherentCrossSection / cellVolume
+          * parser.atoms[i].getCoherentCrossSection() / cellVolume
           / UNITSPERDECIUNIT;
       crossSectionTotal += parser.atoms[i].totalAtoms()
-          * parser.atoms[i].totalCrossSection / cellVolume / UNITSPERDECIUNIT;
+          * parser.atoms[i].getTotalCrossSection() / cellVolume / UNITSPERDECIUNIT;
     }
 
     absCoeff = crossSectionPhotoElectric / UNITSPERMILLIUNIT;
@@ -350,8 +350,8 @@ public class CoefCalcCompute extends CoefCalc {
     // on reduction of solvent accessible space.
     
     for (int i = 0; i < 20; i++) {
-      hetatmMass += ATOMIC_MASS_UNIT * parser.atoms[i].hetatmOccurrence
-          * parser.atoms[i].atomicWeight;
+      hetatmMass += ATOMIC_MASS_UNIT * parser.atoms[i].getHetatmOccurrence()
+          * parser.atoms[i].getAtomicWeight();
     }
 
     hetatmMass /= cellVolume * HETATM_DENSITY * ANGSTROMS_TO_ML;
@@ -388,11 +388,11 @@ public class CoefCalcCompute extends CoefCalc {
     double nonWaterAtoms = 0;
 
     for (int i = 0; i < parser.atomCount; i++) {
-      double conc = parser.atoms[i].solventConcentration;
+      double conc = parser.atoms[i].getSolventConcentration();
       double atomCount = conc * (1 / UNITSPERMILLIUNIT) * AVOGADRO_NUM
           * cellVolume * (1 / MASS_TO_CELL_VOLUME)
           * solventFraction;
-      parser.atoms[i].solventOccurrence += atomCount;
+      parser.atoms[i].incrementSolventOccurrence(atomCount);
 
       nonWaterAtoms += atomCount;
     }
@@ -409,10 +409,10 @@ public class CoefCalcCompute extends CoefCalc {
     // Add water molecules to hydrogen and oxygen.
 
     Atom hydrogen = parser.findAtomWithName("H");
-    hydrogen.solventOccurrence += waterMolecules * 2;
+    hydrogen.setSolventOccurrence(hydrogen.getSolventOccurrence() + waterMolecules * 2);
 
     Atom oxygen = parser.findAtomWithName("O");
-    oxygen.solventOccurrence += waterMolecules;
+    oxygen.setSolventOccurrence(oxygen.getSolventOccurrence() + waterMolecules);
 
   }
 
@@ -429,7 +429,7 @@ public class CoefCalcCompute extends CoefCalc {
     for (int i = 0; i < heavySolvConcNames.size(); i++) {
       Atom heavyAtom = parser.findAtomWithName(heavySolvConcNames.get(i));
 
-      heavyAtom.solventConcentration += heavySolvConcNums.get(i);
+      heavyAtom.setSolventConcentration(heavySolvConcNums.get(i) + heavyAtom.getSolventConcentration());
     }
   }
 
@@ -454,8 +454,8 @@ public class CoefCalcCompute extends CoefCalc {
 
       // note: heavy atoms are provided per monomer,
       // so multiply by number of monomers.
-      heavyAtom.macromolecularOccurrence += heavyProteinAtomNums.get(i)
-          * numMonomers;
+      heavyAtom.incrementMacromolecularOccurrence(heavyProteinAtomNums.get(i)
+          * numMonomers);
     }
 
     // Combine concentrations of heavy atoms in the
@@ -485,42 +485,42 @@ public class CoefCalcCompute extends CoefCalc {
     // Protein atoms: for every amino acid
     // add 5C + 1.35 N + 1.5 O + 8H
 
-    carbon.macromolecularOccurrence += CARBONS_PER_AMINO_ACID * numResidues
-        * numMonomers;
-    nitrogen.macromolecularOccurrence += NITROGENS_PER_AMINO_ACID * numResidues
-        * numMonomers;
-    oxygen.macromolecularOccurrence += OXYGENS_PER_AMINO_ACID * numResidues
-        * numMonomers;
-    hydrogen.macromolecularOccurrence += HYDROGENS_PER_AMINO_ACID * numResidues
-        * numMonomers;
+    carbon.incrementMacromolecularOccurrence(CARBONS_PER_AMINO_ACID * numResidues
+        * numMonomers);
+    nitrogen.incrementMacromolecularOccurrence(NITROGENS_PER_AMINO_ACID * numResidues
+        * numMonomers);
+    oxygen.incrementMacromolecularOccurrence(OXYGENS_PER_AMINO_ACID * numResidues
+        * numMonomers);
+    hydrogen.incrementMacromolecularOccurrence(HYDROGENS_PER_AMINO_ACID * numResidues
+        * numMonomers);
 
     // RNA atoms: for every NTP
     // add 11.25 H + 9.5 C + 3.75 N + 7 O + 1 P.
 
-    carbon.macromolecularOccurrence += CARBONS_PER_RNA_NUCLEOTIDE * numRNA
-        * numMonomers;
-    nitrogen.macromolecularOccurrence += NITROGENS_PER_RNA_NUCLEOTIDE * numRNA
-        * numMonomers;
-    oxygen.macromolecularOccurrence += OXYGENS_PER_RNA_NUCLEOTIDE * numRNA
-        * numMonomers;
-    hydrogen.macromolecularOccurrence += HYDROGENS_PER_RNA_NUCLEOTIDE * numRNA
-        * numMonomers;
-    phosphorus.macromolecularOccurrence += PHOSPHORUSES_PER_RNA_NUCLEOTIDE
-        * numRNA * numMonomers;
+    carbon.incrementMacromolecularOccurrence(CARBONS_PER_RNA_NUCLEOTIDE * numRNA
+        * numMonomers);
+    nitrogen.incrementMacromolecularOccurrence(NITROGENS_PER_RNA_NUCLEOTIDE * numRNA
+        * numMonomers);
+    oxygen.incrementMacromolecularOccurrence(OXYGENS_PER_RNA_NUCLEOTIDE * numRNA
+        * numMonomers);
+    hydrogen.incrementMacromolecularOccurrence(HYDROGENS_PER_RNA_NUCLEOTIDE * numRNA
+        * numMonomers);
+    phosphorus.incrementMacromolecularOccurrence(PHOSPHORUSES_PER_RNA_NUCLEOTIDE
+        * numRNA * numMonomers);
 
     // DNA atoms: for every NTP
     // add 11.75 H + 9.75 C + 4 N + 6 O + 1 P.
 
-    carbon.macromolecularOccurrence += CARBONS_PER_DNA_NUCLEOTIDE * numRNA
-        * numMonomers;
-    nitrogen.macromolecularOccurrence += NITROGENS_PER_DNA_NUCLEOTIDE * numRNA
-        * numMonomers;
-    oxygen.macromolecularOccurrence += OXYGENS_PER_DNA_NUCLEOTIDE * numRNA
-        * numMonomers;
-    hydrogen.macromolecularOccurrence += HYDROGENS_PER_DNA_NUCLEOTIDE * numRNA
-        * numMonomers;
-    phosphorus.macromolecularOccurrence += PHOSPHORUSES_PER_DNA_NUCLEOTIDE
-        * numRNA * numMonomers;
+    carbon.incrementMacromolecularOccurrence(CARBONS_PER_DNA_NUCLEOTIDE * numRNA
+        * numMonomers);
+    nitrogen.incrementMacromolecularOccurrence(NITROGENS_PER_DNA_NUCLEOTIDE * numRNA
+        * numMonomers);
+    oxygen.incrementMacromolecularOccurrence(OXYGENS_PER_DNA_NUCLEOTIDE * numRNA
+        * numMonomers);
+    hydrogen.incrementMacromolecularOccurrence(HYDROGENS_PER_DNA_NUCLEOTIDE * numRNA
+        * numMonomers);
+    phosphorus.incrementMacromolecularOccurrence(PHOSPHORUSES_PER_DNA_NUCLEOTIDE
+        * numRNA * numMonomers);
 
   }
   

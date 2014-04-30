@@ -36,7 +36,7 @@ public class CoefCalcPDB extends CoefCalcCompute {
                                                   ARGININE_N = 4,
                                                   ARGININE_O = 1,
                                                   ARGININE_S = 0,
-        ARGININE_P = 0;
+                                                  ARGININE_P = 0;
 
     /** Asparagine identifier. */
     private static final String  ASPARAGINE_ID    = "ASN";
@@ -45,7 +45,7 @@ public class CoefCalcPDB extends CoefCalcCompute {
                                                   ASPARAGINE_N = 2,
                                                   ASPARAGINE_O = 2,
                                                   ASPARAGINE_S = 0,
-        ASPARAGINE_P = 0;
+                                                  ASPARAGINE_P = 0;
 
     /** Aspartate identifier. */
     private static final String  ASPARTATE_ID     = "ASP";
@@ -54,7 +54,7 @@ public class CoefCalcPDB extends CoefCalcCompute {
                                                   ASPARTATE_N = 1,
                                                   ASPARTATE_O = 3,
                                                   ASPARTATE_S = 0,
-        ASPARTATE_P = 0;
+                                                  ASPARTATE_P = 0;
 
     /** Cysteine identifier. */
     private static final String  CYSTEINE_ID      = "CYS";
@@ -63,7 +63,7 @@ public class CoefCalcPDB extends CoefCalcCompute {
                                                   CYSTEINE_N = 1,
                                                   CYSTEINE_O = 1,
                                                   CYSTEINE_S = 1,
-        CYSTEINE_P = 0;
+                                                  CYSTEINE_P = 0;
 
     /** Glutamine identifier. */
     private static final String  GLUTAMINE_ID     = "GLN";
@@ -72,7 +72,7 @@ public class CoefCalcPDB extends CoefCalcCompute {
                                                   GLUTAMINE_N = 2,
                                                   GLUTAMINE_O = 2,
                                                   GLUTAMINE_S = 0,
-        GLUTAMINE_P = 0;
+                                                  GLUTAMINE_P = 0;
 
     /** Glutamate identifier. */
     private static final String  GLUTAMATE_ID     = "GLU";
@@ -81,7 +81,7 @@ public class CoefCalcPDB extends CoefCalcCompute {
                                                   GLUTAMATE_N = 1,
                                                   GLUTAMATE_O = 3,
                                                   GLUTAMATE_S = 0,
-        GLUTAMATE_P = 0;
+                                                  GLUTAMATE_P = 0;
 
     /** Glycine identifier. */
     private static final String  GLYCINE_ID       = "GLY";
@@ -97,7 +97,7 @@ public class CoefCalcPDB extends CoefCalcCompute {
                                                   HISTIDINE_N = 3,
                                                   HISTIDINE_O = 1,
                                                   HISTIDINE_S = 0,
-        HISTIDINE_P = 0;
+                                                  HISTIDINE_P = 0;
 
     /** Isoleucine identifier. */
     private static final String  ISOLEUCINE_ID    = "ILE";
@@ -106,7 +106,7 @@ public class CoefCalcPDB extends CoefCalcCompute {
                                                   ISOLEUCINE_N = 1,
                                                   ISOLEUCINE_O = 1,
                                                   ISOLEUCINE_S = 0,
-        ISOLEUCINE_P = 0;
+                                                  ISOLEUCINE_P = 0;
 
     /** Leucine identifier. */
     private static final String  LEUCINE_ID       = "LEU";
@@ -129,7 +129,7 @@ public class CoefCalcPDB extends CoefCalcCompute {
                                                   METHIONINE_N = 1,
                                                   METHIONINE_O = 1,
                                                   METHIONINE_S = 1,
-        METHIONINE_P = 0;
+                                                  METHIONINE_P = 0;
 
     /** Phenylalanine identifier. */
     private static final String  PHENYLALANINE_ID = "PHE";
@@ -161,7 +161,7 @@ public class CoefCalcPDB extends CoefCalcCompute {
                                                   THREONINE_N = 1,
                                                   THREONINE_O = 2,
                                                   THREONINE_S = 0,
-        THREONINE_P = 0;
+                                                  THREONINE_P = 0;
 
     /** tryptophan identifier. */
     private static final String  TRYPTOPHAN_ID    = "TRP";
@@ -170,7 +170,7 @@ public class CoefCalcPDB extends CoefCalcCompute {
                                                   TRYPTOPHAN_N = 2,
                                                   TRYPTOPHAN_O = 1,
                                                   TRYPTOPHAN_S = 0,
-        TRYPTOPHAN_P = 0;
+                                                  TRYPTOPHAN_P = 0;
 
     /** tyrosine identifier. */
     private static final String  TYROSINE_ID      = "TYR";
@@ -179,7 +179,7 @@ public class CoefCalcPDB extends CoefCalcCompute {
                                                   TYROSINE_N = 1,
                                                   TYROSINE_O = 2,
                                                   TYROSINE_S = 0,
-        TYROSINE_P = 0;
+                                                  TYROSINE_P = 0;
 
     /** valine identifier. */
     private static final String  VALINE_ID        = "VAL";
@@ -243,10 +243,10 @@ public class CoefCalcPDB extends CoefCalcCompute {
     private static final int     DCMP_C           = 9, DCMP_H = 12, DCMP_N = 3,
                                                   DCMP_O = 6, DCMP_S = 0,
                                                   DCMP_P = 1;
-    
+
     /** identifiers for type of residue */
-    private static final int    TYPE_PROTEIN    = 1, TYPE_RNA = 2, TYPE_DNA = 3;
-    
+    private static final int     TYPE_PROTEIN     = 1, TYPE_RNA = 2,
+        TYPE_DNA = 3;
 
     /**
      * Creates a residue with identifier and light atom constituents.
@@ -307,7 +307,8 @@ public class CoefCalcPDB extends CoefCalcCompute {
       new Residue(METHIONINE_ID, METHIONINE_C, METHIONINE_H, METHIONINE_O,
           METHIONINE_N, METHIONINE_S, METHIONINE_P, TYPE_PROTEIN);
       new Residue(PHENYLALANINE_ID, PHENYLALANINE_C, PHENYLALANINE_H,
-          PHENYLALANINE_O, PHENYLALANINE_N, PHENYLALANINE_S, PHENYLALANINE_P, TYPE_PROTEIN);
+          PHENYLALANINE_O, PHENYLALANINE_N, PHENYLALANINE_S, PHENYLALANINE_P,
+          TYPE_PROTEIN);
       new Residue(PROLINE_ID, PROLINE_C, PROLINE_H, PROLINE_O, PROLINE_N,
           PROLINE_S, PROLINE_P, TYPE_PROTEIN);
       new Residue(SERINE_ID, SERINE_C, SERINE_H, SERINE_O, SERINE_N, SERINE_S,
@@ -326,10 +327,14 @@ public class CoefCalcPDB extends CoefCalcCompute {
       new Residue(GMP_ID, GMP_C, GMP_H, GMP_O, GMP_N, GMP_S, GMP_P, TYPE_RNA);
       new Residue(CMP_ID, CMP_C, CMP_H, CMP_O, CMP_N, CMP_S, CMP_P, TYPE_RNA);
 
-      new Residue(DAMP_ID, DAMP_C, DAMP_H, DAMP_O, DAMP_N, DAMP_S, DAMP_P, TYPE_DNA);
-      new Residue(DTMP_ID, DTMP_C, DTMP_H, DTMP_O, DTMP_N, DTMP_S, DTMP_P, TYPE_DNA);
-      new Residue(DGMP_ID, DGMP_C, DGMP_H, DGMP_O, DGMP_N, DGMP_S, DGMP_P, TYPE_DNA);
-      new Residue(DCMP_ID, DCMP_C, DCMP_H, DCMP_O, DCMP_N, DCMP_S, DCMP_P, TYPE_DNA);
+      new Residue(DAMP_ID, DAMP_C, DAMP_H, DAMP_O, DAMP_N, DAMP_S, DAMP_P,
+          TYPE_DNA);
+      new Residue(DTMP_ID, DTMP_C, DTMP_H, DTMP_O, DTMP_N, DTMP_S, DTMP_P,
+          TYPE_DNA);
+      new Residue(DGMP_ID, DGMP_C, DGMP_H, DGMP_O, DGMP_N, DGMP_S, DGMP_P,
+          TYPE_DNA);
+      new Residue(DCMP_ID, DCMP_C, DCMP_H, DCMP_O, DCMP_N, DCMP_S, DCMP_P,
+          TYPE_DNA);
 
     }
 
@@ -439,9 +444,9 @@ public class CoefCalcPDB extends CoefCalcCompute {
   protected static final int    ATOM_RESIDUE_NUM_END_POS  = 26;
 
   /** Beginning of SEQRES residue names */
-  
+
   protected static final int    SEQRES_START              = 19;
-  
+
   /**
    * This parser extracts the unit cell details from the CRYST1 line.
    * 
@@ -591,8 +596,10 @@ public class CoefCalcPDB extends CoefCalcCompute {
         elementSymbol, inputLine);
 
     Atom proteinAtom = parser.findAtomWithName(elementSymbol);
-    proteinAtom.macromolecularOccurrence += occupancyNum;
-    proteinAtom.hetatmOccurrence += occupancyNum;
+    proteinAtom.setMacromolecularOccurrence(proteinAtom
+        .getMacromolecularOccurrence() + occupancyNum);
+    proteinAtom.setHetatmOccurrence(proteinAtom.getHetatmOccurrence()
+        + occupancyNum);
   }
 
   /**
@@ -604,23 +611,25 @@ public class CoefCalcPDB extends CoefCalcCompute {
    */
   public void parseSeqResLine(final String inputLine) {
     String sequenceOnly = inputLine.substring(19, inputLine.length());
-    
+
     while (sequenceOnly.length() > 3) {
       String threeLetters = sequenceOnly.substring(0, 3);
-      
+
       if (threeLetters.equals("   ")) {
         sequenceOnly = sequenceOnly.substring(4, sequenceOnly.length());
         continue;
       }
-      
+
       Residue residue = Residue.residueWithName(threeLetters);
-      
+
       if (residue == null) {
-        System.out.println("Warning: could not decipher PDB three letter code: " + threeLetters);
+        System.out
+            .println("Warning: could not decipher PDB three letter code: "
+                + threeLetters);
         sequenceOnly = sequenceOnly.substring(4, sequenceOnly.length());
         continue;
       }
-      
+
       if (residue.type == Residue.TYPE_PROTEIN) {
         numAminoAcids++;
       } else if (residue.type == Residue.TYPE_RNA) {
@@ -628,7 +637,7 @@ public class CoefCalcPDB extends CoefCalcCompute {
       } else if (residue.type == Residue.TYPE_DNA) {
         numDNA++;
       }
-      
+
       Atom hydrogen = parser.findAtomWithName("H");
       Atom oxygen = parser.findAtomWithName("O");
       Atom carbon = parser.findAtomWithName("C");
@@ -636,13 +645,19 @@ public class CoefCalcPDB extends CoefCalcCompute {
       Atom phosphorus = parser.findAtomWithName("P");
       Atom sulphurs = parser.findAtomWithName("S");
 
-      hydrogen.macromolecularOccurrence += residue.hydrogens;
-      oxygen.macromolecularOccurrence += residue.oxygens;
-      carbon.macromolecularOccurrence += residue.carbons;
-      nitrogen.macromolecularOccurrence += residue.nitrogens;
-      phosphorus.macromolecularOccurrence += residue.phosphoruses;
-      sulphurs.macromolecularOccurrence += residue.sulphurs;
-      
+      hydrogen.setMacromolecularOccurrence(residue.hydrogens
+          + hydrogen.getMacromolecularOccurrence());
+      oxygen.setMacromolecularOccurrence(residue.oxygens
+          + oxygen.getMacromolecularOccurrence());
+      carbon.setMacromolecularOccurrence(residue.carbons
+          + carbon.getMacromolecularOccurrence());
+      nitrogen.setMacromolecularOccurrence(residue.nitrogens
+          + nitrogen.getMacromolecularOccurrence());
+      phosphorus.setMacromolecularOccurrence(residue.phosphoruses
+          + phosphorus.getMacromolecularOccurrence());
+      sulphurs.setMacromolecularOccurrence(residue.sulphurs
+          + sulphurs.getMacromolecularOccurrence());
+
       sequenceOnly = sequenceOnly.substring(4, sequenceOnly.length());
     }
   }
@@ -688,8 +703,10 @@ public class CoefCalcPDB extends CoefCalcCompute {
    */
   public void multiplyAtoms(final int num) {
     for (int i = 0; i < parser.atomCount; i++) {
-      parser.atoms[i].macromolecularOccurrence *= num;
-      parser.atoms[i].hetatmOccurrence *= num;
+      parser.atoms[i].setMacromolecularOccurrence(parser.atoms[i]
+          .getMacromolecularOccurrence() * num);
+      parser.atoms[i].setHetatmOccurrence(parser.atoms[i].getHetatmOccurrence()
+          * num);
     }
   }
 
@@ -708,7 +725,7 @@ public class CoefCalcPDB extends CoefCalcCompute {
     hydrogens += numRNA * HYDROGENS_PER_RNA_NUCLEOTIDE;
     hydrogens += numDNA * HYDROGENS_PER_DNA_NUCLEOTIDE;
 
-    parser.findAtomWithZ(1).macromolecularOccurrence = hydrogens;
+    parser.findAtomWithZ(1).setMacromolecularOccurrence(hydrogens);
   }
 
   /**
