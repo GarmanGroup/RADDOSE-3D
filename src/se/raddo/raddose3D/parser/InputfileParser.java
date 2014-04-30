@@ -319,9 +319,9 @@ public class InputfileParser extends Parser {
             if (((crystal_scope)crystal_stack.peek()).crystalCoefCalc == 4)
             {
               if (((crystal_scope)crystal_stack.peek()).heavySolutionConcNames.size() > 0)
-              	((crystal_scope)crystal_stack.peek()).crystalCoefCalcClass = new CoefCalcPDB(((crystal_scope)crystal_stack.peek()).pdb, ((crystal_scope)crystal_stack.peek()).heavySolutionConcNames, ((crystal_scope)crystal_stack.peek()).heavySolutionConcNums);
+              	((crystal_scope)crystal_stack.peek()).crystalCoefCalcClass = new CoefCalcFromPDB(((crystal_scope)crystal_stack.peek()).pdb, ((crystal_scope)crystal_stack.peek()).heavySolutionConcNames, ((crystal_scope)crystal_stack.peek()).heavySolutionConcNums);
               else
-            	((crystal_scope)crystal_stack.peek()).crystalCoefCalcClass = new CoefCalcPDB(((crystal_scope)crystal_stack.peek()).pdb);
+            	((crystal_scope)crystal_stack.peek()).crystalCoefCalcClass = new CoefCalcFromPDB(((crystal_scope)crystal_stack.peek()).pdb);
               													  													
             }
 

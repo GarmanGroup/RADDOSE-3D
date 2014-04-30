@@ -18,7 +18,7 @@ import se.raddo.raddose3D.MuCalcConstantParser.Atom;
  * 
  * @author magd3052
  */
-public class CoefCalcPDB extends CoefCalcCompute {
+public class CoefCalcFromPDB extends CoefCalcCompute {
 
   /**
    * Residue looks after the 20 amino acids, 4 RNA bases and
@@ -482,7 +482,7 @@ public class CoefCalcPDB extends CoefCalcCompute {
   /** Length of SEQRES residue name. */
   protected static final int    SEQRES_RESI_LENGTH        = 3;
 
-  /** Directive first six characters - end pos */
+  /** Directive first six characters - end pos. */
   protected static final int    DIRECTIVE_END_POS         = 6;
 
   /**
@@ -747,9 +747,11 @@ public class CoefCalcPDB extends CoefCalcCompute {
    */
   public void multiplyAtoms(final int num) {
     for (int i = 0; i < this.getParser().getAtomCount(); i++) {
-      this.getParser().getAtoms()[i].setMacromolecularOccurrence(this.getParser().getAtoms()[i]
+      this.getParser().getAtoms()[i].setMacromolecularOccurrence(this
+          .getParser().getAtoms()[i]
           .getMacromolecularOccurrence() * num);
-      this.getParser().getAtoms()[i].setHetatmOccurrence(this.getParser().getAtoms()[i]
+      this.getParser().getAtoms()[i].setHetatmOccurrence(this.getParser()
+          .getAtoms()[i]
           .getHetatmOccurrence()
           * num);
     }
@@ -838,7 +840,7 @@ public class CoefCalcPDB extends CoefCalcCompute {
    * @param pdbCode four letter PDB code
    */
 
-  public CoefCalcPDB(final String pdbCode) {
+  public CoefCalcFromPDB(final String pdbCode) {
     String pdbName = pdbCode.toUpperCase();
     this.setParser(new MuCalcConstantParser());
 
@@ -862,7 +864,7 @@ public class CoefCalcPDB extends CoefCalcCompute {
    * @param heavySolvConcNames solvent element names
    * @param heavySolvConcNums solvent concentrations in mM.
    */
-  public CoefCalcPDB(final String pdbName,
+  public CoefCalcFromPDB(final String pdbName,
       final List<String> heavySolvConcNames,
       final List<Double> heavySolvConcNums) {
     String pdbNameUpperCase = pdbName.toUpperCase();

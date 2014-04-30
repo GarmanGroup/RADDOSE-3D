@@ -96,9 +96,9 @@ if ($crystal::crystalCoefCalc == 3) {
 if ($crystal::crystalCoefCalc == 4)
 {
   if ($crystal::heavySolutionConcNames.size() > 0)
-  	$crystal::crystalCoefCalcClass = new CoefCalcPDB($crystal::pdb, $crystal::heavySolutionConcNames, $crystal::heavySolutionConcNums);
+  	$crystal::crystalCoefCalcClass = new CoefCalcFromPDB($crystal::pdb, $crystal::heavySolutionConcNames, $crystal::heavySolutionConcNums);
   else
-	$crystal::crystalCoefCalcClass = new CoefCalcPDB($crystal::pdb);
+	$crystal::crystalCoefCalcClass = new CoefCalcFromPDB($crystal::pdb);
   													  													
 }
 
