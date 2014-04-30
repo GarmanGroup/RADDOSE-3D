@@ -519,63 +519,7 @@ public class MuCalcConstantParser {
       this.absorptionEdgeM = newabsorptionEdgeM;
     }
 
-    /**
-     * @return the absorptionEdgeKCoeff
-     */
-    public double[] getAbsorptionEdgeKCoeff() {
-      return absorptionEdgeKCoeff;
-    }
-
-    /**
-     * @param newabsorptionEdgeKCoeff the absorptionEdgeKCoeff to set
-     */
-    public void setAbsorptionEdgeKCoeff(final double[] newabsorptionEdgeKCoeff) {
-      this.absorptionEdgeKCoeff = newabsorptionEdgeKCoeff;
-    }
-
-    /**
-     * @return the absorptionEdgeLCoeff
-     */
-    public double[] getAbsorptionEdgeLCoeff() {
-      return absorptionEdgeLCoeff;
-    }
-
-    /**
-     * @param newabsorptionEdgeLCoeff the absorptionEdgeLCoeff to set
-     */
-    public void setAbsorptionEdgeLCoeff(final double[] newabsorptionEdgeLCoeff) {
-      this.absorptionEdgeLCoeff = newabsorptionEdgeLCoeff;
-    }
-
-    /**
-     * @return the absorptionEdgeMCoeff
-     */
-    public double[] getAbsorptionEdgeMCoeff() {
-      return absorptionEdgeMCoeff;
-    }
-
-    /**
-     * @param newabsorptionEdgeMCoeff the absorptionEdgeMCoeff to set
-     */
-    public void setAbsorptionEdgeMCoeff(final double[] newabsorptionEdgeMCoeff) {
-      this.absorptionEdgeMCoeff = newabsorptionEdgeMCoeff;
-    }
-
-    /**
-     * @return the absorptionEdgeNCoeff
-     */
-    public double[] getAbsorptionEdgeNCoeff() {
-      return absorptionEdgeNCoeff;
-    }
-
-    /**
-     * @param newabsorptionEdgeNCoeff the absorptionEdgeNCoeff to set
-     */
-    public void setAbsorptionEdgeNCoeff(final double[] newabsorptionEdgeNCoeff) {
-      this.absorptionEdgeNCoeff = newabsorptionEdgeNCoeff;
-    }
-
-    /**
+        /**
      * @return the atomicWeight
      */
     public double getAtomicWeight() {
@@ -587,36 +531,6 @@ public class MuCalcConstantParser {
      */
     public void setAtomicWeight(final double newatomicWeight) {
       this.atomicWeight = newatomicWeight;
-    }
-
-    /**
-     * @return the coherentScatteringCoeff
-     */
-    public double[] getCoherentScatteringCoeff() {
-      return coherentScatteringCoeff;
-    }
-
-    /**
-     * @param newcoherentScatteringCoeff the coherentScatteringCoeff to set
-     */
-    public void setCoherentScatteringCoeff(
-        final double[] newcoherentScatteringCoeff) {
-      this.coherentScatteringCoeff = newcoherentScatteringCoeff;
-    }
-
-    /**
-     * @return the incoherentScatteringCoeff
-     */
-    public double[] getIncoherentScatteringCoeff() {
-      return incoherentScatteringCoeff;
-    }
-
-    /**
-     * @param newincoherentScatteringCoeff the incoherentScatteringCoeff to set
-     */
-    public void setIncoherentScatteringCoeff(
-        final double[] newincoherentScatteringCoeff) {
-      this.incoherentScatteringCoeff = newincoherentScatteringCoeff;
     }
 
     /**
@@ -673,7 +587,7 @@ public class MuCalcConstantParser {
      * @return the hetatmOccurrence
      */
     public double getHetatmOccurrence() {
-      return hetatmOccurrence;
+      return new Double(hetatmOccurrence);
     }
 
     /**
