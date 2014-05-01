@@ -52,4 +52,11 @@ public class Assertion {
     Assert.assertEquals(value, target, name + " set incorrectly (" + value + ")");
   }
 
+  /**
+   * Tests object for null with a nice error message.
+   */
+  public static void isNotNull(Object object, String name) {
+    Assert.assertNotNull(object, name + " is null");
+  }
+
 }
