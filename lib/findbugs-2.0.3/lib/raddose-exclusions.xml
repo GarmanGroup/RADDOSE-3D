@@ -1,0 +1,6 @@
+<FindBugsFilter>
+    <Match>
+      <Bug pattern="UL_UNRELEASED_LOCK_EXCEPTION_PATH" /> <!-- seems buggy -->
+    </Match>
+</FindBugsFilter>
+    
