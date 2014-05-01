@@ -38,7 +38,7 @@ public class OutputSummaryText implements ExposeObserver, Output,
   private Integer              wedgeNum                  = 0;
 
   /** List of references to display. */
-  private List<String>         references                = 
+  private List<String>         references                =
       new ArrayList<String>();
 
   /**
