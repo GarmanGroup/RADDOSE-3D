@@ -150,9 +150,10 @@ public class ExperimentDummy extends Experiment {
         return 0;
       }
 
+      @SuppressWarnings("PMD.ReturnEmptyArrayRatherThanNull")
       @Override
       public double[] getCrystCoord(final int i, final int j, final int k) {
-        return null; // NOPMD - Don't use this class for anything useful
+        return null;
       }
 
       @Override
@@ -182,9 +183,10 @@ public class ExperimentDummy extends Experiment {
         return crystSizeVoxels;
       }
 
+      @SuppressWarnings("PMD.ReturnEmptyArrayRatherThanNull")
       @Override
       public double[] getCrystSizeUM() {
-        return null; // NOPMD - Don't use this class for anything useful
+        return null;
       }
 
       @Override

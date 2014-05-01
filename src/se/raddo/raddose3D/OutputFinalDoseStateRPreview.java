@@ -53,10 +53,12 @@ public class OutputFinalDoseStateRPreview implements Output {
 
   @Override
   public void publishWedge(final Wedge wdg) {
+    // No implementation required.
   }
 
   @Override
   public void publishBeam(final Beam b) {
+    // No implementation required.
   }
 
   @Override

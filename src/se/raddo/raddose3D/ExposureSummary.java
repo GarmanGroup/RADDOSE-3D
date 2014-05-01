@@ -76,6 +76,7 @@ public class ExposureSummary implements ExposeObserver {
 
   @Override
   public void register(final Crystal c) {
+    // No implementation required.
   }
 
   @Override
