@@ -260,8 +260,8 @@
   <findbugs home="${findbugs.home}"
             output="xml:withMessages"
             outputFile="${report.dir}/findbugs.xml"
-  	        excludeFilter="${findbugs.home}/raddose-exclusions.xml"
-  	        effort="max">
+            excludeFilter="${findbugs.home}/raddose-exclusions.xml"
+            effort="max">
    <fileset dir="bin">
     <include name="**/*.class"/>
     <exclude name="se/raddo/raddose3D/parser/**/*"/>
