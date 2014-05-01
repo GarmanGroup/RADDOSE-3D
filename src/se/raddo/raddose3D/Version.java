@@ -6,13 +6,6 @@ package se.raddo.raddose3D;
 public final class Version {
 
   /**
-   * Declare constructor for this class private. Class only holds static version
-   * strings, and thus does not need to be instantiated.
-   */
-  private Version() {
-  }
-
-  /**
    * A string containing the SVN revision of the current source code. This line
    * ('?' followed by '---' and '?') gets changed automatically during the
    * build/deploy process to the SVN revision number. In development builds the
@@ -48,8 +41,15 @@ public final class Version {
                                                + VERSION_MINOR + "."
                                                + VERSION_BUILD;
 
+  /**
+   * Declare constructor for this class private. Class only holds static version
+   * strings, and thus does not need to be instantiated.
+   */
+  private Version() {
+  }
+
   /** prints version information to STDOUT. */
-  public static final void printVersionInformation() {
+  public static void printVersionInformation() {
     System.out.println("Raddose 3D\nversion " + VERSION);
   }
 }
