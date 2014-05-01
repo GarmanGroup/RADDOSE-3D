@@ -13,13 +13,12 @@ import se.raddo.raddose3D.Wedge;
 
 public class WedgeTest {
 
-  @SuppressWarnings("unused")
   @Test
   /** Instantiation should fail if required parameters are missing. */
   public void testInstantiationFail() {
     try {
-      Wedge w = new Wedge(null, null, null, null, null, null, null, null, null,
-          null, null);
+      new Wedge(null, null, null, null, null, null, null, null, null, null,
+          null);
     } catch (RuntimeException e) {
       System.out.println(e);
       System.out.println("@Test - testInstantiationFail");
@@ -34,7 +33,7 @@ public class WedgeTest {
   public void testInstantiationDefaults() {
     Wedge w = new Wedge(null, 0d, 90d, 120d, null, null, null, null, null,
         null, null);
-       
+
     Assertion.isNotNull(w.getAngRes(), "angular resolution");
     Assertion.equals(w.getStartAng(), Math.toRadians(0), "start angle");
     Assertion.equals(w.getEndAng(), Math.toRadians(90), "end angle");
@@ -50,11 +49,11 @@ public class WedgeTest {
     System.out.println("@Test - testInstantiationDefaults");
   }
 
-// TODO
-//  @Test
-//  /** Instantiation with all parameters. */
-//  public void testInstantiation() {
-//    
-//    System.out.println("@Test - testInstantiation");
-//  }
+  // TODO
+  //  @Test
+  //  /** Instantiation with all parameters. */
+  //  public void testInstantiation() {
+  //    
+  //    System.out.println("@Test - testInstantiation");
+  //  }
 }
