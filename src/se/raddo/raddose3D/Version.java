@@ -6,12 +6,36 @@ package se.raddo.raddose3D;
 public final class Version {
 
   /**
-   * A string containing the SVN revision of the current source code. This line
-   * ('?' followed by '---' and '?') gets changed automatically during the
-   * build/deploy process to the SVN revision number. In development builds the
-   * version will be reported as 'head'.
+   * A string containing a revision number of the current source code. This line
+   * ('?' followed by '---' and '?') is modified automatically during the
+   * build/deploy process. In development builds the version will be reported as
+   * 'head'.
    */
-  private static final String SVN_REVISION = "?---?";
+  private static final String REVISION      = "?---?";
+
+  /** The major version number. */
+  public static final long    VERSION_MAJOR = 1;
+
+  /** The minor version number. */
+  public static final long    VERSION_MINOR = 1;
+
+  /** The true build number (depending on REVISION). */
+  @SuppressWarnings("unused")
+  public static final String  VERSION_BUILD = (REVISION == "?-" + "-"
+                                                + "-?") ? "head"
+                                                : REVISION;
+
+  /** A string built from version number plus build number. */
+  public static final String  VERSION       = VERSION_MAJOR + "."
+                                                + VERSION_MINOR + "."
+                                                + VERSION_BUILD;
+
+  /**
+   * Declare constructor for this class private. Class only holds static version
+   * strings, and thus does not need to be instantiated.
+   */
+  private Version() {
+  }
 
   /**
    * Can be called from outside to read version number. This function is used
@@ -24,31 +48,7 @@ public final class Version {
     System.out.println(VERSION);
   }
 
-  /** The major version number. */
-  public static final long   VERSION_MAJOR = 1;
-
-  /** The minor version number. */
-  public static final long   VERSION_MINOR = 1;
-
-  /** The build number (the SVN revision the build is based upon). */
-  @SuppressWarnings("unused")
-  public static final String VERSION_BUILD = (SVN_REVISION == "?-" + "-"
-                                               + "-?") ? "head"
-                                               : SVN_REVISION;
-
-  /** A string built from version number plus build number. */
-  public static final String VERSION       = VERSION_MAJOR + "."
-                                               + VERSION_MINOR + "."
-                                               + VERSION_BUILD;
-
-  /**
-   * Declare constructor for this class private. Class only holds static version
-   * strings, and thus does not need to be instantiated.
-   */
-  private Version() {
-  }
-
-  /** prints version information to STDOUT. */
+  /** Prints version information to STDOUT. */
   public static void printVersionInformation() {
     System.out.println("Raddose 3D\nversion " + VERSION);
   }
