@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Map;
 
 /**
- * Crystal abstract class
+ * Crystal abstract class.
  */
 public abstract class Crystal {
 
@@ -85,9 +85,9 @@ public abstract class Crystal {
    * depth of the coordinate in micrometres from the surface of the crystal
    * along the [0 0 1] unit vector.
    * 
-   * @param voxCoord
-   * @param deltaPhi
-   * @param myWedge
+   * @param voxCoord coordinates of voxel
+   * @param deltaPhi change in phi
+   * @param myWedge Wedge object
    * @return depth
    */
   public abstract double findDepth(double[] voxCoord, double deltaPhi,
@@ -100,9 +100,9 @@ public abstract class Crystal {
    * Return the coordinates, in micrometres from the origin (centre of
    * rotation and beam intercept) of voxel ijk.
    * 
-   * @param i
-   * @param j
-   * @param k
+   * @param i i coord
+   * @param j j coord
+   * @param k k coord
    * @return crystal coordinates
    */
   public abstract double[] getCrystCoord(int i, int j, int k);
@@ -110,9 +110,9 @@ public abstract class Crystal {
   /**
    * returns TRUE if there is a crystal at the coordinates i, j, k.
    * 
-   * @param i
-   * @param j
-   * @param k
+   * @param i i coord
+   * @param j j coord
+   * @param k k coord
    * @return TRUE if crystal present at coords
    */
   public abstract boolean isCrystalAt(int i, int j, int k);
@@ -120,9 +120,9 @@ public abstract class Crystal {
   /**
    * Should increment the dose array element ijk by doseVox.
    * 
-   * @param i
-   * @param j
-   * @param k
+   * @param i i coord
+   * @param j j coord
+   * @param k k coord
    * @param doseIncrease
    */
   public abstract void addDose(int i, int j, int k, double doseIncrease);
@@ -130,9 +130,9 @@ public abstract class Crystal {
   /**
    * Should increment the fluence array element ijk by fluenceVox.
    * 
-   * @param i
-   * @param j
-   * @param k
+   * @param i i coord
+   * @param j j coord
+   * @param k k coord
    * @param fluenceIncrease
    */
   public abstract void addFluence(int i, int j, int k, double fluenceIncrease);
@@ -140,9 +140,9 @@ public abstract class Crystal {
   /**
    * Should increment the elastic yield array element ijk by fluenceVox.
    * 
-   * @param i
-   * @param j
-   * @param k
+   * @param i i coord
+   * @param j j coord
+   * @param k k coord
    * @param elasticIncrease
    */
   public abstract void addElastic(int i, int j, int k, double elasticIncrease);
@@ -166,32 +166,33 @@ public abstract class Crystal {
   /**
    * Return the dose at voxel ijk in MGy.
    * 
-   * @param i
-   * @param j
-   * @param k
+   * @param i i coord
+   * @param j j coord
+   * @param k k coord
    */
   public abstract double getDose(int i, int j, int k);
 
   /**
    * Return the fluence at voxel ijk.
    * 
-   * @param i
-   * @param j
-   * @param k
+   * @param i i coord
+   * @param j j coord
+   * @param k k coord
    */
   public abstract double getFluence(int i, int j, int k);
 
   /**
    * Return the total elastic scattering from voxel ijk.
    * 
-   * @param i
-   * @param j
-   * @param k
+   * @param i i coord
+   * @param j j coord
+   * @param k k coord
    */
   public abstract double getElastic(int i, int j, int k);
 
   /**
    * Return the resolution of the crystal in 1/um.
+   * @return resolution of crystal in 1 / um.
    */
   public abstract double getCrystalPixPerUM();
 
