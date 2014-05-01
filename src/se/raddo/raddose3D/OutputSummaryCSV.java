@@ -21,7 +21,7 @@ public class OutputSummaryCSV implements Output {
   private ExposureSummary      expSummary;
 
   /** Number of seen wedges. */
-  private int                  wedgeCounter              = 0;
+  private int                  wedgeCounter;
 
   /**
    * Generic property constructor for OutputSummaryCSV class.
@@ -66,6 +66,7 @@ public class OutputSummaryCSV implements Output {
 
   @Override
   public void publishBeam(final Beam b) {
+    // No implementation required.
   }
 
   @Override

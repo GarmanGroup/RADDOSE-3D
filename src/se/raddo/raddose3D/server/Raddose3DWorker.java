@@ -4,7 +4,7 @@ import java.lang.Thread.UncaughtExceptionHandler;
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadMXBean;
 import java.util.HashMap;
-import java.util.Vector;
+import java.util.List;
 
 import se.raddo.raddose3D.Experiment;
 import se.raddo.raddose3D.InputException;
@@ -155,8 +155,8 @@ public class Raddose3DWorker
     System.out.println("Worker " + jobID + ": Done.");
 
     // Update performance metrics.
-    Vector<Long> cvs = progressEstimate.getCrystalVoxelList();
-    Vector<Long> wss = progressEstimate.getWedgeSliceList();
+    List<Long> cvs = progressEstimate.getCrystalVoxelList();
+    List<Long> wss = progressEstimate.getWedgeSliceList();
 
     if (cvs.size() != wss.size()) {
       throw new RuntimeException("Progress Estimate information malformed.");

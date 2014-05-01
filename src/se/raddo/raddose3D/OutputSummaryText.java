@@ -1,9 +1,9 @@
 package se.raddo.raddose3D;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 /** Summary text output module for the PNAS 2013 release of the code. */
 public class OutputSummaryText implements ExposeObserver, Output,
@@ -38,7 +38,8 @@ public class OutputSummaryText implements ExposeObserver, Output,
   private Integer              wedgeNum                  = 0;
 
   /** List of references to display. */
-  private List<String>         references                = new Vector<String>();
+  private List<String>         references                = 
+      new ArrayList<String>();
 
   /**
    * Generic property constructor for OutputSummaryText class.

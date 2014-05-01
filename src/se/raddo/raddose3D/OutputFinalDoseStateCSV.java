@@ -39,10 +39,12 @@ public class OutputFinalDoseStateCSV implements Output {
 
   @Override
   public void publishWedge(final Wedge wdg) {
+    // No implementation needed.
   }
 
   @Override
   public void publishBeam(final Beam b) {
+    // No implementation needed.
   }
 
   @Override

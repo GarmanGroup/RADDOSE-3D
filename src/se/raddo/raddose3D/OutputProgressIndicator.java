@@ -81,6 +81,7 @@ public class OutputProgressIndicator implements Output, ExposeObserver {
       final double addedDose, final double totalDose, final double fluence,
       final double relativeDiffractionEfficiency, final double absorbedEnergy,
       final double elastic) {
+    // No implementation required
   }
 
   @Override
@@ -116,6 +117,7 @@ public class OutputProgressIndicator implements Output, ExposeObserver {
   @Override
   public void summaryObservation(final int i, final int j, final int k,
       final double totalDose) {
+    // No implementation required
   }
 
   @Override

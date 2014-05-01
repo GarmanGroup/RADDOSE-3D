@@ -5,6 +5,7 @@ import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * RADDOSE-3D main class for command line invocation.
@@ -17,9 +18,9 @@ public final class RD3D {
   /** Array of command line parameters. */
   private final String[]    commandLineParams;
   /** List of prepared input modules for the simulation. */
-  private ArrayList<Input>  inputs               = new ArrayList<Input>();
+  private List<Input>       inputs               = new ArrayList<Input>();
   /** List of prepared output modules for the simulation. */
-  private ArrayList<Output> outputs              = new ArrayList<Output>();
+  private List<Output>      outputs              = new ArrayList<Output>();
   /** Experiment class for the simulation. */
   private Experiment        exp                  = new Experiment();
   /** Common prefix for output files. */
@@ -136,8 +137,9 @@ public final class RD3D {
 
   /**
    * Parse all regular command line parameters.
-   * Populates the two Vectors inputs and outputs.
+   * Populates the two lists inputs and outputs.
    */
+  @SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
   private void parseCommandLineParameters() {
     OutputFactory of = new OutputFactory();
 

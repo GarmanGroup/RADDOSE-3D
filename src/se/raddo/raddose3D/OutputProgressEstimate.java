@@ -1,26 +1,26 @@
 package se.raddo.raddose3D;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 /**
  * TODO: Comment on what this does and where it is used
- * 
  * Underlying model: Time / TTick = xa + (CrystalVoxels + xb Sum_WedgeSlices).
  * This code reports CrystalVoxels and Sum_WedgeSlices.
  */
 public class OutputProgressEstimate implements Output {
   /** Where output should be directed to. (optional) */
-  private final Writer w;
+  private final Writer          w;
 
   /** The total number of voxels in the last seen crystal. */
-  private Long         crystalVoxels     = 0L;
+  private Long                  crystalVoxels     = 0L;
   /** The total number of wedge exposures of the current crystal so far. */
-  private Long         sumWedgeSlices    = 0L;
+  private Long                  sumWedgeSlices    = 0L;
   /** A list of numbers of voxels for all seen crystals. */
-  private Vector<Long> crystalVoxelList  = new Vector<Long>();
+  private final List<Long> crystalVoxelList  = new ArrayList<Long>();
   /** A list of numbers of wedge exposures for all seen crystals. */
-  private Vector<Long> sumWedgeSliceList = new Vector<Long>();
+  private final List<Long> sumWedgeSliceList = new ArrayList<Long>();
 
   /**
    * Generic property constructor for OutputProgressEstimate output class.
@@ -54,6 +54,7 @@ public class OutputProgressEstimate implements Output {
 
   @Override
   public void publishBeam(final Beam b) {
+    // No implementation needed.
   }
 
   @Override
@@ -102,7 +103,7 @@ public class OutputProgressEstimate implements Output {
    * @return
    *         Ordered list of numbers of voxels.
    */
-  public Vector<Long> getCrystalVoxelList() {
+  public List<Long> getCrystalVoxelList() {
     return crystalVoxelList;
   }
 
@@ -114,7 +115,7 @@ public class OutputProgressEstimate implements Output {
    *         An ordered list containing the number of wedge exposures for each
    *         seen crystal.
    */
-  public Vector<Long> getWedgeSliceList() {
+  public List<Long> getWedgeSliceList() {
     return sumWedgeSliceList;
   }
 }
