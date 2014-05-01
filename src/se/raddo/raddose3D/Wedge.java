@@ -17,6 +17,7 @@ public class Wedge {
     OFF_AXIS
   };
 
+  /** Storage of all wedge properties. */
   private final Map<WedgeProperties, Double> properties;
 
   /**
@@ -25,7 +26,9 @@ public class Wedge {
    * 
    * @param angularResolution
    * @param startAngle
+   *          Start angle of exposure in degrees.
    * @param endAngle
+   *          End angle of exposure in degrees.
    * @param totalSecondsExposure
    * @param startXposition
    * @param startYposition
@@ -58,6 +61,7 @@ public class Wedge {
     properties.put(WedgeProperties.OFF_AXIS, 0d);
 
     /* Compulsory variables */
+    // TODO: Setting the angles in degrees, but getting them in radians? Why?
     properties.put(WedgeProperties.ANGLE_START, Math.toRadians(startAngle));
     properties.put(WedgeProperties.ANGLE_END, Math.toRadians(endAngle));
     properties.put(WedgeProperties.EXPOSURE_TIME, totalSecondsExposure);
