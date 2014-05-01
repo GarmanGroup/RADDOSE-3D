@@ -6,10 +6,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Scanner;
-import java.util.Vector;
 
 /**
  * Calculate absorption and attenuation coefficients using a previous version of
@@ -19,18 +19,18 @@ import java.util.Vector;
  */
 public class CoefCalcRaddose extends CoefCalc {
   /** Constant for unit conversion. */
-  private static final long UNITSPERMILLIUNIT   = 1000L;
+  private static final long UNITSPERMILLIUNIT = 1000L;
 
   /**
    * Suggested location of RADDOSE executable.
    */
-  private static String     raddosePathOverride = null;
+  private static String     raddosePathOverride;
 
   /**
    * Actual location of RADDOSE executable.
    * Will try to find it if not set manually.
    */
-  private static String     raddosePath         = null;
+  private static String     raddosePath;
 
   /**
    * Description of the experiment.
@@ -54,11 +54,11 @@ public class CoefCalcRaddose extends CoefCalc {
       final Double solventFraction) {
 
     String cell;
-    if (cellAlpha != null && cellBeta != null && cellGamma != null) {
+    if (cellAlpha == null || cellBeta == null || cellGamma == null) {
+      cell = "CELL " + cellA + " " + cellB + " " + cellC + "\n";
+    } else {
       cell = "CELL " + cellA + " " + cellB + " " + cellC + " "
           + cellAlpha + " " + cellBeta + " " + cellGamma + "\n";
-    } else {
-      cell = "CELL " + cellA + " " + cellB + " " + cellC + "\n";
     }
 
     String nMon = "NMON " + numMonomers + "\n";
@@ -79,7 +79,7 @@ public class CoefCalcRaddose extends CoefCalc {
 
     String pAtm;
     if ((heavyProteinAtomNames == null)
-        || (heavyProteinAtomNames.size() == 0)) {
+        || heavyProteinAtomNames.isEmpty()) {
       pAtm = "";
     } else {
       StringBuffer p = new StringBuffer("PATM");
@@ -92,7 +92,7 @@ public class CoefCalcRaddose extends CoefCalc {
 
     String sAtm;
     if ((heavySolutionConcNames == null)
-        || (heavySolutionConcNames.size() == 0)) {
+        || heavySolutionConcNames.isEmpty()) {
       sAtm = "";
     } else {
       StringBuffer p = new StringBuffer("SATM");
@@ -145,10 +145,10 @@ public class CoefCalcRaddose extends CoefCalc {
     }
 
     // Try to find RADDOSE executable
-    Vector<String> raddoseCandidates = new Vector<String>();
+    List<String> raddoseCandidates = new ArrayList<String>();
     if ((raddosePathOverride != null) && (!raddosePathOverride.equals(""))) {
       raddoseCandidates.add(raddosePathOverride);
-      if (raddosePathOverride.indexOf("/") < 0) {
+      if (raddosePathOverride.indexOf('/') < 0) {
         raddoseCandidates.add("./" + raddosePathOverride);
       }
     }
@@ -164,10 +164,7 @@ public class CoefCalcRaddose extends CoefCalc {
       File fileCandidate = new File(raddoseCandidate);
       if (fileCandidate.exists()) {
         // This is a good sign
-        if (!fileCandidate.canExecute()) {
-          System.out.println("Found RADDOSE at " + raddoseCandidate
-              + " but is not executable");
-        } else {
+        if (fileCandidate.canExecute()) {
           // This is even better
           command = raddoseCandidate;
           try {
@@ -181,6 +178,9 @@ public class CoefCalcRaddose extends CoefCalc {
             raddosePath = command;
             return raddose;
           }
+        } else {
+          System.out.println("Found RADDOSE at " + raddoseCandidate
+              + " but is not executable");
         }
       }
     }
@@ -201,12 +201,13 @@ public class CoefCalcRaddose extends CoefCalc {
   }
 
   @Override
+  @SuppressWarnings("PMD.PrematureDeclaration")
   public void updateCoefficients(final Wedge w, final Beam b) {
-    String energy = String.format("ENERGY %g\n", b.getPhotonEnergy());
-    String phoSec = String.format("PHOSEC %g\n", b.getPhotonsPerSec());
-    String exposure = String.format("EXPOSURE %g\n", w.getTotSec());
+    String energy = String.format("ENERGY %g%n", b.getPhotonEnergy());
+    String phoSec = String.format("PHOSEC %g%n", b.getPhotonsPerSec());
+    String exposure = String.format("EXPOSURE %g%n", w.getTotSec());
     String debug = "DEBUG\n";
-    
+
     Process oldRD = runRaddose();
     try {
       // Now run the old RADDOSE and get coefficients from output stream.
@@ -229,9 +230,9 @@ public class CoefCalcRaddose extends CoefCalc {
       scanIN.useLocale(Locale.US);
       while (scanIN.hasNext()) {
         String word = scanIN.next();
-        
-    // DEBUG    System.out.print(word + " ");
-        if (word.equals("Absorption") && scanIN.hasNext("Coefficient")) {
+
+        // DEBUG    System.out.print(word + " ");
+        if ("Absorption".equals(word) && scanIN.hasNext("Coefficient")) {
           scanIN.next();
           scanIN.next();
           if (scanIN.hasNextDouble()) {
@@ -242,7 +243,7 @@ public class CoefCalcRaddose extends CoefCalc {
                 "Error in Absorption calculation using RDV2");
           }
         }
-        if (word.equals("(Rayleigh)")) {
+        if ("(Rayleigh)".equals(word)) {
           scanIN.next();
           scanIN.next();
           if (scanIN.hasNextDouble()) {
@@ -253,7 +254,7 @@ public class CoefCalcRaddose extends CoefCalc {
                 "Error in Elastic calculation using RDV2");
           }
         }
-        if (word.equals("Attenuation")) {
+        if ("Attenuation".equals(word)) {
           scanIN.next();
           scanIN.next();
           if (scanIN.hasNextDouble()) {
@@ -264,7 +265,7 @@ public class CoefCalcRaddose extends CoefCalc {
                 "Error in Attenuation calculation using RDV2");
           }
         }
-        if (word.equals("Density")) {
+        if ("Density".equals(word)) {
           scanIN.next();
           if (scanIN.hasNextDouble()) {
             density = scanIN.nextDouble();
@@ -316,11 +317,11 @@ public class CoefCalcRaddose extends CoefCalc {
   public String toString() {
     return String.format(
         "Crystal coefficients calculated with RADDOSE V2 "
-            + "(Paithankar et al., 2009). \n"
-            + "Absorption Coefficient: %.2e /um.\n"
-            + "Attenuation Coefficient: %.2e /um.\n"
-            + "Elastic Coefficient: %.2e /um.\n"
-            + "Density: %.2f g/ml.\n",
+            + "(Paithankar et al., 2009). %n"
+            + "Absorption Coefficient: %.2e /um.%n"
+            + "Attenuation Coefficient: %.2e /um.%n"
+            + "Elastic Coefficient: %.2e /um.%n"
+            + "Density: %.2f g/ml.%n",
         absCoeff, attCoeff, elasCoeff, density);
   }
 
