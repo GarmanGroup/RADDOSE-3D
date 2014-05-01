@@ -14,32 +14,32 @@ import java.util.Map;
 
 public class OutputFluencePerDoseHistCSV implements Output, ExposeObserver {
   /** Default number of bins for the fluence per dose histogram. */
-  private static final Integer DEFAULT_HISTOGRAM_BINS   = 199;
+  private static final Integer DEFAULT_HISTOGRAM_BINS = 199;
   /**
    * Default value for the lower bound of the second bin of the resulting
    * fluence per dose histogram.
    */
-  private static final Double  DEFAULT_HISTOGRAM_MIN    = 0.1;
+  private static final Double  DEFAULT_HISTOGRAM_MIN  = 0.1;
   /**
    * Default value for the upper bound of the penultimate bin of the resulting
    * fluence per dose histogram. All observations greater than this value are
    * grouped together.
    */
-  private static final Double  DEFAULT_HISTOGRAM_MAX    = 100.0;
+  private static final Double  DEFAULT_HISTOGRAM_MAX  = 100.0;
 
   /** Where output should be directed to. */
   private final Writer         w;
 
   /** Number of the current wedge. */
-  private int                  wedgeCounter             = 1;
+  private int                  wedgeCounter           = 1;
 
   /** A reference to the current Crystal object. */
   private Crystal              crystal;
 
   private final Histogram      h;
 
-  private double               diffractedIntensityNum   = 0;
-  private double               diffractedIntensityDenom = 0;
+  private double               diffractedIntensityNum;
+  private double               diffractedIntensityDenom;
 
   /**
    * Generic property constructor for OutputFluencePerDoseHistCSV output class.
@@ -66,8 +66,8 @@ public class OutputFluencePerDoseHistCSV implements Output, ExposeObserver {
     mProp.putAll(properties);
 
     // Check for valid parameters
-    Assertions a = new Assertions("Could not create " +
-        "OutputFluencePerDoseHistCSV: ");
+    Assertions a = new Assertions("Could not create "
+        + "OutputFluencePerDoseHistCSV: ");
     a.checkIsClass(mProp.get(OUTPUT_WRITER), Writer.class,
         "no writer class given");
     w = (Writer) mProp.get(OUTPUT_WRITER);
@@ -118,11 +118,12 @@ public class OutputFluencePerDoseHistCSV implements Output, ExposeObserver {
     for (int i = 1; i < histogram.length - 1; i++) {
       w.write(String.format(", %g", histogram[i]));
     }
-    w.write(String.format(", > %g\n", histogram[histogram.length - 1]));
+    w.write(String.format(", > %g%n", histogram[histogram.length - 1]));
   }
 
   @Override
   public void publishBeam(final Beam b) {
+    // Implementation not required.
   }
 
   @Override
@@ -167,14 +168,17 @@ public class OutputFluencePerDoseHistCSV implements Output, ExposeObserver {
   @Override
   public void summaryObservation(final int i, final int j, final int k,
       final double totalDose) {
+    // Implementation not required.
   }
 
   @Override
   public void exposureStart(final int imageCount) {
+    // Implementation not required.
   }
 
   @Override
   public void exposureComplete() {
+    // Implementation not required.
   }
 
   @Override
@@ -191,6 +195,7 @@ public class OutputFluencePerDoseHistCSV implements Output, ExposeObserver {
   }
 
   @Override
-  public void register(Crystal c) {
+  public void register(final Crystal c) {
+    // Implementation not required.
   }
 }

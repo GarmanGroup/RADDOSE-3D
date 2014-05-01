@@ -144,7 +144,7 @@ public final class RD3D {
     for (int i = 0; i < commandLineParams.length; i++) {
       String command = commandLineParams[i].toLowerCase();
 
-      if (command.equals("-i") || command.equals("--in")) {
+      if ("-i".equals(command) || "--in".equals(command)) {
         if ((i + 1) >= commandLineParams.length) {
           System.err.println("No input filename given");
         } else {
@@ -167,18 +167,18 @@ public final class RD3D {
           }
         }
 
-      } else if (command.equals("-p") || command.equals("--prefix")) {
+      } else if ("-p".equals(command) || "--prefix".equals(command)) {
         if ((i + 1) < commandLineParams.length) {
           i++;
           // prefix is assigned as a priority parameter,
           // so that it can affect earlier -o commands
         }
 
-      } else if (command.equals("-t") || command.equals("--test")) {
+      } else if ("-t".equals(command) || "--test".equals(command)) {
         System.out.println("Test run. No actual calculations will take place.");
         exp = new ExperimentDummy();
 
-      } else if (command.equals("-r") || command.equals("--raddose")) {
+      } else if ("-r".equals(command) || "--raddose".equals(command)) {
         if ((i + 1) >= commandLineParams.length) {
           System.err.println("No path to raddose executable given");
         } else {
@@ -188,7 +188,7 @@ public final class RD3D {
               + commandLineParams[i]);
         }
 
-      } else if (command.equals("-o") || command.equals("--out")) {
+      } else if ("-o".equals(command) || "--out".equals(command)) {
         //        module[:parameters]:dest[:dest[..]]
         if ((i + 1) >= commandLineParams.length) {
           System.err.println("No custom output specification given");
