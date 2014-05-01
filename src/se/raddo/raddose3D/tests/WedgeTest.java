@@ -36,8 +36,8 @@ public class WedgeTest {
         null, null);
        
     Assertion.isNotNull(w.getAngRes(), "angular resolution");
-    Assertion.equals(w.getStartAng(), 0d, "start angle");
-    Assertion.equals(w.getEndAng(), 90d, "end angle");
+    Assertion.equals(w.getStartAng(), Math.toRadians(0), "start angle");
+    Assertion.equals(w.getEndAng(), Math.toRadians(90), "end angle");
     Assertion.equals(w.getTotSec(), 120d, "exposure time");
     Assertion.isNotNull(w.getStartX(), "start X coordinate");
     Assertion.isNotNull(w.getStartY(), "start Y coordinate");
