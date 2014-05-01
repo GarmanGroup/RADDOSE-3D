@@ -336,7 +336,7 @@ public class CoefCalcCompute extends CoefCalc {
   /**
    * @return the parser
    */
-  protected MuCalcConstantParser getParser() {
+  public MuCalcConstantParser getParser() {
     return parser;
   }
 
