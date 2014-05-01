@@ -6,7 +6,14 @@ import org.testng.annotations.*;
 
 import se.raddo.raddose3D.CoefCalcFromParams;
 
+/**
+ * @author magd3052
+ */
 public class CoefCalcTests {
+  /**
+   * Take a unit cell consisting entirely of water and make sure
+   * number of hydrogens is twice the number of oxygens.
+   */
   @Test
   public void testCoefCalcWaterOnly() {
     List<String> atoms = new ArrayList<String>();
