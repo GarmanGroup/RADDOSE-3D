@@ -11,7 +11,11 @@ import org.apache.commons.math3.distribution.NormalDistribution;
 import java.util.Map;
 
 public class BeamGaussian implements Beam {
-  private final Double fwhmX, fwhmY;
+  /** Horizontal full width half maximum of the beam. */ 
+  private final Double fwhmX;
+
+  /** Vertical full width half maximum of the beam. */ 
+  private final Double fwhmY;
 
   /** Beam flux. */
   private final Double photonsPerSec;

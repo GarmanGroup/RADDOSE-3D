@@ -9,8 +9,6 @@ import se.raddo.raddose3D.Wedge;
 /**
  * A minimal implementation of the Crystal class, which does... nothing.
  * This class is only for test purposes.
- * 
- * @author Markus Gerstel
  */
 public class CrystalDummy extends Crystal {
   public CrystalDummy() {
@@ -38,10 +36,12 @@ public class CrystalDummy extends Crystal {
 
   @Override
   public void addDose(int i, int j, int k, double doseIncrease) {
+    // No implementation required.
   }
 
   @Override
   public void addFluence(int i, int j, int k, double fluenceIncrease) {
+    // No implementation required.
   }
 
   @Override
@@ -76,17 +76,16 @@ public class CrystalDummy extends Crystal {
 
   @Override
   public void setupDepthFinding(double angle, Wedge wedge) {
+    // No implementation required.
   }
 
   @Override
   public void addElastic(int i, int j, int k, double elasticIncrease) {
-    // TODO Auto-generated method stub
-    
+    // No implementation required.
   }
 
   @Override
   public double getElastic(int i, int j, int k) {
-    // TODO Auto-generated method stub
     return 0;
   }
 }
