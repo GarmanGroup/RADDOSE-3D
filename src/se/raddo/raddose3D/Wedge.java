@@ -113,9 +113,9 @@ public class Wedge {
    *         String describing the wedge.
    */
   public String wedgeProperties() {
-    StringBuffer s;
-
-    s = new StringBuffer(String.format(
+    StringBuffer s = new StringBuffer(200);
+    
+    s.append(String.format(
         "Collecting data for a total of %.1fs from phi = %.1f to %.1f deg.%n",
         properties.get(WedgeProperties.EXPOSURE_TIME),
         properties.get(WedgeProperties.ANGLE_START),
