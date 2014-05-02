@@ -588,7 +588,8 @@ public class DatabaseConnector {
           }
         }
 
-        version = selectVersionNumber(se.raddo.raddose3D.Version.VERSION_STRING);
+        version = selectVersionNumber(
+            se.raddo.raddose3D.Version.VERSION_STRING);
 
         if (version == null) {
           throw new RuntimeException("Could not determine version ID.");
