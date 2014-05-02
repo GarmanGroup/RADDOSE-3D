@@ -74,7 +74,7 @@ public class OutputSummaryCSV implements Output {
     wedgeCounter++;
 
     w.write(String.format(
-        "%d, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f\n",
+        "%d, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f%n",
         wedgeCounter,
         expSummary.getAvgDiffractedDose(),
         expSummary.getWedgeElastic(),

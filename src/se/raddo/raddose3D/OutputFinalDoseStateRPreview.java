@@ -77,7 +77,7 @@ public class OutputFinalDoseStateRPreview implements Output {
     w.write("# Code generated "
         + (new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")).format(new Date())
         + "\n");
-    w.write(String.format("# Crystal size: %dx%dx%d voxels\n",
+    w.write(String.format("# Crystal size: %dx%dx%d voxels%n",
         csize[0], csize[1], csize[2]));
 
     // Limit to voxel numbers to keep resource requirements under control
@@ -96,7 +96,7 @@ public class OutputFinalDoseStateRPreview implements Output {
       csizel[2] = RESOLUTION_LIMIT;
     }
 
-    w.write(String.format("# Reduced grid size: %dx%dx%d voxels\n",
+    w.write(String.format("# Reduced grid size: %dx%dx%d voxels%n",
         csizel[0], csizel[1], csizel[2]));
     w.write("#\n\n");
 
@@ -107,7 +107,7 @@ public class OutputFinalDoseStateRPreview implements Output {
     w.write("require(\"misc3d\")\n\n");
 
     w.write("# Three dimensional dose array (MGy)\n");
-    w.write(String.format("dose <- array(0, c(%d, %d, %d))\n",
+    w.write(String.format("dose <- array(0, c(%d, %d, %d))%n",
         csizel[0], csizel[1], csizel[2]));
     for (int k = 0; k < csizel[2]; k++) {
       w.write(String.format("dose[,,%d]<-c(", (k + 1)));

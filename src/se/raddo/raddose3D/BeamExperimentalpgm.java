@@ -56,7 +56,7 @@ public class BeamExperimentalpgm extends BeamExperimental {
     return String
         .format(
             "Experimental beam profile taken from %s. Beam has" +
-                " %.1e photons per second at %.2f keV.\n",
+                " %.1e photons per second at %.2f keV.%n",
             file, getPhotonsPerSec(), getPhotonEnergy());
   }
 

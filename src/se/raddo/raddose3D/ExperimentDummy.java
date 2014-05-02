@@ -82,7 +82,7 @@ public class ExperimentDummy extends Experiment {
    * An internal implementation of a CrystalFactory that only creates dummy
    * Crystals.
    */
-  private class DummyCrystalFactory extends CrystalFactory {
+  private static class DummyCrystalFactory extends CrystalFactory {
     @Override
     public Crystal createCrystal(final String crystalType,
         final Map<Object, Object> properties) {

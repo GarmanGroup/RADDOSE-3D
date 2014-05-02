@@ -276,51 +276,51 @@ public class InputParserTest {
     Assert.assertEquals(testCF.lastSeenType, "Cuboid", "Crystal type");
 
     Map<Object, Object> properties;
-    Iterator<Object> keys;
+    Iterator<Map.Entry<Object, Object>> iter;
 
     properties = testCF.getSeenProperties();
-    keys = properties.keySet().iterator();
-    while (keys.hasNext()) {
+    iter = properties.entrySet().iterator();
+    while (iter.hasNext()) {
       Boolean match = false;
-      Object me = keys.next();
-      if (me.equals(Crystal.CRYSTAL_DIM_X)) {
-        Assertion.equals((Double) properties.get(me), 75, "Crystal size X");
+      Map.Entry<Object, Object> me = iter.next();
+      if (me.getKey().equals(Crystal.CRYSTAL_DIM_X)) {
+        Assertion.equals((Double) me.getValue(), 75, "Crystal size X");
         match = true;
       }
-      if (me.equals(Crystal.CRYSTAL_DIM_Y)) {
-        Assertion.equals((Double) properties.get(me), 70, "Crystal size Y");
+      if (me.getKey().equals(Crystal.CRYSTAL_DIM_Y)) {
+        Assertion.equals((Double) me.getValue(), 70, "Crystal size Y");
         match = true;
       }
-      if (me.equals(Crystal.CRYSTAL_DIM_Z)) {
-        Assertion.equals((Double) properties.get(me), 60, "Crystal size Z");
+      if (me.getKey().equals(Crystal.CRYSTAL_DIM_Z)) {
+        Assertion.equals((Double) me.getValue(), 60, "Crystal size Z");
         match = true;
       }
-      if (me.equals(Crystal.CRYSTAL_RESOLUTION)) {
-        Assertion.equals((Double) properties.get(me), 0.273,
+      if (me.getKey().equals(Crystal.CRYSTAL_RESOLUTION)) {
+        Assertion.equals((Double) me.getValue(), 0.273,
             "Crystal resolution");
         match = true;
       }
-      if (me.equals(Crystal.CRYSTAL_ANGLE_P)) {
-        Assertion.equals((Double) properties.get(me), 1, "Crystal angle P");
+      if (me.getKey().equals(Crystal.CRYSTAL_ANGLE_P)) {
+        Assertion.equals((Double) me.getValue(), 1, "Crystal angle P");
         match = true;
       }
-      if (me.equals(Crystal.CRYSTAL_ANGLE_L)) {
-        Assertion.equals((Double) properties.get(me), 0.1, "Crystal angle L");
+      if (me.getKey().equals(Crystal.CRYSTAL_ANGLE_L)) {
+        Assertion.equals((Double) me.getValue(), 0.1, "Crystal angle L");
         match = true;
       }
-      if (me.equals(Crystal.CRYSTAL_COEFCALC)) {
-        Assert.assertTrue(properties.get(me) instanceof CoefCalcAverage,
+      if (me.getKey().equals(Crystal.CRYSTAL_COEFCALC)) {
+        Assert.assertTrue(me.getValue() instanceof CoefCalcAverage,
             "CoefCalc not initialized with CoefCalcDummy");
         match = true;
       }
-      if (me.equals(Crystal.CRYSTAL_DDM)) {
-        Assert.assertTrue(properties.get(me) instanceof DDMSimple,
+      if (me.getKey().equals(Crystal.CRYSTAL_DDM)) {
+        Assert.assertTrue(me.getValue() instanceof DDMSimple,
             "DDM is of wrong type");
         match = true;
       }
       if (!match) {
-        Assert.fail("Unexpected crystal property " + me + " set. ("
-            + properties.get(me) + ")");
+        Assert.fail("Unexpected crystal property " + me.getKey() + " set. ("
+            + me.getValue() + ")");
       }
     }
 
@@ -333,35 +333,35 @@ public class InputParserTest {
         "Beam type set incorrectly (" + testBF.lastSeenType + ")");
 
     properties = testBF.getSeenProperties();
-    keys = properties.keySet().iterator();
-    while (keys.hasNext()) {
+    iter = properties.entrySet().iterator();
+    while (iter.hasNext()) {
       Boolean match = false;
-      Object me = keys.next();
-      if (me.equals(Beam.BEAM_FLUX)) {
-        Assertion.equals((Double) properties.get(me), 200000000000d,
+      Map.Entry<Object, Object> me = iter.next();
+      if (me.getKey().equals(Beam.BEAM_FLUX)) {
+        Assertion.equals((Double) me.getValue(), 200000000000d,
             "Beam flux");
         match = true;
       }
-      if (me.equals(Beam.BEAM_FWHM_X)) {
-        Assertion.equals((Double) properties.get(me), 70, "Beam x FWHM");
+      if (me.getKey().equals(Beam.BEAM_FWHM_X)) {
+        Assertion.equals((Double) me.getValue(), 70, "Beam x FWHM");
         match = true;
       }
-      if (me.equals(Beam.BEAM_FWHM_Y)) {
-        Assertion.equals((Double) properties.get(me), 20, "Beam y FWHM");
+      if (me.getKey().equals(Beam.BEAM_FWHM_Y)) {
+        Assertion.equals((Double) me.getValue(), 20, "Beam y FWHM");
         match = true;
       }
-      if (me.equals(Beam.BEAM_ENERGY)) {
-        Assertion.equals((Double) properties.get(me), 12.1, "Beam energy");
+      if (me.getKey().equals(Beam.BEAM_ENERGY)) {
+        Assertion.equals((Double) me.getValue(), 12.1, "Beam energy");
         match = true;
       }
-      if (me.equals(Beam.BEAM_COLL_H)) {
-        Assertion.equals((Double) properties.get(me), 41,
+      if (me.getKey().equals(Beam.BEAM_COLL_H)) {
+        Assertion.equals((Double) me.getValue(), 41,
             "Beam horizontal collimation");
         match = true;
       }
       if (!match) {
-        Assert.fail("Unexpected beam property " + me + " set. ("
-            + properties.get(me) + ")");
+        Assert.fail("Unexpected beam property " + me.getKey() + " set. ("
+            + me.getValue() + ")");
       }
     }
 

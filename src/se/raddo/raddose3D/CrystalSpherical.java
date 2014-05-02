@@ -221,7 +221,9 @@ public class CrystalSpherical extends Crystal {
 
   @Override
   public int[] getCrystSizeVoxels() {
-    return crystSizeVoxels;
+    int[] csv = new int[crystSizeVoxels.length];
+    System.arraycopy(crystSizeVoxels, 0, csv, 0, crystSizeVoxels.length);
+    return csv;
   }
 
   @Override
@@ -231,6 +233,8 @@ public class CrystalSpherical extends Crystal {
 
   @Override
   public double[] getCrystSizeUM() {
-    return crystSizeUM;
+    double[] cs = new double[crystSizeUM.length];
+    System.arraycopy(crystSizeUM, 0, cs, 0, crystSizeUM.length);
+    return cs;
   }
 }

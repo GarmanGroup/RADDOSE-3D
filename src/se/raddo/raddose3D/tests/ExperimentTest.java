@@ -133,7 +133,7 @@ public class ExperimentTest {
     System.out.println("@Test - testExperimentComplex");
   }
 
-  private class OutputTestSubscriber implements Output {
+  private static class OutputTestSubscriber implements Output {
     public long    seenobjects     = 0;
     public long    seenclose       = 0;
     public Object  lastseenobject  = null;

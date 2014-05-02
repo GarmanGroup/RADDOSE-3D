@@ -82,7 +82,7 @@ public class OutputProgressEstimate implements Output {
   private void addEstimate(final Long voxels, final Long slices) {
     if (w != null) {
       w.write(String.format(
-          "Progress Estimate Information: CrystalVoxels=%d WedgeSlices=%d\n",
+          "Progress Estimate Information: CrystalVoxels=%d WedgeSlices=%d%n",
           voxels, slices));
     }
     crystalVoxelList.add(voxels);
