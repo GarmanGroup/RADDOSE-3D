@@ -296,7 +296,7 @@ public final class RD3D {
    */
   private static void printCommandlineHelp() {
     System.out.println("raddose   --   command line options  ("
-        + Version.VERSION + ")");
+        + Version.VERSION_STRING + ")");
     System.out
         .println("==========================================================");
     System.out.println(" -?   or --help         show command line help (this)");
@@ -340,6 +340,7 @@ public final class RD3D {
    *         A single Writer that writes to all valid destinations, or null if
    *         no valid destination was given.
    */
+  @SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
   private Writer parseOutputDestinations(final String[] destinations) {
     ArrayList<Writer> writers = new ArrayList<Writer>();
 

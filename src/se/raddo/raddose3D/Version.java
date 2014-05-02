@@ -11,24 +11,24 @@ public final class Version {
    * build/deploy process. In development builds the version will be reported as
    * 'head'.
    */
-  private static final String REVISION      = "?---?";
+  private static final String REVISION       = "?---?";
 
   /** The major version number. */
-  public static final long    VERSION_MAJOR = 1;
+  public static final long    VERSION_MAJOR  = 1;
 
   /** The minor version number. */
-  public static final long    VERSION_MINOR = 1;
+  public static final long    VERSION_MINOR  = 1;
 
   /** The true build number (depending on REVISION). */
   @SuppressWarnings("unused")
-  public static final String  VERSION_BUILD = (REVISION == "?-" + "-"
-                                                + "-?") ? "head"
-                                                : REVISION;
+  public static final String  VERSION_BUILD  = (REVISION == "?-" + "-"
+                                                 + "-?") ? "head"
+                                                 : REVISION;
 
   /** A string built from version number plus build number. */
-  public static final String  VERSION       = VERSION_MAJOR + "."
-                                                + VERSION_MINOR + "."
-                                                + VERSION_BUILD;
+  public static final String  VERSION_STRING = VERSION_MAJOR + "."
+                                                 + VERSION_MINOR + "."
+                                                 + VERSION_BUILD;
 
   /**
    * Declare constructor for this class private. Class only holds static version
@@ -45,11 +45,11 @@ public final class Version {
    *          command line options (input ignored)
    */
   public static void main(final String[] args) {
-    System.out.println(VERSION);
+    System.out.println(VERSION_STRING);
   }
 
   /** Prints version information to STDOUT. */
   public static void printVersionInformation() {
-    System.out.println("Raddose 3D\nversion " + VERSION);
+    System.out.println("Raddose 3D\nversion " + VERSION_STRING);
   }
 }

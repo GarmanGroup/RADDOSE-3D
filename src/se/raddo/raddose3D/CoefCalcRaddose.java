@@ -160,8 +160,9 @@ public class CoefCalcRaddose extends CoefCalc {
     raddoseCandidates.add("../raddose.exe");
 
     String command = null;
+    File fileCandidate;
     for (String raddoseCandidate : raddoseCandidates) {
-      File fileCandidate = new File(raddoseCandidate);
+      fileCandidate = new File(raddoseCandidate);
       if (fileCandidate.exists()) {
         // This is a good sign
         if (fileCandidate.canExecute()) {

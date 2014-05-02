@@ -563,7 +563,7 @@ public class DatabaseConnector {
       lock.lock();
       ensureConnectionPresent();
 
-      version = selectVersionNumber(se.raddo.raddose3D.Version.VERSION);
+      version = selectVersionNumber(se.raddo.raddose3D.Version.VERSION_STRING);
 
       if (version == null) {
         // version not yet registered
@@ -574,7 +574,7 @@ public class DatabaseConnector {
               .prepareStatement("INSERT INTO versions "
                   + "(jar, Version, Compilation) "
                   + "VALUES (NULL, ?, NOW())");
-          pst.setString(1, se.raddo.raddose3D.Version.VERSION);
+          pst.setString(1, se.raddo.raddose3D.Version.VERSION_STRING);
           pst.executeUpdate();
         } catch (SQLException ex) {
           reportSQLException(ex);
@@ -588,7 +588,7 @@ public class DatabaseConnector {
           }
         }
 
-        version = selectVersionNumber(se.raddo.raddose3D.Version.VERSION);
+        version = selectVersionNumber(se.raddo.raddose3D.Version.VERSION_STRING);
 
         if (version == null) {
           throw new RuntimeException("Could not determine version ID.");
