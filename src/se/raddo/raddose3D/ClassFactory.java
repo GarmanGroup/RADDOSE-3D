@@ -26,15 +26,15 @@ public class ClassFactory<E> {
   /**
    * new MyClass<MyObject>(MyObject.class)
    * 
-   * @param realType
+   * @param producedClass
    */
-  public ClassFactory(Class<E> realType) {
-    this.realType = realType;
-    System.out.println(realType.getName());
+  public ClassFactory(final Class<E> producedClass) {
+    realType = producedClass;
+    System.out.println(producedClass.getName());
   }
 
   /**
-   * creates and returns different objects of type E by name
+   * Creates and returns different objects of type E by name.
    * 
    * @param name
    *          the name of the class requested.
