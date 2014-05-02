@@ -20,9 +20,9 @@ public class CrystalCuboid extends Crystal {
   private final double         crystalPixPerUM;
 
   /**
-   * Initial orientation of the crystal in the plane
-   * of the loop (right handed rotation about z)
-   * and of the loop (right handed rotation about x).
+   * Initial orientation of the crystal in the plane of the loop (right handed
+   * rotation about z) and of the loop (right handed rotation about x) in
+   * radians.
    */
   private final double         p, l;
 
@@ -53,7 +53,6 @@ public class CrystalCuboid extends Crystal {
    */
   private final double[][]     vertices;
 
-  private double[][]           verticesRotated;
   private double[][]           verticesRotatedNormals;
   private double[][]           verticesRotatedv1s;
   private double[]             verticesRotatedDenominators;
@@ -227,7 +226,7 @@ public class CrystalCuboid extends Crystal {
 
   @Override
   public String crystalInfo() {
-    String st = String
+    String s = String
         .format(
             "Cuboid Crystal of size [%.0f, %.0f, %.0f] um [x, y, z] at a "
                 + "resolution of %.2f microns per voxel edge.",
@@ -235,24 +234,22 @@ public class CrystalCuboid extends Crystal {
             crystSizeUM[1],
             crystSizeUM[2],
             1 / crystalPixPerUM);
-    if (l != 0 || p != 0) {
-      String st1 = String
-          .format(
-              "%nRotated by %.1f deg in the plane of the loop and the loop is "
-                  + "bent by %.1f relative to the rotation axis at phi = 0.",
-              Math.toDegrees(p), Math.toDegrees(l));
-      return st + st1;
+    if (l == 0 && p == 0) {
+      return s;
     } else {
-      return st;
+      return s + String.format(
+          "%nRotated by %.1f deg in the plane of the loop and the loop is "
+              + "bent by %.1f relative to the rotation axis at phi = 0.",
+          Math.toDegrees(p), Math.toDegrees(l));
     }
   }
 
   @Override
   public void setupDepthFinding(final double angrad, final Wedge wedge) {
+    double[][] verticesRotated = new double[vertices.length][3];
 
     // Rotate and translate the vertices of the crystal
     // to the position defined by angrad (= deltaphi)
-    verticesRotated = new double[vertices.length][3];
 
     for (int vertInd = 0; vertInd < vertices.length; vertInd++) {
 
@@ -336,9 +333,9 @@ public class CrystalCuboid extends Crystal {
      */
     for (int facePlane = 0; facePlane < face.length; facePlane++) {
 
-      if (verticesRotatedDenominators[facePlane] == 0) {
-        // i.e. it is parallel and they will not intersect
-      } else {
+      // if verticesRotatedDenominators[] == 0 they are parallel and will
+      // not intersect
+      if (verticesRotatedDenominators[facePlane] != 0) {
         // numerator = (v1-voxP) dot normal
         double numerator = dot3(minus(verticesRotatedv1s[facePlane], voxCoord),
             verticesRotatedNormals[facePlane]);
@@ -416,7 +413,9 @@ public class CrystalCuboid extends Crystal {
 
   @Override
   public int[] getCrystSizeVoxels() {
-    return crystSizeVoxels;
+    int[] csv = new int[crystSizeVoxels.length];
+    System.arraycopy(crystSizeVoxels, 0, csv, 0, crystSizeVoxels.length);
+    return csv;
   }
 
   @Override
@@ -426,7 +425,9 @@ public class CrystalCuboid extends Crystal {
 
   @Override
   public double[] getCrystSizeUM() {
-    return crystSizeUM;
+    double[] cs = new double[crystSizeUM.length];
+    System.arraycopy(crystSizeUM, 0, cs, 0, crystSizeUM.length);
+    return cs;
   }
 
   /**

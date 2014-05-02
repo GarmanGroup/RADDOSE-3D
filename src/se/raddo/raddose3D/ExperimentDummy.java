@@ -179,12 +179,13 @@ public class ExperimentDummy extends Experiment {
       }
 
       @Override
+      @SuppressWarnings("PMD.MethodReturnsInternalArray")
       public int[] getCrystSizeVoxels() {
         return crystSizeVoxels;
       }
 
-      @SuppressWarnings("PMD.ReturnEmptyArrayRatherThanNull")
       @Override
+      @SuppressWarnings("PMD.ReturnEmptyArrayRatherThanNull")
       public double[] getCrystSizeUM() {
         return null;
       }

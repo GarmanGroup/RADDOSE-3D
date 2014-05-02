@@ -1,6 +1,7 @@
 package se.raddo.raddose3D;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -44,7 +45,7 @@ public abstract class Crystal {
    * of individual voxel exposure events and can also inspect the Crystal object
    * after each image and and wedge.
    */
-  private final ArrayList<ExposeObserver> exposureObservers
+  private final List<ExposeObserver> exposureObservers
                 = new ArrayList<ExposeObserver>();
 
   /**
@@ -341,13 +342,14 @@ public abstract class Crystal {
     final double beamAttenuationExpFactor = -coefCalc
         .getAttenuationCoefficient();
 
+    double[] crystCoords;
+    double[] translateRotateCoords = new double[3];
     for (int i = 0; i < crystalSize[0]; i++) {
       for (int j = 0; j < crystalSize[1]; j++) {
         for (int k = 0; k < crystalSize[2]; k++) {
           if (isCrystalAt(i, j, k)) {
             // Rotate crystal into position
-            double[] crystCoords = getCrystCoord(i, j, k);
-            double[] translateRotateCoords = new double[3];
+            crystCoords = getCrystCoord(i, j, k);
 
             // Translate Y
             translateRotateCoords[1] = crystCoords[1]
@@ -372,7 +374,6 @@ public abstract class Crystal {
                 wedge.getOffAxisUm());
 
             if (unattenuatedBeamIntensity > 0d) {
-
               double depth = findDepth(translateRotateCoords, angle, wedge);
 
               /*
@@ -395,7 +396,7 @@ public abstract class Crystal {
                 addDose(i, j, k, voxImageDose);
                 addElastic(i, j, k, voxElasticYield);
               } else if (voxImageDose < 0) {
-                throw new RuntimeException(
+                throw new ArithmeticException(
                     "negative dose encountered - this should never happen");
               }
 
@@ -433,21 +434,6 @@ public abstract class Crystal {
         // Voxel mass: 1um^3/1m/ml
         // (= 1e-18/1e3) / [volume (um^-3) *density (g/ml)]
         * 1e-6; // MGy
-  }
-
-  /**
-   * Returns an ExposureSummary object registered to this crystal.
-   * 
-   * @param absEnThreshold
-   *          Absorbed energy threshold value for the ExposureSummary object.
-   *          Parameter is ignored, threshold fixed at 0.95.
-   * @return
-   *         An ExposureSummary object that keeps a list of automatically
-   *         generated metrics regarding exposures of this crystal.
-   */
-  @Deprecated
-  public ExposureSummary getExposureSummary(final Double absEnThreshold) {
-    return getExposureSummary();
   }
 
   /**

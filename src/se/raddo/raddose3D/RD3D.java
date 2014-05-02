@@ -143,8 +143,9 @@ public final class RD3D {
   private void parseCommandLineParameters() {
     OutputFactory of = new OutputFactory();
 
+    String command;
     for (int i = 0; i < commandLineParams.length; i++) {
-      String command = commandLineParams[i].toLowerCase();
+      command = commandLineParams[i].toLowerCase();
 
       if ("-i".equals(command) || "--in".equals(command)) {
         if ((i + 1) >= commandLineParams.length) {
