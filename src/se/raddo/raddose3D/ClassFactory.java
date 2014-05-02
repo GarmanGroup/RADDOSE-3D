@@ -74,84 +74,66 @@ public class ClassFactory<E> {
           "ClassFactory: properties set to null");
     }
 
-    String trimmedCrystalName = name.trim();
-    if (trimmedCrystalName.equals("")) {
+    String objectClassName = name.trim();
+    if ("".equals(objectClassName)) {
       throw new IllegalArgumentException(
-          "ClassFactory: crystalName is empty");
+          "ClassFactory: object name not set");
     }
 
-    // 2. Construct the class name of the requested crystal type
+    // 2. Construct the full class name of the requested object
 
-    String objectClassName, alternativeObjectClassName;
+    if (objectClassName.indexOf('.') == -1) {
+      // Only short name was specified.
+      // Add the full name of the general class as prefix
+      objectClassName = realType.getName().concat(objectClassName);
+    } // otherwise: The full object path is assumed.
 
-    if (trimmedCrystalName.indexOf('.') == -1) {
-      objectClassName = "Crystal"
-          .concat(trimmedCrystalName.substring(0, 1).toUpperCase())
-          .concat(trimmedCrystalName.substring(1).toLowerCase());
+    // 3. Try to find the class
 
-      alternativeObjectClassName = "Crystal"
-          .concat(trimmedCrystalName);
-
-      objectClassName = "se.raddo.raddose3D."
-          .concat(objectClassName);
-      alternativeObjectClassName = "se.raddo.raddose3D."
-          .concat(alternativeObjectClassName);
-    } else {
-      objectClassName = trimmedCrystalName;
-      alternativeObjectClassName = trimmedCrystalName;
-    }
-
-    // 3. Try to find that class either by the preferred or
-    //    - alternatively - by the original capitalization
-
-    Class<?> crystalClass;
+    Class<?> objectClass;
     try {
-      crystalClass = Class.forName(objectClassName);
-    } catch (ClassNotFoundException e1) {
-      try {
-        crystalClass = Class.forName(alternativeObjectClassName);
-        objectClassName = alternativeObjectClassName;
-      } catch (ClassNotFoundException e2) {
-        throw new ClassFactoryException(
-            "Could not initialize crystal of type "
-                + name + ": Class " + objectClassName
-                + " not found.", e1);
-      }
+      objectClass = Class.forName(objectClassName);
+    } catch (ClassNotFoundException e) {
+      throw new ClassFactoryException(
+          "Could not initialize object of type "
+              + realType.getName() + ": Class " + objectClassName
+              + " not found.", e);
     }
 
-    // 4. A class has been found. Check that it is a subclass of Crystal.
+    // 4. A class has been found.
+    // Check that it is a subclass of the requested type.
 
-    if (!realType.isAssignableFrom(crystalClass)) {
-      throw new ClassFactoryException("Could not initialize crystal of type "
-          + name + ": Class " + objectClassName
-          + " is not a subclass of Crystal.");
+    if (!realType.isAssignableFrom(objectClass)) {
+      throw new ClassFactoryException("Could not initialize object of type "
+          + realType.getName() + ": Class " + objectClassName
+          + " is not a subclass of " + realType.getName() + ".");
     }
 
     // 5. Find the constructor that accepts the property Map data structure.
 
     Constructor<?> objectConstructor;
     try {
-      objectConstructor = crystalClass.getConstructor(Map.class);
+      objectConstructor = objectClass.getConstructor(Map.class);
     } catch (NoSuchMethodException e) {
-      throw new ClassFactoryException("Error initializing crystal of type "
-          + name + ": Class " + objectClassName
+      throw new ClassFactoryException("Error initializing object of type "
+          + realType.getName() + ": Class " + objectClassName
           + " does not have a property constructor.", e);
     }
 
-    // 6. Invoke the constructor and create the crystal object. Voila.
+    // 6. Invoke the constructor and create the object. Voila.
 
     try {
-      return (E) realType.cast(objectConstructor.newInstance(properties));
+      return realType.cast(objectConstructor.newInstance(properties));
     } catch (InstantiationException e) {
       throw new ClassFactoryException(
           "Error during crystal instantiation of "
               + objectClassName + ": " + e.getCause().getMessage(),
           e.getCause());
     } catch (IllegalAccessException e) {
-      throw new ClassFactoryException("Error during crystal creation of "
+      throw new ClassFactoryException("Error during creation of "
           + objectClassName + ": Illegal access exception", e);
     } catch (InvocationTargetException e) {
-      throw new ClassFactoryException("Error during crystal invocation of "
+      throw new ClassFactoryException("Error during invocation of "
           + objectClassName + ": " + e.getCause().getMessage(), e.getCause());
     }
   }
