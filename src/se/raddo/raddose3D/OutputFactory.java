@@ -1,16 +1,20 @@
 package se.raddo.raddose3D;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * The OutputFactory class can be used to instantiate Output type classes.
- * 
- * @author Markus Gerstel
+ * The OutputFactory class sits between the parser and the actual crystal
+ * classes. It allows easy testing of the parser and extensibility for new
+ * {@link Output} types.
  */
-public class OutputFactory {
+public class OutputFactory extends ClassFactory<Output> {
+  /**
+   * Use ClassFactory internally to create {@link Output} objects.
+   */
+  public OutputFactory() {
+    super(Output.class);
+  }
 
   /**
    * creates and returns an Output type object.
@@ -29,108 +33,37 @@ public class OutputFactory {
    *          Map after object creation.
    * @return
    *         the requested Output type object
+   * @throws IllegalArgumentException
+   *           the passed parameters are invalid
+   * @throws ClassFactoryException
+   *           the requested crystal class could not be initialized
    */
   public Output createOutput(final String outputName,
-      final Map<Object, Object> properties) {
+      final Map<Object, Object> properties)
+      throws IllegalArgumentException, ClassFactoryException {
+    String revisedOutputName;
 
-    // 1. Do some sanity checks on the passed parameters
-
-    if (outputName == null) {
-      throw new RuntimeException("OutputFactory: outputName set to null");
-    }
-    if (properties == null) {
-      throw new RuntimeException("OutputFactory: properties set to null");
-    }
-
-    String trimmedOutputName = outputName.trim();
-    if (trimmedOutputName.equals("")) {
-      throw new RuntimeException("OutputFactory: outputName is empty");
-    }
-
-    // 2. Construct the class name of the requested crystal type
-
-    String outputClassName, alternativeOutputClassName;
-
-    if (trimmedOutputName.indexOf(".") == -1) {
-      outputClassName = "Output"
-          .concat(trimmedOutputName.substring(0, 1).toUpperCase())
-          .concat(trimmedOutputName.substring(1).toLowerCase());
-
-      alternativeOutputClassName = "Output"
-          .concat(trimmedOutputName);
-
-      outputClassName = "se.raddo.raddose3D."
-          .concat(outputClassName);
-      alternativeOutputClassName = "se.raddo.raddose3D."
-          .concat(alternativeOutputClassName);
+    if ("finaldosestatecsv".equalsIgnoreCase(outputName)) {
+      revisedOutputName = "se.raddo.raddose3D.OutputFinalDoseStateCSV";
+    } else if ("finaldosestater".equalsIgnoreCase(outputName)) {
+      revisedOutputName = "se.raddo.raddose3D.OutputFinalDoseStateR";
+    } else if ("finaldosestaterpreview".equalsIgnoreCase(outputName)) {
+      revisedOutputName = "se.raddo.raddose3D.OutputFinalDoseStateRPreview";
+    } else if ("fluenceperdosehistcsv".equalsIgnoreCase(outputName)) {
+      revisedOutputName = "se.raddo.raddose3D.OutputFluencePerDoseHistCSV";
+    } else if ("progressestimate".equalsIgnoreCase(outputName)) {
+      revisedOutputName = "se.raddo.raddose3D.OutputProgressEstimate";
+    } else if ("progressindicator".equalsIgnoreCase(outputName)) {
+      revisedOutputName = "se.raddo.raddose3D.OutputProgressIndicator";
+    } else if ("summarycsv".equalsIgnoreCase(outputName)) {
+      revisedOutputName = "se.raddo.raddose3D.OutputSummaryCSV";
+    } else if ("summarytext".equalsIgnoreCase(outputName)) {
+      revisedOutputName = "se.raddo.raddose3D.OutputSummaryText";
     } else {
-      outputClassName = trimmedOutputName;
-      alternativeOutputClassName = trimmedOutputName;
+      revisedOutputName = outputName;
     }
 
-    // 3. Try to find that class either by the preferred or
-    //    - alternatively - by the original capitalization
-
-    Class<?> outputClass;
-    try {
-      outputClass = Class.forName(outputClassName);
-    } catch (NoClassDefFoundError e1) {
-      // Class not available although it has been seen at compile time
-      // might be caused by different capitalization. Try alternative name:
-      try {
-        outputClass = Class.forName(alternativeOutputClassName);
-        outputClassName = alternativeOutputClassName;
-      } catch (ClassNotFoundException e2) {
-        throw new RuntimeException("Could not initialize output of type "
-            + outputName + ": Class " + outputClassName
-            + " not found.", e1);
-      }
-    } catch (ClassNotFoundException e1) {
-      // Class not available and has not been seen at compile time.
-      // Try alternative name:
-      try {
-        outputClass = Class.forName(alternativeOutputClassName);
-        outputClassName = alternativeOutputClassName;
-      } catch (ClassNotFoundException e2) {
-        throw new RuntimeException("Could not initialize output of type "
-            + outputName + ": Class " + outputClassName
-            + " not found.", e1);
-      }
-    }
-
-    // 4. A class has been found. Check that it is a subclass of Output.
-
-    if (!Output.class.isAssignableFrom(outputClass)) {
-      throw new RuntimeException("Could not initialize output of type "
-          + outputName + ": Class " + outputClassName
-          + " is not an implementation of Output.");
-    }
-
-    // 5. Find the constructor that accepts the property Map data structure.
-
-    Constructor<?> outputConstructor;
-    try {
-      outputConstructor = outputClass.getConstructor(Map.class);
-    } catch (NoSuchMethodException e) {
-      throw new RuntimeException("Error initializing output of type "
-          + outputName + ": Class " + outputClassName
-          + " does not have a property constructor.", e);
-    }
-
-    // 6. Invoke the constructor and create the crystal object. Voila.
-
-    try {
-      return (Output) outputConstructor.newInstance(properties);
-    } catch (InstantiationException e) {
-      throw new RuntimeException("Error during output instantiation of "
-          + outputClassName + ": " + e.getCause().getMessage(), e.getCause());
-    } catch (IllegalAccessException e) {
-      throw new RuntimeException("Error during output creation of "
-          + outputClassName + ": Illegal access exception", e);
-    } catch (InvocationTargetException e) {
-      throw new RuntimeException("Error during output invocation of "
-          + outputClassName + ": " + e.getCause().getMessage(), e.getCause());
-    }
+    return createObject(revisedOutputName, properties);
   }
 
   /**
