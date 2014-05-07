@@ -7,6 +7,9 @@ import java.util.Map;
  * allows easy testing of the parser and extensibility for new beam types.
  */
 public class BeamFactory extends ClassFactory<Beam> {
+  /**
+   * Use ClassFactory internally to create Beam objects.
+   */
   public BeamFactory() {
     super(Beam.class);
   }
@@ -35,9 +38,9 @@ public class BeamFactory extends ClassFactory<Beam> {
   public Beam createBeam(final String beamName,
       final Map<Object, Object> properties)
       throws IllegalArgumentException, ClassFactoryException {
-    
+
     String revisedBeamName;
-    
+
     if ("experimental".equalsIgnoreCase(beamName)) {
       revisedBeamName = "se.raddo.raddose3D.BeamExperimental";
     } else if ("experimentalpgm".equalsIgnoreCase(beamName)) {
@@ -49,7 +52,7 @@ public class BeamFactory extends ClassFactory<Beam> {
     } else {
       revisedBeamName = beamName;
     }
-    
+
     return createObject(revisedBeamName, properties);
   }
 }
