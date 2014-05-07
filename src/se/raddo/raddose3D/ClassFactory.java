@@ -141,7 +141,7 @@ public class ClassFactory<E> {
   /**
    * Exception for when the requested class could not be instantiated.
    */
-  private static class ClassFactoryException extends RuntimeException {
+  static class ClassFactoryException extends RuntimeException {
     /**
      * Unique exception serial.
      */
