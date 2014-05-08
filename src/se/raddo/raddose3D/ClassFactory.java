@@ -18,10 +18,10 @@ public class ClassFactory {
   /**
    * Creates and returns different objects of a defined type by name.
    * 
-   * @param<T>
-   *           the type of the produced class. Does not need to be specified by
-   *           the caller, but will be automatically set my the producedClass
-   *           parameter.
+   * @param <T>
+   *          the type of the produced class. Does not need to be specified by
+   *          the caller, but will be automatically set my the producedClass
+   *          parameter.
    * @param producedClass
    *          the type of class requested. e.g. Crystal.class
    *          This is required for type-checking and the final cast of the newly
