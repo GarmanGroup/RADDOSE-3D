@@ -19,9 +19,9 @@ public class ClassFactoryTest {
 
   @Test
   public void testBeamFactoryTopHat() {
-    ClassFactory<Beam> bf = new ClassFactory<Beam>(Beam.class);
+    ClassFactory bf = new ClassFactory();
 
-    Beam b = bf.createObject("Tophat", defaultProperties());
+    Beam b = bf.createObject(Beam.class, "Tophat", defaultProperties());
     Assert.assertTrue(b instanceof BeamTophat);
     Assertion.equals(b.getPhotonEnergy(), BEAMENERGYMARKER,
         "Beam Energy");
@@ -31,9 +31,9 @@ public class ClassFactoryTest {
 
   @Test
   public void testBeamFactoryGaussian() {
-    ClassFactory<Beam> bf = new ClassFactory<Beam>(Beam.class);
+    ClassFactory bf = new ClassFactory();
 
-    Beam b = bf.createObject("Gaussian", defaultProperties());
+    Beam b = bf.createObject(Beam.class, "Gaussian", defaultProperties());
     Assert.assertTrue(b instanceof BeamGaussian);
     Assertion.equals(b.getPhotonEnergy(), BEAMENERGYMARKER,
         "Beam Energy");
@@ -43,10 +43,10 @@ public class ClassFactoryTest {
 
   @Test
   public void testBeamFactoryInvalid() {
-    ClassFactory<Beam> bf = new ClassFactory<Beam>(Beam.class);
+    ClassFactory bf = new ClassFactory();
 
     try {
-      bf.createObject("invalid", defaultProperties());
+      bf.createObject(Beam.class, "invalid", defaultProperties());
     } catch (RuntimeException e) {
       System.out.println(e);
       System.out.println("@Test - testClassFactoryBeamInvalid");
@@ -58,10 +58,10 @@ public class ClassFactoryTest {
 
   @Test
   public void testBeamFactoryEmpty() {
-    ClassFactory<Beam> bf = new ClassFactory<Beam>(Beam.class);
+    ClassFactory bf = new ClassFactory();
 
     try {
-      bf.createObject("", defaultProperties());
+      bf.createObject(Beam.class, "", defaultProperties());
     } catch (IllegalArgumentException e) {
       System.out.println(e);
       System.out.println("@Test - testClassFactoryBeamEmpty");
@@ -73,10 +73,10 @@ public class ClassFactoryTest {
 
   @Test
   public void testBeamFactoryNull() {
-    ClassFactory<Beam> bf = new ClassFactory<Beam>(Beam.class);
+    ClassFactory bf = new ClassFactory();
 
     try {
-      bf.createObject(null, defaultProperties());
+      bf.createObject(Beam.class, null, defaultProperties());
     } catch (IllegalArgumentException e) {
       System.out.println(e);
       System.out.println("@Test - testClassFactoryBeamNull");
@@ -88,9 +88,9 @@ public class ClassFactoryTest {
 
   @Test
   public void testBeamFactoryDummy() {
-    ClassFactory<Beam> bf = new ClassFactory<Beam>(Beam.class);
+    ClassFactory bf = new ClassFactory();
 
-    Beam b = bf.createObject("se.raddo.raddose3D.tests.BeamDummy",
+    Beam b = bf.createObject(Beam.class, "se.raddo.raddose3D.tests.BeamDummy",
         defaultProperties());
 
     Assert.assertTrue(b instanceof BeamDummy);

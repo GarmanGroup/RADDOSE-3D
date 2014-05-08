@@ -12,160 +12,45 @@ import java.util.Map;
  * The class constructor has to be known however. All classes created by
  * ClassFactory must offer a constructor taking a single Map<Object, Object>
  * parameter.
- * 
- * @param <E>
- *          The type of class to be generated. E can be a class or an interface.
  */
-public class ClassFactory<E> {
+public class ClassFactory {
 
   /**
-   * Class reference to the target class. Required for type-checking and the
-   * final cast of the newly created object. This must be the same as E.class
-   * but E.class is not available due to type erasure.
-   */
-  private final Class<E> realType;
-
-  /**
-   * Create a new ClassFactory
-   * new MyClass<MyObject>(MyObject.class)
-   * http://stackoverflow.com/questions/6633317/checking-generic-type
+   * Creates and returns different objects of a defined type by name.
    * 
    * @param producedClass
-   */
-  public ClassFactory(final Class<E> producedClass) {
-    realType = producedClass;
-  }
-
-  /**
-   * Creates and returns different objects of type E by name.
-   * 
+   *          the type of class requested. e.g. Crystal.class
+   *          This is required for type-checking and the final cast of the newly
+   *          created object.
    * @param name
    *          the name of the class requested.
    * @param properties
-   *          a Map containing the complete list of crystal properties.
-   *          Different crystal types may require a different set of specified
-   *          properties, but dimension and resolution etc. will certainly be
-   *          required. Keys of the Map structure are usually determined by the
-   *          constants defined in the class E (e.g. {@link Beam} or
+   *          a Map containing the complete list of object properties.
+   *          Different object types may require a different set of specified
+   *          properties. Keys of the Map structure are usually determined by
+   *          the constants defined in the relevant class (e.g. {@link Beam} or
    *          {@link Crystal}), but external implementations may have their own
    *          key set. Check the corresponding classes for details.
+   *          E.g. crystal type classes will certainly require dimension and
+   *          resolution etc.
    *          The newly created object should not keep any references to this
    *          Map after object creation.
    * @return
-   *         the requested object of type E
+   *         the requested object of type producedClass
    * @throws IllegalArgumentException
    *           the passed parameters are invalid
    * @throws ClassFactoryException
    *           the requested class could not be initialized
-   */
-  @SuppressWarnings({
-      "PMD.CyclomaticComplexity",
-      "PMD.NPathComplexity" })
-  @Deprecated // there is a much cooler way to achieve the same goal
-  public E createObject(final String name,
-      final Map<Object, Object> properties)
-      throws IllegalArgumentException, ClassFactoryException {
-
-    // 1. Do some sanity checks on the passed parameters
-
-    if (name == null) {
-      throw new IllegalArgumentException(
-          "ClassFactory: object name missing");
-    }
-    if (properties == null) {
-      throw new IllegalArgumentException(
-          "ClassFactory: properties set to null");
-    }
-
-    String objectClassName = name.trim();
-    if ("".equals(objectClassName)) {
-      throw new IllegalArgumentException(
-          "ClassFactory: object name not set");
-    }
-
-    // 2. Construct the full class name of the requested object
-
-    if (objectClassName.indexOf('.') == -1) {
-      // Only short name was specified.
-      // Add the full name of the general class as prefix
-      objectClassName = realType.getName().concat(objectClassName);
-    } // otherwise: The full object path is assumed.
-
-    // 3. Try to find the class
-
-    Class<?> objectClass;
-    try {
-      objectClass = Class.forName(objectClassName);
-    } catch (ClassNotFoundException e) {
-      throw new ClassFactoryException(
-          "Could not initialize object of type "
-              + realType.getName() + ": Class " + objectClassName
-              + " not found.", e);
-    }
-
-    // 4. A class has been found.
-    // Check that it is a subclass of the requested type.
-
-    if (!realType.isAssignableFrom(objectClass)) {
-      throw new ClassFactoryException("Could not initialize object of type "
-          + realType.getName() + ": Class " + objectClassName
-          + " is not a subclass of " + realType.getName() + ".");
-    }
-
-    // 5. Find the constructor that accepts the property Map data structure.
-
-    Constructor<?> objectConstructor;
-    try {
-      objectConstructor = objectClass.getConstructor(Map.class);
-    } catch (NoSuchMethodException e) {
-      throw new ClassFactoryException("Error initializing object of type "
-          + realType.getName() + ": Class " + objectClassName
-          + " does not have a property constructor.", e);
-    }
-
-    // 6. Invoke the constructor and create the object. Voila.
-
-    try {
-      return realType.cast(objectConstructor.newInstance(properties));
-    } catch (InstantiationException e) {
-      throw new ClassFactoryException(
-          "Error during crystal instantiation of "
-              + objectClassName + ": " + e.getCause().getMessage(), e);
-    } catch (IllegalAccessException e) {
-      throw new ClassFactoryException("Error during creation of "
-          + objectClassName + ": Illegal access exception", e);
-    } catch (InvocationTargetException e) {
-      throw new ClassFactoryException("Error during invocation of "
-          + objectClassName + ": " + e.getCause().getMessage(), e);
-    }
-  }
-
-  /**
-   * This is the future!
    */
   public static <T> T createObject(final Class<T> producedClass,
       final String name, final Map<Object, Object> properties)
       throws IllegalArgumentException, ClassFactoryException {
 
     // 1. Do some sanity checks on the passed parameters
-
-    if (name == null) {
-      throw new IllegalArgumentException(
-          "ClassFactory: object name missing");
-    }
-    if (properties == null) {
-      throw new IllegalArgumentException(
-          "ClassFactory: properties set to null");
-    }
-
-    String objectClassName = name.trim();
-    if ("".equals(objectClassName)) {
-      throw new IllegalArgumentException(
-          "ClassFactory: object name not set");
-    }
+    parameterChecks(producedClass, name, properties);
 
     // 2. Construct the full class name of the requested object
-
+    String objectClassName = name;
     if (objectClassName.indexOf('.') == -1) {
       // Only short name was specified.
       // Add the full name of the general class as prefix
@@ -173,7 +58,6 @@ public class ClassFactory<E> {
     } // otherwise: The full object path is assumed.
 
     // 3. Try to find the class
-
     Class<?> objectClass;
     try {
       objectClass = Class.forName(objectClassName);
@@ -186,7 +70,6 @@ public class ClassFactory<E> {
 
     // 4. A class has been found.
     // Check that it is a subclass of the requested type.
-
     if (!producedClass.isAssignableFrom(objectClass)) {
       throw new ClassFactoryException("Could not initialize object of type "
           + producedClass.getName() + ": Class " + objectClassName
@@ -194,7 +77,6 @@ public class ClassFactory<E> {
     }
 
     // 5. Find the constructor that accepts the property Map data structure.
-
     Constructor<?> objectConstructor;
     try {
       objectConstructor = objectClass.getConstructor(Map.class);
@@ -205,7 +87,6 @@ public class ClassFactory<E> {
     }
 
     // 6. Invoke the constructor and create the object. Voila.
-
     try {
       return producedClass.cast(objectConstructor.newInstance(properties));
     } catch (InstantiationException e) {
@@ -221,4 +102,45 @@ public class ClassFactory<E> {
     }
   }
 
+  /**
+   * Run simple checks on the passed parameters.
+   * 
+   * @param factoryClass
+   *          the type of class requested.
+   * @param name
+   *          the name of the class requested.
+   * @param properties
+   *          a Map containing the complete list of object properties.
+   * @throws IllegalArgumentException
+   *           the passed parameters are invalid
+   */
+  private static void parameterChecks(Class<?> factoryClass,
+      final String name, final Map<Object, Object> properties)
+      throws IllegalArgumentException {
+
+    if (factoryClass == null) {
+      throw new IllegalArgumentException(
+          "ClassFactory: target class not defined");
+    }
+
+    if (name == null) {
+      throw new IllegalArgumentException(
+          "ClassFactory: object name missing");
+    }
+
+    if (properties == null) {
+      throw new IllegalArgumentException(
+          "ClassFactory: properties set to null");
+    }
+
+    if ("".equals(name)) {
+      throw new IllegalArgumentException(
+          "ClassFactory: object name not set");
+    }
+
+    if (!name.equals(name.trim())) {
+      throw new IllegalArgumentException(
+          "ClassFactory: object name contains leading/trailing spaces");
+    }
+  }
 }

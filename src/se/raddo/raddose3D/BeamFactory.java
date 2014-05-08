@@ -6,14 +6,7 @@ import java.util.Map;
  * The BeamFactory class sits between the parser and the actual beam classes. It
  * allows easy testing of the parser and extensibility for new beam types.
  */
-public class BeamFactory extends ClassFactory<Beam> {
-  /**
-   * Use ClassFactory internally to create Beam objects.
-   */
-  public BeamFactory() {
-    super(Beam.class);
-  }
-
+public class BeamFactory extends ClassFactory {
   /**
    * creates and returns different Beam type objects.
    * 

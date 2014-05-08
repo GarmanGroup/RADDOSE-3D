@@ -8,14 +8,7 @@ import java.util.Map;
  * classes. It allows easy testing of the parser and extensibility for new
  * {@link Output} types.
  */
-public class OutputFactory extends ClassFactory<Output> {
-  /**
-   * Use ClassFactory internally to create {@link Output} objects.
-   */
-  public OutputFactory() {
-    super(Output.class);
-  }
-
+public class OutputFactory extends ClassFactory {
   /**
    * creates and returns an Output type object.
    * 
@@ -63,7 +56,7 @@ public class OutputFactory extends ClassFactory<Output> {
       revisedOutputName = outputName;
     }
 
-    return createObject(revisedOutputName, properties);
+    return createObject(Output.class, revisedOutputName, properties);
   }
 
   /**

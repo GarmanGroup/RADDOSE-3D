@@ -7,14 +7,7 @@ import java.util.Map;
  * classes. It allows easy testing of the parser and extensibility for new
  * crystal types.
  */
-public class CrystalFactory extends ClassFactory<Crystal> {
-  /**
-   * Use ClassFactory internally to create Crystal objects.
-   */
-  public CrystalFactory() {
-    super(Crystal.class);
-  }
-
+public class CrystalFactory extends ClassFactory {
   /**
    * creates and returns different Crystal type objects.
    * 
