@@ -18,6 +18,10 @@ public class ClassFactory {
   /**
    * Creates and returns different objects of a defined type by name.
    * 
+   * @param<T>
+   *           the type of the produced class. Does not need to be specified by
+   *           the caller, but will be automatically set my the producedClass
+   *           parameter.
    * @param producedClass
    *          the type of class requested. e.g. Crystal.class
    *          This is required for type-checking and the final cast of the newly
@@ -42,7 +46,7 @@ public class ClassFactory {
    * @throws ClassFactoryException
    *           the requested class could not be initialized
    */
-  public static <T> T createObject(final Class<T> producedClass,
+  public <T> T createObject(final Class<T> producedClass,
       final String name, final Map<Object, Object> properties)
       throws IllegalArgumentException, ClassFactoryException {
 
@@ -114,7 +118,7 @@ public class ClassFactory {
    * @throws IllegalArgumentException
    *           the passed parameters are invalid
    */
-  private static void parameterChecks(Class<?> factoryClass,
+  private void parameterChecks(final Class<?> factoryClass,
       final String name, final Map<Object, Object> properties)
       throws IllegalArgumentException {
 
