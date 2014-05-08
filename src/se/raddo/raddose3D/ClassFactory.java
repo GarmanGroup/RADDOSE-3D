@@ -19,18 +19,21 @@ import java.util.Map;
 public class ClassFactory<E> {
 
   /**
-   * http://stackoverflow.com/questions/6633317/checking-generic-type
+   * Class reference to the target class. Required for type-checking and the
+   * final cast of the newly created object. This must be the same as E.class
+   * but E.class is not available due to type erasure.
    */
   private final Class<E> realType;
 
   /**
+   * Create a new ClassFactory
    * new MyClass<MyObject>(MyObject.class)
+   * http://stackoverflow.com/questions/6633317/checking-generic-type
    * 
    * @param producedClass
    */
   public ClassFactory(final Class<E> producedClass) {
     realType = producedClass;
-    System.out.println(producedClass.getName());
   }
 
   /**
@@ -56,9 +59,9 @@ public class ClassFactory<E> {
    *           the requested class could not be initialized
    */
   @SuppressWarnings({
-      "PMD.CyclomaticComplexity",
-      "PMD.NPathComplexity",
-      "PMD.PreserveStackTrace" })
+      "xPMD.CyclomaticComplexity",
+      "xPMD.NPathComplexity",
+      "xPMD.PreserveStackTrace" }) // just to check if they're still needed
   public E createObject(final String name,
       final Map<Object, Object> properties)
       throws IllegalArgumentException, ClassFactoryException {
