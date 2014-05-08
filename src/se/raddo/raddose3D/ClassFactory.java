@@ -59,8 +59,8 @@ public class ClassFactory<E> {
    *           the requested class could not be initialized
    */
   @SuppressWarnings({
-      "xPMD.CyclomaticComplexity",
-      "xPMD.NPathComplexity",
+      "PMD.CyclomaticComplexity",
+      "PMD.NPathComplexity",
       "xPMD.PreserveStackTrace" }) // just to check if they're still needed
   public E createObject(final String name,
       final Map<Object, Object> properties)
@@ -130,14 +130,13 @@ public class ClassFactory<E> {
     } catch (InstantiationException e) {
       throw new ClassFactoryException(
           "Error during crystal instantiation of "
-              + objectClassName + ": " + e.getCause().getMessage(),
-          e.getCause());
+              + objectClassName + ": " + e.getCause().getMessage(), e);
     } catch (IllegalAccessException e) {
       throw new ClassFactoryException("Error during creation of "
           + objectClassName + ": Illegal access exception", e);
     } catch (InvocationTargetException e) {
       throw new ClassFactoryException("Error during invocation of "
-          + objectClassName + ": " + e.getCause().getMessage(), e.getCause());
+          + objectClassName + ": " + e.getCause().getMessage(), e);
     }
   }
 }
