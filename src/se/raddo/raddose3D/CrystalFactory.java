@@ -51,6 +51,6 @@ public class CrystalFactory extends ClassFactory<Crystal> {
       revisedCrystalName = crystalName;
     }
 
-    return createObject(revisedCrystalName, properties);
+    return createObject(Crystal.class, revisedCrystalName, properties);
   }
 }

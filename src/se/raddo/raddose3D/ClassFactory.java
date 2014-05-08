@@ -61,6 +61,7 @@ public class ClassFactory<E> {
   @SuppressWarnings({
       "PMD.CyclomaticComplexity",
       "PMD.NPathComplexity" })
+  @Deprecated // there is a much cooler way to achieve the same goal
   public E createObject(final String name,
       final Map<Object, Object> properties)
       throws IllegalArgumentException, ClassFactoryException {
@@ -138,4 +139,86 @@ public class ClassFactory<E> {
           + objectClassName + ": " + e.getCause().getMessage(), e);
     }
   }
+
+  /**
+   * This is the future!
+   */
+  public static <T> T createObject(final Class<T> producedClass,
+      final String name, final Map<Object, Object> properties)
+      throws IllegalArgumentException, ClassFactoryException {
+
+    // 1. Do some sanity checks on the passed parameters
+
+    if (name == null) {
+      throw new IllegalArgumentException(
+          "ClassFactory: object name missing");
+    }
+    if (properties == null) {
+      throw new IllegalArgumentException(
+          "ClassFactory: properties set to null");
+    }
+
+    String objectClassName = name.trim();
+    if ("".equals(objectClassName)) {
+      throw new IllegalArgumentException(
+          "ClassFactory: object name not set");
+    }
+
+    // 2. Construct the full class name of the requested object
+
+    if (objectClassName.indexOf('.') == -1) {
+      // Only short name was specified.
+      // Add the full name of the general class as prefix
+      objectClassName = producedClass.getName().concat(objectClassName);
+    } // otherwise: The full object path is assumed.
+
+    // 3. Try to find the class
+
+    Class<?> objectClass;
+    try {
+      objectClass = Class.forName(objectClassName);
+    } catch (ClassNotFoundException e) {
+      throw new ClassFactoryException(
+          "Could not initialize object of type "
+              + producedClass.getName() + ": Class " + objectClassName
+              + " not found.", e);
+    }
+
+    // 4. A class has been found.
+    // Check that it is a subclass of the requested type.
+
+    if (!producedClass.isAssignableFrom(objectClass)) {
+      throw new ClassFactoryException("Could not initialize object of type "
+          + producedClass.getName() + ": Class " + objectClassName
+          + " is not a subclass of " + producedClass.getName() + ".");
+    }
+
+    // 5. Find the constructor that accepts the property Map data structure.
+
+    Constructor<?> objectConstructor;
+    try {
+      objectConstructor = objectClass.getConstructor(Map.class);
+    } catch (NoSuchMethodException e) {
+      throw new ClassFactoryException("Error initializing object of type "
+          + producedClass.getName() + ": Class " + objectClassName
+          + " does not have a property constructor.", e);
+    }
+
+    // 6. Invoke the constructor and create the object. Voila.
+
+    try {
+      return producedClass.cast(objectConstructor.newInstance(properties));
+    } catch (InstantiationException e) {
+      throw new ClassFactoryException(
+          "Error during crystal instantiation of "
+              + objectClassName + ": " + e.getCause().getMessage(), e);
+    } catch (IllegalAccessException e) {
+      throw new ClassFactoryException("Error during creation of "
+          + objectClassName + ": Illegal access exception", e);
+    } catch (InvocationTargetException e) {
+      throw new ClassFactoryException("Error during invocation of "
+          + objectClassName + ": " + e.getCause().getMessage(), e);
+    }
+  }
+
 }

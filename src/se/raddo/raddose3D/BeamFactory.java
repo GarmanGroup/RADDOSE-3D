@@ -53,6 +53,6 @@ public class BeamFactory extends ClassFactory<Beam> {
       revisedBeamName = beamName;
     }
 
-    return createObject(revisedBeamName, properties);
+    return createObject(Beam.class, revisedBeamName, properties);
   }
 }
