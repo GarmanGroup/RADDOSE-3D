@@ -60,8 +60,7 @@ public class ClassFactory<E> {
    */
   @SuppressWarnings({
       "PMD.CyclomaticComplexity",
-      "PMD.NPathComplexity",
-      "xPMD.PreserveStackTrace" }) // just to check if they're still needed
+      "PMD.NPathComplexity" })
   public E createObject(final String name,
       final Map<Object, Object> properties)
       throws IllegalArgumentException, ClassFactoryException {
