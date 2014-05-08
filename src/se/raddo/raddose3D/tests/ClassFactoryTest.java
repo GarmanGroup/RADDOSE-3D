@@ -92,10 +92,22 @@ public class ClassFactoryTest {
 
     Beam b = bf.createObject(Beam.class, "se.raddo.raddose3D.tests.BeamDummy",
         defaultProperties());
-
     Assert.assertTrue(b instanceof BeamDummy);
 
     System.out.println("@Test - testClassFactoryBeamDummy");
+  }
+
+  @Test
+  public void testClassFactoryNull() {
+    ClassFactory cf = new ClassFactory();
+
+    try {
+      cf.createObject(null, "se.raddo.raddose3D.Crystal", defaultProperties());
+    } catch (IllegalArgumentException e) {
+      System.out.println(e);
+      System.out.println("@Test - testClassFactoryNull");
+      return;
+    }
   }
 
   private HashMap<Object, Object> defaultProperties() {
