@@ -73,9 +73,8 @@ public class Raddose3DWorker
     System.out.println("Acquiring lock");
     if (!db.lockQueueJob(jobID)) {
       System.err.println("Could not acquire lock!");
-      throw new RuntimeException("Could not acquire lock!");
+      throw new IllegalStateException("Could not acquire lock!");
     }
-
   }
 
   @Override
@@ -146,7 +145,7 @@ public class Raddose3DWorker
               fileName)
           + " function() {\n"
           + String.format("  render(%d)%n",
-              (int) (imageNo * fullCircle / numberOfImages))
+              (imageNo * fullCircle / numberOfImages))
           + "})\n");
     }
     doseStateRPreviewDB.close();
@@ -174,8 +173,8 @@ public class Raddose3DWorker
     updateTimingInformation();
 
     db.saveTimingData(jobID, x1, x2,
-        new Double(realTime) / MILLISECONDSPERSECONDS,
-        new Double(getUserTime()) / MILLISECONDSPERSECONDS);
+        (double) realTime / MILLISECONDSPERSECONDS,
+        (double) getUserTime() / MILLISECONDSPERSECONDS);
 
     if (exitNotification != null) {
       synchronized (exitNotification) {

@@ -79,7 +79,9 @@ public final class RaddoseServer {
     // und realtime / usertime
 
     Vector<Raddose3DWorker> workers = new Vector<Raddose3DWorker>();
-
+    Iterator<Raddose3DWorker> workerIterator;
+    StringBuffer status;
+    
     System.out.println("RADDOSE-3D Server ready.");
 
     while ((!shutdown) || (!workers.isEmpty())) {
@@ -88,8 +90,8 @@ public final class RaddoseServer {
       // If any thread finished or died
       //  update timing information
 
-      Iterator<Raddose3DWorker> workerIterator = workers.iterator();
-      StringBuffer status = new StringBuffer("Thread status:");
+      workerIterator = workers.iterator();
+      status = new StringBuffer("Thread status:");
       while (workerIterator.hasNext()) {
         Raddose3DWorker w = workerIterator.next();
         status.append(" #" + w.getJobID() + ":" + w.getState());
