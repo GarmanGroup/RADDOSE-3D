@@ -20,7 +20,7 @@ public class ClassFactory {
    * 
    * @param <T>
    *          the type of the produced class. Does not need to be specified by
-   *          the caller, but will be automatically set my the producedClass
+   *          the caller, but will be automatically set by the producedClass
    *          parameter.
    * @param producedClass
    *          the type of class requested. e.g. Crystal.class
