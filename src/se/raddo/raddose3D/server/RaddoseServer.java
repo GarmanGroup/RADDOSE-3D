@@ -81,7 +81,7 @@ public final class RaddoseServer {
     Vector<Raddose3DWorker> workers = new Vector<Raddose3DWorker>();
     Iterator<Raddose3DWorker> workerIterator;
     StringBuffer status;
-    
+
     System.out.println("RADDOSE-3D Server ready.");
 
     while ((!shutdown) || (!workers.isEmpty())) {
