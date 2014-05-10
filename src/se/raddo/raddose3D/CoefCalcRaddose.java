@@ -316,7 +316,7 @@ public class CoefCalcRaddose extends CoefCalc {
 
   @Override
   public String toString() {
-    return String.format(
+     return String.format(
         "Crystal coefficients calculated with RADDOSE V2 "
             + "(Paithankar et al., 2009). %n"
             + "Absorption Coefficient: %.2e /um.%n"

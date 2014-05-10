@@ -636,6 +636,7 @@ public class CoefCalcFromPDB extends CoefCalcCompute {
         .getMacromolecularOccurrence() + occupancyNum);
     proteinAtom.setHetatmOccurrence(proteinAtom.getHetatmOccurrence()
         + occupancyNum);
+    
   }
 
   /**

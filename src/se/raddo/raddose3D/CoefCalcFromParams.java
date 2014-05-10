@@ -57,11 +57,17 @@ public class CoefCalcFromParams extends CoefCalcCompute {
     if (gamma == null) {
       gamma = RIGHT_ANGLE;
     }
+    
+    Double sf = -1.0;
+    
+    if (solventFraction != null) {
+      sf = solventFraction;
+    }
 
     cellVolume(cellA, cellB, cellC, alpha, beta, gamma);
 
     this.calculateAtomOccurrences(numMonomers, numResidues, numRNA, numDNA,
-        solventFraction, heavyProteinAtomNames, heavyProteinAtomNums,
+        sf, heavyProteinAtomNames, heavyProteinAtomNums,
         heavySolutionConcNames, heavySolutionConcNums);
 
   }

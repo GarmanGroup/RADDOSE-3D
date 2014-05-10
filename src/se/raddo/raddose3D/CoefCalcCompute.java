@@ -363,6 +363,7 @@ public class CoefCalcCompute extends CoefCalc {
             + "Elastic Coefficient: %.2e /um.%n"
             + "Density: %.2f g/ml.%n",
         absCoeff, attCoeff, elasCoeff, density);
+
   }
 
   /**
