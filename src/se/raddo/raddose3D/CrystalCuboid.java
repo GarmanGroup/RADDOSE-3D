@@ -58,7 +58,7 @@ public class CrystalCuboid extends Crystal {
   private double[]             verticesRotatedDenominators;
 
   /**
-   * 5 by 4 integer array that defines the faces of the crystal, each 4 element
+   * 6 by 4 integer array that defines the faces of the crystal, each 4 element
    * row represents the vertices that make up that face.
    */
   private final int[][]        face = {
