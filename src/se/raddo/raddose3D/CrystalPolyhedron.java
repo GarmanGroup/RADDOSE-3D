@@ -61,9 +61,8 @@ public class CrystalPolyhedron extends Crystal {
 
   /**
    * Index array displaying connectivity of vertex array.
-   * Please try to make sure these indices are going clockwise
-   * as this will help anyone who plans to draw the crystal
-   * in OpenGL.
+   * These indices must go clockwise to ensure correct calculation
+   * of normal vectors.
    * In groups of 3 - triangles only please, no octagon nonsense.
    */
   private final int[][]    indices      = {
@@ -73,6 +72,86 @@ public class CrystalPolyhedron extends Crystal {
                                            { 4, 3, 2 }
                                            };
 
+  /**
+   * Normal array holding normalised direction vectors for
+   * each triangle specified by the index array.
+   * Contains an i, j, k vector per triangle.
+   * Should have same no. of entries as the indices array.
+   */
+  private double[][] normals;
+  
+  /**
+   * Vector class containing magical vector methods
+   * like cross products and magnitudes.
+   * @author magd3052
+   *
+   */
+  private static class Vector {
+    /**
+     * Returns magnitude of 3D vector.
+     * @param vector 3d coordinates of vector
+     * @return magnitude scalar.
+     */
+    static public double vectorMagnitude(final double[] vector)
+    {
+      double distance = Math.pow(vector[0], 2) + Math.pow(vector[1], 2) + Math.pow(vector[2], 2);
+      
+      distance = Math.sqrt(distance);
+      
+      return distance;
+    }
+    
+    /**
+     * returns 3D vector between FROM and TO points.
+     * @param from from point
+     * @param to to point
+     * @return vector between points.
+     */
+    static public double[] vectorBetweenPoints(final double[] from, final double[] to)
+    {
+      double[] newVector = new double[3];
+      
+      for (int i=0; i < 3; i++)
+        newVector[i] = to[i] - from[i];
+
+      return newVector;
+    }
+    
+    /**
+     * returns 3D cross-product between two vectors.
+     * @param vector1 vector1
+     * @param vector2 vector2
+     * @return cross product
+     */
+    static public double[] crossProduct(final double[] vector1, final double[] vector2)
+    {
+      double[] newVector = new double[3];
+      
+      newVector[0] = vector1[1] * vector2[2] - vector1[2] * vector2[1];
+      newVector[1] = vector1[2] * vector2[0] - vector1[0] * vector2[2];
+      newVector[2] = vector1[0] * vector2[1] - vector1[1] * vector2[0];
+      
+      return newVector;
+    }
+    
+    /**
+     * returns 3D cross product with magnitude set to 1 between
+     * two vectors.
+     * @param vector1 vector1
+     * @param vector2 vector2
+     * @return normalised cross product
+     */
+    static public double[] normalisedCrossProduct(final double[] vector1, final double[] vector2)
+    {
+      double[] newVector = crossProduct(vector1, vector2);
+      double magnitude = vectorMagnitude(newVector);
+      
+      for (int i=0; i < 3; i++)
+        newVector[i] /= magnitude;
+      
+      return newVector;
+    }
+  }
   
   /**
    * Code shamefully copied from @link CrystalCuboid class
@@ -190,6 +269,45 @@ public class CrystalPolyhedron extends Crystal {
 
   }
   
+
+  
+  /**
+   * Calculates normal array from index and vertex arrays.
+   */
+  public void calculateNormals()
+  {
+    normals = new double[indices.length][3];
+    
+    for (int i=0; i < indices.length; i++)
+    {
+      // get the three vertices which this triangle corresponds to.
+      double[] point1 = vertices[indices[i][0] - 1];
+      double[] point2 = vertices[indices[i][0] - 1];
+      double[] point3 = vertices[indices[i][0] - 1];
+      
+      // get two vectors which can be used to define our plane.
+      
+      double[] vector1 = Vector.vectorBetweenPoints(point1, point2);
+      double[] vector2 = Vector.vectorBetweenPoints(point1, point3);
+      
+      // get the normal vector between these two vectors.
+      
+      double[] normalVector = Vector.normalisedCrossProduct(vector1, vector2);
+      
+      // copy this vector into the normals array at the given point.      
+      System.arraycopy(normalVector, 0, normals[i], 0, 3);
+    }
+    
+  }
+  
+  /**
+   * Calculates crystal occupancy at i, j, k, returns value
+   * and sets crystOcc at a given i, j, k
+   * @param i i
+   * @param j j
+   * @param k k
+   * @return crystal occupancy flag
+   */
   public boolean calculateCrystalOccupancy(int i, int j, int k)
   {
     // TODO: calculate crystal occupancy
