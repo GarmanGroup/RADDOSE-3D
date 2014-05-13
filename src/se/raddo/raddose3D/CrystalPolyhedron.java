@@ -99,8 +99,7 @@ public class CrystalPolyhedron extends Crystal {
      * @param vector 3d coordinates of vector
      * @return magnitude scalar.
      */
-    static public double vectorMagnitude(final double[] vector)
-    {
+    public static double vectorMagnitude(final double[] vector) {
       double distance = Math.pow(vector[0], 2) + Math.pow(vector[1], 2)
           + Math.pow(vector[2], 2);
 
@@ -116,9 +115,8 @@ public class CrystalPolyhedron extends Crystal {
      * @param to to point
      * @return vector between points.
      */
-    static public double[] vectorBetweenPoints(final double[] from,
-        final double[] to)
-    {
+    public static double[] vectorBetweenPoints(final double[] from,
+        final double[] to) {
       double[] newVector = new double[3];
 
       for (int i = 0; i < 3; i++) {
@@ -135,9 +133,8 @@ public class CrystalPolyhedron extends Crystal {
      * @param vector2 vector2
      * @return cross product
      */
-    static public double[] crossProduct(final double[] vector1,
-        final double[] vector2)
-    {
+    public static double[] crossProduct(final double[] vector1,
+        final double[] vector2) {
       double[] newVector = new double[3];
 
       newVector[0] = vector1[1] * vector2[2] - vector1[2] * vector2[1];
@@ -155,9 +152,8 @@ public class CrystalPolyhedron extends Crystal {
      * @param vector2 vector2
      * @return normalised cross product
      */
-    static public double[] normalisedCrossProduct(final double[] vector1,
-        final double[] vector2)
-    {
+    public static double[] normalisedCrossProduct(final double[] vector1,
+        final double[] vector2) {
       double[] newVector = crossProduct(vector1, vector2);
       double magnitude = vectorMagnitude(newVector);
 
@@ -169,15 +165,14 @@ public class CrystalPolyhedron extends Crystal {
     }
 
     /**
-     * returns dot product between two 3D vectors
+     * returns dot product between two 3D vectors.
      * 
      * @param vector1 vector1
      * @param vector2 vector2
      * @return dot product
      */
-    static public double dotProduct(final double[] vector1,
-        final double[] vector2)
-    {
+    public static double dotProduct(final double[] vector1,
+        final double[] vector2) {
       double dotProduct = 0;
 
       for (int i = 0; i < 3; i++) {
@@ -198,17 +193,17 @@ public class CrystalPolyhedron extends Crystal {
      * @param planeDistance distance of plane from true origin (0, 0, 0)
      * @return intersection point between plane and direction vector
      */
-    static public double[] rayTraceToPoint(final double[] normalUnitVector,
+    public static double[] rayTraceToPoint(final double[] normalUnitVector,
         final double[] directionVector, final double[] origin,
-        final double planeDistance)
-    {
+        final double planeDistance) {
       double t = rayTraceDistance(normalUnitVector, directionVector, origin,
           planeDistance);
 
       double[] point = new double[3];
 
-      for (int i = 0; i < 3; i++)
+      for (int i = 0; i < 3; i++) {
         point[i] = origin[i] + t * directionVector[i];
+      }
 
       return point;
     }
@@ -224,7 +219,7 @@ public class CrystalPolyhedron extends Crystal {
      * @param planeDistance distance of plane from true origin (0, 0, 0)
      * @return signed distance between direction vector and plane
      */
-    static public double rayTraceDistance(final double[] normalUnitVector,
+    public static double rayTraceDistance(final double[] normalUnitVector,
         final double[] directionVector, final double[] origin,
         final double planeDistance) {
       double d = normalUnitVector[0] * origin[0] + normalUnitVector[1]
@@ -245,24 +240,27 @@ public class CrystalPolyhedron extends Crystal {
      * Takes an array of vertices of a polygon and determines whether a point
      * is contained within the polygon or not. Ignores the z axis at the
      * moment.
+     * 
      * @param vertices array of 3D vertices
      * @param point point to test inclusion - must be in same plane
-     *        as vertices
+     *          as vertices
      * @return boolean value - in polygon or not in polygon.
      */
-    public boolean polygonInclusionTest(double[][] vertices, double[] point) {
+    public static boolean polygonInclusionTest(final double[][] vertices,
+        final double[] point) {
       int i, j = 0;
       boolean c = false;
-      
+
       for (i = 0, j = vertices.length - 1; i < vertices.length; j = i++) {
-        if ( ((vertices[i][1] > point[1]) != (vertices[j][1] > point[1])) &&
-            (point[0] < (vertices[j][0] - vertices[i][0]) * (point[1] - vertices[i][1]) /
+        if (((vertices[i][1] > point[1]) != (vertices[j][1] > point[1]))
+            &&
+            (point[0] < (vertices[j][0] - vertices[i][0])
+                * (point[1] - vertices[i][1]) /
                 (vertices[j][1] - vertices[i][1]) + vertices[i][0])) {
-          
           c = !c;
         }
       }
-      
+
       return c;
     }
   }
@@ -286,7 +284,7 @@ public class CrystalPolyhedron extends Crystal {
    *          The keys of the Map are defined by the constants in the
    *          {@link Crystal} class.
    */
-  public CrystalPolyhedron(Map<Object, Object> properties) {
+  public CrystalPolyhedron(final Map<Object, Object> properties) {
     super(properties);
     // Pass properties to Crystal()-constructor
 
@@ -387,12 +385,10 @@ public class CrystalPolyhedron extends Crystal {
    * Also calculates signed distances of each triangle
    * from the origin.
    */
-  public void calculateNormals()
-  {
+  public void calculateNormals() {
     normals = new double[indices.length][3];
 
-    for (int i = 0; i < indices.length; i++)
-    {
+    for (int i = 0; i < indices.length; i++) {
       // get the three vertices which this triangle corresponds to.
       double[] point1 = vertices[indices[i][0] - 1];
       double[] point2 = vertices[indices[i][0] - 1];
@@ -407,7 +403,7 @@ public class CrystalPolyhedron extends Crystal {
 
       double[] normalVector = Vector.normalisedCrossProduct(vector1, vector2);
 
-      // copy this vector into the normals array at the given point.      
+      // copy this vector into the normals array at the given point.
       System.arraycopy(normalVector, 0, normals[i], 0, 3);
 
       double distanceFromOrigin = -(normalVector[0] * point1[0]
@@ -420,14 +416,14 @@ public class CrystalPolyhedron extends Crystal {
 
   /**
    * Calculates crystal occupancy at i, j, k, returns value
-   * and sets crystOcc at a given i, j, k
+   * and sets crystOcc at a given i, j, k.
    * 
    * @param i i
    * @param j j
    * @param k k
    * @return crystal occupancy flag
    */
-  public boolean calculateCrystalOccupancy(int i, int j, int k)
+  public boolean calculateCrystalOccupancy(final int i, final int j, final int k)
   {
     // TODO: calculate crystal occupancy
     return false;
@@ -440,7 +436,7 @@ public class CrystalPolyhedron extends Crystal {
    * se.raddo.raddose3D.Wedge)
    */
   @Override
-  public void setupDepthFinding(double angrad, Wedge wedge) {
+  public void setupDepthFinding(final double angrad, final Wedge wedge) {
     // TODO Auto-generated method stub
 
   }
@@ -452,7 +448,8 @@ public class CrystalPolyhedron extends Crystal {
    * se.raddo.raddose3D.Wedge)
    */
   @Override
-  public double findDepth(double[] voxCoord, double deltaPhi, Wedge myWedge) {
+  public double findDepth(final double[] voxCoord, final double deltaPhi,
+      final Wedge myWedge) {
     // TODO Auto-generated method stub
     return 0;
   }
@@ -463,7 +460,7 @@ public class CrystalPolyhedron extends Crystal {
    * @see se.raddo.raddose3D.Crystal#getCrystCoord(int, int, int)
    */
   @Override
-  public double[] getCrystCoord(int i, int j, int k) {
+  public double[] getCrystCoord(final int i, final int j, final int k) {
     return crystCoord[i][j][k];
   }
 
@@ -473,7 +470,7 @@ public class CrystalPolyhedron extends Crystal {
    * @see se.raddo.raddose3D.Crystal#isCrystalAt(int, int, int)
    */
   @Override
-  public boolean isCrystalAt(int i, int j, int k) {
+  public boolean isCrystalAt(final int i, final int j, final int k) {
     return crystOcc[i][j][k];
   }
 
@@ -483,7 +480,8 @@ public class CrystalPolyhedron extends Crystal {
    * @see se.raddo.raddose3D.Crystal#addDose(int, int, int, double)
    */
   @Override
-  public void addDose(int i, int j, int k, double doseIncrease) {
+  public void addDose(final int i, final int j, final int k,
+      final double doseIncrease) {
     dose[i][j][k] += doseIncrease;
   }
 
@@ -493,7 +491,8 @@ public class CrystalPolyhedron extends Crystal {
    * @see se.raddo.raddose3D.Crystal#addFluence(int, int, int, double)
    */
   @Override
-  public void addFluence(int i, int j, int k, double fluenceIncrease) {
+  public void addFluence(final int i, final int j, final int k,
+      final double fluenceIncrease) {
     fluence[i][j][k] += fluenceIncrease;
 
   }
@@ -504,7 +503,8 @@ public class CrystalPolyhedron extends Crystal {
    * @see se.raddo.raddose3D.Crystal#addElastic(int, int, int, double)
    */
   @Override
-  public void addElastic(int i, int j, int k, double elasticIncrease) {
+  public void addElastic(final int i, final int j, final int k,
+      final double elasticIncrease) {
     elastic[i][j][k] += elasticIncrease;
 
   }
@@ -550,7 +550,7 @@ public class CrystalPolyhedron extends Crystal {
    * @see se.raddo.raddose3D.Crystal#getDose(int, int, int)
    */
   @Override
-  public double getDose(int i, int j, int k) {
+  public double getDose(final int i, final int j, final int k) {
     return dose[i][j][k];
   }
 
@@ -560,7 +560,7 @@ public class CrystalPolyhedron extends Crystal {
    * @see se.raddo.raddose3D.Crystal#getFluence(int, int, int)
    */
   @Override
-  public double getFluence(int i, int j, int k) {
+  public double getFluence(final int i, final int j, final int k) {
     return fluence[i][j][k];
   }
 
@@ -570,7 +570,7 @@ public class CrystalPolyhedron extends Crystal {
    * @see se.raddo.raddose3D.Crystal#getElastic(int, int, int)
    */
   @Override
-  public double getElastic(int i, int j, int k) {
+  public double getElastic(final int i, final int j, final int k) {
     return elastic[i][j][k];
   }
 
