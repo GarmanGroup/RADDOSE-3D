@@ -12,52 +12,52 @@ import java.util.Map;
 public class CrystalPolyhedron extends Crystal {
 
   /** Resolution of crystal in 1/um. */
-  private final double     crystalPixPerUM;
+  private final double        crystalPixPerUM;
 
   /**
    * Initial orientation of the crystal in the plane of the loop (right handed
    * rotation about z) and of the loop (right handed rotation about x) in
    * radians.
    */
-  private final double     p, l;
+  private final double        p, l;
 
   /**
    * 3 element array defining dimensions of
    * bounding box of crystal in um.
    */
-  private final double[]   crystSizeUM;
+  private final double[]      crystSizeUM;
 
   /** 3 element array defining dimensions of bounding box in voxels. */
-  private final int[]      crystSizeVoxels;
+  private final int[]         crystSizeVoxels;
 
   /**
    * Dose and fluence arrays holding the scalar
    * fields for these values at voxel i,j,k.
    */
-  private double[][][]     dose, fluence, elastic;
+  private double[][][]        dose, fluence, elastic;
 
   /**
    * A boolean (int for extensibility to deeper segmentation) array. 0 = empty,
    * 1 = crystal.
    */
-  private final boolean[][][]  crystOcc;
+  private final boolean[][][] crystOcc;
 
   /**
    * 4d array where the 4th dimension is a 3 element array with the coordinates
    * of the voxel i,j,k in the starting position.
    */
-  private double[][][][]   crystCoord;
+  private double[][][][]      crystCoord;
 
   /**
    * Vertex array containing a variable number of 3-dimension vertices.
    * Currently set to a default approx. tetrahedron for testing purposes.
    */
-  private final double[][] vertices     = {
-                                           { 0, 0, 0 },
-                                           { 2, 0, 0 },
-                                           { 1, 2, 0 },
-                                           { 1, 1, 2 }
-                                           };
+  private final double[][]    vertices = {
+                                       { 0, 0, 0 },
+                                       { 2, 0, 0 },
+                                       { 1, 2, 0 },
+                                       { 1, 1, 2 }
+                                       };
 
   /**
    * Index array displaying connectivity of vertex array.
@@ -65,12 +65,12 @@ public class CrystalPolyhedron extends Crystal {
    * of normal vectors.
    * In groups of 3 - triangles only please, no octagon nonsense.
    */
-  private final int[][]    indices      = {
-                                           { 2, 1, 3 },
-                                           { 1, 3, 4 },
-                                           { 1, 4, 2 },
-                                           { 4, 3, 2 }
-                                           };
+  private final int[][]       indices  = {
+                                       { 2, 1, 3 },
+                                       { 1, 3, 4 },
+                                       { 1, 4, 2 },
+                                       { 4, 3, 2 }
+                                       };
 
   /**
    * Normal array holding normalised direction vectors for
@@ -78,85 +78,198 @@ public class CrystalPolyhedron extends Crystal {
    * Contains an i, j, k vector per triangle.
    * Should have same no. of entries as the indices array.
    */
-  private double[][] normals;
-  
+  private double[][]          normals;
+
+  /**
+   * Distances from origin for each of the triangle planes.
+   * Should have same no. of entries as the indices array.
+   */
+  private double[]            originDistances;
+
   /**
    * Vector class containing magical vector methods
    * like cross products and magnitudes.
+   * 
    * @author magd3052
-   *
    */
   private static class Vector {
     /**
      * Returns magnitude of 3D vector.
+     * 
      * @param vector 3d coordinates of vector
      * @return magnitude scalar.
      */
     static public double vectorMagnitude(final double[] vector)
     {
-      double distance = Math.pow(vector[0], 2) + Math.pow(vector[1], 2) + Math.pow(vector[2], 2);
-      
+      double distance = Math.pow(vector[0], 2) + Math.pow(vector[1], 2)
+          + Math.pow(vector[2], 2);
+
       distance = Math.sqrt(distance);
-      
+
       return distance;
     }
-    
+
     /**
      * returns 3D vector between FROM and TO points.
+     * 
      * @param from from point
      * @param to to point
      * @return vector between points.
      */
-    static public double[] vectorBetweenPoints(final double[] from, final double[] to)
+    static public double[] vectorBetweenPoints(final double[] from,
+        final double[] to)
     {
       double[] newVector = new double[3];
-      
-      for (int i=0; i < 3; i++)
+
+      for (int i = 0; i < 3; i++) {
         newVector[i] = to[i] - from[i];
+      }
 
       return newVector;
     }
-    
+
     /**
      * returns 3D cross-product between two vectors.
+     * 
      * @param vector1 vector1
      * @param vector2 vector2
      * @return cross product
      */
-    static public double[] crossProduct(final double[] vector1, final double[] vector2)
+    static public double[] crossProduct(final double[] vector1,
+        final double[] vector2)
     {
       double[] newVector = new double[3];
-      
+
       newVector[0] = vector1[1] * vector2[2] - vector1[2] * vector2[1];
       newVector[1] = vector1[2] * vector2[0] - vector1[0] * vector2[2];
       newVector[2] = vector1[0] * vector2[1] - vector1[1] * vector2[0];
-      
+
       return newVector;
     }
-    
+
     /**
      * returns 3D cross product with magnitude set to 1 between
      * two vectors.
+     * 
      * @param vector1 vector1
      * @param vector2 vector2
      * @return normalised cross product
      */
-    static public double[] normalisedCrossProduct(final double[] vector1, final double[] vector2)
+    static public double[] normalisedCrossProduct(final double[] vector1,
+        final double[] vector2)
     {
       double[] newVector = crossProduct(vector1, vector2);
       double magnitude = vectorMagnitude(newVector);
-      
-      for (int i=0; i < 3; i++)
+
+      for (int i = 0; i < 3; i++) {
         newVector[i] /= magnitude;
-      
+      }
+
       return newVector;
     }
+
+    /**
+     * returns dot product between two 3D vectors
+     * 
+     * @param vector1 vector1
+     * @param vector2 vector2
+     * @return dot product
+     */
+    static public double dotProduct(final double[] vector1,
+        final double[] vector2)
+    {
+      double dotProduct = 0;
+
+      for (int i = 0; i < 3; i++) {
+        dotProduct += vector1[i] * vector2[i];
+      }
+
+      return dotProduct;
+    }
+
+    /**
+     * Ray trace from a point to a plane via a direction vector,
+     * find the intersection between the direction vector and the
+     * plane and return this point.
+     * 
+     * @param normalUnitVector normal vector with magnitude 1
+     * @param directionVector direction vector of any magnitude
+     * @param origin point from which ray is traced (i.e. voxel coordinate)
+     * @param planeDistance distance of plane from true origin (0, 0, 0)
+     * @return intersection point between plane and direction vector
+     */
+    static public double[] rayTraceToPoint(final double[] normalUnitVector,
+        final double[] directionVector, final double[] origin,
+        final double planeDistance)
+    {
+      double t = rayTraceDistance(normalUnitVector, directionVector, origin,
+          planeDistance);
+
+      double[] point = new double[3];
+
+      for (int i = 0; i < 3; i++)
+        point[i] = origin[i] + t * directionVector[i];
+
+      return point;
+    }
+
+    /**
+     * Ray trace from a point to a plane via a direction vector,
+     * find the signed distance between the direction vector and
+     * the plane and return this point.
+     * 
+     * @param normalUnitVector normal vector with magnitude 1
+     * @param directionVector direction vector of any magnitude
+     * @param origin point from which ray is traced (i.e. voxel coordinate)
+     * @param planeDistance distance of plane from true origin (0, 0, 0)
+     * @return signed distance between direction vector and plane
+     */
+    static public double rayTraceDistance(final double[] normalUnitVector,
+        final double[] directionVector, final double[] origin,
+        final double planeDistance) {
+      double d = normalUnitVector[0] * origin[0] + normalUnitVector[1]
+          * origin[1] + normalUnitVector[2] * origin[2] + planeDistance;
+
+      double originNormalDotProduct = dotProduct(origin, normalUnitVector);
+      double directionNormalDotProduct = dotProduct(directionVector,
+          normalUnitVector);
+
+      double t = -(originNormalDotProduct + d) / directionNormalDotProduct;
+
+      return t;
+    }
+
+    /**
+     * Original C code
+     * http://www.ecse.rpi.edu/~wrf/Research/Short_Notes/pnpoly.html
+     * Takes an array of vertices of a polygon and determines whether a point
+     * is contained within the polygon or not. Ignores the z axis at the
+     * moment.
+     * @param vertices array of 3D vertices
+     * @param point point to test inclusion - must be in same plane
+     *        as vertices
+     * @return boolean value - in polygon or not in polygon.
+     */
+    public boolean polygonInclusionTest(double[][] vertices, double[] point) {
+      int i, j = 0;
+      boolean c = false;
+      
+      for (i = 0, j = vertices.length - 1; i < vertices.length; j = i++) {
+        if ( ((vertices[i][1] > point[1]) != (vertices[j][1] > point[1])) &&
+            (point[0] < (vertices[j][0] - vertices[i][0]) * (point[1] - vertices[i][1]) /
+                (vertices[j][1] - vertices[i][1]) + vertices[i][0])) {
+          
+          c = !c;
+        }
+      }
+      
+      return c;
+    }
   }
-  
+
   /**
    * Code shamefully copied from @link CrystalCuboid class
    * but frankly, CrystalCuboid is doomed once this class is implemented.
-   * 
    * Generic property constructor for cuboid crystals. Extracts all required
    * information from a Map data structure.
    * *
@@ -227,7 +340,7 @@ public class CrystalPolyhedron extends Crystal {
     fluence = new double[nx][ny][nz];
     elastic = new double[nx][ny][nz];
     crystOcc = new boolean[nx][ny][nz];
-    
+
     /*
      * Calculate Crystal Coordinates, and assign them:
      */
@@ -268,41 +381,47 @@ public class CrystalPolyhedron extends Crystal {
     crystCoord = tempCrystCoords; // Final value
 
   }
-  
 
-  
   /**
    * Calculates normal array from index and vertex arrays.
+   * Also calculates signed distances of each triangle
+   * from the origin.
    */
   public void calculateNormals()
   {
     normals = new double[indices.length][3];
-    
-    for (int i=0; i < indices.length; i++)
+
+    for (int i = 0; i < indices.length; i++)
     {
       // get the three vertices which this triangle corresponds to.
       double[] point1 = vertices[indices[i][0] - 1];
       double[] point2 = vertices[indices[i][0] - 1];
       double[] point3 = vertices[indices[i][0] - 1];
-      
+
       // get two vectors which can be used to define our plane.
-      
+
       double[] vector1 = Vector.vectorBetweenPoints(point1, point2);
       double[] vector2 = Vector.vectorBetweenPoints(point1, point3);
-      
+
       // get the normal vector between these two vectors.
-      
+
       double[] normalVector = Vector.normalisedCrossProduct(vector1, vector2);
-      
+
       // copy this vector into the normals array at the given point.      
       System.arraycopy(normalVector, 0, normals[i], 0, 3);
+
+      double distanceFromOrigin = -(normalVector[0] * point1[0]
+          + normalVector[1] * point1[1] + normalVector[2] * point1[2]);
+
+      originDistances[i] = distanceFromOrigin;
     }
-    
+
   }
-  
+
   /**
    * Calculates crystal occupancy at i, j, k, returns value
    * and sets crystOcc at a given i, j, k
+   * 
    * @param i i
    * @param j j
    * @param k k
@@ -365,7 +484,7 @@ public class CrystalPolyhedron extends Crystal {
    */
   @Override
   public void addDose(int i, int j, int k, double doseIncrease) {
-     dose[i][j][k] += doseIncrease;
+    dose[i][j][k] += doseIncrease;
   }
 
   /*
