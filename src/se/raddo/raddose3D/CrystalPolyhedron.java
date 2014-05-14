@@ -3,7 +3,10 @@
  */
 package se.raddo.raddose3D;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -12,52 +15,60 @@ import java.util.Map;
 public class CrystalPolyhedron extends Crystal {
 
   /** Resolution of crystal in 1/um. */
-  private final double        crystalPixPerUM;
+  private final double          crystalPixPerUM;
 
   /**
    * Initial orientation of the crystal in the plane of the loop (right handed
    * rotation about z) and of the loop (right handed rotation about x) in
    * radians.
    */
-  private final double        p, l;
+  private final double          p, l;
 
   /**
    * 3 element array defining dimensions of
    * bounding box of crystal in um.
    */
-  private final double[]      crystSizeUM;
+  private final double[]        crystSizeUM;
 
   /** 3 element array defining dimensions of bounding box in voxels. */
-  private final int[]         crystSizeVoxels;
+  private final int[]           crystSizeVoxels;
 
   /**
    * Dose and fluence arrays holding the scalar
    * fields for these values at voxel i,j,k.
    */
-  private double[][][]        dose, fluence, elastic;
+  private double[][][]          dose, fluence, elastic;
 
   /**
-   * A boolean (int for extensibility to deeper segmentation) array. 0 = empty,
-   * 1 = crystal.
+   * A boolean (int for extensibility to deeper segmentation) array.
+   * Fourth dimension is a two dimensional array, first element
+   * is a flag (calculated/not calculated) and second element is
+   * a boolean (crystal/not crystal).
    */
-  private final boolean[][][] crystOcc;
+  private final boolean[][][][] crystOcc;
 
   /**
    * 4d array where the 4th dimension is a 3 element array with the coordinates
    * of the voxel i,j,k in the starting position.
    */
-  private double[][][][]      crystCoord;
+  private double[][][][]        crystCoord;
 
   /**
    * Vertex array containing a variable number of 3-dimension vertices.
    * Currently set to a default approx. tetrahedron for testing purposes.
    */
-  private final double[][]    vertices = {
-                                       { 0, 0, 0 },
-                                       { 2, 0, 0 },
-                                       { 1, 2, 0 },
-                                       { 1, 1, 2 }
-                                       };
+  private final double[][]      vertices = {
+                                         { -45, -37, 20 },
+                                         { -45, -37, -20 },
+                                         { -45, 37, -20 },
+                                         { -45, 37, 20 },
+                                         { 45, -37, 20 },
+                                         { 45, -37, -20 },
+                                         { 45, 37, -20 },
+                                         { 45, 37, 20 }
+                                         };
+
+  private double[][]            rotatedVertices;
 
   /**
    * Index array displaying connectivity of vertex array.
@@ -65,12 +76,20 @@ public class CrystalPolyhedron extends Crystal {
    * of normal vectors.
    * In groups of 3 - triangles only please, no octagon nonsense.
    */
-  private final int[][]       indices  = {
-                                       { 2, 1, 3 },
-                                       { 1, 3, 4 },
-                                       { 1, 4, 2 },
-                                       { 4, 3, 2 }
-                                       };
+  private final int[][]         indices  = {
+                                         { 1, 3, 2 },
+                                         { 4, 3, 1 },
+                                         { 3, 6, 2 },
+                                         { 7, 6, 3 },
+                                         { 2, 5, 1 },
+                                         { 2, 6, 5 },
+                                         { 4, 8, 3 },
+                                         { 8, 7, 3 },
+                                         { 4, 1, 8 },
+                                         { 1, 5, 8 },
+                                         { 8, 5, 7 },
+                                         { 7, 5, 6 }
+                                         };
 
   /**
    * Normal array holding normalised direction vectors for
@@ -78,13 +97,13 @@ public class CrystalPolyhedron extends Crystal {
    * Contains an i, j, k vector per triangle.
    * Should have same no. of entries as the indices array.
    */
-  private double[][]          normals;
+  private double[][]            normals  = null, rotatedNormals = null;
 
   /**
    * Distances from origin for each of the triangle planes.
    * Should have same no. of entries as the indices array.
    */
-  private double[]            originDistances;
+  private double[]              originDistances, rotatedOriginDistances = null;
 
   /**
    * Vector class containing magical vector methods
@@ -209,6 +228,28 @@ public class CrystalPolyhedron extends Crystal {
     }
 
     /**
+     * Ray trace - find intersection of direction vector from point
+     * with plane from already-known distance t.
+     * 
+     * @param directionVector direction vector
+     * @param origin point from which ray is traced
+     * @param t distance of origin to plane along direction vector
+     * @return point of intersection
+     */
+    public static double[] rayTraceToPointWithDistance(
+        final double[] directionVector,
+        final double[] origin,
+        final double t) {
+      double[] point = new double[3];
+
+      for (int i = 0; i < 3; i++) {
+        point[i] = origin[i] + t * directionVector[i];
+      }
+
+      return point;
+    }
+
+    /**
      * Ray trace from a point to a plane via a direction vector,
      * find the signed distance between the direction vector and
      * the plane and return this point.
@@ -222,14 +263,15 @@ public class CrystalPolyhedron extends Crystal {
     public static double rayTraceDistance(final double[] normalUnitVector,
         final double[] directionVector, final double[] origin,
         final double planeDistance) {
-      double d = normalUnitVector[0] * origin[0] + normalUnitVector[1]
-          * origin[1] + normalUnitVector[2] * origin[2] + planeDistance;
+      //     double d = Math.abs(normalUnitVector[0] * origin[0] + normalUnitVector[1]
+      //         * origin[1] + normalUnitVector[2] * origin[2] + planeDistance);
 
       double originNormalDotProduct = dotProduct(origin, normalUnitVector);
       double directionNormalDotProduct = dotProduct(directionVector,
           normalUnitVector);
 
-      double t = -(originNormalDotProduct + d) / directionNormalDotProduct;
+      double t = -(originNormalDotProduct + planeDistance)
+          / directionNormalDotProduct;
 
       return t;
     }
@@ -248,10 +290,9 @@ public class CrystalPolyhedron extends Crystal {
      */
     public static boolean polygonInclusionTest(final double[][] vertices,
         final double[] point) {
-      int i, j = 0;
       boolean c = false;
 
-      for (i = 0, j = vertices.length - 1; i < vertices.length; j = i++) {
+      for (int i = 0, j = vertices.length - 1; i < vertices.length; j = i++) {
         if (((vertices[i][1] > point[1]) != (vertices[j][1] > point[1]))
             &&
             (point[0] < (vertices[j][0] - vertices[i][0])
@@ -260,6 +301,32 @@ public class CrystalPolyhedron extends Crystal {
           c = !c;
         }
       }
+
+      // however if it's on the edge we want it to be a YES...
+/*
+      if (!c) {
+        for (int i = 0, j = 1; i < 3; j = (i++ % 3))
+        {
+          double[] edge, edge2 = new double[3];
+          edge = vectorBetweenPoints(vertices[i], vertices[j]);
+          edge2 = vectorBetweenPoints(vertices[i], point);
+
+          double scale0 = edge2[0] / edge[0];
+          double scale1 = edge2[1] / edge[1];
+
+          if (scale0 != scale1) {
+            continue;
+          }
+
+          double scale2 = edge[2] / point[2];
+
+          if (scale1 != scale2) {
+            continue;
+          } else {
+            return true;
+          }
+        }
+      }*/
 
       return c;
     }
@@ -337,7 +404,9 @@ public class CrystalPolyhedron extends Crystal {
     dose = new double[nx][ny][nz];
     fluence = new double[nx][ny][nz];
     elastic = new double[nx][ny][nz];
-    crystOcc = new boolean[nx][ny][nz];
+
+    // Initialise crystal occupancy to correct size
+    crystOcc = new boolean[nx][ny][nz][2];
 
     /*
      * Calculate Crystal Coordinates, and assign them:
@@ -377,7 +446,6 @@ public class CrystalPolyhedron extends Crystal {
     }
 
     crystCoord = tempCrystCoords; // Final value
-
   }
 
   /**
@@ -385,14 +453,24 @@ public class CrystalPolyhedron extends Crystal {
    * Also calculates signed distances of each triangle
    * from the origin.
    */
-  public void calculateNormals() {
-    normals = new double[indices.length][3];
+  public void calculateNormals(boolean rotated) {
+
+    double[][] verticesUsed = vertices;
+    double[] originDistancesUsed = new double[vertices.length];
+    double[][] normalsUsed = new double[vertices.length][3];
+
+    if (rotated) {
+      verticesUsed = rotatedVertices;
+    }
+
+    normalsUsed = new double[indices.length][3];
+    originDistancesUsed = new double[indices.length];
 
     for (int i = 0; i < indices.length; i++) {
       // get the three vertices which this triangle corresponds to.
-      double[] point1 = vertices[indices[i][0] - 1];
-      double[] point2 = vertices[indices[i][0] - 1];
-      double[] point3 = vertices[indices[i][0] - 1];
+      double[] point1 = verticesUsed[indices[i][0] - 1];
+      double[] point2 = verticesUsed[indices[i][1] - 1];
+      double[] point3 = verticesUsed[indices[i][2] - 1];
 
       // get two vectors which can be used to define our plane.
 
@@ -404,14 +482,35 @@ public class CrystalPolyhedron extends Crystal {
       double[] normalVector = Vector.normalisedCrossProduct(vector1, vector2);
 
       // copy this vector into the normals array at the given point.
-      System.arraycopy(normalVector, 0, normals[i], 0, 3);
+      System.arraycopy(normalVector, 0, normalsUsed[i], 0, 3);
 
       double distanceFromOrigin = -(normalVector[0] * point1[0]
           + normalVector[1] * point1[1] + normalVector[2] * point1[2]);
 
-      originDistances[i] = distanceFromOrigin;
+      originDistancesUsed[i] = distanceFromOrigin;
     }
 
+    if (!rotated) {
+      originDistances = new double[indices.length];
+      normals = new double[indices.length][3];
+
+      for (int i = 0; i < normalsUsed.length; i++) {
+        System.arraycopy(normalsUsed[i], 0, normals[i], 0, 3);
+      }
+
+      System.arraycopy(originDistancesUsed, 0, originDistances, 0,
+          indices.length);
+    } else {
+      rotatedOriginDistances = new double[indices.length];
+      rotatedNormals = new double[indices.length][3];
+
+      for (int i = 0; i < normalsUsed.length; i++) {
+        System.arraycopy(normalsUsed[i], 0, rotatedNormals[i], 0, 3);
+      }
+
+      System.arraycopy(originDistancesUsed, 0, rotatedOriginDistances, 0,
+          indices.length);
+    }
   }
 
   /**
@@ -425,8 +524,49 @@ public class CrystalPolyhedron extends Crystal {
    */
   public boolean calculateCrystalOccupancy(final int i, final int j, final int k)
   {
-    // TODO: calculate crystal occupancy
-    return false;
+    if (normals == null)
+      calculateNormals(false);
+
+    boolean inside = false;
+
+    double[] directionVector = { 0, 0, 1 };
+    double[] origin = crystCoord[i][j][k];
+
+    for (int l = 0; l < indices.length; l++) {
+      double intersectionDistance = Vector.rayTraceDistance(normals[l],
+          directionVector, origin, originDistances[l]);
+
+      Double distanceObject = Double.valueOf(intersectionDistance);
+
+      if (intersectionDistance < 0 || distanceObject.isNaN()
+          || distanceObject.isInfinite())
+        continue;
+
+      double[] intersectionPoint = Vector.rayTraceToPointWithDistance(
+          directionVector, origin, intersectionDistance);
+
+      double[][] triangleVertices = new double[3][3];
+
+      // copy vertices referenced by indices into single array for
+      // passing onto the polygon inclusion test.
+      for (int m = 0; m < 3; m++) {
+        System.arraycopy(vertices[indices[l][m] - 1], 0, triangleVertices[m],
+            0, 3);
+      }
+
+      boolean crosses = Vector.polygonInclusionTest(triangleVertices,
+          intersectionPoint);
+
+      if (crosses) {
+        inside = !inside;
+      }
+    }
+
+    if (inside) {
+      //     System.out.println("Inside is true for " + i + ", " + j + ", " + k);
+    }
+
+    return inside;
   }
 
   /*
@@ -437,8 +577,35 @@ public class CrystalPolyhedron extends Crystal {
    */
   @Override
   public void setupDepthFinding(final double angrad, final Wedge wedge) {
-    // TODO Auto-generated method stub
+    rotatedVertices = new double[vertices.length][3];
 
+    // Rotate and translate the vertices of the crystal
+    // to the position defined by angrad (= deltaphi)
+
+    for (int vertInd = 0; vertInd < vertices.length; vertInd++) {
+
+      // Translate Y
+      rotatedVertices[vertInd][1] = vertices[vertInd][1]
+          + wedge.getStartY()
+          + wedge.getTransY(angrad);
+      // Translate X
+      double transX = vertices[vertInd][0]
+          + wedge.getStartX()
+          + wedge.getTransX(angrad);
+      // Translate Z
+      double transZ = vertices[vertInd][2]
+          + wedge.getStartZ()
+          + wedge.getTransZ(angrad);
+
+      // Rotate X
+      rotatedVertices[vertInd][0] = transX * Math.cos(angrad)
+          + transZ * Math.sin(angrad);
+      // Rotate Z
+      rotatedVertices[vertInd][2] = -1 * transX * Math.sin(angrad)
+          + transZ * Math.cos(angrad);
+    }
+
+    calculateNormals(true);
   }
 
   /*
@@ -450,8 +617,69 @@ public class CrystalPolyhedron extends Crystal {
   @Override
   public double findDepth(final double[] voxCoord, final double deltaPhi,
       final Wedge myWedge) {
-    // TODO Auto-generated method stub
-    return 0;
+    double[] zAxis = { 0, 0, 1 };
+
+    List<Double> distancesFound = new ArrayList<Double>();
+
+    for (int i = 0; i < indices.length; i++)
+    {
+      double intersectionDistance = (-1)
+          * Vector.rayTraceDistance(rotatedNormals[i],
+              zAxis, voxCoord, rotatedOriginDistances[i]);
+
+      Double distanceObject = Double.valueOf(intersectionDistance);
+
+      if (intersectionDistance <= 0 || distanceObject.isNaN()
+          || distanceObject.isInfinite())
+        continue;
+
+      double[] intersectionPoint = Vector.rayTraceToPointWithDistance(
+          zAxis, voxCoord, intersectionDistance);
+
+      double[][] triangleVertices = new double[3][3];
+
+      // copy vertices referenced by indices into single array for
+      // passing onto the polygon inclusion test.
+      for (int m = 0; m < 3; m++) {
+        System.arraycopy(vertices[indices[i][m] - 1], 0, triangleVertices[m],
+            0, 3);
+      }
+
+      boolean crosses = Vector.polygonInclusionTest(triangleVertices,
+          intersectionPoint);
+
+      if (crosses) {
+        distancesFound.add(Double.valueOf(intersectionDistance));
+      }
+    }
+
+    Collections.sort(distancesFound);
+
+    for (int i = 0; i < distancesFound.size() - 1; i++)
+    {
+      if (distancesFound.get(i + 1) == distancesFound.get(i))
+        distancesFound.remove(i + 1);
+    }
+
+    // sanity check that point is within crystal
+    if (distancesFound.size() == 0 || distancesFound.size() % 2 == 0) {
+      return 0;
+    }
+
+    double depth = distancesFound.get(0).doubleValue();
+
+    for (int i = 1; i < distancesFound.size(); i += 2) {
+      Double addition = distancesFound.get(i + 1) - distancesFound.get(i);
+
+      depth += addition.doubleValue();
+    }
+/*
+    if (deltaPhi == 0) {
+      System.out.println(voxCoord[0] + "\t" + voxCoord[1] + "\t" + voxCoord[2]
+          + "\t" + depth);
+    }
+*/
+    return depth;
   }
 
   /*
@@ -471,7 +699,14 @@ public class CrystalPolyhedron extends Crystal {
    */
   @Override
   public boolean isCrystalAt(final int i, final int j, final int k) {
-    return crystOcc[i][j][k];
+    boolean[] occ = crystOcc[i][j][k];
+
+    if (!occ[0]) {
+      occ[1] = calculateCrystalOccupancy(i, j, k);
+      occ[0] = true;
+    }
+
+    return occ[1];
   }
 
   /*
@@ -517,7 +752,7 @@ public class CrystalPolyhedron extends Crystal {
   @Override
   public String crystalInfo() {
     // TODO Auto-generated method stub
-    return null;
+    return "Insert info";
   }
 
   /*
