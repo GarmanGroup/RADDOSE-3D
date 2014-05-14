@@ -172,50 +172,6 @@ public class ElementDatabase {
           Element el = new Element(elementName, atomicNumber, einfo);
           elements.put(elementName.toLowerCase(), el);
           elements.put(atomicNumber, el);
-
-          /*
-           * el.setAbsorptionEdges(Double.parseDouble(components[EDGE_K]),
-           * Double.parseDouble(components[EDGE_L]),
-           * Double.parseDouble(components[EDGE_M]));
-           * el.setAbsorptionKEdgeCoeffs(
-           * Double.parseDouble(components[K_COEFF_0]),
-           * Double.parseDouble(components[K_COEFF_1]),
-           * Double.parseDouble(components[K_COEFF_2]),
-           * Double.parseDouble(components[K_COEFF_3]));
-           * el.setAbsorptionLEdgeCoeffs(
-           * Double.parseDouble(components[L_COEFF_0]),
-           * Double.parseDouble(components[L_COEFF_1]),
-           * Double.parseDouble(components[L_COEFF_2]),
-           * Double.parseDouble(components[L_COEFF_3]));
-           * el.setAbsorptionMEdgeCoeffs(
-           * Double.parseDouble(components[M_COEFF_0]),
-           * Double.parseDouble(components[M_COEFF_1]),
-           * Double.parseDouble(components[M_COEFF_2]),
-           * Double.parseDouble(components[M_COEFF_3]));
-           * el.setAbsorptionNEdgeCoeffs(
-           * Double.parseDouble(components[N_COEFF_0]),
-           * Double.parseDouble(components[N_COEFF_1]),
-           * Double.parseDouble(components[N_COEFF_2]),
-           * Double.parseDouble(components[N_COEFF_3]));
-           * el.setAtomicConstants(Double
-           * .parseDouble(components[ATOMIC_WEIGHT]));
-           * el.setCoherentScatteringCoeffs(
-           * Double.parseDouble(components[COHERENT_COEFF_0]),
-           * Double.parseDouble(components[COHERENT_COEFF_1]),
-           * Double.parseDouble(components[COHERENT_COEFF_2]),
-           * Double.parseDouble(components[COHERENT_COEFF_3]));
-           * el.setIncoherentScatteringCoeffs(
-           * Double.parseDouble(components[INCOHERENT_COEFF_0]),
-           * Double.parseDouble(components[INCOHERENT_COEFF_1]),
-           * Double.parseDouble(components[INCOHERENT_COEFF_2]),
-           * Double.parseDouble(components[INCOHERENT_COEFF_3]));
-           * el.setLs(Double.parseDouble(components[L2]),
-           * Double.parseDouble(components[L3]));
-           * 
-           * elements.put(components[ELEMENT_NAME].toLowerCase(), el);
-           * elements.put(Integer.parseInt(components[ATOMIC_NUMBER]), el);
-           */
-
         } catch (NumberFormatException e) {
           System.out.println("Could not parse line " + totalLines);
           e.printStackTrace();
