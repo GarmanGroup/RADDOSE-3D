@@ -295,7 +295,7 @@ public class ElementDatabase {
   @Deprecated
   public Element findAtomWithName(final String atomName) {
     for (int i = 0; i < atoms.length; i++) {
-      if (atoms[i].elementName.equals(atomName.toUpperCase())) {
+      if (atoms[i].getElementName().equals(atomName.toUpperCase())) {
         return atoms[i];
       }
     }

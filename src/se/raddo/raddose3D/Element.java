@@ -12,12 +12,12 @@ public class Element {
   /**
    * Element name.
    */
-  public final String                                       elementName;
+  private final String                                       elementName;
 
   /**
    * Atomic number.
    */
-  public final int                                          atomicNumber;
+  private final int                                          atomicNumber;
 
   /**
    * Stored information about the chemical element.
