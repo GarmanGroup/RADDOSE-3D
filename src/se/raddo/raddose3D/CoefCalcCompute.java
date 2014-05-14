@@ -156,7 +156,7 @@ public class CoefCalcCompute extends CoefCalc {
   /**
    * Parser which is going to look after our atom objects.
    */
-  private ElementDatabase  parser;
+  private final ElementDatabase  parser;
 
   /**
    * Simple constructor.
@@ -335,13 +335,6 @@ public class CoefCalcCompute extends CoefCalc {
    */
   public ElementDatabase getParser() {
     return parser;
-  }
-
-  /**
-   * @param newparser the parser to set
-   */
-  protected void setParser(final ElementDatabase newparser) {
-    this.parser = newparser;
   }
 
   /**

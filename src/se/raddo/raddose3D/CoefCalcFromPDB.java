@@ -634,7 +634,7 @@ public class CoefCalcFromPDB extends CoefCalcCompute {
         .getMacromolecularOccurrence() + occupancyNum);
     proteinAtom.setHetatmOccurrence(proteinAtom.getHetatmOccurrence()
         + occupancyNum);
-    
+
   }
 
   /**
@@ -834,7 +834,6 @@ public class CoefCalcFromPDB extends CoefCalcCompute {
 
   public CoefCalcFromPDB(final String pdbCode) {
     String pdbName = pdbCode.toUpperCase();
-    this.setParser(new ElementDatabase());
 
     Residue.createResidueArray();
 
@@ -853,7 +852,6 @@ public class CoefCalcFromPDB extends CoefCalcCompute {
       final List<String> heavySolvConcNames,
       final List<Double> heavySolvConcNums) {
     String pdbNameUpperCase = pdbName.toUpperCase();
-    this.setParser(new ElementDatabase());
 
     Residue.createResidueArray();
 

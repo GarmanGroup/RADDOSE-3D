@@ -40,7 +40,6 @@ public class CoefCalcFromParams extends CoefCalcCompute {
       final List<String> heavySolutionConcNames,
       final List<Double> heavySolutionConcNums,
       final Double solventFraction) {
-    this.setParser(new ElementDatabase());
 
     Double alpha = cellAlpha;
     Double beta = cellBeta;
