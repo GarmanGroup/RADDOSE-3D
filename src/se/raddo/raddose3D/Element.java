@@ -1,7 +1,8 @@
 package se.raddo.raddose3D;
 
-import java.util.HashMap;
 import java.util.Map;
+
+import se.raddo.raddose3D.ElementDatabase.DatabaseFields;
 
 /**
  * The Element class contains physical constants of an element associated with
@@ -11,13 +12,12 @@ public class Element {
   /**
    * Element name.
    */
-  @Deprecated
-  public String                                             elementName;
+  public final String                                       elementName;
+
   /**
    * Atomic number.
    */
-  @Deprecated
-  public int                                                atomicNumber;
+  public final int                                          atomicNumber;
 
   /**
    * Stored information about the chemical element.
@@ -31,44 +31,25 @@ public class Element {
     K, L, M, N, C, I
   }
 
-  /**
-   * Atomic weight.
-   */
-  @Deprecated
-  private double              atomicWeight;
-
-  /**
-   * L2 and L3 variables.
-   */
-  @Deprecated
-  private double              l2, l3;
-
-  /**
-   * Atomic mass unit in grams.
-   */
+  /** Atomic mass unit in grams. */
   private static final double ATOMIC_MASS_UNIT          = 1.66E-24;
-  /**
-   * LJ_1 variable from Fortran, used to correct atomic elements < 29 Z.
-   */
+
+  /** LJ_1 variable from Fortran, used to correct atomic elements < 29 Z. */
   private static final double LJ_1                      = 1.160;
-  /**
-   * LJ_2 variable from Fortran, used to correct atomic elements < 29 Z.
-   */
+
+  /** LJ_2 variable from Fortran, used to correct atomic elements < 29 Z. */
   private static final double LJ_2                      = 1.41;
 
   /** Light atom/heavy atom threshold. */
   public static final int     LIGHT_ATOM_MAX_NUM        = 29;
+
   /** Absorption edge room for error. */
   private static final double ABSORPTION_EDGE_TOLERANCE = 0.001;
 
-  /**
-   * Number of expansions of the polynomial.
-   */
+  /** Number of expansions of the polynomial. */
   private static final int    POLYNOMIAL_EXPANSION      = 4;
 
-  /**
-   * Occurrences - number of times this atom is found in the protein.
-   */
+  /** Occurrences - number of times this atom is found in the protein. */
   @Deprecated
   private double              macromolecularOccurrence;
 
@@ -100,25 +81,6 @@ public class Element {
                               coherentCrossSection;
 
   /**
-   * Create new atom with element name & atomic number.
-   * 
-   * @param name element name
-   * @param number atomic number
-   */
-  @Deprecated
-  public Element(final String name, final int number) {
-    elementName = name;
-    atomicNumber = number;
-    macromolecularOccurrence = 0;
-    solventOccurrence = 0;
-    solventConcentration = 0;
-    photoelectricCrossSection = 0;
-    totalCrossSection = 0;
-    coherentCrossSection = 0;
-    elementData = new HashMap<ElementDatabase.DatabaseFields, Double>();
-  }
-
-  /**
    * Create a new element with name, atomic number and associated information.
    * 
    * @param element
@@ -133,56 +95,6 @@ public class Element {
     elementName = element;
     atomicNumber = protons;
     elementData = elementInformation;
-  }
-
-  /*
-   * el.setAtomicConstants(Double
-   * .parseDouble(components[ATOMIC_WEIGHT]));
-   * 
-   * el.setIncoherentScatteringCoeffs(
-   * Double.parseDouble(components[INCOHERENT_COEFF_0]),
-   * Double.parseDouble(components[INCOHERENT_COEFF_1]),
-   * Double.parseDouble(components[INCOHERENT_COEFF_2]),
-   * Double.parseDouble(components[INCOHERENT_COEFF_3]));
-   * el.setLs(Double.parseDouble(components[L2]),
-   * Double.parseDouble(components[L3]));
-   * 
-   * elements.put(components[ELEMENT_NAME].toLowerCase(), el);
-   * elements.put(Integer.parseInt(components[ATOMIC_NUMBER]), el);
-   */
-
-  /**
-   * Set element name and atomic number.
-   * 
-   * @param name element name
-   * @param number atomic number
-   */
-  @Deprecated
-  public void setCoreParameters(final String name, final int number) {
-    elementName = name;
-    atomicNumber = number;
-  }
-
-  /**
-   * Sets atomic weight of atom.
-   * 
-   * @param atweight atomic weight
-   */
-  @Deprecated
-  public void setAtomicConstants(final double atweight) {
-    atomicWeight = atweight;
-  }
-
-  /**
-   * Sets L2 and L3 which were found in the Fortran code.
-   * 
-   * @param ltwo L2 to be set
-   * @param lthree L3 to be set
-   */
-  @Deprecated
-  public void setLs(final double ltwo, final double lthree) {
-    this.l2 = ltwo;
-    this.l3 = lthree;
   }
 
   /**
@@ -200,13 +112,11 @@ public class Element {
   /**
    * multiplies total atoms in unit cell by atomic weight.
    * 
-   * @return total weight of atoms in unit cell
+   * @return
+   *         total weight of atoms in unit cell
    */
   public double totalMass() {
-    double totalAtoms = this.totalAtoms();
-    double mass = atomicWeight * totalAtoms * ATOMIC_MASS_UNIT;
-
-    return mass;
+    return getAtomicWeight() * totalAtoms() * ATOMIC_MASS_UNIT;
   }
 
   /**
@@ -387,11 +297,13 @@ public class Element {
     // Use edge jumps for correct X-sections.
 
     if (atomicNumber <= LIGHT_ATOM_MAX_NUM) {
-      if (energy > this.l3 && energy < this.l2) {
+      if (energy > elementData.get(ElementDatabase.DatabaseFields.L3)
+          && energy < elementData.get(ElementDatabase.DatabaseFields.L2)) {
         bax /= (LJ_1 * LJ_2);
       }
 
-      if (energy > this.l2 && energy < absorptionEdgeL) {
+      if (energy > elementData.get(ElementDatabase.DatabaseFields.L2)
+          && energy < absorptionEdgeL) {
         bax /= LJ_1;
       }
     }
@@ -424,14 +336,6 @@ public class Element {
   }
 
   /**
-   * @param elementNameNew the elementName to set
-   */
-  @Deprecated
-  public void setElementName(final String elementNameNew) {
-    this.elementName = elementNameNew;
-  }
-
-  /**
    * @return the atomicNumber
    */
   @Deprecated
@@ -440,26 +344,10 @@ public class Element {
   }
 
   /**
-   * @param newatomicNumber the atomicNumber to set
-   */
-  @Deprecated
-  public void setAtomicNumber(final int newatomicNumber) {
-    this.atomicNumber = newatomicNumber;
-  }
-
-  /**
    * @return the atomicWeight
    */
   public double getAtomicWeight() {
-    return atomicWeight;
-  }
-
-  /**
-   * @param newatomicWeight the atomicWeight to set
-   */
-  @Deprecated
-  public void setAtomicWeight(final double newatomicWeight) {
-    this.atomicWeight = newatomicWeight;
+    return elementData.get(DatabaseFields.ATOMIC_WEIGHT);
   }
 
   /**

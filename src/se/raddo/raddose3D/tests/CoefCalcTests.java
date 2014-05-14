@@ -19,10 +19,9 @@ public class CoefCalcTests {
     List<String> atoms = new ArrayList<String>();
     List<Double> numbers = new ArrayList<Double>();
 
-    CoefCalcFromParams coefCalc = new CoefCalcFromParams(Double.valueOf(100.0),
-        Double.valueOf(100.0), Double.valueOf(100.0), Double.valueOf(90.0),
-        Double.valueOf(90.0), Double.valueOf(90.0), 0, 0, 0, 0, atoms, numbers,
-        atoms, numbers, Double.valueOf(100.0));
+    CoefCalcFromParams coefCalc = new CoefCalcFromParams(100.0,
+        100.0, 100.0, 90.0, 90.0, 90.0, 0, 0, 0, 0, atoms, numbers,
+        atoms, numbers, 100.0);
 
     Double oxygenOccurrence = Double.valueOf(coefCalc.getParser()
         .findAtomWithName("O").getSolventOccurrence());
@@ -47,11 +46,9 @@ public class CoefCalcTests {
     atoms.add("zn");
     numbers.add(Double.valueOf(2));
 
-    CoefCalcFromParams coefCalc = new CoefCalcFromParams(Double.valueOf(100.0),
-        Double.valueOf(100.0), Double.valueOf(100.0), Double.valueOf(90.0),
-        Double.valueOf(90.0), Double.valueOf(90.0), 24, 10, 0, 0, atoms,
-        numbers,
-        emptyAtoms, emptyNumbers, Double.valueOf(100.0));
+    CoefCalcFromParams coefCalc = new CoefCalcFromParams(100.0,
+        100.0, 100.0, 90.0, 90.0, 90.0, 24, 10, 0, 0, atoms,
+        numbers, emptyAtoms, emptyNumbers, 100.0);
 
     Double zincOccurrence = Double.valueOf(coefCalc.getParser()
         .findAtomWithName("ZN").getMacromolecularOccurrence());
