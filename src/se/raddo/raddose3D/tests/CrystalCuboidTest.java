@@ -191,7 +191,7 @@ public class CrystalCuboidTest {
     }
   }
 
-  @Test(groups = { "advanced" })
+  @Test
   public static void secondDepthTest() {
 
     // make a new map for a Cuboid Crystal, dimensions 90 x 74 x 40 um,
