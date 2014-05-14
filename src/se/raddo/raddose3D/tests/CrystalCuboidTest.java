@@ -176,7 +176,7 @@ public class CrystalCuboidTest {
       c.setupDepthFinding(angles, w);
       double sumdepths1 = c.findDepth(tempCoords, angles, w)
           + c.findDepth(tempInvCoords, angles, w);
-      
+
       c.setupDepthFinding(angles + Math.PI, w);
       double sumdepths2 = c.findDepth(tempCoords, angles + Math.PI, w)
           + c.findDepth(tempInvCoords, angles + Math.PI, w);
@@ -189,5 +189,42 @@ public class CrystalCuboidTest {
       Assert.assertTrue(Math.abs(sumdepths1 - sumdepths2) <= 1e-10,
           "depths are not matched under symmetry");
     }
+  }
+
+  @Test(groups = { "advanced" })
+  public static void secondDepthTest() {
+
+    // make a new map for a Cuboid Crystal, dimensions 90 x 74 x 40 um,
+    // 0.5 voxels per um, no starting rotation.
+    HashMap<Object, Object> properties = new HashMap<Object, Object>();
+    properties.put(Crystal.CRYSTAL_DIM_X, 90d);
+    properties.put(Crystal.CRYSTAL_DIM_Y, 74d);
+    properties.put(Crystal.CRYSTAL_DIM_Z, 40d);
+    properties.put(Crystal.CRYSTAL_RESOLUTION, 0.5d);
+    properties.put(Crystal.CRYSTAL_ANGLE_P, 0d);
+    properties.put(Crystal.CRYSTAL_ANGLE_L, 0d);
+    properties.put(Crystal.CRYSTAL_COEFCALC, new CoefCalcAverage());
+    Crystal c = new CrystalCuboid(properties);
+
+    // create a new wedge with no rotation at 100 seconds' exposure
+    // (doesn't matter)
+    Wedge w = new Wedge(0d, 0d, 0d, 100d, 0d, 0d, 0d, 0d, 0d, 0d, 0d);
+
+    // beam is along z axis. So when the crystal is not rotated, the 
+    // maximum depth along the z axis should be 40 um (length of crystal).
+
+    double[] crystCoords = new double[3];
+    // this coordinate is in voxel coordinates.
+    // this translates to bottom left corner of the crystal
+    // in crystCoords (-45, -37, -20)
+    // and should therefore be first to intercept the beam and have
+    // a depth of 0.
+    crystCoords = c.getCrystCoord(0, 0, 0);
+
+    c.setupDepthFinding(0, w);
+    double depth = c.findDepth(crystCoords, 0, w);
+
+    Assertion.equals(depth, 0, "depth = 0 at front edge of crystal");
+
   }
 }
