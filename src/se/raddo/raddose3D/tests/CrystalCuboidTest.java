@@ -221,6 +221,8 @@ public class CrystalCuboidTest {
     // a depth of 0.
     crystCoords = c.getCrystCoord(0, 0, 0);
 
+    Assertion.equals(crystCoords[2], -20, "crystal coordinate z axis = -20");
+    
     c.setupDepthFinding(0, w);
     double depth = c.findDepth(crystCoords, 0, w);
 
