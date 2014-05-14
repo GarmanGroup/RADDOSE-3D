@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Map;
 
 /**
  * 
@@ -14,37 +15,63 @@ public class MuCalcConstantParser {
   /**
    * Location of MuCalcConstants library.
    */
-
-  protected static final String MUCALC_FILE = "constants/MuCalcConstants.txt";
+  private static final String  MUCALC_FILE = "constants/MuCalcConstants.txt";
 
   /**
    * Array of Atom objects containing all elements listed in Constants file.
    */
-  private Atom[]                atoms;
+  @Deprecated
+  private Element[]            atoms;
+
+  /**
+   * Map of all Element objects in the database.
+   */
+  private Map<Object, Element> elements;
 
   /**
    * Atom count - number of atoms in this array.
    */
-  private int                   atomCount;
+  @Deprecated
+  private int                  atomCount;
 
   /**
    * Total atoms in period table.
    */
-  private static final int      TOTAL_ATOMS = 111;
+  @Deprecated
+  private static final int     TOTAL_ATOMS = 111;
 
   /**
-   * List of available fields in the database file
+   * List of available fields in the database file.
    */
   private static enum DatabaseFields {
+    /** atomic number. */
     ATOMIC_NUMBER(0),
+    /** element name. */
     ELEMENT_NAME(1);
 
+    /**
+     * The position of each element in the database line. Index starting at 0.
+     */
     private final int field;
 
+    /**
+     * Initialization of each enum type entry.
+     * 
+     * @param fieldnumber
+     *          The position of this element in the database line. Index
+     *          starting at 0.
+     */
     DatabaseFields(final int fieldnumber) {
       field = fieldnumber;
     }
 
+    /**
+     * Returns the position of this element in the database line.
+     * 
+     * @return
+     *         Position of this element in the database line. Index starting at
+     *         0.
+     */
     private int fieldNumber() {
       return field;
     }
@@ -53,10 +80,12 @@ public class MuCalcConstantParser {
   /**
    * atomic number.
    */
+  @Deprecated
   private static final int ATOMIC_NUMBER      = 0;
   /**
    * element name.
    */
+  @Deprecated
   private static final int ELEMENT_NAME       = 1;
   /**
    * K edge in Angstroms.
@@ -188,7 +217,7 @@ public class MuCalcConstantParser {
    * Constructor - reads in constant file & populates atom array.
    */
   public MuCalcConstantParser() {
-    atoms = new Atom[TOTAL_ATOMS];
+    atoms = new Element[TOTAL_ATOMS];
 
     BufferedReader br = null;
     InputStreamReader isr = null;
@@ -233,7 +262,7 @@ public class MuCalcConstantParser {
         // as listed in the constants file.
 
         try {
-          atoms[i] = new Atom(components[ELEMENT_NAME],
+          atoms[i] = new Element(components[ELEMENT_NAME],
               Integer.parseInt(components[ATOMIC_NUMBER]));
           atoms[i].setAbsorptionEdges(Double.parseDouble(components[EDGE_K]),
               Double.parseDouble(components[EDGE_L]),
@@ -310,7 +339,7 @@ public class MuCalcConstantParser {
    * @param z atomic number
    * @return associated Atom object
    */
-  public Atom findAtomWithZ(final double z) {
+  public Element findAtomWithZ(final double z) {
     int lower = 0;
     int higher = atomCount - 1;
     int newBound = (higher + lower) / 2;
@@ -349,7 +378,7 @@ public class MuCalcConstantParser {
    * @param atomName element name
    * @return Atom object
    */
-  public Atom findAtomWithName(final String atomName) {
+  public Element findAtomWithName(final String atomName) {
     for (int i = 0; i < atoms.length; i++) {
       if (atoms[i].elementName.equals(atomName.toUpperCase())) {
         return atoms[i];
@@ -364,14 +393,14 @@ public class MuCalcConstantParser {
   /**
    * @return the atoms
    */
-  public Atom[] getAtoms() {
+  public Element[] getAtoms() {
     return atoms;
   }
 
   /**
    * @param newAtoms the atoms to set
    */
-  public void setAtoms(final Atom[] newAtoms) {
+  public void setAtoms(final Element[] newAtoms) {
     this.atoms = newAtoms;
   }
 
@@ -395,7 +424,7 @@ public class MuCalcConstantParser {
    * 
    * @author magd3052
    */
-  public static class Atom {
+  public static class Element {
     /**
      * Element name.
      */
@@ -491,7 +520,7 @@ public class MuCalcConstantParser {
      * @param name element name
      * @param number atomic number
      */
-    public Atom(final String name, final int number) {
+    public Element(final String name, final int number) {
       elementName = name;
       atomicNumber = number;
       macromolecularOccurrence = 0;

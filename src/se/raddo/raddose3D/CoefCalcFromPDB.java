@@ -9,7 +9,7 @@ import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
-import se.raddo.raddose3D.MuCalcConstantParser.Atom;
+import se.raddo.raddose3D.MuCalcConstantParser.Element;
 
 /**
  * CoefCalcPDB class takes PDB information and converts
@@ -631,7 +631,7 @@ public class CoefCalcFromPDB extends CoefCalcCompute {
     double occupancyNum = this.checkOccupancyAndElementName(occupancy,
         elementSymbol, inputLine);
 
-    Atom proteinAtom = this.getParser().findAtomWithName(elementSymbol);
+    Element proteinAtom = this.getParser().findAtomWithName(elementSymbol);
     proteinAtom.setMacromolecularOccurrence(proteinAtom
         .getMacromolecularOccurrence() + occupancyNum);
     proteinAtom.setHetatmOccurrence(proteinAtom.getHetatmOccurrence()
@@ -677,12 +677,12 @@ public class CoefCalcFromPDB extends CoefCalcCompute {
         this.incrementNumDNA(1);
       }
 
-      Atom hydrogen = this.getParser().findAtomWithName("H");
-      Atom oxygen = this.getParser().findAtomWithName("O");
-      Atom carbon = this.getParser().findAtomWithName("C");
-      Atom nitrogen = this.getParser().findAtomWithName("N");
-      Atom phosphorus = this.getParser().findAtomWithName("P");
-      Atom sulphurs = this.getParser().findAtomWithName("S");
+      Element hydrogen = this.getParser().findAtomWithName("H");
+      Element oxygen = this.getParser().findAtomWithName("O");
+      Element carbon = this.getParser().findAtomWithName("C");
+      Element nitrogen = this.getParser().findAtomWithName("N");
+      Element phosphorus = this.getParser().findAtomWithName("P");
+      Element sulphurs = this.getParser().findAtomWithName("S");
 
       hydrogen.setMacromolecularOccurrence(residue.hydrogens
           + hydrogen.getMacromolecularOccurrence());
