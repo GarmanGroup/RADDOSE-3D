@@ -9,9 +9,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 
+ * Holds X-ray cross section information for all elements of the periodic table.
  */
-
 public class ElementDatabase {
   /**
    * Location of MuCalcConstants library.
@@ -44,7 +43,7 @@ public class ElementDatabase {
   /**
    * List of available fields in the database file.
    */
-  protected static enum DatabaseFields {
+  public static enum DatabaseFields {
     /** K edge in Angstroms. */
     EDGE_K(2),
     /** L edge in Angstroms. */
@@ -60,7 +59,7 @@ public class ElementDatabase {
     /** N coefficients for polynomial expansion. */
     N_COEFF_0(17), N_COEFF_1(18), N_COEFF_2(19), N_COEFF_3(20),
 
-    /** N coefficient 4. // TODO: ?!? */
+    /** Atomic weight. */
     ATOMIC_WEIGHT(23),
 
     /** Coherent coefficients for polynomial expansion. */
@@ -107,168 +106,10 @@ public class ElementDatabase {
     }
   }
 
-  /**
-   * atomic number.
-   */
-  private static final int ATOMIC_NUMBER      = 0;
-  /**
-   * element name.
-   */
-  private static final int ELEMENT_NAME       = 1;
-  /**
-   * K edge in Angstroms.
-   */
-  @Deprecated
-  private static final int EDGE_K             = 2;
-  /**
-   * L edge in Angstroms.
-   */
-  @Deprecated
-  private static final int EDGE_L             = 3;
-  /**
-   * M edge in Angstroms.
-   */
-  @Deprecated
-  private static final int EDGE_M             = 4;
-
-  /**
-   * K coefficient 0 in polynomial expansion.
-   */
-  @Deprecated
-  private static final int K_COEFF_0          = 5;
-  /**
-   * K coefficient 1.
-   */
-  @Deprecated
-  private static final int K_COEFF_1          = 6;
-  /**
-   * K coefficient 2.
-   */
-  @Deprecated
-  private static final int K_COEFF_2          = 7;
-  /**
-   * K coefficient 3.
-   */
-  @Deprecated
-  private static final int K_COEFF_3          = 8;
-
-  /**
-   * L coefficient 0 in polynomial expansion.
-   */
-  @Deprecated
-  private static final int L_COEFF_0          = 9;
-  /**
-   * L coefficient 1.
-   */
-  @Deprecated
-  private static final int L_COEFF_1          = 10;
-  /**
-   * L coefficient 2.
-   */
-  @Deprecated
-  private static final int L_COEFF_2          = 11;
-  /**
-   * L coefficient 3.
-   */
-  @Deprecated
-  private static final int L_COEFF_3          = 12;
-
-  /**
-   * M coefficient 0 in polynomial expansion.
-   */
-  @Deprecated
-  private static final int M_COEFF_0          = 13;
-  /**
-   * M coefficient 1.
-   */
-  @Deprecated
-  private static final int M_COEFF_1          = 14;
-  /**
-   * M coefficient 2.
-   */
-  @Deprecated
-  private static final int M_COEFF_2          = 15;
-  /**
-   * M coefficient 3.
-   */
-  @Deprecated
-  private static final int M_COEFF_3          = 16;
-  /**
-   * N coefficient 0 for polynomial expansion.
-   */
-  @Deprecated
-  private static final int N_COEFF_0          = 17;
-  /**
-   * N coefficient 1.
-   */
-  @Deprecated
-  private static final int N_COEFF_1          = 18;
-  /**
-   * N coefficient 2.
-   */
-  @Deprecated
-  private static final int N_COEFF_2          = 19;
-  /**
-   * N coefficient 3.
-   */
-  @Deprecated
-  private static final int N_COEFF_3          = 20;
-  /**
-   * N coefficient 4.
-   */
-  private static final int ATOMIC_WEIGHT      = 23;
-
-  /**
-   * Coherent coefficient 0 for polynomial expansion.
-   */
-  @Deprecated
-  private static final int COHERENT_COEFF_0   = 24;
-  /**
-   * Coherent coefficient 1.
-   */
-  @Deprecated
-  private static final int COHERENT_COEFF_1   = 25;
-  /**
-   * Coherent coefficient 2.
-   */
-  @Deprecated
-  private static final int COHERENT_COEFF_2   = 26;
-  /**
-   * Coherent coefficient 3.
-   */
-  @Deprecated
-  private static final int COHERENT_COEFF_3   = 27;
-
-  /**
-   * Incoherent coefficient 0 for polynomial expansion.
-   */
-  @Deprecated
-  private static final int INCOHERENT_COEFF_0 = 28;
-  /**
-   * Incoherent coefficient 1.
-   */
-  @Deprecated
-  private static final int INCOHERENT_COEFF_1 = 29;
-  /**
-   * Incoherent coefficient 2.
-   */
-  @Deprecated
-  private static final int INCOHERENT_COEFF_2 = 30;
-  /**
-   * Incoherent coefficient 3.
-   */
-  @Deprecated
-  private static final int INCOHERENT_COEFF_3 = 31;
-  /**
-   * L2.
-   */
-  @Deprecated
-  private static final int L2                 = 36;
-  /**
-   * L3.
-   */
-  @Deprecated
-  private static final int L3                 = 37;
+  /** Position of the atomic number in the database file. */
+  private static final int ATOMIC_NUMBER = 0;
+  /** Position of the element name in the database file. */
+  private static final int ELEMENT_NAME  = 1;
 
   /**
    * Constructor - reads in constant file & populates atom array.
@@ -319,48 +160,62 @@ public class ElementDatabase {
         // as listed in the constants file.
 
         try {
-          Element el = new Element(components[ELEMENT_NAME],
-              Integer.parseInt(components[ATOMIC_NUMBER]));
-          el.setAbsorptionEdges(Double.parseDouble(components[EDGE_K]),
-              Double.parseDouble(components[EDGE_L]),
-              Double.parseDouble(components[EDGE_M]));
-          el.setAbsorptionKEdgeCoeffs(
-              Double.parseDouble(components[K_COEFF_0]),
-              Double.parseDouble(components[K_COEFF_1]),
-              Double.parseDouble(components[K_COEFF_2]),
-              Double.parseDouble(components[K_COEFF_3]));
-          el.setAbsorptionLEdgeCoeffs(
-              Double.parseDouble(components[L_COEFF_0]),
-              Double.parseDouble(components[L_COEFF_1]),
-              Double.parseDouble(components[L_COEFF_2]),
-              Double.parseDouble(components[L_COEFF_3]));
-          el.setAbsorptionMEdgeCoeffs(
-              Double.parseDouble(components[M_COEFF_0]),
-              Double.parseDouble(components[M_COEFF_1]),
-              Double.parseDouble(components[M_COEFF_2]),
-              Double.parseDouble(components[M_COEFF_3]));
-          el.setAbsorptionNEdgeCoeffs(
-              Double.parseDouble(components[N_COEFF_0]),
-              Double.parseDouble(components[N_COEFF_1]),
-              Double.parseDouble(components[N_COEFF_2]),
-              Double.parseDouble(components[N_COEFF_3]));
-          el.setAtomicConstants(Double
-              .parseDouble(components[ATOMIC_WEIGHT]));
-          el.setCoherentScatteringCoeffs(
-              Double.parseDouble(components[COHERENT_COEFF_0]),
-              Double.parseDouble(components[COHERENT_COEFF_1]),
-              Double.parseDouble(components[COHERENT_COEFF_2]),
-              Double.parseDouble(components[COHERENT_COEFF_3]));
-          el.setIncoherentScatteringCoeffs(
-              Double.parseDouble(components[INCOHERENT_COEFF_0]),
-              Double.parseDouble(components[INCOHERENT_COEFF_1]),
-              Double.parseDouble(components[INCOHERENT_COEFF_2]),
-              Double.parseDouble(components[INCOHERENT_COEFF_3]));
-          el.setLs(Double.parseDouble(components[L2]),
-              Double.parseDouble(components[L3]));
+          Map<DatabaseFields, Double> einfo =
+              new HashMap<DatabaseFields, Double>();
+          for (DatabaseFields df : DatabaseFields.values()) {
+            einfo.put(df, new Double(components[df.fieldNumber()]));
+          }
 
-          elements.put(components[ELEMENT_NAME], el);
-          elements.put(components[ATOMIC_NUMBER], el);
+          Integer atomicNumber = new Integer(components[ATOMIC_NUMBER]);
+          String elementName = components[ELEMENT_NAME];
+
+          Element el = new Element(elementName, atomicNumber, einfo);
+          elements.put(elementName.toLowerCase(), el);
+          elements.put(atomicNumber, el);
+
+          /*
+           * el.setAbsorptionEdges(Double.parseDouble(components[EDGE_K]),
+           * Double.parseDouble(components[EDGE_L]),
+           * Double.parseDouble(components[EDGE_M]));
+           * el.setAbsorptionKEdgeCoeffs(
+           * Double.parseDouble(components[K_COEFF_0]),
+           * Double.parseDouble(components[K_COEFF_1]),
+           * Double.parseDouble(components[K_COEFF_2]),
+           * Double.parseDouble(components[K_COEFF_3]));
+           * el.setAbsorptionLEdgeCoeffs(
+           * Double.parseDouble(components[L_COEFF_0]),
+           * Double.parseDouble(components[L_COEFF_1]),
+           * Double.parseDouble(components[L_COEFF_2]),
+           * Double.parseDouble(components[L_COEFF_3]));
+           * el.setAbsorptionMEdgeCoeffs(
+           * Double.parseDouble(components[M_COEFF_0]),
+           * Double.parseDouble(components[M_COEFF_1]),
+           * Double.parseDouble(components[M_COEFF_2]),
+           * Double.parseDouble(components[M_COEFF_3]));
+           * el.setAbsorptionNEdgeCoeffs(
+           * Double.parseDouble(components[N_COEFF_0]),
+           * Double.parseDouble(components[N_COEFF_1]),
+           * Double.parseDouble(components[N_COEFF_2]),
+           * Double.parseDouble(components[N_COEFF_3]));
+           * el.setAtomicConstants(Double
+           * .parseDouble(components[ATOMIC_WEIGHT]));
+           * el.setCoherentScatteringCoeffs(
+           * Double.parseDouble(components[COHERENT_COEFF_0]),
+           * Double.parseDouble(components[COHERENT_COEFF_1]),
+           * Double.parseDouble(components[COHERENT_COEFF_2]),
+           * Double.parseDouble(components[COHERENT_COEFF_3]));
+           * el.setIncoherentScatteringCoeffs(
+           * Double.parseDouble(components[INCOHERENT_COEFF_0]),
+           * Double.parseDouble(components[INCOHERENT_COEFF_1]),
+           * Double.parseDouble(components[INCOHERENT_COEFF_2]),
+           * Double.parseDouble(components[INCOHERENT_COEFF_3]));
+           * el.setLs(Double.parseDouble(components[L2]),
+           * Double.parseDouble(components[L3]));
+           * 
+           * elements.put(components[ELEMENT_NAME].toLowerCase(), el);
+           * elements.put(Integer.parseInt(components[ATOMIC_NUMBER]), el);
+           */
+
         } catch (NumberFormatException e) {
           System.out.println("Could not parse line " + totalLines);
           e.printStackTrace();
@@ -399,35 +254,34 @@ public class ElementDatabase {
    * @param z atomic number
    * @return associated Atom object
    */
+  @Deprecated
   public Element findAtomWithZ(final double z) {
-    int lower = 0;
-    int higher = atomCount - 1;
-    int newBound = (higher + lower) / 2;
-
-    if (z < atoms[lower].atomicNumber || z > atoms[higher].atomicNumber) {
-      System.out
-          .println("Warning: Atomic number asked for which is out of range.");
-      return null;
-    }
-
-    while (atoms[newBound].atomicNumber != z) {
-      if (higher == lower + 1) {
-        System.out
-            .println("Warning: Atomic number within range but"
-                + "no data available for particular Z.");
-        return null;
-      }
-
-      if (atoms[newBound].atomicNumber > z) {
-        higher = newBound;
-      } else if (atoms[newBound].atomicNumber < z) {
-        lower = newBound;
-      }
-
-      newBound = (higher + lower) / 2;
-    }
-
-    return atoms[newBound];
+    return getElement((int) z);
+    /**
+     * int lower = 0;
+     * int higher = atomCount - 1;
+     * int newBound = (higher + lower) / 2;
+     * if (z < atoms[lower].atomicNumber || z > atoms[higher].atomicNumber) {
+     * System.out
+     * .println("Warning: Atomic number asked for which is out of range.");
+     * return null;
+     * }
+     * while (atoms[newBound].atomicNumber != z) {
+     * if (higher == lower + 1) {
+     * System.out
+     * .println("Warning: Atomic number within range but"
+     * + "no data available for particular Z.");
+     * return null;
+     * }
+     * if (atoms[newBound].atomicNumber > z) {
+     * higher = newBound;
+     * } else if (atoms[newBound].atomicNumber < z) {
+     * lower = newBound;
+     * }
+     * newBound = (higher + lower) / 2;
+     * }
+     * return atoms[newBound];
+     */
   }
 
   /**
@@ -438,6 +292,7 @@ public class ElementDatabase {
    * @param atomName element name
    * @return Atom object
    */
+  @Deprecated
   public Element findAtomWithName(final String atomName) {
     for (int i = 0; i < atoms.length; i++) {
       if (atoms[i].elementName.equals(atomName.toUpperCase())) {
@@ -453,8 +308,34 @@ public class ElementDatabase {
   /**
    * @return the atoms
    */
+  @Deprecated
   public Element[] getAtoms() {
     return atoms;
+  }
+
+  /**
+   * Returns the Element object associated with the chemical element with z
+   * protons.
+   * 
+   * @param z
+   *          atomic number
+   * @return
+   *         associated Element object
+   */
+  public Element getElement(final int z) {
+    return elements.get(z);
+  }
+
+  /**
+   * Returns the Element object associated with the specified chemical element.
+   * 
+   * @param name
+   *          name of a chemical element
+   * @return
+   *         associated Element object
+   */
+  public Element getElement(final String name) {
+    return elements.get(name.toLowerCase());
   }
 
   /**

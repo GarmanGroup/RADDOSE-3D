@@ -1,47 +1,46 @@
 package se.raddo.raddose3D;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
- * Atom class looking after physical constants associated with
+ * The Element class contains physical constants of an element associated with
  * x-ray cross sections.
- * 
- * @author magd3052
  */
 public class Element {
   /**
    * Element name.
    */
-  public String               elementName;
+  @Deprecated
+  public String                                             elementName;
   /**
    * Atomic number.
    */
-  public int                  atomicNumber;
+  @Deprecated
+  public int                                                atomicNumber;
 
   /**
-   * Absorption edge K, L, M in Angstroms.
+   * Stored information about the chemical element.
    */
-  private double              absorptionEdgeK, absorptionEdgeL,
-                              absorptionEdgeM;
+  private final Map<ElementDatabase.DatabaseFields, Double> elementData;
 
   /**
-   * Array (of four) for K, L, M, N edges.
+   * List of absorption edges.
    */
-  private double[]            absorptionEdgeKCoeff, absorptionEdgeLCoeff,
-                              absorptionEdgeMCoeff, absorptionEdgeNCoeff;
+  private enum AbsorptionEdge {
+    K, L, M, N, C, I
+  }
 
   /**
    * Atomic weight.
    */
+  @Deprecated
   private double              atomicWeight;
-
-  /**
-   * Array of four for coherent and incoherent scattering.
-   */
-  private double[]            coherentScatteringCoeff,
-                              incoherentScatteringCoeff;
 
   /**
    * L2 and L3 variables.
    */
+  @Deprecated
   private double              l2, l3;
 
   /**
@@ -96,8 +95,8 @@ public class Element {
   /**
    * calculated cross-sections.
    */
-
-  private double              photoelectricCrossSection, totalCrossSection,
+  private double              photoelectricCrossSection,
+                              totalCrossSection,
                               coherentCrossSection;
 
   /**
@@ -106,6 +105,7 @@ public class Element {
    * @param name element name
    * @param number atomic number
    */
+  @Deprecated
   public Element(final String name, final int number) {
     elementName = name;
     atomicNumber = number;
@@ -115,7 +115,41 @@ public class Element {
     photoelectricCrossSection = 0;
     totalCrossSection = 0;
     coherentCrossSection = 0;
+    elementData = new HashMap<ElementDatabase.DatabaseFields, Double>();
   }
+
+  /**
+   * Create a new element with name, atomic number and associated information.
+   * 
+   * @param element
+   *          element name
+   * @param protons
+   *          atomic number
+   * @param elementInformation
+   *          Map containing the associated element information
+   */
+  public Element(final String element, final int protons,
+      final Map<ElementDatabase.DatabaseFields, Double> elementInformation) {
+    elementName = element;
+    atomicNumber = protons;
+    elementData = elementInformation;
+  }
+
+  /*
+   * el.setAtomicConstants(Double
+   * .parseDouble(components[ATOMIC_WEIGHT]));
+   * 
+   * el.setIncoherentScatteringCoeffs(
+   * Double.parseDouble(components[INCOHERENT_COEFF_0]),
+   * Double.parseDouble(components[INCOHERENT_COEFF_1]),
+   * Double.parseDouble(components[INCOHERENT_COEFF_2]),
+   * Double.parseDouble(components[INCOHERENT_COEFF_3]));
+   * el.setLs(Double.parseDouble(components[L2]),
+   * Double.parseDouble(components[L3]));
+   * 
+   * elements.put(components[ELEMENT_NAME].toLowerCase(), el);
+   * elements.put(Integer.parseInt(components[ATOMIC_NUMBER]), el);
+   */
 
   /**
    * Set element name and atomic number.
@@ -125,23 +159,8 @@ public class Element {
    */
   @Deprecated
   public void setCoreParameters(final String name, final int number) {
-    this.elementName = name;
-    this.atomicNumber = number;
-  }
-
-  /**
-   * Set values of absorption edges in Angstroms.
-   * 
-   * @param edgeK K edge energy
-   * @param edgeL L edge energy
-   * @param edgeM M edge energy
-   */
-  @Deprecated
-  public void setAbsorptionEdges(final double edgeK, final double edgeL,
-      final double edgeM) {
-    this.absorptionEdgeK = edgeK;
-    this.absorptionEdgeL = edgeL;
-    this.absorptionEdgeM = edgeM;
+    elementName = name;
+    atomicNumber = number;
   }
 
   /**
@@ -151,134 +170,7 @@ public class Element {
    */
   @Deprecated
   public void setAtomicConstants(final double atweight) {
-    this.atomicWeight = atweight;
-  }
-
-  /**
-   * sets logarithmic coefficients of K edge for calculation of cross-section.
-   * 
-   * @param k0 k0
-   * @param k1 k1
-   * @param k2 k2
-   * @param k3 k3
-   */
-  @Deprecated
-  public void setAbsorptionKEdgeCoeffs(final double k0, final double k1,
-      final double k2,
-      final double k3) {
-    this.absorptionEdgeKCoeff = new double[POLYNOMIAL_EXPANSION];
-
-    absorptionEdgeKCoeff[0] = k0;
-    absorptionEdgeKCoeff[1] = k1;
-    absorptionEdgeKCoeff[2] = k2;
-    absorptionEdgeKCoeff[3] = k3;
-  }
-
-  /**
-   * sets logarithmic coefficients of L edge for calculation of cross-section.
-   * follows polynomial fit
-   * 
-   * @param l0 l0
-   * @param l1 l1
-   * @param newl2 l2
-   * @param newl3 l3
-   */
-  @Deprecated
-  public void setAbsorptionLEdgeCoeffs(final double l0, final double l1,
-      final double newl2,
-      final double newl3) {
-    this.absorptionEdgeLCoeff = new double[POLYNOMIAL_EXPANSION];
-
-    absorptionEdgeLCoeff[0] = l0;
-    absorptionEdgeLCoeff[1] = l1;
-    absorptionEdgeLCoeff[2] = newl2;
-    absorptionEdgeLCoeff[3] = newl3;
-  }
-
-  /**
-   * sets logarithmic coefficients of M edge for calculation of cross-section.
-   * follows polynomial fit
-   * 
-   * @param m0 m0
-   * @param m1 m1
-   * @param m2 m2
-   * @param m3 m3
-   */
-  @Deprecated
-  public void setAbsorptionMEdgeCoeffs(final double m0, final double m1,
-      final double m2,
-      final double m3) {
-    this.absorptionEdgeMCoeff = new double[POLYNOMIAL_EXPANSION];
-
-    absorptionEdgeMCoeff[0] = m0;
-    absorptionEdgeMCoeff[1] = m1;
-    absorptionEdgeMCoeff[2] = m2;
-    absorptionEdgeMCoeff[3] = m3;
-  }
-
-  /**
-   * sets logarithmic coefficients of K edge for calculation of cross-section.
-   * follows polynomial fit
-   * 
-   * @param n0 n0
-   * @param n1 n1
-   * @param n2 n2
-   * @param n3 n3
-   */
-  @Deprecated
-  public void setAbsorptionNEdgeCoeffs(final double n0, final double n1,
-      final double n2,
-      final double n3) {
-    this.absorptionEdgeNCoeff = new double[POLYNOMIAL_EXPANSION];
-
-    absorptionEdgeNCoeff[0] = n0;
-    absorptionEdgeNCoeff[1] = n1;
-    absorptionEdgeNCoeff[2] = n2;
-    absorptionEdgeNCoeff[3] = n3;
-  }
-
-  /**
-   * sets logarithmic coefficients of coherent scattering for calculation of
-   * cross-section.
-   * follows polynomial fit
-   * 
-   * @param coh0 coh0
-   * @param coh1 coh1
-   * @param coh2 coh2
-   * @param coh3 coh3
-   */
-  @Deprecated
-  public void setCoherentScatteringCoeffs(final double coh0,
-      final double coh1,
-      final double coh2, final double coh3) {
-    this.coherentScatteringCoeff = new double[POLYNOMIAL_EXPANSION];
-
-    coherentScatteringCoeff[0] = coh0;
-    coherentScatteringCoeff[1] = coh1;
-    coherentScatteringCoeff[2] = coh2;
-    coherentScatteringCoeff[3] = coh3;
-  }
-
-  /**
-   * sets logarithmic coefficients of incoherent scattering for calculation of
-   * cross-section.
-   * follows polynomial fit
-   * 
-   * @param incoh0 incoh0
-   * @param incoh1 incoh1
-   * @param incoh2 incoh2
-   * @param incoh3 incoh3
-   */
-  @Deprecated
-  public void setIncoherentScatteringCoeffs(final double incoh0,
-      final double incoh1,
-      final double incoh2, final double incoh3) {
-    this.incoherentScatteringCoeff = new double[POLYNOMIAL_EXPANSION];
-
-    incoherentScatteringCoeff[0] = incoh0;
-    incoherentScatteringCoeff[1] = incoh1;
-    incoherentScatteringCoeff[2] = incoh2;
-    incoherentScatteringCoeff[3] = incoh3;
+    atomicWeight = atweight;
   }
 
   /**
@@ -325,20 +217,82 @@ public class Element {
    * @param edge String indicating which edge coefficient (K, L, M, N, C, I).
    * @return corresponding edge coefficient.
    */
-  public double edgeCoefficient(final int num, final String edge) {
+  private double edgeCoefficient(final int num, final String edge) {
     switch (edge.toCharArray()[0]) {
       case 'K':
-        return this.absorptionEdgeKCoeff[num];
+        switch (num) {
+          case 0:
+            return elementData.get(ElementDatabase.DatabaseFields.K_COEFF_0);
+          case 1:
+            return elementData.get(ElementDatabase.DatabaseFields.K_COEFF_1);
+          case 2:
+            return elementData.get(ElementDatabase.DatabaseFields.K_COEFF_2);
+          case 3:
+            return elementData.get(ElementDatabase.DatabaseFields.K_COEFF_3);
+        }
       case 'L':
-        return this.absorptionEdgeLCoeff[num];
+        switch (num) {
+          case 0:
+            return elementData.get(ElementDatabase.DatabaseFields.L_COEFF_0);
+          case 1:
+            return elementData.get(ElementDatabase.DatabaseFields.L_COEFF_1);
+          case 2:
+            return elementData.get(ElementDatabase.DatabaseFields.L_COEFF_2);
+          case 3:
+            return elementData.get(ElementDatabase.DatabaseFields.L_COEFF_3);
+        }
       case 'M':
-        return this.absorptionEdgeMCoeff[num];
+        switch (num) {
+          case 0:
+            return elementData.get(ElementDatabase.DatabaseFields.M_COEFF_0);
+          case 1:
+            return elementData.get(ElementDatabase.DatabaseFields.M_COEFF_1);
+          case 2:
+            return elementData.get(ElementDatabase.DatabaseFields.M_COEFF_2);
+          case 3:
+            return elementData.get(ElementDatabase.DatabaseFields.M_COEFF_3);
+        }
       case 'N':
-        return this.absorptionEdgeNCoeff[num];
+        switch (num) {
+          case 0:
+            return elementData.get(ElementDatabase.DatabaseFields.N_COEFF_0);
+          case 1:
+            return elementData.get(ElementDatabase.DatabaseFields.N_COEFF_1);
+          case 2:
+            return elementData.get(ElementDatabase.DatabaseFields.N_COEFF_2);
+          case 3:
+            return elementData.get(ElementDatabase.DatabaseFields.N_COEFF_3);
+        }
       case 'C':
-        return this.coherentScatteringCoeff[num];
+        switch (num) {
+          case 0:
+            return elementData
+                .get(ElementDatabase.DatabaseFields.COHERENT_COEFF_0);
+          case 1:
+            return elementData
+                .get(ElementDatabase.DatabaseFields.COHERENT_COEFF_1);
+          case 2:
+            return elementData
+                .get(ElementDatabase.DatabaseFields.COHERENT_COEFF_2);
+          case 3:
+            return elementData
+                .get(ElementDatabase.DatabaseFields.COHERENT_COEFF_3);
+        }
       case 'I':
-        return this.incoherentScatteringCoeff[num];
+        switch (num) {
+          case 0:
+            return elementData
+                .get(ElementDatabase.DatabaseFields.INCOHERENT_COEFF_0);
+          case 1:
+            return elementData
+                .get(ElementDatabase.DatabaseFields.INCOHERENT_COEFF_1);
+          case 2:
+            return elementData
+                .get(ElementDatabase.DatabaseFields.INCOHERENT_COEFF_2);
+          case 3:
+            return elementData
+                .get(ElementDatabase.DatabaseFields.INCOHERENT_COEFF_3);
+        }
       default:
         System.out
             .println("ERROR: Something's gone horribly wrong in the code");
@@ -349,9 +303,12 @@ public class Element {
   /**
    * Calculation of "bax" for corresponding edge and energy in Angstroms.
    * 
-   * @param energy energy of beam in Angstroms
-   * @param edge String indicating which edge coefficient (K, L, M, N, C, I).
-   * @return value of bax
+   * @param energy
+   *          energy of beam in Angstroms
+   * @param edge
+   *          String indicating which edge coefficient (K, L, M, N, C, I).
+   * @return
+   *         value of bax
    */
   public double baxForEdge(final double energy, final String edge) {
     // calculation from logarithmic coefficients in McMaster tables.
@@ -384,6 +341,13 @@ public class Element {
    * @param energy wavelength in Angstroms
    */
   public void calculateMu(final double energy) {
+    Double absorptionEdgeK =
+        elementData.get(ElementDatabase.DatabaseFields.EDGE_K);
+    Double absorptionEdgeL =
+        elementData.get(ElementDatabase.DatabaseFields.EDGE_L);
+    Double absorptionEdgeM =
+        elementData.get(ElementDatabase.DatabaseFields.EDGE_M);
+
     if (energy < absorptionEdgeK
         && energy > absorptionEdgeK - ABSORPTION_EDGE_TOLERANCE) {
       System.out
@@ -427,7 +391,7 @@ public class Element {
         bax /= (LJ_1 * LJ_2);
       }
 
-      if (energy > this.l2 && energy < this.absorptionEdgeL) {
+      if (energy > this.l2 && energy < absorptionEdgeL) {
         bax /= LJ_1;
       }
     }
@@ -435,13 +399,12 @@ public class Element {
     double bcox = 0;
     double binx = 0;
 
-    if (!(this.coherentScatteringCoeff[0] == -1
-    || this.coherentScatteringCoeff[0] == 0)) {
+    if (elementData.get(ElementDatabase.DatabaseFields.COHERENT_COEFF_0) != 0) {
       bcox = baxForEdge(energy, "C");
     }
 
-    if (!(this.coherentScatteringCoeff[0] == -1
-    || this.coherentScatteringCoeff[0] == 0)) {
+    if (elementData.get(ElementDatabase.DatabaseFields.INCOHERENT_COEFF_0) != 0)
+    {
       binx = baxForEdge(energy, "I");
     }
 
@@ -485,51 +448,6 @@ public class Element {
   }
 
   /**
-   * @return the absorptionEdgeK
-   */
-  public double getAbsorptionEdgeK() {
-    return absorptionEdgeK;
-  }
-
-  /**
-   * @param newabsorptionEdgeK the absorptionEdgeK to set
-   */
-  @Deprecated
-  public void setAbsorptionEdgeK(final double newabsorptionEdgeK) {
-    this.absorptionEdgeK = newabsorptionEdgeK;
-  }
-
-  /**
-   * @return the absorptionEdgeL
-   */
-  public double getAbsorptionEdgeL() {
-    return absorptionEdgeL;
-  }
-
-  /**
-   * @param newabsorptionEdgeL the absorptionEdgeL to set
-   */
-  @Deprecated
-  public void setAbsorptionEdgeL(final double newabsorptionEdgeL) {
-    this.absorptionEdgeL = newabsorptionEdgeL;
-  }
-
-  /**
-   * @return the absorptionEdgeM
-   */
-  public double getAbsorptionEdgeM() {
-    return absorptionEdgeM;
-  }
-
-  /**
-   * @param newabsorptionEdgeM the absorptionEdgeM to set
-   */
-  @Deprecated
-  public void setAbsorptionEdgeM(final double newabsorptionEdgeM) {
-    this.absorptionEdgeM = newabsorptionEdgeM;
-  }
-
-  /**
    * @return the atomicWeight
    */
   public double getAtomicWeight() {
@@ -542,36 +460,6 @@ public class Element {
   @Deprecated
   public void setAtomicWeight(final double newatomicWeight) {
     this.atomicWeight = newatomicWeight;
-  }
-
-  /**
-   * @return the l2
-   */
-  public double getL2() {
-    return l2;
-  }
-
-  /**
-   * @param newl2 the l2 to set
-   */
-  @Deprecated
-  public void setL2(final double newl2) {
-    this.l2 = newl2;
-  }
-
-  /**
-   * @return the l3
-   */
-  public double getL3() {
-    return l3;
-  }
-
-  /**
-   * @param newl3 the l3 to set
-   */
-  @Deprecated
-  public void setL3(final double newl3) {
-    this.l3 = newl3;
   }
 
   /**
@@ -671,15 +559,6 @@ public class Element {
   }
 
   /**
-   * @param newphotoelectricCrossSection the photoelectricCrossSection to set
-   */
-  @Deprecated
-  public void setPhotoelectricCrossSection(
-      final double newphotoelectricCrossSection) {
-    this.photoelectricCrossSection = newphotoelectricCrossSection;
-  }
-
-  /**
    * @return the totalCrossSection
    */
   public double getTotalCrossSection() {
@@ -687,25 +566,9 @@ public class Element {
   }
 
   /**
-   * @param newtotalCrossSection the totalCrossSection to set
-   */
-  @Deprecated
-  public void setTotalCrossSection(final double newtotalCrossSection) {
-    this.totalCrossSection = newtotalCrossSection;
-  }
-
-  /**
    * @return the coherentCrossSection
    */
   public double getCoherentCrossSection() {
     return coherentCrossSection;
-  }
-
-  /**
-   * @param newcoherentCrossSection the coherentCrossSection to set
-   */
-  @Deprecated
-  public void setCoherentCrossSection(final double newcoherentCrossSection) {
-    this.coherentCrossSection = newcoherentCrossSection;
   }
 }
