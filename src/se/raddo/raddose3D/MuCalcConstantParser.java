@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -15,39 +16,66 @@ public class MuCalcConstantParser {
   /**
    * Location of MuCalcConstants library.
    */
-  private static final String  MUCALC_FILE = "constants/MuCalcConstants.txt";
+  private static final String        MUCALC_FILE = "constants/MuCalcConstants.txt";
 
   /**
    * Array of Atom objects containing all elements listed in Constants file.
    */
   @Deprecated
-  private Element[]            atoms;
+  private Element[]                  atoms;
 
   /**
    * Map of all Element objects in the database.
    */
-  private Map<Object, Element> elements;
+  private final Map<Object, Element> elements;
 
   /**
    * Atom count - number of atoms in this array.
    */
   @Deprecated
-  private int                  atomCount;
+  private int                        atomCount;
 
   /**
    * Total atoms in period table.
    */
   @Deprecated
-  private static final int     TOTAL_ATOMS = 111;
+  private static final int           TOTAL_ATOMS = 111;
 
   /**
    * List of available fields in the database file.
    */
-  private static enum DatabaseFields {
-    /** atomic number. */
-    ATOMIC_NUMBER(0),
-    /** element name. */
-    ELEMENT_NAME(1);
+  protected static enum DatabaseFields {
+    /** K edge in Angstroms. */
+    EDGE_K(2),
+    /** L edge in Angstroms. */
+    EDGE_L(3),
+    /** M edge in Angstroms. */
+    EDGE_M(4),
+    /** K coefficients in polynomial expansion. */
+    K_COEFF_0(5), K_COEFF_1(6), K_COEFF_2(7), K_COEFF_3(8),
+    /** L coefficients in polynomial expansion. */
+    L_COEFF_0(9), L_COEFF_1(10), L_COEFF_2(11), L_COEFF_3(12),
+    /** M coefficients in polynomial expansion. */
+    M_COEFF_0(13), M_COEFF_1(14), M_COEFF_2(15), M_COEFF_3(16),
+    /** N coefficients for polynomial expansion. */
+    N_COEFF_0(17), N_COEFF_1(18), N_COEFF_2(19), N_COEFF_3(20),
+
+    /** N coefficient 4.  // TODO: ?!? */
+    ATOMIC_WEIGHT(23),
+
+    /** Coherent coefficients for polynomial expansion. */
+    COHERENT_COEFF_0(24), COHERENT_COEFF_1(25),
+    COHERENT_COEFF_2(26), COHERENT_COEFF_3(27),
+
+    /** Incoherent coefficients for polynomial expansion. */
+    INCOHERENT_COEFF_0(28), INCOHERENT_COEFF_1(29),
+    INCOHERENT_COEFF_2(30), INCOHERENT_COEFF_3(31),
+
+    /** L2. */
+    L2(36),
+
+    /** L3. */
+    L3(37);
 
     /**
      * The position of each element in the database line. Index starting at 0.
@@ -80,91 +108,108 @@ public class MuCalcConstantParser {
   /**
    * atomic number.
    */
-  @Deprecated
   private static final int ATOMIC_NUMBER      = 0;
   /**
    * element name.
    */
-  @Deprecated
   private static final int ELEMENT_NAME       = 1;
   /**
    * K edge in Angstroms.
    */
+  @Deprecated
   private static final int EDGE_K             = 2;
   /**
    * L edge in Angstroms.
    */
+  @Deprecated
   private static final int EDGE_L             = 3;
   /**
    * M edge in Angstroms.
    */
+  @Deprecated
   private static final int EDGE_M             = 4;
 
   /**
    * K coefficient 0 in polynomial expansion.
    */
+  @Deprecated
   private static final int K_COEFF_0          = 5;
   /**
    * K coefficient 1.
    */
+  @Deprecated
   private static final int K_COEFF_1          = 6;
   /**
    * K coefficient 2.
    */
+  @Deprecated
   private static final int K_COEFF_2          = 7;
   /**
    * K coefficient 3.
    */
+  @Deprecated
   private static final int K_COEFF_3          = 8;
 
   /**
    * L coefficient 0 in polynomial expansion.
    */
+  @Deprecated
   private static final int L_COEFF_0          = 9;
   /**
    * L coefficient 1.
    */
+  @Deprecated
   private static final int L_COEFF_1          = 10;
   /**
    * L coefficient 2.
    */
+  @Deprecated
   private static final int L_COEFF_2          = 11;
   /**
    * L coefficient 3.
    */
+  @Deprecated
   private static final int L_COEFF_3          = 12;
 
   /**
    * M coefficient 0 in polynomial expansion.
    */
+  @Deprecated
   private static final int M_COEFF_0          = 13;
   /**
    * M coefficient 1.
    */
+  @Deprecated
   private static final int M_COEFF_1          = 14;
   /**
    * M coefficient 2.
    */
+  @Deprecated
   private static final int M_COEFF_2          = 15;
   /**
    * M coefficient 3.
    */
+  @Deprecated
   private static final int M_COEFF_3          = 16;
   /**
    * N coefficient 0 for polynomial expansion.
    */
+  @Deprecated
   private static final int N_COEFF_0          = 17;
   /**
    * N coefficient 1.
    */
+  @Deprecated
   private static final int N_COEFF_1          = 18;
   /**
    * N coefficient 2.
    */
+  @Deprecated
   private static final int N_COEFF_2          = 19;
   /**
    * N coefficient 3.
    */
+  @Deprecated
   private static final int N_COEFF_3          = 20;
   /**
    * N coefficient 4.
@@ -174,43 +219,53 @@ public class MuCalcConstantParser {
   /**
    * Coherent coefficient 0 for polynomial expansion.
    */
+  @Deprecated
   private static final int COHERENT_COEFF_0   = 24;
   /**
    * Coherent coefficient 1.
    */
+  @Deprecated
   private static final int COHERENT_COEFF_1   = 25;
   /**
    * Coherent coefficient 2.
    */
+  @Deprecated
   private static final int COHERENT_COEFF_2   = 26;
   /**
    * Coherent coefficient 3.
    */
+  @Deprecated
   private static final int COHERENT_COEFF_3   = 27;
 
   /**
    * Incoherent coefficient 0 for polynomial expansion.
    */
+  @Deprecated
   private static final int INCOHERENT_COEFF_0 = 28;
   /**
    * Incoherent coefficient 1.
    */
+  @Deprecated
   private static final int INCOHERENT_COEFF_1 = 29;
   /**
    * Incoherent coefficient 2.
    */
+  @Deprecated
   private static final int INCOHERENT_COEFF_2 = 30;
   /**
    * Incoherent coefficient 3.
    */
+  @Deprecated
   private static final int INCOHERENT_COEFF_3 = 31;
   /**
    * L2.
    */
+  @Deprecated
   private static final int L2                 = 36;
   /**
    * L3.
    */
+  @Deprecated
   private static final int L3                 = 37;
 
   /**
@@ -218,10 +273,10 @@ public class MuCalcConstantParser {
    */
   public MuCalcConstantParser() {
     atoms = new Element[TOTAL_ATOMS];
+    elements = new HashMap<Object, Element>();
 
     BufferedReader br = null;
     InputStreamReader isr = null;
-
     try {
       FileInputStream is = new FileInputStream(MUCALC_FILE);
       isr = new InputStreamReader(is);
@@ -262,45 +317,48 @@ public class MuCalcConstantParser {
         // as listed in the constants file.
 
         try {
-          atoms[i] = new Element(components[ELEMENT_NAME],
+          Element el = new Element(components[ELEMENT_NAME],
               Integer.parseInt(components[ATOMIC_NUMBER]));
-          atoms[i].setAbsorptionEdges(Double.parseDouble(components[EDGE_K]),
+          el.setAbsorptionEdges(Double.parseDouble(components[EDGE_K]),
               Double.parseDouble(components[EDGE_L]),
               Double.parseDouble(components[EDGE_M]));
-          atoms[i].setAbsorptionKEdgeCoeffs(
+          el.setAbsorptionKEdgeCoeffs(
               Double.parseDouble(components[K_COEFF_0]),
               Double.parseDouble(components[K_COEFF_1]),
               Double.parseDouble(components[K_COEFF_2]),
               Double.parseDouble(components[K_COEFF_3]));
-          atoms[i].setAbsorptionLEdgeCoeffs(
+          el.setAbsorptionLEdgeCoeffs(
               Double.parseDouble(components[L_COEFF_0]),
               Double.parseDouble(components[L_COEFF_1]),
               Double.parseDouble(components[L_COEFF_2]),
               Double.parseDouble(components[L_COEFF_3]));
-          atoms[i].setAbsorptionMEdgeCoeffs(
+          el.setAbsorptionMEdgeCoeffs(
               Double.parseDouble(components[M_COEFF_0]),
               Double.parseDouble(components[M_COEFF_1]),
               Double.parseDouble(components[M_COEFF_2]),
               Double.parseDouble(components[M_COEFF_3]));
-          atoms[i].setAbsorptionNEdgeCoeffs(
+          el.setAbsorptionNEdgeCoeffs(
               Double.parseDouble(components[N_COEFF_0]),
               Double.parseDouble(components[N_COEFF_1]),
               Double.parseDouble(components[N_COEFF_2]),
               Double.parseDouble(components[N_COEFF_3]));
-          atoms[i].setAtomicConstants(Double
+          el.setAtomicConstants(Double
               .parseDouble(components[ATOMIC_WEIGHT]));
-          atoms[i].setCoherentScatteringCoeffs(
+          el.setCoherentScatteringCoeffs(
               Double.parseDouble(components[COHERENT_COEFF_0]),
               Double.parseDouble(components[COHERENT_COEFF_1]),
               Double.parseDouble(components[COHERENT_COEFF_2]),
               Double.parseDouble(components[COHERENT_COEFF_3]));
-          atoms[i].setIncoherentScatteringCoeffs(
+          el.setIncoherentScatteringCoeffs(
               Double.parseDouble(components[INCOHERENT_COEFF_0]),
               Double.parseDouble(components[INCOHERENT_COEFF_1]),
               Double.parseDouble(components[INCOHERENT_COEFF_2]),
               Double.parseDouble(components[INCOHERENT_COEFF_3]));
-          atoms[i].setLs(Double.parseDouble(components[L2]),
+          el.setLs(Double.parseDouble(components[L2]),
               Double.parseDouble(components[L3]));
+
+          elements.put(components[ELEMENT_NAME], el);
+          elements.put(components[ATOMIC_NUMBER], el);
         } catch (NumberFormatException e) {
           System.out.println("Could not parse line " + totalLines);
           e.printStackTrace();
@@ -488,23 +546,27 @@ public class MuCalcConstantParser {
     /**
      * Occurrences - number of times this atom is found in the protein.
      */
+    @Deprecated
     private double              macromolecularOccurrence;
 
     /**
      * Hetatms - number of times this atom is found in the protein, should also
      * be included in macromolecular occurrence.
      */
+    @Deprecated
     private double              hetatmOccurrence          = 0;
 
     /**
      * Concentration of this atom in the solvent.
      */
+    @Deprecated
     private double              solventConcentration;
 
     /**
      * Number of atoms of this type in the solvent,
      * calculated from solvent concentration.
      */
+    @Deprecated
     private double              solventOccurrence;
 
     /**
@@ -537,6 +599,7 @@ public class MuCalcConstantParser {
      * @param name element name
      * @param number atomic number
      */
+    @Deprecated
     public void setCoreParameters(final String name, final int number) {
       this.elementName = name;
       this.atomicNumber = number;
@@ -549,6 +612,7 @@ public class MuCalcConstantParser {
      * @param edgeL L edge energy
      * @param edgeM M edge energy
      */
+    @Deprecated
     public void setAbsorptionEdges(final double edgeK, final double edgeL,
         final double edgeM) {
       this.absorptionEdgeK = edgeK;
@@ -561,6 +625,7 @@ public class MuCalcConstantParser {
      * 
      * @param atweight atomic weight
      */
+    @Deprecated
     public void setAtomicConstants(final double atweight) {
       this.atomicWeight = atweight;
     }
@@ -573,6 +638,7 @@ public class MuCalcConstantParser {
      * @param k2 k2
      * @param k3 k3
      */
+    @Deprecated
     public void setAbsorptionKEdgeCoeffs(final double k0, final double k1,
         final double k2,
         final double k3) {
@@ -593,6 +659,7 @@ public class MuCalcConstantParser {
      * @param newl2 l2
      * @param newl3 l3
      */
+    @Deprecated
     public void setAbsorptionLEdgeCoeffs(final double l0, final double l1,
         final double newl2,
         final double newl3) {
@@ -613,6 +680,7 @@ public class MuCalcConstantParser {
      * @param m2 m2
      * @param m3 m3
      */
+    @Deprecated
     public void setAbsorptionMEdgeCoeffs(final double m0, final double m1,
         final double m2,
         final double m3) {
@@ -633,6 +701,7 @@ public class MuCalcConstantParser {
      * @param n2 n2
      * @param n3 n3
      */
+    @Deprecated
     public void setAbsorptionNEdgeCoeffs(final double n0, final double n1,
         final double n2,
         final double n3) {
@@ -654,6 +723,7 @@ public class MuCalcConstantParser {
      * @param coh2 coh2
      * @param coh3 coh3
      */
+    @Deprecated
     public void setCoherentScatteringCoeffs(final double coh0,
         final double coh1,
         final double coh2, final double coh3) {
@@ -675,6 +745,7 @@ public class MuCalcConstantParser {
      * @param incoh2 incoh2
      * @param incoh3 incoh3
      */
+    @Deprecated
     public void setIncoherentScatteringCoeffs(final double incoh0,
         final double incoh1,
         final double incoh2, final double incoh3) {
@@ -692,6 +763,7 @@ public class MuCalcConstantParser {
      * @param ltwo L2 to be set
      * @param lthree L3 to be set
      */
+    @Deprecated
     public void setLs(final double ltwo, final double lthree) {
       this.l2 = ltwo;
       this.l3 = lthree;
@@ -859,6 +931,7 @@ public class MuCalcConstantParser {
     /**
      * @return the elementName
      */
+    @Deprecated
     public String getElementName() {
       return elementName;
     }
@@ -866,6 +939,7 @@ public class MuCalcConstantParser {
     /**
      * @param elementNameNew the elementName to set
      */
+    @Deprecated
     public void setElementName(final String elementNameNew) {
       this.elementName = elementNameNew;
     }
@@ -873,6 +947,7 @@ public class MuCalcConstantParser {
     /**
      * @return the atomicNumber
      */
+    @Deprecated
     public int getAtomicNumber() {
       return atomicNumber;
     }
@@ -880,6 +955,7 @@ public class MuCalcConstantParser {
     /**
      * @param newatomicNumber the atomicNumber to set
      */
+    @Deprecated
     public void setAtomicNumber(final int newatomicNumber) {
       this.atomicNumber = newatomicNumber;
     }
@@ -894,6 +970,7 @@ public class MuCalcConstantParser {
     /**
      * @param newabsorptionEdgeK the absorptionEdgeK to set
      */
+    @Deprecated
     public void setAbsorptionEdgeK(final double newabsorptionEdgeK) {
       this.absorptionEdgeK = newabsorptionEdgeK;
     }
@@ -908,6 +985,7 @@ public class MuCalcConstantParser {
     /**
      * @param newabsorptionEdgeL the absorptionEdgeL to set
      */
+    @Deprecated
     public void setAbsorptionEdgeL(final double newabsorptionEdgeL) {
       this.absorptionEdgeL = newabsorptionEdgeL;
     }
@@ -922,6 +1000,7 @@ public class MuCalcConstantParser {
     /**
      * @param newabsorptionEdgeM the absorptionEdgeM to set
      */
+    @Deprecated
     public void setAbsorptionEdgeM(final double newabsorptionEdgeM) {
       this.absorptionEdgeM = newabsorptionEdgeM;
     }
@@ -936,6 +1015,7 @@ public class MuCalcConstantParser {
     /**
      * @param newatomicWeight the atomicWeight to set
      */
+    @Deprecated
     public void setAtomicWeight(final double newatomicWeight) {
       this.atomicWeight = newatomicWeight;
     }
@@ -950,6 +1030,7 @@ public class MuCalcConstantParser {
     /**
      * @param newl2 the l2 to set
      */
+    @Deprecated
     public void setL2(final double newl2) {
       this.l2 = newl2;
     }
@@ -964,6 +1045,7 @@ public class MuCalcConstantParser {
     /**
      * @param newl3 the l3 to set
      */
+    @Deprecated
     public void setL3(final double newl3) {
       this.l3 = newl3;
     }
@@ -971,6 +1053,7 @@ public class MuCalcConstantParser {
     /**
      * @return the macromolecularOccurrence
      */
+    // TODO: ??
     public double getMacromolecularOccurrence() {
       return macromolecularOccurrence;
     }
@@ -978,6 +1061,7 @@ public class MuCalcConstantParser {
     /**
      * @param newmacromolecularOccurrence the macromolecularOccurrence to set
      */
+    // TODO: ??
     public void setMacromolecularOccurrence(
         final double newmacromolecularOccurrence) {
       this.macromolecularOccurrence = newmacromolecularOccurrence;
@@ -986,6 +1070,7 @@ public class MuCalcConstantParser {
     /**
      * @param increment the macromolecularOccurrence increment
      */
+    // TODO: ??
     public void incrementMacromolecularOccurrence(final double increment) {
       this.macromolecularOccurrence += increment;
     }
@@ -1000,6 +1085,7 @@ public class MuCalcConstantParser {
     /**
      * @param newhetatmOccurrence the hetatmOccurrence to set
      */
+    @Deprecated
     public void setHetatmOccurrence(final double newhetatmOccurrence) {
       this.hetatmOccurrence = newhetatmOccurrence;
     }
@@ -1014,6 +1100,7 @@ public class MuCalcConstantParser {
     /**
      * @param newsolventConcentration the solventConcentration to set
      */
+    
     public void setSolventConcentration(final double newsolventConcentration) {
       this.solventConcentration = newsolventConcentration;
     }
