@@ -60,15 +60,17 @@ public class MuCalcConstantParser {
     /** N coefficients for polynomial expansion. */
     N_COEFF_0(17), N_COEFF_1(18), N_COEFF_2(19), N_COEFF_3(20),
 
-    /** N coefficient 4.  // TODO: ?!? */
+    /** N coefficient 4. // TODO: ?!? */
     ATOMIC_WEIGHT(23),
 
     /** Coherent coefficients for polynomial expansion. */
     COHERENT_COEFF_0(24), COHERENT_COEFF_1(25),
+    /** Coherent coefficients for polynomial expansion. */
     COHERENT_COEFF_2(26), COHERENT_COEFF_3(27),
 
     /** Incoherent coefficients for polynomial expansion. */
     INCOHERENT_COEFF_0(28), INCOHERENT_COEFF_1(29),
+    /** Incoherent coefficients for polynomial expansion. */
     INCOHERENT_COEFF_2(30), INCOHERENT_COEFF_3(31),
 
     /** L2. */
@@ -1100,7 +1102,7 @@ public class MuCalcConstantParser {
     /**
      * @param newsolventConcentration the solventConcentration to set
      */
-    
+
     public void setSolventConcentration(final double newsolventConcentration) {
       this.solventConcentration = newsolventConcentration;
     }
