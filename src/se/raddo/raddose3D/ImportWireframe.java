@@ -19,6 +19,6 @@ public interface ImportWireframe {
    * in groups of three indices for each triangle.
    * @return array of indices
    */
-  public double[][] getIndices();
+  public int[][] getIndices();
   
 }
