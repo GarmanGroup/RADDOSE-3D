@@ -5,7 +5,7 @@ package se.raddo.raddose3D;
 
 import java.util.List;
 
-import se.raddo.raddose3D.MuCalcConstantParser.Atom;
+import se.raddo.raddose3D.MuCalcConstantParser.Element;
 
 /**
  * @author magd3052
@@ -100,7 +100,7 @@ public class CoefCalcFromParams extends CoefCalcCompute {
     // protein and adding these to the unit cell.
 
     for (int i = 0; i < heavyProteinAtomNames.size(); i++) {
-      Atom heavyAtom = this.getParser().findAtomWithName(heavyProteinAtomNames.get(i));
+      Element heavyAtom = this.getParser().findAtomWithName(heavyProteinAtomNames.get(i));
 
       // note: heavy atoms are provided per monomer,
       // so multiply by number of monomers.
@@ -129,11 +129,11 @@ public class CoefCalcFromParams extends CoefCalcCompute {
 
     // Atom preparation...
 
-    Atom hydrogen = this.getParser().findAtomWithName("H");
-    Atom oxygen = this.getParser().findAtomWithName("O");
-    Atom carbon = this.getParser().findAtomWithName("C");
-    Atom nitrogen = this.getParser().findAtomWithName("N");
-    Atom phosphorus = this.getParser().findAtomWithName("P");
+    Element hydrogen = this.getParser().findAtomWithName("H");
+    Element oxygen = this.getParser().findAtomWithName("O");
+    Element carbon = this.getParser().findAtomWithName("C");
+    Element nitrogen = this.getParser().findAtomWithName("N");
+    Element phosphorus = this.getParser().findAtomWithName("P");
 
     // Protein atoms: for every amino acid
     // add 5C + 1.35 N + 1.5 O + 8H

@@ -2,9 +2,9 @@ package se.raddo.raddose3D;
 
 import java.util.List;
 import static java.lang.Math.PI;
-import static se.raddo.raddose3D.MuCalcConstantParser.Atom.LIGHT_ATOM_MAX_NUM;
+import static se.raddo.raddose3D.MuCalcConstantParser.Element.LIGHT_ATOM_MAX_NUM;
 
-import se.raddo.raddose3D.MuCalcConstantParser.Atom;
+import se.raddo.raddose3D.MuCalcConstantParser.Element;
 
 /**
  * @author Helen Ginn
@@ -459,11 +459,11 @@ public class CoefCalcCompute extends CoefCalc {
 
     // Add water molecules to hydrogen and oxygen.
 
-    Atom hydrogen = parser.findAtomWithName("H");
+    Element hydrogen = parser.findAtomWithName("H");
     hydrogen.setSolventOccurrence(hydrogen.getSolventOccurrence()
         + waterMolecules * 2);
 
-    Atom oxygen = parser.findAtomWithName("O");
+    Element oxygen = parser.findAtomWithName("O");
     oxygen.setSolventOccurrence(oxygen.getSolventOccurrence() + waterMolecules);
 
   }
@@ -479,7 +479,7 @@ public class CoefCalcCompute extends CoefCalc {
       final List<Double> heavySolvConcNums) {
 
     for (int i = 0; i < heavySolvConcNames.size(); i++) {
-      Atom heavyAtom = parser.findAtomWithName(heavySolvConcNames.get(i));
+      Element heavyAtom = parser.findAtomWithName(heavySolvConcNames.get(i));
 
       heavyAtom.setSolventConcentration(heavySolvConcNums.get(i)
           + heavyAtom.getSolventConcentration());
