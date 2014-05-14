@@ -5,8 +5,6 @@ package se.raddo.raddose3D;
 
 import java.util.List;
 
-import se.raddo.raddose3D.MuCalcConstantParser.Element;
-
 /**
  * @author magd3052
  *
@@ -42,7 +40,7 @@ public class CoefCalcFromParams extends CoefCalcCompute {
       final List<String> heavySolutionConcNames,
       final List<Double> heavySolutionConcNums,
       final Double solventFraction) {
-    this.setParser(new MuCalcConstantParser());
+    this.setParser(new ElementDatabase());
 
     Double alpha = cellAlpha;
     Double beta = cellBeta;
