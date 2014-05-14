@@ -1,6 +1,7 @@
 package se.raddo.raddose3D;
 
 import javax.media.jai.InterpolationBilinear;
+// TODO: Remove JAI dependence
 
 /**
  * Takes an experimental grid of beam intensities, and interpolates for
