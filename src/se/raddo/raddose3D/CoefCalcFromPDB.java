@@ -9,8 +9,6 @@ import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
-import se.raddo.raddose3D.MuCalcConstantParser.Element;
-
 /**
  * CoefCalcPDB class takes PDB information and converts
  * it into atom occurrence information which the superclass,
@@ -836,7 +834,7 @@ public class CoefCalcFromPDB extends CoefCalcCompute {
 
   public CoefCalcFromPDB(final String pdbCode) {
     String pdbName = pdbCode.toUpperCase();
-    this.setParser(new MuCalcConstantParser());
+    this.setParser(new ElementDatabase());
 
     Residue.createResidueArray();
 
@@ -855,7 +853,7 @@ public class CoefCalcFromPDB extends CoefCalcCompute {
       final List<String> heavySolvConcNames,
       final List<Double> heavySolvConcNums) {
     String pdbNameUpperCase = pdbName.toUpperCase();
-    this.setParser(new MuCalcConstantParser());
+    this.setParser(new ElementDatabase());
 
     Residue.createResidueArray();
 

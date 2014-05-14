@@ -2,9 +2,6 @@ package se.raddo.raddose3D;
 
 import java.util.List;
 import static java.lang.Math.PI;
-import static se.raddo.raddose3D.MuCalcConstantParser.Element.LIGHT_ATOM_MAX_NUM;
-
-import se.raddo.raddose3D.MuCalcConstantParser.Element;
 
 /**
  * @author Helen Ginn
@@ -159,13 +156,13 @@ public class CoefCalcCompute extends CoefCalc {
   /**
    * Parser which is going to look after our atom objects.
    */
-  private MuCalcConstantParser  parser;
+  private ElementDatabase  parser;
 
   /**
    * Simple constructor.
    */
   public CoefCalcCompute() {
-    parser = new MuCalcConstantParser();
+    parser = new ElementDatabase();
   }
 
   /**
@@ -336,14 +333,14 @@ public class CoefCalcCompute extends CoefCalc {
   /**
    * @return the parser
    */
-  public MuCalcConstantParser getParser() {
+  public ElementDatabase getParser() {
     return parser;
   }
 
   /**
    * @param newparser the parser to set
    */
-  protected void setParser(final MuCalcConstantParser newparser) {
+  protected void setParser(final ElementDatabase newparser) {
     this.parser = newparser;
   }
 
@@ -400,7 +397,7 @@ public class CoefCalcCompute extends CoefCalc {
     // otherwise heavy atoms would make a very large impact
     // on reduction of solvent accessible space.
 
-    for (int i = 0; i < LIGHT_ATOM_MAX_NUM; i++) {
+    for (int i = 0; i < Element.LIGHT_ATOM_MAX_NUM; i++) {
       hetatmMass += ATOMIC_MASS_UNIT
           * parser.getAtoms()[i].getHetatmOccurrence()
           * parser.getAtoms()[i].getAtomicWeight();
