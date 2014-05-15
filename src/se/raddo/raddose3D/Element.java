@@ -99,8 +99,7 @@ public class Element {
    */
   @Deprecated
   public double totalAtoms(Double macromolecularOccurrence) {
-    double totalAtoms = solventOccurrence + macromolecularOccurrence;
-    return totalAtoms;
+    return solventOccurrence + macromolecularOccurrence;
   }
 
   /**
@@ -200,7 +199,7 @@ public class Element {
       if (coefficients[i] == -1) {
         sum = 0; //TODO: Confirm whether this is actually needed, or just a 'safeguard'? ie. is this from Fortran?
       } else if (energy == 1) {
-        sum += coefficients[i];
+        sum += coefficients[i]; // TODO: Is this actually correct?
       } else {
         sum += coefficients[i] * Math.pow(Math.log(energy), i);
       }
@@ -301,7 +300,6 @@ public class Element {
   /**
    * @return the elementName
    */
-  @Deprecated
   public String getElementName() {
     return elementName;
   }
@@ -309,7 +307,6 @@ public class Element {
   /**
    * @return the atomicNumber
    */
-  @Deprecated
   public int getAtomicNumber() {
     return atomicNumber;
   }
