@@ -1,7 +1,9 @@
 package se.raddo.raddose3D;
 
 import java.util.List;
+import java.util.Map;
 
+import se.raddo.raddose3D.Element.CrossSection;
 import static java.lang.Math.PI;
 
 /**
@@ -194,16 +196,17 @@ public class CoefCalcCompute extends CoefCalc {
     // weighted by the cell volume
 
     for (int i = 0; i < elementDB.getAtomCount(); i++) {
-      elementDB.getAtoms()[i].calculateMu(energy);
+      Map<Element.CrossSection, Double> cs = elementDB.getAtoms()[i]
+          .calculateMu(energy);
 
       crossSectionPhotoElectric += totalAtoms(elementDB.getAtoms()[i])
-          * elementDB.getAtoms()[i].getPhotoelectricCrossSection() / cellVolume
+          * cs.get(CrossSection.PHOTOELECTRIC) / cellVolume
           / UNITSPERDECIUNIT;
       crossSectionCoherent += totalAtoms(elementDB.getAtoms()[i])
-          * elementDB.getAtoms()[i].getCoherentCrossSection() / cellVolume
+          * cs.get(CrossSection.COHERENT) / cellVolume
           / UNITSPERDECIUNIT;
       crossSectionTotal += totalAtoms(elementDB.getAtoms()[i])
-          * elementDB.getAtoms()[i].getTotalCrossSection() / cellVolume
+          * cs.get(CrossSection.TOTAL) / cellVolume
           / UNITSPERDECIUNIT;
     }
 
