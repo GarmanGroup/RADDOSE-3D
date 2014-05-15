@@ -50,10 +50,6 @@ public class Element {
   /** Number of expansions of the polynomial. */
   private static final int    POLYNOMIAL_EXPANSION      = 4;
 
-  /** Occurrences - number of times this atom is found in the protein. */
-  @Deprecated
-  private double              macromolecularOccurrence;
-
   /**
    * Hetatms - number of times this atom is found in the protein, should also
    * be included in macromolecular occurrence.
@@ -102,21 +98,18 @@ public class Element {
    * @return total atoms in unit cell
    */
   @Deprecated
-  public double totalAtoms() {
-    double totalAtoms = this.solventOccurrence
-        + this.macromolecularOccurrence;
-
-    return totalAtoms;
+  public double totalAtoms(Double macromolecularOccurrence) {
+    return solventOccurrence + macromolecularOccurrence;
   }
 
   /**
    * Returns the edge coefficients depending on the edge specified.
    * 
-   * @param edge String indicating which edge coefficients (K, L, M, N, C, I).
+   * @param edge Selected edge coefficients (K, L, M, N, C, I).
    * @return corresponding edge coefficients.
    */
   private Double[] edgeCoefficients(final AbsorptionEdge edge) {
-    Double[] coefficients = new Double[4];
+    Double[] coefficients = new Double[POLYNOMIAL_EXPANSION];
 
     switch (edge) {
       case K:
@@ -206,7 +199,7 @@ public class Element {
       if (coefficients[i] == -1) {
         sum = 0; //TODO: Confirm whether this is actually needed, or just a 'safeguard'? ie. is this from Fortran?
       } else if (energy == 1) {
-        sum += coefficients[i];
+        sum += coefficients[i]; // TODO: Is this actually correct?
       } else {
         sum += coefficients[i] * Math.pow(Math.log(energy), i);
       }
@@ -307,7 +300,6 @@ public class Element {
   /**
    * @return the elementName
    */
-  @Deprecated
   public String getElementName() {
     return elementName;
   }
@@ -315,7 +307,6 @@ public class Element {
   /**
    * @return the atomicNumber
    */
-  @Deprecated
   public int getAtomicNumber() {
     return atomicNumber;
   }
@@ -332,31 +323,6 @@ public class Element {
    */
   public Double getAtomicWeightInGrams() {
     return elementData.get(DatabaseFields.ATOMIC_WEIGHT) * ATOMIC_MASS_UNIT;
-  }
-
-  /**
-   * @return the macromolecularOccurrence
-   */
-  @Deprecated
-  public double getMacromolecularOccurrence() {
-    return macromolecularOccurrence;
-  }
-
-  /**
-   * @param newmacromolecularOccurrence the macromolecularOccurrence to set
-   */
-  @Deprecated
-  public void setMacromolecularOccurrence(
-      final double newmacromolecularOccurrence) {
-    this.macromolecularOccurrence = newmacromolecularOccurrence;
-  }
-
-  /**
-   * @param increment the macromolecularOccurrence increment
-   */
-  @Deprecated
-  public void incrementMacromolecularOccurrence(final double increment) {
-    this.macromolecularOccurrence += increment;
   }
 
   /**
