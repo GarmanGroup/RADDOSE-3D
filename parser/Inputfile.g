@@ -135,6 +135,8 @@ crystalLine
 							  $crystal::heavySolutionConcNums	= $s.num;	}
 	| t=solventFraction		{ $crystal::solFrac					= $t.solFrac; }
 	| u=pdb					{ $crystal::pdb						= $u.pdb; }
+	| v=wireframeType			{ $crystal::crystalProperties.put(Crystal.CRYSTAL_WIREFRAME_TYPE, $v.value); }
+	| w=modelFile				{ $crystal::crystalProperties.put(Crystal.CRYSTAL_WIREFRAME_FILE, $w.value); }
 	;
 
 	
@@ -248,6 +250,15 @@ SOLVENTFRACTION : ('S'|'s')('O'|'o')('L'|'l')('V'|'v')('E'|'e')('N'|'n')('T'|'t'
 pdb returns [String pdb]
 	: PDBNAME a=STRING {$pdb = $a.text;};
 PDBNAME : ('P'|'p')('D'|'d')('B'|'b') ;
+
+wireframeType returns [String value]
+	: WIREFRAMETYPE a=STRING {$value = $a.text;};
+WIREFRAMETYPE : ('W'|'w')('I'|'i')('R'|'r')('E'|'e')('F'|'f')('R'|'r')('A'|'a')('M'|'m')('E'|'e')('T'|'t')('Y'|'y'|)('P'|'p')('E'|'e') ;
+
+modelFile returns [String value]
+	: MODELFILE a=STRING {$value = $a.text;};
+MODELFILE : ('M'|'m')('O'|'o')('D'|'d')('E'|'e')('L'|'l')('F'|'f')('I'|'i')('L'|'l')('E'|'e') ;
+
 
 // ------------------------------------------------------------------
 beam returns [Beam bObj]

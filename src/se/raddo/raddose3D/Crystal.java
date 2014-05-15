@@ -25,6 +25,10 @@ public abstract class Crystal {
   public static final String     CRYSTAL_COEFCALC              = "COEFCALC";
   /** Constant for data fields in Map constructors: Dose Decay Model. */
   public static final String     CRYSTAL_DDM                   = "DECAYMODEL";
+  /** Constant for data fields in Map constructors: Wireframe type */
+  public static final String    CRYSTAL_WIREFRAME_TYPE = "WIREFRAME_TYPE";
+  /** Constant for data fields in Map constructors: Wireframe file */
+  public static final String    CRYSTAL_WIREFRAME_FILE = "WIREFRAME_FILE";
 
   /** Default recommended voxel resolution in voxels/micrometre. */
   protected static final Double  CRYSTAL_RESOLUTION_DEF        = 0.5d;

@@ -27,6 +27,12 @@ public class ImportWireframeObj implements ImportWireframe {
    * @param filename .obj filename.
    */
   public ImportWireframeObj(final String filename) {
+    if (filename == null)
+    {
+      System.out.println("Filename not found, please set ModelFile");
+      throw new RuntimeException();
+    }
+    
     wireframeFileName = filename;
   }
 
@@ -122,7 +128,9 @@ public class ImportWireframeObj implements ImportWireframe {
     int[][] returnIndices = new int[triads.size()][3];
 
     for (int i = 0; i < triads.size(); i++) {
-      System.arraycopy(triads.get(i).getXyz(), 0, returnIndices[i], 0, 3);
+      returnIndices[i][0] = (int)triads.get(i).getXyz()[0];
+      returnIndices[i][1] = (int)triads.get(i).getXyz()[1];
+      returnIndices[i][2] = (int)triads.get(i).getXyz()[2];
     }
 
     return returnIndices;

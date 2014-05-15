@@ -57,16 +57,21 @@ public class CrystalPolyhedron extends Crystal {
    * Vertex array containing a variable number of 3-dimension vertices.
    * Currently set to a default approx. tetrahedron for testing purposes.
    */
-  private final double[][]      vertices = {
-                                         { -45, -37, 20 },
-                                         { -45, -37, -20 },
-                                         { -45, 37, -20 },
-                                         { -45, 37, 20 },
-                                         { 45, -37, 20 },
-                                         { 45, -37, -20 },
-                                         { 45, 37, -20 },
-                                         { 45, 37, 20 }
-                                         };
+  private final double[][]      vertices;
+
+  /* vertices for cuboid of size 90 x 74 x 40 */
+  /*
+   * = {
+   * { -45, -37, 20 },
+   * { -45, -37, -20 },
+   * { -45, 37, -20 },
+   * { -45, 37, 20 },
+   * { 45, -37, 20 },
+   * { 45, -37, -20 },
+   * { 45, 37, -20 },
+   * { 45, 37, 20 }
+   * };
+   */
 
   private double[][]            rotatedVertices;
 
@@ -76,20 +81,25 @@ public class CrystalPolyhedron extends Crystal {
    * of normal vectors.
    * In groups of 3 - triangles only please, no octagon nonsense.
    */
-  private final int[][]         indices  = {
-                                         { 1, 3, 2 },
-                                         { 4, 3, 1 },
-                                         { 3, 6, 2 },
-                                         { 7, 6, 3 },
-                                         { 2, 5, 1 },
-                                         { 2, 6, 5 },
-                                         { 4, 8, 3 },
-                                         { 8, 7, 3 },
-                                         { 4, 1, 8 },
-                                         { 1, 5, 8 },
-                                         { 8, 5, 7 },
-                                         { 7, 5, 6 }
-                                         };
+  private final int[][]         indices;
+
+  /* Indices for cuboid */
+  /*
+   * = {
+   * { 1, 3, 2 },
+   * { 4, 3, 1 },
+   * { 3, 6, 2 },
+   * { 7, 6, 3 },
+   * { 2, 5, 1 },
+   * { 2, 6, 5 },
+   * { 4, 8, 3 },
+   * { 8, 7, 3 },
+   * { 4, 1, 8 },
+   * { 1, 5, 8 },
+   * { 8, 5, 7 },
+   * { 7, 5, 6 }
+   * };
+   */
 
   /**
    * Normal array holding normalised direction vectors for
@@ -97,7 +107,8 @@ public class CrystalPolyhedron extends Crystal {
    * Contains an i, j, k vector per triangle.
    * Should have same no. of entries as the indices array.
    */
-  private double[][]            normals  = null, rotatedNormals = null;
+  private double[][]            normals = null,
+                                        rotatedNormals = null;
 
   /**
    * Distances from origin for each of the triangle planes.
@@ -212,6 +223,7 @@ public class CrystalPolyhedron extends Crystal {
      * @param planeDistance distance of plane from true origin (0, 0, 0)
      * @return intersection point between plane and direction vector
      */
+    @SuppressWarnings("unused")
     public static double[] rayTraceToPoint(final double[] normalUnitVector,
         final double[] directionVector, final double[] origin,
         final double planeDistance) {
@@ -263,8 +275,6 @@ public class CrystalPolyhedron extends Crystal {
     public static double rayTraceDistance(final double[] normalUnitVector,
         final double[] directionVector, final double[] origin,
         final double planeDistance) {
-      //     double d = Math.abs(normalUnitVector[0] * origin[0] + normalUnitVector[1]
-      //         * origin[1] + normalUnitVector[2] * origin[2] + planeDistance);
 
       double originNormalDotProduct = dotProduct(origin, normalUnitVector);
       double directionNormalDotProduct = dotProduct(directionVector,
@@ -302,34 +312,36 @@ public class CrystalPolyhedron extends Crystal {
         }
       }
 
-      // however if it's on the edge we want it to be a YES...
-/*
-      if (!c) {
-        for (int i = 0, j = 1; i < 3; j = (i++ % 3))
-        {
-          double[] edge, edge2 = new double[3];
-          edge = vectorBetweenPoints(vertices[i], vertices[j]);
-          edge2 = vectorBetweenPoints(vertices[i], point);
-
-          double scale0 = edge2[0] / edge[0];
-          double scale1 = edge2[1] / edge[1];
-
-          if (scale0 != scale1) {
-            continue;
-          }
-
-          double scale2 = edge[2] / point[2];
-
-          if (scale1 != scale2) {
-            continue;
-          } else {
-            return true;
-          }
-        }
-      }*/
-
       return c;
     }
+  }
+
+  /**
+   * Returns the minimum and maximum values of a vertex array
+   * given chosen dimension (0 = x, 1 = y, 2 = z).
+   * 
+   * @param dimension 0 = x, 1 = y, 2 = z
+   * @param vertices vertices to be examined
+   * @return double array, first element minimum, second element maximum
+   */
+  public double[] minMaxVertices(int dimension, double[][] vertices) {
+
+    double min = java.lang.Double.POSITIVE_INFINITY;
+    double max = java.lang.Double.NEGATIVE_INFINITY;
+
+    for (int i = 0; i < vertices.length; i++) {
+      if (vertices[i][dimension] < min) {
+        min = vertices[i][dimension];
+      }
+
+      if (vertices[i][dimension] > max) {
+        max = vertices[i][dimension];
+      }
+    }
+
+    double[] result = { min, max };
+
+    return result;
   }
 
   /**
@@ -362,34 +374,57 @@ public class CrystalPolyhedron extends Crystal {
     mergedProperties.putAll(properties);
 
     // Check for valid parameters
-    Assertions a = new Assertions("Could not create cuboid crystal: ");
-    a.checkIsClass(mergedProperties.get(Crystal.CRYSTAL_DIM_X), Double.class,
-        "no X dimension specified");
-    a.checkIsClass(mergedProperties.get(Crystal.CRYSTAL_DIM_Y), Double.class,
-        "no Y dimension specified");
-    a.checkIsClass(mergedProperties.get(Crystal.CRYSTAL_DIM_Z), Double.class,
-        "no Z dimension specified");
+    Assertions a = new Assertions("Could not create polyhedral crystal: ");
     a.checkIsClass(mergedProperties.get(Crystal.CRYSTAL_ANGLE_P), Double.class,
         "no P angle specified");
     a.checkIsClass(mergedProperties.get(Crystal.CRYSTAL_ANGLE_L), Double.class,
         "no L angle specified");
 
-    Double xdim = (Double) mergedProperties.get(Crystal.CRYSTAL_DIM_X);
-    Double ydim = (Double) mergedProperties.get(Crystal.CRYSTAL_DIM_Y);
-    Double zdim = (Double) mergedProperties.get(Crystal.CRYSTAL_DIM_Z);
+    // Assign the rotation variables that can be set directly from the constructor
+    p = Math.toRadians((Double) mergedProperties.get(Crystal.CRYSTAL_ANGLE_P));
+    l = Math.toRadians((Double) mergedProperties.get(Crystal.CRYSTAL_ANGLE_L));
 
+    // Assign wireframe type and wireframe file
+    String wireframeType = (String) mergedProperties
+        .get(CRYSTAL_WIREFRAME_TYPE);
+    String wireframeFile = (String) mergedProperties
+        .get(CRYSTAL_WIREFRAME_FILE);
+
+    // TODO: turn into something a bit more sensible later
+    // like an ImportWireframeFactory.
+
+    double[][] tempVertices = null;
+
+    if ("obj".equalsIgnoreCase(wireframeType)) {
+      ImportWireframeObj importer = new ImportWireframeObj(wireframeFile);
+      tempVertices = importer.getVertices();
+      indices = importer.getIndices();
+    } else {
+      System.out.println("Wireframe model type not set.");
+      indices = new int[1][3];
+    }
+
+    double[] xMinMax = this.minMaxVertices(0, tempVertices);
+    double[] yMinMax = this.minMaxVertices(1, tempVertices);
+    double[] zMinMax = this.minMaxVertices(2, tempVertices);
+
+    Double xshift = -xMinMax[0];
+    Double yshift = -yMinMax[0];
+    Double zshift = -zMinMax[0];
+
+    Double xdim = xMinMax[1] - xMinMax[0];
+    Double ydim = yMinMax[1] - yMinMax[0];
+    Double zdim = zMinMax[1] - zMinMax[0];
+
+    // Assign the resolution from the constructor or from calculated value
     if ((mergedProperties.get(Crystal.CRYSTAL_RESOLUTION) == null)
         || (!Double.class.isAssignableFrom(
             mergedProperties.get(Crystal.CRYSTAL_RESOLUTION).getClass()))) {
       mergedProperties.put(Crystal.CRYSTAL_RESOLUTION,
           getDefaultLimitedResolution(xdim, ydim, zdim));
     }
-
-    // Assign the final variables that can be set directly from the constructor
     crystalPixPerUM = (Double) mergedProperties.get(Crystal.CRYSTAL_RESOLUTION);
-    p = Math.toRadians((Double) mergedProperties.get(Crystal.CRYSTAL_ANGLE_P));
-    l = Math.toRadians((Double) mergedProperties.get(Crystal.CRYSTAL_ANGLE_L));
-
+    
     double[] tempCrystDim = { xdim, ydim, zdim };
     crystSizeUM = tempCrystDim; // Final Value
 
@@ -422,9 +457,9 @@ public class CrystalPolyhedron extends Crystal {
            * Set original coordinate. Temporary variables needed since we use
            * all of the previous xyz's to set each of the new ones.
            */
-          double x = -xdim / 2 + i / crystalPixPerUM;
-          double y = -ydim / 2 + j / crystalPixPerUM;
-          double z = -zdim / 2 + k / crystalPixPerUM;
+          double x = -xshift + i / crystalPixPerUM;
+          double y = -yshift + j / crystalPixPerUM;
+          double z = -zshift + k / crystalPixPerUM;
 
           /*
            * rotation in plane about [0 0 1] (P) Temporary variables needed
@@ -446,6 +481,36 @@ public class CrystalPolyhedron extends Crystal {
     }
 
     crystCoord = tempCrystCoords; // Final value
+
+    for (int i = 0; i < tempVertices.length; i++)
+    {
+
+      double x = tempVertices[i][0];
+      double y = tempVertices[i][1];
+      double z = tempVertices[i][2];
+
+      /*
+       * rotation in plane about [0 0 1] (P) Temporary variables needed
+       * since we use all of the previous xyz's to set each of the new ones.
+       */
+      double x2 = x * Math.cos(p) + y * Math.sin(p);
+      double y2 = -1 * x * Math.sin(p) + y * Math.cos(p);
+      double z2 = z;
+
+      /*
+       * rotation loop about [1 0 0] (L)
+       */
+      tempVertices[i][0] = x2;
+      tempVertices[i][1] = y2 * Math.cos(l) + z2 * Math.sin(l);
+      tempVertices[i][2] = -1 * y2 * Math.sin(l) + z2
+          * Math.cos(l);
+    }
+
+    vertices = new double[tempVertices.length][3];
+
+    for (int i = 0; i < vertices.length; i++) {
+      System.arraycopy(tempVertices[i], 0, vertices[i], 0, 3);
+    }
   }
 
   /**
@@ -562,10 +627,6 @@ public class CrystalPolyhedron extends Crystal {
       }
     }
 
-    if (inside) {
-      //     System.out.println("Inside is true for " + i + ", " + j + ", " + k);
-    }
-
     return inside;
   }
 
@@ -673,12 +734,12 @@ public class CrystalPolyhedron extends Crystal {
 
       depth += addition.doubleValue();
     }
-/*
-    if (deltaPhi == 0) {
-      System.out.println(voxCoord[0] + "\t" + voxCoord[1] + "\t" + voxCoord[2]
-          + "\t" + depth);
-    }
-*/
+    /*
+     * if (deltaPhi == 0) {
+     * System.out.println(voxCoord[0] + "\t" + voxCoord[1] + "\t" + voxCoord[2]
+     * + "\t" + depth);
+     * }
+     */
     return depth;
   }
 
@@ -751,8 +812,22 @@ public class CrystalPolyhedron extends Crystal {
    */
   @Override
   public String crystalInfo() {
-    // TODO Auto-generated method stub
-    return "Insert info";
+    String s = String
+        .format(
+            "Polyhedron crystal of bounding size [%.0f, %.0f, %.0f] um [x, y, z] at a "
+                + "resolution of %.2f microns per voxel edge.",
+            crystSizeUM[0],
+            crystSizeUM[1],
+            crystSizeUM[2],
+            1 / crystalPixPerUM);
+    if (l == 0 && p == 0) {
+      return s;
+    } else {
+      return s + String.format(
+          "%nRotated by %.1f deg in the plane of the loop and the loop is "
+              + "bent by %.1f relative to the rotation axis at phi = 0.",
+          Math.toDegrees(p), Math.toDegrees(l));
+    }
   }
 
   /*
