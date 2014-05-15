@@ -632,7 +632,7 @@ public class CoefCalcFromPDB extends CoefCalcCompute {
     Element proteinAtom = this.getParser().getElement(elementSymbol);
     proteinAtom.setMacromolecularOccurrence(proteinAtom
         .getMacromolecularOccurrence() + occupancyNum);
-    proteinAtom.setHetatmOccurrence(proteinAtom.getHetatmOccurrence()
+    proteinAtom.setHetatmOccurrence(getHetatmOccurrence(proteinAtom)
         + occupancyNum);
 
   }
@@ -740,14 +740,14 @@ public class CoefCalcFromPDB extends CoefCalcCompute {
    * @param num number of molecules in unit cell
    */
   public void multiplyAtoms(final int num) {
-    for (int i = 0; i < this.getParser().getAtomCount(); i++) {
-      this.getParser().getAtoms()[i].setMacromolecularOccurrence(this
-          .getParser().getAtoms()[i]
-          .getMacromolecularOccurrence() * num);
-      this.getParser().getAtoms()[i].setHetatmOccurrence(this.getParser()
+    for (int i = 0; i < getParser().getAtomCount(); i++) {
+      getParser().getAtoms()[i].setMacromolecularOccurrence(getParser()
           .getAtoms()[i]
-          .getHetatmOccurrence()
-          * num);
+          .getMacromolecularOccurrence() * num);
+      getParser().getAtoms()[i]
+          .setHetatmOccurrence(getHetatmOccurrence(getParser()
+              .getAtoms()[i])
+              * num);
     }
   }
 

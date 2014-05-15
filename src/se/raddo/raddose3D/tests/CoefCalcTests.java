@@ -2,6 +2,7 @@ package se.raddo.raddose3D.tests;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import org.testng.annotations.*;
 
 import se.raddo.raddose3D.CoefCalcFromParams;
@@ -23,10 +24,10 @@ public class CoefCalcTests {
         100.0, 100.0, 90.0, 90.0, 90.0, 0, 0, 0, 0, atoms, numbers,
         atoms, numbers, 100.0);
 
-    Double oxygenOccurrence = Double.valueOf(coefCalc.getParser()
-        .getElement("O").getSolventOccurrence());
-    Double hydrogenOccurrence = Double.valueOf(coefCalc.getParser()
-        .getElement("H").getSolventOccurrence());
+    Double oxygenOccurrence = Double.valueOf(coefCalc.getSolventOccurrence(coefCalc.getParser()
+        .getElement("O")));
+    Double hydrogenOccurrence = Double.valueOf(coefCalc.getSolventOccurrence(coefCalc.getParser()
+        .getElement("H")));
 
     Assertion.equals(hydrogenOccurrence, oxygenOccurrence * 2, "O vs H");
   }

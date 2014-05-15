@@ -112,17 +112,6 @@ public class Element {
   }
 
   /**
-   * multiplies total atoms in unit cell by atomic weight.
-   * 
-   * @return
-   *         total weight of atoms in unit cell
-   */
-  @Deprecated
-  public double totalMass() {
-    return getAtomicWeight() * totalAtoms() * ATOMIC_MASS_UNIT;
-  }
-
-  /**
    * Returns the edge coefficients depending on the edge specified.
    * 
    * @param edge String indicating which edge coefficients (K, L, M, N, C, I).
@@ -332,10 +321,17 @@ public class Element {
   }
 
   /**
-   * @return the atomicWeight
+   * @return the atomic weight in u
    */
   public Double getAtomicWeight() {
     return elementData.get(DatabaseFields.ATOMIC_WEIGHT);
+  }
+  
+  /**
+   * @return the atomic weight in grams
+   */
+  public Double getAtomicWeightInGrams() {
+    return elementData.get(DatabaseFields.ATOMIC_WEIGHT) * ATOMIC_MASS_UNIT;
   }
 
   /**

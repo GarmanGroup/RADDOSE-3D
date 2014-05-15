@@ -18,27 +18,9 @@ public class ElementDatabase {
   private static final String        MUCALC_FILE = "constants/MuCalcConstants.txt";
 
   /**
-   * Array of Atom objects containing all elements listed in Constants file.
-   */
-  @Deprecated
-  private Element[]                  atoms;
-
-  /**
    * Map of all Element objects in the database.
    */
   private final Map<Object, Element> elements;
-
-  /**
-   * Atom count - number of atoms in this array.
-   */
-  @Deprecated
-  private int                        atomCount;
-
-  /**
-   * Total atoms in period table.
-   */
-  @Deprecated
-  private static final int           TOTAL_ATOMS = 111;
 
   /**
    * List of available fields in the database file.
@@ -115,7 +97,6 @@ public class ElementDatabase {
    * Constructor - reads in constant file & populates atom array.
    */
   public ElementDatabase() {
-    atoms = new Element[TOTAL_ATOMS];
     elements = new HashMap<Object, Element>();
 
     BufferedReader br = null;
@@ -133,7 +114,6 @@ public class ElementDatabase {
     } // Read in constants file, consider some kind of error checking
 
     String line;
-    int i = 0;
     int totalLines = 0;
     try {
       while ((line = br.readLine()) != null) {
@@ -176,8 +156,6 @@ public class ElementDatabase {
           System.out.println("Could not parse line " + totalLines);
           e.printStackTrace();
         }
-
-        i++;
       }
     } catch (NumberFormatException e) {
       e.printStackTrace();
@@ -199,8 +177,6 @@ public class ElementDatabase {
         e1.printStackTrace();
       }
     }
-
-    atomCount = i;
   }
 
   /**
@@ -208,7 +184,7 @@ public class ElementDatabase {
    */
   @Deprecated
   public Element[] getAtoms() {
-    return atoms;
+    return new Element[0];
   }
 
   /**
@@ -237,23 +213,10 @@ public class ElementDatabase {
   }
 
   /**
-   * @param newAtoms the atoms to set
-   */
-  public void setAtoms(final Element[] newAtoms) {
-    this.atoms = newAtoms;
-  }
-
-  /**
    * @return the atomCount
    */
+  @Deprecated
   public int getAtomCount() {
-    return atomCount;
-  }
-
-  /**
-   * @param newAtomCount the atomCount to set
-   */
-  public void setAtomCount(final int newAtomCount) {
-    this.atomCount = newAtomCount;
+    return 0;
   }
 }

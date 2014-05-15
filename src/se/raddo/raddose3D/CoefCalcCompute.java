@@ -1,6 +1,7 @@
 package se.raddo.raddose3D;
 
 import java.util.List;
+
 import static java.lang.Math.PI;
 
 /**
@@ -17,18 +18,17 @@ public class CoefCalcCompute extends CoefCalc {
   /**
    * Right angle.
    */
-  public static final double    RIGHT_ANGLE                     = 90;
+  protected static final double RIGHT_ANGLE                     = 90;
 
   /**
    * Parallel angle.
    */
-
-  public static final double    PARALLEL_ANGLE                  = 180;
+  protected static final double PARALLEL_ANGLE                  = 180;
 
   /**
    * Percentage conversion.
    */
-  public static final double    PERCENTAGE_CONVERSION           = 100;
+  protected static final double PERCENTAGE_CONVERSION           = 100;
 
   /**
    * Protein density in g/ml.
@@ -83,7 +83,6 @@ public class CoefCalcCompute extends CoefCalc {
   /**
    * conversion factor to make a number bigger. 1E27.
    */
-
   protected static final double MASS_TO_CELL_VOLUME             = 1E27;
 
   /**
@@ -99,7 +98,6 @@ public class CoefCalcCompute extends CoefCalc {
   /**
    * Units per deci-unit.
    */
-
   protected static final long   UNITSPERDECIUNIT                = 10L;
 
   /** hydrogens per amino acid. */
@@ -154,15 +152,15 @@ public class CoefCalcCompute extends CoefCalc {
   private int                   numMonomers                     = 1;
 
   /**
-   * Parser which is going to look after our atom objects.
+   * Element database keeping the coefficients of all elements.
    */
-  private final ElementDatabase  parser;
+  private final ElementDatabase elementDB;
 
   /**
    * Simple constructor.
    */
   public CoefCalcCompute() {
-    parser = new ElementDatabase();
+    elementDB = new ElementDatabase();
   }
 
   /**
@@ -177,8 +175,9 @@ public class CoefCalcCompute extends CoefCalc {
     // then express as g / cm-3.
     double mass = 0;
 
-    for (int i = 0; i < parser.getAtomCount(); i++) {
-      double addition = parser.getAtoms()[i].totalMass();
+    for (int i = 0; i < elementDB.getAtomCount(); i++) {
+      double addition = totalAtoms(elementDB.getAtoms()[i])
+          * elementDB.getAtoms()[i].getAtomicWeightInGrams();
 
       mass += addition;
     }
@@ -194,17 +193,17 @@ public class CoefCalcCompute extends CoefCalc {
     // take cross section contributions from each individual atom
     // weighted by the cell volume
 
-    for (int i = 0; i < parser.getAtomCount(); i++) {
-      parser.getAtoms()[i].calculateMu(energy);
+    for (int i = 0; i < elementDB.getAtomCount(); i++) {
+      elementDB.getAtoms()[i].calculateMu(energy);
 
-      crossSectionPhotoElectric += parser.getAtoms()[i].totalAtoms()
-          * parser.getAtoms()[i].getPhotoelectricCrossSection() / cellVolume
+      crossSectionPhotoElectric += totalAtoms(elementDB.getAtoms()[i])
+          * elementDB.getAtoms()[i].getPhotoelectricCrossSection() / cellVolume
           / UNITSPERDECIUNIT;
-      crossSectionCoherent += parser.getAtoms()[i].totalAtoms()
-          * parser.getAtoms()[i].getCoherentCrossSection() / cellVolume
+      crossSectionCoherent += totalAtoms(elementDB.getAtoms()[i])
+          * elementDB.getAtoms()[i].getCoherentCrossSection() / cellVolume
           / UNITSPERDECIUNIT;
-      crossSectionTotal += parser.getAtoms()[i].totalAtoms()
-          * parser.getAtoms()[i].getTotalCrossSection() / cellVolume
+      crossSectionTotal += totalAtoms(elementDB.getAtoms()[i])
+          * elementDB.getAtoms()[i].getTotalCrossSection() / cellVolume
           / UNITSPERDECIUNIT;
     }
 
@@ -334,7 +333,7 @@ public class CoefCalcCompute extends CoefCalc {
    * @return the parser
    */
   public ElementDatabase getParser() {
-    return parser;
+    return elementDB;
   }
 
   /**
@@ -353,7 +352,6 @@ public class CoefCalcCompute extends CoefCalc {
             + "Elastic Coefficient: %.2e /um.%n"
             + "Density: %.2f g/ml.%n",
         absCoeff, attCoeff, elasCoeff, density);
-
   }
 
   /**
@@ -392,8 +390,8 @@ public class CoefCalcCompute extends CoefCalc {
 
     for (int i = 0; i < Element.LIGHT_ATOM_MAX_NUM; i++) {
       hetatmMass += ATOMIC_MASS_UNIT
-          * parser.getAtoms()[i].getHetatmOccurrence()
-          * parser.getAtoms()[i].getAtomicWeight();
+          * getHetatmOccurrence(elementDB.getAtoms()[i])
+          * elementDB.getAtoms()[i].getAtomicWeight();
     }
 
     hetatmMass /= cellVolume * HETATM_DENSITY * ANGSTROMS_TO_ML;
@@ -429,11 +427,11 @@ public class CoefCalcCompute extends CoefCalc {
 
     double nonWaterAtoms = 0;
 
-    for (int i = 0; i < parser.getAtomCount(); i++) {
-      double conc = parser.getAtoms()[i].getSolventConcentration();
+    for (int i = 0; i < elementDB.getAtomCount(); i++) {
+      double conc = getSolventConcentration(elementDB.getAtoms()[i]);
       double atomCount = conc * AVOGADRO_NUM * cellVolume * solventFraction
           * 1E-3 * 1E-27;
-      parser.getAtoms()[i].incrementSolventOccurrence(atomCount);
+      incrementSolventOccurrence(elementDB.getAtoms()[i], atomCount);
 
       nonWaterAtoms += atomCount;
     }
@@ -449,12 +447,12 @@ public class CoefCalcCompute extends CoefCalc {
 
     // Add water molecules to hydrogen and oxygen.
 
-    Element hydrogen = parser.getElement("H");
-    hydrogen.setSolventOccurrence(hydrogen.getSolventOccurrence()
+    Element hydrogen = elementDB.getElement("H");
+    setSolventOccurrence(hydrogen, getSolventOccurrence(hydrogen)
         + waterMolecules * 2);
 
-    Element oxygen = parser.getElement("O");
-    oxygen.setSolventOccurrence(oxygen.getSolventOccurrence() + waterMolecules);
+    Element oxygen = elementDB.getElement("O");
+    setSolventOccurrence(oxygen, getSolventOccurrence(oxygen) + waterMolecules);
 
   }
 
@@ -469,10 +467,10 @@ public class CoefCalcCompute extends CoefCalc {
       final List<Double> heavySolvConcNums) {
 
     for (int i = 0; i < heavySolvConcNames.size(); i++) {
-      Element heavyAtom = parser.getElement(heavySolvConcNames.get(i));
+      Element heavyAtom = elementDB.getElement(heavySolvConcNames.get(i));
 
-      heavyAtom.setSolventConcentration(heavySolvConcNums.get(i)
-          + heavyAtom.getSolventConcentration());
+      setSolventConcentration(heavyAtom, heavySolvConcNums.get(i)
+          + getSolventConcentration(heavyAtom));
     }
   }
 
@@ -518,5 +516,41 @@ public class CoefCalcCompute extends CoefCalc {
     System.out.println("Cell volume: " + cellVolume + " Angstroms cubed");
 
     return cellVol;
+  }
+
+  public void setSolventConcentration(Element element,
+      double newsolventConcentration) {
+    element.setSolventConcentration(newsolventConcentration);
+  }
+
+  public double getSolventOccurrence(Element element) {
+    return element.getSolventOccurrence();
+  }
+
+  public double getSolventConcentration(Element element) {
+    return element.getSolventConcentration();
+  }
+
+  public void incrementSolventOccurrence(Element element,
+      double increment) {
+    element.incrementSolventOccurrence(increment);
+  }
+
+  public void setSolventOccurrence(Element element,
+      double newsolventOccurrence) {
+    element.setSolventOccurrence(newsolventOccurrence);
+  }
+
+  public double getHetatmOccurrence(Element element) {
+    return element.getHetatmOccurrence();
+  }
+
+  public void incrementMacromolecularOccurrence(Element element,
+      double increment) {
+    element.incrementMacromolecularOccurrence(increment);
+  }
+
+  public double totalAtoms(Element element) {
+    return element.totalAtoms();
   }
 }

@@ -10,6 +10,8 @@ import java.util.List;
  *
  */
 public class CoefCalcFromParams extends CoefCalcCompute {
+
+
   /**
    * Compute results and put them in local variables absCoeff, attCoeff,
    * elasCoeff and density.
@@ -97,11 +99,11 @@ public class CoefCalcFromParams extends CoefCalcCompute {
     // protein and adding these to the unit cell.
 
     for (int i = 0; i < heavyProteinAtomNames.size(); i++) {
-      Element heavyAtom = this.getParser().getElement(heavyProteinAtomNames.get(i));
+      Element heavyAtom = getParser().getElement(heavyProteinAtomNames.get(i));
 
       // note: heavy atoms are provided per monomer,
       // so multiply by number of monomers.
-      heavyAtom.incrementMacromolecularOccurrence(heavyProteinAtomNums.get(i)
+      incrementMacromolecularOccurrence(heavyAtom, heavyProteinAtomNums.get(i)
           * monomers);
     }
 
@@ -126,65 +128,63 @@ public class CoefCalcFromParams extends CoefCalcCompute {
 
     // Atom preparation...
 
-    Element hydrogen = this.getParser().getElement("H");
-    Element oxygen = this.getParser().getElement("O");
-    Element carbon = this.getParser().getElement("C");
-    Element nitrogen = this.getParser().getElement("N");
-    Element phosphorus = this.getParser().getElement("P");
+    Element hydrogen = getParser().getElement("H");
+    Element oxygen = getParser().getElement("O");
+    Element carbon = getParser().getElement("C");
+    Element nitrogen = getParser().getElement("N");
+    Element phosphorus = getParser().getElement("P");
 
     // Protein atoms: for every amino acid
     // add 5C + 1.35 N + 1.5 O + 8H
 
-    carbon.incrementMacromolecularOccurrence(CARBONS_PER_AMINO_ACID
-        * numResidues
-        * this.getNumMonomers());
-    nitrogen.incrementMacromolecularOccurrence(NITROGENS_PER_AMINO_ACID
+    incrementMacromolecularOccurrence(carbon, CARBONS_PER_AMINO_ACID
         * numResidues
         * getNumMonomers());
-    oxygen.incrementMacromolecularOccurrence(OXYGENS_PER_AMINO_ACID
+    incrementMacromolecularOccurrence(nitrogen, NITROGENS_PER_AMINO_ACID
         * numResidues
         * getNumMonomers());
-    hydrogen.incrementMacromolecularOccurrence(HYDROGENS_PER_AMINO_ACID
+    incrementMacromolecularOccurrence(oxygen, OXYGENS_PER_AMINO_ACID
+        * numResidues
+        * getNumMonomers());
+    incrementMacromolecularOccurrence(hydrogen, HYDROGENS_PER_AMINO_ACID
         * numResidues
         * getNumMonomers());
 
     // RNA atoms: for every NTP
     // add 11.25 H + 9.5 C + 3.75 N + 7 O + 1 P.
 
-    carbon.incrementMacromolecularOccurrence(CARBONS_PER_RNA_NUCLEOTIDE
+    incrementMacromolecularOccurrence(carbon, CARBONS_PER_RNA_NUCLEOTIDE
         * this.getNumRNA()
         * getNumMonomers());
-    nitrogen.incrementMacromolecularOccurrence(NITROGENS_PER_RNA_NUCLEOTIDE
+    incrementMacromolecularOccurrence(nitrogen, NITROGENS_PER_RNA_NUCLEOTIDE
         * this.getNumRNA()
         * getNumMonomers());
-    oxygen.incrementMacromolecularOccurrence(OXYGENS_PER_RNA_NUCLEOTIDE
+    incrementMacromolecularOccurrence(oxygen, OXYGENS_PER_RNA_NUCLEOTIDE
         * this.getNumRNA()
         * getNumMonomers());
-    hydrogen.incrementMacromolecularOccurrence(HYDROGENS_PER_RNA_NUCLEOTIDE
+    incrementMacromolecularOccurrence(hydrogen, HYDROGENS_PER_RNA_NUCLEOTIDE
         * this.getNumRNA()
         * getNumMonomers());
-    phosphorus
-        .incrementMacromolecularOccurrence(PHOSPHORUSES_PER_RNA_NUCLEOTIDE
-            * this.getNumRNA() * getNumMonomers());
+    incrementMacromolecularOccurrence(phosphorus, PHOSPHORUSES_PER_RNA_NUCLEOTIDE
+        * this.getNumRNA() * getNumMonomers());
 
     // DNA atoms: for every NTP
     // add 11.75 H + 9.75 C + 4 N + 6 O + 1 P.
 
-    carbon.incrementMacromolecularOccurrence(CARBONS_PER_DNA_NUCLEOTIDE
+    incrementMacromolecularOccurrence(carbon, CARBONS_PER_DNA_NUCLEOTIDE
         * getNumDNA()
         * getNumMonomers());
-    nitrogen.incrementMacromolecularOccurrence(NITROGENS_PER_DNA_NUCLEOTIDE
+    incrementMacromolecularOccurrence(nitrogen, NITROGENS_PER_DNA_NUCLEOTIDE
         * getNumDNA()
         * getNumMonomers());
-    oxygen.incrementMacromolecularOccurrence(OXYGENS_PER_DNA_NUCLEOTIDE
+    incrementMacromolecularOccurrence(oxygen, OXYGENS_PER_DNA_NUCLEOTIDE
         * getNumDNA()
         * getNumMonomers());
-    hydrogen.incrementMacromolecularOccurrence(HYDROGENS_PER_DNA_NUCLEOTIDE
+    incrementMacromolecularOccurrence(hydrogen, HYDROGENS_PER_DNA_NUCLEOTIDE
         * getNumDNA()
         * getNumMonomers());
-    phosphorus
-        .incrementMacromolecularOccurrence(PHOSPHORUSES_PER_DNA_NUCLEOTIDE
-            * getNumDNA() * getNumMonomers());
+    incrementMacromolecularOccurrence(phosphorus, PHOSPHORUSES_PER_DNA_NUCLEOTIDE
+        * getNumDNA() * getNumMonomers());
 
   }
 }
