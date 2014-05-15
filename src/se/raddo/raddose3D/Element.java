@@ -106,11 +106,11 @@ public class Element {
   /**
    * Returns the edge coefficients depending on the edge specified.
    * 
-   * @param edge String indicating which edge coefficients (K, L, M, N, C, I).
+   * @param edge Selected edge coefficients (K, L, M, N, C, I).
    * @return corresponding edge coefficients.
    */
   private Double[] edgeCoefficients(final AbsorptionEdge edge) {
-    Double[] coefficients = new Double[4];
+    Double[] coefficients = new Double[POLYNOMIAL_EXPANSION];
 
     switch (edge) {
       case K:
