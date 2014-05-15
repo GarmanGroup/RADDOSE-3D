@@ -629,7 +629,7 @@ public class CoefCalcFromPDB extends CoefCalcCompute {
     double occupancyNum = this.checkOccupancyAndElementName(occupancy,
         elementSymbol, inputLine);
 
-    Element proteinAtom = this.getParser().findAtomWithName(elementSymbol);
+    Element proteinAtom = this.getParser().getElement(elementSymbol);
     proteinAtom.setMacromolecularOccurrence(proteinAtom
         .getMacromolecularOccurrence() + occupancyNum);
     proteinAtom.setHetatmOccurrence(proteinAtom.getHetatmOccurrence()
@@ -675,12 +675,12 @@ public class CoefCalcFromPDB extends CoefCalcCompute {
         this.incrementNumDNA(1);
       }
 
-      Element hydrogen = this.getParser().findAtomWithName("H");
-      Element oxygen = this.getParser().findAtomWithName("O");
-      Element carbon = this.getParser().findAtomWithName("C");
-      Element nitrogen = this.getParser().findAtomWithName("N");
-      Element phosphorus = this.getParser().findAtomWithName("P");
-      Element sulphurs = this.getParser().findAtomWithName("S");
+      Element hydrogen = this.getParser().getElement("H");
+      Element oxygen = this.getParser().getElement("O");
+      Element carbon = this.getParser().getElement("C");
+      Element nitrogen = this.getParser().getElement("N");
+      Element phosphorus = this.getParser().getElement("P");
+      Element sulphurs = this.getParser().getElement("S");
 
       hydrogen.setMacromolecularOccurrence(residue.hydrogens
           + hydrogen.getMacromolecularOccurrence());

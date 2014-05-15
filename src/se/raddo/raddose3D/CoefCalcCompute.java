@@ -449,11 +449,11 @@ public class CoefCalcCompute extends CoefCalc {
 
     // Add water molecules to hydrogen and oxygen.
 
-    Element hydrogen = parser.findAtomWithName("H");
+    Element hydrogen = parser.getElement("H");
     hydrogen.setSolventOccurrence(hydrogen.getSolventOccurrence()
         + waterMolecules * 2);
 
-    Element oxygen = parser.findAtomWithName("O");
+    Element oxygen = parser.getElement("O");
     oxygen.setSolventOccurrence(oxygen.getSolventOccurrence() + waterMolecules);
 
   }
@@ -469,7 +469,7 @@ public class CoefCalcCompute extends CoefCalc {
       final List<Double> heavySolvConcNums) {
 
     for (int i = 0; i < heavySolvConcNames.size(); i++) {
-      Element heavyAtom = parser.findAtomWithName(heavySolvConcNames.get(i));
+      Element heavyAtom = parser.getElement(heavySolvConcNames.get(i));
 
       heavyAtom.setSolventConcentration(heavySolvConcNums.get(i)
           + heavyAtom.getSolventConcentration());

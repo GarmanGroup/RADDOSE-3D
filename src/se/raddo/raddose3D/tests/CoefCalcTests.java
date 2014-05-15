@@ -24,9 +24,9 @@ public class CoefCalcTests {
         atoms, numbers, 100.0);
 
     Double oxygenOccurrence = Double.valueOf(coefCalc.getParser()
-        .findAtomWithName("O").getSolventOccurrence());
+        .getElement("O").getSolventOccurrence());
     Double hydrogenOccurrence = Double.valueOf(coefCalc.getParser()
-        .findAtomWithName("H").getSolventOccurrence());
+        .getElement("H").getSolventOccurrence());
 
     Assertion.equals(hydrogenOccurrence, oxygenOccurrence * 2, "O vs H");
   }
@@ -51,7 +51,7 @@ public class CoefCalcTests {
         numbers, emptyAtoms, emptyNumbers, 100.0);
 
     Double zincOccurrence = Double.valueOf(coefCalc.getParser()
-        .findAtomWithName("ZN").getMacromolecularOccurrence());
+        .getElement("ZN").getMacromolecularOccurrence());
 
     Assertion.equals(zincOccurrence, 48, "Zn = 48");
   }

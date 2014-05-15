@@ -97,7 +97,7 @@ public class CoefCalcFromParams extends CoefCalcCompute {
     // protein and adding these to the unit cell.
 
     for (int i = 0; i < heavyProteinAtomNames.size(); i++) {
-      Element heavyAtom = this.getParser().findAtomWithName(heavyProteinAtomNames.get(i));
+      Element heavyAtom = this.getParser().getElement(heavyProteinAtomNames.get(i));
 
       // note: heavy atoms are provided per monomer,
       // so multiply by number of monomers.
@@ -126,11 +126,11 @@ public class CoefCalcFromParams extends CoefCalcCompute {
 
     // Atom preparation...
 
-    Element hydrogen = this.getParser().findAtomWithName("H");
-    Element oxygen = this.getParser().findAtomWithName("O");
-    Element carbon = this.getParser().findAtomWithName("C");
-    Element nitrogen = this.getParser().findAtomWithName("N");
-    Element phosphorus = this.getParser().findAtomWithName("P");
+    Element hydrogen = this.getParser().getElement("H");
+    Element oxygen = this.getParser().getElement("O");
+    Element carbon = this.getParser().getElement("C");
+    Element nitrogen = this.getParser().getElement("N");
+    Element phosphorus = this.getParser().getElement("P");
 
     // Protein atoms: for every amino acid
     // add 5C + 1.35 N + 1.5 O + 8H

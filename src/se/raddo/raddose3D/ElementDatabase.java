@@ -204,64 +204,6 @@ public class ElementDatabase {
   }
 
   /**
-   * Q chop algorithm to quickly find an atom with a given atomic number Z.
-   * * Your job is to check for a NULL return.
-   * 
-   * @param z atomic number
-   * @return associated Atom object
-   */
-  @Deprecated
-  public Element findAtomWithZ(final double z) {
-    return getElement((int) z);
-    /**
-     * int lower = 0;
-     * int higher = atomCount - 1;
-     * int newBound = (higher + lower) / 2;
-     * if (z < atoms[lower].atomicNumber || z > atoms[higher].atomicNumber) {
-     * System.out
-     * .println("Warning: Atomic number asked for which is out of range.");
-     * return null;
-     * }
-     * while (atoms[newBound].atomicNumber != z) {
-     * if (higher == lower + 1) {
-     * System.out
-     * .println("Warning: Atomic number within range but"
-     * + "no data available for particular Z.");
-     * return null;
-     * }
-     * if (atoms[newBound].atomicNumber > z) {
-     * higher = newBound;
-     * } else if (atoms[newBound].atomicNumber < z) {
-     * lower = newBound;
-     * }
-     * newBound = (higher + lower) / 2;
-     * }
-     * return atoms[newBound];
-     */
-  }
-
-  /**
-   * A bit of a slower algorithm to find atom with a given name. If you have the
-   * atomic number, use findAtomWithZ instead.
-   * Your job is to check for a NULL return.
-   * 
-   * @param atomName element name
-   * @return Atom object
-   */
-  @Deprecated
-  public Element findAtomWithName(final String atomName) {
-    for (int i = 0; i < atoms.length; i++) {
-      if (atoms[i].getElementName().equals(atomName.toUpperCase())) {
-        return atoms[i];
-      }
-    }
-
-    System.out.println("Warning: Atom with name " + atomName
-        + " cannot be found in atom dictionary.");
-    return null;
-  }
-
-  /**
    * @return the atoms
    */
   @Deprecated
