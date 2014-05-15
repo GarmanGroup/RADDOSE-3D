@@ -630,8 +630,7 @@ public class CoefCalcFromPDB extends CoefCalcCompute {
         elementSymbol, inputLine);
 
     Element proteinAtom = this.getParser().getElement(elementSymbol);
-    proteinAtom.setMacromolecularOccurrence(proteinAtom
-        .getMacromolecularOccurrence() + occupancyNum);
+    incrementMacromolecularOccurrence(proteinAtom, occupancyNum);
     proteinAtom.setHetatmOccurrence(getHetatmOccurrence(proteinAtom)
         + occupancyNum);
 
@@ -682,18 +681,18 @@ public class CoefCalcFromPDB extends CoefCalcCompute {
       Element phosphorus = this.getParser().getElement("P");
       Element sulphurs = this.getParser().getElement("S");
 
-      hydrogen.setMacromolecularOccurrence(residue.hydrogens
-          + hydrogen.getMacromolecularOccurrence());
-      oxygen.setMacromolecularOccurrence(residue.oxygens
-          + oxygen.getMacromolecularOccurrence());
-      carbon.setMacromolecularOccurrence(residue.carbons
-          + carbon.getMacromolecularOccurrence());
-      nitrogen.setMacromolecularOccurrence(residue.nitrogens
-          + nitrogen.getMacromolecularOccurrence());
-      phosphorus.setMacromolecularOccurrence(residue.phosphoruses
-          + phosphorus.getMacromolecularOccurrence());
-      sulphurs.setMacromolecularOccurrence(residue.sulphurs
-          + sulphurs.getMacromolecularOccurrence());
+      setMacromolecularOccurrence(hydrogen, residue.hydrogens
+          + getMacromolecularOccurrence(hydrogen));
+      setMacromolecularOccurrence(oxygen, residue.oxygens
+          + getMacromolecularOccurrence(oxygen));
+      setMacromolecularOccurrence(carbon, residue.carbons
+          + getMacromolecularOccurrence(carbon));
+      setMacromolecularOccurrence(nitrogen, residue.nitrogens
+          + getMacromolecularOccurrence(nitrogen));
+      setMacromolecularOccurrence(phosphorus, residue.phosphoruses
+          + getMacromolecularOccurrence(phosphorus));
+      setMacromolecularOccurrence(sulphurs, residue.sulphurs
+          + getMacromolecularOccurrence(sulphurs));
 
       sequenceOnly = sequenceOnly.substring(SEQRES_RESI_LENGTH + 1,
           sequenceOnly.length());
@@ -741,9 +740,9 @@ public class CoefCalcFromPDB extends CoefCalcCompute {
    */
   public void multiplyAtoms(final int num) {
     for (int i = 0; i < getParser().getAtomCount(); i++) {
-      getParser().getAtoms()[i].setMacromolecularOccurrence(getParser()
-          .getAtoms()[i]
-          .getMacromolecularOccurrence() * num);
+      setMacromolecularOccurrence(getParser().getAtoms()[i],
+          getMacromolecularOccurrence(getParser().getAtoms()[i]) * num);
+      
       getParser().getAtoms()[i]
           .setHetatmOccurrence(getHetatmOccurrence(getParser()
               .getAtoms()[i])

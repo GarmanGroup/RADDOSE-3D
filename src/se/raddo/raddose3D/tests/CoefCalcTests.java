@@ -24,10 +24,12 @@ public class CoefCalcTests {
         100.0, 100.0, 90.0, 90.0, 90.0, 0, 0, 0, 0, atoms, numbers,
         atoms, numbers, 100.0);
 
-    Double oxygenOccurrence = Double.valueOf(coefCalc.getSolventOccurrence(coefCalc.getParser()
-        .getElement("O")));
-    Double hydrogenOccurrence = Double.valueOf(coefCalc.getSolventOccurrence(coefCalc.getParser()
-        .getElement("H")));
+    Double oxygenOccurrence = Double.valueOf(coefCalc
+        .getSolventOccurrence(coefCalc.getParser()
+            .getElement("O")));
+    Double hydrogenOccurrence = Double.valueOf(coefCalc
+        .getSolventOccurrence(coefCalc.getParser()
+            .getElement("H")));
 
     Assertion.equals(hydrogenOccurrence, oxygenOccurrence * 2, "O vs H");
   }
@@ -51,11 +53,10 @@ public class CoefCalcTests {
         100.0, 100.0, 90.0, 90.0, 90.0, 24, 10, 0, 0, atoms,
         numbers, emptyAtoms, emptyNumbers, 100.0);
 
-    Double zincOccurrence = Double.valueOf(coefCalc.getParser()
-        .getElement("ZN").getMacromolecularOccurrence());
+    Double zincOccurrence = coefCalc.getMacromolecularOccurrence(
+        coefCalc.getParser().getElement("ZN"));
 
     Assertion.equals(zincOccurrence, 48, "Zn = 48");
   }
-
 
 }

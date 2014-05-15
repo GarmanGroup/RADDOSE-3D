@@ -50,10 +50,6 @@ public class Element {
   /** Number of expansions of the polynomial. */
   private static final int    POLYNOMIAL_EXPANSION      = 4;
 
-  /** Occurrences - number of times this atom is found in the protein. */
-  @Deprecated
-  private double              macromolecularOccurrence;
-
   /**
    * Hetatms - number of times this atom is found in the protein, should also
    * be included in macromolecular occurrence.
@@ -102,10 +98,8 @@ public class Element {
    * @return total atoms in unit cell
    */
   @Deprecated
-  public double totalAtoms() {
-    double totalAtoms = this.solventOccurrence
-        + this.macromolecularOccurrence;
-
+  public double totalAtoms(Double macromolecularOccurrence) {
+    double totalAtoms = solventOccurrence + macromolecularOccurrence;
     return totalAtoms;
   }
 
@@ -332,31 +326,6 @@ public class Element {
    */
   public Double getAtomicWeightInGrams() {
     return elementData.get(DatabaseFields.ATOMIC_WEIGHT) * ATOMIC_MASS_UNIT;
-  }
-
-  /**
-   * @return the macromolecularOccurrence
-   */
-  @Deprecated
-  public double getMacromolecularOccurrence() {
-    return macromolecularOccurrence;
-  }
-
-  /**
-   * @param newmacromolecularOccurrence the macromolecularOccurrence to set
-   */
-  @Deprecated
-  public void setMacromolecularOccurrence(
-      final double newmacromolecularOccurrence) {
-    this.macromolecularOccurrence = newmacromolecularOccurrence;
-  }
-
-  /**
-   * @param increment the macromolecularOccurrence increment
-   */
-  @Deprecated
-  public void incrementMacromolecularOccurrence(final double increment) {
-    this.macromolecularOccurrence += increment;
   }
 
   /**
