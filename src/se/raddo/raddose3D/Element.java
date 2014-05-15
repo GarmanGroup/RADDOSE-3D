@@ -12,12 +12,12 @@ public class Element {
   /**
    * Element name.
    */
-  private final String                                       elementName;
+  private final String                                      elementName;
 
   /**
    * Atomic number.
    */
-  private final int                                          atomicNumber;
+  private final int                                         atomicNumber;
 
   /**
    * Stored information about the chemical element.
@@ -127,9 +127,9 @@ public class Element {
    * @param edge String indicating which edge coefficient (K, L, M, N, C, I).
    * @return corresponding edge coefficient.
    */
-  private double edgeCoefficient(final int num, final String edge) {
-    switch (edge.toCharArray()[0]) {
-      case 'K':
+  private double edgeCoefficient(final int num, final AbsorptionEdge edge) {
+    switch (edge) {
+      case K:
         switch (num) {
           case 0:
             return elementData.get(ElementDatabase.DatabaseFields.K_COEFF_0);
@@ -140,7 +140,7 @@ public class Element {
           case 3:
             return elementData.get(ElementDatabase.DatabaseFields.K_COEFF_3);
         }
-      case 'L':
+      case L:
         switch (num) {
           case 0:
             return elementData.get(ElementDatabase.DatabaseFields.L_COEFF_0);
@@ -151,7 +151,7 @@ public class Element {
           case 3:
             return elementData.get(ElementDatabase.DatabaseFields.L_COEFF_3);
         }
-      case 'M':
+      case M:
         switch (num) {
           case 0:
             return elementData.get(ElementDatabase.DatabaseFields.M_COEFF_0);
@@ -162,7 +162,7 @@ public class Element {
           case 3:
             return elementData.get(ElementDatabase.DatabaseFields.M_COEFF_3);
         }
-      case 'N':
+      case N:
         switch (num) {
           case 0:
             return elementData.get(ElementDatabase.DatabaseFields.N_COEFF_0);
@@ -173,7 +173,7 @@ public class Element {
           case 3:
             return elementData.get(ElementDatabase.DatabaseFields.N_COEFF_3);
         }
-      case 'C':
+      case C:
         switch (num) {
           case 0:
             return elementData
@@ -188,7 +188,7 @@ public class Element {
             return elementData
                 .get(ElementDatabase.DatabaseFields.COHERENT_COEFF_3);
         }
-      case 'I':
+      case I:
         switch (num) {
           case 0:
             return elementData
@@ -204,9 +204,8 @@ public class Element {
                 .get(ElementDatabase.DatabaseFields.INCOHERENT_COEFF_3);
         }
       default:
-        System.out
-            .println("ERROR: Something's gone horribly wrong in the code");
-        return -1;
+        throw new RuntimeException(
+            "ERROR: Something's gone horribly wrong in the code");
     }
   }
 
@@ -220,7 +219,7 @@ public class Element {
    * @return
    *         value of bax
    */
-  public double baxForEdge(final double energy, final String edge) {
+  public double baxForEdge(final double energy, final AbsorptionEdge edge) {
     // calculation from logarithmic coefficients in McMaster tables.
 
     double sum = 0;
@@ -283,13 +282,13 @@ public class Element {
     double bax = 0;
 
     if (energy > absorptionEdgeK) {
-      bax = baxForEdge(energy, "K");
+      bax = baxForEdge(energy, AbsorptionEdge.K);
     } else if (energy < absorptionEdgeK && energy > absorptionEdgeL) {
-      bax = baxForEdge(energy, "L");
+      bax = baxForEdge(energy, AbsorptionEdge.L);
     } else if (energy < absorptionEdgeL && energy > absorptionEdgeM) {
-      bax = baxForEdge(energy, "M");
+      bax = baxForEdge(energy, AbsorptionEdge.M);
     } else if (energy < absorptionEdgeM) {
-      bax = baxForEdge(energy, "N");
+      bax = baxForEdge(energy, AbsorptionEdge.N);
     }
 
     // Fortran says...
@@ -312,12 +311,12 @@ public class Element {
     double binx = 0;
 
     if (elementData.get(ElementDatabase.DatabaseFields.COHERENT_COEFF_0) != 0) {
-      bcox = baxForEdge(energy, "C");
+      bcox = baxForEdge(energy, AbsorptionEdge.C);
     }
 
     if (elementData.get(ElementDatabase.DatabaseFields.INCOHERENT_COEFF_0) != 0)
     {
-      binx = baxForEdge(energy, "I");
+      binx = baxForEdge(energy, AbsorptionEdge.I);
     }
 
     double btox = bax + bcox + binx;
