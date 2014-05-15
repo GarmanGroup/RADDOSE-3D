@@ -178,13 +178,14 @@ public class CoefCalcCompute extends CoefCalc {
     double mass = 0;
 
     for (int i = 0; i < elementDB.getAtomCount(); i++) {
-      double addition = totalAtoms(elementDB.getAtoms()[i])
-          * elementDB.getAtoms()[i].getAtomicWeightInGrams();
+      Element element = elementDB.getAtoms()[i];
+      double addition = totalAtoms(element)
+          * element.getAtomicWeightInGrams();
 
       mass += addition;
     }
 
-    density = mass * MASS_TO_CELL_VOLUME / (cellVolume * UNITSPERMILLIUNIT);
+    density = mass * MASS_TO_CELL_VOLUME / (cellVolume * UNITSPERMILLIUNIT) / 2;
 
     double energy = b.getPhotonEnergy();
 
@@ -210,9 +211,9 @@ public class CoefCalcCompute extends CoefCalc {
           / UNITSPERDECIUNIT;
     }
 
-    absCoeff = crossSectionPhotoElectric / UNITSPERMILLIUNIT;
-    attCoeff = crossSectionTotal / UNITSPERMILLIUNIT;
-    elasCoeff = crossSectionCoherent / UNITSPERMILLIUNIT;
+    absCoeff = crossSectionPhotoElectric / UNITSPERMILLIUNIT / 2;
+    attCoeff = crossSectionTotal / UNITSPERMILLIUNIT / 2;
+    elasCoeff = crossSectionCoherent / UNITSPERMILLIUNIT / 2;
   }
 
   /**

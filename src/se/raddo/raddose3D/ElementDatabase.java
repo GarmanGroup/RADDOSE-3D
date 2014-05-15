@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -184,7 +185,10 @@ public class ElementDatabase {
    */
   @Deprecated
   public Element[] getAtoms() {
-    return new Element[0];
+    
+    Collection<Element> collection = elements.values();
+    
+    return collection.toArray(new Element[collection.size()]);
   }
 
   /**
@@ -217,6 +221,6 @@ public class ElementDatabase {
    */
   @Deprecated
   public int getAtomCount() {
-    return 0;
+    return elements.size();
   }
 }
