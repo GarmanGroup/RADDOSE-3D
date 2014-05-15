@@ -1,5 +1,6 @@
 package se.raddo.raddose3D;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import se.raddo.raddose3D.ElementDatabase.DatabaseFields;
@@ -40,7 +41,7 @@ public class Element {
   /** LJ_2 variable from Fortran, used to correct atomic elements < 29 Z. */
   private static final double LJ_2                      = 1.41;
 
-  /** Light atom/heavy atom threshold. */
+  /** Light/heavy element threshold. (l<=x<h) */
   public static final int     LIGHT_ATOM_MAX_NUM        = 29;
 
   /** Absorption edge room for error. */
@@ -73,13 +74,10 @@ public class Element {
   @Deprecated
   private double              solventOccurrence;
 
-  /**
-   * calculated cross-sections.
-   */
-  @Deprecated
-  private double              photoelectricCrossSection,
-                              totalCrossSection,
-                              coherentCrossSection;
+  /** Different types of calculated cross-sections. */
+  public enum CrossSection {
+    PHOTOELECTRIC, COHERENT, TOTAL
+  }
 
   /**
    * Create a new element with name, atomic number and associated information.
@@ -227,7 +225,7 @@ public class Element {
    * 
    * @param energy wavelength in Angstroms
    */
-  public void calculateMu(final double energy) {
+  public Map<CrossSection, Double> calculateMu(final double energy) {
     Double absorptionEdgeK =
         elementData.get(ElementDatabase.DatabaseFields.EDGE_K);
     Double absorptionEdgeL =
@@ -237,24 +235,24 @@ public class Element {
 
     if (energy < absorptionEdgeK
         && energy > absorptionEdgeK - ABSORPTION_EDGE_TOLERANCE) {
-      System.out
-          .println("Warning: using an energy close to middle of K edge of "
+      throw new RuntimeException(
+          "Warning: using an energy close to middle of K edge of "
               + elementName);
-      return;
+      // TODO: How does Fortran deal with this?
     }
     if (energy < absorptionEdgeL
         && energy > absorptionEdgeL - ABSORPTION_EDGE_TOLERANCE) {
-      System.out
-          .println("Warning: using an energy close to middle of L edge of "
+      throw new RuntimeException(
+          "Warning: using an energy close to middle of L edge of "
               + elementName);
-      return;
+      // TODO: How does Fortran deal with this?
     }
     if (energy < absorptionEdgeM
         && energy > absorptionEdgeM - ABSORPTION_EDGE_TOLERANCE) {
-      System.out
-          .println("Warning: using an energy close to middle of M edge of "
+      throw new RuntimeException(
+          "Warning: using an energy close to middle of M edge of "
               + elementName);
-      return;
+      // TODO: How does Fortran deal with this?
     }
 
     double bax = 0;
@@ -299,9 +297,11 @@ public class Element {
 
     double btox = bax + bcox + binx;
 
-    photoelectricCrossSection = bax; // mu, abs coefficient
-    totalCrossSection = btox; // attenuation
-    coherentCrossSection = bcox; // elastic
+    Map<CrossSection, Double> results = new HashMap<CrossSection, Double>();
+    results.put(CrossSection.COHERENT, bcox); // elastic
+    results.put(CrossSection.PHOTOELECTRIC, bax); // mu, abs coefficient
+    results.put(CrossSection.TOTAL, btox); // attenuation
+    return results;
   }
 
   /**
@@ -326,7 +326,7 @@ public class Element {
   public Double getAtomicWeight() {
     return elementData.get(DatabaseFields.ATOMIC_WEIGHT);
   }
-  
+
   /**
    * @return the atomic weight in grams
    */
@@ -423,24 +423,4 @@ public class Element {
     this.solventOccurrence += increment;
   }
 
-  /**
-   * @return the photoelectricCrossSection
-   */
-  public double getPhotoelectricCrossSection() {
-    return photoelectricCrossSection;
-  }
-
-  /**
-   * @return the totalCrossSection
-   */
-  public double getTotalCrossSection() {
-    return totalCrossSection;
-  }
-
-  /**
-   * @return the coherentCrossSection
-   */
-  public double getCoherentCrossSection() {
-    return coherentCrossSection;
-  }
 }
