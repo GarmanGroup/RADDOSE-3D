@@ -76,6 +76,7 @@ public class Element {
   /**
    * calculated cross-sections.
    */
+  @Deprecated
   private double              photoelectricCrossSection,
                               totalCrossSection,
                               coherentCrossSection;
@@ -102,6 +103,7 @@ public class Element {
    * 
    * @return total atoms in unit cell
    */
+  @Deprecated
   public double totalAtoms() {
     double totalAtoms = this.solventOccurrence
         + this.macromolecularOccurrence;
@@ -115,98 +117,86 @@ public class Element {
    * @return
    *         total weight of atoms in unit cell
    */
+  @Deprecated
   public double totalMass() {
     return getAtomicWeight() * totalAtoms() * ATOMIC_MASS_UNIT;
   }
 
   /**
-   * Returns the correct edge coefficient depending on the coefficient number
-   * and the edge specified.
+   * Returns the edge coefficients depending on the edge specified.
    * 
-   * @param num number coefficient (0, 1, 2, 3) to access
-   * @param edge String indicating which edge coefficient (K, L, M, N, C, I).
-   * @return corresponding edge coefficient.
+   * @param edge String indicating which edge coefficients (K, L, M, N, C, I).
+   * @return corresponding edge coefficients.
    */
-  private double edgeCoefficient(final int num, final AbsorptionEdge edge) {
+  private Double[] edgeCoefficients(final AbsorptionEdge edge) {
+    Double[] coefficients = new Double[4];
+
     switch (edge) {
       case K:
-        switch (num) {
-          case 0:
-            return elementData.get(ElementDatabase.DatabaseFields.K_COEFF_0);
-          case 1:
-            return elementData.get(ElementDatabase.DatabaseFields.K_COEFF_1);
-          case 2:
-            return elementData.get(ElementDatabase.DatabaseFields.K_COEFF_2);
-          case 3:
-            return elementData.get(ElementDatabase.DatabaseFields.K_COEFF_3);
-        }
+        coefficients[0] = elementData
+            .get(ElementDatabase.DatabaseFields.K_COEFF_0);
+        coefficients[1] = elementData
+            .get(ElementDatabase.DatabaseFields.K_COEFF_1);
+        coefficients[2] = elementData
+            .get(ElementDatabase.DatabaseFields.K_COEFF_2);
+        coefficients[3] = elementData
+            .get(ElementDatabase.DatabaseFields.K_COEFF_3);
+        break;
       case L:
-        switch (num) {
-          case 0:
-            return elementData.get(ElementDatabase.DatabaseFields.L_COEFF_0);
-          case 1:
-            return elementData.get(ElementDatabase.DatabaseFields.L_COEFF_1);
-          case 2:
-            return elementData.get(ElementDatabase.DatabaseFields.L_COEFF_2);
-          case 3:
-            return elementData.get(ElementDatabase.DatabaseFields.L_COEFF_3);
-        }
+        coefficients[0] = elementData
+            .get(ElementDatabase.DatabaseFields.L_COEFF_0);
+        coefficients[1] = elementData
+            .get(ElementDatabase.DatabaseFields.L_COEFF_1);
+        coefficients[2] = elementData
+            .get(ElementDatabase.DatabaseFields.L_COEFF_2);
+        coefficients[3] = elementData
+            .get(ElementDatabase.DatabaseFields.L_COEFF_3);
+        break;
       case M:
-        switch (num) {
-          case 0:
-            return elementData.get(ElementDatabase.DatabaseFields.M_COEFF_0);
-          case 1:
-            return elementData.get(ElementDatabase.DatabaseFields.M_COEFF_1);
-          case 2:
-            return elementData.get(ElementDatabase.DatabaseFields.M_COEFF_2);
-          case 3:
-            return elementData.get(ElementDatabase.DatabaseFields.M_COEFF_3);
-        }
+        coefficients[0] = elementData
+            .get(ElementDatabase.DatabaseFields.M_COEFF_0);
+        coefficients[1] = elementData
+            .get(ElementDatabase.DatabaseFields.M_COEFF_1);
+        coefficients[2] = elementData
+            .get(ElementDatabase.DatabaseFields.M_COEFF_2);
+        coefficients[3] = elementData
+            .get(ElementDatabase.DatabaseFields.M_COEFF_3);
+        break;
       case N:
-        switch (num) {
-          case 0:
-            return elementData.get(ElementDatabase.DatabaseFields.N_COEFF_0);
-          case 1:
-            return elementData.get(ElementDatabase.DatabaseFields.N_COEFF_1);
-          case 2:
-            return elementData.get(ElementDatabase.DatabaseFields.N_COEFF_2);
-          case 3:
-            return elementData.get(ElementDatabase.DatabaseFields.N_COEFF_3);
-        }
+        coefficients[0] = elementData
+            .get(ElementDatabase.DatabaseFields.N_COEFF_0);
+        coefficients[1] = elementData
+            .get(ElementDatabase.DatabaseFields.N_COEFF_1);
+        coefficients[2] = elementData
+            .get(ElementDatabase.DatabaseFields.N_COEFF_2);
+        coefficients[3] = elementData
+            .get(ElementDatabase.DatabaseFields.N_COEFF_3);
+        break;
       case C:
-        switch (num) {
-          case 0:
-            return elementData
-                .get(ElementDatabase.DatabaseFields.COHERENT_COEFF_0);
-          case 1:
-            return elementData
-                .get(ElementDatabase.DatabaseFields.COHERENT_COEFF_1);
-          case 2:
-            return elementData
-                .get(ElementDatabase.DatabaseFields.COHERENT_COEFF_2);
-          case 3:
-            return elementData
-                .get(ElementDatabase.DatabaseFields.COHERENT_COEFF_3);
-        }
+        coefficients[0] = elementData
+            .get(ElementDatabase.DatabaseFields.COHERENT_COEFF_0);
+        coefficients[1] = elementData
+            .get(ElementDatabase.DatabaseFields.COHERENT_COEFF_1);
+        coefficients[2] = elementData
+            .get(ElementDatabase.DatabaseFields.COHERENT_COEFF_2);
+        coefficients[3] = elementData
+            .get(ElementDatabase.DatabaseFields.COHERENT_COEFF_3);
+        break;
       case I:
-        switch (num) {
-          case 0:
-            return elementData
-                .get(ElementDatabase.DatabaseFields.INCOHERENT_COEFF_0);
-          case 1:
-            return elementData
-                .get(ElementDatabase.DatabaseFields.INCOHERENT_COEFF_1);
-          case 2:
-            return elementData
-                .get(ElementDatabase.DatabaseFields.INCOHERENT_COEFF_2);
-          case 3:
-            return elementData
-                .get(ElementDatabase.DatabaseFields.INCOHERENT_COEFF_3);
-        }
+        coefficients[0] = elementData
+            .get(ElementDatabase.DatabaseFields.INCOHERENT_COEFF_0);
+        coefficients[1] = elementData
+            .get(ElementDatabase.DatabaseFields.INCOHERENT_COEFF_1);
+        coefficients[2] = elementData
+            .get(ElementDatabase.DatabaseFields.INCOHERENT_COEFF_2);
+        coefficients[3] = elementData
+            .get(ElementDatabase.DatabaseFields.INCOHERENT_COEFF_3);
+        break;
       default:
         throw new RuntimeException(
             "ERROR: Something's gone horribly wrong in the code");
     }
+    return coefficients;
   }
 
   /**
@@ -223,16 +213,15 @@ public class Element {
     // calculation from logarithmic coefficients in McMaster tables.
 
     double sum = 0;
+    Double[] coefficients = edgeCoefficients(edge);
 
     for (int i = 0; i < POLYNOMIAL_EXPANSION; i++) {
-      double coefficient = edgeCoefficient(i, edge);
-
-      if (coefficient == -1) {
-        sum = 0;
+      if (coefficients[i] == -1) {
+        sum = 0; //TODO: Confirm whether this is actually needed, or just a 'safeguard'? ie. is this from Fortran?
       } else if (energy == 1) {
-        sum += coefficient;
+        sum += coefficients[i];
       } else {
-        sum += coefficient * Math.pow(Math.log(energy), i);
+        sum += coefficients[i] * Math.pow(Math.log(energy), i);
       }
     }
 
@@ -345,7 +334,7 @@ public class Element {
   /**
    * @return the atomicWeight
    */
-  public double getAtomicWeight() {
+  public Double getAtomicWeight() {
     return elementData.get(DatabaseFields.ATOMIC_WEIGHT);
   }
 
