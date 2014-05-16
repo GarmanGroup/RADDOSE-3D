@@ -173,7 +173,7 @@ public class Element {
 
     for (int i = 0; i < POLYNOMIAL_EXPANSION; i++) {
       if (coefficients[i] == -1) {
-        sum = 0; //TODO: Confirm whether this is actually needed, or just a 'safeguard'? ie. is this from Fortran?
+        sum = 0; //TODO: just a 'safeguard'
       } else if (energy == 1) {
         sum += coefficients[i]; // TODO: Is this actually correct?
       } else {
