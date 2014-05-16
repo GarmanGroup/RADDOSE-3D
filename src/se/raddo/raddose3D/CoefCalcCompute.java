@@ -159,14 +159,20 @@ public class CoefCalcCompute extends CoefCalc {
    */
   private final ElementDatabase      elementDB;
 
-  private final Map<Element, Double> macromolecularOccurence;
+  private final Map<Element, Double> heteroAtomOccurrence;
+  private final Map<Element, Double> macromolecularOccurrence;
+  private final Map<Element, Double> solventOccurrence;
+  private final Map<Element, Double> solventConcentration;
 
   /**
    * Simple constructor.
    */
   public CoefCalcCompute() {
     elementDB = new ElementDatabase();
-    macromolecularOccurence = new HashMap<Element, Double>();
+    macromolecularOccurrence = new HashMap<Element, Double>();
+    heteroAtomOccurrence = new HashMap<Element, Double>();
+    solventOccurrence = new HashMap<Element, Double>();
+    solventConcentration = new HashMap<Element, Double>();
   }
 
   /**
@@ -526,57 +532,88 @@ public class CoefCalcCompute extends CoefCalc {
     return cellVol;
   }
 
-  public void setSolventConcentration(Element element,
-      double newsolventConcentration) {
-    element.setSolventConcentration(newsolventConcentration);
+  public void setSolventConcentration(final Element element,
+      final Double newsolventConcentration) {
+    solventConcentration.put(element, newsolventConcentration);
   }
 
-  public double getSolventOccurrence(Element element) {
-    return element.getSolventOccurrence();
-  }
-
-  public double getSolventConcentration(Element element) {
-    return element.getSolventConcentration();
-  }
-
-  public void incrementSolventOccurrence(Element element,
-      double increment) {
-    element.incrementSolventOccurrence(increment);
-  }
-
-  public void setSolventOccurrence(Element element,
-      double newsolventOccurrence) {
-    element.setSolventOccurrence(newsolventOccurrence);
-  }
-
-  public double getHetatmOccurrence(Element element) {
-    return element.getHetatmOccurrence();
-  }
-
-  public void incrementMacromolecularOccurrence(final Element element,
-      final Double increment) {
-    if (macromolecularOccurence.containsKey(element)) {
-      macromolecularOccurence.put(element, increment +
-          macromolecularOccurence.get(element));
-    } else {
-      macromolecularOccurence.put(element, increment);
-    }
-  }
-
-  public Double getMacromolecularOccurrence(final Element element) {
-    if (macromolecularOccurence.containsKey(element)) {
-      return macromolecularOccurence.get(element);
+  public double getSolventConcentration(final Element element) {
+    if (solventConcentration.containsKey(element)) {
+      return solventConcentration.get(element);
     } else {
       return 0.;
     }
   }
 
+  public Double getSolventOccurrence(Element element) {
+    if (solventOccurrence.containsKey(element)) {
+      return solventOccurrence.get(element);
+    } else {
+      return 0.;
+    }
+  }
+
+  public void incrementSolventOccurrence(final Element element,
+      final Double increment) {
+    if (solventOccurrence.containsKey(element)) {
+      solventOccurrence.put(element, increment +
+          solventOccurrence.get(element));
+    } else {
+      solventOccurrence.put(element, increment);
+    }
+  }
+
+  public void setSolventOccurrence(final Element element,
+      final Double newsolventOccurrence) {
+    solventOccurrence.put(element, newsolventOccurrence);
+  }
+
+  public Double getHetatmOccurrence(final Element element) {
+    if (heteroAtomOccurrence.containsKey(element)) {
+      return heteroAtomOccurrence.get(element);
+    } else {
+      return 0.;
+    }
+  }
+
+  public void incrementHetatmOccurrence(final Element element,
+      final Double increment) {
+    if (heteroAtomOccurrence.containsKey(element)) {
+      heteroAtomOccurrence.put(element, increment +
+          heteroAtomOccurrence.get(element));
+    } else {
+      heteroAtomOccurrence.put(element, increment);
+    }
+  }
+
+  public void setHetatmOccurrence(final Element element, final Double haOcc) {
+    heteroAtomOccurrence.put(element, haOcc);
+  }
+
+  public Double getMacromolecularOccurrence(final Element element) {
+    if (macromolecularOccurrence.containsKey(element)) {
+      return macromolecularOccurrence.get(element);
+    } else {
+      return 0.;
+    }
+  }
+
+  public void incrementMacromolecularOccurrence(final Element element,
+      final Double increment) {
+    if (macromolecularOccurrence.containsKey(element)) {
+      macromolecularOccurrence.put(element, increment +
+          macromolecularOccurrence.get(element));
+    } else {
+      macromolecularOccurrence.put(element, increment);
+    }
+  }
+
   public void setMacromolecularOccurrence(final Element element,
       final Double mmOcc) {
-    macromolecularOccurence.put(element, mmOcc);
+    macromolecularOccurrence.put(element, mmOcc);
   }
 
   public double totalAtoms(final Element element) {
-    return element.totalAtoms(getMacromolecularOccurrence(element));
+    return getSolventOccurrence(element) + getMacromolecularOccurrence(element);
   }
 }

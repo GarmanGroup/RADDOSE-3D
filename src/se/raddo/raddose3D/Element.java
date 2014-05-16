@@ -50,26 +50,6 @@ public class Element {
   /** Number of expansions of the polynomial. */
   private static final int    POLYNOMIAL_EXPANSION      = 4;
 
-  /**
-   * Hetatms - number of times this atom is found in the protein, should also
-   * be included in macromolecular occurrence.
-   */
-  @Deprecated
-  private double              hetatmOccurrence          = 0;
-
-  /**
-   * Concentration of this atom in the solvent.
-   */
-  @Deprecated
-  private double              solventConcentration;
-
-  /**
-   * Number of atoms of this type in the solvent,
-   * calculated from solvent concentration.
-   */
-  @Deprecated
-  private double              solventOccurrence;
-
   /** Different types of calculated cross-sections. */
   public enum CrossSection {
     PHOTOELECTRIC, COHERENT, TOTAL
@@ -90,16 +70,6 @@ public class Element {
     elementName = element;
     atomicNumber = protons;
     elementData = elementInformation;
-  }
-
-  /**
-   * Total atoms combining solvent occurrence and macromolecular occurrence.
-   * 
-   * @return total atoms in unit cell
-   */
-  @Deprecated
-  public double totalAtoms(Double macromolecularOccurrence) {
-    return solventOccurrence + macromolecularOccurrence;
   }
 
   /**
@@ -324,69 +294,4 @@ public class Element {
   public Double getAtomicWeightInGrams() {
     return elementData.get(DatabaseFields.ATOMIC_WEIGHT) * ATOMIC_MASS_UNIT;
   }
-
-  /**
-   * @return the hetatmOccurrence
-   */
-  @Deprecated
-  public double getHetatmOccurrence() {
-    return new Double(hetatmOccurrence);
-  }
-
-  /**
-   * @param newhetatmOccurrence the hetatmOccurrence to set
-   */
-  @Deprecated
-  public void setHetatmOccurrence(final double newhetatmOccurrence) {
-    this.hetatmOccurrence = newhetatmOccurrence;
-  }
-
-  /**
-   * @return the solventConcentration
-   */
-  @Deprecated
-  public double getSolventConcentration() {
-    return solventConcentration;
-  }
-
-  /**
-   * @param newsolventConcentration the solventConcentration to set
-   */
-  @Deprecated
-  public void setSolventConcentration(final double newsolventConcentration) {
-    this.solventConcentration = newsolventConcentration;
-  }
-
-  /**
-   * @param increment the solventConcentration to increment
-   */
-  @Deprecated
-  public void incrementSolventConcentration(final double increment) {
-    this.solventConcentration += increment;
-  }
-
-  /**
-   * @return the solventOccurrence
-   */
-  @Deprecated
-  public double getSolventOccurrence() {
-    return solventOccurrence;
-  }
-
-  /**
-   * @param newsolventOccurrence the solventOccurrence to set
-   */
-  @Deprecated
-  public void setSolventOccurrence(final double newsolventOccurrence) {
-    this.solventOccurrence = newsolventOccurrence;
-  }
-
-  /**
-   * @param increment the solventOccurrence to increment
-   */
-  @Deprecated
-  public void incrementSolventOccurrence(final double increment) {
-    this.solventOccurrence += increment;
-  }
-
 }
