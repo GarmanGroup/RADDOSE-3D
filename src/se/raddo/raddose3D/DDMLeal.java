@@ -24,17 +24,17 @@ public class DDMLeal implements DDM {
    */
 
   /**
-   * Decay Parameter beta
+   * Decay Parameter beta.
    */
   private final double beta = 0.316928538944095;
 
   /**
-   * Decay Parameter B0
+   * Decay Parameter B.
    */
-  private final double B0 = 13.854805547210105;
+  private final double B = 13.854805547210105;
 
   /**
-   * Decay Parameter gamma
+   * Decay Parameter gamma.
    */
   private final double gamma = 0.029790991953658;
 
@@ -113,25 +113,25 @@ public class DDMLeal implements DDM {
     /**
       * Array that stores the BEST intensity data
       */
-    final double[][] BESTDATA = getBESTData();
+    final double[][] bestData = getBESTData();
 
     /**
       *Array containing the squares of the reciprocal resolution values.
       * i.e. if d is the resolution then hsqrd = 1/d^2.
       */
-    double[] hsqrd = new double[BESTDATA.length];
+    double[] hsqrd = new double[bestData.length];
 
     /**
       * Array containing the expected intensity values for a given
       * resolution.
       */
-    double[] expectedIntensity = new double[BESTDATA.length];
+    double[] expectedIntensity = new double[bestData.length];
 
     /**
       * Array containing the differences between each resolution value
       * in the BEST intensity data.
       */
-    double[] dh = new double[BESTDATA.length - 1];
+    double[] dh = new double[bestData.length - 1];
 
     /**
      * Variable to store a constant factor to multiply in Debye-Waller
@@ -147,9 +147,9 @@ public class DDMLeal implements DDM {
      * BEST data that are below the specified maximum resolution value.
      */
     while (!moreThanMaxhsqrd) {
-        if (BESTDATA[rowIndex][0] <= hsqrdMax) {
-            hsqrd[rowIndex] = BESTDATA[rowIndex][0];
-            expectedIntensity[rowIndex] = BESTDATA[rowIndex][1];
+        if (bestData[rowIndex][0] <= hsqrdMax) {
+            hsqrd[rowIndex] = bestData[rowIndex][0];
+            expectedIntensity[rowIndex] = bestData[rowIndex][1];
             rowIndex++;
         } else {
             moreThanMaxhsqrd = true;
@@ -173,7 +173,7 @@ public class DDMLeal implements DDM {
         eachTerm = ((hsqrd[j + 1] + hsqrd[j]) / 2)
                 * ((expectedIntensity[j + 1] + expectedIntensity[j]) / 2)
                 * Math.exp(-half * ((hsqrd[j + 1] + hsqrd[j]) / 2)
-                    *(this.B0 + (this.beta * dose)))
+                    * (this.B + (this.beta * dose)))
                 * dh[j];
         integralSum = integralSum + eachTerm;
     }
@@ -181,7 +181,8 @@ public class DDMLeal implements DDM {
     /**
      * Calculate the integrated intensity of eqn 4 leal et al. 2012
      */
-    integratedIntensity = Math.exp(-Math.pow(this.gamma * dose, 2)) * integralSum;
+    integratedIntensity = Math.exp(-Math.pow(this.gamma * dose, 2))
+        * integralSum;
 
     return integratedIntensity;
   }
@@ -200,19 +201,19 @@ public class DDMLeal implements DDM {
   public static double[][] getBESTData() {
 
     /** Path to the file containing the values of the BEST intensity data */
-    final String BESTFILE = "constants/Intensity_values.csv";
+    final String bestFile = "constants/Intensity_values.csv";
 
     /** Number of columns in BEST intensity data*/
-    final int NUMBEROFCOLUMNS = 2;
+    final int numberOfColumns = 2;
 
 
     /** Number of intensity values in BEST intensity data */
-    final int INTENSITYVALUES = 300;
+    final int intensityValues = 300;
 
 
     /** Array to contain the BEST intensity data */
-    final double[][] BESTDATA
-      = new double[INTENSITYVALUES][NUMBEROFCOLUMNS];
+    final double[][] bestData
+      = new double[intensityValues][numberOfColumns];
 
 
     /** Counter for each value read in the BEST intensity file*/
@@ -231,7 +232,7 @@ public class DDMLeal implements DDM {
     BufferedReader csvFile = null;
     /** Try to create a File reader object*/
     try {
-        csvFile = new BufferedReader(new FileReader(BESTFILE));
+        csvFile = new BufferedReader(new FileReader(bestFile));
     } catch (FileNotFoundException e) {
         System.out.println("Couldn't find the file.");
         System.out.println("Has the BEST intensity csv file been "
@@ -246,7 +247,8 @@ public class DDMLeal implements DDM {
     try {
         rowData = csvFile.readLine();
     } catch (IOException e1) {
-        System.out.println("There is no 1st line to read in the BEST intensity file.");
+        System.out.println("There is no 1st line to read in the "
+            + "BEST intensity file.");
         System.out.println("Have you amended the file?");
         e1.printStackTrace();
     }
@@ -259,7 +261,7 @@ public class DDMLeal implements DDM {
      * second column.
      * Note: the first row
      */
-    while (csvFileRowNumber < INTENSITYVALUES) {
+    while (csvFileRowNumber < intensityValues) {
         try {
             rowData = csvFile.readLine();
         } catch (IOException e) {
@@ -268,8 +270,10 @@ public class DDMLeal implements DDM {
             System.out.println("Have you amended the file?");
             e.printStackTrace();
         }
-        BESTDATA[csvFileRowNumber][0] = Double.parseDouble(rowData.split(",")[0]);
-        BESTDATA[csvFileRowNumber][1] = Double.parseDouble(rowData.split(",")[1]);
+        bestData[csvFileRowNumber][0]
+            = Double.parseDouble(rowData.split(",")[0]);
+        bestData[csvFileRowNumber][1]
+            = Double.parseDouble(rowData.split(",")[1]);
         csvFileRowNumber++;
     }
 
@@ -282,7 +286,7 @@ public class DDMLeal implements DDM {
         e.printStackTrace();
     }
     /** Return the BEST intensity data */
-    return BESTDATA;
+    return bestData;
 
 }
 
