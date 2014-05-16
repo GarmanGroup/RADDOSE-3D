@@ -25,6 +25,7 @@ public class Wedge {
    * All angular arguments are in degrees.
    * 
    * @param angularResolution
+   * Angular exposure resolution in degrees.
    * @param startAngle
    *          Start angle of exposure in degrees.
    * @param endAngle
