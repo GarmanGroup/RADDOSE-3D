@@ -29,9 +29,9 @@ public class DDMLeal implements DDM {
   private final double beta = 0.316928538944095;
 
   /**
-   * Decay Parameter B.
+   * Decay Parameter b0.
    */
-  private final double B = 13.854805547210105;
+  private final double b0 = 13.854805547210105;
 
   /**
    * Decay Parameter gamma.
@@ -173,7 +173,7 @@ public class DDMLeal implements DDM {
         eachTerm = ((hsqrd[j + 1] + hsqrd[j]) / 2)
                 * ((expectedIntensity[j + 1] + expectedIntensity[j]) / 2)
                 * Math.exp(-half * ((hsqrd[j + 1] + hsqrd[j]) / 2)
-                    * (this.B + (this.beta * dose)))
+                    * (this.b0 + (this.beta * dose)))
                 * dh[j];
         integralSum = integralSum + eachTerm;
     }
