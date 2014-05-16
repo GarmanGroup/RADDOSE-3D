@@ -118,8 +118,8 @@ public class Wedge {
     s.append(String.format(
         "Collecting data for a total of %.1fs from phi = %.1f to %.1f deg.%n",
         properties.get(WedgeProperties.EXPOSURE_TIME),
-        properties.get(WedgeProperties.ANGLE_START),
-        properties.get(WedgeProperties.ANGLE_END)));
+        Math.toDegrees(properties.get(WedgeProperties.ANGLE_START)),
+        Math.toDegrees(properties.get(WedgeProperties.ANGLE_END))));
 
     if ((properties.get(WedgeProperties.START_POSITION_X) != 0)
         || (properties.get(WedgeProperties.START_POSITION_Y) != 0)
