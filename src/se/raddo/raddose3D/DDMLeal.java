@@ -41,6 +41,10 @@ public class DDMLeal implements DDM {
   public double calcDecay(final double dose) {
 
     DDMLeal DDMObj = new DDMLeal(); 
+    /** Relative intensity is the integrated intensity calculated
+     *  using the current dose divided by the integrated intensity
+     *  at dose = 0 MGy
+     */
     double relativeIntensityDecay = DDMObj.getIntegratedIntensity(dose)/DDMObj.getIntegratedIntensity(0);
     return relativeIntensityDecay;
   }
