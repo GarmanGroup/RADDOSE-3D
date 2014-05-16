@@ -3,6 +3,7 @@ package se.raddo.raddose3D;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import se.raddo.raddose3D.Element.CrossSection;
 import static java.lang.Math.PI;
@@ -198,12 +199,11 @@ public class CoefCalcCompute extends CoefCalc {
     // then express as g / cm-3.
     double mass = 0;
 
-    for (int i = 0; i < elementDB.getAtomCount(); i++) {
-      Element element = elementDB.getAtoms()[i];
-      double addition = totalAtoms(element)
-          * element.getAtomicWeightInGrams();
+    Set<Element> presentElements = solventOccurrence.keySet();
+    presentElements.addAll(macromolecularOccurrence.keySet());
 
-      mass += addition;
+    for (Element e : presentElements) {
+      mass += totalAtoms(e) * e.getAtomicWeightInGrams();
     }
 
     density = mass * MASS_TO_CELL_VOLUME / (cellVolume * UNITSPERMILLIUNIT) / 2;
@@ -216,18 +216,16 @@ public class CoefCalcCompute extends CoefCalc {
 
     // take cross section contributions from each individual atom
     // weighted by the cell volume
-
-    for (int i = 0; i < elementDB.getAtomCount(); i++) {
-      Map<Element.CrossSection, Double> cs = elementDB.getAtoms()[i]
-          .calculateMu(energy);
-
-      crossSectionPhotoElectric += totalAtoms(elementDB.getAtoms()[i])
+    Map<Element.CrossSection, Double> cs;
+    for (Element e : presentElements) {
+      cs = e.calculateMu(energy);
+      crossSectionPhotoElectric += totalAtoms(e)
           * cs.get(CrossSection.PHOTOELECTRIC) / cellVolume
           / UNITSPERDECIUNIT;
-      crossSectionCoherent += totalAtoms(elementDB.getAtoms()[i])
+      crossSectionCoherent += totalAtoms(e)
           * cs.get(CrossSection.COHERENT) / cellVolume
           / UNITSPERDECIUNIT;
-      crossSectionTotal += totalAtoms(elementDB.getAtoms()[i])
+      crossSectionTotal += totalAtoms(e)
           * cs.get(CrossSection.TOTAL) / cellVolume
           / UNITSPERDECIUNIT;
     }
@@ -413,10 +411,13 @@ public class CoefCalcCompute extends CoefCalc {
     // otherwise heavy atoms would make a very large impact
     // on reduction of solvent accessible space.
 
-    for (int i = 0; i < Element.LIGHT_ATOM_MAX_NUM; i++) {
-      hetatmMass += ATOMIC_MASS_UNIT
-          * getHetatmOccurrence(elementDB.getAtoms()[i])
-          * elementDB.getAtoms()[i].getAtomicWeight();
+    for (Element e : heteroAtomOccurrence.keySet()) {
+      if (e.getAtomicNumber() < Element.LIGHT_ATOM_MAX_NUM) {
+        // TODO: Is this < or <= ?!
+
+        hetatmMass += heteroAtomOccurrence.get(e) *
+            e.getAtomicWeightInGrams();
+      }
     }
 
     hetatmMass /= cellVolume * HETATM_DENSITY * ANGSTROMS_TO_ML;
@@ -452,12 +453,11 @@ public class CoefCalcCompute extends CoefCalc {
 
     double nonWaterAtoms = 0;
 
-    for (int i = 0; i < elementDB.getAtomCount(); i++) {
-      double conc = getSolventConcentration(elementDB.getAtoms()[i]);
+    for (Element e : solventConcentration.keySet()) {
+      double conc = solventConcentration.get(e);
       double atomCount = conc * AVOGADRO_NUM * cellVolume * solventFraction
           * 1E-3 * 1E-27;
-      incrementSolventOccurrence(elementDB.getAtoms()[i], atomCount);
-
+      incrementSolventOccurrence(e, atomCount);
       nonWaterAtoms += atomCount;
     }
 
