@@ -160,12 +160,14 @@ public class CoefCalcCompute extends CoefCalc {
   private final ElementDatabase      elementDB;
 
   /**
-   * Number of atoms (only those that are not part of the protein), per monomer.
+   * Number of atoms (only those that are not part of the protein), per
+   * monomer.)
+   * TODO: maybe move to PDB class
    */
   private final Map<Element, Double> heteroAtomOccurrence;
   /** Number of atoms (all) per monomer. */
   private final Map<Element, Double> macromolecularOccurrence;
-  /** Concentration of heavy atoms in the solvent, mMol */
+  /** Concentration of heavy atoms in the solvent in mMol. */
   private final Map<Element, Double> solventConcentration;
   /**
    * Number of atoms in the solvent per unit cell, derived from

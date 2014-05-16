@@ -12,6 +12,7 @@ import java.util.Map;
 /**
  * Holds X-ray cross section information for all elements of the periodic table.
  */
+// TODO: Make this a singleton
 public class ElementDatabase {
   /**
    * Location of MuCalcConstants library.
@@ -147,7 +148,7 @@ public class ElementDatabase {
             einfo.put(df, new Double(components[df.fieldNumber()]));
           }
 
-          Integer atomicNumber = new Integer(components[ATOMIC_NUMBER]);
+          Integer atomicNumber = Integer.valueOf(components[ATOMIC_NUMBER]);
           String elementName = components[ELEMENT_NAME];
 
           Element el = new Element(elementName, atomicNumber, einfo);
@@ -185,9 +186,7 @@ public class ElementDatabase {
    */
   @Deprecated
   public Element[] getAtoms() {
-    
     Collection<Element> collection = elements.values();
-    
     return collection.toArray(new Element[collection.size()]);
   }
 

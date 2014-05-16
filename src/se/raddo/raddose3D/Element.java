@@ -52,7 +52,12 @@ public class Element {
 
   /** Different types of calculated cross-sections. */
   public enum CrossSection {
-    PHOTOELECTRIC, COHERENT, TOTAL
+    /**
+     * Cross-section for the photoelectric effect. This does not contribute to
+     * scattering.
+     */
+    PHOTOELECTRIC,
+    COHERENT, TOTAL
   }
 
   /**
@@ -78,6 +83,7 @@ public class Element {
    * @param edge Selected edge coefficients (K, L, M, N, C, I).
    * @return corresponding edge coefficients.
    */
+  // TODO: Do this only once, on object instantiation.
   private Double[] edgeCoefficients(final AbsorptionEdge edge) {
     Double[] coefficients = new Double[POLYNOMIAL_EXPANSION];
 
@@ -282,16 +288,22 @@ public class Element {
   }
 
   /**
-   * @return the atomic weight in u
+   * Return the atomic weight of this element in unified atomic mass (u).
+   * 
+   * @return
+   *         the atomic weight in u
    */
   public Double getAtomicWeight() {
     return elementData.get(DatabaseFields.ATOMIC_WEIGHT);
   }
 
   /**
-   * @return the atomic weight in grams
+   * Return the atomic weight of this element in grams.
+   * 
+   * @return
+   *         the atomic weight in grams
    */
   public Double getAtomicWeightInGrams() {
-    return elementData.get(DatabaseFields.ATOMIC_WEIGHT) * ATOMIC_MASS_UNIT;
+    return getAtomicWeight() * ATOMIC_MASS_UNIT;
   }
 }
