@@ -1,5 +1,12 @@
 package se.raddo.raddose3D;
 
+/**
+ * This is a Dose Decay Model (DDM) class that calculates the Relative
+ * Diffraction Efficiency (RDE) for a voxel with a given dose. The DDM
+ * is linear decrease in the RDE based on data from the Owen et al. (2006)
+ * paper. Once the decay reaches a value given by DDM_FACTOR_OWEN_2006
+ * the Decay has reached maximum and the RDE is 0.
+ */
 public class DDMLinear implements DDM {
 
   /** from Owen et al. 2006. */

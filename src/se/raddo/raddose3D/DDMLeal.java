@@ -12,8 +12,6 @@ import java.io.IOException;
  * scattering power of a crystal as a product of the expected
  * intensity, the Debye-waller factor and an empirically derived
  * scale factor.
- *
- * @author Jonny Brooks
  */
 public class DDMLeal implements DDM {
 
