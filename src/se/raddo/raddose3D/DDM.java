@@ -6,7 +6,7 @@ package se.raddo.raddose3D;
  */
 public interface DDM {
   /**
-   * Calculates the decay of diffraction efficiency as a function of dose
+   * Calculates the decay of diffraction efficiency as a function of dose.
    *
    * @param dose the dose absorbed within a crystal voxel
    *
