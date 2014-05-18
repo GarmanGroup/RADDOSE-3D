@@ -1,6 +1,7 @@
 package se.raddo.raddose3D;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -199,7 +200,8 @@ public class CoefCalcCompute extends CoefCalc {
     // then express as g / cm-3.
     double mass = 0;
 
-    Set<Element> presentElements = solventOccurrence.keySet();
+    Set<Element> presentElements = new HashSet<Element>();
+    presentElements.addAll(solventOccurrence.keySet());
     presentElements.addAll(macromolecularOccurrence.keySet());
 
     for (Element e : presentElements) {
