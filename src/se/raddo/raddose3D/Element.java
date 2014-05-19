@@ -66,6 +66,9 @@ public class Element {
   /** Number of expansions of the polynomial. */
   private static final int    POLYNOMIAL_EXPANSION      = 4;
 
+  /** Conversion factor [Barns/Atom] = C * [cm^2/g]. */
+  public static final double  C                         = 53.2400017;
+
   /** Different types of calculated cross-sections. */
   public enum CrossSection {
     /**
@@ -213,6 +216,9 @@ public class Element {
    * 
    * @param energy
    *          X-ray photon energy in keV
+   * @return
+   *         Map structure containing the photoelectric, coherent and total
+   *         cross sections in units Barns/Atom.
    */
   public Map<CrossSection, Double> calculateMu(final double energy) {
     Double absorptionEdgeK =

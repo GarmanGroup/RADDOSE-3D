@@ -10,10 +10,15 @@ import se.raddo.raddose3D.Element.CrossSection;
 import se.raddo.raddose3D.ElementDatabase.DatabaseFields;
 
 /**
- * Generate an element and compare results with results calculated from
+ * Generate an element and compare results with results obtained from
  * http://cars9.uchicago.edu/mcbook/
  */
 public class ElementTest {
+
+  public static void main(final String[] args) {
+    ElementTest e = new ElementTest();
+    e.createElement();
+  }
 
   @Test
   public void createElement() {
@@ -26,17 +31,26 @@ public class ElementTest {
     Assertion.equals(s.getElementName(), "S", "element name");
 
     compareResults(s, 1.1, 1978.71497, 2.62428641, 1981.35059);
+    compareResults(s, 1.2, 1568.09387, 2.63965917, 1570.74646);
+    compareResults(s, 1.7, 609.046936, 2.56492448, 611.633484);
+    compareResults(s, 2.1, 339.237946, 2.42386913, 341.690186);
+    compareResults(s, 2.3, 262.987366, 2.34494638, 265.363983);
+    compareResults(s, 2.4, 233.32811, 2.30482531, 235.666229);
+    compareResults(s, 2.5, 2156.88818, 2.26461291, 2159.18774);
+    compareResults(s, 5, 349.58316, 1.44702506, 351.098572);
+    compareResults(s, 10, 48.4815712, 0.716733396, 49.3056908);
   }
 
   private void compareResults(final Element e, final double energy,
       final double photoelectric, final double coherent, final double total) {
     Map<CrossSection, Double> xs = e.calculateMu(energy);
-    Assertion.equals(xs.get(Element.CrossSection.PHOTOELECTRIC), photoelectric,
-        "Photoelectric cross-section at " + energy + " keV", 0.001);
-    Assertion.equals(xs.get(Element.CrossSection.COHERENT), photoelectric,
-        "Coherent cross-section at " + energy + " keV", 0.001);
-    Assertion.equals(xs.get(Element.CrossSection.TOTAL), photoelectric,
-        "Total cross-section at " + energy + " keV", 0.001);
+    Assertion.equals(xs.get(Element.CrossSection.PHOTOELECTRIC) / Element.C,
+        photoelectric, "Photoelectric cross-section at " + energy + " keV",
+        0.001);
+    Assertion.equals(xs.get(Element.CrossSection.COHERENT) / Element.C,
+        coherent, "Coherent cross-section at " + energy + " keV", 0.001);
+    Assertion.equals(xs.get(Element.CrossSection.TOTAL) / Element.C,
+        total, "Total cross-section at " + energy + " keV", 0.001);
   }
 
   private Map<DatabaseFields, Double> getSulphur() {
