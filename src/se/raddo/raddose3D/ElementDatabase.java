@@ -117,15 +117,13 @@ public class ElementDatabase {
 
     // Read in constants file, consider some kind of error checking
     try {
-      int totalLines = 0;
-
       String line;
       String[] components;
 
-      Map<DatabaseFields, Double> elementInfo;
+      Map<DatabaseFields, Double> elementInfo =
+          new HashMap<DatabaseFields, Double>();
 
       while ((line = br.readLine()) != null) {
-        totalLines++;
         // ignore commented out lines.
         if (Character.toString(line.charAt(0)).equals("#")) {
           continue;
@@ -133,37 +131,27 @@ public class ElementDatabase {
 
         // array containing all those numbers from the calculator file
         components = line.split("\t", -1);
-//
-//        for (int j = 0; j < components.length; j++) {
-//          // set components to -1 if they're empty, because
-//          // otherwise Java gets upset.
-//          String component = components[j];
-//          if ("".equals(component)) {
-//            components[j] = "-1";
-//          }
-//        }
 
         // Setting all the properties of the new atom.
         // component[x] where the values of x are in order
         // as listed in the constants file.
 
-        try {
-          elementInfo = new HashMap<DatabaseFields, Double>();
-          for (DatabaseFields df : DatabaseFields.values()) {
-            elementInfo.put(df, new Double(components[df.fieldNumber()]));
+        int atomicNumber = Integer.valueOf(components[ATOMIC_NUMBER]);
+
+        elementInfo.clear();
+        for (DatabaseFields df : DatabaseFields.values()) {
+
+          if ("".equals(components[df.fieldNumber()])) {
+            elementInfo.put(df, null);
+          } else {
+            elementInfo.put(df, Double.valueOf(components[df.fieldNumber()]));
           }
-
-          int atomicNumber = Integer.valueOf(components[ATOMIC_NUMBER]);
-
-          Element el =
-              new Element(components[ELEMENT_NAME], atomicNumber, elementInfo);
-          elements.put(components[ELEMENT_NAME].toLowerCase(), el);
-          elements.put(atomicNumber, el);
-        } catch (NumberFormatException e) {
-          System.err.println("Could not parse line " + totalLines
-              + " of element database file " + MUCALC_FILE);
-          e.printStackTrace();
         }
+
+        Element elem = new Element(components[ELEMENT_NAME], atomicNumber,
+            elementInfo);
+        elements.put(components[ELEMENT_NAME].toLowerCase(), elem);
+        elements.put(atomicNumber, elem);
       }
 
       br.close();
