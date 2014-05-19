@@ -100,7 +100,8 @@ public class Element {
       final Map<ElementDatabase.DatabaseFields, Double> elementInformation) {
     elementName = element;
     atomicNumber = protons;
-    elementData = elementInformation;
+    elementData = new HashMap<ElementDatabase.DatabaseFields, Double>(
+        elementInformation);
     coefficients = edgeCoefficients(elementInformation);
   }
 
