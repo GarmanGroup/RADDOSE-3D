@@ -11,13 +11,16 @@ import java.util.Map;
 
 /**
  * Holds X-ray cross section information for all elements of the periodic table.
+ * The ElementDatabase class is a Singleton. Its constructor is not publically
+ * accessible.
+ * To obtain an instance of the ElementDatabase class, call the getInstance()
+ * function.
  */
-// TODO: Make this a singleton
 public class ElementDatabase {
   /**
-   * Location of MuCalcConstants library.
+   * Reference to the singleton instance of ElementDatabase.
    */
-  private static final String        MUCALC_FILE = "constants/MuCalcConstants.txt";
+  private static ElementDatabase     ElementDBSingleton;
 
   /**
    * Map of all Element objects in the database.
@@ -90,15 +93,23 @@ public class ElementDatabase {
     }
   }
 
+  /**
+   * Location of MuCalcConstants library.
+   */
+  private static final String MUCALC_FILE   = "constants/MuCalcConstants.txt";
+
   /** Position of the atomic number in the database file. */
-  private static final int ATOMIC_NUMBER = 0;
+  private static final int    ATOMIC_NUMBER = 0;
   /** Position of the element name in the database file. */
-  private static final int ELEMENT_NAME  = 1;
+  private static final int    ELEMENT_NAME  = 1;
 
   /**
-   * Constructor - reads in constant file & populates atom array.
+   * Protected constructor of ElementDatabase. This reads in and parses the
+   * constant file and creates the element map.
+   * To obtain an instance of the ElementDatabase class, call the getInstance()
+   * function.
    */
-  public ElementDatabase() {
+  protected ElementDatabase() {
     elements = new HashMap<Object, Element>();
 
     BufferedReader br = null;
@@ -179,6 +190,20 @@ public class ElementDatabase {
         e1.printStackTrace();
       }
     }
+  }
+
+  /**
+   * Returns an instance of the element database. The true constructor of
+   * ElementDatabase is private, as ElementDatabase is a Singleton.
+   * 
+   * @return
+   *         Instance of the element database.
+   */
+  public synchronized static ElementDatabase getInstance() {
+    if (ElementDBSingleton == null) {
+      ElementDBSingleton = new ElementDatabase();
+    }
+    return ElementDBSingleton;
   }
 
   /**

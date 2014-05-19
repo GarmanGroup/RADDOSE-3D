@@ -181,7 +181,7 @@ public class CoefCalcCompute extends CoefCalc {
    * Simple constructor.
    */
   public CoefCalcCompute() {
-    elementDB = new ElementDatabase();
+    elementDB = ElementDatabase.getInstance();
     macromolecularOccurrence = new HashMap<Element, Double>();
     heteroAtomOccurrence = new HashMap<Element, Double>();
     solventOccurrence = new HashMap<Element, Double>();

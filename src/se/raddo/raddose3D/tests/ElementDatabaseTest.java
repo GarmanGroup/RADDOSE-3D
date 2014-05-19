@@ -12,7 +12,7 @@ import se.raddo.raddose3D.ElementDatabase;
 public class ElementDatabaseTest {
   @Test
   public void checkElementDB() {
-    ElementDatabase edb = new ElementDatabase();
+    ElementDatabase edb = ElementDatabase.getInstance();
 
     Element s = edb.getElement("S");
     Assertion.isNotNull(s, "Could not find sulphur by name");
