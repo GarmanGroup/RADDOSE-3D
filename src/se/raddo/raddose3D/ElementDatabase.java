@@ -5,7 +5,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -208,15 +207,6 @@ public class ElementDatabase {
   }
 
   /**
-   * @return the atoms
-   */
-  @Deprecated
-  public Element[] getAtoms() {
-    Collection<Element> collection = elements.values();
-    return collection.toArray(new Element[collection.size()]);
-  }
-
-  /**
    * Returns the Element object associated with the chemical element with z
    * protons.
    * 
@@ -239,13 +229,5 @@ public class ElementDatabase {
    */
   public Element getElement(final String name) {
     return elements.get(name.toLowerCase());
-  }
-
-  /**
-   * @return the atomCount
-   */
-  @Deprecated
-  public int getAtomCount() {
-    return elements.size();
   }
 }

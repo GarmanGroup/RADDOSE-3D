@@ -626,6 +626,26 @@ public class CoefCalcCompute extends CoefCalc {
     macromolecularOccurrence.put(element, mmOcc);
   }
 
+  /**
+   * Take into account the number of molecules in the unit cell; equal to NCS
+   * symmetry operators multiplied
+   * by CS symmetry operators.
+   * 
+   * @param num
+   *          number of molecules in unit cell
+   */
+  public void multiplyAtoms(final int num) {
+    for (Element e : macromolecularOccurrence.keySet()) {
+      setMacromolecularOccurrence(e,
+          getMacromolecularOccurrence(e) * num);
+    }
+
+    for (Element e : heteroAtomOccurrence.keySet()) {
+      setHetatmOccurrence(e,
+          getHetatmOccurrence(e) * num);
+    }
+  }
+
   public double totalAtoms(final Element element) {
     return getSolventOccurrence(element) + getMacromolecularOccurrence(element);
   }

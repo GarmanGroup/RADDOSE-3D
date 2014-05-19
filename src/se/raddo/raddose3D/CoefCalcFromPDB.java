@@ -731,23 +731,6 @@ public class CoefCalcFromPDB extends CoefCalcCompute {
   }
 
   /**
-   * Take into account the number of molecules in the unit cell; equal to NCS
-   * symmetry operators multiplied
-   * by CS symmetry operators.
-   * 
-   * @param num number of molecules in unit cell
-   */
-  public void multiplyAtoms(final int num) {
-    for (int i = 0; i < getParser().getAtomCount(); i++) {
-      setMacromolecularOccurrence(getParser().getAtoms()[i],
-          getMacromolecularOccurrence(getParser().getAtoms()[i]) * num);
-
-      setHetatmOccurrence(getParser().getAtoms()[i],
-          getHetatmOccurrence(getParser().getAtoms()[i]) * num);
-    }
-  }
-
-  /**
    * Downloads PDB from http://www.pdb.org/ and initiates parsing of PDB line by
    * line.
    * 
