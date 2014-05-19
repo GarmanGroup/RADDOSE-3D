@@ -14,14 +14,9 @@ import se.raddo.raddose3D.ElementDatabase.DatabaseFields;
  * http://cars9.uchicago.edu/mcbook/
  */
 public class ElementTest {
-
-  public static void main(final String[] args) {
-    ElementTest e = new ElementTest();
-    e.createElement();
-  }
-
+  
   @Test
-  public void createElement() {
+  public void checkElement() {
     Element s = new Element("S", 16, getSulphur());
 
     Assertion.equals(s.getAtomicNumber(), 16, "atomic number");
