@@ -21,8 +21,9 @@ public class BeamExperimentalTest {
   private Double[][] evenBeamHorizontalChange = new Double[4][4];
   private Double[][] evenBeamBothChange       = new Double[4][4];
 
-  private Double     sumVert                  = 0.0, sumHoriz = 0.0,
-      sumBoth = 0.0;
+  private Double     sumVert                  = 0.0;
+  private Double     sumHoriz                 = 0.0;
+  private Double     sumBoth                  = 0.0;
 
   private Double     defaultE                 = 10.0;
   private Double     defaultFlux              = 1e12;
@@ -137,25 +138,33 @@ public class BeamExperimentalTest {
 
   /**
    * Explicity test the bilinear interpolation routine.
+   * Values obtained from
+   * *
+   * http://www.ajdesigner.com/phpinterpolation/
+   * bilinear_interpolation_equation.php
    */
   @Test
   public void testInterpolation() {
-    Assertion.equals(BeamExperimental.bilinearInterpolate(0, 1, 2, 3, 0, 0), 
+    Assertion.equals(BeamExperimental.bilinearInterpolate(0, 1, 2, 3, 0, 0),
         0, "Bilinear Interpolation at x=0, y=0");
-    Assertion.equals(BeamExperimental.bilinearInterpolate(0, 1, 2, 3, 1, 0), 
+    Assertion.equals(BeamExperimental.bilinearInterpolate(0, 1, 2, 3, 1, 0),
         1, "Bilinear Interpolation at x=1, y=0");
-    Assertion.equals(BeamExperimental.bilinearInterpolate(0, 1, 2, 3, 0, 1), 
+    Assertion.equals(BeamExperimental.bilinearInterpolate(0, 1, 2, 3, 0, 1),
         2, "Bilinear Interpolation at x=0, y=1");
-    Assertion.equals(BeamExperimental.bilinearInterpolate(0, 1, 2, 3, 1, 1), 
+    Assertion.equals(BeamExperimental.bilinearInterpolate(0, 1, 2, 3, 1, 1),
         3, "Bilinear Interpolation at x=1, y=1");
 
-    Assertion.equals(BeamExperimental.bilinearInterpolate(0, 1, 2, 3, 0.3, 0.5), 
+    Assertion.equals(
+        BeamExperimental.bilinearInterpolate(0, 1, 2, 3, 0.3, 0.5),
         1.3, "Bilinear Interpolation at x=0.3, y=0.5");
-    Assertion.equals(BeamExperimental.bilinearInterpolate(0, 1, 2, 3, 0.7, 0.5), 
+    Assertion.equals(
+        BeamExperimental.bilinearInterpolate(0, 1, 2, 3, 0.7, 0.5),
         1.7, "Bilinear Interpolation at x=0.7, y=0.5");
-    Assertion.equals(BeamExperimental.bilinearInterpolate(0, 1, 2, 3, 0.7, 0.9), 
+    Assertion.equals(
+        BeamExperimental.bilinearInterpolate(0, 1, 2, 3, 0.7, 0.9),
         2.5, "Bilinear Interpolation at x=0.7, y=0.9");
-    Assertion.equals(BeamExperimental.bilinearInterpolate(0, 1, 2, 3, 0.9, 0.9), 
+    Assertion.equals(
+        BeamExperimental.bilinearInterpolate(0, 1, 2, 3, 0.9, 0.9),
         2.7, "Bilinear Interpolation at x=0.9, y=0.9");
   }
 }
