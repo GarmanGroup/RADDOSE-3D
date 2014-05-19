@@ -26,10 +26,26 @@ public class Element {
   private final Map<ElementDatabase.DatabaseFields, Double> elementData;
 
   /**
+   * Stored absorption edge coefficients.
+   */
+  private final Map<AbsorptionEdge, Double[]>               coefficients;
+
+  /**
    * List of absorption edges.
    */
   private enum AbsorptionEdge {
-    K, L, M, N, C, I
+    /** innermost electron shell, 1 shell */
+    K,
+    /** 2 shell */
+    L,
+    /** 3 shell */
+    M,
+    /** 4 shell */
+    N,
+    /** Coherent scattering polynomial coefficients */
+    C,
+    /** Incoherent scattering polynomial coefficients */
+    I
   }
 
   /** Atomic mass unit in grams. */
@@ -75,115 +91,118 @@ public class Element {
     elementName = element;
     atomicNumber = protons;
     elementData = elementInformation;
+    coefficients = edgeCoefficients(elementInformation);
   }
 
   /**
-   * Returns the edge coefficients depending on the edge specified.
+   * Converts the edge coefficients into easier-to-handle arrays.
    * 
-   * @param edge Selected edge coefficients (K, L, M, N, C, I).
-   * @return corresponding edge coefficients.
+   * @param elementInformation
+   *          The database fields of the current element
+   * @return
+   *         Map containing all edge coefficients as Double[] arrays.
    */
-  // TODO: Do this only once, on object instantiation.
-  private Double[] edgeCoefficients(final AbsorptionEdge edge) {
-    Double[] coefficients = new Double[POLYNOMIAL_EXPANSION];
+  private Map<AbsorptionEdge, Double[]> edgeCoefficients(
+      final Map<ElementDatabase.DatabaseFields, Double> elementInformation) {
 
-    switch (edge) {
-      case K:
-        coefficients[0] = elementData
-            .get(ElementDatabase.DatabaseFields.K_COEFF_0);
-        coefficients[1] = elementData
-            .get(ElementDatabase.DatabaseFields.K_COEFF_1);
-        coefficients[2] = elementData
-            .get(ElementDatabase.DatabaseFields.K_COEFF_2);
-        coefficients[3] = elementData
-            .get(ElementDatabase.DatabaseFields.K_COEFF_3);
-        break;
-      case L:
-        coefficients[0] = elementData
-            .get(ElementDatabase.DatabaseFields.L_COEFF_0);
-        coefficients[1] = elementData
-            .get(ElementDatabase.DatabaseFields.L_COEFF_1);
-        coefficients[2] = elementData
-            .get(ElementDatabase.DatabaseFields.L_COEFF_2);
-        coefficients[3] = elementData
-            .get(ElementDatabase.DatabaseFields.L_COEFF_3);
-        break;
-      case M:
-        coefficients[0] = elementData
-            .get(ElementDatabase.DatabaseFields.M_COEFF_0);
-        coefficients[1] = elementData
-            .get(ElementDatabase.DatabaseFields.M_COEFF_1);
-        coefficients[2] = elementData
-            .get(ElementDatabase.DatabaseFields.M_COEFF_2);
-        coefficients[3] = elementData
-            .get(ElementDatabase.DatabaseFields.M_COEFF_3);
-        break;
-      case N:
-        coefficients[0] = elementData
-            .get(ElementDatabase.DatabaseFields.N_COEFF_0);
-        coefficients[1] = elementData
-            .get(ElementDatabase.DatabaseFields.N_COEFF_1);
-        coefficients[2] = elementData
-            .get(ElementDatabase.DatabaseFields.N_COEFF_2);
-        coefficients[3] = elementData
-            .get(ElementDatabase.DatabaseFields.N_COEFF_3);
-        break;
-      case C:
-        coefficients[0] = elementData
-            .get(ElementDatabase.DatabaseFields.COHERENT_COEFF_0);
-        coefficients[1] = elementData
-            .get(ElementDatabase.DatabaseFields.COHERENT_COEFF_1);
-        coefficients[2] = elementData
-            .get(ElementDatabase.DatabaseFields.COHERENT_COEFF_2);
-        coefficients[3] = elementData
-            .get(ElementDatabase.DatabaseFields.COHERENT_COEFF_3);
-        break;
-      case I:
-        coefficients[0] = elementData
-            .get(ElementDatabase.DatabaseFields.INCOHERENT_COEFF_0);
-        coefficients[1] = elementData
-            .get(ElementDatabase.DatabaseFields.INCOHERENT_COEFF_1);
-        coefficients[2] = elementData
-            .get(ElementDatabase.DatabaseFields.INCOHERENT_COEFF_2);
-        coefficients[3] = elementData
-            .get(ElementDatabase.DatabaseFields.INCOHERENT_COEFF_3);
-        break;
-      default:
-        throw new RuntimeException(
-            "ERROR: Something's gone horribly wrong in the code");
-    }
-    return coefficients;
+    Map<AbsorptionEdge, Double[]> coeffMap =
+        new HashMap<AbsorptionEdge, Double[]>();
+
+    Double[] coeff;
+    coeff = new Double[POLYNOMIAL_EXPANSION];
+    coeff[0] = elementInformation
+        .get(ElementDatabase.DatabaseFields.K_COEFF_0);
+    coeff[1] = elementInformation
+        .get(ElementDatabase.DatabaseFields.K_COEFF_1);
+    coeff[2] = elementInformation
+        .get(ElementDatabase.DatabaseFields.K_COEFF_2);
+    coeff[3] = elementInformation
+        .get(ElementDatabase.DatabaseFields.K_COEFF_3);
+    coeffMap.put(AbsorptionEdge.K, coeff);
+
+    coeff = new Double[POLYNOMIAL_EXPANSION];
+    coeff[0] = elementInformation
+        .get(ElementDatabase.DatabaseFields.L_COEFF_0);
+    coeff[1] = elementInformation
+        .get(ElementDatabase.DatabaseFields.L_COEFF_1);
+    coeff[2] = elementInformation
+        .get(ElementDatabase.DatabaseFields.L_COEFF_2);
+    coeff[3] = elementInformation
+        .get(ElementDatabase.DatabaseFields.L_COEFF_3);
+    coeffMap.put(AbsorptionEdge.L, coeff);
+
+    coeff = new Double[POLYNOMIAL_EXPANSION];
+    coeff[0] = elementInformation
+        .get(ElementDatabase.DatabaseFields.M_COEFF_0);
+    coeff[1] = elementInformation
+        .get(ElementDatabase.DatabaseFields.M_COEFF_1);
+    coeff[2] = elementInformation
+        .get(ElementDatabase.DatabaseFields.M_COEFF_2);
+    coeff[3] = elementInformation
+        .get(ElementDatabase.DatabaseFields.M_COEFF_3);
+    coeffMap.put(AbsorptionEdge.M, coeff);
+
+    coeff = new Double[POLYNOMIAL_EXPANSION];
+    coeff[0] = elementInformation
+        .get(ElementDatabase.DatabaseFields.N_COEFF_0);
+    coeff[1] = elementInformation
+        .get(ElementDatabase.DatabaseFields.N_COEFF_1);
+    coeff[2] = elementInformation
+        .get(ElementDatabase.DatabaseFields.N_COEFF_2);
+    coeff[3] = elementInformation
+        .get(ElementDatabase.DatabaseFields.N_COEFF_3);
+    coeffMap.put(AbsorptionEdge.N, coeff);
+
+    coeff = new Double[POLYNOMIAL_EXPANSION];
+    coeff[0] = elementInformation
+        .get(ElementDatabase.DatabaseFields.COHERENT_COEFF_0);
+    coeff[1] = elementInformation
+        .get(ElementDatabase.DatabaseFields.COHERENT_COEFF_1);
+    coeff[2] = elementInformation
+        .get(ElementDatabase.DatabaseFields.COHERENT_COEFF_2);
+    coeff[3] = elementInformation
+        .get(ElementDatabase.DatabaseFields.COHERENT_COEFF_3);
+    coeffMap.put(AbsorptionEdge.C, coeff);
+
+    coeff = new Double[POLYNOMIAL_EXPANSION];
+    coeff[0] = elementInformation
+        .get(ElementDatabase.DatabaseFields.INCOHERENT_COEFF_0);
+    coeff[1] = elementInformation
+        .get(ElementDatabase.DatabaseFields.INCOHERENT_COEFF_1);
+    coeff[2] = elementInformation
+        .get(ElementDatabase.DatabaseFields.INCOHERENT_COEFF_2);
+    coeff[3] = elementInformation
+        .get(ElementDatabase.DatabaseFields.INCOHERENT_COEFF_3);
+    coeffMap.put(AbsorptionEdge.I, coeff);
+
+    return coeffMap;
   }
 
   /**
-   * Calculation of "bax" for corresponding edge and energy in Angstroms.
+   * Calculation of "bax" for corresponding edge and energy.
    * 
    * @param energy
-   *          energy of beam in Angstroms
+   *          beam energy in keV
    * @param edge
-   *          String indicating which edge coefficient (K, L, M, N, C, I).
+   *          Selected edge coefficient (K, L, M, N, C, I).
    * @return
    *         value of bax
    */
-  public double baxForEdge(final double energy, final AbsorptionEdge edge) {
+  private double baxForEdge(final double energy, final AbsorptionEdge edge) {
     // calculation from logarithmic coefficients in McMaster tables.
 
     double sum = 0;
-    Double[] coefficients = edgeCoefficients(edge);
+    Double[] coeffs = coefficients.get(edge);
 
     for (int i = 0; i < POLYNOMIAL_EXPANSION; i++) {
-      if (coefficients[i] == -1) {
-        sum = 0; //TODO: just a 'safeguard'
-      } else if (energy == 1) {
-        sum += coefficients[i]; // TODO: Is this actually correct?
+      if (energy == 1) {
+        sum += coeffs[i]; // TODO: Is this actually correct?
       } else {
-        sum += coefficients[i] * Math.pow(Math.log(energy), i);
+        sum += coeffs[i] * Math.pow(Math.log(energy), i);
       }
     }
 
-    double bax = Math.exp(sum);
-
-    return bax;
+    return Math.exp(sum);
   }
 
   /**
@@ -192,7 +211,8 @@ public class Element {
    * calculates bax for this edge. Corrects bax if atomic number is below 29,
    * and then uses this to calculate the cross-sections.
    * 
-   * @param energy wavelength in Angstroms
+   * @param energy
+   *          X-ray photon energy in keV
    */
   public Map<CrossSection, Double> calculateMu(final double energy) {
     Double absorptionEdgeK =
