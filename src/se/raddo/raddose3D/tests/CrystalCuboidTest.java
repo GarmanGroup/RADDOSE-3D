@@ -5,15 +5,12 @@ import java.util.HashMap;
 import org.testng.Assert;
 import org.testng.annotations.*;
 
-import se.raddo.raddose3D.CoefCalcAverage;
 import se.raddo.raddose3D.Crystal;
 import se.raddo.raddose3D.CrystalCuboid;
 import se.raddo.raddose3D.Wedge;
 
 /**
  * Tests for the Cuboid crystal class.
- * 
- * @author Oliver Zeldin
  */
 
 public class CrystalCuboidTest {
@@ -42,7 +39,6 @@ public class CrystalCuboidTest {
     properties.put(Crystal.CRYSTAL_DIM_Y, 100d);
     properties.put(Crystal.CRYSTAL_DIM_Z, 100d);
     properties.put(Crystal.CRYSTAL_RESOLUTION, 0.5d);
-    properties.put(Crystal.CRYSTAL_COEFCALC, new CoefCalcAverage());
 
     properties.put(Crystal.CRYSTAL_ANGLE_P, 0d);
     properties.put(Crystal.CRYSTAL_ANGLE_L, 0d);
@@ -128,7 +124,6 @@ public class CrystalCuboidTest {
     properties.put(Crystal.CRYSTAL_RESOLUTION, 1d);
     properties.put(Crystal.CRYSTAL_ANGLE_P, 0d);
     properties.put(Crystal.CRYSTAL_ANGLE_L, 0d);
-    properties.put(Crystal.CRYSTAL_COEFCALC, new CoefCalcAverage());
     Crystal c = new CrystalCuboid(properties);
 
     Wedge w = new Wedge(2d, 0d, 90d, 100d, 0d, 0d, 0d, 0d, 0d, 0d, 0d);
@@ -203,12 +198,7 @@ public class CrystalCuboidTest {
     properties.put(Crystal.CRYSTAL_RESOLUTION, 0.5d);
     properties.put(Crystal.CRYSTAL_ANGLE_P, 0d);
     properties.put(Crystal.CRYSTAL_ANGLE_L, 0d);
-    properties.put(Crystal.CRYSTAL_COEFCALC, new CoefCalcAverage());
     Crystal c = new CrystalCuboid(properties);
-
-    // create a new wedge with no rotation at 100 seconds' exposure
-    // (doesn't matter)
-    Wedge w = new Wedge(0d, 0d, 0d, 100d, 0d, 0d, 0d, 0d, 0d, 0d, 0d);
 
     // beam is along z axis. So when the crystal is not rotated, the 
     // maximum depth along the z axis should be 40 um (length of crystal).
@@ -220,10 +210,15 @@ public class CrystalCuboidTest {
     // and should therefore be first to intercept the beam and have
     // a depth of 0.
     crystCoords = c.getCrystCoord(0, 0, 0);
-
-    Assertion.equals(crystCoords[2], -20, "crystal coordinate z axis = -20");
+    Assertion.equals(crystCoords[0], -45, "crystal coordinate x axis");
+    Assertion.equals(crystCoords[1], -37, "crystal coordinate y axis");
+    Assertion.equals(crystCoords[2], -20, "crystal coordinate z axis");
     
+    // create a new wedge with no rotation at 100 seconds' exposure
+    // (doesn't matter)
+    Wedge w = new Wedge(0d, 0d, 0d, 100d, 0d, 0d, 0d, 0d, 0d, 0d, 0d);
     c.setupDepthFinding(0, w);
+    
     double depth = c.findDepth(crystCoords, 0, w);
 
     Assertion.equals(depth, 0, "depth = 0 at front edge of crystal");
