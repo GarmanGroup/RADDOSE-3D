@@ -6,8 +6,6 @@ import javax.media.jai.InterpolationBilinear;
 /**
  * Takes an experimental grid of beam intensities, and interpolates for
  * the correct intensity using Bilinear interpolation.
- * 
- * @author Oliver Zeldin
  */
 public class BeamExperimental implements Beam {
   private final double     pixXSize,
@@ -104,13 +102,10 @@ public class BeamExperimental implements Beam {
         float fracX = (float) (realX / pixXSize - (voxelHorizontal + 0.5));
         float fracY = (float) (realY / pixYSize - (voxelVertical + 0.5));
 
-        InterpolationBilinear ip = new InterpolationBilinear();
-
-        return ip.interpolate(beamArray[voxelVertical][voxelHorizontal],
+        return bilinearInterpolate(beamArray[voxelVertical][voxelHorizontal],
             beamArray[voxelVertical][voxelHorizontal + 1],
             beamArray[voxelVertical + 1][voxelHorizontal],
-            beamArray[voxelVertical + 1][voxelHorizontal + 1],
-            fracX,
+            beamArray[voxelVertical + 1][voxelHorizontal + 1], fracX,
             fracY);
 
       } else if (voxelHorizontal == beamArray[0].length
@@ -124,7 +119,32 @@ public class BeamExperimental implements Beam {
     } else {
       return 0d;
     }
+  }
 
+  /**
+   * Bilinear interpolation routine.
+   * 
+   * @param s00
+   *          Value at x=0, y=0.
+   * @param s01
+   *          Value at x=1, y=0.
+   * @param s10
+   *          Value at x=0, y=1.
+   * @param s11
+   *          Value at x=1, y=1.
+   * @param d
+   *          x position between 0 and 1.
+   * @param e
+   *          y position between 0 and 1.
+   * @return
+   *         Bilinearly interpolated value for coordinates xfrac/yfrac.
+   */
+  public static double bilinearInterpolate(final double s00, final double s01,
+      final double s10, final double s11, final double d, final double e)
+  {
+    InterpolationBilinear ip = new InterpolationBilinear();
+
+    return ip.interpolate(s00, s01, s10, s11, (float) d, (float) e);
   }
 
   @Override
