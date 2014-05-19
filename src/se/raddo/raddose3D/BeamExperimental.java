@@ -1,6 +1,7 @@
 package se.raddo.raddose3D;
 
 import javax.media.jai.InterpolationBilinear;
+
 // TODO: Remove JAI dependence
 
 /**
@@ -144,7 +145,13 @@ public class BeamExperimental implements Beam {
   {
     InterpolationBilinear ip = new InterpolationBilinear();
 
-    return ip.interpolate(s00, s01, s10, s11, (float) d, (float) e);
+    double p = s00 * (1 - d) * (1 - e)
+        + s01 * (d) * (1 - e)
+        + s10 * (1 - d) * (e)
+        + s11 * (d) * (e);
+
+    return p;
+    //  return ip.interpolate(s00, s01, s10, s11, (float) d, (float) e);
   }
 
   @Override
