@@ -96,7 +96,7 @@ public class ElementDatabase {
   /**
    * Location of MuCalcConstants library.
    */
-  private static final String MUCALC_FILE   = "/constants/MuCalcConstants.txt";
+  private static final String MUCALC_FILE   = "constants/MuCalcConstants.txt";
 
   /** Position of the atomic number in the database file. */
   private static final int    ATOMIC_NUMBER = 0;
@@ -114,17 +114,18 @@ public class ElementDatabase {
 
     BufferedReader br = null;
     InputStreamReader isr = null;
-//    try {
-      InputStream is = getClass().getResourceAsStream(MUCALC_FILE);
+    try {
+//    InputStream is = getClass().getResourceAsStream(MUCALC_FILE);
+      FileInputStream is = new FileInputStream(MUCALC_FILE);
       isr = new InputStreamReader(is);
       br = new BufferedReader(isr);
-//    } catch (FileNotFoundException e) {
-//      // give up
-//      System.out.println("Cannot find atom library file. Have you deleted it?");
-//
-//      e.printStackTrace();
-//      return;
-//    } // Read in constants file, consider some kind of error checking
+    } catch (FileNotFoundException e) {
+      // give up
+      System.out.println("Cannot find atom library file. Have you deleted it?");
+
+      e.printStackTrace();
+      return;
+    } // Read in constants file, consider some kind of error checking
 
     String line;
     int totalLines = 0;
