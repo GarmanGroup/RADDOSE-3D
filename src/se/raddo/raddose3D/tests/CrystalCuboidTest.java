@@ -115,7 +115,7 @@ public class CrystalCuboidTest {
 
   //This should work now... Am going to tart up Wedge and have another go.
   @Test(groups = { "advanced" })
-  public static void testFindDepth() {
+  public static void testFindDepthSymmetry() {
 
     HashMap<Object, Object> properties = new HashMap<Object, Object>();
     properties.put(Crystal.CRYSTAL_DIM_X, 100d);
@@ -187,21 +187,29 @@ public class CrystalCuboidTest {
   }
 
   @Test
-  public static void secondDepthTest() {
+  public static void testFindDepth() {
+    int xdim = 90;
+    int ydim = 74;
+    int zdim = 40;
+    Double resolution = 0.5d;
 
     // make a new map for a Cuboid Crystal, dimensions 90 x 74 x 40 um,
     // 0.5 voxels per um, no starting rotation.
     HashMap<Object, Object> properties = new HashMap<Object, Object>();
-    properties.put(Crystal.CRYSTAL_DIM_X, 90d);
-    properties.put(Crystal.CRYSTAL_DIM_Y, 74d);
-    properties.put(Crystal.CRYSTAL_DIM_Z, 40d);
-    properties.put(Crystal.CRYSTAL_RESOLUTION, 0.5d);
+    properties.put(Crystal.CRYSTAL_DIM_X, Double.valueOf(xdim));
+    properties.put(Crystal.CRYSTAL_DIM_Y, Double.valueOf(ydim));
+    properties.put(Crystal.CRYSTAL_DIM_Z, Double.valueOf(zdim));
+    properties.put(Crystal.CRYSTAL_RESOLUTION, resolution);
     properties.put(Crystal.CRYSTAL_ANGLE_P, 0d);
     properties.put(Crystal.CRYSTAL_ANGLE_L, 0d);
     Crystal c = new CrystalCuboid(properties);
 
+    // create a new wedge with no rotation at 100 seconds' exposure
+    // (doesn't matter)
+    Wedge w = new Wedge(0d, 0d, 0d, 100d, 0d, 0d, 0d, 0d, 0d, 0d, 0d);
+
     // beam is along z axis. So when the crystal is not rotated, the 
-    // maximum depth along the z axis should be 40 um (length of crystal).
+    // maximum depth along the z axis should be zdim um (length of crystal).
 
     double[] crystCoords = new double[3];
     // this coordinate is in voxel coordinates.
@@ -209,19 +217,29 @@ public class CrystalCuboidTest {
     // in crystCoords (-45, -37, -20)
     // and should therefore be first to intercept the beam and have
     // a depth of 0.
-    crystCoords = c.getCrystCoord(0, 0, 0);
-    Assertion.equals(crystCoords[0], -45, "crystal coordinate x axis");
-    Assertion.equals(crystCoords[1], -37, "crystal coordinate y axis");
-    Assertion.equals(crystCoords[2], -20, "crystal coordinate z axis");
-    
-    // create a new wedge with no rotation at 100 seconds' exposure
-    // (doesn't matter)
-    Wedge w = new Wedge(0d, 0d, 0d, 100d, 0d, 0d, 0d, 0d, 0d, 0d, 0d);
-    c.setupDepthFinding(0, w);
-    
-    double depth = c.findDepth(crystCoords, 0, w);
 
-    Assertion.equals(depth, 0, "depth = 0 at front edge of crystal");
+    for (int x = 0; x < xdim * resolution; x++) {
+      for (int y = 0; y < ydim * resolution; y++) {
+        for (int z = 0; z < zdim * resolution; z++) {
+          crystCoords = c.getCrystCoord(x, y, z);
+          Assertion.equals(crystCoords[0], -(xdim / 2) + (x / resolution),
+              "crystal coordinate x axis");
+          Assertion.equals(crystCoords[1], -(ydim / 2) + (y / resolution),
+              "crystal coordinate y axis");
+          Assertion.equals(crystCoords[2], -(zdim / 2) + (z / resolution),
+              "crystal coordinate z axis");
 
+          c.setupDepthFinding(0, w);
+
+          double depth = c.findDepth(crystCoords, 0, w);
+          // The depth finding overestimates by 10/resolution :(
+          // depth -= (10 / resolution);
+
+          // Because the crystal has not been rotated,
+          // the depth should just be z / resolution
+          Assertion.equals(depth, z / resolution, "depth at z=" + z);
+        }
+      }
+    }
   }
 }
