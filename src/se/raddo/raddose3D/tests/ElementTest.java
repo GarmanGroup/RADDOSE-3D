@@ -25,6 +25,10 @@ public class ElementTest {
         "atomic weight (g)");
     Assertion.equals(s.getElementName(), "S", "element name");
 
+    sulphurTests(s);
+  }
+  
+  public void sulphurTests(final Element s) {
     compareResults(s, 1.1, 1978.71497, 2.62428641, 1981.35059);
     compareResults(s, 1.2, 1568.09387, 2.63965917, 1570.74646);
     compareResults(s, 1.7, 609.046936, 2.56492448, 611.633484);
@@ -36,7 +40,7 @@ public class ElementTest {
     compareResults(s, 10, 48.4815712, 0.716733396, 49.3056908);
   }
 
-  private void compareResults(final Element e, final double energy,
+  private static void compareResults(final Element e, final double energy,
       final double photoelectric, final double coherent, final double total) {
     Map<CrossSection, Double> xs = e.calculateMu(energy);
     Assertion.equals(xs.get(Element.CrossSection.PHOTOELECTRIC) / Element.C,
