@@ -145,7 +145,7 @@ public class BeamExperimentalTest {
    */
   @Test
   public void testInterpolation() {
-    Double tolerance = 1e-7; // interpolation library is not quite exact
+    // Double tolerance = 1e-7; // interpolation library is not quite exact
     
     Assertion.equals(BeamExperimental.bilinearInterpolate(0, 1, 2, 3, 0, 0),
         0., "Bilinear Interpolation at x=0, y=0", tolerance);
