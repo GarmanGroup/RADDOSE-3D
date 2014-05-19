@@ -14,23 +14,10 @@ import java.util.Scanner;
  */
 public class BeamExperimentalpgm extends BeamExperimental {
 
+  /**
+   * Name of the file containing the PGM image of the beam.
+   */
   private final String file;
-
-  @Deprecated
-  public BeamExperimentalpgm(final String pgmFile, final Double totalFlux,
-      final Double beamEnergy, final Double pixelSizeX,
-      final Double pixelSizeY) {
-    // Call to the super constructor must be the first instruction.
-    // Thus all file operations must go into a static function.
-    // only one pixel size since PGM has implicit square pixel geometry
-
-    super(getXYIntensityList(pgmFile),
-        totalFlux,
-        beamEnergy,
-        pixelSizeX,
-        pixelSizeY);
-    file = pgmFile;
-  }
 
   /**
    * Generic property constructor for ExperimentalPGM beams. Extracts all
@@ -43,20 +30,24 @@ public class BeamExperimentalpgm extends BeamExperimental {
    *          {@link Beam} class.
    */
   public BeamExperimentalpgm(final Map<Object, Object> properties) {
-    this((String) properties.get(Beam.BEAM_EXTFILE),
+    // Call to the super constructor must be the first instruction.
+    // Thus all file operations must go into a static function.
+    // only one pixel size since PGM has implicit square pixel geometry
+
+    super(getXYIntensityList((String) properties.get(Beam.BEAM_EXTFILE)),
         (Double) properties.get(Beam.BEAM_FLUX),
         (Double) properties.get(Beam.BEAM_ENERGY),
         (Double) properties.get(Beam.BEAM_PIXSIZE_X),
         (Double) properties.get(Beam.BEAM_PIXSIZE_Y));
+    file = (String) properties.get(Beam.BEAM_EXTFILE);
   }
 
-  
   @Override
   public String getDescription() {
     return String
         .format(
-            "Experimental beam profile taken from %s. Beam has" +
-                " %.1e photons per second at %.2f keV.%n",
+            "Experimental beam profile taken from %s. Beam has"
+                + " %.1e photons per second at %.2f keV.%n",
             file, getPhotonsPerSec(), getPhotonEnergy());
   }
 
