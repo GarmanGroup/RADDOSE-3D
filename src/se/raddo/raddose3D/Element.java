@@ -238,7 +238,7 @@ public class Element {
         elementData.get(ElementDatabase.DatabaseFields.EDGE_K);
     if (energy < absorptionEdgeK
         && energy > absorptionEdgeK - ABSORPTION_EDGE_TOLERANCE) {
-      throw new RuntimeException(
+      throw new IllegalArgumentException(
           "Warning: using an energy close to middle of K edge of "
               + elementName);
       // TODO: How does Fortran deal with this?
@@ -248,7 +248,7 @@ public class Element {
         elementData.get(ElementDatabase.DatabaseFields.EDGE_L);
     if (energy < absorptionEdgeL
         && energy > absorptionEdgeL - ABSORPTION_EDGE_TOLERANCE) {
-      throw new RuntimeException(
+      throw new IllegalArgumentException(
           "Warning: using an energy close to middle of L edge of "
               + elementName);
       // TODO: How does Fortran deal with this?
@@ -258,7 +258,7 @@ public class Element {
         elementData.get(ElementDatabase.DatabaseFields.EDGE_M);
     if (energy < absorptionEdgeM
         && energy > absorptionEdgeM - ABSORPTION_EDGE_TOLERANCE) {
-      throw new RuntimeException(
+      throw new IllegalArgumentException(
           "Warning: using an energy close to middle of M edge of "
               + elementName);
       // TODO: How does Fortran deal with this?
