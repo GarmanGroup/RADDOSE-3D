@@ -206,7 +206,13 @@ public class Element {
 
     for (int i = 0; i < POLYNOMIAL_EXPANSION; i++) {
       if (energy == 1) {
-        sum += coeffs[i]; // TODO: Is this actually correct?
+        /*
+         * This is actually wrong, as it causes a discontinuity in the
+         * cross-section function. However, this is how Pathikrit Bandyopadhyay
+         * chose to implement it, so it stays. It also only affects values at
+         * E = 1keV.
+         */
+        sum += coeffs[i];
       } else {
         sum += coeffs[i] * Math.pow(Math.log(energy), i);
       }
