@@ -11,10 +11,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Holds X-ray cross section information for all elements of the periodic table.
- * The ElementDatabase class is a Singleton. Its constructor is not publically
- * accessible.
- * To obtain an instance of the ElementDatabase class, call the getInstance()
+ * The ElementDatabase holds X-ray cross section information for (nearly) all
+ * elements of the periodic table. It relies on a constants file containing the
+ * Pathikrit Bandyopadhyay parameterization of the McMaster tables.
+ * This class is a Singleton. Its constructor is therefore not publicly
+ * accessible. To obtain an instance of this class, call the getInstance()
  * function.
  */
 public class ElementDatabase {
