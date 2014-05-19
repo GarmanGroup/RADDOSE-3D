@@ -20,7 +20,7 @@ public class ElementDatabase {
   /**
    * Reference to the singleton instance of ElementDatabase.
    */
-  private static ElementDatabase     ElementDBSingleton;
+  private static ElementDatabase     singleton;
 
   /**
    * Map of all Element objects in the database.
@@ -128,6 +128,7 @@ public class ElementDatabase {
 
     String line;
     int totalLines = 0;
+    Map<DatabaseFields, Double> einfo;
     try {
       while ((line = br.readLine()) != null) {
         totalLines++;
@@ -143,7 +144,7 @@ public class ElementDatabase {
           // set components to -1 if they're empty, because
           // otherwise Java gets upset.
           String component = components[j];
-          if (component.equals("")) {
+          if ("".equals(component)) {
             components[j] = "-1";
           }
         }
@@ -153,17 +154,16 @@ public class ElementDatabase {
         // as listed in the constants file.
 
         try {
-          Map<DatabaseFields, Double> einfo =
-              new HashMap<DatabaseFields, Double>();
+          einfo = new HashMap<DatabaseFields, Double>();
           for (DatabaseFields df : DatabaseFields.values()) {
             einfo.put(df, new Double(components[df.fieldNumber()]));
           }
 
-          Integer atomicNumber = Integer.valueOf(components[ATOMIC_NUMBER]);
-          String elementName = components[ELEMENT_NAME];
+          int atomicNumber = Integer.valueOf(components[ATOMIC_NUMBER]);
 
-          Element el = new Element(elementName, atomicNumber, einfo);
-          elements.put(elementName.toLowerCase(), el);
+          Element el =
+              new Element(components[ELEMENT_NAME], atomicNumber, einfo);
+          elements.put(components[ELEMENT_NAME].toLowerCase(), el);
           elements.put(atomicNumber, el);
         } catch (NumberFormatException e) {
           System.out.println("Could not parse line " + totalLines);
@@ -199,11 +199,12 @@ public class ElementDatabase {
    * @return
    *         Instance of the element database.
    */
-  public synchronized static ElementDatabase getInstance() {
-    if (ElementDBSingleton == null) {
-      ElementDBSingleton = new ElementDatabase();
+  @SuppressWarnings("PMD.AvoidSynchronizedAtMethodLevel")
+  public static synchronized ElementDatabase getInstance() {
+    if (singleton == null) {
+      singleton = new ElementDatabase();
     }
-    return ElementDBSingleton;
+    return singleton;
   }
 
   /**
