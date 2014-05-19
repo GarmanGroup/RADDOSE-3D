@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -112,7 +113,14 @@ public class ElementDatabase {
   protected ElementDatabase() {
     elements = new HashMap<Object, Element>();
 
-    InputStreamReader isr = locateConstantsFile();
+    InputStreamReader isr;
+    try {
+      isr = locateConstantsFile();
+    } catch (IOException e) {
+      throw new RuntimeException("Error accessing element database file "
+          + MUCALC_FILE, e);
+    }
+
     BufferedReader br = new BufferedReader(isr);
 
     // Read in constants file, consider some kind of error checking
@@ -140,7 +148,6 @@ public class ElementDatabase {
 
         elementInfo.clear();
         for (DatabaseFields df : DatabaseFields.values()) {
-
           if ("".equals(components[df.fieldNumber()])) {
             elementInfo.put(df, null);
           } else {
@@ -168,25 +175,22 @@ public class ElementDatabase {
    * 
    * @return
    *         InputStreamReader pointing to the correct resource.
-   * @throws RuntimeException
-   *           If the file could not be found.
+   * @throws FileNotFoundException
+   *           The file could not be found.
+   * @throws UnsupportedEncodingException
+   *           The file charset cannot be interpreted.
    */
-  private InputStreamReader locateConstantsFile() throws RuntimeException {
+  private InputStreamReader locateConstantsFile()
+      throws UnsupportedEncodingException, FileNotFoundException {
     // Try to find it within class path;
     InputStream is = getClass().getResourceAsStream("/" + MUCALC_FILE);
 
     if (is == null) {
       // If it is not within the class path, try via the file system.
-      try {
-        is = new FileInputStream(MUCALC_FILE);
-      } catch (FileNotFoundException e) {
-        // give up
-        throw new RuntimeException("Cannot find element database file "
-            + MUCALC_FILE, e);
-      }
+      is = new FileInputStream(MUCALC_FILE);
     }
 
-    return new InputStreamReader(is);
+    return new InputStreamReader(is, "US-ASCII");
   }
 
   /**
