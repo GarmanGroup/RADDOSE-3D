@@ -1,9 +1,5 @@
 package se.raddo.raddose3D;
 
-import javax.media.jai.InterpolationBilinear;
-
-// TODO: Remove JAI dependence
-
 /**
  * Takes an experimental grid of beam intensities, and interpolates for
  * the correct intensity using Bilinear interpolation.
@@ -125,33 +121,27 @@ public class BeamExperimental implements Beam {
   /**
    * Bilinear interpolation routine.
    * 
-   * @param s00
+   * @param v00
    *          Value at x=0, y=0.
-   * @param s01
+   * @param v10
    *          Value at x=1, y=0.
-   * @param s10
+   * @param v01
    *          Value at x=0, y=1.
-   * @param s11
+   * @param v11
    *          Value at x=1, y=1.
-   * @param d
+   * @param x
    *          x position between 0 and 1.
-   * @param e
+   * @param y
    *          y position between 0 and 1.
    * @return
-   *         Bilinearly interpolated value for coordinates xfrac/yfrac.
+   *         Bilinearly interpolated value for coordinates x, y.
    */
-  public static double bilinearInterpolate(final double s00, final double s01,
-      final double s10, final double s11, final double d, final double e)
-  {
-    InterpolationBilinear ip = new InterpolationBilinear();
-
-    double p = s00 * (1 - d) * (1 - e)
-        + s01 * (d) * (1 - e)
-        + s10 * (1 - d) * (e)
-        + s11 * (d) * (e);
-
-    return p;
-    //  return ip.interpolate(s00, s01, s10, s11, (float) d, (float) e);
+  public static double bilinearInterpolate(final double v00, final double v10,
+      final double v01, final double v11, final double x, final double y) {
+    return v00 * (1 - x) * (1 - y)
+        + v10 * (x) * (1 - y)
+        + v01 * (1 - x) * (y)
+        + v11 * (x) * (y);
   }
 
   @Override
