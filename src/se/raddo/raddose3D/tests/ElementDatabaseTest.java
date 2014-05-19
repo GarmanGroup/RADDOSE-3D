@@ -1,6 +1,6 @@
 package se.raddo.raddose3D.tests;
 
-import org.junit.Assert;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import se.raddo.raddose3D.Element;
