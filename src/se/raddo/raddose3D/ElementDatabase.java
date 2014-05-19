@@ -112,25 +112,18 @@ public class ElementDatabase {
   protected ElementDatabase() {
     elements = new HashMap<Object, Element>();
 
-    BufferedReader br = null;
-    InputStreamReader isr = null;
-    try {
-//    InputStream is = getClass().getResourceAsStream(MUCALC_FILE);
-      FileInputStream is = new FileInputStream(MUCALC_FILE);
-      isr = new InputStreamReader(is);
-      br = new BufferedReader(isr);
-    } catch (FileNotFoundException e) {
-      // give up
-      System.out.println("Cannot find atom library file. Have you deleted it?");
+    final InputStreamReader isr = locateConstantsFile();
+    final BufferedReader br = new BufferedReader(isr);
 
-      e.printStackTrace();
-      return;
-    } // Read in constants file, consider some kind of error checking
-
-    String line;
-    int totalLines = 0;
-    Map<DatabaseFields, Double> einfo;
+    // Read in constants file, consider some kind of error checking
     try {
+      int totalLines = 0;
+
+      String line;
+      String[] components;
+
+      Map<DatabaseFields, Double> elementInfo;
+
       while ((line = br.readLine()) != null) {
         totalLines++;
         // ignore commented out lines.
@@ -139,7 +132,7 @@ public class ElementDatabase {
         }
 
         // array containing all those numbers from the calculator file
-        String[] components = line.split("\t", -1);
+        components = line.split("\t", -1);
 
         for (int j = 0; j < components.length; j++) {
           // set components to -1 if they're empty, because
@@ -155,42 +148,57 @@ public class ElementDatabase {
         // as listed in the constants file.
 
         try {
-          einfo = new HashMap<DatabaseFields, Double>();
+          elementInfo = new HashMap<DatabaseFields, Double>();
           for (DatabaseFields df : DatabaseFields.values()) {
-            einfo.put(df, new Double(components[df.fieldNumber()]));
+            elementInfo.put(df, new Double(components[df.fieldNumber()]));
           }
 
           int atomicNumber = Integer.valueOf(components[ATOMIC_NUMBER]);
 
           Element el =
-              new Element(components[ELEMENT_NAME], atomicNumber, einfo);
+              new Element(components[ELEMENT_NAME], atomicNumber, elementInfo);
           elements.put(components[ELEMENT_NAME].toLowerCase(), el);
           elements.put(atomicNumber, el);
         } catch (NumberFormatException e) {
-          System.out.println("Could not parse line " + totalLines);
+          System.err.println("Could not parse line " + totalLines
+              + " of element database file " + MUCALC_FILE);
           e.printStackTrace();
         }
       }
-    } catch (NumberFormatException e) {
-      e.printStackTrace();
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
 
-    try {
       br.close();
+      isr.close();
     } catch (IOException e) {
-      e.printStackTrace();
+      throw new RuntimeException("Error accessing element database file "
+          + MUCALC_FILE, e);
     }
+  }
 
-    if (isr != null) {
+  /**
+   * Try to locate MUCALC_FILE. This may be in the class path (ie. within a .jar
+   * file), or in the file system.
+   * 
+   * @return
+   *         InputStreamReader pointing to the correct resource.
+   * @throws RuntimeException
+   *           If the file could not be found.
+   */
+  private InputStreamReader locateConstantsFile() {
+    // Try to find it within class path;
+    InputStream is = getClass().getResourceAsStream("/" + MUCALC_FILE);
+
+    if (is == null) {
+      // If it is not within the class path, try via the file system.
       try {
-        isr.close();
-      } catch (IOException e1) {
-        // TODO Auto-generated catch block
-        e1.printStackTrace();
+        is = new FileInputStream(MUCALC_FILE);
+      } catch (FileNotFoundException e) {
+        // give up
+        throw new RuntimeException("Cannot find element database file "
+            + MUCALC_FILE, e);
       }
     }
+
+    return new InputStreamReader(is);
   }
 
   /**
