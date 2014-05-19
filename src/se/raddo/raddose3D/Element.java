@@ -34,17 +34,17 @@ public class Element {
    * List of absorption edges.
    */
   private enum AbsorptionEdge {
-    /** innermost electron shell, 1 shell */
+    /** innermost electron shell, 1 shell. */
     K,
-    /** 2 shell */
+    /** 2 shell. */
     L,
-    /** 3 shell */
+    /** 3 shell. */
     M,
-    /** 4 shell */
+    /** 4 shell. */
     N,
-    /** Coherent scattering polynomial coefficients */
+    /** Coherent scattering polynomial coefficients. */
     C,
-    /** Incoherent scattering polynomial coefficients */
+    /** Incoherent scattering polynomial coefficients. */
     I
   }
 
@@ -57,7 +57,7 @@ public class Element {
   /** LJ_2 variable from Fortran, used to correct atomic elements < 29 Z. */
   private static final double LJ_2                      = 1.41;
 
-  /** Light/heavy element threshold. (l<=x<h) */
+  /** Light/heavy element threshold, 29 is treated as light atom. */
   public static final int     LIGHT_ATOM_MAX_NUM        = 29;
 
   /** Absorption edge room for error. */
@@ -76,7 +76,14 @@ public class Element {
      * scattering.
      */
     PHOTOELECTRIC,
-    COHERENT, TOTAL
+    /**
+     * Cross-section for coherent (elastic) scattering.
+     */
+    COHERENT,
+    /**
+     * Attenuation cross-section.
+     */
+    TOTAL
   }
 
   /**
@@ -223,11 +230,6 @@ public class Element {
   public Map<CrossSection, Double> calculateMu(final double energy) {
     Double absorptionEdgeK =
         elementData.get(ElementDatabase.DatabaseFields.EDGE_K);
-    Double absorptionEdgeL =
-        elementData.get(ElementDatabase.DatabaseFields.EDGE_L);
-    Double absorptionEdgeM =
-        elementData.get(ElementDatabase.DatabaseFields.EDGE_M);
-
     if (energy < absorptionEdgeK
         && energy > absorptionEdgeK - ABSORPTION_EDGE_TOLERANCE) {
       throw new RuntimeException(
@@ -235,6 +237,9 @@ public class Element {
               + elementName);
       // TODO: How does Fortran deal with this?
     }
+
+    Double absorptionEdgeL =
+        elementData.get(ElementDatabase.DatabaseFields.EDGE_L);
     if (energy < absorptionEdgeL
         && energy > absorptionEdgeL - ABSORPTION_EDGE_TOLERANCE) {
       throw new RuntimeException(
@@ -242,6 +247,9 @@ public class Element {
               + elementName);
       // TODO: How does Fortran deal with this?
     }
+
+    Double absorptionEdgeM =
+        elementData.get(ElementDatabase.DatabaseFields.EDGE_M);
     if (energy < absorptionEdgeM
         && energy > absorptionEdgeM - ABSORPTION_EDGE_TOLERANCE) {
       throw new RuntimeException(
@@ -251,7 +259,6 @@ public class Element {
     }
 
     double bax = 0;
-
     if (energy > absorptionEdgeK) {
       bax = baxForEdge(energy, AbsorptionEdge.K);
     } else if (energy < absorptionEdgeK && energy > absorptionEdgeL) {
