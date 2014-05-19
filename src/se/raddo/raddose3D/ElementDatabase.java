@@ -112,8 +112,8 @@ public class ElementDatabase {
   protected ElementDatabase() {
     elements = new HashMap<Object, Element>();
 
-    final InputStreamReader isr = locateConstantsFile();
-    final BufferedReader br = new BufferedReader(isr);
+    InputStreamReader isr = locateConstantsFile();
+    BufferedReader br = new BufferedReader(isr);
 
     // Read in constants file, consider some kind of error checking
     try {
@@ -133,15 +133,15 @@ public class ElementDatabase {
 
         // array containing all those numbers from the calculator file
         components = line.split("\t", -1);
-
-        for (int j = 0; j < components.length; j++) {
-          // set components to -1 if they're empty, because
-          // otherwise Java gets upset.
-          String component = components[j];
-          if ("".equals(component)) {
-            components[j] = "-1";
-          }
-        }
+//
+//        for (int j = 0; j < components.length; j++) {
+//          // set components to -1 if they're empty, because
+//          // otherwise Java gets upset.
+//          String component = components[j];
+//          if ("".equals(component)) {
+//            components[j] = "-1";
+//          }
+//        }
 
         // Setting all the properties of the new atom.
         // component[x] where the values of x are in order
@@ -183,7 +183,7 @@ public class ElementDatabase {
    * @throws RuntimeException
    *           If the file could not be found.
    */
-  private InputStreamReader locateConstantsFile() {
+  private InputStreamReader locateConstantsFile() throws RuntimeException {
     // Try to find it within class path;
     InputStream is = getClass().getResourceAsStream("/" + MUCALC_FILE);
 
