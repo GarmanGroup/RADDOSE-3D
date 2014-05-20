@@ -114,6 +114,7 @@ public class ElementDatabase {
    * @throws IOException
    *           The constant file could not be found or accessed.
    */
+  @SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
   protected ElementDatabase() throws IOException {
     elements = new HashMap<Object, Element>();
 
@@ -140,7 +141,7 @@ public class ElementDatabase {
       // component[x] where the values of x are in order
       // as listed in the constants file.
 
-      int atomicNumber = Integer.valueOf(components[ATOMIC_NUMBER]);
+      int atomicNumber = Integer.parseInt(components[ATOMIC_NUMBER]);
 
       elementInfo.clear();
       for (DatabaseFields df : DatabaseFields.values()) {
