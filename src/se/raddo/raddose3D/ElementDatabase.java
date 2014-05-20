@@ -110,64 +110,55 @@ public class ElementDatabase {
    * constant file and creates the element map.
    * To obtain an instance of the ElementDatabase class, call the getInstance()
    * function.
+   * 
+   * @throws IOException
+   *           The constant file could not be found or accessed.
    */
-  protected ElementDatabase() {
+  protected ElementDatabase() throws IOException {
     elements = new HashMap<Object, Element>();
 
-    InputStreamReader isr;
-    try {
-      isr = locateConstantsFile();
-    } catch (IOException e) {
-      throw new RuntimeException("Error accessing element database file "
-          + MUCALC_FILE, e);
-    }
-
+    InputStreamReader isr = locateConstantsFile();
     BufferedReader br = new BufferedReader(isr);
 
     // Read in constants file, consider some kind of error checking
-    try {
-      String line;
-      String[] components;
+    String line;
+    String[] components;
 
-      Map<DatabaseFields, Double> elementInfo =
-          new HashMap<DatabaseFields, Double>();
+    Map<DatabaseFields, Double> elementInfo =
+        new HashMap<DatabaseFields, Double>();
 
-      while ((line = br.readLine()) != null) {
-        // ignore commented out lines.
-        if (Character.toString(line.charAt(0)).equals("#")) {
-          continue;
-        }
-
-        // array containing all those numbers from the calculator file
-        components = line.split("\t", -1);
-
-        // Setting all the properties of the new atom.
-        // component[x] where the values of x are in order
-        // as listed in the constants file.
-
-        int atomicNumber = Integer.valueOf(components[ATOMIC_NUMBER]);
-
-        elementInfo.clear();
-        for (DatabaseFields df : DatabaseFields.values()) {
-          if ("".equals(components[df.fieldNumber()])) {
-            elementInfo.put(df, null);
-          } else {
-            elementInfo.put(df, Double.valueOf(components[df.fieldNumber()]));
-          }
-        }
-
-        Element elem = new Element(components[ELEMENT_NAME], atomicNumber,
-            elementInfo);
-        elements.put(components[ELEMENT_NAME].toLowerCase(), elem);
-        elements.put(atomicNumber, elem);
+    while ((line = br.readLine()) != null) {
+      // ignore commented out lines.
+      if (Character.toString(line.charAt(0)).equals("#")) {
+        continue;
       }
 
-      br.close();
-      isr.close();
-    } catch (IOException e) {
-      throw new RuntimeException("Error accessing element database file "
-          + MUCALC_FILE, e);
+      // array containing all those numbers from the calculator file
+      components = line.split("\t", -1);
+
+      // Setting all the properties of the new atom.
+      // component[x] where the values of x are in order
+      // as listed in the constants file.
+
+      int atomicNumber = Integer.valueOf(components[ATOMIC_NUMBER]);
+
+      elementInfo.clear();
+      for (DatabaseFields df : DatabaseFields.values()) {
+        if ("".equals(components[df.fieldNumber()])) {
+          elementInfo.put(df, null);
+        } else {
+          elementInfo.put(df, Double.valueOf(components[df.fieldNumber()]));
+        }
+      }
+
+      Element elem = new Element(components[ELEMENT_NAME], atomicNumber,
+          elementInfo);
+      elements.put(components[ELEMENT_NAME].toLowerCase(), elem);
+      elements.put(atomicNumber, elem);
     }
+
+    br.close();
+    isr.close();
   }
 
   /**
@@ -204,7 +195,12 @@ public class ElementDatabase {
   @SuppressWarnings("PMD.AvoidSynchronizedAtMethodLevel")
   public static synchronized ElementDatabase getInstance() {
     if (singleton == null) {
-      singleton = new ElementDatabase();
+      try {
+        singleton = new ElementDatabase();
+      } catch (IOException e) {
+        throw new RuntimeException("Error accessing element database file "
+            + MUCALC_FILE, e);
+      }
     }
     return singleton;
   }
