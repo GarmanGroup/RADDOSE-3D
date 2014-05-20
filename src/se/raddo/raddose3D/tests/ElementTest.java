@@ -36,8 +36,9 @@ public class ElementTest {
     compareResults(s, 2.3, 262.987366, 2.34494638, 265.363983);
     compareResults(s, 2.4, 233.32811, 2.30482531, 235.666229);
     compareResults(s, 2.4719, 214.701355, 2.27591038, 217.011719);
-    compareResults(s, 2.4721, 2217.96924 + 0.001, 2.27582908, 2220.2793); 
-      // probably a quantization error on the website
+    compareResults(s, 2.4721,
+        2217.96924 + 0.001, 2.27582908, 2220.2793 + 0.001);
+    // probably a quantization error of the website scripts
     compareResults(s, 2.5, 2156.88818, 2.26461291, 2159.18774);
     compareResults(s, 5, 349.58316, 1.44702506, 351.098572);
     compareResults(s, 10, 48.4815712, 0.716733396, 49.3056908);
