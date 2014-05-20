@@ -272,14 +272,6 @@ public final class RD3D {
     }
 
     try {
-      Writer w = new WriterFile(prefix + "FluencePerDoseHistCSV.csv");
-      outputs.add(of.createOutputSimple("FluencePerDoseHistCSV", w));
-    } catch (IOException e) {
-      e.printStackTrace();
-      System.err.println("Could not initialize OutputFluencePerDoseHistCSV");
-    }
-
-    try {
       Writer w = new WriterFile(prefix + "DoseState.R");
       outputs.add(of.createOutputSimple("FinalDoseStateR", w));
     } catch (IOException e) {
@@ -319,7 +311,6 @@ public final class RD3D {
     System.out.println("       -o SummaryCSV:SummaryCSV.csv");
     System.out.println("       -o Summary:Summary.txt,-");
     System.out.println("       -o DoseStateCSV:DoseState.csv");
-    System.out.println("       -o fluencehist:FluencePerDoseHistCSV.csv");
 
     System.out.println();
     System.out
