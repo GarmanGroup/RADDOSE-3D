@@ -6,7 +6,15 @@ public abstract class CoefCalc {
   @Override
   public abstract String toString();
 
-  // TODO: Can the coefficients ever be dependent on the wedge?
+  /**
+   * Calculate cross-sections for the new Wedge/Beam scenario.
+   * 
+   * @param w
+   *          Wedge object
+   *          TODO: Can the coefficients ever be dependent on the wedge?
+   * @param b
+   *          Beam object
+   */
   public abstract void updateCoefficients(Wedge w, Beam b);
 
   /**
