@@ -258,7 +258,7 @@ public class CoefCalcCompute extends CoefCalc {
    * @return elastic coefficient
    */
   @Override
-  public double getElasCoef() {
+  public double getElasticCoefficient() {
     return elasCoeff;
   }
 

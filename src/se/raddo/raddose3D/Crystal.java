@@ -328,7 +328,7 @@ public abstract class Crystal {
         // (= 1e-18/1e3) / [volume (um^-3) *density (g/ml)]
         * 1e-6; // MGy
     final double fluenceToElasticFactor = -1
-        * Math.expm1(-1 * coefCalc.getElasCoef() / getCrystalPixPerUM())
+        * Math.expm1(-1 * coefCalc.getElasticCoefficient() / getCrystalPixPerUM())
         // exposure for the Voxel (J) * fraction scattered by the voxel
         //   = J scattered
         / (beam.getPhotonEnergy() * Beam.KEVTOJOULES);

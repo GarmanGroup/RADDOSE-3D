@@ -305,7 +305,7 @@ public class CoefCalcRaddose extends CoefCalc {
   }
 
   @Override
-  public double getElasCoef() {
+  public double getElasticCoefficient() {
     return elasCoeff;
   }
 

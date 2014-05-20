@@ -5,10 +5,6 @@ package se.raddo.raddose3D;
  */
 
 public abstract class CoefCalc {
-  public abstract double getAbsorptionCoefficient();
-
-  public abstract double getAttenuationCoefficient();
-
   public abstract double getDensity();
 
   @Override
@@ -16,5 +12,9 @@ public abstract class CoefCalc {
 
   public abstract void updateCoefficients(Wedge w, Beam b);
 
-  public abstract double getElasCoef();
+  public abstract double getAbsorptionCoefficient();
+
+  public abstract double getAttenuationCoefficient();
+
+  public abstract double getElasticCoefficient();
 }

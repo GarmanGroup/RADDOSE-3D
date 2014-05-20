@@ -51,7 +51,7 @@ public class CoefCalcAverage extends CoefCalc {
   }
 
   @Override
-  public double getElasCoef() {
+  public double getElasticCoefficient() {
     return ELASTIC_COEFFICIENT;
   }
 
