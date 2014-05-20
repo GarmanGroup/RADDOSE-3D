@@ -241,12 +241,14 @@ public class Element {
         elementData.get(ElementDatabase.DatabaseFields.EDGE_L);
     Double absorptionEdgeM =
         elementData.get(ElementDatabase.DatabaseFields.EDGE_M);
-    if ((energy < absorptionEdgeK && energy > absorptionEdgeK
-        - ABSORPTION_EDGE_TOLERANCE)
-        || (energy < absorptionEdgeL && energy > absorptionEdgeL
-            - ABSORPTION_EDGE_TOLERANCE)
-        || (energy < absorptionEdgeM && energy > absorptionEdgeM
-            - ABSORPTION_EDGE_TOLERANCE)) {
+
+    if ((absorptionEdgeK != null && energy < absorptionEdgeK
+        && energy > absorptionEdgeK - ABSORPTION_EDGE_TOLERANCE)
+        || (absorptionEdgeL != null && energy < absorptionEdgeL
+        && energy > absorptionEdgeL - ABSORPTION_EDGE_TOLERANCE)
+        || (absorptionEdgeM != null && energy < absorptionEdgeM
+        && energy > absorptionEdgeM - ABSORPTION_EDGE_TOLERANCE)) {
+
       System.err.println("Warning: Energy is close to absorption edge of "
           + elementName);
     }
