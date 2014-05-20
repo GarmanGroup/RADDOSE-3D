@@ -14,7 +14,7 @@ import se.raddo.raddose3D.ElementDatabase.DatabaseFields;
  * http://cars9.uchicago.edu/mcbook/
  */
 public class ElementTest {
-  
+
   @Test
   public void checkElement() {
     Element s = new Element("S", 16, getSulphur());
@@ -27,7 +27,7 @@ public class ElementTest {
 
     sulphurTests(s);
   }
-  
+
   public void sulphurTests(final Element s) {
     compareResults(s, 1.1, 1978.71497, 2.62428641, 1981.35059);
     compareResults(s, 1.2, 1568.09387, 2.63965917, 1570.74646);
@@ -35,6 +35,8 @@ public class ElementTest {
     compareResults(s, 2.1, 339.237946, 2.42386913, 341.690186);
     compareResults(s, 2.3, 262.987366, 2.34494638, 265.363983);
     compareResults(s, 2.4, 233.32811, 2.30482531, 235.666229);
+    compareResults(s, 2.4719, 214.701355, 2.27591038, 217.011719);
+    compareResults(s, 2.4721, 2217.96924, 2.27582908, 2220.2793);
     compareResults(s, 2.5, 2156.88818, 2.26461291, 2159.18774);
     compareResults(s, 5, 349.58316, 1.44702506, 351.098572);
     compareResults(s, 10, 48.4815712, 0.716733396, 49.3056908);
