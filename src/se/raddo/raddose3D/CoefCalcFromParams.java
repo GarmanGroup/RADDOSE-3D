@@ -7,15 +7,17 @@ import java.util.List;
 
 /**
  * @author magd3052
- *
  */
 public class CoefCalcFromParams extends CoefCalcCompute {
-
+  /**
+   * Right angle.
+   */
+  private static final double RIGHT_ANGLE = 90;
 
   /**
    * Compute results and put them in local variables absCoeff, attCoeff,
    * elasCoeff and density.
-   *
+   * 
    * @param cellA cell dimension a
    * @param cellB cell dimension b
    * @param cellC cell dimension c
@@ -56,9 +58,9 @@ public class CoefCalcFromParams extends CoefCalcCompute {
     if (gamma == null) {
       gamma = RIGHT_ANGLE;
     }
-    
+
     Double sf = -1.0;
-    
+
     if (solventFraction != null) {
       sf = solventFraction;
     }
@@ -70,7 +72,6 @@ public class CoefCalcFromParams extends CoefCalcCompute {
         heavySolutionConcNames, heavySolutionConcNums);
 
   }
-  
 
   /**
    * Calculate the macromolecular mass (etc.) and add the appropriate numbers of
@@ -165,8 +166,9 @@ public class CoefCalcFromParams extends CoefCalcCompute {
     incrementMacromolecularOccurrence(hydrogen, HYDROGENS_PER_RNA_NUCLEOTIDE
         * this.getNumRNA()
         * getNumMonomers());
-    incrementMacromolecularOccurrence(phosphorus, PHOSPHORUSES_PER_RNA_NUCLEOTIDE
-        * this.getNumRNA() * getNumMonomers());
+    incrementMacromolecularOccurrence(phosphorus,
+        PHOSPHORUSES_PER_RNA_NUCLEOTIDE
+            * this.getNumRNA() * getNumMonomers());
 
     // DNA atoms: for every NTP
     // add 11.75 H + 9.75 C + 4 N + 6 O + 1 P.
@@ -183,8 +185,9 @@ public class CoefCalcFromParams extends CoefCalcCompute {
     incrementMacromolecularOccurrence(hydrogen, HYDROGENS_PER_DNA_NUCLEOTIDE
         * getNumDNA()
         * getNumMonomers());
-    incrementMacromolecularOccurrence(phosphorus, PHOSPHORUSES_PER_DNA_NUCLEOTIDE
-        * getNumDNA() * getNumMonomers());
+    incrementMacromolecularOccurrence(phosphorus,
+        PHOSPHORUSES_PER_DNA_NUCLEOTIDE
+            * getNumDNA() * getNumMonomers());
 
   }
 }

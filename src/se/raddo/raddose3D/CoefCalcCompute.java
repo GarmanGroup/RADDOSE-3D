@@ -21,11 +21,6 @@ public class CoefCalcCompute extends CoefCalc {
                                      cellVolume;
 
   /**
-   * Right angle.
-   */
-  protected static final double      RIGHT_ANGLE                     = 90;
-
-  /**
    * Parallel angle.
    */
   protected static final double      PARALLEL_ANGLE                  = 180;
