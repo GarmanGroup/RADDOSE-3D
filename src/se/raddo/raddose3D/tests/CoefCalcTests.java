@@ -7,7 +7,6 @@ import java.util.Map;
 
 import org.testng.annotations.*;
 
-import se.raddo.raddose3D.Assertions;
 import se.raddo.raddose3D.Beam;
 import se.raddo.raddose3D.BeamTophat;
 import se.raddo.raddose3D.CoefCalcFromParams;
@@ -65,7 +64,7 @@ public class CoefCalcTests {
   }
 
   /**
-   * Run an actual scenario and compare to values obtained by RADDOSE2
+   * Run an actual scenario and compare to values obtained from RADDOSE2.
    */
   @Test
   public void testCoefCalcScenario() {
@@ -97,9 +96,17 @@ public class CoefCalcTests {
 
     coefCalc.updateCoefficients(null, b);
 
-    Assertion.equals(coefCalc.getAbsorptionCoefficient(), 1.04,
-        "Absorption Coefficient");
-    Assertion.equals(coefCalc.getAttenuationCoefficient(), 1.095,
-        "Attenuation Coefficient");
+    // Values obtained from RADDOSEv2, http://www.raddo.se/legacy/
+    Assertion.equals(coefCalc.getAbsorptionCoefficient(), 0.001042,
+        "Absorption Coefficient", 0.000005);
+    Assertion.equals(coefCalc.getElasticCoefficient(), 0.000036,
+        "Elastic Coefficient", 0.000005);
+    Assertion.equals(coefCalc.getAttenuationCoefficient(), 0.001095,
+        "Attenuation Coefficient", 0.000005);
+  }
+
+  public static void main(String[] s) {
+    CoefCalcTests c = new CoefCalcTests();
+    c.testCoefCalcScenario();
   }
 }
