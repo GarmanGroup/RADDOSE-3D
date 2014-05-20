@@ -67,7 +67,7 @@ public class CoefCalcTests {
    * Run an actual scenario and compare to values obtained from RADDOSE2.
    */
   @Test
-  public void testCoefCalcScenario() {
+  public void testCoefCalcScenario1() {
     List<String> heavyProtAtomNames = new ArrayList<String>();
     List<Double> heavyProtAtomNums = new ArrayList<Double>();
 
@@ -105,8 +105,51 @@ public class CoefCalcTests {
         "Attenuation Coefficient", 0.000005);
   }
 
-  public static void main(String[] s) {
-    CoefCalcTests c = new CoefCalcTests();
-    c.testCoefCalcScenario();
+  /**
+   * Run an actual scenario and compare to values obtained from RADDOSE2.
+   */
+  @Test
+  public void testCoefCalcScenario2() {
+    List<String> heavyProtAtomNames = new ArrayList<String>();
+    List<Double> heavyProtAtomNums = new ArrayList<Double>();
+
+    List<String> heavySolutionConcNames = new ArrayList<String>();
+    List<Double> heavySolutionConcNums = new ArrayList<Double>();
+
+    heavyProtAtomNames.add("S");
+    heavyProtAtomNames.add("Se");
+    heavyProtAtomNames.add("Cu");
+    heavyProtAtomNums.add(4.0);
+    heavyProtAtomNums.add(2.0);
+    heavyProtAtomNums.add(200.0);
+
+    heavySolutionConcNames.add("Na");
+    heavySolutionConcNames.add("Cl");
+    heavySolutionConcNames.add("As");
+    heavySolutionConcNums.add(500.);
+    heavySolutionConcNums.add(200.);
+    heavySolutionConcNums.add(200.);
+
+    CoefCalcFromParams coefCalc = new CoefCalcFromParams(
+        79.2, 79.2, 38.1, 70.0, 70.0, 50.0, 4, 200, 0, 0,
+        heavyProtAtomNames, heavyProtAtomNums,
+        heavySolutionConcNames, heavySolutionConcNums, 0.);
+
+    Map<Object, Object> beamProperties = new HashMap<Object, Object>();
+    beamProperties.put(Beam.BEAM_COLL_H, 80.);
+    beamProperties.put(Beam.BEAM_COLL_V, 80.);
+    beamProperties.put(Beam.BEAM_FLUX, 9.281e8);
+    beamProperties.put(Beam.BEAM_ENERGY, 14.05);
+    Beam b = new BeamTophat(beamProperties);
+
+    coefCalc.updateCoefficients(null, b);
+
+    // Values obtained from RADDOSEv2, http://www.raddo.se/legacy/
+    Assertion.equals(coefCalc.getAbsorptionCoefficient(), 0.004675,
+        "Absorption Coefficient", 0.000005);
+    Assertion.equals(coefCalc.getElasticCoefficient(), 0.000068,
+        "Elastic Coefficient", 0.000005);
+    Assertion.equals(coefCalc.getAttenuationCoefficient(), 0.004769,
+        "Attenuation Coefficient", 0.000005);
   }
 }
