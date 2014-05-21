@@ -8,14 +8,26 @@
   <pathelement location="bin"/>
  </path>
 
- <target name="build">
-  <!-- Get subversion revision number -->
-  <exec executable="svnversion" outputproperty="repository.revision"/>
+ <!-- Get git tree depth -->
+ <exec executable="git" outputproperty="repository.revision">
+  <arg value="rev-list" />
+  <arg value="--count" />
+  <arg value="HEAD" />
+ </exec>
+
+ <target name="versionize">
+  <echo message="Raddose3D git repository age is ${repository.revision}" />
+
+  <!-- Write tree depth to Version.java -->
   <exec executable="/bin/sed" failonerror="false">
-    <arg value="-i"/>
-    <arg value="s/?---?/${repository.revision}/g"/>
-    <arg value="src/se/raddo/raddose3D/Version.java"/>
+   <arg value="-i"/>
+   <arg value="s/?---?/${repository.revision}/g"/>
+   <arg value="src/se/raddo/raddose3D/Version.java"/>
   </exec>
+ </target>
+
+ <target name="build">
+  <antcall target="versionize"/>
  	
   <!-- Standard compile run, no warnings -->
   <mkdir dir="bin"/>
@@ -28,13 +40,7 @@
  </target>
 
  <target name="build-debug">
-  <!-- Get subversion revision number -->
-  <exec executable="svnversion" outputproperty="repository.revision"/>
-  <exec executable="/bin/sed" failonerror="false">
-    <arg value="-i"/>
-    <arg value="s/?---?/${repository.revision}/g"/>
-    <arg value="src/se/raddo/raddose3D/Version.java"/>
-  </exec>
+  <antcall target="versionize"/>
 
   <!-- Standard compile run, no warnings -->
   <mkdir dir="bin"/>
@@ -47,13 +53,9 @@
  </target>
 
  <target name="build-warn">
-  <!-- Compile, do show warnings, insist on version number -->
-  <exec executable="svnversion" outputproperty="repository.revision"/>
-  <exec executable="/bin/sed" failonerror="true">
-    <arg value="-i"/>
-    <arg value="s/?---?/${repository.revision}/g"/>
-    <arg value="src/se/raddo/raddose3D/Version.java"/>
-  </exec>
+  <antcall target="versionize"/>
+
+  <!-- Compile, do show warnings -->
   <mkdir dir="bin"/>
   <javac srcdir="src" destdir="bin"
          debug="false" includes="**/*.java" includeantruntime="false"
@@ -66,13 +68,9 @@
  </target>
 
  <target name="build-debug-warn">
-  <!-- Compile, do show warnings, insist on version number -->
-  <exec executable="svnversion" outputproperty="repository.revision"/>
-  <exec executable="/bin/sed" failonerror="true">
-    <arg value="-i"/>
-    <arg value="s/?---?/${repository.revision}/g"/>
-    <arg value="src/se/raddo/raddose3D/Version.java"/>
-  </exec>
+  <antcall target="versionize"/>
+
+  <!-- Compile, do show warnings -->
   <mkdir dir="bin"/>
   <javac srcdir="src" destdir="bin"
          debug="true" includes="**/*.java" includeantruntime="false"
@@ -124,8 +122,6 @@
  </target>
 
  <target name="jar-deploy">
-  <!-- Get subversion revision number -->
-  <exec executable="svnversion" outputproperty="repository.revision"/>
   <echo message="Deploy jar - revision is ${repository.revision}" />
 
   <copy file="raddose3d.jar" tofile="/raddose/jars/raddose3d-${repository.revision}.jar" preservelastmodified="true"/>
@@ -139,28 +135,6 @@
 
  <target name="javadoc">
   <!-- Create Javadoc documentation in folder doc -->
-
-  <!-- Get subversion revision number. -->
-  <exec executable="svnversion" outputproperty="repository.revision">
-
-   <!-- Specify '-c' to get last changed rather than current revisions. -->
-   <arg value="-c"/>
-
-   <!-- Get version on src subdirectory -->
-   <arg value="src"/>
-
-   <!-- Use redirector/filterchain to parse output.
-        svnversion -c will return output in format [initial]:[current]
-        and we want to strip off [initial]: -->
-
-   <redirector>
-    <outputfilterchain>
-     <tokenfilter>
-      <replaceregex pattern="[0-9]+\:" replace="" />
-     </tokenfilter>
-    </outputfilterchain>
-   </redirector>
-  </exec>
 
   <tstamp>
     <format property="timestamp" pattern="dd.MM.yyyy HH:mm:ss"/>
