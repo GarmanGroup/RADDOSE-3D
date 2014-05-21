@@ -2,5 +2,11 @@
     <Match>
       <Bug pattern="UL_UNRELEASED_LOCK_EXCEPTION_PATH" /> <!-- seems buggy -->
     </Match>
+    
+    <Match>
+      <Class name="se.raddo.raddose3D.tests.+" />
+      <Bug pattern="NP" />
+       <!-- Dangerous null pointer stuff is allowed valid within tests -->
+    </Match>
 </FindBugsFilter>
     
