@@ -91,6 +91,10 @@
   <jar destfile="raddose3d.jar" basedir="bin" excludes="se/raddo/raddose3D/tests/** se/raddo/raddose3D/server/**">
    <zipfileset includes="**/*.class" src="lib/antlr-3.4/antlr-3.4-cutdown.jar"/>
    <zipfileset includes="**/*.class" src="lib/commons-math3-3.0/commons-math3-3.0.jar"/>
+   <fileset dir=".">
+    <include name="constants/MuCalcConstants.txt" />
+   </fileset>
+
    <manifest>
     <attribute name="Main-Class" value="se.raddo.raddose3D.RD3D"/>
     <attribute name="Implementation-Vendor" value="E. F. Garman group"/>
@@ -111,6 +115,9 @@
    <!-- do not bundle mysql connector. Users have to install platform dependent binary build.
     <zipfileset includes="**/*.class" src="lib/mysql-connector-java-5.1.22/mysql-connector-java-5.1.22-bin.jar"/>
    -->
+   <fileset dir=".">
+    <include name="constants/MuCalcConstants.txt" />
+   </fileset>
 
    <manifest>
     <attribute name="Main-Class" value="se.raddo.raddose3D.server.RaddoseServer"/>
