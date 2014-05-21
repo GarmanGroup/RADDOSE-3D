@@ -9,8 +9,6 @@ import java.util.List;
 
 /**
  * RADDOSE-3D main class for command line invocation.
- * 
- * @author Markus Gerstel
  */
 public final class RD3D {
   /** Conversion factor for ns/s. */

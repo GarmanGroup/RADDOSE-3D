@@ -9,8 +9,6 @@ import java.util.Map;
  * static images for the web service implementation.
  * A maximum grid size is set to limit the potential impact of a single job
  * on a shared system.
- * 
- * @author Markus Gerstel
  */
 public class OutputFinalDoseStateRPreview implements Output {
 

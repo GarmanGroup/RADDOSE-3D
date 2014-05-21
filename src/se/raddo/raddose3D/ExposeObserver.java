@@ -2,7 +2,7 @@ package se.raddo.raddose3D;
 
 /**
  * Interface for listening in on exposure activity on a crystal. Once registered
- * with an instance of \link{Crystal} the method exposureObservation will be
+ * with an instance of {@link Crystal} the method exposureObservation will be
  * called for each voxel exposure, and after exposure, the method
  * summaryObservation will be called for each voxel.
  */

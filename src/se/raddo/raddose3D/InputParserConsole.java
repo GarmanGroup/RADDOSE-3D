@@ -6,8 +6,6 @@ import java.io.BufferedReader;
 
 /**
  * A parser that reads from STDIN.
- * 
- * @author Markus Gerstel
  */
 public class InputParserConsole extends InputParserString {
 
