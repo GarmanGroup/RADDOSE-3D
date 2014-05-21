@@ -2,8 +2,6 @@ package se.raddo.raddose3D;
 
 /**
  * Forwards all received input to multiple {@link Writer} instances.
- * 
- * @author Markus Gerstel
  */
 public class WriterMultiple implements Writer {
   /** List of Writer instances. */

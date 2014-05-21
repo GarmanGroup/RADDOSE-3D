@@ -2,8 +2,6 @@ package se.raddo.raddose3D;
 
 /**
  * WriterConsole writes all received data to STDOUT.
- * 
- * @author Markus Gerstel
  */
 public class WriterConsole implements Writer {
   /** Text to be written upon close()-call. */
