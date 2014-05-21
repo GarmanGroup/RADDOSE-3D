@@ -4,7 +4,7 @@
     </Match>
     
     <Match>
-      <Class name="se.raddo.raddose3D.tests.+" />
+      <Package name="se.raddo.raddose3D.tests" />
       <Bug code="NP" />
        <!-- Dangerous null pointer stuff is allowed valid within tests -->
     </Match>
