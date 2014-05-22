@@ -21,7 +21,7 @@ public abstract class Writer extends OutputStream {
    * Write a StringBuffer.
    * 
    * @param b
-   *          Stringbuffer to be written
+   *          StringBuffer to be written
    */
   public abstract void write(StringBuffer b);
 
@@ -37,5 +37,11 @@ public abstract class Writer extends OutputStream {
   @Override
   public void write(final int i) {
     write(String.valueOf(Character.toChars(i)));
+  }
+  
+  @Override
+  public void write(final byte[] b) {
+    // Use the string based write method instead of individual write(int) calls
+    write(new String(b));
   }
 }
