@@ -28,6 +28,7 @@ public class WriterString extends Writer {
   @Override
   public void close() {
     readonly = true;
+    data.trimToSize();
   }
 
   /**
