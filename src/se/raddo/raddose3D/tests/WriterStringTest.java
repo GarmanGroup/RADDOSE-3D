@@ -1,5 +1,7 @@
 package se.raddo.raddose3D.tests;
 
+import java.io.PrintWriter;
+
 import org.testng.Assert;
 import org.testng.annotations.*;
 
@@ -46,6 +48,22 @@ public class WriterStringTest {
     Assert.assertTrue(exceptionEncountered);
 
     System.out.println("@Test - testWriterStringAfterClose");
+  }
+
+
+  @Test
+  public void testWriterStringAsOutputStream() {
+    WriterString w = new WriterString();
+    PrintWriter p = new PrintWriter(w);
+
+    p.write("asdf");
+    p.write("");
+    p.write("\n");
+    p.write("bla");
+    p.close();
+
+    Assert.assertEquals(w.getDataString(), "asdf\nbla");
+    System.out.println("@Test - testWriterStringAsOutputStream");
   }
 
 }
