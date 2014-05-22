@@ -6,7 +6,7 @@ import se.raddo.raddose3D.Writer;
  * Dummy writer implementation. Takes all input an discards it.
  * (/dev/null)
  */
-public class WriterDummy implements Writer {
+public class WriterDummy extends Writer {
 
   @Override
   public void write(final String s) {

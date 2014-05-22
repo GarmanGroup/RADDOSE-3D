@@ -4,7 +4,7 @@ package se.raddo.raddose3D;
  * WriterCompress applies ZIP compression to any output, and passes it on to
  * another Writer instance.
  */
-public class WriterCompress implements Writer {
+public class WriterCompress extends Writer {
   /** The Writer class that output should be directed to. */
   private final Writer output;
 

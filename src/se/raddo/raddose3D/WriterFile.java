@@ -8,7 +8,7 @@ import java.io.OutputStreamWriter;
 /**
  * WriterFile writes all received data to a predefined file.
  */
-public class WriterFile implements Writer {
+public class WriterFile extends Writer {
   /** Reference to the output file. */
   private final BufferedWriter outFile;
 
