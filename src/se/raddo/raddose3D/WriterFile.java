@@ -45,6 +45,16 @@ public class WriterFile extends Writer {
   }
 
   @Override
+  public void flush() {
+    try {
+      outFile.flush();
+    } catch (IOException e) {
+      e.printStackTrace();
+      System.err.println("WriterFile: Could not flush file " + outFileName);
+    }
+  }
+
+  @Override
   public void close() {
     try {
       outFile.close();
