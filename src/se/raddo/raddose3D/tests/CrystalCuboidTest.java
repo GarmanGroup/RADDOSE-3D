@@ -186,7 +186,7 @@ public class CrystalCuboidTest {
     }
   }
 
-  @Test
+  @Test(groups = { "advanced" })
   public static void testFindDepth() {
     int xdim = 90;
     int ydim = 74;
