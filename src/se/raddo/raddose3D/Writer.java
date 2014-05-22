@@ -36,6 +36,6 @@ public abstract class Writer extends OutputStream {
 
   @Override
   public void write(final int i) {
-    write(Character.toChars(i % 256).toString());
+    write(String.valueOf(Character.toChars(i)));
   }
 }
