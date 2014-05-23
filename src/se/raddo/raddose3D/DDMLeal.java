@@ -11,7 +11,7 @@ import java.io.IOException;
  * Leal et al. 2012 paper. The paper describes the loss of
  * scattering power of a crystal as a product of the expected
  * intensity, the Debye-waller factor and an empirically derived
- * scale factor. CHECK
+ * scale factor.
  */
 public class DDMLeal implements DDM {
 
