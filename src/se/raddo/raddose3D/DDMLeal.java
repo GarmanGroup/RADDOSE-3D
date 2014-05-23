@@ -18,7 +18,7 @@ public class DDMLeal implements DDM {
   /**
    * Decay parameters used in leal et al. 2012 (eqn 4).
    * The values were found for a cubic crystal of bovine
-   * pancreatic insulin (unpublished)
+   * pancreatic insulin at cryotemperature - 100K (unpublished)
    */
 
   /**
@@ -37,13 +37,13 @@ public class DDMLeal implements DDM {
   private final double gamma = 0.029790991953658;
 
   /**
-   * Printed string to tell user the type of dose decay model being used.
+   * Print string to tell user the type of dose decay model being used.
    *
    * @return Informative string about the dose decay model being used.
    */
   @Override
   public String toString() {
-    return "Dose Decay Model from Leal 2012 used.";
+    return "Dose Decay Model from Leal 2012 is being used.";
   }
 
   /**
