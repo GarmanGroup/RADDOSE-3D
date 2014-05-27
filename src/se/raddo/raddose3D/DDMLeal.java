@@ -8,7 +8,7 @@ import java.io.IOException;
 /**
  * This is a Dose Decay Model class that calculates the Relative
  * Diffraction Efficiency (RDE) according to the model from the
- * Leal et al. 2012 paper. The paper describes the loss of
+ * Leal et al. (2012) paper. The paper describes the loss of
  * scattering power of a crystal as a product of the expected
  * intensity, the Debye-waller factor and an empirically derived
  * scale factor.
@@ -16,9 +16,9 @@ import java.io.IOException;
 public class DDMLeal implements DDM {
 
   /**
-   * Decay parameters used in leal et al. 2012 (eqn 4).
+   * Decay parameters used in Leal et al. (2012) (eqn 4).
    * The values were found for a cubic crystal of bovine
-   * pancreatic insulin (unpublished)
+   * pancreatic insulin (unpublished).
    */
 
   /**
