@@ -64,7 +64,7 @@ public class OutputProgressEstimate implements Output {
     Double angularResolution = wdg.getAngRes();
 
     if (Math.abs(startAngle - endAngle) < angularResolution) {
-      sumWedgeSlices += 100;
+      sumWedgeSlices += Crystal.STATICEXPOSURE;
     } else {
       sumWedgeSlices += (long)
           (Math.abs(endAngle - startAngle) / angularResolution + 1);

@@ -33,6 +33,9 @@ public abstract class Crystal {
   /** Default recommended voxel resolution in voxels/micrometre. */
   protected static final Double  CRYSTAL_RESOLUTION_DEF        = 0.5d;
 
+  /** Number of exposure-steps when crystal is exposed without rotation. */
+  public static final int        STATICEXPOSURE                = 100;
+
   /**
    * Upper voxel limit for default resolution.
    * Resolution will be reduced if voxel number would otherwise exceed this.
@@ -253,7 +256,7 @@ public abstract class Crystal {
     // Set up angles to iterate over.
     double[] angles;
     if (Math.abs(wedge.getStartAng() - wedge.getEndAng()) < wedge.getAngRes()) {
-      angles = new double[100]; // TODO: something clever
+      angles = new double[STATICEXPOSURE]; // TODO: something clever
       for (int i = 0; i < angles.length; i++) {
         angles[i] = wedge.getStartAng();
       }
