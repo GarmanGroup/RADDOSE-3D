@@ -1,5 +1,7 @@
 package se.raddo.raddose3D;
 
+import java.io.IOException;
+
 /**
  * WriterCompress applies ZIP compression to any output, and passes it on to
  * another Writer instance.
@@ -28,6 +30,11 @@ public class WriterCompress extends Writer {
   public void write(StringBuffer b) {
     // TODO Auto-generated method stub
     output.write(b);
+  }
+
+  @Override
+  public void flush() throws IOException {
+    output.flush();
   }
 
   @Override
