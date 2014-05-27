@@ -16,18 +16,18 @@ public class WriterCompress extends Writer {
    * @param w
    *          Writer instance, where the compressed output stream should end up.
    */
-  public WriterCompress(Writer w) {
+  public WriterCompress(final Writer w) {
     output = w;
   }
 
   @Override
-  public void write(String s) {
+  public void write(final String s) {
     // TODO Auto-generated method stub
     output.write(s);
   }
 
   @Override
-  public void write(StringBuffer b) {
+  public void write(final StringBuffer b) {
     // TODO Auto-generated method stub
     output.write(b);
   }

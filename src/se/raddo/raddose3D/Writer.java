@@ -38,7 +38,7 @@ public abstract class Writer extends OutputStream {
   public void write(final int i) {
     write(String.valueOf(Character.toChars(i)));
   }
-  
+
   @Override
   public void write(final byte[] b) {
     // Use the string based write method instead of individual write(int) calls
