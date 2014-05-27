@@ -18,7 +18,7 @@ public class DDMLeal implements DDM {
   /**
    * Decay parameters used in leal et al. 2012 (eqn 4).
    * The values were found for a cubic crystal of bovine
-   * pancreatic insulin at cryotemperature - 100K (unpublished)
+   * pancreatic insulin (unpublished)
    */
 
   /**

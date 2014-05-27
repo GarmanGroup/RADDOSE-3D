@@ -5,8 +5,6 @@ import java.util.Map;
 /**
  * Debugging output module that only writes event notifications to its
  * {@link Writer}.
- * 
- * @author Markus Gerstel
  */
 
 public class OutputEventObserver implements Output {

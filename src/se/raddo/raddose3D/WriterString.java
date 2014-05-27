@@ -2,8 +2,6 @@ package se.raddo.raddose3D;
 
 /**
  * WriterString writes all received data to a string.
- * 
- * @author Markus Gerstel
  */
 public class WriterString implements Writer {
   /** All received data is kept in a Stringbuffer. */

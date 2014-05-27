@@ -4,8 +4,6 @@ import org.antlr.runtime.ANTLRStringStream;
 
 /**
  * A parser that reads from a string.
- * 
- * @author Markus Gerstel
  */
 public class InputParserString extends InputParser {
 

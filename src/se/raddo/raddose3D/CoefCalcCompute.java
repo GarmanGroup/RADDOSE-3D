@@ -7,11 +7,6 @@ import java.util.Map;
 import java.util.Set;
 
 import se.raddo.raddose3D.Element.CrossSection;
-import static java.lang.Math.PI;
-
-/**
- * @author Helen Ginn
- */
 
 public class CoefCalcCompute extends CoefCalc {
   /**
@@ -19,16 +14,6 @@ public class CoefCalcCompute extends CoefCalc {
    */
   private double                     absCoeff, attCoeff, elasCoeff, density,
                                      cellVolume;
-
-  /**
-   * Right angle.
-   */
-  protected static final double      RIGHT_ANGLE                     = 90;
-
-  /**
-   * Parallel angle.
-   */
-  protected static final double      PARALLEL_ANGLE                  = 180;
 
   /**
    * Percentage conversion.
@@ -188,12 +173,6 @@ public class CoefCalcCompute extends CoefCalc {
     solventConcentration = new HashMap<Element, Double>();
   }
 
-  /**
-   * Calculate cross-sections from the associated parser's atom array.
-   * 
-   * @param w Wedge object
-   * @param b Beam object
-   */
   @Override
   public void updateCoefficients(final Wedge w, final Beam b) {
     // density is easy. Loop through all atoms and calculate total mass.
@@ -237,41 +216,21 @@ public class CoefCalcCompute extends CoefCalc {
     elasCoeff = crossSectionCoherent / UNITSPERMILLIUNIT;
   }
 
-  /**
-   * Returns absorption coefficient.
-   * 
-   * @return absorption coefficient
-   */
   @Override
   public double getAbsorptionCoefficient() {
     return absCoeff;
   }
 
-  /**
-   * Returns attenuation coefficient.
-   * 
-   * @return attenuation coefficient
-   */
   @Override
   public double getAttenuationCoefficient() {
     return attCoeff;
   }
 
-  /**
-   * Returns elastic coefficient.
-   * 
-   * @return elastic coefficient
-   */
   @Override
-  public double getElasCoef() {
+  public double getElasticCoefficient() {
     return elasCoeff;
   }
 
-  /**
-   * Returns density coefficient.
-   * 
-   * @return density coefficient
-   */
   @Override
   public double getDensity() {
     return density;
@@ -431,13 +390,14 @@ public class CoefCalcCompute extends CoefCalc {
         - hetatmMass;
 
     // sanity check
+    // TODO: Print to STDERR and/or crash out. 
     if (solventFraction < 0) {
       System.out
           .println("Warning: Solvent mass calculated as a negative number...");
     }
 
-    System.out.println("Solvent fraction determined as " + solventFraction
-        * PERCENTAGE_CONVERSION + "%.");
+    System.out.println(String.format("Solvent fraction determined as %.2f %%.",
+        solventFraction * PERCENTAGE_CONVERSION));
 
     return solventFraction;
   }
@@ -507,24 +467,25 @@ public class CoefCalcCompute extends CoefCalc {
    * @param cellA unit cell dimension a
    * @param cellB unit cell dimension b
    * @param cellC unit cell dimension c
-   * @param cellAlpha unit cell angle alpha
-   * @param cellBeta unit cell angle beta
-   * @param cellGamma unit cell angle gamma
+   * @param cellAlpha unit cell angle alpha in degrees
+   * @param cellBeta unit cell angle beta in degrees
+   * @param cellGamma unit cell angle gamma in degrees
    * @return cell volume in Angstroms cubed.
    */
 
   public double cellVolume(final double cellA, final double cellB,
       final double cellC,
       final double cellAlpha, final double cellBeta, final double cellGamma) {
-    double alpha = cellAlpha * PI / PARALLEL_ANGLE;
-    double beta = cellBeta * PI / PARALLEL_ANGLE;
-    double gamma = cellGamma * PI / PARALLEL_ANGLE;
+    double alpha = Math.toRadians(cellAlpha);
+    double beta = Math.toRadians(cellBeta);
+    double gamma = Math.toRadians(cellGamma);
 
     double ult = 1.0 + 2.0 * Math.cos(alpha) * Math.cos(beta) * Math.cos(gamma)
         - Math.pow(Math.cos(alpha), 2.0) - Math.pow(Math.cos(beta), 2.0)
         - Math.pow(Math.cos(gamma), 2.0);
 
     if (ult < 0.0) {
+      // TODO: Either print warning or crash out.
       System.out
           .println("Warning: error calculating unit cell "
               + "volume - please check inputs.");

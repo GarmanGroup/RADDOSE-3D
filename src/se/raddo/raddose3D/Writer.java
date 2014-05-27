@@ -6,7 +6,7 @@ package se.raddo.raddose3D;
  * different files, strings or other targets. Implementing classes should expect
  * any number of write-calls followed by a single call of the close() method.
  * 
- * @author Markus Gerstel
+ * TODO: Make Writer an abstract class extending OutputStream.
  */
 public interface Writer {
   /**

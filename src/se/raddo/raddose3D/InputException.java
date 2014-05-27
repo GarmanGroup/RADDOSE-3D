@@ -2,10 +2,7 @@ package se.raddo.raddose3D;
 
 /**
  * Exception for errors in the input data.
- * 
- * @author Markus Gerstel
  **/
-
 public class InputException extends Exception {
 
   /** Unique exception identifier. */

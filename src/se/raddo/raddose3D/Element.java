@@ -237,32 +237,20 @@ public class Element {
   public Map<CrossSection, Double> calculateMu(final double energy) {
     Double absorptionEdgeK =
         elementData.get(ElementDatabase.DatabaseFields.EDGE_K);
-    if (energy < absorptionEdgeK
-        && energy > absorptionEdgeK - ABSORPTION_EDGE_TOLERANCE) {
-      throw new IllegalArgumentException(
-          "Warning: using an energy close to middle of K edge of "
-              + elementName);
-      // TODO: How does Fortran deal with this?
-    }
-
     Double absorptionEdgeL =
         elementData.get(ElementDatabase.DatabaseFields.EDGE_L);
-    if (energy < absorptionEdgeL
-        && energy > absorptionEdgeL - ABSORPTION_EDGE_TOLERANCE) {
-      throw new IllegalArgumentException(
-          "Warning: using an energy close to middle of L edge of "
-              + elementName);
-      // TODO: How does Fortran deal with this?
-    }
-
     Double absorptionEdgeM =
         elementData.get(ElementDatabase.DatabaseFields.EDGE_M);
-    if (energy < absorptionEdgeM
-        && energy > absorptionEdgeM - ABSORPTION_EDGE_TOLERANCE) {
-      throw new IllegalArgumentException(
-          "Warning: using an energy close to middle of M edge of "
-              + elementName);
-      // TODO: How does Fortran deal with this?
+
+    if ((absorptionEdgeK != null && energy < absorptionEdgeK
+        && energy > absorptionEdgeK - ABSORPTION_EDGE_TOLERANCE)
+        || (absorptionEdgeL != null && energy < absorptionEdgeL
+        && energy > absorptionEdgeL - ABSORPTION_EDGE_TOLERANCE)
+        || (absorptionEdgeM != null && energy < absorptionEdgeM
+        && energy > absorptionEdgeM - ABSORPTION_EDGE_TOLERANCE)) {
+
+      System.err.println("Warning: Energy is close to absorption edge of "
+          + elementName);
     }
 
     double bax = 0;

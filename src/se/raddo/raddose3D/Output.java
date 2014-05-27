@@ -4,8 +4,6 @@ package se.raddo.raddose3D;
  * Classes implementing this interface can subscribe to {@link Experiment} and
  * receive events such as {@link Crystal} and {@link Beam} initialisation and
  * {@link Wedge} exposure.
- * 
- * @author Markus Gerstel
  */
 
 public interface Output {

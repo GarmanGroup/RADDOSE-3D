@@ -11,6 +11,7 @@ import java.util.Map;
  * 
  * @author Oliver Zeldin
  */
+// This file is not part of the RD3D release
 
 public class OutputFluencePerDoseHistCSV implements Output, ExposeObserver {
   /** Default number of bins for the fluence per dose histogram. */

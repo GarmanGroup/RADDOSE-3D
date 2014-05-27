@@ -5,8 +5,6 @@ import org.antlr.runtime.ANTLRFileStream;
 
 /**
  * A parser that reads from a single file.
- * 
- * @author Markus Gerstel
  */
 public class InputParserFile extends InputParser {
 

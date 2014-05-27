@@ -211,7 +211,7 @@ public class CrystalCuboidTest {
     // beam is along z axis. So when the crystal is not rotated, the 
     // maximum depth along the z axis should be zdim um (length of crystal).
 
-    double[] crystCoords = new double[3];
+    double[] crystCoords;
     // this coordinate is in voxel coordinates.
     // this translates to bottom left corner of the crystal
     // in crystCoords (-45, -37, -20)

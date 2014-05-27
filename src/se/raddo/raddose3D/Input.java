@@ -2,8 +2,6 @@ package se.raddo.raddose3D;
 
 /**
  * generic interface for all experimental data providers.
- * 
- * @author Markus Gerstel
  */
 public interface Input {
 

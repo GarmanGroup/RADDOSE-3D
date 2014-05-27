@@ -2,8 +2,6 @@ package se.raddo.raddose3D;
 
 /**
  * Interface to which a stream of experimental objects can be sent.
- * 
- * @author Markus Gerstel
  */
 public interface Initializer extends ExperimentNotices {
 
