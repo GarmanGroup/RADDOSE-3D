@@ -43,11 +43,11 @@ public class CrystalPolyhedronTests {
         for (int z = 0; z < zdim * resolution; z++) {
           crystCoords = c.getCrystCoord(x, y, z);
           Assertion.equals(crystCoords[0], -(xdim / 2) + (x / resolution),
-              "crystal coordinate x axis", 0.01);
+              "crystal coordinate x axis for voxel (" + x + ", " + y + ", " + z + ")", 0.01);
           Assertion.equals(crystCoords[1], -(ydim / 2) + (y / resolution),
-              "crystal coordinate y axis", 0.01);
+              "crystal coordinate y axis for voxel (" + x + ", " + y + ", " + z + ")", 0.01);
           Assertion.equals(crystCoords[2], -(zdim / 2) + (z / resolution),
-              "crystal coordinate z axis", 0.01);
+              "crystal coordinate z axis for voxel (" + x + ", " + y + ", " + z + ")", 0.01);
           
           c.setupDepthFinding(0, w);
 
@@ -62,7 +62,7 @@ public class CrystalPolyhedronTests {
       }
     }
   }
-  
+
   @Test
   public static void testFindDepthConcave()
   {
