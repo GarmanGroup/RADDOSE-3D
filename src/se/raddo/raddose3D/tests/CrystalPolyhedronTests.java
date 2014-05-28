@@ -65,6 +65,11 @@ public class CrystalPolyhedronTests {
     }
   }
 
+  // Test to work out whether concave crystals omit depths where
+  // there is missing crystal space.
+  // Object file has a horseshoe shape (like a magnet) which
+  // is hit from the side, which may omit the middle bit
+  // depending on the tested voxel.
   @Test
   public static void testFindDepthConcave()
   {
@@ -87,10 +92,11 @@ public class CrystalPolyhedronTests {
     Wedge w = new Wedge(0d, 0d, 0d, 100d, 0d, 0d, 0d, 0d, 0d, 0d, 0d);
 
     // this is where the beam should be going through the thickest
-    // part of the crystal
+    // part of the crystal (pre-determined)
     double [] crystCoordThick = {3.5, -8.65, 29.9};
     
-    // thinnest part of the crystal
+    // this coordinate should miss out the middle section of
+    // the horseshoe if hit by the beam.
     
     double [] crystCoordThin = {5, 6, 30.0};
 
@@ -100,7 +106,7 @@ public class CrystalPolyhedronTests {
     Assertion.equals(thickDepth, 60.0, "Thick part of crystal about 30 um", 1.0);
     
     double thinDepth = c.findDepth(crystCoordThin, 0, w);
-    Assertion.equals(thinDepth, 40.0, "Thin part of crystal about 20 um", 3.0);
+    Assertion.equals(thinDepth, 40.0, "Thin part of crystal about 20 um", 1.0);
     
   }
 }
