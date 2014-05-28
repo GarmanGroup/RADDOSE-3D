@@ -57,7 +57,7 @@ public class CrystalPolyhedronTests {
 
           // Because the crystal has not been rotated,
           // the depth should just be z / resolution
-          Assertion.equals(depth, z / resolution, "depth at z=" + z, 0.01);
+          Assertion.equals(depth, z / resolution, "depth at z=" + z, 2.0);
         }
       }
     }
@@ -75,7 +75,7 @@ public class CrystalPolyhedronTests {
     HashMap<Object, Object> properties = new HashMap<Object, Object>();
 
     properties.put(Crystal.CRYSTAL_RESOLUTION, resolution);
-    properties.put(Crystal.CRYSTAL_ANGLE_P, 90.0d);
+    properties.put(Crystal.CRYSTAL_ANGLE_P, 0d);
     properties.put(Crystal.CRYSTAL_ANGLE_L, 0d);
     properties.put(CrystalPolyhedron.CRYSTAL_WIREFRAME_FILE, modelFile);
     properties.put(CrystalPolyhedron.CRYSTAL_WIREFRAME_TYPE, modelType);
@@ -86,11 +86,11 @@ public class CrystalPolyhedronTests {
 
     // this is where the beam should be going through the thickest
     // part of the crystal
-    double [] crystCoordThick = {3, 11, 30.144};
+    double [] crystCoordThiN = {3, 30.28, 8.4};
 
     // thinnest part of the crystal
     
-    double [] crystCoordThin = {-0.2, -11, 29.83};
+    double [] crystCoordThiCK = {3.5, 29.9, -8.65};
     
     c.setupDepthFinding(0, w);
 
