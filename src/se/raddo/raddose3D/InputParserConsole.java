@@ -8,7 +8,6 @@ import java.io.BufferedReader;
  * A parser that reads from STDIN.
  */
 public class InputParserConsole extends InputParserString {
-
   /**
    * Read input from console and pass it to InputParserString constructor.
    * 
@@ -35,7 +34,7 @@ public class InputParserConsole extends InputParserString {
     String s;
     while ((s = in.readLine()) != null) {
       sb.append(s);
-      sb.append("\n");
+      sb.append(LINEENDING);
     }
     // Ctrl-Z terminates input
 

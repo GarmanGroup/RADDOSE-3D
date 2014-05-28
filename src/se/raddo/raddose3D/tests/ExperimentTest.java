@@ -11,9 +11,9 @@ import se.raddo.raddose3D.Output;
 import se.raddo.raddose3D.Wedge;
 
 public class ExperimentTest {
-  Crystal c      = new CrystalDummy();
-  Wedge   w      = new Wedge(0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d);
-  Beam    b      = new BeamDummy();
+  Crystal c = new CrystalDummy();
+  Wedge   w = new Wedge(0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d);
+  Beam    b = new BeamDummy();
 
   @Test
   public void testExperimentSimple() {
@@ -52,6 +52,8 @@ public class ExperimentTest {
     Assert.assertNull(testsubscriber.lastseenwedge);
     Assert.assertEquals(testsubscriber.seenobjects, 1);
     Assert.assertEquals(testsubscriber.seenclose, 0);
+
+    e.close();
 
     System.out.println("@Test - testExperimentSimple");
   }

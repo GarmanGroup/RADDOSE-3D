@@ -24,17 +24,17 @@ public class DDMLeal implements DDM {
   /**
    * Decay Parameter beta.
    */
-  private final double beta = 0.316928538944095;
+  private static final double BETA = 0.316928538944095;
 
   /**
    * Decay Parameter b0.
    */
-  private final double b0 = 13.854805547210105;
+  private static final double B0 = 13.854805547210105;
 
   /**
    * Decay Parameter gamma.
    */
-  private final double gamma = 0.029790991953658;
+  private static final double GAMMA = 0.029790991953658;
 
   /**
    * Print string to tell user the type of dose decay model being used.
@@ -163,7 +163,7 @@ public class DDMLeal implements DDM {
     }
 
     /**
-     * Calculate integral of eqn 4 leal et al. 2012
+     * Calculate integral of eqn 4 Leal et al. (2012)
      */
     double integralSum = 0;
     double eachTerm;
@@ -171,7 +171,7 @@ public class DDMLeal implements DDM {
         eachTerm = ((hsqrd[j + 1] + hsqrd[j]) / 2)
                 * ((expectedIntensity[j + 1] + expectedIntensity[j]) / 2)
                 * Math.exp(-half * ((hsqrd[j + 1] + hsqrd[j]) / 2)
-                    * (this.b0 + (this.beta * dose)))
+                    * (B0 + (BETA * dose)))
                 * dh[j];
         integralSum = integralSum + eachTerm;
     }
@@ -179,7 +179,7 @@ public class DDMLeal implements DDM {
     /**
      * Calculate the integrated intensity of eqn 4 leal et al. 2012
      */
-    integratedIntensity = Math.exp(-Math.pow(this.gamma * dose, 2))
+    integratedIntensity = Math.exp(-Math.pow(GAMMA * dose, 2))
         * integralSum;
 
     return integratedIntensity;

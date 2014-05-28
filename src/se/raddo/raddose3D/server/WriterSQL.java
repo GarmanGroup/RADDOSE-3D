@@ -6,7 +6,7 @@ import se.raddo.raddose3D.server.DatabaseConnector.OutputType;
 /**
  * WriterSQL writes all received data to an SQL record on a close() call.
  */
-public class WriterSQL implements Writer {
+public class WriterSQL extends Writer {
   /** Reference to initialized database connection. */
   private final DatabaseConnector sql;
   /** Unique ID referencing the job in the SQL database. */

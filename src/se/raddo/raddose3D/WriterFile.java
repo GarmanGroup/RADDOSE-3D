@@ -8,7 +8,7 @@ import java.io.OutputStreamWriter;
 /**
  * WriterFile writes all received data to a predefined file.
  */
-public class WriterFile implements Writer {
+public class WriterFile extends Writer {
   /** Reference to the output file. */
   private final BufferedWriter outFile;
 
@@ -42,6 +42,16 @@ public class WriterFile implements Writer {
   @Override
   public void write(final StringBuffer b) {
     write(new String(b));
+  }
+
+  @Override
+  public void flush() {
+    try {
+      outFile.flush();
+    } catch (IOException e) {
+      e.printStackTrace();
+      System.err.println("WriterFile: Could not flush file " + outFileName);
+    }
   }
 
   @Override
