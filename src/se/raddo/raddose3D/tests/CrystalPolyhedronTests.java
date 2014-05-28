@@ -52,12 +52,10 @@ public class CrystalPolyhedronTests {
           c.setupDepthFinding(0, w);
 
           double depth = c.findDepth(crystCoords, 0, w);
-          // The depth finding overestimates by 10/resolution :(
-          // depth -= (10 / resolution);
 
           // Because the crystal has not been rotated,
           // the depth should just be z / resolution
-          Assertion.equals(depth, z / resolution, "depth at z=" + z, 2.0);
+          Assertion.equals(depth, z / resolution, "depth at z=" + z + "for voxel (" + x + ", " + y + ", " + z + ")", 2.0);
         }
       }
     }
@@ -86,11 +84,11 @@ public class CrystalPolyhedronTests {
 
     // this is where the beam should be going through the thickest
     // part of the crystal
-    double [] crystCoordThin = {3, 30.28, 8.4};
+    double [] crystCoordThin = {3, 8.4, 30.28};
 
     // thinnest part of the crystal
     
-    double [] crystCoordThick = {3.5, 29.9, -8.65};
+    double [] crystCoordThick = {3.5, -8.65, 29.9};
     
     c.setupDepthFinding(0, w);
 
