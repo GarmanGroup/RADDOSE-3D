@@ -116,6 +116,10 @@ public final class RD3D {
    * 
    * @param cmdLineParams
    *          Array of command line parameters.
+   * @return
+   *         Returns false if the command line parameters indicate that no
+   *         experiment should be run (eg. command line help parameter present).
+   *         True otherwise.
    */
   @SuppressWarnings("PMD.CyclomaticComplexity")
   private boolean parseHighPriorityParameters(final String[] cmdLineParams) {
@@ -153,7 +157,8 @@ public final class RD3D {
    * @param cmdLineParams
    *          Array of command line parameters.
    */
-  @SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
+  @SuppressWarnings({ "PMD.AvoidInstantiatingObjectsInLoops",
+      "PMD.CyclomaticComplexity" })
   private void parseCommandLineParameters(final String[] cmdLineParams) {
     OutputFactory of = new OutputFactory();
 
