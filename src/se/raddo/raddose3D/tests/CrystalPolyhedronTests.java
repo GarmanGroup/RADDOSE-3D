@@ -13,7 +13,7 @@ public class CrystalPolyhedronTests {
   @Test
   public static void testFindDepthSimple()
   {
-    double xdim = 30, ydim = 20, zdim = 10; // just like in the model file.
+    double xdim = 60, ydim = 40, zdim = 20; // just like in the model file.
     
     Double resolution = 0.5d;
     String modelFile = "models/cuboid-30-20-10.obj";
@@ -69,7 +69,7 @@ public class CrystalPolyhedronTests {
     double xdim = 30, ydim = 20, zdim = 10; // just like in the model file.
     
     Double resolution = 0.5d;
-    String modelFile = "models/concave-cuboid-30-20-10.obj";
+    String modelFile = "models/concave_cuboid-30-20-10.obj";
     String modelType = "obj";
     
     HashMap<Object, Object> properties = new HashMap<Object, Object>();
@@ -95,10 +95,10 @@ public class CrystalPolyhedronTests {
     c.setupDepthFinding(0, w);
 
     double thickDepth = c.findDepth(crystCoordThick, 0, w);
-    Assertion.equals(thickDepth, 30.0, "Thick part of crystal about 30 um (" + thickDepth + ")", 1.0);
+    Assertion.equals(thickDepth, 30.0, "Thick part of crystal about 30 um", 1.0);
     
     double thinDepth = c.findDepth(crystCoordThin, 0, w);
-    Assertion.equals(thickDepth, 20.0, "Thin part of crystal about 20 um (" + thinDepth + ")", 3.0);
+    Assertion.equals(thickDepth, 20.0, "Thin part of crystal about 20 um", 3.0);
     
   }
 }
