@@ -55,7 +55,7 @@ public class CrystalPolyhedronTests {
 
           // Because the crystal has not been rotated,
           // the depth should just be z / resolution
-          Assertion.equals(depth, z / resolution, "depth at z=" + z + "for voxel (" + x + ", " + y + ", " + z + ")", 2.0);
+          Assertion.equals(depth, z / resolution, "depth at z=" + z + " for crystCoord (" + crystCoords[0] + ", " + crystCoords[1] + ", " + crystCoords[2] + ")", 2.0);
         }
       }
     }
@@ -93,10 +93,10 @@ public class CrystalPolyhedronTests {
     c.setupDepthFinding(0, w);
 
     double thickDepth = c.findDepth(crystCoordThick, 0, w);
-    Assertion.equals(thickDepth, 30.0, "Thick part of crystal about 30 um", 1.0);
+    Assertion.equals(thickDepth, 60.0, "Thick part of crystal about 30 um", 1.0);
     
     double thinDepth = c.findDepth(crystCoordThin, 0, w);
-    Assertion.equals(thickDepth, 20.0, "Thin part of crystal about 20 um", 3.0);
+    Assertion.equals(thickDepth, 40.0, "Thin part of crystal about 20 um", 3.0);
     
   }
 }
