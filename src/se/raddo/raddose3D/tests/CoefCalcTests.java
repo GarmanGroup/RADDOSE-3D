@@ -28,12 +28,10 @@ public class CoefCalcTests {
         100.0, 100.0, 90.0, 90.0, 90.0, 0, 0, 0, 0, atoms, numbers,
         atoms, numbers, 100.0);
 
-    Double oxygenOccurrence = Double.valueOf(coefCalc
-        .getSolventOccurrence(coefCalc.getParser()
-            .getElement("O")));
-    Double hydrogenOccurrence = Double.valueOf(coefCalc
-        .getSolventOccurrence(coefCalc.getParser()
-            .getElement("H")));
+    Double oxygenOccurrence = coefCalc.getSolventOccurrence(
+        coefCalc.getParser().getElement("O"));
+    Double hydrogenOccurrence = coefCalc.getSolventOccurrence(
+        coefCalc.getParser().getElement("H"));
 
     Assertion.equals(hydrogenOccurrence, oxygenOccurrence * 2, "O vs H");
   }
