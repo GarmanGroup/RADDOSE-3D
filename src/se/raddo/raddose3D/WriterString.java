@@ -3,7 +3,7 @@ package se.raddo.raddose3D;
 /**
  * WriterString writes all received data to a string.
  */
-public class WriterString implements Writer {
+public class WriterString extends Writer {
   /** All received data is kept in a Stringbuffer. */
   private final StringBuffer data     = new StringBuffer();
   /** After close() is called further data results in RuntimeExceptions. */
@@ -28,6 +28,7 @@ public class WriterString implements Writer {
   @Override
   public void close() {
     readonly = true;
+    data.trimToSize();
   }
 
   /**

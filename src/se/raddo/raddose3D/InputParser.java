@@ -2,6 +2,7 @@ package se.raddo.raddose3D;
 
 import se.raddo.raddose3D.parser.InputfileLexer;
 import se.raddo.raddose3D.parser.InputfileParser;
+
 import java.util.List;
 
 import org.antlr.runtime.CharStream;
@@ -21,9 +22,14 @@ public class InputParser implements Input {
   private final CommonTokenStream tokens;
 
   /** A class to create Crystal type objects. */
-  private CrystalFactory          cf = new CrystalFactory();
+  private CrystalFactory          cf         = new CrystalFactory();
   /** A class to create Beam type objects. */
-  private BeamFactory             bf = new BeamFactory();
+  private BeamFactory             bf         = new BeamFactory();
+
+  /**
+   * System-specific line ending characters.
+   */
+  protected static final String   LINEENDING = String.format("%n").intern();
 
   /**
    * create a new InputParser that can process an ANTLR CharStream.
@@ -79,7 +85,7 @@ public class InputParser implements Input {
       StringBuffer errorString = new StringBuffer("Parser found "
           + errors.size() + " errors in input:\n");
       for (String e : errors) {
-        errorString.append("\n");
+        errorString.append(LINEENDING);
         errorString.append(e);
       }
       throw new InputException(errorString.toString());

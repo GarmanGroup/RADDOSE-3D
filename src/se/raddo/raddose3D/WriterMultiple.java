@@ -1,9 +1,11 @@
 package se.raddo.raddose3D;
 
+import java.io.IOException;
+
 /**
  * Forwards all received input to multiple {@link Writer} instances.
  */
-public class WriterMultiple implements Writer {
+public class WriterMultiple extends Writer {
   /** List of Writer instances. */
   private final Iterable<Writer> children;
 
@@ -29,6 +31,13 @@ public class WriterMultiple implements Writer {
   public void write(final StringBuffer b) {
     for (Writer w : children) {
       w.write(b);
+    }
+  }
+
+  @Override
+  public void flush() throws IOException {
+    for (Writer w : children) {
+      w.flush();
     }
   }
 
