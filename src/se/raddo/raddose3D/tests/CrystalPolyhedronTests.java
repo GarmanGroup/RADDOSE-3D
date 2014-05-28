@@ -86,11 +86,11 @@ public class CrystalPolyhedronTests {
 
     // this is where the beam should be going through the thickest
     // part of the crystal
-    double [] crystCoordThiN = {3, 30.28, 8.4};
+    double [] crystCoordThin = {3, 30.28, 8.4};
 
     // thinnest part of the crystal
     
-    double [] crystCoordThiCK = {3.5, 29.9, -8.65};
+    double [] crystCoordThick = {3.5, 29.9, -8.65};
     
     c.setupDepthFinding(0, w);
 
