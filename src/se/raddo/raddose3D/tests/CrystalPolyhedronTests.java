@@ -13,7 +13,7 @@ public class CrystalPolyhedronTests {
   @Test
   public static void testFindDepthSimple()
   {
-    double xdim = 60, ydim = 40, zdim = 20; // just like in the model file.
+    double xdim = 60, ydim = 20, zdim = 40; // just like in the model file.
     
     Double resolution = 0.5d;
     String modelFile = "models/cuboid-30-20-10.obj";
@@ -75,7 +75,7 @@ public class CrystalPolyhedronTests {
     HashMap<Object, Object> properties = new HashMap<Object, Object>();
 
     properties.put(Crystal.CRYSTAL_RESOLUTION, resolution);
-    properties.put(Crystal.CRYSTAL_ANGLE_P, 0d);
+    properties.put(Crystal.CRYSTAL_ANGLE_P, 90.0d);
     properties.put(Crystal.CRYSTAL_ANGLE_L, 0d);
     properties.put(CrystalPolyhedron.CRYSTAL_WIREFRAME_FILE, modelFile);
     properties.put(CrystalPolyhedron.CRYSTAL_WIREFRAME_TYPE, modelType);
