@@ -115,18 +115,17 @@ public class OutputFinalDoseStateRPreview implements Output {
             w.write(",");
           }
 
-          // Could put fancy interpolation algorithm here.
-          // Or just trilinear interpolation.
-          // For now nearest neighbour will do.
+          // Could put fancy interpolation algorithm here, eg.
+          // trilinear interpolation.
 
-          float trueCoordinateX = i * csize[0] / csizel[0];
-          float trueCoordinateY = j * csize[1] / csizel[1];
-          float trueCoordinateZ = k * csize[2] / csizel[2];
+          // For now nearest neighbour will do. Find n.n.:
+          int trueCoordinateX = i * csize[0] / csizel[0];
+          int trueCoordinateY = j * csize[1] / csizel[1];
+          int trueCoordinateZ = k * csize[2] / csizel[2];
 
+          // Use n.n. dose:
           double dose = crystal.getDose(
-              Math.round(trueCoordinateX),
-              Math.round(trueCoordinateY),
-              Math.round(trueCoordinateZ));
+              trueCoordinateX, trueCoordinateY, trueCoordinateZ);
 
           if (dose <= Double.MIN_VALUE) {
             w.write("0");
