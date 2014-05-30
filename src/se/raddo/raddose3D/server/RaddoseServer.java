@@ -50,6 +50,7 @@ public final class RaddoseServer {
   private void run(final Integer maxProcesses) {
     createShutdownHook();
 
+    /*
     DatabaseConnector sql = new DatabaseConnector();
     try {
       sql.connect("root", "raddose");
@@ -64,9 +65,9 @@ public final class RaddoseServer {
 
     se.raddo.raddose3D.CoefCalcRaddose
         .setRADDOSEExecutable("/raddose/workdir/raddose");
-
+*/
     System.out.println("RADDOSE-3D version: " + getCurrentVersion());
-    System.out.println("Database version: " + sql.getVersionNumber());
+//    System.out.println("Database version: " + sql.getVersionNumber());
 
     //    GetPerformanceIndicators();
     // SELECT X1, X2, AVG(realtime), AVG(usertime)
@@ -92,7 +93,7 @@ public final class RaddoseServer {
 
       workerIterator = workers.iterator();
       System.out.print("Thread status:");
-      while (workerIterator.hasNext()) {
+/*      while (workerIterator.hasNext()) {
         Raddose3DWorker w = workerIterator.next();
         System.out.print(" #" + w.getJobID() + ":" + w.getState());
         if (w.getState() == Thread.State.TERMINATED) {
@@ -111,9 +112,9 @@ public final class RaddoseServer {
           workerIterator.remove();
         }
       }
-      System.out.println();
+  */    System.out.println();
 
-      if (!shutdown && (workers.size() < MAXPROCESSES)) {
+    /*  if (!shutdown && (workers.size() < MAXPROCESSES)) {
         if (sql.getHighestPriority() > workers.size()) {
           Long nextJob = sql
               .getJobIDWithPriorityGreaterOrEqual(workers.size() + 1);
@@ -133,7 +134,7 @@ public final class RaddoseServer {
           }
         }
       }
-
+*/
       // Sleep for 5 seconds or interrupt
       synchronized (this) {
         try {
