@@ -177,12 +177,18 @@ public final class RaddoseServer {
   private void createShutdownHook() {
     // Keep final reference to this RaddoseServer instance...
     final RaddoseServer rds = this;
+    final Thread mainThread = Thread.currentThread();
 
     Runtime.getRuntime().addShutdownHook(new Thread() {
       @Override
       public void run() {
         rds.shutdown(); // ...to allow variable capture and thus shutdown.
         System.out.println("Server shutting down...");
+        try {
+          mainThread.join(60000);
+        } catch (InterruptedException e) {
+          // Do nothing.
+        }
       }
     });
   }
