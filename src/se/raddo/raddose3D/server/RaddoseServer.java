@@ -10,6 +10,9 @@ import java.util.Vector;
  * Server for batch processing of RADDOSE-3D jobs.
  */
 public final class RaddoseServer {
+  /** Maximum time to wait for remaining jobs in milliseconds. */
+  private static final int     SHUTDOWNTIME = 60000;
+
   /** limit for the maximum number of parallel jobs to be run. */
   private static final Integer MAXPROCESSES = 2;
 
@@ -35,10 +38,7 @@ public final class RaddoseServer {
     System.out.println("RADDOSE-3D Server starting up.");
 
     RaddoseServer rds = new RaddoseServer();
-
     rds.run(MAXPROCESSES);
-
-    System.out.println("RADDOSE-3D Server shutting down.");
   }
 
   /**
@@ -50,7 +50,6 @@ public final class RaddoseServer {
   private void run(final Integer maxProcesses) {
     createShutdownHook();
 
-    /*
     DatabaseConnector sql = new DatabaseConnector();
     try {
       sql.connect("root", "raddose");
@@ -65,9 +64,9 @@ public final class RaddoseServer {
 
     se.raddo.raddose3D.CoefCalcRaddose
         .setRADDOSEExecutable("/raddose/workdir/raddose");
-*/
+
     System.out.println("RADDOSE-3D version: " + getCurrentVersion());
-//    System.out.println("Database version: " + sql.getVersionNumber());
+    System.out.println("Database version: " + sql.getVersionNumber());
 
     //    GetPerformanceIndicators();
     // SELECT X1, X2, AVG(realtime), AVG(usertime)
@@ -93,7 +92,8 @@ public final class RaddoseServer {
 
       workerIterator = workers.iterator();
       System.out.print("Thread status:");
-/*      while (workerIterator.hasNext()) {
+
+      while (workerIterator.hasNext()) {
         Raddose3DWorker w = workerIterator.next();
         System.out.print(" #" + w.getJobID() + ":" + w.getState());
         if (w.getState() == Thread.State.TERMINATED) {
@@ -112,9 +112,9 @@ public final class RaddoseServer {
           workerIterator.remove();
         }
       }
-  */    System.out.println();
+      System.out.println();
 
-    /*  if (!shutdown && (workers.size() < MAXPROCESSES)) {
+      if (!shutdown && (workers.size() < MAXPROCESSES)) {
         if (sql.getHighestPriority() > workers.size()) {
           Long nextJob = sql
               .getJobIDWithPriorityGreaterOrEqual(workers.size() + 1);
@@ -134,7 +134,7 @@ public final class RaddoseServer {
           }
         }
       }
-*/
+
       // Sleep for 5 seconds or interrupt
       synchronized (this) {
         try {
@@ -183,9 +183,10 @@ public final class RaddoseServer {
       @Override
       public void run() {
         rds.shutdown(); // ...to allow variable capture and thus shutdown.
-        System.out.println("Server shutting down...");
+        System.out.println("Server shutting down. "
+            + "This may take up to 60 seconds");
         try {
-          mainThread.join(60000);
+          mainThread.join(SHUTDOWNTIME);
         } catch (InterruptedException e) {
           // Do nothing.
         }
