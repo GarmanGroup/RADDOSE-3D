@@ -181,6 +181,7 @@ public final class RaddoseServer {
       @Override
       public void run() {
         rds.shutdown(); // ...to allow variable capture and thus shutdown.
+        System.out.println("Server shutting down...");
       }
     });
   }
