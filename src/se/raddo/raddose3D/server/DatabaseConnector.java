@@ -16,6 +16,12 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class DatabaseConnector {
   /**
+   * Constants for declaring SQL statement parameters.
+   */
+  private static final int _1             = 1, _2 = 2, _3 = 3,
+                                          _4 = 4, _5 = 5, _6 = 6;
+
+  /**
    * Lock to ensure only one thread can access a single connection. More
    * flexible than 'synchronized'.
    */
@@ -180,6 +186,12 @@ public class DatabaseConnector {
     }
   }
 
+  /**
+   * Returns the highest priority of all jobs queued in the database.
+   * 
+   * @return
+   *         job priority, or 0 if the job queue is empty.
+   */
   public Integer getHighestPriority() {
     lock.lock();
     ensureConnectionPresent();
@@ -191,7 +203,7 @@ public class DatabaseConnector {
       rs = st
           .executeQuery("SELECT MAX(Queue) FROM queue WHERE Status = 'Queued'");
       if (rs.next()) {
-        return rs.getInt(1);
+        return rs.getInt(_1);
       }
     } catch (SQLException ex) {
       reportSQLException(ex);
@@ -253,10 +265,10 @@ public class DatabaseConnector {
           + "FROM queue "
           + "WHERE Status = 'Queued' AND Queue >= ? "
           + "ORDER BY Priority ASC LIMIT 1");
-      pst.setInt(1, priority);
+      pst.setInt(_1, priority);
       rs = pst.executeQuery();
       if (rs.next()) {
-        return rs.getLong(1);
+        return rs.getLong(_1);
       }
     } catch (SQLException ex) {
       reportSQLException(ex);
@@ -300,7 +312,7 @@ public class DatabaseConnector {
       pst = conn.prepareStatement("UPDATE queue "
           + "SET Status = 'Running' "
           + "WHERE Status = 'Queued' AND JobID = ?");
-      pst.setLong(1, jobid);
+      pst.setLong(_1, jobid);
       int changedRows = pst.executeUpdate();
       success = (changedRows == 1);
     } catch (SQLException ex) {
@@ -319,7 +331,7 @@ public class DatabaseConnector {
       pst = conn.prepareStatement("UPDATE jobs "
           + "SET TimeStarted = NOW() "
           + "WHERE ID = ?");
-      pst.setLong(1, jobid);
+      pst.setLong(_1, jobid);
       pst.executeUpdate(); // ignore outcome
     } catch (SQLException ex) {
       reportSQLException(ex);
@@ -356,10 +368,10 @@ public class DatabaseConnector {
     ResultSet rs = null;
     try {
       pst = conn.prepareStatement("SELECT Commands FROM jobs WHERE ID = ?");
-      pst.setLong(1, id);
+      pst.setLong(_1, id);
       rs = pst.executeQuery();
       if (rs.next()) {
-        return rs.getString(1);
+        return rs.getString(_1);
       }
     } catch (SQLException ex) {
       reportSQLException(ex);
@@ -383,6 +395,21 @@ public class DatabaseConnector {
     return null;
   }
 
+  /**
+   * Create a virtual file in the database from a binary stream.
+   * 
+   * @param jobID
+   *          The job number that this file is associated with.
+   * @param fileName
+   *          The name of the virtual file. If the file already exists, it will
+   *          be overwritten.
+   * @param blob
+   *          The content of the virtual file as a binary FileInputStream.
+   * @param blobLength
+   *          The number of bytes in the file stream.
+   * @param type
+   *          The associated file type.
+   */
   public void writeBLOB(final Long jobID, final String fileName,
       final FileInputStream blob, final Long blobLength, final OutputType type)
   {
@@ -394,10 +421,10 @@ public class DatabaseConnector {
       pst = conn
           .prepareStatement("REPLACE INTO output (JobID, Name, Type, Content) "
               + "VALUES (?, ?, ?, ?)");
-      pst.setLong(1, jobID);
-      pst.setString(2, fileName);
-      pst.setString(3, typeEnumToString(type));
-      pst.setBinaryStream(4, blob, blobLength);
+      pst.setLong(_1, jobID);
+      pst.setString(_2, fileName);
+      pst.setString(_3, typeEnumToString(type));
+      pst.setBinaryStream(_4, blob, blobLength);
       pst.executeUpdate();
     } catch (SQLException ex) {
       reportSQLException(ex);
@@ -413,6 +440,19 @@ public class DatabaseConnector {
     }
   }
 
+  /**
+   * Create a virtual file in the database from a string.
+   * 
+   * @param jobID
+   *          The job number that this file is associated with.
+   * @param fileName
+   *          The name of the virtual file. If the file already exists, it will
+   *          be overwritten.
+   * @param fileContent
+   *          The content of the virtual file as a single string.
+   * @param type
+   *          The associated file type.
+   */
   public void writeOutputFile(final Long jobID, final String fileName,
       final String fileContent, final OutputType type) {
     lock.lock();
@@ -423,10 +463,10 @@ public class DatabaseConnector {
       pst = conn
           .prepareStatement("REPLACE INTO output (JobID, Name, Type, Content) "
               + "VALUES (?, ?, ?, ?)");
-      pst.setLong(1, jobID);
-      pst.setString(2, fileName);
-      pst.setString(3, typeEnumToString(type));
-      pst.setString(4, fileContent);
+      pst.setLong(_1, jobID);
+      pst.setString(_2, fileName);
+      pst.setString(_3, typeEnumToString(type));
+      pst.setString(_4, fileContent);
       pst.executeUpdate();
     } catch (SQLException ex) {
       reportSQLException(ex);
@@ -463,9 +503,9 @@ public class DatabaseConnector {
       pst = conn
           .prepareStatement("UPDATE output SET Content = CONCAT(Content, ?) "
               + "WHERE JobID = ? AND Name = ?");
-      pst.setString(1, stringToAppend);
-      pst.setLong(2, jobID);
-      pst.setString(3, fileName);
+      pst.setString(_1, stringToAppend);
+      pst.setLong(_2, jobID);
+      pst.setString(_3, fileName);
       pst.executeUpdate();
     } catch (SQLException ex) {
       reportSQLException(ex);
@@ -481,6 +521,12 @@ public class DatabaseConnector {
     }
   }
 
+  /**
+   * Declare the job finished and remove it from the job queue.
+   * 
+   * @param jobID
+   *          The unique job identifier.
+   */
   public void finalizeJob(final Long jobID) {
     lock.lock();
     ensureConnectionPresent();
@@ -491,8 +537,8 @@ public class DatabaseConnector {
           .prepareStatement("UPDATE jobs "
               + "SET Finished = 'Y', Version = ?, TimeCompleted = NOW() "
               + "WHERE ID = ?");
-      pst.setLong(1, getVersionNumber());
-      pst.setLong(2, jobID);
+      pst.setLong(_1, getVersionNumber());
+      pst.setLong(_2, jobID);
       pst.executeUpdate();
     } catch (SQLException ex) {
       reportSQLException(ex);
@@ -508,7 +554,7 @@ public class DatabaseConnector {
 
     try {
       pst = conn.prepareStatement("DELETE FROM queue WHERE JobID = ?");
-      pst.setLong(1, jobID);
+      pst.setLong(_1, jobID);
       pst.executeUpdate();
     } catch (SQLException ex) {
       reportSQLException(ex);
@@ -531,10 +577,10 @@ public class DatabaseConnector {
 
     try {
       pst = conn.prepareStatement("SELECT ID FROM versions WHERE Version = ?");
-      pst.setString(1, versionString);
+      pst.setString(_1, versionString);
       rs = pst.executeQuery();
       if (rs.next()) {
-        return rs.getLong(1);
+        return rs.getLong(_1);
       }
     } catch (SQLException ex) {
       reportSQLException(ex);
@@ -574,7 +620,7 @@ public class DatabaseConnector {
               .prepareStatement("INSERT INTO versions "
                   + "(jar, Version, Compilation) "
                   + "VALUES (NULL, ?, NOW())");
-          pst.setString(1, se.raddo.raddose3D.Version.VERSION_STRING);
+          pst.setString(_1, se.raddo.raddose3D.Version.VERSION_STRING);
           pst.executeUpdate();
         } catch (SQLException ex) {
           reportSQLException(ex);
@@ -638,12 +684,12 @@ public class DatabaseConnector {
           .prepareStatement("REPLACE INTO runtimeestimate "
               + "(JobID, Version, X1, X2, realtime, usertime) "
               + "VALUES (?, ?, ?, ?, ?, ?)");
-      pst.setLong(1, jobID);
-      pst.setLong(2, getVersionNumber());
-      pst.setLong(3, x1);
-      pst.setLong(4, x2);
-      pst.setDouble(5, realTime);
-      pst.setDouble(6, userTime);
+      pst.setLong(_1, jobID);
+      pst.setLong(_2, getVersionNumber());
+      pst.setLong(_3, x1);
+      pst.setLong(_4, x2);
+      pst.setDouble(_5, realTime);
+      pst.setDouble(_6, userTime);
       pst.executeUpdate();
     } catch (SQLException ex) {
       reportSQLException(ex);
@@ -672,7 +718,7 @@ public class DatabaseConnector {
       pst = conn
           .prepareStatement("REPLACE INTO crashes (JobID, StackTrace) "
               + "VALUES (?, ?)");
-      pst.setLong(1, jobID);
+      pst.setLong(_1, jobID);
 
       String crashmessage = message.concat("Crash due to "
           + reason.getMessage() + "\n");
@@ -681,7 +727,7 @@ public class DatabaseConnector {
         crashmessage = crashmessage.concat(s.toString() + "\n");
       }
 
-      pst.setString(2, crashmessage);
+      pst.setString(_2, crashmessage);
       pst.executeUpdate();
       success = true;
     } catch (SQLException ex) {
@@ -698,5 +744,4 @@ public class DatabaseConnector {
     }
     return success;
   }
-
 }
