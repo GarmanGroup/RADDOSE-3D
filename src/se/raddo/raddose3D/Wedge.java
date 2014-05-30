@@ -10,7 +10,11 @@ import java.util.Map;
 public class Wedge {
 
   private enum WedgeProperties {
-    ANGLE_START, ANGLE_END, ANGULAR_RESOLUTION,
+    /** Start and end angle of exposure in radians. */
+    ANGLE_START, ANGLE_END, 
+    /** Angular exposure resolution in radians per image. */
+    ANGULAR_RESOLUTION,
+    /** Total exposure time of the wedge in seconds. */
     EXPOSURE_TIME,
     START_POSITION_X, START_POSITION_Y, START_POSITION_Z,
     TRANSLATION_X, TRANSLATION_Y, TRANSLATION_Z,
