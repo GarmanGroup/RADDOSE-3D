@@ -11,7 +11,7 @@ public class Wedge {
 
   private enum WedgeProperties {
     /** Start and end angle of exposure in radians. */
-    ANGLE_START, ANGLE_END, 
+    ANGLE_START, ANGLE_END,
     /** Angular exposure resolution in radians per image. */
     ANGULAR_RESOLUTION,
     /** Total exposure time of the wedge in seconds. */
@@ -29,7 +29,7 @@ public class Wedge {
    * All angular arguments are in degrees.
    * 
    * @param angularResolution
-   * Angular exposure resolution in degrees.
+   *          Angular exposure resolution in degrees.
    * @param startAngle
    *          Start angle of exposure in degrees.
    * @param endAngle
@@ -119,7 +119,7 @@ public class Wedge {
    */
   public String wedgeProperties() {
     StringBuffer s = new StringBuffer(200);
-    
+
     s.append(String.format(
         "Collecting data for a total of %.1fs from phi = %.1f to %.1f deg.%n",
         properties.get(WedgeProperties.EXPOSURE_TIME),
