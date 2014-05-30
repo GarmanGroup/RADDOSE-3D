@@ -19,7 +19,6 @@ public final class RaddoseServer {
    */
   private static final long    TICKWAIT     = 5000;
 
-  // TODO: Shutdown mechanism is in place, but there is no initiation routine
   /**
    * If set to true, then the server will not start processing any new jobs.
    * Once all running jobs are completed, the server will exit.
@@ -49,6 +48,8 @@ public final class RaddoseServer {
    *          maximum number of parallel jobs to be run.
    */
   private void run(final Integer maxProcesses) {
+    createShutdownHook();
+
     DatabaseConnector sql = new DatabaseConnector();
     try {
       sql.connect("root", "raddose");
@@ -80,7 +81,6 @@ public final class RaddoseServer {
 
     Vector<Raddose3DWorker> workers = new Vector<Raddose3DWorker>();
     Iterator<Raddose3DWorker> workerIterator;
-    StringBuffer status;
 
     System.out.println("RADDOSE-3D Server ready.");
 
@@ -91,10 +91,10 @@ public final class RaddoseServer {
       //  update timing information
 
       workerIterator = workers.iterator();
-      status = new StringBuffer("Thread status:");
+      System.out.print("Thread status:");
       while (workerIterator.hasNext()) {
         Raddose3DWorker w = workerIterator.next();
-        status.append(" #" + w.getJobID() + ":" + w.getState());
+        System.out.print(" #" + w.getJobID() + ":" + w.getState());
         if (w.getState() == Thread.State.TERMINATED) {
 
           if (w.getCrashReason() != null) {
@@ -111,7 +111,7 @@ public final class RaddoseServer {
           workerIterator.remove();
         }
       }
-      System.out.println(status);
+      System.out.println();
 
       if (!shutdown && (workers.size() < MAXPROCESSES)) {
         if (sql.getHighestPriority() > workers.size()) {
@@ -123,13 +123,13 @@ public final class RaddoseServer {
                 nextJob = null;
               }
             }
-          }
-          if (nextJob != null) {
-            Raddose3DWorker newJob = new Raddose3DWorker(
-                sql.getJobIDWithPriorityGreaterOrEqual(workers.size() + 1),
-                sql, this);
-            workers.add(newJob);
-            newJob.start();
+            if (nextJob != null) {
+              Raddose3DWorker newJob = new Raddose3DWorker(
+                  sql.getJobIDWithPriorityGreaterOrEqual(workers.size() + 1),
+                  sql, this);
+              workers.add(newJob);
+              newJob.start();
+            }
           }
         }
       }
@@ -161,5 +161,27 @@ public final class RaddoseServer {
    */
   private String getCurrentVersion() {
     return se.raddo.raddose3D.Version.VERSION_BUILD;
+  }
+
+  /**
+   * Cleanly shut down the server instance.
+   */
+  public void shutdown() {
+    shutdown = true;
+  }
+
+  /**
+   * Install a shutdown hook to intercept CTRL+C and other shutdown signals.
+   */
+  private void createShutdownHook() {
+    // Keep final reference to this RaddoseServer instance...
+    final RaddoseServer rds = this;
+
+    Runtime.getRuntime().addShutdownHook(new Thread() {
+      @Override
+      public void run() {
+        rds.shutdown(); // ...to allow variable capture and thus shutdown.
+      }
+    });
   }
 }
