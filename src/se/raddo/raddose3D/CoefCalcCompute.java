@@ -519,7 +519,7 @@ public class CoefCalcCompute extends CoefCalc {
     }
   }
 
-  public Double getSolventOccurrence(Element element) {
+  public Double getSolventOccurrence(final Element element) {
     if (solventOccurrence.containsKey(element)) {
       return solventOccurrence.get(element);
     } else {

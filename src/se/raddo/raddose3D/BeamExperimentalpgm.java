@@ -69,15 +69,15 @@ public class BeamExperimentalpgm extends BeamExperimental {
    */
   private static Double[][] getXYIntensityList(final String filename) {
     if ((filename == null) || (filename.equals(""))) {
-      throw new RuntimeException("No filename given");
+      throw new IllegalArgumentException("No filename given");
     }
 
     FileInputStream fileInputStream;
     try {
       fileInputStream = new FileInputStream(filename);
     } catch (IOException e) {
-      throw new RuntimeException("File " + filename + " could not be opened.",
-          e);
+      throw new IllegalArgumentException("File " + filename
+          + " could not be opened.", e);
     }
     //        return new BeamExperimentalPGM(properties);
 
@@ -108,8 +108,8 @@ public class BeamExperimentalpgm extends BeamExperimental {
     try {
       fileInputStream.close();
     } catch (IOException e) {
-      throw new RuntimeException("File " + filename + " could not be closed.",
-          e);
+      throw new IllegalStateException("File " + filename
+          + " could not be closed.", e);
     }
 
     return pgmData;

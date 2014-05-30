@@ -125,7 +125,7 @@ public class Raddose3DWorker
     try {
       experiment.process(new InputParserString(jobData));
     } catch (InputException e) {
-      throw new RuntimeException("Input malformed", e);
+      throw new IllegalArgumentException("Input malformed", e);
     }
 
     experiment.close();
@@ -158,7 +158,8 @@ public class Raddose3DWorker
     List<Long> wss = progressEstimate.getWedgeSliceList();
 
     if (cvs.size() != wss.size()) {
-      throw new RuntimeException("Progress Estimate information malformed.");
+      throw new IllegalStateException(
+          "Progress Estimate information malformed.");
     }
 
     Long x1 = 0L;

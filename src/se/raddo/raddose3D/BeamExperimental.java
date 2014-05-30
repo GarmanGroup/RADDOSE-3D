@@ -110,7 +110,7 @@ public class BeamExperimental implements Beam {
         return beamArray[voxelVertical][voxelHorizontal];
 
       } else {
-        throw new RuntimeException(
+        throw new IllegalArgumentException(
             "Image voxel request out of experimental profile");
       }
     } else {
