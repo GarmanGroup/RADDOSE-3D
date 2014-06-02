@@ -74,19 +74,11 @@ public class DatabaseConnector {
    *          Username for MySQL connection.
    * @param password
    *          Password for MySQL connection.
-   * @throws ClassNotFoundException
-   *           MySQL Connector/J not found.
-   * @throws InstantiationException
-   *           MySQL Connector/J may not be the correct version for the local
-   *           architecture.
-   * @throws IllegalAccessException
-   *           MySQL database name or credentials incorrect.
    * @throws SQLException
    *           MySQL database name or credentials incorrect.
    */
   public void connect(final String username, final String password)
-      throws ClassNotFoundException, InstantiationException,
-      IllegalAccessException, SQLException {
+      throws SQLException {
     if (conn == null) {
       lock.lock();
 
@@ -98,13 +90,16 @@ public class DatabaseConnector {
         connPass = password;
         reconnect();
       } catch (final ClassNotFoundException e) {
-        throw e;
+        throw new SQLException(
+            "Probable cause of error: MySQL Connector/J not found", e);
       } catch (final InstantiationException e) {
-        throw e;
+        throw new SQLException(
+            "Probable cause of error: MySQL Connector/J may not be the "
+                + "correct version for the local architecture.", e);
       } catch (final IllegalAccessException e) {
-        throw e;
-      } catch (final SQLException e) {
-        throw e;
+        throw new SQLException(
+            "Probable cause of error: MySQL database name or "
+                + "credentials incorrect.", e);
       } finally {
         lock.unlock();
       }
@@ -124,7 +119,7 @@ public class DatabaseConnector {
     if (conn != null) {
       try {
         conn.close();
-      } catch (Exception e) {
+      } catch (SQLException e) {
         // Ignore any closing errors
       }
       conn = null;
