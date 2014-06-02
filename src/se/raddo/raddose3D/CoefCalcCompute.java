@@ -390,7 +390,7 @@ public class CoefCalcCompute extends CoefCalc {
         - hetatmMass;
 
     // sanity check
-    // TODO: Print to STDERR and/or crash out. 
+    // TODO: Print to STDERR and/or crash out.
     if (solventFraction < 0) {
       System.out
           .println("Warning: Solvent mass calculated as a negative number...");
@@ -575,8 +575,8 @@ public class CoefCalcCompute extends CoefCalc {
   public void incrementMacromolecularOccurrence(final Element element,
       final Double increment) {
     if (macromolecularOccurrence.containsKey(element)) {
-      macromolecularOccurrence.put(element, increment +
-          macromolecularOccurrence.get(element));
+      macromolecularOccurrence.put(element,
+          increment + macromolecularOccurrence.get(element));
     } else {
       macromolecularOccurrence.put(element, increment);
     }

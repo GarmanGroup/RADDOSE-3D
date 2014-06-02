@@ -572,8 +572,15 @@ public class DatabaseConnector {
   }
 
   /**
+   * Retrieve the database internal representation (an integer number) of a
+   * given RADDOSE3D instance version string.
+   * 
    * @param versionString
+   *          A string containing a RADDOSE3D version (e.g. "1.1.1000").
    * @return
+   *         A number representing the version of the given RADDOSE3D instance
+   *         string or null if the version string has not been defined in the
+   *         database.
    */
   private Long selectVersionNumber(final String versionString) {
     PreparedStatement pst = null;

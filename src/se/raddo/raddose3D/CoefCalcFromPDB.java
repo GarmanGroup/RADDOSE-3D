@@ -14,115 +14,109 @@ import java.util.List;
  * it into atom occurrence information which the superclass,
  * CoefCalcCompute, uses to calculate the absorption
  * coefficient.
- * 
- * @author magd3052
  */
 public class CoefCalcFromPDB extends CoefCalcCompute {
 
   /**
-   * PDB download link stem from pdb.org.
-   */
-  protected static final String PDB_DOWNLOAD_LINK         = "http://www.pdb.org/pdb/download/downloadFile.do?"
-                                                              + "fileFormat=pdb&compression=NO&structureId=";
-
-  /**
    * Found cryst1 line containing unit cell information?
    */
-  private boolean               foundCryst1;
+  private boolean            foundCryst1;
 
   /**
    * Have we already warned the user that the occupancy column is empty?
    */
-  private boolean               occupancyWarning;
+  private boolean            occupancyWarning;
 
   /**
    * How many crystallographic symmetry operators have we found?
    */
-  private int                   csSymmetryOperators;
+  private int                csSymmetryOperators;
 
   /**
    * How many non-crystallographic symmetry operators have we found?
    */
-  private int                   ncsSymmetryOperators      = 1;
+  private int                ncsSymmetryOperators      = 1;
 
   /**
    * Crystal unit cell dimension A - position in PDB file.
    */
-  protected static final int    CRYST1_A_POS              = 6;
+  protected static final int CRYST1_A_POS              = 6;
 
   /**
    * Crystal unit cell dimension B - position in PDB file.
    */
-  protected static final int    CRYST1_B_POS              = 15;
+  protected static final int CRYST1_B_POS              = 15;
 
   /**
    * Crystal unit cell dimension C - position in PDB file.
    */
-  protected static final int    CRYST1_C_POS              = 24;
+  protected static final int CRYST1_C_POS              = 24;
 
   /**
    * Crystal unit cell angle alpha - position in PDB file.
    */
-  protected static final int    CRYST1_ALPHA_POS          = 33;
+  protected static final int CRYST1_ALPHA_POS          = 33;
 
   /**
    * Crystal unit cell angle beta - position in PDB file.
    */
-  protected static final int    CRYST1_BETA_POS           = 40;
+  protected static final int CRYST1_BETA_POS           = 40;
 
   /**
    * Crystal unit cell angle gamma - position in PDB file.
    */
-  protected static final int    CRYST1_GAMMA_POS          = 47;
+  protected static final int CRYST1_GAMMA_POS          = 47;
 
   /**
    * Crystal unit cell definition end character.
    */
-  protected static final int    CRYST1_END_POS            = 54;
+  protected static final int CRYST1_END_POS            = 54;
 
   /**
    * Atom residue name - position in PDB file.
    */
-  protected static final int    ATOM_RESIDUE_NAME_POS     = 17;
+  protected static final int ATOM_RESIDUE_NAME_POS     = 17;
   /**
    * End of atom residue name - position in PDB file.
    */
-  protected static final int    ATOM_RESIDUE_NAME_END_POS = 20;
+  protected static final int ATOM_RESIDUE_NAME_END_POS = 20;
   /**
    * Atom residue number - position in PDB file.
    */
-  protected static final int    ATOM_RESIDUE_NUM_POS      = 22;
+  protected static final int ATOM_RESIDUE_NUM_POS      = 22;
 
   /**
    * End of atom residue number - position in PDB file.
    */
-  protected static final int    ATOM_RESIDUE_NUM_END_POS  = 26;
+  protected static final int ATOM_RESIDUE_NUM_END_POS  = 26;
 
   /** MATRX1 line - position of coordinates-included flag. */
-  protected static final int    MATRX_FLAG_POS            = 59;
+  protected static final int MATRX_FLAG_POS            = 59;
   /** MATRX1 line - end position of coordinates-included flag. */
-  protected static final int    MATRX_FLAG_END_POS        = 60;
+  protected static final int MATRX_FLAG_END_POS        = 60;
 
   /** SMTRY1 line position of SMTRY1 keyword. */
-  protected static final int    SMTRY1_POS                = 13;
+  protected static final int SMTRY1_POS                = 13;
   /** SMTRY1 line end position of SMTRY1 keyword. */
-  protected static final int    SMTRY1_END_POS            = 19;
+  protected static final int SMTRY1_END_POS            = 19;
 
-  /** Occupancy position and end. */
-  protected static final int    OCCUPANCY_POS             = 54,
-      OCCUPANCY_END_POS = 60;
+  /** Start of the Occupancy field in PDB line. */
+  protected static final int OCCUPANCY_POS             = 54;
+  /** End of the Occupancy field in PDB line. */
+  protected static final int OCCUPANCY_END_POS         = 60;
 
-  /** Element symbol position and end. */
-  protected static final int    ELEMENT_SYMBOL_POS        = 76,
-      ELEMENT_SYMBOL_END_POS = 78;
+  /** Start of the Element symbol field in PDB line. */
+  protected static final int ELEMENT_SYMBOL_POS        = 76;
+  /** End of the Element symbol field in PDB line. */
+  protected static final int ELEMENT_SYMBOL_END_POS    = 78;
 
   /** Beginning of SEQRES residue names. */
-  protected static final int    SEQRES_START              = 19;
+  protected static final int SEQRES_START              = 19;
   /** Length of SEQRES residue name. */
-  protected static final int    SEQRES_RESI_LENGTH        = 3;
+  protected static final int SEQRES_RESI_LENGTH        = 3;
 
   /** Directive first six characters - end pos. */
-  protected static final int    DIRECTIVE_END_POS         = 6;
+  protected static final int DIRECTIVE_END_POS         = 6;
 
   /**
    * Residue looks after the 20 amino acids, 4 RNA bases and
@@ -737,7 +731,7 @@ public class CoefCalcFromPDB extends CoefCalcCompute {
    * @param pdbName PDB four letter code
    */
   public void downloadPDB(final String pdbName) {
-    String urlString = String.format("%s%s", PDB_DOWNLOAD_LINK, pdbName);
+    String urlString = getPDBURL(pdbName);
 
     URL pdbURL = null;
     URLConnection pdbConnection = null;
@@ -810,7 +804,6 @@ public class CoefCalcFromPDB extends CoefCalcCompute {
    * 
    * @param pdbCode four letter PDB code
    */
-
   public CoefCalcFromPDB(final String pdbCode) {
     String pdbName = pdbCode.toUpperCase();
 
@@ -842,5 +835,18 @@ public class CoefCalcFromPDB extends CoefCalcCompute {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
+  }
+
+  /**
+   * Generate a URL to a given PDB structure file at pdb.org.
+   * 
+   * @param pdbName
+   *          The 4-character PDB entry name
+   * @return
+   *         A URL pointing to the PDB text file of the given PDB entry.
+   */
+  private String getPDBURL(final String pdbName) {
+    return String.format("http://www.pdb.org/pdb/download/downloadFile.do?"
+        + "fileFormat=pdb&compression=NO&structureId=%s", pdbName);
   }
 }
