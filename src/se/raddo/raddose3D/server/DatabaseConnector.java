@@ -152,7 +152,7 @@ public class DatabaseConnector {
   private void ensureConnectionPresent() {
     lock.lock();
     if (conn == null) {
-      throw new RuntimeException("Connection not present!");
+      throw new IllegalStateException("Connection not present!");
     }
 
     Statement st = null;
@@ -653,7 +653,7 @@ public class DatabaseConnector {
             se.raddo.raddose3D.Version.VERSION_STRING);
 
         if (version == null) {
-          throw new RuntimeException("Could not determine version ID.");
+          throw new IllegalStateException("Could not determine version ID.");
         }
       }
 
@@ -684,7 +684,7 @@ public class DatabaseConnector {
       case TEXT:
         return "text";
       default:
-        throw new RuntimeException("Using undefined OutputType " + type);
+        throw new IllegalArgumentException("Unknown OutputType " + type);
     }
   }
 
