@@ -107,6 +107,7 @@ public class Wedge {
    * @return
    *         Map structure containing the Wedge parameters.
    */
+  @Deprecated
   private static Map<WedgeProperties, Double> generateMapFromParameters(
       final Double angularResolution, final Double startAngle,
       final Double endAngle, final Double totalSecondsExposure,
@@ -182,13 +183,13 @@ public class Wedge {
         || (properties.get(WedgeProperties.START_POSITION_Y) != 0)
         || (properties.get(WedgeProperties.TRANSLATION_X) != 0)
         || (properties.get(WedgeProperties.TRANSLATION_Y) != 0)) {
-      s = s + String.format(
+      s = s.concat(String.format(
           "Start is offset by [%f, %f] um [x,y].%n"
               + " Helical scanning is at [%f, %f] um/deg in [x,y]%n",
           properties.get(WedgeProperties.START_POSITION_X),
           properties.get(WedgeProperties.START_POSITION_Y),
           Math.toRadians(properties.get(WedgeProperties.TRANSLATION_X)),
-          Math.toRadians(properties.get(WedgeProperties.TRANSLATION_Y)));
+          Math.toRadians(properties.get(WedgeProperties.TRANSLATION_Y))));
     }
 
     return s;
@@ -203,7 +204,7 @@ public class Wedge {
    *         The value of the requested wedge property,
    *         or null if the value is not set.
    */
-  public Double get(WedgeProperties property) {
+  public Double get(final WedgeProperties property) {
     return properties.get(property);
   }
 
