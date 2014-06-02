@@ -26,6 +26,14 @@ public class Wedge {
   /** Storage of all wedge properties. */
   private final Map<WedgeProperties, Double> properties;
 
+  /**
+   * Create a new Wedge class, storing experimental data collection strategy
+   * parameters.
+   * 
+   * @param wedgeProperties
+   *          A Map linking WedgeProperties to values. Some values may be
+   *          initialized with default values if not set.
+   */
   public Wedge(final Map<WedgeProperties, Double> wedgeProperties) {
     properties = new HashMap<WedgeProperties, Double>();
 
@@ -90,6 +98,12 @@ public class Wedge {
    *          Start angle of exposure in degrees.
    * @param endAngle
    *          End angle of exposure in degrees.
+   * @param translationX
+   *          translation on the X axis in distance per degree rotation.
+   * @param translationY
+   *          translation on the Y axis in distance per degree rotation.
+   * @param translationZ
+   *          translation on the Z axis in distance per degree rotation.
    * @return
    *         Map structure containing the Wedge parameters.
    */
