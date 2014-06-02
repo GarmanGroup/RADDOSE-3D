@@ -9,7 +9,8 @@ import java.util.Map;
  */
 public class Wedge {
 
-  private enum WedgeProperties {
+  /** Possible Wedge properties, used as index in the properties map. */
+  public enum WedgeProperties {
     /** Start and end angle of exposure in radians. */
     ANGLE_START, ANGLE_END,
     /** Angular exposure resolution in radians per image. */
@@ -17,12 +18,29 @@ public class Wedge {
     /** Total exposure time of the wedge in seconds. */
     EXPOSURE_TIME,
     START_POSITION_X, START_POSITION_Y, START_POSITION_Z,
+    /** Translation along the axis in distance per radian. */
     TRANSLATION_X, TRANSLATION_Y, TRANSLATION_Z,
     OFF_AXIS
   };
 
   /** Storage of all wedge properties. */
   private final Map<WedgeProperties, Double> properties;
+
+  public Wedge(final Map<WedgeProperties, Double> wedgeProperties) {
+    properties = new HashMap<WedgeProperties, Double>();
+
+    /* Default values */
+    properties.put(WedgeProperties.ANGULAR_RESOLUTION, Math.toRadians(2));
+    properties.put(WedgeProperties.START_POSITION_X, 0d);
+    properties.put(WedgeProperties.START_POSITION_Y, 0d);
+    properties.put(WedgeProperties.START_POSITION_Z, 0d);
+    properties.put(WedgeProperties.TRANSLATION_X, 0d);
+    properties.put(WedgeProperties.TRANSLATION_Y, 0d);
+    properties.put(WedgeProperties.TRANSLATION_Z, 0d);
+    properties.put(WedgeProperties.OFF_AXIS, 0d);
+
+    properties.putAll(wedgeProperties);
+  }
 
   /**
    * Full constructor that can be used by the parser.
@@ -38,7 +56,11 @@ public class Wedge {
    * @param startXposition
    * @param startYposition
    * @param translationX
+   *          translation on the X axis in distance per degree rotation.
    * @param translationY
+   *          translation on the Y axis in distance per degree rotation.
+   * @param translationZ
+   *          translation on the Z axis in distance per degree rotation.
    * @param offAxisRotationUm
    */
   public Wedge(final Double angularResolution,
@@ -53,37 +75,54 @@ public class Wedge {
       final Double translationZ,
       final Double offAxisRotationUm) {
 
-    properties = new HashMap<WedgeProperties, Double>();
+    this(generateMapFromParameters(
+        angularResolution, startAngle, endAngle, totalSecondsExposure,
+        startXposition, startYposition, startZposition, translationX,
+        translationY, translationZ, offAxisRotationUm));
+  }
 
-    /* Default values */
-    properties.put(WedgeProperties.ANGULAR_RESOLUTION, Math.toRadians(2));
-    properties.put(WedgeProperties.START_POSITION_X, 0d);
-    properties.put(WedgeProperties.START_POSITION_Y, 0d);
-    properties.put(WedgeProperties.START_POSITION_Z, 0d);
-    properties.put(WedgeProperties.TRANSLATION_X, 0d);
-    properties.put(WedgeProperties.TRANSLATION_Y, 0d);
-    properties.put(WedgeProperties.TRANSLATION_Z, 0d);
-    properties.put(WedgeProperties.OFF_AXIS, 0d);
+  /**
+   * Function to convert Wedge parameters into a Map structure.
+   * 
+   * @param angularResolution
+   *          Angular exposure resolution in degrees.
+   * @param startAngle
+   *          Start angle of exposure in degrees.
+   * @param endAngle
+   *          End angle of exposure in degrees.
+   * @return
+   *         Map structure containing the Wedge parameters.
+   */
+  private static Map<WedgeProperties, Double> generateMapFromParameters(
+      final Double angularResolution, final Double startAngle,
+      final Double endAngle, final Double totalSecondsExposure,
+      final Double startXposition, final Double startYposition,
+      final Double startZposition, final Double translationX,
+      final Double translationY, final Double translationZ,
+      final Double offAxisRotationUm) {
+    Map<WedgeProperties, Double> wedgeProperties =
+        new HashMap<WedgeProperties, Double>();
 
     /* Compulsory variables */
     // TODO: Setting the angles in degrees, but getting them in radians? Why?
-    properties.put(WedgeProperties.ANGLE_START, Math.toRadians(startAngle));
-    properties.put(WedgeProperties.ANGLE_END, Math.toRadians(endAngle));
-    properties.put(WedgeProperties.EXPOSURE_TIME, totalSecondsExposure);
+    wedgeProperties
+        .put(WedgeProperties.ANGLE_START, Math.toRadians(startAngle));
+    wedgeProperties.put(WedgeProperties.ANGLE_END, Math.toRadians(endAngle));
+    wedgeProperties.put(WedgeProperties.EXPOSURE_TIME, totalSecondsExposure);
 
     /* Optional variables */
     if (angularResolution != null) {
-      properties.put(WedgeProperties.ANGULAR_RESOLUTION,
+      wedgeProperties.put(WedgeProperties.ANGULAR_RESOLUTION,
           Math.toRadians(angularResolution));
     }
     if (startXposition != null) {
-      properties.put(WedgeProperties.START_POSITION_X, startXposition);
+      wedgeProperties.put(WedgeProperties.START_POSITION_X, startXposition);
     }
     if (startYposition != null) {
-      properties.put(WedgeProperties.START_POSITION_Y, startYposition);
+      wedgeProperties.put(WedgeProperties.START_POSITION_Y, startYposition);
     }
     if (startZposition != null) {
-      properties.put(WedgeProperties.START_POSITION_Z, startZposition);
+      wedgeProperties.put(WedgeProperties.START_POSITION_Z, startZposition);
     }
 
     /*
@@ -92,22 +131,23 @@ public class Wedge {
      * by 180 and dividing by pi, which is 1/toRadians, a.k.a. 'toDegrees'
      */
     if (translationX != null) {
-      properties.put(WedgeProperties.TRANSLATION_X,
+      wedgeProperties.put(WedgeProperties.TRANSLATION_X,
           Math.toDegrees(translationX));
     }
     if (translationY != null) {
-      properties.put(WedgeProperties.TRANSLATION_Y,
+      wedgeProperties.put(WedgeProperties.TRANSLATION_Y,
           Math.toDegrees(translationY));
     }
     if (translationZ != null) {
-      properties.put(WedgeProperties.TRANSLATION_Z,
+      wedgeProperties.put(WedgeProperties.TRANSLATION_Z,
           Math.toDegrees(translationZ));
     }
 
     if (offAxisRotationUm != null) {
-      properties.put(WedgeProperties.OFF_AXIS,
+      wedgeProperties.put(WedgeProperties.OFF_AXIS,
           offAxisRotationUm);
     }
+    return wedgeProperties;
   }
 
   /**
@@ -118,28 +158,39 @@ public class Wedge {
    *         String describing the wedge.
    */
   public String wedgeProperties() {
-    StringBuffer s = new StringBuffer(200);
-
-    s.append(String.format(
+    String s = String.format(
         "Collecting data for a total of %.1fs from phi = %.1f to %.1f deg.%n",
         properties.get(WedgeProperties.EXPOSURE_TIME),
         Math.toDegrees(properties.get(WedgeProperties.ANGLE_START)),
-        Math.toDegrees(properties.get(WedgeProperties.ANGLE_END))));
+        Math.toDegrees(properties.get(WedgeProperties.ANGLE_END)));
 
     if ((properties.get(WedgeProperties.START_POSITION_X) != 0)
         || (properties.get(WedgeProperties.START_POSITION_Y) != 0)
         || (properties.get(WedgeProperties.TRANSLATION_X) != 0)
         || (properties.get(WedgeProperties.TRANSLATION_Y) != 0)) {
-      s.append(String.format(
+      s = s + String.format(
           "Start is offset by [%f, %f] um [x,y].%n"
               + " Helical scanning is at [%f, %f] um/deg in [x,y]%n",
           properties.get(WedgeProperties.START_POSITION_X),
           properties.get(WedgeProperties.START_POSITION_Y),
           Math.toRadians(properties.get(WedgeProperties.TRANSLATION_X)),
-          Math.toRadians(properties.get(WedgeProperties.TRANSLATION_Y))));
+          Math.toRadians(properties.get(WedgeProperties.TRANSLATION_Y)));
     }
 
-    return s.toString();
+    return s;
+  }
+
+  /**
+   * Retrieve a single value from the wedge information.
+   * 
+   * @param property
+   *          The wedge property.
+   * @return
+   *         The value of the requested wedge property,
+   *         or null if the value is not set.
+   */
+  public Double get(WedgeProperties property) {
+    return properties.get(property);
   }
 
   /**
