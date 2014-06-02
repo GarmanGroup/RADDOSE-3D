@@ -28,9 +28,11 @@ public class ExposureSummary implements ExposeObserver {
   /** Internal counter of individual exposures. */
   private int                                 images;
 
-  // exposure summary per voxel variables summaryObservation()
+  /** Total absorbed dose over all crystal voxels in MGy. */
   private Double                              totalDose;
+  /** Total number of exposed voxels in the crystal (voxel dose > 0). */
   private int                                 exposedVoxels;
+  /** Total number of occupied (= non-empty) voxels in the crystal. */
   private int                                 occupiedVoxels;
 
   // exposure summary variables exposureComplete()
@@ -249,6 +251,12 @@ public class ExposureSummary implements ExposeObserver {
     return voxelDoses.lastKey();
   }
 
+  /**
+   * Returns the total absorbed dose over all crystal voxels.
+   * 
+   * @return
+   *         dose value in MGy.
+   */
   public Double getTotalDose() {
     return totalDose;
   }

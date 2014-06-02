@@ -67,8 +67,8 @@ public interface ExposeObserver {
   public void imageComplete(int image, double angrad);
 
   /**
-   * Voxel exposure summary. Called for every voxel after each completed Wedge
-   * exposure.
+   * Voxel exposure summary. Called for every occupied voxel after each
+   * completed Wedge exposure.
    * 
    * @param i
    *          voxel x index: perpendicular to rotation axis
