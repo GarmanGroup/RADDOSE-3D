@@ -1,6 +1,7 @@
 package se.raddo.raddose3D;
 
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 
 /**
  * Writer is an interface allowing Strings and StringBuffers to be passed to
@@ -42,6 +43,11 @@ public abstract class Writer extends OutputStream {
   @Override
   public void write(final byte[] b) {
     // Use the string based write method instead of individual write(int) calls
-    write(new String(b));
+    try {
+      write(new String(b, "UTF-8"));
+    } catch (UnsupportedEncodingException ex) {
+      throw new IllegalArgumentException(
+          "Could not convert byte-array to string for output", ex);
+    }
   }
 }
