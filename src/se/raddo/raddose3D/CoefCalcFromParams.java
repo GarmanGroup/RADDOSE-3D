@@ -167,7 +167,7 @@ public class CoefCalcFromParams extends CoefCalcCompute {
         * this.getNumRNA()
         * getNumMonomers());
     incrementMacromolecularOccurrence(phosphorus,
-        PHOSPHORUSES_PER_RNA_NUCLEOTIDE
+        PHOSPHORI_PER_RNA_NUCLEOTIDE
             * this.getNumRNA() * getNumMonomers());
 
     // DNA atoms: for every NTP
@@ -186,7 +186,7 @@ public class CoefCalcFromParams extends CoefCalcCompute {
         * getNumDNA()
         * getNumMonomers());
     incrementMacromolecularOccurrence(phosphorus,
-        PHOSPHORUSES_PER_DNA_NUCLEOTIDE
+        PHOSPHORI_PER_DNA_NUCLEOTIDE
             * getNumDNA() * getNumMonomers());
 
   }

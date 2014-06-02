@@ -25,9 +25,9 @@ public abstract class Crystal {
   public static final String     CRYSTAL_COEFCALC              = "COEFCALC";
   /** Constant for data fields in Map constructors: Dose Decay Model. */
   public static final String     CRYSTAL_DDM                   = "DECAYMODEL";
-  /** Constant for data fields in Map constructors: Wireframe type */
-  public static final String    CRYSTAL_WIREFRAME_TYPE = "WIREFRAME_TYPE";
-  /** Constant for data fields in Map constructors: Wireframe file */
+  /** Constant for data fields in Map constructors: Wireframe type. */
+  public static final String     CRYSTAL_WIREFRAME_TYPE = "WIREFRAME_TYPE";
+  /** Constant for data fields in Map constructors: Wireframe file. */
   public static final String    CRYSTAL_WIREFRAME_FILE = "WIREFRAME_FILE";
 
   /** Default recommended voxel resolution in voxels/micrometre. */
@@ -331,7 +331,8 @@ public abstract class Crystal {
         // (= 1e-18/1e3) / [volume (um^-3) *density (g/ml)]
         * 1e-6; // MGy
     final double fluenceToElasticFactor = -1
-        * Math.expm1(-1 * coefCalc.getElasticCoefficient() / getCrystalPixPerUM())
+        * Math.expm1(-1 * coefCalc.getElasticCoefficient() 
+        / getCrystalPixPerUM())
         // exposure for the Voxel (J) * fraction scattered by the voxel
         //   = J scattered
         / (beam.getPhotonEnergy() * Beam.KEVTOJOULES);

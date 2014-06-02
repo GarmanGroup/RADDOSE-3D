@@ -12,26 +12,32 @@ import java.util.Map;
 
 public class BeamGaussian implements Beam {
   /** Horizontal full width half maximum of the beam. */
-  private final Double fwhmX;
+  private final Double        fwhmX;
 
   /** Vertical full width half maximum of the beam. */
-  private final Double fwhmY;
+  private final Double        fwhmY;
 
   /** Beam flux. */
-  private final Double photonsPerSec;
+  private final Double        photonsPerSec;
 
   /** Beam energy. */
-  private final Double photonEnergy;
+  private final Double        photonEnergy;
 
   /** Horizontal/Vertical collimation. No collimation if set to null. */
-  private final Double collXum, collYum;
+  private final Double        collXum, collYum;
 
-  private final Double normFactor;
+  private final Double        normFactor;
 
-  private final double scaleFactor;
+  private final double        scaleFactor;
 
   /** Horizontal/Vertical Gaussian distribution of the beam. */
-  private final Gaussian gX, gY;
+  private final Gaussian      gX, gY;
+
+  /**
+   * Conversion factor between standard deviation and full-width at
+   * half-maximum.
+   */
+  private static final double SIGMA_TO_FWHM = 2 * Math.sqrt(2 * Math.log(2));
 
   /**
    * Generic property constructor for Gaussian beams. Extracts all required
@@ -67,8 +73,8 @@ public class BeamGaussian implements Beam {
     fwhmX = (Double) properties.get(Beam.BEAM_FWHM_X);
     fwhmY = (Double) properties.get(Beam.BEAM_FWHM_Y);
 
-    Double sigmaX = fwhmX / 2.35482; // Convert to sigma
-    Double sigmaY = fwhmY / 2.35482; // Convert to sigma
+    Double sigmaX = fwhmX / SIGMA_TO_FWHM; // Convert to sigma
+    Double sigmaY = fwhmY / SIGMA_TO_FWHM; // Convert to sigma
 
     if ((properties.get(Beam.BEAM_COLL_H) == null)
         && (properties.get(Beam.BEAM_COLL_V) == null)) {
