@@ -325,7 +325,7 @@ public class CrystalCuboid extends Crystal {
       final Wedge wedge) {
 
     // Found minimal distance to plane
-    Double minDist = java.lang.Double.POSITIVE_INFINITY;
+    Double minDist = Double.POSITIVE_INFINITY;
 
     /*
      * Loop through each face of the crystal and find the distance along the z
@@ -354,7 +354,7 @@ public class CrystalCuboid extends Crystal {
      * Check that the mindist has been changed, ie that there was at least one
      * non-zero positive distance along z axis to a plane.
      */
-    if (minDist == java.lang.Double.POSITIVE_INFINITY) {
+    if (minDist.isInfinite()) {
       throw (new RuntimeErrorException(
           null,
           String
