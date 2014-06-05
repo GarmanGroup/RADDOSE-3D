@@ -113,23 +113,23 @@ public final class RaddoseServer {
       }
       System.out.println();
 
-      if (!shutdownInProgress && (workers.size() < maxProcesses)) {
-        if (sql.getHighestPriority() > workers.size()) {
-          Long nextJob = sql
-              .getJobIDWithPriorityGreaterOrEqual(workers.size() + 1);
+      if (!shutdownInProgress
+          && (workers.size() < maxProcesses)
+          && (sql.getHighestPriority() > workers.size())) {
+        Long nextJob = sql
+            .getJobIDWithPriorityGreaterOrEqual(workers.size() + 1);
+        if (nextJob != null) {
+          for (Raddose3DWorker r : workers) {
+            if (r.getJobID().equals(nextJob)) {
+              nextJob = null;
+            }
+          }
           if (nextJob != null) {
-            for (Raddose3DWorker r : workers) {
-              if (r.getJobID().equals(nextJob)) {
-                nextJob = null;
-              }
-            }
-            if (nextJob != null) {
-              Raddose3DWorker newJob = new Raddose3DWorker(
-                  sql.getJobIDWithPriorityGreaterOrEqual(workers.size() + 1),
-                  sql, this);
-              workers.add(newJob);
-              newJob.start();
-            }
+            Raddose3DWorker newJob = new Raddose3DWorker(
+                sql.getJobIDWithPriorityGreaterOrEqual(workers.size() + 1),
+                sql, this);
+            workers.add(newJob);
+            newJob.start();
           }
         }
       }

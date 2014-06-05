@@ -120,7 +120,8 @@ public class DatabaseConnector {
       try {
         conn.close();
       } catch (SQLException e) {
-        // Ignore any closing errors
+        // Report the exception, but essentially ignore it.
+        reportSQLException(e);
       }
       conn = null;
     }
@@ -620,45 +621,52 @@ public class DatabaseConnector {
    *         RADDOSE3D instance.
    */
   public Long getVersionNumber() {
-    if (version == null) {
-      lock.lock();
-      ensureConnectionPresent();
-
-      version = selectVersionNumber(se.raddo.raddose3D.Version.VERSION_STRING);
-
-      if (version == null) {
-        // version not yet registered
-        PreparedStatement pst = null;
-
-        try {
-          pst = conn
-              .prepareStatement("INSERT INTO versions "
-                  + "(jar, Version, Compilation) "
-                  + "VALUES (NULL, ?, NOW())");
-          pst.setString(SQL_1, se.raddo.raddose3D.Version.VERSION_STRING);
-          pst.executeUpdate();
-        } catch (SQLException ex) {
-          reportSQLException(ex);
-        } finally {
-          try {
-            if (pst != null) {
-              pst.close();
-            }
-          } catch (SQLException ex) {
-            reportSQLException(ex);
-          }
-        }
-
-        version = selectVersionNumber(
-            se.raddo.raddose3D.Version.VERSION_STRING);
-
-        if (version == null) {
-          throw new IllegalStateException("Could not determine version ID.");
-        }
-      }
-
-      lock.unlock();
+    if (version != null) {
+      // Use cached value
+      return version;
     }
+
+    // Obtain registered value from database
+    lock.lock();
+    ensureConnectionPresent();
+
+    version = selectVersionNumber(se.raddo.raddose3D.Version.VERSION_STRING);
+    if (version != null) {
+      // Version is already registered in the database. Use that.
+      lock.unlock();
+      return version;
+    }
+
+    // version has not yet been registered in the database. Do this now.
+    PreparedStatement pst = null;
+
+    try {
+      pst = conn
+          .prepareStatement("INSERT INTO versions "
+              + "(jar, Version, Compilation) "
+              + "VALUES (NULL, ?, NOW())");
+      pst.setString(SQL_1, se.raddo.raddose3D.Version.VERSION_STRING);
+      pst.executeUpdate();
+    } catch (SQLException ex) {
+      reportSQLException(ex);
+    } finally {
+      try {
+        if (pst != null) {
+          pst.close();
+        }
+      } catch (SQLException ex) {
+        reportSQLException(ex);
+      }
+    }
+
+    version = selectVersionNumber(se.raddo.raddose3D.Version.VERSION_STRING);
+    lock.unlock();
+
+    if (version == null) {
+      // Version still unknown? That's a problem.
+      throw new IllegalStateException("Could not determine version ID.");
+    }
+
     return version;
   }
 
