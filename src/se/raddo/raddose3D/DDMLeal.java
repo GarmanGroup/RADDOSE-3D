@@ -18,7 +18,7 @@ public class DDMLeal implements DDM {
   /**
    * Decay parameters used in Leal et al. (2012) (eqn 4).
    * The values were found for a cubic crystal of bovine
-   * pancreatic insulin (unpublished).
+   * pancreatic insulin (unpublished) at cryotemperatures (100K).
    */
 
   /**
@@ -53,7 +53,8 @@ public class DDMLeal implements DDM {
    * expected intensity, the Debye-waller factor and an empirically
    * derived scale factor.
    *
-   * @param dose This is the absorbed dose within the crystal voxel
+   * @param dose
+   *            This is the absorbed dose within the crystal voxel
    *
    * @return The Relative Diffraction Efficiency
    */
@@ -75,7 +76,8 @@ public class DDMLeal implements DDM {
    * The integrated intensity can be found in the Leal et al. 2012
    * paper equation 4.
    *
-   * @param dose This is the absorbed dose within the crystal voxel
+   * @param dose
+   *            This is the absorbed dose within the crystal voxel
    *
    * @return The integrated intensity
    */
