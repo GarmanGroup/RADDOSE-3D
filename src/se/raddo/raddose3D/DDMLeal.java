@@ -43,7 +43,7 @@ public class DDMLeal implements DDM {
    */
   @Override
   public String toString() {
-    return "Dose Decay Model from Leal 2012 is being used.";
+    return "Dose Decay Model from Leal et al. 2012 is being used.";
   }
 
   /**
