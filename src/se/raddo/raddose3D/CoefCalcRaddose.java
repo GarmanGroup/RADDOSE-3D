@@ -203,10 +203,10 @@ public class CoefCalcRaddose extends CoefCalc {
 
   @Override
   @SuppressWarnings("PMD.PrematureDeclaration")
-  public void updateCoefficients(final Wedge w, final Beam b) {
+  public void updateCoefficients(final Beam b) {
     String energy = String.format("ENERGY %g%n", b.getPhotonEnergy());
     String phoSec = String.format("PHOSEC %g%n", b.getPhotonsPerSec());
-    String exposure = String.format("EXPOSURE %g%n", w.getTotSec());
+    String exposure = String.format("EXPOSURE %g%n", 10);
     String debug = "DEBUG\n";
 
     Process oldRD = runRaddose();

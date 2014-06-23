@@ -174,7 +174,7 @@ public class CoefCalcCompute extends CoefCalc {
   }
 
   @Override
-  public void updateCoefficients(final Wedge w, final Beam b) {
+  public void updateCoefficients(final Beam b) {
     // density is easy. Loop through all atoms and calculate total mass.
     // then express as g / cm-3.
     double mass = 0;
