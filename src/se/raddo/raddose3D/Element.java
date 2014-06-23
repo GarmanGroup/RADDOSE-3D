@@ -263,6 +263,7 @@ public class Element {
    * @return
    *         photoelectric absorption cross-section in units Barns/Atom.
    */
+  @SuppressWarnings({ "PMD.CyclomaticComplexity", "PMD.NPathComplexity" })
   private double getPhotoelectricXSForEnergy(final double energy) {
     Double absorptionEdgeK =
         elementData.get(ElementDatabase.DatabaseFields.EDGE_K);
