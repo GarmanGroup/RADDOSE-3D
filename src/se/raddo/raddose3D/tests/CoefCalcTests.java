@@ -92,7 +92,7 @@ public class CoefCalcTests {
     beamProperties.put(Beam.BEAM_ENERGY, 8.05);
     Beam b = new BeamTophat(beamProperties);
 
-    coefCalc.updateCoefficients(null, b);
+    coefCalc.updateCoefficients(b);
 
     // Values obtained from RADDOSEv2, http://www.raddo.se/legacy/
     Assertion.equals(coefCalc.getAbsorptionCoefficient(), 0.001042,
@@ -140,7 +140,7 @@ public class CoefCalcTests {
     beamProperties.put(Beam.BEAM_ENERGY, 14.05);
     Beam b = new BeamTophat(beamProperties);
 
-    coefCalc.updateCoefficients(null, b);
+    coefCalc.updateCoefficients(b);
 
     // Values obtained from RADDOSEv2, http://www.raddo.se/legacy/
     Assertion.equals(coefCalc.getAbsorptionCoefficient(), 0.004675,

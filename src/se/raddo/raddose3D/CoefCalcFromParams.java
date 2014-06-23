@@ -1,13 +1,7 @@
-/**
- *
- */
 package se.raddo.raddose3D;
 
 import java.util.List;
 
-/**
- * @author magd3052
- */
 public class CoefCalcFromParams extends CoefCalcCompute {
   /**
    * Right angle.
@@ -67,10 +61,9 @@ public class CoefCalcFromParams extends CoefCalcCompute {
 
     cellVolume(cellA, cellB, cellC, alpha, beta, gamma);
 
-    this.calculateAtomOccurrences(numMonomers, numResidues, numRNA, numDNA,
+    calculateAtomOccurrences(numMonomers, numResidues, numRNA, numDNA,
         sf, heavyProteinAtomNames, heavyProteinAtomNums,
         heavySolutionConcNames, heavySolutionConcNums);
-
   }
 
   /**
@@ -137,54 +130,39 @@ public class CoefCalcFromParams extends CoefCalcCompute {
 
     // Protein atoms: for every amino acid
     // add 5C + 1.35 N + 1.5 O + 8H
-
     incrementMacromolecularOccurrence(carbon, CARBONS_PER_AMINO_ACID
-        * numResidues
-        * getNumMonomers());
+        * numResidues * getNumMonomers());
     incrementMacromolecularOccurrence(nitrogen, NITROGENS_PER_AMINO_ACID
-        * numResidues
-        * getNumMonomers());
+        * numResidues * getNumMonomers());
     incrementMacromolecularOccurrence(oxygen, OXYGENS_PER_AMINO_ACID
-        * numResidues
-        * getNumMonomers());
+        * numResidues * getNumMonomers());
     incrementMacromolecularOccurrence(hydrogen, HYDROGENS_PER_AMINO_ACID
-        * numResidues
-        * getNumMonomers());
+        * numResidues * getNumMonomers());
 
     // RNA atoms: for every NTP
     // add 11.25 H + 9.5 C + 3.75 N + 7 O + 1 P.
-
     incrementMacromolecularOccurrence(carbon, CARBONS_PER_RNA_NUCLEOTIDE
-        * this.getNumRNA()
-        * getNumMonomers());
+        * getNumRNA() * getNumMonomers());
     incrementMacromolecularOccurrence(nitrogen, NITROGENS_PER_RNA_NUCLEOTIDE
-        * this.getNumRNA()
-        * getNumMonomers());
+        * getNumRNA() * getNumMonomers());
     incrementMacromolecularOccurrence(oxygen, OXYGENS_PER_RNA_NUCLEOTIDE
-        * this.getNumRNA()
-        * getNumMonomers());
+        * getNumRNA() * getNumMonomers());
     incrementMacromolecularOccurrence(hydrogen, HYDROGENS_PER_RNA_NUCLEOTIDE
-        * this.getNumRNA()
-        * getNumMonomers());
+        * getNumRNA() * getNumMonomers());
     incrementMacromolecularOccurrence(phosphorus,
         PHOSPHORI_PER_RNA_NUCLEOTIDE
             * this.getNumRNA() * getNumMonomers());
 
     // DNA atoms: for every NTP
     // add 11.75 H + 9.75 C + 4 N + 6 O + 1 P.
-
     incrementMacromolecularOccurrence(carbon, CARBONS_PER_DNA_NUCLEOTIDE
-        * getNumDNA()
-        * getNumMonomers());
+        * getNumDNA() * getNumMonomers());
     incrementMacromolecularOccurrence(nitrogen, NITROGENS_PER_DNA_NUCLEOTIDE
-        * getNumDNA()
-        * getNumMonomers());
+        * getNumDNA() * getNumMonomers());
     incrementMacromolecularOccurrence(oxygen, OXYGENS_PER_DNA_NUCLEOTIDE
-        * getNumDNA()
-        * getNumMonomers());
+        * getNumDNA() * getNumMonomers());
     incrementMacromolecularOccurrence(hydrogen, HYDROGENS_PER_DNA_NUCLEOTIDE
-        * getNumDNA()
-        * getNumMonomers());
+        * getNumDNA() * getNumMonomers());
     incrementMacromolecularOccurrence(phosphorus,
         PHOSPHORI_PER_DNA_NUCLEOTIDE
             * getNumDNA() * getNumMonomers());

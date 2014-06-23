@@ -251,7 +251,7 @@ public abstract class Crystal {
   public void expose(final Beam beam, final Wedge wedge) {
 
     // Update coefficients in case the beam energy has changed.
-    coefCalc.updateCoefficients(wedge, beam);
+    coefCalc.updateCoefficients(beam);
 
     // Set up angles to iterate over.
     double[] angles;

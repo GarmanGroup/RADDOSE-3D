@@ -7,15 +7,12 @@ public abstract class CoefCalc {
   public abstract String toString();
 
   /**
-   * Calculate cross-sections for the new Wedge/Beam scenario.
+   * Calculate cross-sections for the new Beam.
    * 
-   * @param w
-   *          Wedge object
-   *          TODO: Can the coefficients ever be dependent on the wedge?
    * @param b
    *          Beam object
    */
-  public abstract void updateCoefficients(Wedge w, Beam b);
+  public abstract void updateCoefficients(Beam b);
 
   /**
    * Returns the current absorption coefficient (photoelectric effect).

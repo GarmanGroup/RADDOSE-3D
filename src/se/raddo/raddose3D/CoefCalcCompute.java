@@ -174,7 +174,7 @@ public class CoefCalcCompute extends CoefCalc {
   }
 
   @Override
-  public void updateCoefficients(final Wedge w, final Beam b) {
+  public void updateCoefficients(final Beam b) {
     // density is easy. Loop through all atoms and calculate total mass.
     // then express as g / cm-3.
     double mass = 0;
@@ -199,7 +199,7 @@ public class CoefCalcCompute extends CoefCalc {
     // weighted by the cell volume
     Map<Element.CrossSection, Double> cs;
     for (Element e : presentElements) {
-      cs = e.calculateMu(energy);
+      cs = e.getAbsCoefficients(energy);
       crossSectionPhotoElectric += totalAtoms(e)
           * cs.get(CrossSection.PHOTOELECTRIC) / cellVolume
           / UNITSPERDECIUNIT;

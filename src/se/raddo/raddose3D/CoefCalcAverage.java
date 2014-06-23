@@ -7,8 +7,6 @@ package se.raddo.raddose3D;
  * composition from a survey of the PDB (Berman 2002).
  * Density is taken from Fischer et al., 2004: 1.41 g/ml for large proteins,
  * 50% solvent (solvent mass ~1g/lml).
- * 
- * @author Oliver Zeldin
  */
 public class CoefCalcAverage extends CoefCalc {
 
@@ -73,7 +71,7 @@ public class CoefCalcAverage extends CoefCalc {
   }
 
   @Override
-  public void updateCoefficients(final Wedge w, final Beam b) {
-    //Does nothing
+  public void updateCoefficients(final Beam b) {
+    // Does nothing
   }
 }
