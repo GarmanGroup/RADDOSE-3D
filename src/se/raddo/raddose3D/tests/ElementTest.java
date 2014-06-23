@@ -44,6 +44,21 @@ public class ElementTest {
     compareResults(s, 10, 48.4815712, 0.716733396, 49.3056908);
   }
 
+  public void manganeseTests(final Element mg) {
+    compareResults(mg, 1.1, 753.605774, 2.02505422, 755.646667);
+    compareResults(mg, 1.2, 588.960938, 2.03198099, 591.010681);
+    compareResults(mg, 1.30, 470.938721, 2.02889442, 472.987274);
+    compareResults(mg, 1.31, 5354.30518, 2.0281291, 5356.35303);
+    compareResults(mg, 1.7, 2900.64331, 1.95550072, 2902.62573);
+    compareResults(mg, 2.1, 1719.7334, 1.83737242, 1721.60461);
+    compareResults(mg, 2.3, 1364.00793, 1.77321875, 1365.81836);
+    compareResults(mg, 2.5, 1099.26038, 1.70869017, 1101.0094);
+    compareResults(mg, 5, 163.331894, 1.07319105, 164.477081);
+    compareResults(mg, 10, 20.6076527, 0.52411586, 21.2394829);
+    compareResults(mg, 0.05, 41337100., 0.0305607822, 41337100.);
+    compareResults(mg, 0.1, 2718515.75, 0.169477433, 2718516.);
+  }
+
   private static void compareResults(final Element e, final double energy,
       final double photoelectric, final double coherent, final double total) {
     Map<CrossSection, Double> xs = e.calcAbsCoefficients(energy);
