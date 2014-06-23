@@ -43,7 +43,7 @@ public class ElementTest {
     compareResults(s, C, 2.4719, 214.701355, 2.27591038, 217.011719);
     compareResults(s, C, 2.4721,
         2217.96924 + 0.001, 2.27582908, 2220.2793 + 0.001);
-    // probably a quantization error of the website scripts
+    // Our calculation has higher precision than the website values
     compareResults(s, C, 2.5, 2156.88818, 2.26461291, 2159.18774);
     compareResults(s, C, 5, 349.58316, 1.44702506, 351.098572);
     compareResults(s, C, 10, 48.4815712, 0.716733396, 49.3056908);
@@ -58,15 +58,23 @@ public class ElementTest {
     compareResults(mg, C, 1.1, 753.605774, 2.02505422, 755.646667);
     compareResults(mg, C, 1.2, 588.960938, 2.03198099, 591.010681);
     compareResults(mg, C, 1.30, 470.938721, 2.02889442, 472.987274);
-    compareResults(mg, C, 1.31, 5354.30518, 2.0281291, 5356.35303);
+    compareResults(mg, C, 1.31,
+        5354.30518 - 0.007, 2.0281291, 5356.35303 - 0.007);
+    // Our calculation has higher precision than the website values
     compareResults(mg, C, 1.7, 2900.64331, 1.95550072, 2902.62573);
-    compareResults(mg, C, 2.1, 1719.7334, 1.83737242, 1721.60461);
+    compareResults(mg, C, 2.1,
+        1719.7334 - 0.001, 1.83737242, 1721.60461 - 0.001);
+    // Our calculation has higher precision than the website values
     compareResults(mg, C, 2.3, 1364.00793, 1.77321875, 1365.81836);
     compareResults(mg, C, 2.5, 1099.26038, 1.70869017, 1101.0094);
     compareResults(mg, C, 5, 163.331894, 1.07319105, 164.477081);
     compareResults(mg, C, 10, 20.6076527, 0.52411586, 21.2394829);
-    compareResults(mg, C, 0.05, 41337100., 0.0305607822, 41337100.);
-    compareResults(mg, C, 0.1, 2718515.75, 0.169477433, 2718516.);
+    compareResults(mg, C, 0.05,
+        41337100. - 33.815, 0.0305607822, 41337100. - 33.785);
+    // Our calculation has higher precision than the website values
+    compareResults(mg, C, 0.1, 
+        2718515.75 + 4.713, 0.169477433, 2718516. + 4.633);
+    // Our calculation has higher precision than the website values
   }
 
   private static void compareResults(final Element e,
