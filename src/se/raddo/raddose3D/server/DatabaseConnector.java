@@ -729,6 +729,21 @@ public class DatabaseConnector {
     lock.unlock();
   }
 
+  /**
+   * Mark a job as crashed in the database, and store the stack trace for future
+   * debugging purposes.
+   * 
+   * @param jobID
+   *          The unique job identifier.
+   * @param message
+   *          Custom message prefix for the crash (should end with a newline
+   *          character).
+   * @param reason
+   *          Throwable element causing the crash. The contained message and
+   *          stacktrace will be reported.
+   * @return
+   *         True on success, false on failure to mark the job as crashed.
+   */
   public Boolean markThreadAsCrashed(final Long jobID, final String message,
       final Throwable reason) {
     lock.lock();
