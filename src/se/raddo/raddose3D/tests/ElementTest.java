@@ -80,7 +80,7 @@ public class ElementTest {
   private static void compareResults(final Element e,
       final double conversionfactor, final double energy,
       final double photoelectric, final double coherent, final double total) {
-    Map<CrossSection, Double> xs = e.calcAbsCoefficients(energy);
+    Map<CrossSection, Double> xs = e.getAbsCoefficients(energy);
     Assertion.equals(xs.get(Element.CrossSection.PHOTOELECTRIC)
         / conversionfactor, photoelectric, "Photoelectric cross-section at "
         + energy + " keV", 0.001);

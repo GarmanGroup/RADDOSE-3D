@@ -229,7 +229,7 @@ public class Element {
    *         Map structure containing the photoelectric, coherent and total
    *         cross sections in units Barns/Atom.
    */
-  public Map<CrossSection, Double> calcAbsCoefficients(final double energy) {
+  public Map<CrossSection, Double> getAbsCoefficients(final double energy) {
     double photoelectric = getPhotoelectricXSForEnergy(energy);
 
     double elastic = 0;

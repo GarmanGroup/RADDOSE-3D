@@ -199,7 +199,7 @@ public class CoefCalcCompute extends CoefCalc {
     // weighted by the cell volume
     Map<Element.CrossSection, Double> cs;
     for (Element e : presentElements) {
-      cs = e.calcAbsCoefficients(energy);
+      cs = e.getAbsCoefficients(energy);
       crossSectionPhotoElectric += totalAtoms(e)
           * cs.get(CrossSection.PHOTOELECTRIC) / cellVolume
           / UNITSPERDECIUNIT;
