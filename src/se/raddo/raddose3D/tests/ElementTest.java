@@ -28,6 +28,8 @@ public class ElementTest {
     sulphurTests(s);
   }
 
+  // Theoretical values obtained from e.g.
+  // http://csrri.iit.edu/cgi-bin/period-form?ener=1.1&name=S
   public void sulphurTests(final Element s) {
     compareResults(s, 1.1, 1978.71497, 2.62428641, 1981.35059);
     compareResults(s, 1.2, 1568.09387, 2.63965917, 1570.74646);
@@ -44,6 +46,8 @@ public class ElementTest {
     compareResults(s, 10, 48.4815712, 0.716733396, 49.3056908);
   }
 
+  // Theoretical values obtained from e.g.
+  // http://csrri.iit.edu/cgi-bin/period-form?ener=1.1&name=Mg
   public void manganeseTests(final Element mg) {
     compareResults(mg, 1.1, 753.605774, 2.02505422, 755.646667);
     compareResults(mg, 1.2, 588.960938, 2.03198099, 591.010681);
