@@ -288,11 +288,11 @@ public class Element {
 
     if (energy > absorptionEdgeK) {
       photoelectric = baxForEdge(energy, AbsorptionEdge.K);
-    } else if (energy < absorptionEdgeK && energy > absorptionEdgeL) {
+    } else if (energy > absorptionEdgeL) {
       photoelectric = baxForEdge(energy, AbsorptionEdge.L);
-    } else if (energy < absorptionEdgeL && energy > absorptionEdgeM) {
+    } else if (energy > absorptionEdgeM) {
       photoelectric = baxForEdge(energy, AbsorptionEdge.M);
-    } else if (energy < absorptionEdgeM) {
+    } else {
       photoelectric = baxForEdge(energy, AbsorptionEdge.N);
     }
 
