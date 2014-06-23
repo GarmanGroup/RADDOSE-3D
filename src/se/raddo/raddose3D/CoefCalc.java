@@ -15,7 +15,18 @@ public abstract class CoefCalc {
    * @param b
    *          Beam object
    */
+  @Deprecated
   public abstract void updateCoefficients(Wedge w, Beam b);
+
+  /**
+   * Calculate cross-sections for the new Beam.
+   * 
+   * @param b
+   *          Beam object
+   */
+  public void updateCoefficients(Beam b) {
+    updateCoefficients(null, b);
+  }
 
   /**
    * Returns the current absorption coefficient (photoelectric effect).
