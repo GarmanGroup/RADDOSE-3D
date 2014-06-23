@@ -232,7 +232,7 @@ public class Element {
    *         Map structure containing the photoelectric, coherent and total
    *         cross sections in units Barns/Atom.
    */
-  public Map<CrossSection, Double> calculateMu(final double energy) {
+  public Map<CrossSection, Double> calcAbsCoefficients(final double energy) {
     double photoelectric = getPhotoelectricXSForEnergy(energy);
 
     double elastic = 0;
@@ -249,9 +249,9 @@ public class Element {
     double attenuation = photoelectric + elastic + binx;
 
     Map<CrossSection, Double> results = new HashMap<CrossSection, Double>();
-    results.put(CrossSection.COHERENT, elastic); // elastic
-    results.put(CrossSection.PHOTOELECTRIC, photoelectric); // mu, abs coefficient
-    results.put(CrossSection.TOTAL, attenuation); // attenuation
+    results.put(CrossSection.COHERENT, elastic);
+    results.put(CrossSection.PHOTOELECTRIC, photoelectric); // mu, abs coeff.
+    results.put(CrossSection.TOTAL, attenuation);
     return results;
   }
 

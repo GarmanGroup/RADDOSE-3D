@@ -46,7 +46,7 @@ public class ElementTest {
 
   private static void compareResults(final Element e, final double energy,
       final double photoelectric, final double coherent, final double total) {
-    Map<CrossSection, Double> xs = e.calculateMu(energy);
+    Map<CrossSection, Double> xs = e.calcAbsCoefficients(energy);
     Assertion.equals(xs.get(Element.CrossSection.PHOTOELECTRIC) / Element.C,
         photoelectric, "Photoelectric cross-section at " + energy + " keV",
         0.001);
