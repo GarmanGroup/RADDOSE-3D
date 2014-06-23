@@ -256,9 +256,10 @@ public class Element {
   }
 
   /**
-   * Find the corresponding edge for a given energy and a number of absorption
-   * edges, and correct it for atomic numbers below 29. Print a warning if we're
-   * too close to an absorption edge.
+   * Determine the photoelectric cross-section for a given energy.
+   * Find the corresponding edge for the energy and the known absorption edges.
+   * Obtain the cross-section and correct it for atomic numbers below 29. Print
+   * a warning if we're too close to an absorption edge.
    * 
    * @param energy
    *          X-ray photon energy in keV.
