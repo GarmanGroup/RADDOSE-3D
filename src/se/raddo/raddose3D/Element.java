@@ -264,16 +264,17 @@ public class Element {
    *         photoelectric absorption cross-section in units Barns/Atom.
    */
   private double getPhotoelectricXSForEnergy(final double energy) {
-    double photoelectric = 0;
-
     Double absorptionEdgeK =
         elementData.get(ElementDatabase.DatabaseFields.EDGE_K);
+    if (absorptionEdgeK == null) {
+      throw new IllegalStateException("K Absorption Edge undefined");
+    }
     Double absorptionEdgeL =
         elementData.get(ElementDatabase.DatabaseFields.EDGE_L);
     Double absorptionEdgeM =
         elementData.get(ElementDatabase.DatabaseFields.EDGE_M);
 
-    if ((absorptionEdgeK != null && energy < absorptionEdgeK
+    if ((energy < absorptionEdgeK
         && energy > absorptionEdgeK - ABSORPTION_EDGE_TOLERANCE)
         || (absorptionEdgeL != null && energy < absorptionEdgeL
         && energy > absorptionEdgeL - ABSORPTION_EDGE_TOLERANCE)
@@ -284,6 +285,8 @@ public class Element {
           + elementName);
     }
 
+    // Obtain photoelectric absorption coefficient using the closest edge.
+    double photoelectric = 0;
     if ((energy > absorptionEdgeK) || (absorptionEdgeL == null)) {
       photoelectric = baxForEdge(energy, AbsorptionEdge.K);
     } else if ((energy > absorptionEdgeL) || (absorptionEdgeM == null)) {
@@ -294,22 +297,22 @@ public class Element {
       photoelectric = baxForEdge(energy, AbsorptionEdge.N);
     }
 
-    // Fortran says...
-    // correct for L-edges since McMaster uses L1 edge.
-    // Use edge jumps for correct X-sections.
+    // Correction of the absorption coefficient for light elements
+    if (atomicNumber <= LIGHT_ATOM_MAX_NUM) {
+      // Fortran says...
+      // correct for L-edges since McMaster uses L1 edge.
+      // Use edge jumps for correct X-sections.
+      if ((energy > elementData.get(ElementDatabase.DatabaseFields.L3))
+          && (energy < elementData.get(ElementDatabase.DatabaseFields.L2))) {
+        photoelectric /= (LJ_1 * LJ_2);
+      }
 
-    if ((atomicNumber <= LIGHT_ATOM_MAX_NUM)
-        && (energy > elementData.get(ElementDatabase.DatabaseFields.L3))
-        && (energy < elementData.get(ElementDatabase.DatabaseFields.L2))) {
-      photoelectric /= (LJ_1 * LJ_2);
+      if ((energy > elementData.get(ElementDatabase.DatabaseFields.L2))
+          && (energy < absorptionEdgeL)) {
+        photoelectric /= LJ_1;
+      }
     }
 
-    if ((atomicNumber <= LIGHT_ATOM_MAX_NUM)
-        && (energy > elementData.get(ElementDatabase.DatabaseFields.L2))
-        && (energy < absorptionEdgeL)) {
-      photoelectric /= LJ_1;
-    }
-    
     return photoelectric;
   }
 
