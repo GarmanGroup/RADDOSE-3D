@@ -1,11 +1,6 @@
 package se.raddo.raddose3D;
 
 public abstract class CoefCalc {
-  public abstract double getDensity();
-
-  @Override
-  public abstract String toString();
-
   /**
    * Calculate cross-sections for the new Beam.
    * 
@@ -39,4 +34,12 @@ public abstract class CoefCalc {
    *         elastic scattering coefficient in units m^-1 (tbc)
    */
   public abstract double getElasticCoefficient();
+
+  /**
+   * Returns the density of the crystal.
+   * 
+   * @return
+   *         crystal density in g/ml.
+   */
+  public abstract double getDensity();
 }
