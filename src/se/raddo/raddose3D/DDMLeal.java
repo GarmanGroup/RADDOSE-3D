@@ -20,17 +20,17 @@ public class DDMLeal implements DDM {
   /**
    * Decay Parameter beta.
    */
-  private static final double BETA = 0.316928538944095;
+  private static final double BETA = 0.169734272014635;
 
   /**
    * Decay Parameter b0.
    */
-  private static final double B0 = 13.854805547210105;
+  private static final double B0 = 12.257390234727273;
 
   /**
    * Decay Parameter gamma.
    */
-  private static final double GAMMA = 0.029790991953658;
+  private static final double GAMMA = 0.040691675989120;
 
   /**
    * Print string to tell user the type of dose decay model being used.
