@@ -14,7 +14,7 @@ import java.util.Scanner;
 /**
  * Calculate absorption and attenuation coefficients using a previous version of
  * RADDOSE.
- * 
+ *
  * @author Oliver Zeldin
  */
 public class CoefCalcRaddose extends CoefCalc {
@@ -125,7 +125,7 @@ public class CoefCalcRaddose extends CoefCalc {
    * If RADDOSE can not be found or run a RuntimeException will be thrown.
    * If an instance of RADDOSE is found then its location is cached for
    * subsequent calls.
-   * 
+   *
    * @return
    *         object referring to the running RADDOSE instance.
    */
@@ -206,7 +206,7 @@ public class CoefCalcRaddose extends CoefCalc {
   public void updateCoefficients(final Beam b) {
     String energy = String.format("ENERGY %g%n", b.getPhotonEnergy());
     String phoSec = String.format("PHOSEC %g%n", b.getPhotonsPerSec());
-    String exposure = String.format("EXPOSURE %g%n", 10);
+    String exposure = String.format("EXPOSURE %d%n", 10);
     String debug = "DEBUG\n";
 
     Process oldRD = runRaddose();
@@ -328,7 +328,7 @@ public class CoefCalcRaddose extends CoefCalc {
 
   /**
    * Override the default search locations of legacy RADDOSE executable.
-   * 
+   *
    * @param pathToExecutable
    *          Complete path to the executable of a legacy RADDOSE version.
    */
