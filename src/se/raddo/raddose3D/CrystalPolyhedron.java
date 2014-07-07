@@ -132,10 +132,10 @@ public class CrystalPolyhedron extends Crystal {
      * @return magnitude scalar.
      */
     public static double vectorMagnitude(final double[] vector) {
-      double distance = Math.pow(vector[0], 2) + Math.pow(vector[1], 2)
+      double squaredDistance = Math.pow(vector[0], 2) + Math.pow(vector[1], 2)
           + Math.pow(vector[2], 2);
 
-      distance = Math.sqrt(distance);
+      double distance = Math.sqrt(squaredDistance);
 
       return distance;
     }
