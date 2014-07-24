@@ -13,16 +13,17 @@ import java.util.List;
 public final class RD3D {
   /** Conversion factor for ns/s. */
   private static final long NANOSECONDSPERSECOND = 1000000000L;
-  /** Array of command line parameters. */
-  private final String[]    commandLineParams;
   /** List of prepared input modules for the simulation. */
   private List<Input>       inputs               = new ArrayList<Input>();
   /** List of prepared output modules for the simulation. */
   private List<Output>      outputs              = new ArrayList<Output>();
-  /** Experiment class for the simulation. */
+  /**
+   * Experiment class for the simulation.
+   * If set to null then no simulation is run.
+   */
   private Experiment        exp                  = new Experiment();
   /** Common prefix for output files. */
-  private String            prefix;
+  private String            prefix               = "output-";
 
   /**
    * Private class constructor. Only the class itself needs to instantiate it.
@@ -31,55 +32,60 @@ public final class RD3D {
    *          Command line parameters to be parsed.
    */
   private RD3D(final String[] args) {
-    commandLineParams = args;
+    // Display help and exit if called without command line arguments
+    if (args.length < 1) {
+      exp = null;
+      printCommandlineHelp();
+    } else {
+      // Check for high priority command line parameters.
+      // This may change the default prefix.
+      if (parseHighPriorityParameters(args)) {
+        // Now parse all command line options.
+        parseCommandLineParameters(args);
+
+        // Did the user select specific output modules? If not, set defaults.
+        if (outputs.isEmpty()) {
+          setDefaultObservers();
+        }
+
+      } else {
+        exp = null;
+      }
+    }
   }
 
   /**
    * static main function, called externally.
    * 
-   * @param args
+   * @param cmdLineParams
    *          Array of strings containing command line parameters.
    */
-  public static void main(final String[] args) {
-    // Display help and exit if called without command line arguments
-    if (args.length < 1) {
-      printCommandlineHelp();
-      System.exit(0);
+  public static void main(final String[] cmdLineParams) {
+    RD3D raddose = new RD3D(cmdLineParams);
+
+    if (raddose.runExperiment()) {
+      System.out.println(String.format(
+          "RADDOSE-3D terminated after %.1f seconds",
+          (double) ManagementFactory.getThreadMXBean()
+              .getCurrentThreadUserTime() / NANOSECONDSPERSECOND));
     }
-
-    RD3D raddose = new RD3D(args);
-
-    // Check for high priority command line parameters.
-    raddose.parseHighPriorityParameters();
-
-    // Unless a custom prefix has been set, set default prefix.
-    if (raddose.prefix == null) {
-      System.out.println("Output files are prefixed with 'output-'");
-      raddose.prefix = "output-";
-    }
-
-    // Now parse all command line options.
-    raddose.parseCommandLineParameters();
-
-    // Did the user select specific output modules? If not, set defaults.
-    if (raddose.outputs.isEmpty()) {
-      raddose.setDefaultObservers();
-    }
-
-    raddose.runExperiment();
-
-    System.out.println("RADDOSE-3D terminated after "
-        + String.format("%.2f", (double) ManagementFactory.getThreadMXBean()
-            .getCurrentThreadUserTime() / NANOSECONDSPERSECOND)
-        + " seconds");
   }
 
   /**
    * Passes inputs and outputs to the prepared Experiment class and runs the
    * experiment.
    * Closes down and destroys all references afterwards.
+   * 
+   * @return
+   *         Returns true if there was a defined experiment, false if there was
+   *         no experiment defined (ie. not enough input to create an
+   *         experiment).
    */
-  private void runExperiment() {
+  private boolean runExperiment() {
+    if (exp == null) {
+      return false;
+    }
+
     // Add outputs to experiment.
     for (Output o : outputs) {
       exp.addObserver(o);
@@ -99,58 +105,73 @@ public final class RD3D {
     // Clean up.
     exp.close();
     exp = null;
+
+    return true;
   }
 
   /**
    * Check command line for high priority parameters.
    * Parameters such as -V, -? or -p affect all others, and must therefore be
    * parsed first.
+   * 
+   * @param cmdLineParams
+   *          Array of command line parameters.
+   * @return
+   *         Returns false if the command line parameters indicate that no
+   *         experiment should be run (eg. command line help parameter present).
+   *         True otherwise.
    */
-  private void parseHighPriorityParameters() {
-    for (int i = 0; i < commandLineParams.length; i++) {
+  @SuppressWarnings("PMD.CyclomaticComplexity")
+  private boolean parseHighPriorityParameters(final String[] cmdLineParams) {
+    for (int i = 0; i < cmdLineParams.length; i++) {
 
       // Comparisons here are case sensitive
-      String command = commandLineParams[i];
+      String command = cmdLineParams[i];
 
       if ("-V".equals(command) || "--version".equalsIgnoreCase(command)) {
         Version.printVersionInformation();
-        System.exit(0);
+        return false;
 
       } else if ("-?".equals(command) || "/?".equals(command)
           || "--help".equalsIgnoreCase(command)) {
         printCommandlineHelp();
-        System.exit(0);
+        return false;
 
       } else if ("-p".equalsIgnoreCase(command)
           || "--prefix".equalsIgnoreCase(command)) {
-        if ((i + 1) >= commandLineParams.length) {
+        if ((i + 1) >= cmdLineParams.length) {
           System.err.println("No output prefix given");
         } else {
-          prefix = commandLineParams[++i];
+          prefix = cmdLineParams[++i];
           System.out.println("Output file prefix set to " + prefix);
         }
       }
     }
+    return true;
   }
 
   /**
    * Parse all regular command line parameters.
    * Populates the two lists inputs and outputs.
+   * 
+   * @param cmdLineParams
+   *          Array of command line parameters.
    */
-  @SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
-  private void parseCommandLineParameters() {
+  @SuppressWarnings({ "PMD.AvoidInstantiatingObjectsInLoops",
+      "PMD.CyclomaticComplexity" })
+  private void parseCommandLineParameters(final String[] cmdLineParams) {
     OutputFactory of = new OutputFactory();
 
     String command;
-    for (int i = 0; i < commandLineParams.length; i++) {
-      command = commandLineParams[i].toLowerCase();
+    for (int i = 0; i < cmdLineParams.length; i++) {
+      command = cmdLineParams[i].toLowerCase();
 
       if ("-i".equals(command) || "--in".equals(command)) {
-        if ((i + 1) >= commandLineParams.length) {
+        if ((i + 1) >= cmdLineParams.length) {
           System.err.println("No input filename given");
         } else {
           i++;
-          if (commandLineParams[i].equals("-")) {
+          if (cmdLineParams[i].equals("-")) {
             System.out.println("Read from console");
             try {
               inputs.add(new InputParserConsole());
@@ -158,18 +179,18 @@ public final class RD3D {
               System.err.println("Could not read from console");
             }
           } else {
-            System.out.println("Load File: " + commandLineParams[i]);
+            System.out.println("Load File: " + cmdLineParams[i]);
             try {
-              inputs.add(new InputParserFile(commandLineParams[i]));
+              inputs.add(new InputParserFile(cmdLineParams[i]));
             } catch (IOException e) {
               System.err.println("Could not read from file '"
-                  + commandLineParams[i] + "'");
+                  + cmdLineParams[i] + "'");
             }
           }
         }
 
       } else if ("-p".equals(command) || "--prefix".equals(command)) {
-        if ((i + 1) < commandLineParams.length) {
+        if ((i + 1) < cmdLineParams.length) {
           i++;
           // prefix is assigned as a priority parameter,
           // so that it can affect earlier -o commands
@@ -180,33 +201,33 @@ public final class RD3D {
         exp = new ExperimentDummy();
 
       } else if ("-r".equals(command) || "--raddose".equals(command)) {
-        if ((i + 1) >= commandLineParams.length) {
+        if ((i + 1) >= cmdLineParams.length) {
           System.err.println("No path to raddose executable given");
         } else {
           i++;
-          CoefCalcRaddose.setRADDOSEExecutable(commandLineParams[i]);
+          CoefCalcRaddose.setRADDOSEExecutable(cmdLineParams[i]);
           System.out.println("raddose executable set to "
-              + commandLineParams[i]);
+              + cmdLineParams[i]);
         }
 
       } else if ("-o".equals(command) || "--out".equals(command)) {
         //        module[:parameters]:dest[:dest[..]]
-        if ((i + 1) >= commandLineParams.length) {
+        if ((i + 1) >= cmdLineParams.length) {
           System.err.println("No custom output specification given");
         } else {
           i++;
 
-          String[] specification = commandLineParams[i].split(":");
+          String[] specification = cmdLineParams[i].split(":");
           if (specification.length < 2) {
             System.err.println("Invalid output specification: "
-                + commandLineParams[i]);
+                + cmdLineParams[i]);
           } else {
             Writer w;
             w = parseOutputDestinations(specification[specification.length - 1]
                 .split(","));
             if (w == null) {
               System.err.println("No valid output specified in: "
-                  + commandLineParams[i]);
+                  + cmdLineParams[i]);
             } else {
 
               String module = specification[0];
@@ -218,20 +239,15 @@ public final class RD3D {
                   new HashMap<Object, Object>();
               properties.put(Output.OUTPUT_WRITER, w);
 
-              try {
-                Output observer = of.createOutput(module, properties);
-                outputs.add(observer);
-              } catch (RuntimeException r) {
-                System.err.println("Unknown output specification "
-                    + specification[0] + ":\n " + r.getMessage());
-              }
+              Output observer = of.createOutput(module, properties);
+              outputs.add(observer);
             }
           }
         }
 
       } else {
         System.err.println("Unparsed command line argument: "
-            + commandLineParams[i]);
+            + cmdLineParams[i]);
       }
     }
   }

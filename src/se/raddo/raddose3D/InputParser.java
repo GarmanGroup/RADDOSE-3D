@@ -85,8 +85,7 @@ public class InputParser implements Input {
       StringBuffer errorString = new StringBuffer("Parser found "
           + errors.size() + " errors in input:\n");
       for (String e : errors) {
-        errorString.append(LINEENDING);
-        errorString.append(e);
+        errorString.append(LINEENDING).append(e);
       }
       throw new InputException(errorString.toString());
     }

@@ -37,7 +37,11 @@ public class Histogram {
 
   /** Total number of observations so far. */
   private int          observationCount;
+
+  /** Running sum of the positions of observations. */
   private double       observationPositionSum;
+
+  /** Running sum of the weighted positions of observations. */
   private double       observationWeightedSum;
 
   /**
@@ -219,6 +223,14 @@ public class Histogram {
     return observationWeightSum;
   }
 
+  /**
+   * Returns the weighted positional mean of all observations. Unweighted
+   * observations are treated as observations with weight 1.
+   * 
+   * @return
+   *         weighted positional mean of all observations.
+   *         null is returned if there are no previous observations.
+   */
   public Double getWeightedPositionMean() {
     if (observationCount == 0) {
       return null;

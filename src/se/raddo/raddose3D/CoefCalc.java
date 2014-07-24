@@ -1,21 +1,13 @@
 package se.raddo.raddose3D;
 
 public abstract class CoefCalc {
-  public abstract double getDensity();
-
-  @Override
-  public abstract String toString();
-
   /**
-   * Calculate cross-sections for the new Wedge/Beam scenario.
+   * Calculate cross-sections for the new Beam.
    * 
-   * @param w
-   *          Wedge object
-   *          TODO: Can the coefficients ever be dependent on the wedge?
    * @param b
    *          Beam object
    */
-  public abstract void updateCoefficients(Wedge w, Beam b);
+  public abstract void updateCoefficients(Beam b);
 
   /**
    * Returns the current absorption coefficient (photoelectric effect).
@@ -42,4 +34,12 @@ public abstract class CoefCalc {
    *         elastic scattering coefficient in units m^-1 (tbc)
    */
   public abstract double getElasticCoefficient();
+
+  /**
+   * Returns the density of the crystal.
+   * 
+   * @return
+   *         crystal density in g/ml.
+   */
+  public abstract double getDensity();
 }

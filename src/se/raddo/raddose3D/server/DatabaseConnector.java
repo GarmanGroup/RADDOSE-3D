@@ -16,6 +16,12 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class DatabaseConnector {
   /**
+   * Constants for declaring SQL statement parameters.
+   */
+  private static final int SQL_1          = 1, SQL_2 = 2, SQL_3 = 3,
+                                          SQL_4 = 4, SQL_5 = 5, SQL_6 = 6;
+
+  /**
    * Lock to ensure only one thread can access a single connection. More
    * flexible than 'synchronized'.
    */
@@ -68,19 +74,11 @@ public class DatabaseConnector {
    *          Username for MySQL connection.
    * @param password
    *          Password for MySQL connection.
-   * @throws ClassNotFoundException
-   *           MySQL Connector/J not found.
-   * @throws InstantiationException
-   *           MySQL Connector/J may not be the correct version for the local
-   *           architecture.
-   * @throws IllegalAccessException
-   *           MySQL database name or credentials incorrect.
    * @throws SQLException
    *           MySQL database name or credentials incorrect.
    */
   public void connect(final String username, final String password)
-      throws ClassNotFoundException, InstantiationException,
-      IllegalAccessException, SQLException {
+      throws SQLException {
     if (conn == null) {
       lock.lock();
 
@@ -92,13 +90,16 @@ public class DatabaseConnector {
         connPass = password;
         reconnect();
       } catch (final ClassNotFoundException e) {
-        throw e;
+        throw new SQLException(
+            "Probable cause of error: MySQL Connector/J not found", e);
       } catch (final InstantiationException e) {
-        throw e;
+        throw new SQLException(
+            "Probable cause of error: MySQL Connector/J may not be the "
+                + "correct version for the local architecture.", e);
       } catch (final IllegalAccessException e) {
-        throw e;
-      } catch (final SQLException e) {
-        throw e;
+        throw new SQLException(
+            "Probable cause of error: MySQL database name or "
+                + "credentials incorrect.", e);
       } finally {
         lock.unlock();
       }
@@ -118,8 +119,9 @@ public class DatabaseConnector {
     if (conn != null) {
       try {
         conn.close();
-      } catch (Exception e) {
-        // Ignore any closing errors
+      } catch (SQLException e) {
+        // Report the exception, but essentially ignore it.
+        reportSQLException(e);
       }
       conn = null;
     }
@@ -151,7 +153,7 @@ public class DatabaseConnector {
   private void ensureConnectionPresent() {
     lock.lock();
     if (conn == null) {
-      throw new RuntimeException("Connection not present!");
+      throw new IllegalStateException("Connection not present!");
     }
 
     Statement st = null;
@@ -180,6 +182,12 @@ public class DatabaseConnector {
     }
   }
 
+  /**
+   * Returns the highest priority of all jobs queued in the database.
+   * 
+   * @return
+   *         job priority, or 0 if the job queue is empty.
+   */
   public Integer getHighestPriority() {
     lock.lock();
     ensureConnectionPresent();
@@ -191,7 +199,7 @@ public class DatabaseConnector {
       rs = st
           .executeQuery("SELECT MAX(Queue) FROM queue WHERE Status = 'Queued'");
       if (rs.next()) {
-        return rs.getInt(1);
+        return rs.getInt(SQL_1);
       }
     } catch (SQLException ex) {
       reportSQLException(ex);
@@ -253,10 +261,10 @@ public class DatabaseConnector {
           + "FROM queue "
           + "WHERE Status = 'Queued' AND Queue >= ? "
           + "ORDER BY Priority ASC LIMIT 1");
-      pst.setInt(1, priority);
+      pst.setInt(SQL_1, priority);
       rs = pst.executeQuery();
       if (rs.next()) {
-        return rs.getLong(1);
+        return rs.getLong(SQL_1);
       }
     } catch (SQLException ex) {
       reportSQLException(ex);
@@ -300,7 +308,7 @@ public class DatabaseConnector {
       pst = conn.prepareStatement("UPDATE queue "
           + "SET Status = 'Running' "
           + "WHERE Status = 'Queued' AND JobID = ?");
-      pst.setLong(1, jobid);
+      pst.setLong(SQL_1, jobid);
       int changedRows = pst.executeUpdate();
       success = (changedRows == 1);
     } catch (SQLException ex) {
@@ -319,7 +327,7 @@ public class DatabaseConnector {
       pst = conn.prepareStatement("UPDATE jobs "
           + "SET TimeStarted = NOW() "
           + "WHERE ID = ?");
-      pst.setLong(1, jobid);
+      pst.setLong(SQL_1, jobid);
       pst.executeUpdate(); // ignore outcome
     } catch (SQLException ex) {
       reportSQLException(ex);
@@ -356,10 +364,10 @@ public class DatabaseConnector {
     ResultSet rs = null;
     try {
       pst = conn.prepareStatement("SELECT Commands FROM jobs WHERE ID = ?");
-      pst.setLong(1, id);
+      pst.setLong(SQL_1, id);
       rs = pst.executeQuery();
       if (rs.next()) {
-        return rs.getString(1);
+        return rs.getString(SQL_1);
       }
     } catch (SQLException ex) {
       reportSQLException(ex);
@@ -383,6 +391,21 @@ public class DatabaseConnector {
     return null;
   }
 
+  /**
+   * Create a virtual file in the database from a binary stream.
+   * 
+   * @param jobID
+   *          The job number that this file is associated with.
+   * @param fileName
+   *          The name of the virtual file. If the file already exists, it will
+   *          be overwritten.
+   * @param blob
+   *          The content of the virtual file as a binary FileInputStream.
+   * @param blobLength
+   *          The number of bytes in the file stream.
+   * @param type
+   *          The associated file type.
+   */
   public void writeBLOB(final Long jobID, final String fileName,
       final FileInputStream blob, final Long blobLength, final OutputType type)
   {
@@ -394,10 +417,10 @@ public class DatabaseConnector {
       pst = conn
           .prepareStatement("REPLACE INTO output (JobID, Name, Type, Content) "
               + "VALUES (?, ?, ?, ?)");
-      pst.setLong(1, jobID);
-      pst.setString(2, fileName);
-      pst.setString(3, typeEnumToString(type));
-      pst.setBinaryStream(4, blob, blobLength);
+      pst.setLong(SQL_1, jobID);
+      pst.setString(SQL_2, fileName);
+      pst.setString(SQL_3, typeEnumToString(type));
+      pst.setBinaryStream(SQL_4, blob, blobLength);
       pst.executeUpdate();
     } catch (SQLException ex) {
       reportSQLException(ex);
@@ -413,6 +436,19 @@ public class DatabaseConnector {
     }
   }
 
+  /**
+   * Create a virtual file in the database from a string.
+   * 
+   * @param jobID
+   *          The job number that this file is associated with.
+   * @param fileName
+   *          The name of the virtual file. If the file already exists, it will
+   *          be overwritten.
+   * @param fileContent
+   *          The content of the virtual file as a single string.
+   * @param type
+   *          The associated file type.
+   */
   public void writeOutputFile(final Long jobID, final String fileName,
       final String fileContent, final OutputType type) {
     lock.lock();
@@ -423,10 +459,10 @@ public class DatabaseConnector {
       pst = conn
           .prepareStatement("REPLACE INTO output (JobID, Name, Type, Content) "
               + "VALUES (?, ?, ?, ?)");
-      pst.setLong(1, jobID);
-      pst.setString(2, fileName);
-      pst.setString(3, typeEnumToString(type));
-      pst.setString(4, fileContent);
+      pst.setLong(SQL_1, jobID);
+      pst.setString(SQL_2, fileName);
+      pst.setString(SQL_3, typeEnumToString(type));
+      pst.setString(SQL_4, fileContent);
       pst.executeUpdate();
     } catch (SQLException ex) {
       reportSQLException(ex);
@@ -463,9 +499,9 @@ public class DatabaseConnector {
       pst = conn
           .prepareStatement("UPDATE output SET Content = CONCAT(Content, ?) "
               + "WHERE JobID = ? AND Name = ?");
-      pst.setString(1, stringToAppend);
-      pst.setLong(2, jobID);
-      pst.setString(3, fileName);
+      pst.setString(SQL_1, stringToAppend);
+      pst.setLong(SQL_2, jobID);
+      pst.setString(SQL_3, fileName);
       pst.executeUpdate();
     } catch (SQLException ex) {
       reportSQLException(ex);
@@ -481,6 +517,12 @@ public class DatabaseConnector {
     }
   }
 
+  /**
+   * Declare the job finished and remove it from the job queue.
+   * 
+   * @param jobID
+   *          The unique job identifier.
+   */
   public void finalizeJob(final Long jobID) {
     lock.lock();
     ensureConnectionPresent();
@@ -491,8 +533,8 @@ public class DatabaseConnector {
           .prepareStatement("UPDATE jobs "
               + "SET Finished = 'Y', Version = ?, TimeCompleted = NOW() "
               + "WHERE ID = ?");
-      pst.setLong(1, getVersionNumber());
-      pst.setLong(2, jobID);
+      pst.setLong(SQL_1, getVersionNumber());
+      pst.setLong(SQL_2, jobID);
       pst.executeUpdate();
     } catch (SQLException ex) {
       reportSQLException(ex);
@@ -508,7 +550,7 @@ public class DatabaseConnector {
 
     try {
       pst = conn.prepareStatement("DELETE FROM queue WHERE JobID = ?");
-      pst.setLong(1, jobID);
+      pst.setLong(SQL_1, jobID);
       pst.executeUpdate();
     } catch (SQLException ex) {
       reportSQLException(ex);
@@ -525,16 +567,27 @@ public class DatabaseConnector {
     lock.unlock();
   }
 
+  /**
+   * Retrieve the database internal representation (an integer number) of a
+   * given RADDOSE3D instance version string.
+   * 
+   * @param versionString
+   *          A string containing a RADDOSE3D version (e.g. "1.1.1000").
+   * @return
+   *         A number representing the version of the given RADDOSE3D instance
+   *         string or null if the version string has not been defined in the
+   *         database.
+   */
   private Long selectVersionNumber(final String versionString) {
     PreparedStatement pst = null;
     ResultSet rs = null;
 
     try {
       pst = conn.prepareStatement("SELECT ID FROM versions WHERE Version = ?");
-      pst.setString(1, versionString);
+      pst.setString(SQL_1, versionString);
       rs = pst.executeQuery();
       if (rs.next()) {
-        return rs.getLong(1);
+        return rs.getLong(SQL_1);
       }
     } catch (SQLException ex) {
       reportSQLException(ex);
@@ -558,46 +611,62 @@ public class DatabaseConnector {
     return null;
   }
 
+  /**
+   * Retrieve the database internal representation (an integer number) of the
+   * current RADDOSE3D instance version. If the current RADDOSE3D instance
+   * version is unknown to the database, then register it.
+   * 
+   * @return
+   *         A number representing the version of the currently running
+   *         RADDOSE3D instance.
+   */
   public Long getVersionNumber() {
-    if (version == null) {
-      lock.lock();
-      ensureConnectionPresent();
-
-      version = selectVersionNumber(se.raddo.raddose3D.Version.VERSION_STRING);
-
-      if (version == null) {
-        // version not yet registered
-        PreparedStatement pst = null;
-
-        try {
-          pst = conn
-              .prepareStatement("INSERT INTO versions "
-                  + "(jar, Version, Compilation) "
-                  + "VALUES (NULL, ?, NOW())");
-          pst.setString(1, se.raddo.raddose3D.Version.VERSION_STRING);
-          pst.executeUpdate();
-        } catch (SQLException ex) {
-          reportSQLException(ex);
-        } finally {
-          try {
-            if (pst != null) {
-              pst.close();
-            }
-          } catch (SQLException ex) {
-            reportSQLException(ex);
-          }
-        }
-
-        version = selectVersionNumber(
-            se.raddo.raddose3D.Version.VERSION_STRING);
-
-        if (version == null) {
-          throw new RuntimeException("Could not determine version ID.");
-        }
-      }
-
-      lock.unlock();
+    if (version != null) {
+      // Use cached value
+      return version;
     }
+
+    // Obtain registered value from database
+    lock.lock();
+    ensureConnectionPresent();
+
+    version = selectVersionNumber(se.raddo.raddose3D.Version.VERSION_STRING);
+    if (version != null) {
+      // Version is already registered in the database. Use that.
+      lock.unlock();
+      return version;
+    }
+
+    // version has not yet been registered in the database. Do this now.
+    PreparedStatement pst = null;
+
+    try {
+      pst = conn
+          .prepareStatement("INSERT INTO versions "
+              + "(jar, Version, Compilation) "
+              + "VALUES (NULL, ?, NOW())");
+      pst.setString(SQL_1, se.raddo.raddose3D.Version.VERSION_STRING);
+      pst.executeUpdate();
+    } catch (SQLException ex) {
+      reportSQLException(ex);
+    } finally {
+      try {
+        if (pst != null) {
+          pst.close();
+        }
+      } catch (SQLException ex) {
+        reportSQLException(ex);
+      }
+    }
+
+    version = selectVersionNumber(se.raddo.raddose3D.Version.VERSION_STRING);
+    lock.unlock();
+
+    if (version == null) {
+      // Version still unknown? That's a problem.
+      throw new IllegalStateException("Could not determine version ID.");
+    }
+
     return version;
   }
 
@@ -623,7 +692,7 @@ public class DatabaseConnector {
       case TEXT:
         return "text";
       default:
-        throw new RuntimeException("Using undefined OutputType " + type);
+        throw new IllegalArgumentException("Unknown OutputType " + type);
     }
   }
 
@@ -638,12 +707,12 @@ public class DatabaseConnector {
           .prepareStatement("REPLACE INTO runtimeestimate "
               + "(JobID, Version, X1, X2, realtime, usertime) "
               + "VALUES (?, ?, ?, ?, ?, ?)");
-      pst.setLong(1, jobID);
-      pst.setLong(2, getVersionNumber());
-      pst.setLong(3, x1);
-      pst.setLong(4, x2);
-      pst.setDouble(5, realTime);
-      pst.setDouble(6, userTime);
+      pst.setLong(SQL_1, jobID);
+      pst.setLong(SQL_2, getVersionNumber());
+      pst.setLong(SQL_3, x1);
+      pst.setLong(SQL_4, x2);
+      pst.setDouble(SQL_5, realTime);
+      pst.setDouble(SQL_6, userTime);
       pst.executeUpdate();
     } catch (SQLException ex) {
       reportSQLException(ex);
@@ -660,6 +729,21 @@ public class DatabaseConnector {
     lock.unlock();
   }
 
+  /**
+   * Mark a job as crashed in the database, and store the stack trace for future
+   * debugging purposes.
+   * 
+   * @param jobID
+   *          The unique job identifier.
+   * @param message
+   *          Custom message prefix for the crash (should end with a newline
+   *          character).
+   * @param reason
+   *          Throwable element causing the crash. The contained message and
+   *          stacktrace will be reported.
+   * @return
+   *         True on success, false on failure to mark the job as crashed.
+   */
   public Boolean markThreadAsCrashed(final Long jobID, final String message,
       final Throwable reason) {
     lock.lock();
@@ -672,7 +756,7 @@ public class DatabaseConnector {
       pst = conn
           .prepareStatement("REPLACE INTO crashes (JobID, StackTrace) "
               + "VALUES (?, ?)");
-      pst.setLong(1, jobID);
+      pst.setLong(SQL_1, jobID);
 
       String crashmessage = message.concat("Crash due to "
           + reason.getMessage() + "\n");
@@ -681,7 +765,7 @@ public class DatabaseConnector {
         crashmessage = crashmessage.concat(s.toString() + "\n");
       }
 
-      pst.setString(2, crashmessage);
+      pst.setString(SQL_2, crashmessage);
       pst.executeUpdate();
       success = true;
     } catch (SQLException ex) {
@@ -698,5 +782,4 @@ public class DatabaseConnector {
     }
     return success;
   }
-
 }

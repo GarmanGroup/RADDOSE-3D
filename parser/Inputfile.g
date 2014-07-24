@@ -151,9 +151,11 @@ DDM : ('D'|'d')('D'|'d')('M'|'m') ;
 crystalDDMKeyword returns [DDM value]
 	: SIMPLE { $value = new DDMSimple(); }
 	| LINEAR { $value = new DDMLinear(); }
+	| LEAL   { $value = new DDMLeal(); }
 	;
 SIMPLE : ('S'|'s')('I'|'i')('M'|'m')('P'|'p')('L'|'l')('E'|'e') ;
 LINEAR : ('L'|'l')('I'|'i')('N'|'n')('E'|'e')('A'|'a')('R'|'r') ;
+LEAL : ('L'|'l')('E'|'e')('A'|'a')('L'|'l') ;
 
 crystalCoefcalc returns [int value]
 	: ABSCOEFCALC a=crystalCoefcalcKeyword  { $value = $a.value; };

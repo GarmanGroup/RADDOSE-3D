@@ -10,21 +10,26 @@ import java.util.Vector;
  * Server for batch processing of RADDOSE-3D jobs.
  */
 public final class RaddoseServer {
+  /** Maximum time to wait for remaining jobs in seconds. */
+  private static final int     SHUTDOWNTIME       = 60;
+
   /** limit for the maximum number of parallel jobs to be run. */
-  private static final Integer MAXPROCESSES = 2;
+  private static final Integer MAXPROCESSES       = 2;
 
   /**
    * Maximum time in milliseconds to wait in main loop.
    * Events will interrupt.
    */
-  private static final long    TICKWAIT     = 5000;
+  private static final long    TICKWAIT           = 5000;
 
-  // TODO: Shutdown mechanism is in place, but there is no initiation routine
+  /** Number of milliseconds per second. */
+  private static final int     SECONDSINMS        = 1000;
+
   /**
    * If set to true, then the server will not start processing any new jobs.
    * Once all running jobs are completed, the server will exit.
    */
-  private Boolean              shutdown     = false;
+  private Boolean              shutdownInProgress = false;
 
   /**
    * Main method for RADDOSE-3D server.
@@ -36,10 +41,7 @@ public final class RaddoseServer {
     System.out.println("RADDOSE-3D Server starting up.");
 
     RaddoseServer rds = new RaddoseServer();
-
     rds.run(MAXPROCESSES);
-
-    System.out.println("RADDOSE-3D Server shutting down.");
   }
 
   /**
@@ -49,15 +51,13 @@ public final class RaddoseServer {
    *          maximum number of parallel jobs to be run.
    */
   private void run(final Integer maxProcesses) {
+    createShutdownHook();
+
     DatabaseConnector sql = new DatabaseConnector();
     try {
       sql.connect("root", "raddose");
     } catch (SQLException e) {
-      System.err.println("SQL-Exception while connecting to database: " + e);
-      return;
-    } catch (Exception e) {
-      System.err.println("Exception while connecting to database: " + e);
-      e.printStackTrace();
+      System.err.println("Exception while connecting to SQL database: " + e);
       return;
     }
 
@@ -80,21 +80,21 @@ public final class RaddoseServer {
 
     Vector<Raddose3DWorker> workers = new Vector<Raddose3DWorker>();
     Iterator<Raddose3DWorker> workerIterator;
-    StringBuffer status;
 
     System.out.println("RADDOSE-3D Server ready.");
 
-    while ((!shutdown) || (!workers.isEmpty())) {
+    while ((!shutdownInProgress) || (!workers.isEmpty())) {
 
       // CheckIfThreadsAreAlive
       // If any thread finished or died
       //  update timing information
 
       workerIterator = workers.iterator();
-      status = new StringBuffer("Thread status:");
+      System.out.print("Thread status:");
+
       while (workerIterator.hasNext()) {
         Raddose3DWorker w = workerIterator.next();
-        status.append(" #" + w.getJobID() + ":" + w.getState());
+        System.out.print(" #" + w.getJobID() + ":" + w.getState());
         if (w.getState() == Thread.State.TERMINATED) {
 
           if (w.getCrashReason() != null) {
@@ -111,17 +111,17 @@ public final class RaddoseServer {
           workerIterator.remove();
         }
       }
-      System.out.println(status);
+      System.out.println();
 
-      if (!shutdown && (workers.size() < MAXPROCESSES)) {
-        if (sql.getHighestPriority() > workers.size()) {
-          Long nextJob = sql
-              .getJobIDWithPriorityGreaterOrEqual(workers.size() + 1);
-          if (nextJob != null) {
-            for (Raddose3DWorker r : workers) {
-              if (r.getJobID().equals(nextJob)) {
-                nextJob = null;
-              }
+      if (!shutdownInProgress
+          && (workers.size() < maxProcesses)
+          && (sql.getHighestPriority() > workers.size())) {
+        Long nextJob = sql
+            .getJobIDWithPriorityGreaterOrEqual(workers.size() + 1);
+        if (nextJob != null) {
+          for (Raddose3DWorker r : workers) {
+            if (r.getJobID().equals(nextJob)) {
+              nextJob = null;
             }
           }
           if (nextJob != null) {
@@ -161,5 +161,35 @@ public final class RaddoseServer {
    */
   private String getCurrentVersion() {
     return se.raddo.raddose3D.Version.VERSION_BUILD;
+  }
+
+  /**
+   * Cleanly shut down the server instance.
+   */
+  public void shutdown() {
+    shutdownInProgress = true;
+  }
+
+  /**
+   * Install a shutdown hook to intercept CTRL+C and other shutdown signals.
+   */
+  private void createShutdownHook() {
+    // Keep final reference to this RaddoseServer instance...
+    final RaddoseServer rds = this;
+    final Thread mainThread = Thread.currentThread();
+
+    Runtime.getRuntime().addShutdownHook(new Thread() {
+      @Override
+      public void run() {
+        rds.shutdown(); // ...to allow variable capture and thus shutdown.
+        System.out.println(String.format("Server shutting down. "
+            + "This may take up to %d seconds", SHUTDOWNTIME));
+        try {
+          mainThread.join(SHUTDOWNTIME * SECONDSINMS);
+        } catch (InterruptedException e) {
+          // Do nothing.
+        }
+      }
+    });
   }
 }

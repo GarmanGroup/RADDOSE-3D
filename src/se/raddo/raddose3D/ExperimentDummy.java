@@ -93,7 +93,7 @@ public class ExperimentDummy extends Experiment {
      * An internal implementation of a dummy Crystal, that only computes the
      * size of the bounding box.
      */
-    private class DummyCrystal extends Crystal {
+    private static class DummyCrystal extends Crystal {
       /** 3 element array defining dimensions of bounding box in voxels. */
       private final int[] crystSizeVoxels;
 

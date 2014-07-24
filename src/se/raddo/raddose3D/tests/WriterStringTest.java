@@ -1,6 +1,8 @@
 package se.raddo.raddose3D.tests;
 
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 
 import org.testng.Assert;
 import org.testng.annotations.*;
@@ -50,11 +52,11 @@ public class WriterStringTest {
     System.out.println("@Test - testWriterStringAfterClose");
   }
 
-
   @Test
-  public void testWriterStringAsOutputStream() {
+  public void testWriterStringAsOutputStream()
+      throws UnsupportedEncodingException {
     WriterString w = new WriterString();
-    PrintWriter p = new PrintWriter(w);
+    PrintWriter p = new PrintWriter(new OutputStreamWriter(w, "UTF-8"));
 
     p.write("asdf");
     p.write("");

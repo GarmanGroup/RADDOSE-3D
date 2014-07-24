@@ -181,11 +181,14 @@ public class CrystalCuboid extends Crystal {
     crystCoord = tempCrystCoords; // Final value
 
     /*
-     * Set initial vertex positions:
+     * Set initial vertex positions. A constant 'delta' is added to each vertex so that the voxels
+     * on the surface do not appear beyond the faces defined by the vertices. Basically, the box 
+     * bounded by the vertices is slightly bigger than the box bounded by the voxels, and so when we 
+     * rotate everything, the voxels never end up outside the 'vertex' box due to rounding errors.
      */
 
-    // make sure rounding errors don't put voxels outside the surface
-    double delta = 10 / crystalPixPerUM;
+    // make sure rounding errors don't put voxels outside the surface. Should be small relative to voxel size.
+    double delta = 1 / 10*crystalPixPerUM;
 
     // Set initial positions of vertices
     double[][] makeVertices = {
@@ -325,7 +328,7 @@ public class CrystalCuboid extends Crystal {
       final Wedge wedge) {
 
     // Found minimal distance to plane
-    Double minDist = java.lang.Double.POSITIVE_INFINITY;
+    Double minDist = Double.POSITIVE_INFINITY;
 
     /*
      * Loop through each face of the crystal and find the distance along the z
@@ -354,7 +357,7 @@ public class CrystalCuboid extends Crystal {
      * Check that the mindist has been changed, ie that there was at least one
      * non-zero positive distance along z axis to a plane.
      */
-    if (minDist == java.lang.Double.POSITIVE_INFINITY) {
+    if (minDist.isInfinite()) {
       throw (new RuntimeErrorException(
           null,
           String

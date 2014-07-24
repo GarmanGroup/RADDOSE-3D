@@ -2,6 +2,10 @@ package se.raddo.raddose3D;
 
 import java.util.Map;
 
+/**
+ * Produces a CSV file describing the final three-dimensional dose distribution
+ * within the crystal at the end of the experiment.
+ */
 public class OutputFinalDoseStateCSV implements Output {
   /** Where output should be directed to. */
   private final Writer w;

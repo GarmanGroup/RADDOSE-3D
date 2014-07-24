@@ -66,9 +66,6 @@ public class Element {
   /** Number of expansions of the polynomial. */
   private static final int    POLYNOMIAL_EXPANSION      = 4;
 
-  /** Conversion factor [Barns/Atom] = C * [cm^2/g]. */
-  public static final double  C                         = 53.2400017;
-
   /** Different types of calculated cross-sections. */
   public enum CrossSection {
     /**
@@ -223,10 +220,8 @@ public class Element {
   }
 
   /**
-   * energy is between two edges; this function finds the corresponding edge
-   * and
-   * calculates bax for this edge. Corrects bax if atomic number is below 29,
-   * and then uses this to calculate the cross-sections.
+   * Obtain the photoelectric, elastic and incoherent cross-sections for a given
+   * energy and calculate the total cross-section.
    * 
    * @param energy
    *          X-ray photon energy in keV
@@ -234,15 +229,53 @@ public class Element {
    *         Map structure containing the photoelectric, coherent and total
    *         cross sections in units Barns/Atom.
    */
-  public Map<CrossSection, Double> calculateMu(final double energy) {
+  public Map<CrossSection, Double> getAbsCoefficients(final double energy) {
+    double photoelectric = getPhotoelectricXSForEnergy(energy);
+
+    double elastic = 0;
+    if (elementData.get(ElementDatabase.DatabaseFields.COHERENT_COEFF_0) != 0) {
+      elastic = baxForEdge(energy, AbsorptionEdge.C);
+    }
+
+    double binx = 0;
+    if (elementData.get(ElementDatabase.DatabaseFields.INCOHERENT_COEFF_0) != 0)
+    {
+      binx = baxForEdge(energy, AbsorptionEdge.I);
+    }
+
+    double attenuation = photoelectric + elastic + binx;
+
+    Map<CrossSection, Double> results = new HashMap<CrossSection, Double>();
+    results.put(CrossSection.COHERENT, elastic);
+    results.put(CrossSection.PHOTOELECTRIC, photoelectric); // mu, abs coeff.
+    results.put(CrossSection.TOTAL, attenuation);
+    return results;
+  }
+
+  /**
+   * Determine the photoelectric cross-section for a given energy.
+   * Find the corresponding edge for the energy and the known absorption edges.
+   * Obtain the cross-section and correct it for atomic numbers below 29. Print
+   * a warning if we're too close to an absorption edge.
+   * 
+   * @param energy
+   *          X-ray photon energy in keV.
+   * @return
+   *         photoelectric absorption cross-section in units Barns/Atom.
+   */
+  @SuppressWarnings({ "PMD.CyclomaticComplexity", "PMD.NPathComplexity" })
+  private double getPhotoelectricXSForEnergy(final double energy) {
     Double absorptionEdgeK =
         elementData.get(ElementDatabase.DatabaseFields.EDGE_K);
+    if (absorptionEdgeK == null) {
+      throw new IllegalStateException("K Absorption Edge undefined");
+    }
     Double absorptionEdgeL =
         elementData.get(ElementDatabase.DatabaseFields.EDGE_L);
     Double absorptionEdgeM =
         elementData.get(ElementDatabase.DatabaseFields.EDGE_M);
 
-    if ((absorptionEdgeK != null && energy < absorptionEdgeK
+    if ((energy < absorptionEdgeK
         && energy > absorptionEdgeK - ABSORPTION_EDGE_TOLERANCE)
         || (absorptionEdgeL != null && energy < absorptionEdgeL
         && energy > absorptionEdgeL - ABSORPTION_EDGE_TOLERANCE)
@@ -253,52 +286,35 @@ public class Element {
           + elementName);
     }
 
-    double bax = 0;
-    if (energy > absorptionEdgeK) {
-      bax = baxForEdge(energy, AbsorptionEdge.K);
-    } else if (energy < absorptionEdgeK && energy > absorptionEdgeL) {
-      bax = baxForEdge(energy, AbsorptionEdge.L);
-    } else if (energy < absorptionEdgeL && energy > absorptionEdgeM) {
-      bax = baxForEdge(energy, AbsorptionEdge.M);
-    } else if (energy < absorptionEdgeM) {
-      bax = baxForEdge(energy, AbsorptionEdge.N);
+    // Obtain photoelectric absorption coefficient using the closest edge.
+    double photoelectric = 0;
+    if ((energy > absorptionEdgeK) || (absorptionEdgeL == null)) {
+      photoelectric = baxForEdge(energy, AbsorptionEdge.K);
+    } else if ((energy > absorptionEdgeL) || (absorptionEdgeM == null)) {
+      photoelectric = baxForEdge(energy, AbsorptionEdge.L);
+    } else if (energy > absorptionEdgeM) {
+      photoelectric = baxForEdge(energy, AbsorptionEdge.M);
+    } else {
+      photoelectric = baxForEdge(energy, AbsorptionEdge.N);
     }
 
-    // Fortran says...
-    // correct for L-edges since McMaster uses L1 edge.
-    // Use edge jumps for correct X-sections.
-
+    // Correction of the absorption coefficient for light elements
     if (atomicNumber <= LIGHT_ATOM_MAX_NUM) {
-      if (energy > elementData.get(ElementDatabase.DatabaseFields.L3)
-          && energy < elementData.get(ElementDatabase.DatabaseFields.L2)) {
-        bax /= (LJ_1 * LJ_2);
+      // Fortran says...
+      // correct for L-edges since McMaster uses L1 edge.
+      // Use edge jumps for correct X-sections.
+      if ((energy > elementData.get(ElementDatabase.DatabaseFields.L3))
+          && (energy < elementData.get(ElementDatabase.DatabaseFields.L2))) {
+        photoelectric /= (LJ_1 * LJ_2);
       }
 
-      if (energy > elementData.get(ElementDatabase.DatabaseFields.L2)
-          && energy < absorptionEdgeL) {
-        bax /= LJ_1;
+      if ((energy > elementData.get(ElementDatabase.DatabaseFields.L2))
+          && (energy < absorptionEdgeL)) {
+        photoelectric /= LJ_1;
       }
     }
 
-    double bcox = 0;
-    double binx = 0;
-
-    if (elementData.get(ElementDatabase.DatabaseFields.COHERENT_COEFF_0) != 0) {
-      bcox = baxForEdge(energy, AbsorptionEdge.C);
-    }
-
-    if (elementData.get(ElementDatabase.DatabaseFields.INCOHERENT_COEFF_0) != 0)
-    {
-      binx = baxForEdge(energy, AbsorptionEdge.I);
-    }
-
-    double btox = bax + bcox + binx;
-
-    Map<CrossSection, Double> results = new HashMap<CrossSection, Double>();
-    results.put(CrossSection.COHERENT, bcox); // elastic
-    results.put(CrossSection.PHOTOELECTRIC, bax); // mu, abs coefficient
-    results.put(CrossSection.TOTAL, btox); // attenuation
-    return results;
+    return photoelectric;
   }
 
   /**

@@ -37,5 +37,10 @@ public class ElementDatabaseTest {
       Element e = edb.getElement(i);
       Assertion.isNotNull(e, "Could not find element no. " + i);
     }
+    
+    Element mg = edb.getElement("Mg");
+    Assertion.isNotNull(mg, "Could not find manganese by name");
+    
+    et.manganeseTests(mg);
   }
 }

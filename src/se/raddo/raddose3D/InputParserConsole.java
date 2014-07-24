@@ -33,8 +33,7 @@ public class InputParserConsole extends InputParserString {
 
     String s;
     while ((s = in.readLine()) != null) {
-      sb.append(s);
-      sb.append(LINEENDING);
+      sb.append(s).append(LINEENDING);
     }
     // Ctrl-Z terminates input
 

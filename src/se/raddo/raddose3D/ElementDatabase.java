@@ -199,7 +199,7 @@ public class ElementDatabase {
       try {
         singleton = new ElementDatabase();
       } catch (IOException e) {
-        throw new RuntimeException("Error accessing element database file "
+        throw new IllegalStateException("Error accessing element database file "
             + MUCALC_FILE, e);
       }
     }
