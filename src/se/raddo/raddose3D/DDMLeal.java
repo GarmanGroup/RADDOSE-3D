@@ -31,7 +31,7 @@ public class DDMLeal implements DDM {
    * Decay Parameter gamma.
    */
   private static final double GAMMA = 0.040691675989120;
-
+//TODO make boolean
   /**
    * Print string to tell user the type of dose decay model being used.
    *
