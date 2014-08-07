@@ -248,13 +248,14 @@ public class CoefCalcTests {
       Beam b = new BeamTophat(beamProperties);
 
       coefCalc.updateCoefficients(b);
+      coefCalcRDV2.updateCoefficients(b);
 
       // Values obtained from RADDOSEv2, http://www.raddo.se/legacy/
       Assertion.equals(coefCalc.getAbsorptionCoefficient(), coefCalcRDV2.getAbsorptionCoefficient(),
           "Absorption Coefficient", 0.000005);
       Assertion.equals(coefCalc.getElasticCoefficient(),coefCalcRDV2.getElasticCoefficient(),
           "Elastic Coefficient", 0.000005);
-      Assertion.equals(coefCalc.getAttenuationCoefficient(), coefCalcRDV2.getElasticCoefficient(),
+      Assertion.equals(coefCalc.getAttenuationCoefficient(), coefCalcRDV2.getAttenuationCoefficient(),
           "Attenuation Coefficient", 0.000005);
     }
   }
