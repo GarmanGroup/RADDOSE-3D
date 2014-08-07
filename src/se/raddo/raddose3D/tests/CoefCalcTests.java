@@ -188,9 +188,9 @@ public class CoefCalcTests {
     // Values obtained from RADDOSEv2, http://www.raddo.se/legacy/
     Assertion.equals(coefCalc.getAbsorptionCoefficient(), 4.60e-04,
         "Absorption Coefficient", 0.000005);
-    Assertion.equals(coefCalc.getElasticCoefficient(), 4.97e-04,
+    Assertion.equals(coefCalc.getElasticCoefficient(), 2.20e-05,
         "Elastic Coefficient", 0.000005);
-    Assertion.equals(coefCalc.getAttenuationCoefficient(), 2.20e-05,
+    Assertion.equals(coefCalc.getAttenuationCoefficient(), 4.97e-04,
         "Attenuation Coefficient", 0.000005);
   }
 }
