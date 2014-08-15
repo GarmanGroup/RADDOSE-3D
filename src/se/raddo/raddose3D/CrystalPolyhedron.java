@@ -279,11 +279,16 @@ public class CrystalPolyhedron extends Crystal {
         final double planeDistance) {
 
       double originNormalDotProduct = dotProduct(origin, normalUnitVector);
-      double directionNormalDotProduct = dotProduct(directionVector,
+/*      double directionNormalDotProduct = dotProduct(directionVector,
           normalUnitVector);
+*/
+
+      // assuming direction vector is always (0, 0, 1)
+
+ //     double directionNormalDotProduct = directionVector[2] * normalUnitVector[2];
 
       double t = -(originNormalDotProduct + planeDistance)
-          / directionNormalDotProduct;
+          / normalUnitVector[2];
 
       return t;
     }
@@ -730,7 +735,7 @@ public class CrystalPolyhedron extends Crystal {
     }
 
     double depth = distancesFound.get(0).doubleValue();
-    
+
     for (int i = 1; i < distancesFound.size(); i += 2) {
       Double addition = distancesFound.get(i + 1) - distancesFound.get(i);
 
