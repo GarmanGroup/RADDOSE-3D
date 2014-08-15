@@ -730,7 +730,7 @@ public class CrystalPolyhedron extends Crystal {
     }
 
     double depth = distancesFound.get(0).doubleValue();
-
+    
     for (int i = 1; i < distancesFound.size(); i += 2) {
       Double addition = distancesFound.get(i + 1) - distancesFound.get(i);
 
