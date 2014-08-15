@@ -51,6 +51,11 @@ scope {
 	String 			crystalType;
 	int 			crystalCoefCalc;
 	CoefCalc		crystalCoefCalcClass;
+	int			crystalDdm;
+	DDM			crystalDdmClass;	
+	Double			gammaParam;
+	Double			b0Param;
+	Double			betaParam;		
 	String			pdb;
 	Double			cellA;
 	Double			cellB;
@@ -93,6 +98,7 @@ if ($crystal::crystalCoefCalc == 3) {
   													$crystal::heavySolutionConcNames, $crystal::heavySolutionConcNums,
   													$crystal::solFrac);
 }
+
 if ($crystal::crystalCoefCalc == 4)
 {
   if ($crystal::heavySolutionConcNames.size() > 0)
@@ -104,6 +110,24 @@ if ($crystal::crystalCoefCalc == 4)
 
 $crystal::crystalProperties.put(Crystal.CRYSTAL_COEFCALC, $crystal::crystalCoefCalcClass);
 
+if ($crystal::crystalDdm == 1)
+{
+	$crystal::crystalDdmClass = new DDMSimple();
+}
+
+if ($crystal::crystalDdm == 2)
+{
+	$crystal::crystalDdmClass = new DDMLinear();
+}
+
+if ($crystal::crystalDdm == 3)
+{
+	$crystal::crystalDdmClass = new DDMLeal($crystal::gammaParam, $crystal::b0Param, $crystal::betaParam);
+}
+
+$crystal::crystalProperties.put(Crystal.CRYSTAL_DDM, $crystal::crystalDdmClass);
+
+
 $cObj = crystalFactory.createCrystal($crystal::crystalType, $crystal::crystalProperties);
 }
 	: CRYSTAL crystalLine+ ;
@@ -111,7 +135,7 @@ CRYSTAL	: ('C'|'c')('R'|'r')('Y'|'y')('S'|'s')('T'|'t')('A'|'a')('L'|'l') ;
 
 crystalLine 
 	: a=crystalType			{ $crystal::crystalType 			= $a.crystalType; }
-	| b=crystalDDM 			{ $crystal::crystalProperties.put(Crystal.CRYSTAL_DDM, $b.value); }
+	| b=crystalDDM 			{ $crystal::crystalDdm 				= $b.value; }
 	| c=crystalCoefcalc		{ $crystal::crystalCoefCalc			= $c.value; }
 	| d=crystalDim			{ if ($d.properties != null) {
 							   $crystal::crystalProperties.putAll($d.properties);
@@ -119,6 +143,9 @@ crystalLine
 	| e=crystalPPM			{ $crystal::crystalProperties.put(Crystal.CRYSTAL_RESOLUTION, $e.ppm); }
 	| f=crystalAngP 		{ $crystal::crystalProperties.put(Crystal.CRYSTAL_ANGLE_P, $f.value); }
 	| g=crystalAngL			{ $crystal::crystalProperties.put(Crystal.CRYSTAL_ANGLE_L, $g.value); }
+	| h=crystalDecayParam		{ $crystal::gammaParam 					= $h.gammaParam; 
+	                           			  $crystal::b0Param 					= $h.b0Param; 
+	                           			  $crystal::betaParam 					= $h.betaParam; }
 	| m=unitcell			{ $crystal::cellA					= $m.dimA; 
    							  $crystal::cellB 					= $m.dimB; 	
 							  $crystal::cellC 					= $m.dimC;	
@@ -144,18 +171,22 @@ crystalType returns [String crystalType]
 	: TYPE e=STRING {$crystalType = $e.text;};
 TYPE : ('T'|'t')('Y'|'y')('P'|'p')('E'|'e') ;
 
-crystalDDM returns [DDM value]
+crystalDDM returns [int value]
 	: ( DIFFRACTIONDECAYMODEL | DDM ) e=crystalDDMKeyword { $value = $e.value; };
 DIFFRACTIONDECAYMODEL : ('D'|'d')('I'|'i')('F'|'f')('F'|'f')('R'|'r')('A'|'a')('C'|'c')('T'|'t')('I'|'i')('O'|'o')('N'|'n')('D'|'d')('E'|'e')('C'|'c')('A'|'a')('Y'|'y')('M'|'m')('O'|'o')('D'|'d')('E'|'e')('L'|'l') ;
 DDM : ('D'|'d')('D'|'d')('M'|'m') ;
-crystalDDMKeyword returns [DDM value]
-	: SIMPLE { $value = new DDMSimple(); }
-	| LINEAR { $value = new DDMLinear(); }
-	| LEAL   { $value = new DDMLeal(); }
+crystalDDMKeyword returns [int value]
+	: SIMPLE { $value = 1; }
+	| LINEAR { $value = 2; }
+	| LEAL   { $value = 3; }
 	;
 SIMPLE : ('S'|'s')('I'|'i')('M'|'m')('P'|'p')('L'|'l')('E'|'e') ;
 LINEAR : ('L'|'l')('I'|'i')('N'|'n')('E'|'e')('A'|'a')('R'|'r') ;
 LEAL : ('L'|'l')('E'|'e')('A'|'a')('L'|'l') ;
+
+crystalDecayParam returns [Double gammaParam, Double b0Param, Double betaParam]
+	: DECAYPARAM a=FLOAT b=FLOAT c=FLOAT {$gammaParam = Double.parseDouble($a.text); $b0Param = Double.parseDouble($b.text); $betaParam = Double.parseDouble($c.text);};
+DECAYPARAM  : ('D'|'d')('E'|'e')('C'|'c')('A'|'a')('Y'|'y')('P'|'p')('A'|'a')('R'|'r')('A'|'a')('M'|'m');
 
 crystalCoefcalc returns [int value]
 	: ABSCOEFCALC a=crystalCoefcalcKeyword  { $value = $a.value; };
