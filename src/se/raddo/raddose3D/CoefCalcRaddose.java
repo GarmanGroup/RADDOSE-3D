@@ -158,7 +158,6 @@ public class CoefCalcRaddose extends CoefCalc {
     raddoseCandidates.add("./raddose.exe");
     raddoseCandidates.add("../raddose");
     raddoseCandidates.add("../raddose.exe");
-    raddoseCandidates.add("/data/jenkins/jobs/Raddose3D master/workspace/raddose");
     
     boolean found = false;
     String command = null;
