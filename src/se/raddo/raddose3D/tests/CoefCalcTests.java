@@ -214,7 +214,7 @@ public class CoefCalcTests {
       fileList = fileList.concat(subFile.toString() + "\n");
     }
     
-    Assertion.equals(1, 2, fileList);
+//    Assertion.equals(1, 2, fileList);
     
     for (int i=0; i < testCount; i++)
     {
