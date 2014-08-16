@@ -204,17 +204,6 @@ public class CoefCalcTests {
     int testCount = 5;
     
     Random random = new Random(0);
-
-    File path = new File(System.getProperty("user.dir"));
-    File files[] = path.listFiles();
-    
-    String fileList = "";
-    for (File subFile : files)
-    {
-      fileList = fileList.concat(subFile.toString() + "\n");
-    }
-    
-//    Assertion.equals(1, 2, fileList);
     
     for (int i=0; i < testCount; i++)
     {
