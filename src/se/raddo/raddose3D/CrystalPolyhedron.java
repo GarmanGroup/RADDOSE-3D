@@ -57,7 +57,6 @@ public class CrystalPolyhedron extends Crystal {
 
   /**
    * Vertex array containing a variable number of 3-dimension vertices.
-   * Currently set to a default approx. tetrahedron for testing purposes.
    */
   private final double[][]      vertices;
 
@@ -75,6 +74,9 @@ public class CrystalPolyhedron extends Crystal {
    * };
    */
 
+  /**
+   * Vertices which have been rotated for a given wedge angle.
+   */
   private double[][]            rotatedVertices;
 
   /**
@@ -84,6 +86,12 @@ public class CrystalPolyhedron extends Crystal {
    * In groups of 3 - triangles only please, no octagon nonsense.
    */
   private final int[][]         indices;
+  
+  /**
+   * Similar in style to the index array, except each index is replaced
+   * by the corresponding rotatedVertex.
+   */
+  private double[][][]    expandedRotatedVertices;
 
   /* Indices for cuboid */
   /*
@@ -514,6 +522,7 @@ public class CrystalPolyhedron extends Crystal {
     }
 
     vertices = new double[tempVertices.length][3];
+    
 
     for (int i = 0; i < vertices.length; i++) {
       System.arraycopy(tempVertices[i], 0, vertices[i], 0, 3);
@@ -674,6 +683,21 @@ public class CrystalPolyhedron extends Crystal {
     }
 
     calculateNormals(true);
+    
+    /*
+     * Now we populate the expandedRotatedVertex array.
+     */
+    
+    expandedRotatedVertices = new double[indices.length][3][3];
+    
+    for (int i=0; i < indices.length; i++)
+    {
+      for (int j=0; j < 3; j++)
+      {
+        System.arraycopy(rotatedVertices[indices[i][j] - 1], 0, expandedRotatedVertices[i][j],
+            0, 3);
+      }
+    }
   }
 
   /*
@@ -704,16 +728,7 @@ public class CrystalPolyhedron extends Crystal {
       double[] intersectionPoint = Vector.rayTraceToPointWithDistance(
           zAxis, voxCoord, intersectionDistance);
 
-      double[][] triangleVertices = new double[3][3];
-
-      // copy vertices referenced by indices into single array for
-      // passing onto the polygon inclusion test.
-      for (int m = 0; m < 3; m++) {
-        System.arraycopy(vertices[indices[i][m] - 1], 0, triangleVertices[m],
-            0, 3);
-      }
-
-      boolean crosses = Vector.polygonInclusionTest(triangleVertices,
+      boolean crosses = Vector.polygonInclusionTest(expandedRotatedVertices[i],
           intersectionPoint);
 
       if (crosses) {
