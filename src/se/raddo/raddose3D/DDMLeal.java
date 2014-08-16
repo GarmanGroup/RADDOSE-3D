@@ -12,8 +12,6 @@ public class DDMLeal implements DDM {
 
   /**
    * Decay parameters used in Leal et al. (2012) (eqn 4).
-   * The values were found for a cubic crystal of bovine
-   * pancreatic insulin (unpublished) at cryotemperatures (100K).
    */
 
   /**
@@ -33,6 +31,9 @@ public class DDMLeal implements DDM {
 
   /**
    * Array that stores the BEST intensity data
+   * column 1 - h^2 values. Where h = 1/d and d is the spacing between successive
+   * Bragg planes (i.e. resolution)
+   * column 2 - J values. These are expected intensity values
    */
   private static final double[][] BEST_DATA = new double[][] {
       { 0.009000, 117970.000000 },
@@ -355,6 +356,11 @@ public class DDMLeal implements DDM {
     this.B0 = b0;
     this.GAMMA = gamma;
 
+    /*
+     * column 1 - interpolated h^2 values
+     * column 2 - interpolated J values
+     * column 3 - difference between h values
+     */
     interpolatedValues = new double[BEST_DATA.length - 1][3];
 
     /**
