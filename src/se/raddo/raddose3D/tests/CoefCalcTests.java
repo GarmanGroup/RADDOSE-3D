@@ -1,4 +1,5 @@
 package se.raddo.raddose3D.tests;
+import java.io.File;
 import java.util.Random;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -204,7 +205,16 @@ public class CoefCalcTests {
     
     Random random = new Random(0);
 
-    Assertion.equals(1, 2, System.getProperty("user.dir"));
+    File path = new File(System.getProperty("user.dir"));
+    File files[] = path.listFiles();
+    
+    String fileList = "";
+    for (File subFile : files)
+    {
+      fileList = fileList.concat(subFile.toString() + " ");
+    }
+    
+    Assertion.equals(1, 2, fileList);
     
     for (int i=0; i < testCount; i++)
     {
