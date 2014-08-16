@@ -204,6 +204,8 @@ public class CoefCalcTests {
     
     Random random = new Random(0);
 
+    Assertion.equals(1, 2, System.getProperty("user.dir"));
+    
     for (int i=0; i < testCount; i++)
     {
       List<String> heavyProtAtomNames = new ArrayList<String>();
@@ -225,7 +227,7 @@ public class CoefCalcTests {
       
       heavySolutionConcNames.add("P");
       heavySolutionConcNums.add(phosphorus);
-
+      
       double unit_cell_length = random.nextInt() % 180 + 20;
  
       int protein_residues = random.nextInt() % 80 + 20;
