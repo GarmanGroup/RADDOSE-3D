@@ -160,12 +160,14 @@ public class CoefCalcRaddose extends CoefCalc {
     raddoseCandidates.add("../raddose.exe");
     raddoseCandidates.add("/data/jenkins/jobs/Raddose3D master/workspace/raddose");
     
+    boolean found = false;
     String command = null;
     File fileCandidate;
     for (String raddoseCandidate : raddoseCandidates) {
       fileCandidate = new File(raddoseCandidate);
       if (fileCandidate.exists()) {
         // This is a good sign
+        found = true;
         if (fileCandidate.canExecute()) {
           // This is even better
           command = raddoseCandidate;
@@ -185,6 +187,11 @@ public class CoefCalcRaddose extends CoefCalc {
               + " but is not executable");
         }
       }
+    }
+    
+    if (found == true && command == null)
+    {
+      throw new RuntimeException("Found RADDOSE executable but could not execute.");
     }
 
     if (command == null) {
