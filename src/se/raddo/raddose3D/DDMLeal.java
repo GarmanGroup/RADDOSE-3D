@@ -353,6 +353,7 @@ public class DDMLeal implements DDM {
    */
   public DDMLeal(final Double gamma, final Double b0, final Double beta) {
 
+    //TODO Add comments for following code
     if (gamma == null || b0 == null || beta == null) {
       this.BETA = 0;
       this.B0 = 0;
