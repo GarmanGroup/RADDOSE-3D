@@ -352,14 +352,23 @@ public class DDMLeal implements DDM {
    * @param beta beta
    */
   public DDMLeal(final Double gamma, final Double b0, final Double beta) {
-    this.BETA = beta;
-    this.B0 = b0;
-    this.GAMMA = gamma;
-    /*Print the parameter values to the screen*/
-    System.out.println("Using decay parameter values:");
-    System.out.println("Gamma = " + this.GAMMA);
-    System.out.println("B0 = " + this.B0);
-    System.out.println("Beta = " + this.BETA);
+
+    if (gamma == null || b0 == null || beta == null) {
+      this.BETA = 0;
+      this.B0 = 0;
+      this.GAMMA = 0;
+      System.out.print("No decay parameter values given. ");
+      System.out.println("All decay parameters set to 0.");
+    } else {
+      this.BETA = beta;
+      this.B0 = b0;
+      this.GAMMA = gamma;
+      /*Print the parameter values to the screen*/
+      System.out.println("Using decay parameter values:");
+      System.out.println("Gamma = " + this.GAMMA);
+      System.out.println("B0 = " + this.B0);
+      System.out.println("Beta = " + this.BETA);
+    }
 
     /*
      * column 1 - interpolated h^2 values
