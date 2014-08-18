@@ -353,7 +353,8 @@ public class DDMLeal implements DDM {
    */
   public DDMLeal(final Double gamma, final Double b0, final Double beta) {
 
-    //TODO Add comments for following code
+    //If not all decay parameters have been given in the input file then set their values to zeros
+    //Otherwise set them to the values given in the input file.
     if (gamma == null || b0 == null || beta == null) {
       this.BETA = 0;
       this.B0 = 0;
@@ -364,6 +365,7 @@ public class DDMLeal implements DDM {
       this.BETA = beta;
       this.B0 = b0;
       this.GAMMA = gamma;
+
       /*Print the parameter values to the screen*/
       System.out.println("Using decay parameter values:");
       System.out.println("Gamma = " + this.GAMMA);
