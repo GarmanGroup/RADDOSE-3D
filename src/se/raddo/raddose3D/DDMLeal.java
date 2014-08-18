@@ -355,6 +355,11 @@ public class DDMLeal implements DDM {
     this.BETA = beta;
     this.B0 = b0;
     this.GAMMA = gamma;
+    /*Print the parameter values to the screen*/
+    System.out.println("Using decay parameter values:");
+    System.out.println("Gamma = " + this.GAMMA);
+    System.out.println("B0 = " + this.B0);
+    System.out.println("Beta = " + this.BETA);
 
     /*
      * column 1 - interpolated h^2 values
