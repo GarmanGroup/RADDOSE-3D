@@ -419,10 +419,12 @@ public class DDMLeal implements DDM {
     /**
      * Relative intensity is the integrated intensity calculated
      * using the current dose divided by the integrated intensity
-     * at dose = 0 MGy
+     * at dose = 0 MGy.
+     * However to up-weight damaged voxels we return the reciprocal
+     * of the relative diffraction efficiency.
      */
-    double relativeIntensityDecay = getIntegratedIntensity(dose)
-        / getIntegratedIntensity(0);
+    double relativeIntensityDecay = getIntegratedIntensity(0)
+        / getIntegratedIntensity(dose);
     return relativeIntensityDecay;
   }
 
