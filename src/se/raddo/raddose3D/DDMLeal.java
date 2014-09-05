@@ -344,12 +344,33 @@ public class DDMLeal implements DDM {
   final double[][] interpolatedValues;
 
   /**
+   * Logarithm of the CONSTANT product within the integral from Leal et al. 2012,
+   * equation 4. This should make the code run quicker if this is defined in the constructor
+   */
+  private final double[] logIntegralProduct;
+
+  /**
+   * CONSTANT product within the exponential term (the coefficient of the dose variable)
+   * in Leal et al. 2012, equation 4. Again this is calculated in the constructor for
+   * speed.
+   */
+  private final double[] exponentialProduct;
+
+  /**
+   * The total integrated intensity at zero dose
+   */
+  private final double zeroDoseIntegratedIntensity;
+
+  /**
    * Constructor for the DDMLeal class that takes in the three decay
    * parameters (defined in Leal et al. 2012, equation 4).
    *
-   * @param gamma gamma
-   * @param b0 b0
-   * @param beta beta
+   * @param gamma The is the parameter that used to describe the extent
+   * of the Gaussian type decay of the scale factor (Leal et al. 2012, equation 3)
+   * @param b0 This is the intercept of a plot of B factor against dose
+   * (Leal et al. 2012, equation 2)
+   * @param beta This is the gradient of a plot of B factor against dose
+   * (Leal et al. 2012, equation 2)
    */
   public DDMLeal(final Double gamma, final Double b0, final Double beta) {
 
@@ -373,22 +394,29 @@ public class DDMLeal implements DDM {
       System.out.println("Beta = " + this.BETA);
     }
 
-    /*
-     * column 1 - interpolated h^2 values
-     * column 2 - interpolated J values
-     * column 3 - difference between h values
+    /**
+     * interpolatedValues[i][0] are the midpoint h^2 values from the BEST data
+     * interpolatedValues[i][1] are the midpoint J values from the BEST data
+     * interpolatedValues[i][2] are the dh values, i.e. the differences between
+     * each resolution (h^2) from the BEST data.
      */
     interpolatedValues = new double[BEST_DATA.length - 1][3];
+    this.logIntegralProduct = new double[BEST_DATA.length - 1];
+    this.exponentialProduct = new double[BEST_DATA.length - 1];
 
-    /**
-     * Calculate the dh values, i.e. the differences between each resolution
-     * from the BEST data
-     */
     for (int i = 0; i < BEST_DATA.length - 1; i++) {
       interpolatedValues[i][0] = (BEST_DATA[i][0] + BEST_DATA[i + 1][0]) / 2;
       interpolatedValues[i][1] = (BEST_DATA[i][1] + BEST_DATA[i + 1][1]) / 2;
       interpolatedValues[i][2] = Math.sqrt(BEST_DATA[i + 1][0]) - Math.sqrt(BEST_DATA[i][0]);
+
+    this.logIntegralProduct[i] = Math.log(interpolatedValues[i][0]
+                                * interpolatedValues[i][1]
+                                * interpolatedValues[i][2]
+                                * Math.exp(-0.5 * this.B0 * interpolatedValues[i][0]));
+    this.exponentialProduct[i] = this.BETA * -0.5 * interpolatedValues[i][0];
     }
+
+    this.zeroDoseIntegratedIntensity = getIntegratedIntensity(0);
   }
 
 
@@ -424,7 +452,7 @@ public class DDMLeal implements DDM {
      * relative diffraction efficiency.
      */
     double relativeWeight = 1 - (getIntegratedIntensity(dose)
-        / getIntegratedIntensity(0));
+        / this.zeroDoseIntegratedIntensity);
     return relativeWeight;
   }
 
@@ -441,42 +469,20 @@ public class DDMLeal implements DDM {
     // TODO Write a 'check' to make sure there is an argument.
 
     /**
-     * The integrated intensity according to leal et al. 2012 (eqn 4)
-     */
-    double integratedIntensity;
-
-    /**
      * Calculate integral of eqn 4 leal et al. 2012
      */
     double integralSum = 0;
-    double eachTerm;
     for (int j = 0; j < interpolatedValues.length; j++) {
-      eachTerm = (interpolatedValues[j][0]
-          * interpolatedValues[j][1]
-          * Math.exp(-0.5 * (interpolatedValues[j][0])
-              * (this.B0 + this.BETA * dose)))
-          * interpolatedValues[j][2];
-      integralSum = integralSum + eachTerm;
+      integralSum += Math.exp(this.exponentialProduct[j] * dose + this.logIntegralProduct[j]);
     }
 
     /**
      * Calculate the integrated intensity of eqn 4 leal et al. 2012
      */
-    integratedIntensity = Math.exp(-Math.pow(this.GAMMA * dose, 2))
+    double integratedIntensity = Math.exp(-Math.pow(this.GAMMA * dose, 2))
         * integralSum;
 
     return integratedIntensity;
   }
-
-  /**
-   * Method to extract the BEST intensity data (Popov & Bourenkov 2003)
-   * The intensity data is stored in a csv file in 2 columns:
-   * column 1 are h^2 values (h = 1/d and d is the resolution in Angstroms)
-   * column 2 are the expected intensity values (denoted J in the file).
-   * The file contains intensity values for each of the 300 resolution bins
-   * (i.e. 300 rows)
-   *
-   * @return An array containing the BEST intensity data
-   */
 
 }
