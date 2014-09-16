@@ -39,6 +39,9 @@ public class CrystalPolyhedron extends Crystal {
    */
   private final double[][][]          dose, fluence, elastic;
 
+  /** Boolean to say whether photoelectron escape should be calculated */
+  private final boolean         photoElectronEscape;
+  
   /**
    * A boolean (int for extensibility to deeper segmentation) array.
    * Fourth dimension is a two dimensional array*, first element
@@ -405,6 +408,18 @@ public class CrystalPolyhedron extends Crystal {
     String wireframeFile = (String) mergedProperties
         .get(CRYSTAL_WIREFRAME_FILE);
 
+    /* Set the value of the boolean for whether photoelectron escape should be
+    calculated.
+    Currently commented out because I haven't done the grammar yet.
+    */
+    /*
+    String pEE = (String) mergedProperties.get(CRYSTAL_PHOTOELECTRON_ESCAPE);
+    photoElectronEscape = ("ON".equals(pEE));
+    
+    */
+    
+    photoElectronEscape = false;
+    
     // TODO: turn into something a bit more sensible later
     // like an ImportWireframeFactory.
 
