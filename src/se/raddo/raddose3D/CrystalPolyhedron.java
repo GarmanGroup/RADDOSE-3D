@@ -42,14 +42,26 @@ public class CrystalPolyhedron extends Crystal {
   /** Boolean to say whether photoelectron escape should be calculated */
   private final boolean         photoElectronEscape;
   
+  /** Escape factor (% of photoelectrons which remain within the crystal)
+   *  for each voxel coordinate i, j, k.
+   */
+  private final double[][][]    escapeFactor;
+  
+  /**
+   * Boolean to determine if escapeFactors have been calculated yet or not.
+   */
+  private boolean     calculatedEscapeFactors = false;
+  
   /**
    * A boolean (int for extensibility to deeper segmentation) array.
-   * Fourth dimension is a two dimensional array*, first element
+   * Fourth dimension is a two element array, first element
    * is a flag (calculated/not calculated) and second element is
    * a boolean (crystal/not crystal).
    */
-  //TODO: Helen: I've added a * after "two dimensional". I believe
+  //Helen: I've added a * after "two dimensional". I believe
   // this should read "two element array". Am I correct?
+  //To Markus: Yes! Thanks!
+  
   private final boolean[][][][] crystOcc;
 
   /**
@@ -408,17 +420,7 @@ public class CrystalPolyhedron extends Crystal {
     String wireframeFile = (String) mergedProperties
         .get(CRYSTAL_WIREFRAME_FILE);
 
-    /* Set the value of the boolean for whether photoelectron escape should be
-    calculated.
-    Currently commented out because I haven't done the grammar yet.
-    */
-    /*
-    String pEE = (String) mergedProperties.get(CRYSTAL_PHOTOELECTRON_ESCAPE);
-    photoElectronEscape = ("ON".equals(pEE));
-    
-    */
-    
-    photoElectronEscape = false;
+   
     
     // TODO: turn into something a bit more sensible later
     // like an ImportWireframeFactory.
@@ -475,6 +477,7 @@ public class CrystalPolyhedron extends Crystal {
 
     /*
      * Calculate Crystal Coordinates, and assign them:
+     * (This needs to be turned into a rotation-based subroutine!)
      */
 
     double[][][][] tempCrystCoords = new double[nx][ny][nz][3];
@@ -541,6 +544,38 @@ public class CrystalPolyhedron extends Crystal {
 
     for (int i = 0; i < vertices.length; i++) {
       System.arraycopy(tempVertices[i], 0, vertices[i], 0, 3);
+    }
+    
+    /* Set the value of the boolean for whether photoelectron escape should be
+    calculated.
+    Currently commented out because I haven't done the grammar yet.
+    */
+    /*
+    String pEE = (String) mergedProperties.get(CRYSTAL_PHOTOELECTRON_ESCAPE);
+    photoElectronEscape = ("ON".equals(pEE));
+    
+    */
+    
+    photoElectronEscape = false;
+    
+    escapeFactor = new double[nx][ny][nz];
+    
+    /*
+     *  If photoElectronEscape is false then all the escapeFactor values
+     *  should be set to 1.
+     */
+   
+    if (!photoElectronEscape)
+    {
+      for (int i = 0; i < nx; i++) {
+        for (int j = 0; j < ny; j++) {
+          for (int k = 0; k < nz; k++) {
+            escapeFactor[i][j][k] = 1;
+          }
+        }
+      }
+      
+      calculatedEscapeFactors = true;
     }
   }
 
@@ -669,6 +704,9 @@ public class CrystalPolyhedron extends Crystal {
    */
   @Override
   public void setupDepthFinding(final double angrad, final Wedge wedge) {
+    if (!calculatedEscapeFactors)
+       calculateEscapeFactors();
+    
     rotatedVertices = new double[vertices.length][3];
 
     // Rotate and translate the vertices of the crystal
@@ -778,6 +816,11 @@ public class CrystalPolyhedron extends Crystal {
      * }
      */
     return depth;
+  }
+  
+  private void calculateEscapeFactors()
+  {
+    
   }
 
   /*
