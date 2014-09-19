@@ -308,15 +308,15 @@ public class CrystalPolyhedron extends Crystal {
         final double planeDistance) {
 
       double originNormalDotProduct = dotProduct(origin, normalUnitVector);
-       double directionNormalDotProduct = dotProduct(directionVector,
-       normalUnitVector);
-       
+      double directionNormalDotProduct = dotProduct(directionVector,
+          normalUnitVector);
+
       // assuming direction vector is always (0, 0, 1)
 
       //     double directionNormalDotProduct = directionVector[2] * normalUnitVector[2];
 
       double t = -(originNormalDotProduct + planeDistance)
-          / normalUnitVector[2];
+          / directionNormalDotProduct;
 
       return t;
     }
@@ -873,11 +873,26 @@ public class CrystalPolyhedron extends Crystal {
           // skip if not crystal
           if (!isCrystalAt(i, j, k))
             continue;
-          
+
           // calculate whether each voxel[i][j][k] is within
-          // 3 um of a surface
+          // 5 um of a surface
           boolean closeToSurface = false;
-          
+
+          for (int l = 0; l < indices.length; l++)
+          {
+            double[] voxCoord = getCrystCoord(i, j, k);
+            
+            double distanceToPlane
+                = Vector.rayTraceDistance(normals[l],
+                    normals[l], voxCoord, originDistances[l]);
+            
+            if (distanceToPlane < distancesTravelled[bins - 1])
+            {
+              closeToSurface = true;
+              break;
+            }
+          }
+
           if (closeToSurface)
           {
             // if voxel is within 3 um of a surface, take a grid of r, theta and phi
@@ -885,46 +900,53 @@ public class CrystalPolyhedron extends Crystal {
             // exit the crystal.
 
             double[] occupancyDistribution = new double[bins];
-            
-            for (int l=0; l < bins; l++)
+
+            for (int l = 0; l < bins; l++)
             {
               // calculate r in voxel coordinates rather than pixels
               double r = distancesTravelled[l] * this.crystalPixPerUM;
-              
+
               double angleLimit = 2 * Math.PI;
               double resolution = 8.;
               double step = angleLimit / resolution;
-              
+
               double totalCount = 0;
               double totalCountWithinCrystal = 0;
-              
+
               for (double theta = 0; theta <= angleLimit; theta += step)
               {
                 for (double phi = 0; phi <= angleLimit; phi += step)
                 {
-                   // calculate x, y, z coordinates of voxel[i][j][k]
+                  // calculate x, y, z coordinates of voxel[i][j][k]
                   // plus the polar coordinates for r, theta, phi
-                  
+
                   double x = r * Math.sin(theta) * Math.cos(phi);
                   double y = r * Math.sin(theta) * Math.sin(phi);
                   double z = r * Math.cos(theta);
-                  
+
                   // add counts to total & total within crystal in order to
                   // calculate the proportion for a given r.
-                  
+
                   totalCount++;
-                  if (isCrystalAt((int)(i + x), (int)(j + y), (int)(k + z)))
+                  if (isCrystalAt((int) (i + x), (int) (j + y), (int) (k + z)))
                     totalCountWithinCrystal++;
                 }
               }
-              
+
               occupancyDistribution[l] = totalCountWithinCrystal / totalCount;
             }
-            
-            // Calculate the values of the gamma distribution at each r
 
+            // Take the values of the gamma distribution at each r
             // Multiply this value by the r distribution and numerically integrate
 
+            double[] combinedDistribution = new double[bins];
+            
+            for (int l = 0; l < bins; l++)
+            {
+              combinedDistribution[l] = gammaDistribution[l] * occupancyDistribution[l];
+            }
+            
+            
             // Assign to escapeFactor[i][j][k].
           }
         }
