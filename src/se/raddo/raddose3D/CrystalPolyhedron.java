@@ -37,21 +37,27 @@ public class CrystalPolyhedron extends Crystal {
    * Dose and fluence arrays holding the scalar
    * fields for these values at voxel i,j,k.
    */
-  private final double[][][]          dose, fluence, elastic;
+  private final double[][][]    dose, fluence, elastic;
 
   /** Boolean to say whether photoelectron escape should be calculated */
   private final boolean         photoElectronEscape;
-  
-  /** Escape factor (% of photoelectrons which remain within the crystal)
-   *  for each voxel coordinate i, j, k.
+
+  /**
+   * Escape factor (% of photoelectrons which remain within the crystal)
+   * for each voxel coordinate i, j, k.
    */
   private final double[][][]    escapeFactor;
-  
+
   /**
    * Boolean to determine if escapeFactors have been calculated yet or not.
    */
-  private boolean     calculatedEscapeFactors = false;
-  
+  private boolean               calculatedEscapeFactors    = false;
+
+  /**
+   * Average mean distance travelled by electron
+   */
+  private static final double   meanElectronTravelDistance = 3.;
+
   /**
    * A boolean (int for extensibility to deeper segmentation) array.
    * Fourth dimension is a two element array, first element
@@ -61,14 +67,14 @@ public class CrystalPolyhedron extends Crystal {
   //Helen: I've added a * after "two dimensional". I believe
   // this should read "two element array". Am I correct?
   //To Markus: Yes! Thanks!
-  
+
   private final boolean[][][][] crystOcc;
 
   /**
    * 4d array where the 4th dimension is a 3 element array with the coordinates
    * of the voxel i,j,k in the starting position.
    */
-  private final double[][][][]        crystCoord;
+  private final double[][][][]  crystCoord;
 
   /**
    * Vertex array containing a variable number of 3-dimension vertices.
@@ -101,12 +107,12 @@ public class CrystalPolyhedron extends Crystal {
    * In groups of 3 - triangles only please, no octagon nonsense.
    */
   private final int[][]         indices;
-  
+
   /**
    * Similar in style to the index array, except each index is replaced
    * by the corresponding rotatedVertex.
    */
-  private double[][][]    expandedRotatedVertices;
+  private double[][][]          expandedRotatedVertices;
 
   /* Indices for cuboid */
   /*
@@ -132,8 +138,8 @@ public class CrystalPolyhedron extends Crystal {
    * Contains an i, j, k vector per triangle.
    * Should have same no. of entries as the indices array.
    */
-  private double[][]            normals = null,
-                                        rotatedNormals = null;
+  private double[][]            normals                    = null,
+      rotatedNormals = null;
 
   /**
    * Distances from origin for each of the triangle planes.
@@ -144,13 +150,13 @@ public class CrystalPolyhedron extends Crystal {
   /**
    * Vector class containing magical vector methods
    * like cross products and magnitudes.
-   *
+   * 
    * @author magd3052
    */
   private static class Vector {
     /**
      * Returns magnitude of 3D vector.
-     *
+     * 
      * @param vector 3d coordinates of vector
      * @return magnitude scalar.
      */
@@ -165,7 +171,7 @@ public class CrystalPolyhedron extends Crystal {
 
     /**
      * returns 3D vector between FROM and TO points.
-     *
+     * 
      * @param from from point
      * @param to to point
      * @return vector between points.
@@ -183,7 +189,7 @@ public class CrystalPolyhedron extends Crystal {
 
     /**
      * returns 3D cross-product between two vectors.
-     *
+     * 
      * @param vector1 vector1
      * @param vector2 vector2
      * @return cross product
@@ -202,7 +208,7 @@ public class CrystalPolyhedron extends Crystal {
     /**
      * returns 3D cross product with magnitude set to 1 between
      * two vectors.
-     *
+     * 
      * @param vector1 vector1
      * @param vector2 vector2
      * @return normalised cross product
@@ -221,7 +227,7 @@ public class CrystalPolyhedron extends Crystal {
 
     /**
      * returns dot product between two 3D vectors.
-     *
+     * 
      * @param vector1 vector1
      * @param vector2 vector2
      * @return dot product
@@ -241,7 +247,7 @@ public class CrystalPolyhedron extends Crystal {
      * Ray trace from a point to a plane via a direction vector,
      * find the intersection between the direction vector and the
      * plane and return this point.
-     *
+     * 
      * @param normalUnitVector normal vector with magnitude 1
      * @param directionVector direction vector of any magnitude
      * @param origin point from which ray is traced (i.e. voxel coordinate)
@@ -267,7 +273,7 @@ public class CrystalPolyhedron extends Crystal {
     /**
      * Ray trace - find intersection of direction vector from point
      * with plane from already-known distance t.
-     *
+     * 
      * @param directionVector direction vector
      * @param origin point from which ray is traced
      * @param t distance of origin to plane along direction vector
@@ -290,7 +296,7 @@ public class CrystalPolyhedron extends Crystal {
      * Ray trace from a point to a plane via a direction vector,
      * find the signed distance between the direction vector and
      * the plane and return this point.
-     *
+     * 
      * @param normalUnitVector normal vector with magnitude 1
      * @param directionVector direction vector of any magnitude
      * @param origin point from which ray is traced (i.e. voxel coordinate)
@@ -302,13 +308,12 @@ public class CrystalPolyhedron extends Crystal {
         final double planeDistance) {
 
       double originNormalDotProduct = dotProduct(origin, normalUnitVector);
-/*      double directionNormalDotProduct = dotProduct(directionVector,
-          normalUnitVector);
-*/
-
+       double directionNormalDotProduct = dotProduct(directionVector,
+       normalUnitVector);
+       
       // assuming direction vector is always (0, 0, 1)
 
- //     double directionNormalDotProduct = directionVector[2] * normalUnitVector[2];
+      //     double directionNormalDotProduct = directionVector[2] * normalUnitVector[2];
 
       double t = -(originNormalDotProduct + planeDistance)
           / normalUnitVector[2];
@@ -322,7 +327,7 @@ public class CrystalPolyhedron extends Crystal {
      * Takes an array of vertices of a polygon and determines whether a point
      * is contained within the polygon or not. Ignores the z axis at the
      * moment.
-     *
+     * 
      * @param vertices array of 3D vertices
      * @param point point to test inclusion - must be in same plane
      *          as vertices
@@ -349,7 +354,7 @@ public class CrystalPolyhedron extends Crystal {
   /**
    * Returns the minimum and maximum values of a vertex array
    * given chosen dimension (0 = x, 1 = y, 2 = z).
-   *
+   * 
    * @param dimension 0 = x, 1 = y, 2 = z
    * @param vertices vertices to be examined
    * @return double array, first element minimum, second element maximum
@@ -387,7 +392,7 @@ public class CrystalPolyhedron extends Crystal {
    * CRYSTAL_RESOLUTION (optional. Default: use getDefaultLimitedResolution)
    * CRYSTAL_ANGLE_P (optional. Default: 0)
    * CRYSTAL_ANGLE_L (optional. Default: 0)
-   *
+   * 
    * @param properties
    *          Map of type <Object, Object> that contains all crystal properties.
    *          The keys of the Map are defined by the constants in the
@@ -420,8 +425,6 @@ public class CrystalPolyhedron extends Crystal {
     String wireframeFile = (String) mergedProperties
         .get(CRYSTAL_WIREFRAME_FILE);
 
-   
-    
     // TODO: turn into something a bit more sensible later
     // like an ImportWireframeFactory.
 
@@ -540,31 +543,30 @@ public class CrystalPolyhedron extends Crystal {
     }
 
     vertices = new double[tempVertices.length][3];
-    
 
     for (int i = 0; i < vertices.length; i++) {
       System.arraycopy(tempVertices[i], 0, vertices[i], 0, 3);
     }
-    
-    /* Set the value of the boolean for whether photoelectron escape should be
-    calculated.
-    Currently commented out because I haven't done the grammar yet.
-    */
+
     /*
-    String pEE = (String) mergedProperties.get(CRYSTAL_PHOTOELECTRON_ESCAPE);
-    photoElectronEscape = ("ON".equals(pEE));
-    
-    */
-    
-    photoElectronEscape = false;
-    
-    escapeFactor = new double[nx][ny][nz];
-    
-    /*
-     *  If photoElectronEscape is false then all the escapeFactor values
-     *  should be set to 1.
+     * Set the value of the boolean for whether photoelectron escape should be
+     * calculated.
+     * Currently commented out because I haven't done the grammar yet.
      */
-   
+    /*
+     * String pEE = (String) mergedProperties.get(CRYSTAL_PHOTOELECTRON_ESCAPE);
+     * photoElectronEscape = ("ON".equals(pEE));
+     */
+
+    photoElectronEscape = false;
+
+    escapeFactor = new double[nx][ny][nz];
+
+    /*
+     * If photoElectronEscape is false then all the escapeFactor values
+     * should be set to 1.
+     */
+
     if (!photoElectronEscape)
     {
       for (int i = 0; i < nx; i++) {
@@ -574,7 +576,7 @@ public class CrystalPolyhedron extends Crystal {
           }
         }
       }
-      
+
       calculatedEscapeFactors = true;
     }
   }
@@ -647,7 +649,7 @@ public class CrystalPolyhedron extends Crystal {
   /**
    * Calculates crystal occupancy at i, j, k, returns value
    * and sets crystOcc at a given i, j, k.
-   *
+   * 
    * @param i i
    * @param j j
    * @param k k
@@ -698,15 +700,15 @@ public class CrystalPolyhedron extends Crystal {
 
   /*
    * (non-Javadoc)
-   *
+   * 
    * @see se.raddo.raddose3D.Crystal#setupDepthFinding(double,
    * se.raddo.raddose3D.Wedge)
    */
   @Override
   public void setupDepthFinding(final double angrad, final Wedge wedge) {
     if (!calculatedEscapeFactors)
-       calculateEscapeFactors();
-    
+      calculateEscapeFactors();
+
     rotatedVertices = new double[vertices.length][3];
 
     // Rotate and translate the vertices of the crystal
@@ -736,18 +738,19 @@ public class CrystalPolyhedron extends Crystal {
     }
 
     calculateNormals(true);
-    
+
     /*
      * Now we populate the expandedRotatedVertex array.
      */
-    
+
     expandedRotatedVertices = new double[indices.length][3][3];
-    
-    for (int i=0; i < indices.length; i++)
+
+    for (int i = 0; i < indices.length; i++)
     {
-      for (int j=0; j < 3; j++)
+      for (int j = 0; j < 3; j++)
       {
-        System.arraycopy(rotatedVertices[indices[i][j] - 1], 0, expandedRotatedVertices[i][j],
+        System.arraycopy(rotatedVertices[indices[i][j] - 1], 0,
+            expandedRotatedVertices[i][j],
             0, 3);
       }
     }
@@ -755,7 +758,7 @@ public class CrystalPolyhedron extends Crystal {
 
   /*
    * (non-Javadoc)
-   *
+   * 
    * @see se.raddo.raddose3D.Crystal#findDepth(double[], double,
    * se.raddo.raddose3D.Wedge)
    */
@@ -817,15 +820,123 @@ public class CrystalPolyhedron extends Crystal {
      */
     return depth;
   }
-  
+
+  private double factorial(final int n)
+  {
+    int total = 1;
+    for (int i = 1; i <= n; i++)
+    {
+      total *= i;
+    }
+    return total;
+  }
+
+  private void calculateGammaDistribution(final double[] distancesTravelled,
+      double[] gammaDistribution, final int k, final double theta,
+      final int bins)
+  {
+    for (int i = 0; i < bins; i++)
+    {
+      double x = distancesTravelled[i];
+      double numLeft = Math.pow(x, k - 1);
+      double numRight = Math.exp(-x / theta);
+      double numerator = numLeft * numRight;
+      double denomLeft = Math.pow(theta, k);
+      double denomRight = factorial(k - 1);
+      double denominator = denomLeft * denomRight;
+
+      gammaDistribution[i] = numerator / denominator;
+    }
+  }
+
   private void calculateEscapeFactors()
   {
-    
+    // These are the bins at which the function will be calculated
+    // turn this into a calculated function
+    int bins = 11;
+    double[] distancesTravelled = { 0, 0.5, 1., 1.5, 2., 2.5, 3., 3.5, 4., 4.5,
+        5. };
+
+    // Set up a gamma distribution with k = 2, theta = 3 um
+    double[] gammaDistribution = new double[bins];
+    calculateGammaDistribution(distancesTravelled, gammaDistribution, 2,
+        meanElectronTravelDistance, bins);
+
+    //    double[] escapeDistribution = new double[bins];
+
+    // for every voxel... 
+    final int[] crystalSize = getCrystSizeVoxels();
+
+    for (int i = 0; i < crystalSize[0]; i++) {
+      for (int j = 0; j < crystalSize[1]; j++) {
+        for (int k = 0; k < crystalSize[2]; k++) {
+          // skip if not crystal
+          if (!isCrystalAt(i, j, k))
+            continue;
+          
+          // calculate whether each voxel[i][j][k] is within
+          // 3 um of a surface
+          boolean closeToSurface = false;
+          
+          if (closeToSurface)
+          {
+            // if voxel is within 3 um of a surface, take a grid of r, theta and phi
+            // and calculate for every r within 0.5 um and 5 um, what proportion
+            // exit the crystal.
+
+            double[] occupancyDistribution = new double[bins];
+            
+            for (int l=0; l < bins; l++)
+            {
+              // calculate r in voxel coordinates rather than pixels
+              double r = distancesTravelled[l] * this.crystalPixPerUM;
+              
+              double angleLimit = 2 * Math.PI;
+              double resolution = 8.;
+              double step = angleLimit / resolution;
+              
+              double totalCount = 0;
+              double totalCountWithinCrystal = 0;
+              
+              for (double theta = 0; theta <= angleLimit; theta += step)
+              {
+                for (double phi = 0; phi <= angleLimit; phi += step)
+                {
+                   // calculate x, y, z coordinates of voxel[i][j][k]
+                  // plus the polar coordinates for r, theta, phi
+                  
+                  double x = r * Math.sin(theta) * Math.cos(phi);
+                  double y = r * Math.sin(theta) * Math.sin(phi);
+                  double z = r * Math.cos(theta);
+                  
+                  // add counts to total & total within crystal in order to
+                  // calculate the proportion for a given r.
+                  
+                  totalCount++;
+                  if (isCrystalAt((int)(i + x), (int)(j + y), (int)(k + z)))
+                    totalCountWithinCrystal++;
+                }
+              }
+              
+              occupancyDistribution[l] = totalCountWithinCrystal / totalCount;
+            }
+            
+            // Calculate the values of the gamma distribution at each r
+
+            // Multiply this value by the r distribution and numerically integrate
+
+            // Assign to escapeFactor[i][j][k].
+          }
+        }
+      }
+    }
+
+    calculatedEscapeFactors = true;
   }
 
   /*
    * (non-Javadoc)
-   *
+   * 
    * @see se.raddo.raddose3D.Crystal#getCrystCoord(int, int, int)
    */
   @Override
@@ -835,7 +946,7 @@ public class CrystalPolyhedron extends Crystal {
 
   /*
    * (non-Javadoc)
-   *
+   * 
    * @see se.raddo.raddose3D.Crystal#isCrystalAt(int, int, int)
    */
   @Override
@@ -852,7 +963,7 @@ public class CrystalPolyhedron extends Crystal {
 
   /*
    * (non-Javadoc)
-   *
+   * 
    * @see se.raddo.raddose3D.Crystal#addDose(int, int, int, double)
    */
   @Override
@@ -863,7 +974,7 @@ public class CrystalPolyhedron extends Crystal {
 
   /*
    * (non-Javadoc)
-   *
+   * 
    * @see se.raddo.raddose3D.Crystal#addFluence(int, int, int, double)
    */
   @Override
@@ -875,7 +986,7 @@ public class CrystalPolyhedron extends Crystal {
 
   /*
    * (non-Javadoc)
-   *
+   * 
    * @see se.raddo.raddose3D.Crystal#addElastic(int, int, int, double)
    */
   @Override
@@ -887,7 +998,7 @@ public class CrystalPolyhedron extends Crystal {
 
   /*
    * (non-Javadoc)
-   *
+   * 
    * @see se.raddo.raddose3D.Crystal#crystalInfo()
    */
   @Override
@@ -912,7 +1023,7 @@ public class CrystalPolyhedron extends Crystal {
 
   /*
    * (non-Javadoc)
-   *
+   * 
    * @see se.raddo.raddose3D.Crystal#getCrystSizeVoxels()
    */
   @Override
@@ -924,7 +1035,7 @@ public class CrystalPolyhedron extends Crystal {
 
   /*
    * (non-Javadoc)
-   *
+   * 
    * @see se.raddo.raddose3D.Crystal#getCrystSizeUM()
    */
   @Override
@@ -936,7 +1047,7 @@ public class CrystalPolyhedron extends Crystal {
 
   /*
    * (non-Javadoc)
-   *
+   * 
    * @see se.raddo.raddose3D.Crystal#getDose(int, int, int)
    */
   @Override
@@ -946,7 +1057,7 @@ public class CrystalPolyhedron extends Crystal {
 
   /*
    * (non-Javadoc)
-   *
+   * 
    * @see se.raddo.raddose3D.Crystal#getFluence(int, int, int)
    */
   @Override
@@ -956,7 +1067,7 @@ public class CrystalPolyhedron extends Crystal {
 
   /*
    * (non-Javadoc)
-   *
+   * 
    * @see se.raddo.raddose3D.Crystal#getElastic(int, int, int)
    */
   @Override
@@ -966,7 +1077,7 @@ public class CrystalPolyhedron extends Crystal {
 
   /*
    * (non-Javadoc)
-   *
+   * 
    * @see se.raddo.raddose3D.Crystal#getCrystalPixPerUM()
    */
   @Override
