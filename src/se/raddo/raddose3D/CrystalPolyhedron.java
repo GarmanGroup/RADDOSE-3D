@@ -37,25 +37,47 @@ public class CrystalPolyhedron extends Crystal {
    * Dose and fluence arrays holding the scalar
    * fields for these values at voxel i,j,k.
    */
-  private double[][][]          dose, fluence, elastic;
+  private final double[][][]    dose, fluence, elastic;
+
+  /** Boolean to say whether photoelectron escape should be calculated */
+  private final boolean         photoElectronEscape;
+
+  /**
+   * Escape factor (% of photoelectrons which remain within the crystal)
+   * for each voxel coordinate i, j, k.
+   */
+  private final double[][][]    escapeFactor;
+
+  /**
+   * Boolean to determine if escapeFactors have been calculated yet or not.
+   */
+  private boolean               calculatedEscapeFactors    = false;
+
+  /**
+   * Average mean distance travelled by electron
+   */
+  private static final double   meanElectronTravelDistance = 3.;
 
   /**
    * A boolean (int for extensibility to deeper segmentation) array.
-   * Fourth dimension is a two dimensional array, first element
+   * Fourth dimension is a two element array, first element
    * is a flag (calculated/not calculated) and second element is
    * a boolean (crystal/not crystal).
    */
+  //Helen: I've added a * after "two dimensional". I believe
+  // this should read "two element array". Am I correct?
+  //To Markus: Yes! Thanks!
+
   private final boolean[][][][] crystOcc;
 
   /**
    * 4d array where the 4th dimension is a 3 element array with the coordinates
    * of the voxel i,j,k in the starting position.
    */
-  private double[][][][]        crystCoord;
+  private final double[][][][]  crystCoord;
 
   /**
    * Vertex array containing a variable number of 3-dimension vertices.
-   * Currently set to a default approx. tetrahedron for testing purposes.
    */
   private final double[][]      vertices;
 
@@ -73,6 +95,9 @@ public class CrystalPolyhedron extends Crystal {
    * };
    */
 
+  /**
+   * Vertices which have been rotated for a given wedge angle.
+   */
   private double[][]            rotatedVertices;
 
   /**
@@ -82,6 +107,12 @@ public class CrystalPolyhedron extends Crystal {
    * In groups of 3 - triangles only please, no octagon nonsense.
    */
   private final int[][]         indices;
+
+  /**
+   * Similar in style to the index array, except each index is replaced
+   * by the corresponding rotatedVertex.
+   */
+  private double[][][]          expandedRotatedVertices;
 
   /* Indices for cuboid */
   /*
@@ -107,8 +138,8 @@ public class CrystalPolyhedron extends Crystal {
    * Contains an i, j, k vector per triangle.
    * Should have same no. of entries as the indices array.
    */
-  private double[][]            normals = null,
-                                        rotatedNormals = null;
+  private double[][]            normals                    = null,
+      rotatedNormals = null;
 
   /**
    * Distances from origin for each of the triangle planes.
@@ -130,10 +161,10 @@ public class CrystalPolyhedron extends Crystal {
      * @return magnitude scalar.
      */
     public static double vectorMagnitude(final double[] vector) {
-      double distance = Math.pow(vector[0], 2) + Math.pow(vector[1], 2)
+      double squaredDistance = Math.pow(vector[0], 2) + Math.pow(vector[1], 2)
           + Math.pow(vector[2], 2);
 
-      distance = Math.sqrt(distance);
+      double distance = Math.sqrt(squaredDistance);
 
       return distance;
     }
@@ -280,6 +311,10 @@ public class CrystalPolyhedron extends Crystal {
       double directionNormalDotProduct = dotProduct(directionVector,
           normalUnitVector);
 
+      // assuming direction vector is always (0, 0, 1)
+
+      //     double directionNormalDotProduct = directionVector[2] * normalUnitVector[2];
+
       double t = -(originNormalDotProduct + planeDistance)
           / directionNormalDotProduct;
 
@@ -424,7 +459,7 @@ public class CrystalPolyhedron extends Crystal {
           getDefaultLimitedResolution(xdim, ydim, zdim));
     }
     crystalPixPerUM = (Double) mergedProperties.get(Crystal.CRYSTAL_RESOLUTION);
-    
+
     double[] tempCrystDim = { xdim, ydim, zdim };
     crystSizeUM = tempCrystDim; // Final Value
 
@@ -445,6 +480,7 @@ public class CrystalPolyhedron extends Crystal {
 
     /*
      * Calculate Crystal Coordinates, and assign them:
+     * (This needs to be turned into a rotation-based subroutine!)
      */
 
     double[][][][] tempCrystCoords = new double[nx][ny][nz][3];
@@ -510,6 +546,38 @@ public class CrystalPolyhedron extends Crystal {
 
     for (int i = 0; i < vertices.length; i++) {
       System.arraycopy(tempVertices[i], 0, vertices[i], 0, 3);
+    }
+
+    /*
+     * Set the value of the boolean for whether photoelectron escape should be
+     * calculated.
+     * Currently commented out because I haven't done the grammar yet.
+     */
+    /*
+     * String pEE = (String) mergedProperties.get(CRYSTAL_PHOTOELECTRON_ESCAPE);
+     * photoElectronEscape = ("ON".equals(pEE));
+     */
+
+    photoElectronEscape = false;
+
+    escapeFactor = new double[nx][ny][nz];
+
+    /*
+     * If photoElectronEscape is false then all the escapeFactor values
+     * should be set to 1.
+     */
+
+    if (!photoElectronEscape)
+    {
+      for (int i = 0; i < nx; i++) {
+        for (int j = 0; j < ny; j++) {
+          for (int k = 0; k < nz; k++) {
+            escapeFactor[i][j][k] = 1;
+          }
+        }
+      }
+
+      calculatedEscapeFactors = true;
     }
   }
 
@@ -638,6 +706,9 @@ public class CrystalPolyhedron extends Crystal {
    */
   @Override
   public void setupDepthFinding(final double angrad, final Wedge wedge) {
+    if (!calculatedEscapeFactors)
+      calculateEscapeFactors();
+
     rotatedVertices = new double[vertices.length][3];
 
     // Rotate and translate the vertices of the crystal
@@ -667,6 +738,22 @@ public class CrystalPolyhedron extends Crystal {
     }
 
     calculateNormals(true);
+
+    /*
+     * Now we populate the expandedRotatedVertex array.
+     */
+
+    expandedRotatedVertices = new double[indices.length][3][3];
+
+    for (int i = 0; i < indices.length; i++)
+    {
+      for (int j = 0; j < 3; j++)
+      {
+        System.arraycopy(rotatedVertices[indices[i][j] - 1], 0,
+            expandedRotatedVertices[i][j],
+            0, 3);
+      }
+    }
   }
 
   /*
@@ -697,16 +784,7 @@ public class CrystalPolyhedron extends Crystal {
       double[] intersectionPoint = Vector.rayTraceToPointWithDistance(
           zAxis, voxCoord, intersectionDistance);
 
-      double[][] triangleVertices = new double[3][3];
-
-      // copy vertices referenced by indices into single array for
-      // passing onto the polygon inclusion test.
-      for (int m = 0; m < 3; m++) {
-        System.arraycopy(vertices[indices[i][m] - 1], 0, triangleVertices[m],
-            0, 3);
-      }
-
-      boolean crosses = Vector.polygonInclusionTest(triangleVertices,
+      boolean crosses = Vector.polygonInclusionTest(expandedRotatedVertices[i],
           intersectionPoint);
 
       if (crosses) {
@@ -741,6 +819,141 @@ public class CrystalPolyhedron extends Crystal {
      * }
      */
     return depth;
+  }
+
+  private double factorial(final int n)
+  {
+    int total = 1;
+    for (int i = 1; i <= n; i++)
+    {
+      total *= i;
+    }
+    return total;
+  }
+
+  private void calculateGammaDistribution(final double[] distancesTravelled,
+      double[] gammaDistribution, final int k, final double theta,
+      final int bins)
+  {
+    for (int i = 0; i < bins; i++)
+    {
+      double x = distancesTravelled[i];
+      double numLeft = Math.pow(x, k - 1);
+      double numRight = Math.exp(-x / theta);
+      double numerator = numLeft * numRight;
+      double denomLeft = Math.pow(theta, k);
+      double denomRight = factorial(k - 1);
+      double denominator = denomLeft * denomRight;
+
+      gammaDistribution[i] = numerator / denominator;
+    }
+  }
+
+  private void calculateEscapeFactors()
+  {
+    // These are the bins at which the function will be calculated
+    // turn this into a calculated function
+    int bins = 11;
+    double[] distancesTravelled = { 0, 0.5, 1., 1.5, 2., 2.5, 3., 3.5, 4., 4.5,
+        5. };
+
+    // Set up a gamma distribution with k = 2, theta = 3 um
+    double[] gammaDistribution = new double[bins];
+    calculateGammaDistribution(distancesTravelled, gammaDistribution, 2,
+        meanElectronTravelDistance, bins);
+
+    //    double[] escapeDistribution = new double[bins];
+
+    // for every voxel... 
+    final int[] crystalSize = getCrystSizeVoxels();
+
+    for (int i = 0; i < crystalSize[0]; i++) {
+      for (int j = 0; j < crystalSize[1]; j++) {
+        for (int k = 0; k < crystalSize[2]; k++) {
+          // skip if not crystal
+          if (!isCrystalAt(i, j, k))
+            continue;
+
+          // calculate whether each voxel[i][j][k] is within
+          // 5 um of a surface
+          boolean closeToSurface = false;
+
+          for (int l = 0; l < indices.length; l++)
+          {
+            double[] voxCoord = getCrystCoord(i, j, k);
+            
+            double distanceToPlane
+                = Vector.rayTraceDistance(normals[l],
+                    normals[l], voxCoord, originDistances[l]);
+            
+            if (distanceToPlane < distancesTravelled[bins - 1])
+            {
+              closeToSurface = true;
+              break;
+            }
+          }
+
+          if (closeToSurface)
+          {
+            // if voxel is within 3 um of a surface, take a grid of r, theta and phi
+            // and calculate for every r within 0.5 um and 5 um, what proportion
+            // exit the crystal.
+
+            double[] occupancyDistribution = new double[bins];
+
+            for (int l = 0; l < bins; l++)
+            {
+              // calculate r in voxel coordinates rather than pixels
+              double r = distancesTravelled[l] * this.crystalPixPerUM;
+
+              double angleLimit = 2 * Math.PI;
+              double resolution = 8.;
+              double step = angleLimit / resolution;
+
+              double totalCount = 0;
+              double totalCountWithinCrystal = 0;
+
+              for (double theta = 0; theta <= angleLimit; theta += step)
+              {
+                for (double phi = 0; phi <= angleLimit; phi += step)
+                {
+                  // calculate x, y, z coordinates of voxel[i][j][k]
+                  // plus the polar coordinates for r, theta, phi
+
+                  double x = r * Math.sin(theta) * Math.cos(phi);
+                  double y = r * Math.sin(theta) * Math.sin(phi);
+                  double z = r * Math.cos(theta);
+
+                  // add counts to total & total within crystal in order to
+                  // calculate the proportion for a given r.
+
+                  totalCount++;
+                  if (isCrystalAt((int) (i + x), (int) (j + y), (int) (k + z)))
+                    totalCountWithinCrystal++;
+                }
+              }
+
+              occupancyDistribution[l] = totalCountWithinCrystal / totalCount;
+            }
+
+            // Take the values of the gamma distribution at each r
+            // Multiply this value by the r distribution and numerically integrate
+
+            double[] combinedDistribution = new double[bins];
+            
+            for (int l = 0; l < bins; l++)
+            {
+              combinedDistribution[l] = gammaDistribution[l] * occupancyDistribution[l];
+            }
+            
+            
+            // Assign to escapeFactor[i][j][k].
+          }
+        }
+      }
+    }
+
+    calculatedEscapeFactors = true;
   }
 
   /*
