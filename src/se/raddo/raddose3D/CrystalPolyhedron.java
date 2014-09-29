@@ -579,6 +579,9 @@ public class CrystalPolyhedron extends Crystal {
 
       calculatedEscapeFactors = true;
     }
+
+    if (!calculatedEscapeFactors)
+      calculateEscapeFactors();
   }
 
   /**
@@ -706,8 +709,6 @@ public class CrystalPolyhedron extends Crystal {
    */
   @Override
   public void setupDepthFinding(final double angrad, final Wedge wedge) {
-    if (!calculatedEscapeFactors)
-      calculateEscapeFactors();
 
     rotatedVertices = new double[vertices.length][3];
 
@@ -851,21 +852,36 @@ public class CrystalPolyhedron extends Crystal {
 
   private void calculateEscapeFactors()
   {
+    System.out.println("Calculating escape factors...");
+
     // These are the bins at which the function will be calculated
     // turn this into a calculated function
-    int bins = 11;
-    double[] distancesTravelled = { 0, 0.5, 1., 1.5, 2., 2.5, 3., 3.5, 4., 4.5,
-        5. };
+    double[] distancesTravelled = { 1., 1.5, 2., 2.5, 3., 3.5, 4.,
+        5., 6., 7., 8. };
+    int bins = distancesTravelled.length;
 
     // Set up a gamma distribution with k = 2, theta = 3 um
     double[] gammaDistribution = new double[bins];
     calculateGammaDistribution(distancesTravelled, gammaDistribution, 2,
         meanElectronTravelDistance, bins);
 
+    double gammaIntegral = 0;
+
+    for (int l = 0; l < bins - 1; l++)
+    {
+      double width = distancesTravelled[l + 1] - distancesTravelled[l];
+      double height = (gammaDistribution[l + 1] + gammaDistribution[l]) / 2;
+      gammaIntegral += width * height;
+    }
+
     //    double[] escapeDistribution = new double[bins];
 
     // for every voxel... 
     final int[] crystalSize = getCrystSizeVoxels();
+
+    // statistics on voxels near surface
+    int totalVoxels = 0;
+    int interestingVoxels = 0;
 
     for (int i = 0; i < crystalSize[0]; i++) {
       for (int j = 0; j < crystalSize[1]; j++) {
@@ -878,14 +894,15 @@ public class CrystalPolyhedron extends Crystal {
           // 5 um of a surface
           boolean closeToSurface = false;
 
+          totalVoxels++;
+
           for (int l = 0; l < indices.length; l++)
           {
             double[] voxCoord = getCrystCoord(i, j, k);
-            
-            double distanceToPlane
-                = Vector.rayTraceDistance(normals[l],
-                    normals[l], voxCoord, originDistances[l]);
-            
+
+            double distanceToPlane = Vector.rayTraceDistance(normals[l],
+                normals[l], voxCoord, originDistances[l]);
+
             if (distanceToPlane < distancesTravelled[bins - 1])
             {
               closeToSurface = true;
@@ -907,7 +924,7 @@ public class CrystalPolyhedron extends Crystal {
               double r = distancesTravelled[l] * this.crystalPixPerUM;
 
               double angleLimit = 2 * Math.PI;
-              double resolution = 8.;
+              double resolution = 6.;
               double step = angleLimit / resolution;
 
               double totalCount = 0;
@@ -934,34 +951,50 @@ public class CrystalPolyhedron extends Crystal {
               }
 
               occupancyDistribution[l] = totalCountWithinCrystal / totalCount;
+
+              // debug
+              //             System.out.println(distancesTravelled[l] + "\t" + occupancyDistribution[l] + "\t" + gammaDistribution[l]);
             }
 
             // Take the values of the gamma distribution at each r
             // Multiply this value by the r distribution and numerically integrate
 
             double[] combinedDistribution = new double[bins];
-            
+
             for (int l = 0; l < bins; l++)
             {
-              combinedDistribution[l] = gammaDistribution[l] * occupancyDistribution[l];
+              combinedDistribution[l] = gammaDistribution[l]
+                  * occupancyDistribution[l];
+              //   System.out.println(combinedDistribution[l]);
             }
-            
+
             double integral = 0;
-            
+
             for (int l = 0; l < bins - 1; l++)
             {
               double width = distancesTravelled[l + 1] - distancesTravelled[l];
               double height = (combinedDistribution[l + 1] + combinedDistribution[l]) / 2;
               integral += width * height;
             }
-            
+
+            integral /= gammaIntegral;
+
+            // stats 
+            if (integral < 1)
+              interestingVoxels++;
+
             // Assign to escapeFactor[i][j][k].
-            
+
             escapeFactor[i][j][k] = integral;
           }
         }
       }
     }
+
+    double percentage = 100 * (double) interestingVoxels / (double) totalVoxels;
+
+    System.out.println(String.format("%.1f", percentage)
+        + "% of voxels have a non-unity escape factor");
 
     calculatedEscapeFactors = true;
   }
@@ -983,6 +1016,15 @@ public class CrystalPolyhedron extends Crystal {
    */
   @Override
   public boolean isCrystalAt(final int i, final int j, final int k) {
+    final int[] crystalSize = getCrystSizeVoxels();
+
+    if (i < 0 || i >= crystalSize[0])
+      return false;
+    if (j < 0 || j >= crystalSize[1])
+      return false;
+    if (k < 0 || k >= crystalSize[2])
+      return false;
+
     boolean[] occ = crystOcc[i][j][k];
 
     if (!occ[0]) {
@@ -1001,7 +1043,7 @@ public class CrystalPolyhedron extends Crystal {
   @Override
   public void addDose(final int i, final int j, final int k,
       final double doseIncrease) {
-    dose[i][j][k] += doseIncrease;
+    dose[i][j][k] += doseIncrease * escapeFactor[i][j][k];
   }
 
   /*
