@@ -946,8 +946,18 @@ public class CrystalPolyhedron extends Crystal {
               combinedDistribution[l] = gammaDistribution[l] * occupancyDistribution[l];
             }
             
+            double integral = 0;
+            
+            for (int l = 0; l < bins - 1; l++)
+            {
+              double width = distancesTravelled[l + 1] - distancesTravelled[l];
+              double height = (combinedDistribution[l + 1] + combinedDistribution[l]) / 2;
+              integral += width * height;
+            }
             
             // Assign to escapeFactor[i][j][k].
+            
+            escapeFactor[i][j][k] = integral;
           }
         }
       }
