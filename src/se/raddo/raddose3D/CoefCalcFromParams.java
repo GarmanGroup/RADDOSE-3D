@@ -92,13 +92,18 @@ public class CoefCalcFromParams extends CoefCalcCompute {
     // Start by dealing with heavy atom in the
     // protein and adding these to the unit cell.
 
-    for (int i = 0; i < heavyProteinAtomNames.size(); i++) {
-      Element heavyAtom = getParser().getElement(heavyProteinAtomNames.get(i));
+    if (heavyProteinAtomNames != null)
+    {
+      for (int i = 0; i < heavyProteinAtomNames.size(); i++) {
+        Element heavyAtom = getParser()
+            .getElement(heavyProteinAtomNames.get(i));
 
-      // note: heavy atoms are provided per monomer,
-      // so multiply by number of monomers.
-      incrementMacromolecularOccurrence(heavyAtom, heavyProteinAtomNums.get(i)
-          * monomers);
+        // note: heavy atoms are provided per monomer,
+        // so multiply by number of monomers.
+        incrementMacromolecularOccurrence(heavyAtom,
+            heavyProteinAtomNums.get(i)
+                * monomers);
+      }
     }
 
     // Combine concentrations of heavy atoms in the
