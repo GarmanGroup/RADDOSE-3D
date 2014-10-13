@@ -188,7 +188,7 @@ public class CrystalCuboid extends Crystal {
      */
 
     // make sure rounding errors don't put voxels outside the surface. Should be small relative to voxel size.
-    double delta = 1 / 10*crystalPixPerUM;
+    double delta = 0.5 * crystalPixPerUM;
 
     // Set initial positions of vertices
     double[][] makeVertices = {
