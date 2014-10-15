@@ -69,7 +69,9 @@ public class CrystalPolyhedronTests {
             double trueDepth = (angle == 0) ? z : x;
             trueDepth /= resolution;
             
-            Assertion.equals(depth, trueDepth, "depth at z=" + z
+            String axis = (angle == 0) ? "z" : "x";
+            
+            Assertion.equals(depth, trueDepth, "depth at " + axis + " = " + trueDepth
                 + " for crystCoord (" + crystCoords[0] + ", " + crystCoords[1]
                 + ", " + crystCoords[2] + ")", 2.0);
           }
