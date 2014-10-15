@@ -558,8 +558,16 @@ public class CrystalPolyhedron extends Crystal {
      * photoElectronEscape = ("ON".equals(pEE));
      */
 
-    photoElectronEscape = false;
+    String escapeString = (String)mergedProperties.get(Crystal.CRYSTAL_PHOTOELECTRON_ESCAPE);
 
+ /*   if ("ON".equals(escapeString)) {
+      photoElectronEscape = true;
+    } else {
+      photoElectronEscape = false;
+    }
+*/
+    photoElectronEscape = true;
+    
     escapeFactor = new double[nx][ny][nz];
 
     /*
@@ -953,7 +961,7 @@ public class CrystalPolyhedron extends Crystal {
               occupancyDistribution[l] = totalCountWithinCrystal / totalCount;
 
               // debug
-              //             System.out.println(distancesTravelled[l] + "\t" + occupancyDistribution[l] + "\t" + gammaDistribution[l]);
+        //      System.out.println(distancesTravelled[l] + "\t" + occupancyDistribution[l] + "\t" + gammaDistribution[l]);
             }
 
             // Take the values of the gamma distribution at each r
