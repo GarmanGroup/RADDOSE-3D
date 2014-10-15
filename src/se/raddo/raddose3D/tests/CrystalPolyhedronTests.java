@@ -28,9 +28,9 @@ public class CrystalPolyhedronTests {
     properties.put(CrystalPolyhedron.CRYSTAL_WIREFRAME_TYPE, modelType);
 
     Crystal c = new CrystalPolyhedron(properties);
-
     Wedge w = new Wedge(0d, 0d, 0d, 100d, 0d, 0d, 0d, 0d, 0d, 0d, 0d);
-
+    
+    
     double[] crystCoords;
     // this coordinate is in voxel coordinates.
     // this translates to bottom left corner of the crystal
@@ -58,10 +58,17 @@ public class CrystalPolyhedronTests {
                 "crystal coordinate z axis for voxel (" + x + ", " + y + ", "
                     + z + ")", 0.01);
 
-            double radians = Math.toRadians(angle);
-            
-            c.setupDepthFinding(radians, w);
+            c.setupDepthFinding(Math.toRadians(angle), w);
 
+            if (angle == 90)
+            {
+              // need to rotate the crystcoords round y axis 90 degrees
+              // like in the exposeAngle function.
+              double temp = crystCoords[0];
+              crystCoords[0] = crystCoords[2];
+              crystCoords[2] = temp;
+            }
+            
             double depth = c.findDepth(crystCoords, 0, w);
 
             // Because the crystal has not been rotated,
