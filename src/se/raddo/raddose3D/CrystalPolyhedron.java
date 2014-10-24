@@ -79,7 +79,7 @@ public class CrystalPolyhedron extends Crystal {
   /**
    * Vertex array containing a variable number of 3-dimension vertices.
    */
-  private final double[][]      vertices;
+  protected double[][]      vertices;
 
   /* vertices for cuboid of size 90 x 74 x 40 */
   /*
@@ -106,7 +106,7 @@ public class CrystalPolyhedron extends Crystal {
    * of normal vectors.
    * In groups of 3 - triangles only please, no octagon nonsense.
    */
-  private final int[][]         indices;
+  protected int[][]         indices;
 
   /**
    * Similar in style to the index array, except each index is replaced
@@ -378,11 +378,37 @@ public class CrystalPolyhedron extends Crystal {
 
     return result;
   }
+  
+  /**
+   * Load vertices from wireframe file or any subclass implementation.
+   * @param mergedProperties Map of type <Object, Object> that contains all crystal properties.
+   *          The keys of the Map are defined by the constants in the
+   *          {@link Crystal} class.
+   */
+  public void loadVertices(final Map<Object, Object> mergedProperties)
+  {
+ // Assign wireframe type and wireframe file
+    String wireframeType = (String) mergedProperties
+        .get(CRYSTAL_WIREFRAME_TYPE);
+    String wireframeFile = (String) mergedProperties
+        .get(CRYSTAL_WIREFRAME_FILE);
+
+    // TODO: turn into something a bit more sensible later
+    // like an ImportWireframeFactory.
+
+    if ("obj".equalsIgnoreCase(wireframeType)) {
+      ImportWireframeObj importer = new ImportWireframeObj(wireframeFile);
+      vertices = importer.getVertices();
+      indices = importer.getIndices();
+    } else {
+      System.out.println("Wireframe model type not set.");
+      indices = new int[1][3];
+    }
+
+  }
 
   /**
-   * Code shamefully copied from @link CrystalCuboid class
-   * but frankly, CrystalCuboid is doomed once this class is implemented.
-   * Generic property constructor for cuboid crystals. Extracts all required
+   * Generic property constructor for polyhedron crystals. Extracts all required
    * information from a Map data structure.
    * *
    * Used properties:
@@ -419,30 +445,36 @@ public class CrystalPolyhedron extends Crystal {
     p = Math.toRadians((Double) mergedProperties.get(Crystal.CRYSTAL_ANGLE_P));
     l = Math.toRadians((Double) mergedProperties.get(Crystal.CRYSTAL_ANGLE_L));
 
-    // Assign wireframe type and wireframe file
-    String wireframeType = (String) mergedProperties
-        .get(CRYSTAL_WIREFRAME_TYPE);
-    String wireframeFile = (String) mergedProperties
-        .get(CRYSTAL_WIREFRAME_FILE);
+    loadVertices(mergedProperties);
 
-    // TODO: turn into something a bit more sensible later
-    // like an ImportWireframeFactory.
+    double[] xMinMax = this.minMaxVertices(0, vertices);
+    double[] yMinMax = this.minMaxVertices(1, vertices);
+    double[] zMinMax = this.minMaxVertices(2, vertices);
 
-    double[][] tempVertices = null;
+    for (int i = 0; i < vertices.length; i++)
+    {
 
-    if ("obj".equalsIgnoreCase(wireframeType)) {
-      ImportWireframeObj importer = new ImportWireframeObj(wireframeFile);
-      tempVertices = importer.getVertices();
-      indices = importer.getIndices();
-    } else {
-      System.out.println("Wireframe model type not set.");
-      indices = new int[1][3];
+      double x = vertices[i][0];
+      double y = vertices[i][1];
+      double z = vertices[i][2];
+
+      /*
+       * rotation in plane about [0 0 1] (P) Temporary variables needed
+       * since we use all of the previous xyz's to set each of the new ones.
+       */
+      double x2 = x * Math.cos(p) + y * Math.sin(p);
+      double y2 = -1 * x * Math.sin(p) + y * Math.cos(p);
+      double z2 = z;
+
+      /*
+       * rotation loop about [1 0 0] (L)
+       */
+      vertices[i][0] = x2;
+      vertices[i][1] = y2 * Math.cos(l) + z2 * Math.sin(l);
+      vertices[i][2] = -1 * y2 * Math.sin(l) + z2
+          * Math.cos(l);
     }
-
-    double[] xMinMax = this.minMaxVertices(0, tempVertices);
-    double[] yMinMax = this.minMaxVertices(1, tempVertices);
-    double[] zMinMax = this.minMaxVertices(2, tempVertices);
-
+    
     Double xshift = -xMinMax[0];
     Double yshift = -yMinMax[0];
     Double zshift = -zMinMax[0];
@@ -518,36 +550,6 @@ public class CrystalPolyhedron extends Crystal {
 
     crystCoord = tempCrystCoords; // Final value
 
-    for (int i = 0; i < tempVertices.length; i++)
-    {
-
-      double x = tempVertices[i][0];
-      double y = tempVertices[i][1];
-      double z = tempVertices[i][2];
-
-      /*
-       * rotation in plane about [0 0 1] (P) Temporary variables needed
-       * since we use all of the previous xyz's to set each of the new ones.
-       */
-      double x2 = x * Math.cos(p) + y * Math.sin(p);
-      double y2 = -1 * x * Math.sin(p) + y * Math.cos(p);
-      double z2 = z;
-
-      /*
-       * rotation loop about [1 0 0] (L)
-       */
-      tempVertices[i][0] = x2;
-      tempVertices[i][1] = y2 * Math.cos(l) + z2 * Math.sin(l);
-      tempVertices[i][2] = -1 * y2 * Math.sin(l) + z2
-          * Math.cos(l);
-    }
-
-    vertices = new double[tempVertices.length][3];
-
-    for (int i = 0; i < vertices.length; i++) {
-      System.arraycopy(tempVertices[i], 0, vertices[i], 0, 3);
-    }
-
     /*
      * Set the value of the boolean for whether photoelectron escape should be
      * calculated.
@@ -558,16 +560,18 @@ public class CrystalPolyhedron extends Crystal {
      * photoElectronEscape = ("ON".equals(pEE));
      */
 
-    String escapeString = (String)mergedProperties.get(Crystal.CRYSTAL_PHOTOELECTRON_ESCAPE);
+    String escapeString = (String) mergedProperties
+        .get(Crystal.CRYSTAL_PHOTOELECTRON_ESCAPE);
 
- /*   if ("ON".equals(escapeString)) {
-      photoElectronEscape = true;
-    } else {
-      photoElectronEscape = false;
-    }
-*/
-    photoElectronEscape = true;
-    
+    /*
+     * if ("ON".equals(escapeString)) {
+     * photoElectronEscape = true;
+     * } else {
+     * photoElectronEscape = false;
+     * }
+     */
+    photoElectronEscape = false;
+
     escapeFactor = new double[nx][ny][nz];
 
     /*
@@ -961,7 +965,7 @@ public class CrystalPolyhedron extends Crystal {
               occupancyDistribution[l] = totalCountWithinCrystal / totalCount;
 
               // debug
-        //      System.out.println(distancesTravelled[l] + "\t" + occupancyDistribution[l] + "\t" + gammaDistribution[l]);
+              //      System.out.println(distancesTravelled[l] + "\t" + occupancyDistribution[l] + "\t" + gammaDistribution[l]);
             }
 
             // Take the values of the gamma distribution at each r
