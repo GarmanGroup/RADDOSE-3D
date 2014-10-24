@@ -30,7 +30,7 @@ public abstract class Crystal {
   /** Constant for data fields in Map constructors: Wireframe file. */
   public static final String     CRYSTAL_WIREFRAME_FILE = "WIREFRAME_FILE";
   /** Constant for data fields in Map constructors: Photoelectron escape */
-  public static final String     CRYSTAL_PHOTOELECTRON_ESCAPE = "PHOTOELECTRON_ESCAPE";
+  public static final String     CRYSTAL_PHOTOELECTRON_ESCAPE = "CALCULATEESCAPE";
 
   /** Default recommended voxel resolution in voxels/micrometre. */
   protected static final Double  CRYSTAL_RESOLUTION_DEF        = 0.5d;

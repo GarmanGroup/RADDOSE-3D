@@ -164,6 +164,7 @@ crystalLine
 	| u=pdb					{ $crystal::pdb						= $u.pdb; }
 	| v=wireframeType			{ $crystal::crystalProperties.put(Crystal.CRYSTAL_WIREFRAME_TYPE, $v.value); }
 	| w=modelFile				{ $crystal::crystalProperties.put(Crystal.CRYSTAL_WIREFRAME_FILE, $w.value); }
+	  x=calculateEscape		{ $crystal::crystalProperties.put(Crystal.CRYSTAL_ELECTRON_ESCAPE, $x.value); }
 	;
 
 	
@@ -291,6 +292,11 @@ WIREFRAMETYPE : ('W'|'w')('I'|'i')('R'|'r')('E'|'e')('F'|'f')('R'|'r')('A'|'a')(
 modelFile returns [String value]
 	: MODELFILE a=STRING {$value = $a.text;};
 MODELFILE : ('M'|'m')('O'|'o')('D'|'d')('E'|'e')('L'|'l')('F'|'f')('I'|'i')('L'|'l')('E'|'e') ;
+
+calculateEscape returns [String value]
+	: CALCULATEESCAPE a=STRING {$value = $a.text;};
+CALCULATEESCAPE  
+	:	 ('C'|'c')('A'|'a')('L'|'l')('C'|'c')('U'|'u')('L'|'l')('A'|'a')('T'|'t')('E'|'e')('E'|'e')('S'|'s')('C'|'c')('A'|'a')('P'|'p')('E'|'e') ;
 
 
 // ------------------------------------------------------------------
