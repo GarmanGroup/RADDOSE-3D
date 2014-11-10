@@ -17,7 +17,7 @@ public class Wedge {
     ANGULAR_RESOLUTION,
     /** Total exposure time of the wedge in seconds. */
     EXPOSURE_TIME,
-    /** Start positions in um */
+    /** Start positions in um. */
     START_POSITION_X, START_POSITION_Y, START_POSITION_Z,
     /** Translation along the axis in distance per radian. */
     TRANSLATION_X, TRANSLATION_Y, TRANSLATION_Z,
@@ -61,9 +61,9 @@ public class Wedge {
    *          Start angle of exposure in degrees.
    * @param endAngle
    *          End angle of exposure in degrees.
-   * @param totalSecondsExposure total exposure in seconds
-   * @param startXposition beginning X axis translation
-   * @param startYposition beginning Y axis translation
+   * @param totalSecondsExposure total exposure in seconds.
+   * @param startXposition beginning X axis translation.
+   * @param startYposition beginning Y axis translation.
    * @param translationX
    *          translation on the X axis in distance per degree rotation.
    * @param translationY
@@ -105,9 +105,9 @@ public class Wedge {
    *          translation on the Y axis in distance per degree rotation.
    * @param translationZ
    *          translation on the Z axis in distance per degree rotation.
-   * @param totalSecondsExposure total exposure in seconds
-   * @param startXposition beginning X axis translation
-   * @param startYposition beginning Y axis translation         
+   * @param totalSecondsExposure total exposure in seconds.
+   * @param startXposition beginning X axis translation.
+   * @param startYposition beginning Y axis translation.     
    * @return
    *         Map structure containing the Wedge parameters.
    */
@@ -307,7 +307,7 @@ public class Wedge {
 
   /**
    * Returns three-dimensional vector containing X, Y, and Z
-   * translations per radian
+   * translations per radian.
    * @return double[3] containing translations per radian in um.
    */
   public Double[] getTranslationVector(final double deltaPhi) {
