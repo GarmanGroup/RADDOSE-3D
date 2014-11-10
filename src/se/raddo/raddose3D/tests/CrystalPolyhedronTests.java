@@ -21,6 +21,9 @@ public class CrystalPolyhedronTests {
 
     HashMap<Object, Object> properties = new HashMap<Object, Object>();
 
+    properties.put(Crystal.CRYSTAL_DIM_X, xdim);
+    properties.put(Crystal.CRYSTAL_DIM_Y, ydim);
+    properties.put(Crystal.CRYSTAL_DIM_Z, xdim);
     properties.put(Crystal.CRYSTAL_RESOLUTION, resolution);
     properties.put(Crystal.CRYSTAL_ANGLE_P, 0d);
     properties.put(Crystal.CRYSTAL_ANGLE_L, 0d);
@@ -28,10 +31,10 @@ public class CrystalPolyhedronTests {
     properties.put(CrystalPolyhedron.CRYSTAL_WIREFRAME_TYPE, modelType);
 
     Crystal c = new CrystalPolyhedron(properties);
+    Crystal cub = new CrystalCuboid(properties);
     Wedge w = new Wedge(0d, 0d, 0d, 100d, 0d, 0d, 0d, 0d, 0d, 0d, 0d);
     
-    
-    double[] crystCoords;
+    double[] crystCoords, crystCoordsCub;
     // this coordinate is in voxel coordinates.
     // this translates to bottom left corner of the crystal
     // in crystCoords (-45, -37, -20)
@@ -47,6 +50,7 @@ public class CrystalPolyhedronTests {
       for (int x = 1; x < xdim * resolution - 1; x++) {
         for (int y = 1; y < ydim * resolution - 1; y++) {
           for (int z = 1; z < zdim * resolution - 1; z++) {
+            crystCoordsCub = cub.getCrystCoord(x, y, z);
             crystCoords = c.getCrystCoord(x, y, z);
             Assertion.equals(crystCoords[0], -(xdim / 2) + (x / resolution),
                 "crystal coordinate x axis for voxel (" + x + ", " + y + ", "
@@ -57,7 +61,18 @@ public class CrystalPolyhedronTests {
             Assertion.equals(crystCoords[2], -(zdim / 2) + (z / resolution),
                 "crystal coordinate z axis for voxel (" + x + ", " + y + ", "
                     + z + ")", 0.01);
+            
+            Assertion.equals(crystCoordsCub[0], -(xdim / 2) + (x / resolution),
+                "crystal coordinate x axis for voxel (" + x + ", " + y + ", "
+                    + z + ")", 0.01);
+            Assertion.equals(crystCoordsCub[1], -(ydim / 2) + (y / resolution),
+                "crystal coordinate y axis for voxel (" + x + ", " + y + ", "
+                    + z + ")", 0.01);
+            Assertion.equals(crystCoordsCub[2], -(zdim / 2) + (z / resolution),
+                "crystal coordinate z axis for voxel (" + x + ", " + y + ", "
+                    + z + ")", 0.01);
 
+            cub.setupDepthFinding(Math.toRadians(angle), w);
             c.setupDepthFinding(Math.toRadians(angle), w);
 
             if (angle == 90)
@@ -67,9 +82,14 @@ public class CrystalPolyhedronTests {
               double temp = crystCoords[0];
               crystCoords[0] = crystCoords[2];
               crystCoords[2] = temp;
+              
+              temp = crystCoordsCub[0];
+              crystCoordsCub[0] = crystCoordsCub[2];
+              crystCoordsCub[2] = temp;
             }
             
             double depth = c.findDepth(crystCoords, 0, w);
+            double depthCub = cub.findDepth(crystCoordsCub, 0, w);
 
             // Because the crystal has not been rotated,
             // the depth should just be z / resolution
@@ -81,6 +101,9 @@ public class CrystalPolyhedronTests {
             Assertion.equals(depth, trueDepth, "depth at " + axis + " = " + trueDepth
                 + " for crystCoord (" + crystCoords[0] + ", " + crystCoords[1]
                 + ", " + crystCoords[2] + ")", 2.0);
+            Assertion.equals(depthCub, trueDepth, "depth at " + axis + " = " + trueDepth
+                + " for cuboid crystCoord (" + crystCoordsCub[0] + ", " + crystCoordsCub[1]
+                + ", " + crystCoordsCub[2] + ")", 2.0);
           }
         }
       }
