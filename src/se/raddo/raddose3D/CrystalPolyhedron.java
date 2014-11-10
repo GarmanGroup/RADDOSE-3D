@@ -103,7 +103,8 @@ public class CrystalPolyhedron extends Crystal {
    * of normal vectors.
    * In groups of 3 - triangles only please, no octagon nonsense.
    */
-  protected int[][]             indices;
+  private int[][]             indices;
+
 
   /**
    * Similar in style to the index array, except each index is replaced
@@ -1168,6 +1169,17 @@ public class CrystalPolyhedron extends Crystal {
   @Override
   public double getCrystalPixPerUM() {
     return crystalPixPerUM;
+  }
+
+  /**
+   * Subclasses should set indices using this method.
+   * @param tempIndices new indices
+   */
+  protected void setIndices(int[][] tempIndices) {
+    indices = new int[tempIndices.length][3];
+    for (int i = 0; i < tempIndices.length; i++) {
+      System.arraycopy(tempIndices[i], 0, indices[i], 0, 3);
+    }
   }
 
 }

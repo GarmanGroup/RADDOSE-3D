@@ -55,12 +55,9 @@ public class CrystalCuboid extends CrystalPolyhedron {
        { xdim, ydim, zdim }
        };
     
-    indices = new int[tempIndices.length][3];
-    vertices = new double[tempVertices.length][3];
+    setIndices(tempIndices);
     
-    for (int i = 0; i < tempIndices.length; i++) {
-      System.arraycopy(tempIndices[i], 0, indices[i], 0, 3);
-    }
+    vertices = new double[tempVertices.length][3];
 
     for (int i = 0; i < tempVertices.length; i++) {
       System.arraycopy(tempVertices[i], 0, vertices[i], 0, 3);
