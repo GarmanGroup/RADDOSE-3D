@@ -17,6 +17,7 @@ public class Wedge {
     ANGULAR_RESOLUTION,
     /** Total exposure time of the wedge in seconds. */
     EXPOSURE_TIME,
+    /** Start positions in um */
     START_POSITION_X, START_POSITION_Y, START_POSITION_Z,
     /** Translation along the axis in distance per radian. */
     TRANSLATION_X, TRANSLATION_Y, TRANSLATION_Z,
@@ -60,9 +61,9 @@ public class Wedge {
    *          Start angle of exposure in degrees.
    * @param endAngle
    *          End angle of exposure in degrees.
-   * @param totalSecondsExposure
-   * @param startXposition
-   * @param startYposition
+   * @param totalSecondsExposure total exposure in seconds
+   * @param startXposition beginning X axis translation
+   * @param startYposition beginning Y axis translation
    * @param translationX
    *          translation on the X axis in distance per degree rotation.
    * @param translationY
@@ -104,6 +105,9 @@ public class Wedge {
    *          translation on the Y axis in distance per degree rotation.
    * @param translationZ
    *          translation on the Z axis in distance per degree rotation.
+   * @param totalSecondsExposure total exposure in seconds
+   * @param startXposition beginning X axis translation
+   * @param startYposition beginning Y axis translation         
    * @return
    *         Map structure containing the Wedge parameters.
    */
@@ -248,10 +252,18 @@ public class Wedge {
     return properties.get(WedgeProperties.EXPOSURE_TIME);
   }
 
+  /**
+   * Returns starting X axis translation
+   * @return X axis translation in um.
+   */
   public Double getStartX() {
     return properties.get(WedgeProperties.START_POSITION_X);
   }
 
+  /**
+   * Returns starting Y axis translation
+   * @return Y axis translation in um.
+   */
   public Double getStartY() {
     return properties.get(WedgeProperties.START_POSITION_Y);
   }
@@ -260,10 +272,18 @@ public class Wedge {
     return properties.get(WedgeProperties.START_POSITION_Z);
   }
 
+  /**
+   * Returns translation on X axis per degree of rotation.
+   * @return X axis translation in um per radians.
+   */
   public Double getTransX() {
     return properties.get(WedgeProperties.TRANSLATION_X);
   }
 
+  /**
+   * Returns translation on Y axis per degree of rotation.
+   * @return Y axis translation in um per radians.
+   */
   public Double getTransY() {
     return properties.get(WedgeProperties.TRANSLATION_Y);
   }
@@ -272,6 +292,11 @@ public class Wedge {
     return properties.get(WedgeProperties.TRANSLATION_Z);
   }
 
+  /**
+   * Returns three-dimensional vector containing X, Y, and Z
+   * start position offsets
+   * @return double[3] containing start position offsets in um.
+   */
   public Double[] getStartVector() {
     Double[] startVector = new Double[3];
     startVector[0] = properties.get(WedgeProperties.START_POSITION_X);
@@ -280,6 +305,11 @@ public class Wedge {
     return startVector;
   }
 
+  /**
+   * Returns three-dimensional vector containing X, Y, and Z
+   * translations per radian
+   * @return double[3] containing translations per radian in um.
+   */
   public Double[] getTranslationVector(final double deltaPhi) {
     Double[] translationVector = new Double[3];
     translationVector[0] = getTransX(deltaPhi);
