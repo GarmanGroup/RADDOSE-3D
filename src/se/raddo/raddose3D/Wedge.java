@@ -64,6 +64,7 @@ public class Wedge {
    * @param totalSecondsExposure total exposure in seconds.
    * @param startXposition beginning X axis translation.
    * @param startYposition beginning Y axis translation.
+   * @param startZposition beginning Z axis translation.     
    * @param translationX
    *          translation on the X axis in distance per degree rotation.
    * @param translationY
@@ -108,6 +109,7 @@ public class Wedge {
    * @param totalSecondsExposure total exposure in seconds.
    * @param startXposition beginning X axis translation.
    * @param startYposition beginning Y axis translation.     
+   * @param startZposition beginning Z axis translation.     
    * @return
    *         Map structure containing the Wedge parameters.
    */
@@ -268,6 +270,10 @@ public class Wedge {
     return properties.get(WedgeProperties.START_POSITION_Y);
   }
 
+  /**
+   * Returns starting Z axis translation
+   * @return Z axis translation in um.
+   */
   public Double getStartZ() {
     return properties.get(WedgeProperties.START_POSITION_Z);
   }
@@ -288,13 +294,17 @@ public class Wedge {
     return properties.get(WedgeProperties.TRANSLATION_Y);
   }
 
+  /**
+   * Returns translation on Z axis per degree of rotation.
+   * @return Z axis translation in um per radians.
+   */
   public Double getTransZ() {
     return properties.get(WedgeProperties.TRANSLATION_Z);
   }
 
   /**
    * Returns three-dimensional vector containing X, Y, and Z
-   * start position offsets
+   * start position offsets.
    * @return double[3] containing start position offsets in um.
    */
   public Double[] getStartVector() {
@@ -323,6 +333,7 @@ public class Wedge {
    * 
    * @param deltaPhi
    *          angle of rotation in radians
+   * @return translation vector on the X axis.
    */
   public Double getTransX(final double deltaPhi) {
     return getTransX() * (deltaPhi - getStartAng());
@@ -333,6 +344,7 @@ public class Wedge {
    * 
    * @param deltaPhi
    *          angle of rotation in radians
+   * @return translation vector on the Y axis.
    */
   public Double getTransY(final double deltaPhi) {
     return getTransY() * (deltaPhi - getStartAng());
@@ -343,7 +355,8 @@ public class Wedge {
    * 
    * @param deltaPhi
    *          angle of rotation in radians
-   */
+   * @return translation vector on the Z axis.
+  */
   public Double getTransZ(final double deltaPhi) {
     return getTransZ() * (deltaPhi - getStartAng());
   }
