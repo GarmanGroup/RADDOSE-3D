@@ -39,7 +39,7 @@ public class CrystalPolyhedron extends Crystal {
    */
   private final double[][][]    dose, fluence, elastic;
 
-  /** Boolean to say whether photoelectron escape should be calculated */
+  /** Boolean to say whether photoelectron escape should be calculated. */
   private final boolean         photoElectronEscape;
 
   /**
@@ -54,9 +54,9 @@ public class CrystalPolyhedron extends Crystal {
   private boolean               calculatedEscapeFactors    = false;
 
   /**
-   * Average mean distance travelled by electron
+   * Average mean distance travelled by electron.
    */
-  private static final double   meanElectronTravelDistance = 3.;
+  private static final double   MEAN_ELECTRON_TRAVEL_DISTANCE = 3.;
 
   /**
    * A boolean (int for extensibility to deeper segmentation) array.
@@ -64,9 +64,6 @@ public class CrystalPolyhedron extends Crystal {
    * is a flag (calculated/not calculated) and second element is
    * a boolean (crystal/not crystal).
    */
-  //Helen: I've added a * after "two dimensional". I believe
-  // this should read "two element array". Am I correct?
-  //To Markus: Yes! Thanks!
 
   private final boolean[][][][] crystOcc;
 
@@ -79,7 +76,7 @@ public class CrystalPolyhedron extends Crystal {
   /**
    * Vertex array containing a variable number of 3-dimension vertices.
    */
-  protected double[][]      vertices;
+  protected double[][]          vertices;
 
   /* vertices for cuboid of size 90 x 74 x 40 */
   /*
@@ -106,7 +103,7 @@ public class CrystalPolyhedron extends Crystal {
    * of normal vectors.
    * In groups of 3 - triangles only please, no octagon nonsense.
    */
-  protected int[][]         indices;
+  protected int[][]             indices;
 
   /**
    * Similar in style to the index array, except each index is replaced
@@ -378,16 +375,18 @@ public class CrystalPolyhedron extends Crystal {
 
     return result;
   }
-  
+
   /**
    * Load vertices from wireframe file or any subclass implementation.
-   * @param mergedProperties Map of type <Object, Object> that contains all crystal properties.
+   * 
+   * @param mergedProperties Map of type <Object, Object> that contains all
+   *          crystal properties.
    *          The keys of the Map are defined by the constants in the
    *          {@link Crystal} class.
    */
   public void loadVertices(final Map<Object, Object> mergedProperties)
   {
- // Assign wireframe type and wireframe file
+    // Assign wireframe type and wireframe file
     String wireframeType = (String) mergedProperties
         .get(CRYSTAL_WIREFRAME_TYPE);
     String wireframeFile = (String) mergedProperties
@@ -474,7 +473,7 @@ public class CrystalPolyhedron extends Crystal {
       vertices[i][2] = -1 * y2 * Math.sin(l) + z2
           * Math.cos(l);
     }
-    
+
     Double xshift = -xMinMax[0];
     Double yshift = -yMinMax[0];
     Double zshift = -zMinMax[0];
@@ -875,7 +874,7 @@ public class CrystalPolyhedron extends Crystal {
     // Set up a gamma distribution with k = 2, theta = 3 um
     double[] gammaDistribution = new double[bins];
     calculateGammaDistribution(distancesTravelled, gammaDistribution, 2,
-        meanElectronTravelDistance, bins);
+        MEAN_ELECTRON_TRAVEL_DISTANCE, bins);
 
     double gammaIntegral = 0;
 

@@ -11,8 +11,7 @@ import se.raddo.raddose3D.Wedge;
 
 public class CrystalPolyhedronTests {
   @Test
-  public static void testFindDepthSimple()
-  {
+  public static void testFindDepthSimple() {
     double xdim = 60, ydim = 20, zdim = 40; // just like in the model file.
 
     Double resolution = 0.5d;
@@ -23,7 +22,7 @@ public class CrystalPolyhedronTests {
 
     properties.put(Crystal.CRYSTAL_DIM_X, xdim);
     properties.put(Crystal.CRYSTAL_DIM_Y, ydim);
-    properties.put(Crystal.CRYSTAL_DIM_Z, xdim);
+    properties.put(Crystal.CRYSTAL_DIM_Z, zdim);
     properties.put(Crystal.CRYSTAL_RESOLUTION, resolution);
     properties.put(Crystal.CRYSTAL_ANGLE_P, 0d);
     properties.put(Crystal.CRYSTAL_ANGLE_L, 0d);
@@ -33,7 +32,7 @@ public class CrystalPolyhedronTests {
     Crystal c = new CrystalPolyhedron(properties);
     Crystal cub = new CrystalCuboid(properties);
     Wedge w = new Wedge(0d, 0d, 0d, 100d, 0d, 0d, 0d, 0d, 0d, 0d, 0d);
-    
+
     double[] crystCoords, crystCoordsCub;
     // this coordinate is in voxel coordinates.
     // this translates to bottom left corner of the crystal
