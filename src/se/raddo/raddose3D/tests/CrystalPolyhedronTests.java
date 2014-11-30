@@ -15,7 +15,7 @@ public class CrystalPolyhedronTests {
     double xdim = 60, ydim = 20, zdim = 40; // just like in the model file.
 
     Double resolution = 0.5d;
-    String modelFile = "models/cuboid-30-20-10.obj";
+    String modelFile = "src/se/raddo/raddose3D/tests/CrystalPolyhedron-cuboid-30-20-10.obj";
     String modelType = "obj";
 
     HashMap<Object, Object> properties = new HashMap<Object, Object>();
@@ -118,7 +118,7 @@ public class CrystalPolyhedronTests {
   public static void testFindDepthConcave()
   {
     Double resolution = 0.5d;
-    String modelFile = "models/concave_cuboid-30-20-10.obj";
+    String modelFile = "src/se/raddo/raddose3D/tests/CrystalPolyhedron-concave_cuboid-30-20-10.obj";
     String modelType = "obj";
 
     HashMap<Object, Object> properties = new HashMap<Object, Object>();
