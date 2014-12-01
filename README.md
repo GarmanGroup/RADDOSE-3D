@@ -19,11 +19,9 @@ Contributors:
 
 * Oliver Zeldin
 * Markus Gerstel
-* Johnny Brooks-Bartlet
+* Johnny Brooks-Bartlett
 * Helen Ginn
 
 **Please cite**
 Zeldin, Gerstel, Garman. (2013). J. Appl. Cryst. 46, 1225-1230.
 <http://dx.doi.org/10.1107/S0021889813011461>
-
-Migrated from SVN to git in April 2014. 
