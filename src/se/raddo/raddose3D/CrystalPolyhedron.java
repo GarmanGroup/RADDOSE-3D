@@ -148,13 +148,13 @@ public class CrystalPolyhedron extends Crystal {
   /**
    * Vector class containing magical vector methods
    * like cross products and magnitudes.
-   * 
+   *
    * @author magd3052
    */
   private static class Vector {
     /**
      * Returns magnitude of 3D vector.
-     * 
+     *
      * @param vector 3d coordinates of vector
      * @return magnitude scalar.
      */
@@ -169,7 +169,7 @@ public class CrystalPolyhedron extends Crystal {
 
     /**
      * returns 3D vector between FROM and TO points.
-     * 
+     *
      * @param from from point
      * @param to to point
      * @return vector between points.
@@ -187,7 +187,7 @@ public class CrystalPolyhedron extends Crystal {
 
     /**
      * returns 3D cross-product between two vectors.
-     * 
+     *
      * @param vector1 vector1
      * @param vector2 vector2
      * @return cross product
@@ -206,7 +206,7 @@ public class CrystalPolyhedron extends Crystal {
     /**
      * returns 3D cross product with magnitude set to 1 between
      * two vectors.
-     * 
+     *
      * @param vector1 vector1
      * @param vector2 vector2
      * @return normalised cross product
@@ -225,7 +225,7 @@ public class CrystalPolyhedron extends Crystal {
 
     /**
      * returns dot product between two 3D vectors.
-     * 
+     *
      * @param vector1 vector1
      * @param vector2 vector2
      * @return dot product
@@ -245,7 +245,7 @@ public class CrystalPolyhedron extends Crystal {
      * Ray trace from a point to a plane via a direction vector,
      * find the intersection between the direction vector and the
      * plane and return this point.
-     * 
+     *
      * @param normalUnitVector normal vector with magnitude 1
      * @param directionVector direction vector of any magnitude
      * @param origin point from which ray is traced (i.e. voxel coordinate)
@@ -271,7 +271,7 @@ public class CrystalPolyhedron extends Crystal {
     /**
      * Ray trace - find intersection of direction vector from point
      * with plane from already-known distance t.
-     * 
+     *
      * @param directionVector direction vector
      * @param origin point from which ray is traced
      * @param t distance of origin to plane along direction vector
@@ -294,7 +294,7 @@ public class CrystalPolyhedron extends Crystal {
      * Ray trace from a point to a plane via a direction vector,
      * find the signed distance between the direction vector and
      * the plane and return this point.
-     * 
+     *
      * @param normalUnitVector normal vector with magnitude 1
      * @param directionVector direction vector of any magnitude
      * @param origin point from which ray is traced (i.e. voxel coordinate)
@@ -325,7 +325,7 @@ public class CrystalPolyhedron extends Crystal {
      * Takes an array of vertices of a polygon and determines whether a point
      * is contained within the polygon or not. Ignores the z axis at the
      * moment.
-     * 
+     *
      * @param vertices array of 3D vertices
      * @param point point to test inclusion - must be in same plane
      *          as vertices
@@ -352,7 +352,7 @@ public class CrystalPolyhedron extends Crystal {
   /**
    * Returns the minimum and maximum values of a vertex array
    * given chosen dimension (0 = x, 1 = y, 2 = z).
-   * 
+   *
    * @param dimension 0 = x, 1 = y, 2 = z
    * @param vertices vertices to be examined
    * @return double array, first element minimum, second element maximum
@@ -379,7 +379,7 @@ public class CrystalPolyhedron extends Crystal {
 
   /**
    * Load vertices from wireframe file or any subclass implementation.
-   * 
+   *
    * @param mergedProperties Map of type <Object, Object> that contains all
    *          crystal properties.
    *          The keys of the Map are defined by the constants in the
@@ -418,7 +418,7 @@ public class CrystalPolyhedron extends Crystal {
    * CRYSTAL_RESOLUTION (optional. Default: use getDefaultLimitedResolution)
    * CRYSTAL_ANGLE_P (optional. Default: 0)
    * CRYSTAL_ANGLE_L (optional. Default: 0)
-   * 
+   *
    * @param properties
    *          Map of type <Object, Object> that contains all crystal properties.
    *          The keys of the Map are defined by the constants in the
@@ -664,7 +664,7 @@ public class CrystalPolyhedron extends Crystal {
   /**
    * Calculates crystal occupancy at i, j, k, returns value
    * and sets crystOcc at a given i, j, k.
-   * 
+   *
    * @param i i
    * @param j j
    * @param k k
@@ -715,7 +715,7 @@ public class CrystalPolyhedron extends Crystal {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see se.raddo.raddose3D.Crystal#setupDepthFinding(double,
    * se.raddo.raddose3D.Wedge)
    */
@@ -771,7 +771,7 @@ public class CrystalPolyhedron extends Crystal {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see se.raddo.raddose3D.Crystal#findDepth(double[], double,
    * se.raddo.raddose3D.Wedge)
    */
@@ -995,7 +995,7 @@ public class CrystalPolyhedron extends Crystal {
 
             integral /= gammaIntegral;
 
-            // stats 
+            // stats
             if (integral < 1) {
               interestingVoxels++;
             }
@@ -1008,7 +1008,7 @@ public class CrystalPolyhedron extends Crystal {
       }
     }
 
-    double percentage = 100 * (double) interestingVoxels / (double) totalVoxels;
+    double percentage = 100 * (double) interestingVoxels / totalVoxels;
 
     System.out.println(String.format("%.1f", percentage)
         + "% of voxels have a non-unity escape factor");
@@ -1018,7 +1018,7 @@ public class CrystalPolyhedron extends Crystal {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see se.raddo.raddose3D.Crystal#getCrystCoord(int, int, int)
    */
   @Override
@@ -1028,7 +1028,7 @@ public class CrystalPolyhedron extends Crystal {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see se.raddo.raddose3D.Crystal#isCrystalAt(int, int, int)
    */
   @Override
@@ -1057,7 +1057,7 @@ public class CrystalPolyhedron extends Crystal {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see se.raddo.raddose3D.Crystal#addDose(int, int, int, double)
    */
   @Override
@@ -1068,7 +1068,7 @@ public class CrystalPolyhedron extends Crystal {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see se.raddo.raddose3D.Crystal#addFluence(int, int, int, double)
    */
   @Override
@@ -1080,7 +1080,7 @@ public class CrystalPolyhedron extends Crystal {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see se.raddo.raddose3D.Crystal#addElastic(int, int, int, double)
    */
   @Override
@@ -1092,7 +1092,7 @@ public class CrystalPolyhedron extends Crystal {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see se.raddo.raddose3D.Crystal#crystalInfo()
    */
   @Override
@@ -1100,7 +1100,7 @@ public class CrystalPolyhedron extends Crystal {
     String s = String
         .format(
             "Polyhedron crystal of bounding size"
-            + "0f, %.0f, %.0f] um [x, y, z] at a "
+            + "[%.0f, %.0f, %.0f] um [x, y, z] at a "
                 + "resolution of %.2f microns per voxel edge.",
             crystSizeUM[0],
             crystSizeUM[1],
@@ -1118,7 +1118,7 @@ public class CrystalPolyhedron extends Crystal {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see se.raddo.raddose3D.Crystal#getCrystSizeVoxels()
    */
   @Override
@@ -1130,7 +1130,7 @@ public class CrystalPolyhedron extends Crystal {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see se.raddo.raddose3D.Crystal#getCrystSizeUM()
    */
   @Override
@@ -1142,7 +1142,7 @@ public class CrystalPolyhedron extends Crystal {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see se.raddo.raddose3D.Crystal#getDose(int, int, int)
    */
   @Override
@@ -1152,7 +1152,7 @@ public class CrystalPolyhedron extends Crystal {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see se.raddo.raddose3D.Crystal#getFluence(int, int, int)
    */
   @Override
@@ -1162,7 +1162,7 @@ public class CrystalPolyhedron extends Crystal {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see se.raddo.raddose3D.Crystal#getElastic(int, int, int)
    */
   @Override
@@ -1172,7 +1172,7 @@ public class CrystalPolyhedron extends Crystal {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see se.raddo.raddose3D.Crystal#getCrystalPixPerUM()
    */
   @Override
