@@ -1099,7 +1099,7 @@ public class CrystalPolyhedron extends Crystal {
   public String crystalInfo() {
     String s = String
         .format(
-            "Polyhedron crystal of bounding size"
+            "Polyhedron crystal of bounding size "
             + "[%.0f, %.0f, %.0f] um [x, y, z] at a "
                 + "resolution of %.2f microns per voxel edge.",
             crystSizeUM[0],
