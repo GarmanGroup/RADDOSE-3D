@@ -1926,40 +1926,6 @@ public class InputfileParser extends Parser {
 
 
 
-    // $ANTLR start "calculateEscape"
-    // C:\\Users\\orie2707\\workspace\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:298:1: calculateEscape returns [String value] : CALCULATEESCAPE a= STRING ;
-    public final String calculateEscape() throws RecognitionException {
-        String value = null;
-
-
-        Token a=null;
-
-        try {
-            // C:\\Users\\orie2707\\workspace\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:299:2: ( CALCULATEESCAPE a= STRING )
-            // C:\\Users\\orie2707\\workspace\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:299:4: CALCULATEESCAPE a= STRING
-            {
-            match(input,CALCULATEESCAPE,FOLLOW_CALCULATEESCAPE_in_calculateEscape2482);
-
-            a=(Token)match(input,STRING,FOLLOW_STRING_in_calculateEscape2486);
-
-            value = (a!=null?a.getText():null);
-
-            }
-
-        }
-        catch (RecognitionException re) {
-            reportError(re);
-            recover(input,re);
-        }
-
-        finally {
-        	// do for sure before leaving
-        }
-        return value;
-    }
-    // $ANTLR end "calculateEscape"
-
-
     protected static class beam_scope {
         String beamType;
         HashMap<Object, Object> beamProperties;
@@ -3058,7 +3024,6 @@ public class InputfileParser extends Parser {
     public static final BitSet FOLLOW_pdb_in_crystalLine366 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_wireframeType_in_crystalLine379 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_modelFile_in_crystalLine390 = new BitSet(new long[]{0x0000000000000400L});
-    public static final BitSet FOLLOW_calculateEscape_in_crystalLine402 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_TYPE_in_crystalType422 = new BitSet(new long[]{0x0008000000000000L});
     public static final BitSet FOLLOW_STRING_in_crystalType426 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_set_in_crystalDDM468 = new BitSet(new long[]{0x0000800180000000L});
