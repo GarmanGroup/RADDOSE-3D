@@ -193,16 +193,18 @@ crystalCoefcalc returns [int value]
 	: ABSCOEFCALC a=crystalCoefcalcKeyword  { $value = $a.value; };
 ABSCOEFCALC : (('A'|'a')('B'|'b')('S'|'s'))?('C'|'c')('O'|'o')('E'|'e')('F'|'f')('C'|'c')('A'|'a')('L'|'l')('C'|'c');
 crystalCoefcalcKeyword returns [int value]
-	: DUMMY   { $value = 1;}
-	| AVERAGE { $value = 1;}
-	| DEFAULT { $value = 2;}
-	| RD      { $value = 3;}
-	| PDB	  { $value = 4;}
+	: DUMMY   	{ $value = 1;}
+	| AVERAGE 	{ $value = 1;}
+	| DEFAULT 	{ $value = 2;}
+	| RDJAVA	{ $value = 2;}
+	| RDFORTAN	{ $value = 3;}
+	| PDB	  	{ $value = 4;}
 	;
 DUMMY : ('D'|'d')('U'|'u')('M'|'m')('M'|'m')('Y'|'y') ;
 DEFAULT	: ('D'|'d')('E'|'e')('F'|'f')('A'|'a')('U'|'u')('L'|'l')('T'|'t');
 AVERAGE : ('A'|'a')('V'|'v')('E'|'e')('R'|'r')('A'|'a')('G'|'g')('E'|'e') ;
-RD : ('R'|'r')('D'|'d')(('V'|'v')('2'|'3'))? ;
+RDFORTAN : ('R'|'r')('D'|'d')(('V'|'v')('2'))? ;
+RDJAVA : ('R'|'r')('D'|'d')(('V'|'v')('3'))? ;
 PDB : ('E'|'e')('X'|'x')('P'|'p');
 
 crystalDim returns [Map<Object, Object> properties]
