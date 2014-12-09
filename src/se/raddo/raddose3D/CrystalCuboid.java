@@ -21,7 +21,7 @@ public class CrystalCuboid extends CrystalPolyhedron {
    * { 7, 5, 6 }
    * };
    */
-  
+
   @Override
   public void loadVertices(final Map<Object, Object> mergedProperties)
   {
@@ -40,7 +40,7 @@ public class CrystalCuboid extends CrystalPolyhedron {
          { 7, 5, 6 }
          };
 
-    
+
     Double xdim = (Double) mergedProperties.get(Crystal.CRYSTAL_DIM_X) / 2;
     Double ydim = (Double) mergedProperties.get(Crystal.CRYSTAL_DIM_Y) / 2;
     Double zdim = (Double) mergedProperties.get(Crystal.CRYSTAL_DIM_Z) / 2;
@@ -54,9 +54,9 @@ public class CrystalCuboid extends CrystalPolyhedron {
        { xdim, ydim, -zdim },
        { xdim, ydim, zdim }
        };
-    
+
     setIndices(tempIndices);
-    
+
     vertices = new double[tempVertices.length][3];
 
     for (int i = 0; i < tempVertices.length; i++) {
@@ -68,5 +68,31 @@ public class CrystalCuboid extends CrystalPolyhedron {
   public CrystalCuboid(final Map<Object, Object> properties) {
     super(properties);
 
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see se.raddo.raddose3D.Crystal#crystalInfo()
+   */
+  @Override
+  public String crystalInfo() {
+    String s = String
+        .format(
+            "Cuboid (Polyhedron) crystal of size "
+            + "[%.0f, %.0f, %.0f] um [x, y, z] at a "
+                + "resolution of %.2f microns per voxel edge.",
+            crystSizeUM[0],
+            crystSizeUM[1],
+            crystSizeUM[2],
+            1 / crystalPixPerUM);
+    if (l == 0 && p == 0) {
+      return s;
+    } else {
+      return s + String.format(
+          "%nRotated by %.1f deg in the plane of the loop and the loop is "
+              + "bent by %.1f relative to the rotation axis at phi = 0.",
+          Math.toDegrees(p), Math.toDegrees(l));
+    }
   }
 }

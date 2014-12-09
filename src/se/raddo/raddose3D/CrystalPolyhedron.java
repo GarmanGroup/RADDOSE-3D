@@ -15,20 +15,22 @@ import java.util.Map;
 public class CrystalPolyhedron extends Crystal {
 
   /** Resolution of crystal in 1/um. */
-  private final double          crystalPixPerUM;
+  protected final double          crystalPixPerUM;
 
   /**
    * Initial orientation of the crystal in the plane of the loop (right handed
    * rotation about z) and of the loop (right handed rotation about x) in
    * radians.
    */
-  private final double          p, l;
+  protected final double          p;
+
+  protected final double l;
 
   /**
    * 3 element array defining dimensions of
    * bounding box of crystal in um.
    */
-  private final double[]        crystSizeUM;
+  protected final double[]        crystSizeUM;
 
   /** 3 element array defining dimensions of bounding box in voxels. */
   private final int[]           crystSizeVoxels;
