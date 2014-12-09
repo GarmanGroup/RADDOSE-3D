@@ -562,16 +562,22 @@ public class CrystalPolyhedron extends Crystal {
      * photoElectronEscape = ("ON".equals(pEE));
      */
 
+    /////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////
+    //UNCOMMENT THIS SECTION OF CODE TO USE PHOTOELECTRON ESCAPE MODEL///
+    /*
     String escapeString = (String) mergedProperties
         .get(Crystal.CRYSTAL_PHOTOELECTRON_ESCAPE);
 
-    /*
      * if ("ON".equals(escapeString)) {
      * photoElectronEscape = true;
      * } else {
      * photoElectronEscape = false;
      * }
      */
+    /////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////
+
     photoElectronEscape = false;
 
     escapeFactor = new double[nx][ny][nz];
