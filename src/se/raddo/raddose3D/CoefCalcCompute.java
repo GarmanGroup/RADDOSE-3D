@@ -323,13 +323,13 @@ public class CoefCalcCompute extends CoefCalc {
   /**
    * Returns string containing absorption, attenuation, elastic
    * coefficient and density.
-   * 
+   *
    * @return descriptive string
    */
   @Override
   public String toString() {
     return String.format(
-        "Crystal coefficients calculated with Raddose-3D "
+        "Crystal coefficients calculated with RADDOSE-3D "
             + "(Paithankar et al., 2009). %n"
             + "Absorption Coefficient: %.2e /um.%n"
             + "Attenuation Coefficient: %.2e /um.%n"
@@ -345,7 +345,7 @@ public class CoefCalcCompute extends CoefCalc {
    * have a density of protein
    * but this might be worth changing... would not apply correctly to heavy
    * metals.
-   * 
+   *
    * @return solvent fraction of crystal
    */
   public double calculateSolventFractionFromNums() {
@@ -408,7 +408,7 @@ public class CoefCalcCompute extends CoefCalc {
    * Also need to know number of non-water atoms in the solvent in order to
    * calculate a displacement.
    * 1 Angstrom = 1E-27 litres.
-   * 
+   *
    * @param solventFraction solvent fraction
    */
   public void calculateSolventWater(final double solventFraction) {
@@ -446,7 +446,7 @@ public class CoefCalcCompute extends CoefCalc {
   /**
    * Combine concentrations of heavy atoms in the solvent and add these to the
    * unit cell.
-   * 
+   *
    * @param heavySolvConcNames heavy solvent concentration atom names
    * @param heavySolvConcNums heavy solvent concentrations in mM.
    */
@@ -463,7 +463,7 @@ public class CoefCalcCompute extends CoefCalc {
 
   /**
    * Calculate cell volume from cell dimensions and unit cell angles.
-   * 
+   *
    * @param cellA unit cell dimension a
    * @param cellB unit cell dimension b
    * @param cellC unit cell dimension c
@@ -591,7 +591,7 @@ public class CoefCalcCompute extends CoefCalc {
    * Take into account the number of molecules in the unit cell; equal to NCS
    * symmetry operators multiplied
    * by CS symmetry operators.
-   * 
+   *
    * @param num
    *          number of molecules in unit cell
    */
