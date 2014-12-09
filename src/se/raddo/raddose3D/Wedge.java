@@ -30,7 +30,7 @@ public class Wedge {
   /**
    * Create a new Wedge class, storing experimental data collection strategy
    * parameters.
-   * 
+   *
    * @param wedgeProperties
    *          A Map linking WedgeProperties to values. Some values may be
    *          initialized with default values if not set.
@@ -54,7 +54,7 @@ public class Wedge {
   /**
    * Full constructor that can be used by the parser.
    * All angular arguments are in degrees.
-   * 
+   *
    * @param angularResolution
    *          Angular exposure resolution in degrees.
    * @param startAngle
@@ -64,7 +64,7 @@ public class Wedge {
    * @param totalSecondsExposure total exposure in seconds.
    * @param startXposition beginning X axis translation.
    * @param startYposition beginning Y axis translation.
-   * @param startZposition beginning Z axis translation.     
+   * @param startZposition beginning Z axis translation.
    * @param translationX
    *          translation on the X axis in distance per degree rotation.
    * @param translationY
@@ -93,7 +93,7 @@ public class Wedge {
 
   /**
    * Function to convert Wedge parameters into a Map structure.
-   * 
+   *
    * @param angularResolution
    *          Angular exposure resolution in degrees.
    * @param startAngle
@@ -108,8 +108,8 @@ public class Wedge {
    *          translation on the Z axis in distance per degree rotation.
    * @param totalSecondsExposure total exposure in seconds.
    * @param startXposition beginning X axis translation.
-   * @param startYposition beginning Y axis translation.     
-   * @param startZposition beginning Z axis translation.     
+   * @param startYposition beginning Y axis translation.
+   * @param startZposition beginning Z axis translation.
    * @return
    *         Map structure containing the Wedge parameters.
    */
@@ -174,7 +174,7 @@ public class Wedge {
   /**
    * Contains a description of the wedge: beam size and type, angular range,
    * offset and translation properties.
-   * 
+   *
    * @return
    *         String describing the wedge.
    */
@@ -191,7 +191,7 @@ public class Wedge {
         || (properties.get(WedgeProperties.TRANSLATION_Y) != 0)) {
       s = s.concat(String.format(
           "Start is offset by [%f, %f] um [x,y].%n"
-              + " Helical scanning is at [%f, %f] um/deg in [x,y]%n",
+              + "Helical scanning is at [%f, %f] um/deg in [x,y]%n",
           properties.get(WedgeProperties.START_POSITION_X),
           properties.get(WedgeProperties.START_POSITION_Y),
           Math.toRadians(properties.get(WedgeProperties.TRANSLATION_X)),
@@ -203,7 +203,7 @@ public class Wedge {
 
   /**
    * Retrieve a single value from the wedge information.
-   * 
+   *
    * @param property
    *          The wedge property.
    * @return
@@ -216,7 +216,7 @@ public class Wedge {
 
   /**
    * Returns angular resolution.
-   * 
+   *
    * @return
    *         Wedge angular resolution in radians.
    */
@@ -226,7 +226,7 @@ public class Wedge {
 
   /**
    * Returns starting angle.
-   * 
+   *
    * @return
    *         Wedge starting angle in radians.
    */
@@ -236,7 +236,7 @@ public class Wedge {
 
   /**
    * Returns end angle.
-   * 
+   *
    * @return
    *         Wedge end angle in radians.
    */
@@ -246,7 +246,7 @@ public class Wedge {
 
   /**
    * Returns the total wedge exposure time.
-   * 
+   *
    * @return
    *         Wedge exposure time in seconds.
    */
@@ -330,7 +330,7 @@ public class Wedge {
 
   /**
    * get the x-translation of vector at a given rotation.
-   * 
+   *
    * @param deltaPhi
    *          angle of rotation in radians
    * @return translation vector on the X axis.
@@ -341,7 +341,7 @@ public class Wedge {
 
   /**
    * get the y-translation of vector at a given rotation.
-   * 
+   *
    * @param deltaPhi
    *          angle of rotation in radians
    * @return translation vector on the Y axis.
@@ -352,7 +352,7 @@ public class Wedge {
 
   /**
    * get the z-translation of vector at a given rotation.
-   * 
+   *
    * @param deltaPhi
    *          angle of rotation in radians
    * @return translation vector on the Z axis.
