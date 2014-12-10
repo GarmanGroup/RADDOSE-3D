@@ -13,8 +13,6 @@ import java.util.List;
  * Vertices have not been rotated by the initial rotation angles
  * and this must be executed by the Crystal class. This simply
  * imports data from a text file of OBJ file type.
- * 
- * @author magd3052
  */
 public class ImportWireframeObj implements ImportWireframe {
   /** Import file name of OBJ file type. */
@@ -27,12 +25,11 @@ public class ImportWireframeObj implements ImportWireframe {
    * @param filename .obj filename.
    */
   public ImportWireframeObj(final String filename) {
-    if (filename == null)
-    {
+    if (filename == null) {
       System.out.println("Filename not found, please set ModelFile");
       throw new RuntimeException();
     }
-    
+
     wireframeFileName = filename;
   }
 
@@ -75,12 +72,11 @@ public class ImportWireframeObj implements ImportWireframe {
 
           // components should be: "v", x, y, z.
 
-          double[] xyz = new double[3];
-
-          for (int i = 0; i < 3; i++)
-            xyz[i] = Double.parseDouble(components[i + 1]);
-
-          Triad newVertex = new Triad(xyz);
+          // TODO: there could be a localization bug here
+          Triad newVertex = new Triad(
+              Double.parseDouble(components[1]),
+              Double.parseDouble(components[2]),
+              Double.parseDouble(components[3]));
 
           triads.add(newVertex);
         }
@@ -115,7 +111,7 @@ public class ImportWireframeObj implements ImportWireframe {
     double[][] returnVertices = new double[triads.size()][3];
 
     for (int i = 0; i < triads.size(); i++) {
-      System.arraycopy(triads.get(i).getXyz(), 0, returnVertices[i], 0, 3);
+      System.arraycopy(triads.get(i).getXYZ(), 0, returnVertices[i], 0, 3);
     }
 
     return returnVertices;
@@ -128,9 +124,10 @@ public class ImportWireframeObj implements ImportWireframe {
     int[][] returnIndices = new int[triads.size()][3];
 
     for (int i = 0; i < triads.size(); i++) {
-      returnIndices[i][0] = (int)triads.get(i).getXyz()[0];
-      returnIndices[i][1] = (int)triads.get(i).getXyz()[1];
-      returnIndices[i][2] = (int)triads.get(i).getXyz()[2];
+      double[] xyz = triads.get(i).getXYZ();
+      returnIndices[i][0] = (int) xyz[0];
+      returnIndices[i][1] = (int) xyz[1];
+      returnIndices[i][2] = (int) xyz[2];
     }
 
     return returnIndices;
@@ -139,20 +136,41 @@ public class ImportWireframeObj implements ImportWireframe {
   /**
    * Small triad class which looks after xyz coordinates before
    * being sent back to the caller object.
-   * 
-   * @author magd3052
    */
   class Triad {
     /** xyz coordinates. */
     private double[] xyz = new double[3];
 
     /**
+     * constructor with particular xyz.
+     * 
+     * @param newXYZ new xyz coordinates
+     */
+    public Triad(final double[] newXYZ) {
+      System.arraycopy(newXYZ, 0, xyz, 0, 3);
+    }
+
+    /**
+     * constructor with particular xyz.
+     * 
+     * @param x x coordinate.
+     * @param y y coordinate.
+     * @param z z coordinate.
+     */
+    public Triad(final double x, final double y, final double z) {
+      xyz[0] = x;
+      xyz[1] = y;
+      xyz[2] = z;
+    }
+
+    /**
      * xyz setter.
      * 
-     * @param newXyz new xyz coordinates
+     * @param newXYZ new xyz coordinates.
      */
-    public void setXyz(final double[] newXyz) {
-      System.arraycopy(newXyz, 0, xyz, 0, 3);
+    @Deprecated
+    public void setXyz(final double[] newXYZ) {
+      System.arraycopy(newXYZ, 0, xyz, 0, 3);
     }
 
     /**
@@ -160,19 +178,10 @@ public class ImportWireframeObj implements ImportWireframe {
      * 
      * @return stored xyz coordinates
      */
-    public double[] getXyz() {
-      double[] returnXyz = new double[3];
-      System.arraycopy(xyz, 0, returnXyz, 0, 3);
-      return returnXyz;
-    }
-
-    /**
-     * constructor with particular xyz.
-     * 
-     * @param newXyz new xyz coordinates
-     */
-    public Triad(final double[] newXyz) {
-      System.arraycopy(newXyz, 0, xyz, 0, 3);
+    public double[] getXYZ() {
+      double[] returnXYZ = new double[3];
+      System.arraycopy(xyz, 0, returnXYZ, 0, 3);
+      return returnXYZ;
     }
   }
 }

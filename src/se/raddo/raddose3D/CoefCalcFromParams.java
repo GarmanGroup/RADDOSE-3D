@@ -92,8 +92,7 @@ public class CoefCalcFromParams extends CoefCalcCompute {
     // Start by dealing with heavy atom in the
     // protein and adding these to the unit cell.
 
-    if (heavyProteinAtomNames != null)
-    {
+    if (heavyProteinAtomNames != null) {
       for (int i = 0; i < heavyProteinAtomNames.size(); i++) {
         Element heavyAtom = getParser()
             .getElement(heavyProteinAtomNames.get(i));

@@ -158,7 +158,7 @@ public class CoefCalcRaddose extends CoefCalc {
     raddoseCandidates.add("./raddose.exe");
     raddoseCandidates.add("../raddose");
     raddoseCandidates.add("../raddose.exe");
-    
+
     boolean found = false;
     String command = null;
     File fileCandidate;
@@ -187,9 +187,8 @@ public class CoefCalcRaddose extends CoefCalc {
         }
       }
     }
-    
-    if (found == true && command == null)
-    {
+
+    if (found && (command == null)) {
       throw new RuntimeException("Found RADDOSE executable but could not execute.");
     }
 
@@ -323,7 +322,7 @@ public class CoefCalcRaddose extends CoefCalc {
 
   @Override
   public String toString() {
-     return String.format(
+    return String.format(
         "Crystal coefficients calculated with RADDOSE V2 "
             + "(Paithankar et al., 2009). %n"
             + "Absorption Coefficient: %.2e /um.%n"
