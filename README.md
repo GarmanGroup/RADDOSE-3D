@@ -11,17 +11,17 @@ can be easily integrated into it, in particular to incorporate online methods
 for determining the shape of macromolecular crystals and better protocols for
 imaging real experimental X-ray beam profiles.
 
-Brought to you by the Garman Lab at the University of Oxford. 
-contact: <elspeth.garman@bioch.ox.ac.uk>
+Brought to you by the Garman Lab at the University of Oxford.
+http://www.bioch.ox.ac.uk/garmangroup
 
 Contributors:
 -------------
 
 * Oliver Zeldin
 * Markus Gerstel
-* Johnny Brooks-Bartlett
+* Jonny Brooks-Bartlett
 * Helen Ginn
 
 **Please cite**
 Zeldin, Gerstel, Garman. (2013). J. Appl. Cryst. 46, 1225-1230.
-<http://dx.doi.org/10.1107/S0021889813011461>
+http://dx.doi.org/10.1107/S0021889813011461
