@@ -29,8 +29,8 @@ public abstract class Crystal {
   public static final String     CRYSTAL_WIREFRAME_TYPE = "WIREFRAME_TYPE";
   /** Constant for data fields in Map constructors: Wireframe file. */
   public static final String     CRYSTAL_WIREFRAME_FILE = "WIREFRAME_FILE";
-  /** Constant for data fields in Map constructors: Photoelectron escape */
-  public static final String     CRYSTAL_PHOTOELECTRON_ESCAPE = "CALCULATEESCAPE";
+  /** Constant for data fields in Map constructors: Photoelectron escape. */
+  public static final String     CRYSTAL_PHOTOELECTRON_ESCAPE = "PHESCAPE";
 
   /** Default recommended voxel resolution in voxels/micrometre. */
   protected static final Double  CRYSTAL_RESOLUTION_DEF        = 0.5d;
@@ -333,7 +333,7 @@ public abstract class Crystal {
         // (= 1e-18/1e3) / [volume (um^-3) *density (g/ml)]
         * 1e-6; // MGy
     final double fluenceToElasticFactor = -1
-        * Math.expm1(-1 * coefCalc.getElasticCoefficient() 
+        * Math.expm1(-1 * coefCalc.getElasticCoefficient()
         / getCrystalPixPerUM())
         // exposure for the Voxel (J) * fraction scattered by the voxel
         //   = J scattered
