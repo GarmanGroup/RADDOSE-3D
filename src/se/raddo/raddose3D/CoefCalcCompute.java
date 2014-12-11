@@ -329,8 +329,7 @@ public class CoefCalcCompute extends CoefCalc {
   @Override
   public String toString() {
     return String.format(
-        "Crystal coefficients calculated with RADDOSE-3D "
-            + "(Paithankar et al., 2009). %n"
+        "Crystal coefficients calculated with RADDOSE-3D. %n"
             + "Absorption Coefficient: %.2e /um.%n"
             + "Attenuation Coefficient: %.2e /um.%n"
             + "Elastic Coefficient: %.2e /um.%n"
