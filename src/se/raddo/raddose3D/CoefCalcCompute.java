@@ -500,7 +500,7 @@ public class CoefCalcCompute extends CoefCalc {
 
     cellVolume = cellVol;
 
-    System.out.println("Cell volume: " + cellVolume + " Angstroms cubed");
+    System.out.printf("Cell volume: %.2f Angstroms cubed.%n",cellVolume);
 
     return cellVol;
   }
