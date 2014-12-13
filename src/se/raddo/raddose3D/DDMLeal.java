@@ -389,11 +389,6 @@ public class DDMLeal implements DDM {
       this.b0 = b0;
       this.gamma = gamma;
 
-      /* Print the parameter values to the screen */
-      System.out.println("Using decay parameter values:");
-      System.out.println("Gamma = " + this.gamma);
-      System.out.println("B0 = " + this.b0);
-      System.out.println("Beta = " + this.beta);
     }
 
     /**
@@ -429,7 +424,16 @@ public class DDMLeal implements DDM {
    */
   @Override
   public String toString() {
-    return "Dose Decay Model from Leal et al. 2012 is being used.";
+    String stringInfo = String.format("Dose Decay Model from Leal et al. 2012 is "
+        + "being used.%n"
+        + "Using decay parameter values:%n"
+        + "%5s%2s%7.3f %s%n"
+        + "%5s%2s%7.3f %s%n"
+        + "%5s%2s%7.3f %s"
+        ,"Gamma","=",this.gamma,"MGy^{-1}","B0","=",this.b0,"Angstroms^2","Beta"
+        ,"=",this.beta,"Angstroms^2 MGy^{-1}");
+
+        return stringInfo;
   }
 
   /**
