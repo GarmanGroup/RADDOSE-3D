@@ -189,4 +189,42 @@ public class DDMTests {
   }
 
 
+  @Test
+  /** Tests that the decay values of the Linear DDM class is 1 at zero dose*/
+  public void testDDMLinearZeroDoseDecay() {
+
+    DDMLinear myLinearDDM = new DDMLinear();
+    double zeroDose = 0;
+    double zeroDoseDecayValue;
+    double tolerance = 1e-6;
+
+    zeroDoseDecayValue = myLinearDDM.calcDecay(zeroDose);
+
+    //Check that the decay value is equal to 1
+    Assert.assertEquals(zeroDoseDecayValue, 1, tolerance,"DDMLinear should be 1 at zero dose");
+
+    System.out.println("@Test - testDDMLinearZeroDoseDecay");
+  }
+
+  @Test
+  /** Tests that the RDE of the Leal DDM class is 1 at zero dose*/
+  public void testDDMLealZeroDoseDecay() {
+
+    DDMLeal myLealDDM = new DDMLeal(0.3, 10.0, 0.03);
+    double zeroDose = 0;
+    double zeroDoseRDE;
+    double tolerance = 1e-6;
+
+    //Calculate the zero dose integrated intensity
+    double zeroDoseIntegratedIntensity = myLealDDM.getIntegratedIntensity(0);
+
+    zeroDoseRDE = myLealDDM.getIntegratedIntensity(zeroDose) / zeroDoseIntegratedIntensity;
+
+    //Check that the decay value is equal to 1
+    Assert.assertEquals(zeroDoseRDE, 1, tolerance,"DDMLeal should be 1 at zero dose");
+
+    System.out.println("@Test - testDDMLealZeroDoseDecay");
+  }
+
+
 }
