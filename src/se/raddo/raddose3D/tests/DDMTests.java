@@ -110,4 +110,83 @@ public class DDMTests {
   }
 
 
+  @Test
+  /** Tests that the decay values of the Linear DDM class monotonically decrease*/
+  public void testDDMLinearMonotonicDecrease() {
+
+    DDMLinear myLinearDDM = new DDMLinear();
+    double[] doseValues = {0,1,5,10,30,43,50,100,1000};
+    boolean monotonicDecrease = true;
+    double decayValue;
+    double previousDecayValue = 1.0;
+
+    //For each dose value calculate the decay value.
+    //Then check if the current decay value (at the higher dose) is
+    //smaller than the previous decay value (at the smaller dose).
+    //If it's bigger then the test should fail.
+    //There is a case where the decay values don't get smaller and that's
+    //when the decay value has already dropped to zero.
+    for (int i = 0; i < doseValues.length; i++) {
+      decayValue = myLinearDDM.calcDecay(doseValues[i]);
+
+      if (i > 0){
+        if (decayValue >= previousDecayValue && previousDecayValue != 0.0){
+          monotonicDecrease = false;
+          break;
+        }
+      }
+      previousDecayValue = decayValue;
+    }
+
+    //Check that the decay value is equal to 1
+    Assert.assertTrue(monotonicDecrease,"DDMLinear should monotonically decrease");
+
+    System.out.println("@Test - testDDMLinearMonotonicDecrease");
+  }
+
+
+  @Test
+  /** Tests that the DDMLeal relative integrated intensity values
+   * are monotonically decreasing*/
+  public void testDDMLealMonotonicDecrease() {
+    //Create a DDMLeal object with arbitrary decay parameters.
+    //Create an array with arbitrary dose values.
+    //Create a boolean variable which tests the range of the relative decay
+    //Create a double to hold the Relative Diffraction efficiency (RDE) values
+    DDMLeal myLealDDM = new DDMLeal(0.3, 10.0, 0.03);
+    double[] doseValues = {0,1,5,10,30,43,50,100,1000};
+    boolean monotonicDecrease = true;
+    double RDE;
+    double previousRDE = 1.0;
+
+    //Calculate the zero dose integrated intensity
+    double zeroDoseIntegratedIntensity = myLealDDM.getIntegratedIntensity(0);
+
+    //For each dose value calculate the RDE.
+    //Then check if the RDE (at the higher dose) is
+    //smaller than the previous RDE(at the smaller dose).
+    //If it's bigger then the test should fail
+    for(int i = 0; i < doseValues.length; i++) {
+
+      RDE = myLealDDM.getIntegratedIntensity(doseValues[i])
+          / zeroDoseIntegratedIntensity;
+
+      if (i > 0){
+        if (RDE > previousRDE){
+          monotonicDecrease = false;
+          break;
+        }
+      }
+
+      previousRDE = RDE;
+
+    }
+
+    //Check that the RDE is within range
+    Assert.assertTrue(monotonicDecrease, "DDMLeal should monotonically decrease");
+
+    System.out.println("@Test - testDDMLealMonotonicDecrease");
+  }
+
+
 }
