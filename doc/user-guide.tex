@@ -226,7 +226,7 @@ These two commands are equivalent. \RD will call a previous version of RADDOSE t
 
 \noindent \Keyword{ABSCOEFCALC RDV3}
 
-This command will use the current RADDOSE-3D code to calculate the absorption and attenuation coefficients using the crystal composition specified by the user. (NOTE: If the crystal composition is specified then the \Keyword{RDV3} keyword is preferred over the other \Keyword{ABSCOEFCALC} keywords).
+This command will use the current RADDOSE-3D code to calculate the absorption and attenuation coefficients using the crystal composition specified by the user. (NOTE: If the crystal composition is specified then the \Keyword{RDV3} keyword is preferred over the other \Keyword{ABSCOEFCALC} keywords, particularly if the crystal contains DNA or RNA molecules).
 
 % XXXX  Removed from paper version
 % The path to the locally installed legacy RADDOSE executable can be specified using the \Keyword{-p} command line option (see section ...).
@@ -347,7 +347,7 @@ The command \Keyword{SOLVENTHEAVYCONC Na 1000 Cl 1000} specifies 1M sodium chlor
 
 \noindent \Keyword{SOLVENTFRACTION \textit{F}}
 
-The fraction of the unit cell that is occupied by solvent. If not given explicitly, this value is estimated from \hyperref[numresidues]{\Keyword{NUMRESIDUES}}, \hyperref[numrna]{\Keyword{NUMRNA}} and \hyperref[numdna]{\Keyword{NUMDNA}} using 1.35 g/ml for protein, and 2.0 g/ml for RNA and DNA.
+The fraction of the unit cell that is occupied by solvent. If not given explicitly, this value is estimated from \hyperref[numresidues]{\Keyword{NUMRESIDUES}}, \hyperref[numrna]{\Keyword{NUMRNA}} and \hyperref[numdna]{\Keyword{NUMDNA}} using 1.35 g/ml for protein, and 1.35 g/ml for DNA and 1.3 g/ml for RNA.
 
 % \hyperref[proteinheavyatoms]{the \Keyword{PROTEINHEAVYATOMS} keyword}.
 
