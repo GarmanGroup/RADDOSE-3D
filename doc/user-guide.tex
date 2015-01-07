@@ -486,11 +486,11 @@ the offset in \hbox{\textmu}m along \textit{X} (vertical in most set-ups) betwee
 
 \section{\RD for SAXS}
 
-\RD can be used to give dose estimates for SAXS experiments. Given the protein concentration, all that is required is to calculate the number of molecules in a given volume. This is equivalent to finding the number of monomers in a unit cell volume for a crystal. An example of the required calculation is given for (mouse) glucose isomerase:
+\RD can be used to give dose estimates for SAXS experiments. Given the protein concentration, the number of molecules in a given volume can be calculated. This is equivalent to finding the number of monomers in a unit cell volume for a crystal. An example of the required calculation is given for (mouse) glucose isomerase:
 
-Glucose isomerase (mouse) has 558 amino acids. The atomic mass for each amino acid can be used to accurately find the total atomic mass but for demonstration purposes we will use the fact that an amino acid is roughly 110 daltons. This gives a total molecular mass for the protein as $558 \times 110 = 61380$ daltons or $61380\,grams/mole$. Using the protein concentration in the SAXS experiment, here we will use a concentration of $2\,grams/litre$. The molarity of the solution can be calculated: 
+Glucose isomerase (mouse) has 558 amino acids. The atomic mass for each amino acid can be used to accurately find the total atomic mass. For demonstration purposes we will use the fact that an amino acid is roughly 110 daltons. This gives a total molecular mass for the protein as $558 \times 110 = 61380$ daltons or $61380\,grams/mole$. Using the protein concentration in the SAXS experiment, here we will use a concentration of $2\,grams/litre$, the molarity of the solution can be calculated: 
 \begin{equation}
-molarity = \frac{2\,grams/litre}{61380\,grams/mole} = 3.26 \times 10^{-5}\,M
+molarity = \frac{2\,grams/litre}{61380\,grams/mole} = 3.26 \times 10^{-5}\,M.
 \end{equation} 
 Now it is necessary to choose the dimensions for an arbitrary volume such that it will contain at least 1 molecule.
 For simplicity a 1000\,\AA$^3$ volume is chosen. Converting this volume to litres yields 1000\,\AA$^3$ = $1 \times 10^{-18}\,L$. Multiplying this volume by the molarity of the solution calculated earlier gives the number of moles: $3.26 \times 10^{-5}\,M \times 1 \times 10^{-18}\,L = 3.26 \times 10^{-23}\,moles$.
