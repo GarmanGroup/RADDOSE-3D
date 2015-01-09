@@ -488,12 +488,12 @@ the offset in \hbox{\textmu}m along \textit{X} (vertical in most set-ups) betwee
 
 \RD can be used to give dose estimates for SAXS experiments. Given the protein concentration, the number of molecules in a given volume can be calculated. This is equivalent to finding the number of monomers in a unit cell volume for a crystal. An example of the required calculation is given here for (mouse) glucose isomerase:
 
-Glucose isomerase (mouse) has 558 amino acids. The atomic mass for each amino acid can be used to find the accurate total atomic mass. For demonstration purposes we will use the fact that an amino acid is roughly 110 daltons. This gives a total molecular mass for the protein as $558 \times 110 = 61380$ daltons or $61380\,grams/mole$. Using protein concentration appropriate for a SAXS experiment, here we will use a concentration of $2\,$grams/litre, the molarity of the solution can be calculated: 
+Glucose isomerase (mouse) has 558 amino acids. The atomic mass for each amino acid can be used to find the accurate total atomic mass. For demonstration purposes we will use the fact that an amino acid is roughly 110 daltons. This gives a total molecular mass for the protein of $558 \times 110 = 61380$ daltons or $61380\,grams/mole$. Using a protein concentration appropriate for a SAXS experiment, here we will use a concentration of $2\,$grams/litre, the molarity of the solution can be calculated: 
 \begin{equation}
 molarity = \frac{2\,grams/litre}{61380\,grams/mole} = 3.26 \times 10^{-5}\,M.
 \end{equation} 
 Now it is necessary to choose the dimensions for an arbitrary volume such that it will contain at least 1 molecule.
-For simplicity a $1000^3\,$\AA$^3$ volume is chosen. Converting this volume to litres yields 1000\,\AA$^3$ = $1 \times 10^{-18}\,L$. Multiplying this volume by the molarity of the solution calculated earlier gives the number of moles: $3.26 \times 10^{-5}\,M \times 1 \times 10^{-18}\,L = 3.26 \times 10^{-23}\,moles$.
+For simplicity a $1000^3\,$\AA$^3$ volume is chosen. Converting this volume to litres yields $1000^3$\,\AA$^3$ = $1 \times 10^{-18}\,L$. Multiplying this volume by the molarity of the solution calculated earlier gives the number of moles: $3.26 \times 10^{-5}\,M \times 1 \times 10^{-18}\,L = 3.26 \times 10^{-23}\,moles$.
 
 Finally the number of molecules in the chosen volume is given by multiplying the number of moles by Avogadro's number ($\approx 6.02 \times 10^{23}\,moles^{-1})$. Hence in this example, the number of molecules in the chosen volume is $3.26 \times 10^{-23} \times 6.02 \times 10^{23} = 19.63$. Since the input for the number of monomers is required to be an integer this value is rounded to 20 molecules per unit chosen volume.
 
