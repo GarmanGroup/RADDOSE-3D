@@ -8,6 +8,15 @@ public class CoefCalcFromParams extends CoefCalcCompute {
    */
   protected static final double RIGHT_ANGLE = 90;
 
+
+  /**
+   * Simple Constructor that does nothing.
+   * Created for subclasses
+   */
+  public CoefCalcFromParams(){
+
+  }
+
   /**
    * Compute results and put them in local variables absCoeff, attCoeff,
    * elasCoeff and density.
