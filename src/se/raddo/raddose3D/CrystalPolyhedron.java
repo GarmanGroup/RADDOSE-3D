@@ -553,10 +553,10 @@ public class CrystalPolyhedron extends Crystal {
      * calculated.
      * Currently commented out because I haven't done the grammar yet.
      */
-
+    /*
      String pEE = (String) mergedProperties.get(CRYSTAL_ELECTRON_ESCAPE);
-     //photoElectronEscape = ("ON".equals(pEE));
-
+     photoElectronEscape = ("ON".equals(pEE));
+     */
 
     /////////////////////////////////////////////////////////////////////
     /////////////////////////////////////////////////////////////////////
