@@ -1,4 +1,4 @@
-// $ANTLR 3.4 C:\\Users\\orie2707\\workspace\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g 2015-01-29 18:09:07
+// $ANTLR 3.4 C:\\Users\\orie2707\\workspace\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g 2015-01-29 22:07:33
 
 package se.raddo.raddose3D.parser;
 import se.raddo.raddose3D.*;
@@ -325,7 +325,7 @@ public class InputfileParser extends Parser {
 
             if (((crystal_scope)crystal_stack.peek()).crystalCoefCalc == 3) {
               ((crystal_scope)crystal_stack.peek()).crystalCoefCalcClass = new CoefCalcRaddose(((crystal_scope)crystal_stack.peek()).cellA, ((crystal_scope)crystal_stack.peek()).cellB, ((crystal_scope)crystal_stack.peek()).cellC, ((crystal_scope)crystal_stack.peek()).cellAl, ((crystal_scope)crystal_stack.peek()).cellBe, ((crystal_scope)crystal_stack.peek()).cellGa,
-              													((crystal_scope)crystal_stack.peek()).numRes, ((crystal_scope)crystal_stack.peek()).numRNA, ((crystal_scope)crystal_stack.peek()).numDNA,
+              													((crystal_scope)crystal_stack.peek()).numMon, ((crystal_scope)crystal_stack.peek()).numRes, ((crystal_scope)crystal_stack.peek()).numRNA, ((crystal_scope)crystal_stack.peek()).numDNA,
               													((crystal_scope)crystal_stack.peek()).heavyProteinAtomNames, ((crystal_scope)crystal_stack.peek()).heavyProteinAtomNums,
               													((crystal_scope)crystal_stack.peek()).heavySolutionConcNames, ((crystal_scope)crystal_stack.peek()).heavySolutionConcNums,
               													((crystal_scope)crystal_stack.peek()).solFrac);
@@ -343,7 +343,7 @@ public class InputfileParser extends Parser {
             if (((crystal_scope)crystal_stack.peek()).crystalCoefCalc == 5)
             {
               ((crystal_scope)crystal_stack.peek()).crystalCoefCalcClass = new CoefCalcSAXS(((crystal_scope)crystal_stack.peek()).cellA, ((crystal_scope)crystal_stack.peek()).cellB, ((crystal_scope)crystal_stack.peek()).cellC, ((crystal_scope)crystal_stack.peek()).cellAl, ((crystal_scope)crystal_stack.peek()).cellBe, ((crystal_scope)crystal_stack.peek()).cellGa,
-              													((crystal_scope)crystal_stack.peek()).numMon, ((crystal_scope)crystal_stack.peek()).numRes, ((crystal_scope)crystal_stack.peek()).numRNA, ((crystal_scope)crystal_stack.peek()).numDNA,
+              													((crystal_scope)crystal_stack.peek()).numRes, ((crystal_scope)crystal_stack.peek()).numRNA, ((crystal_scope)crystal_stack.peek()).numDNA,
               													((crystal_scope)crystal_stack.peek()).heavyProteinAtomNames, ((crystal_scope)crystal_stack.peek()).heavyProteinAtomNums,
               													((crystal_scope)crystal_stack.peek()).heavySolutionConcNames, ((crystal_scope)crystal_stack.peek()).heavySolutionConcNums,
               													((crystal_scope)crystal_stack.peek()).solFrac, ((crystal_scope)crystal_stack.peek()).proteinConc);
@@ -832,7 +832,7 @@ public class InputfileParser extends Parser {
                     state._fsp--;
 
 
-                     ((crystal_scope)crystal_stack.peek()).proteinConc =y;
+                     ((crystal_scope)crystal_stack.peek()).proteinConc = y;
 
                     }
                     break;
@@ -1525,9 +1525,9 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "proteinConcentration"
-    // C:\\Users\\orie2707\\workspace\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:263:1: proteinConcentration returns [Double value] : PROTEINCONCENTRATION a= FLOAT ;
+    // C:\\Users\\orie2707\\workspace\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:263:1: proteinConcentration returns [Double proteinConc] : PROTEINCONCENTRATION a= FLOAT ;
     public final Double proteinConcentration() throws RecognitionException {
-        Double value = null;
+        Double proteinConc = null;
 
 
         Token a=null;
@@ -1540,7 +1540,7 @@ public class InputfileParser extends Parser {
 
             a=(Token)match(input,FLOAT,FOLLOW_FLOAT_in_proteinConcentration1675); 
 
-            value = Integer.parseDouble((a!=null?a.getText():null));
+            proteinConc = Double.parseDouble((a!=null?a.getText():null));
 
             }
 
@@ -1553,7 +1553,7 @@ public class InputfileParser extends Parser {
         finally {
         	// do for sure before leaving
         }
-        return value;
+        return proteinConc;
     }
     // $ANTLR end "proteinConcentration"
 

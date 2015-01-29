@@ -94,7 +94,7 @@ if ($crystal::crystalCoefCalc == 2)
 
 if ($crystal::crystalCoefCalc == 3) {
   $crystal::crystalCoefCalcClass = new CoefCalcRaddose($crystal::cellA, $crystal::cellB, $crystal::cellC, $crystal::cellAl, $crystal::cellBe, $crystal::cellGa,
-  													$crystal::numRes, $crystal::numRNA, $crystal::numDNA,
+  													$crystal::numMon, $crystal::numRes, $crystal::numRNA, $crystal::numDNA,
   													$crystal::heavyProteinAtomNames, $crystal::heavyProteinAtomNums,
   													$crystal::heavySolutionConcNames, $crystal::heavySolutionConcNums,
   													$crystal::solFrac);
@@ -112,7 +112,7 @@ if ($crystal::crystalCoefCalc == 4)
 if ($crystal::crystalCoefCalc == 5)
 {
   $crystal::crystalCoefCalcClass = new CoefCalcSAXS($crystal::cellA, $crystal::cellB, $crystal::cellC, $crystal::cellAl, $crystal::cellBe, $crystal::cellGa,
-  													$crystal::numMon, $crystal::numRes, $crystal::numRNA, $crystal::numDNA,
+  													$crystal::numRes, $crystal::numRNA, $crystal::numDNA,
   													$crystal::heavyProteinAtomNames, $crystal::heavyProteinAtomNums,
   													$crystal::heavySolutionConcNames, $crystal::heavySolutionConcNums,
   													$crystal::solFrac, $crystal::proteinConc);
@@ -175,7 +175,7 @@ crystalLine
 	| v=wireframeType			{ $crystal::crystalProperties.put(Crystal.CRYSTAL_WIREFRAME_TYPE, $v.value); }
 	| w=modelFile				{ $crystal::crystalProperties.put(Crystal.CRYSTAL_WIREFRAME_FILE, $w.value); }
 	| x=calculateEscape		{ $crystal::crystalProperties.put(Crystal.CRYSTAL_ELECTRON_ESCAPE, $x.value); }
-	| y=proteinConcentration	{ $crystal::proteinConc					=$y.value;}
+	| y=proteinConcentration	{ $crystal::proteinConc					= $y.proteinConc;}
 	  
 	;
 
@@ -260,8 +260,8 @@ unitcell returns [Double dimA, Double dimB, Double dimC, Double angA, Double ang
 	;
 UNITCELL : ('U'|'u')('N'|'n')('I'|'i')('T'|'t')('C'|'c')('E'|'e')('L'|'l')('L'|'l') ;
 	
-proteinConcentration returns [Double value]
-	: PROTEINCONCENTRATION a=FLOAT {$value = Integer.parseDouble($a.text);};
+proteinConcentration returns [Double proteinConc]
+	: PROTEINCONCENTRATION a=FLOAT {$proteinConc = Double.parseDouble($a.text);};
 PROTEINCONCENTRATION: ('P'|'p')('R'|'r')('O'|'o')('T'|'t')('E'|'e')('I'|'i')('N'|'n')('C'|'c')('O'|'o')('N'|'n')('C'|'c') ;
 
 nummonomers returns [int value]
