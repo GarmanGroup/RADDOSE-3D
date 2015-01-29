@@ -6,12 +6,12 @@ public class CoefCalcFromParams extends CoefCalcCompute {
   /**
    * Right angle.
    */
-  private static final double RIGHT_ANGLE = 90;
+  protected static final double RIGHT_ANGLE = 90;
 
   /**
    * Compute results and put them in local variables absCoeff, attCoeff,
    * elasCoeff and density.
-   * 
+   *
    * @param cellA cell dimension a
    * @param cellB cell dimension b
    * @param cellC cell dimension c
@@ -69,7 +69,7 @@ public class CoefCalcFromParams extends CoefCalcCompute {
   /**
    * Calculate the macromolecular mass (etc.) and add the appropriate numbers of
    * atom occurrences to the parser's atom array.
-   * 
+   *
    * @param monomers number of monomers
    * @param numResidues number of amino acid residues
    * @param numRNAresidues number of RNA residues

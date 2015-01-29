@@ -57,6 +57,7 @@ scope {
 	Double			b0Param;
 	Double			betaParam;		
 	String			pdb;
+	Double			proteinConc;
 	Double			cellA;
 	Double			cellB;
 	Double			cellC;
@@ -75,7 +76,7 @@ scope {
     HashMap<Object, Object> crystalProperties;
 	}
 @init { 
-$crystal::crystalCoefCalc = 2; // 0 = error, 1 = Simple, 2 = DEFAULT, 3 = RDV2, 4 = PDB
+$crystal::crystalCoefCalc = 2; // 0 = error, 1 = Simple, 2 = DEFAULT, 3 = RDV2, 4 = PDB, 5 = SAXS
 		$crystal::crystalProperties = new HashMap<Object, Object>();
 }
 @after { 
@@ -93,7 +94,7 @@ if ($crystal::crystalCoefCalc == 2)
 
 if ($crystal::crystalCoefCalc == 3) {
   $crystal::crystalCoefCalcClass = new CoefCalcRaddose($crystal::cellA, $crystal::cellB, $crystal::cellC, $crystal::cellAl, $crystal::cellBe, $crystal::cellGa,
-  													$crystal::numMon, $crystal::numRes, $crystal::numRNA, $crystal::numDNA,
+  													$crystal::numRes, $crystal::numRNA, $crystal::numDNA,
   													$crystal::heavyProteinAtomNames, $crystal::heavyProteinAtomNums,
   													$crystal::heavySolutionConcNames, $crystal::heavySolutionConcNums,
   													$crystal::solFrac);
@@ -106,6 +107,15 @@ if ($crystal::crystalCoefCalc == 4)
   else
 	$crystal::crystalCoefCalcClass = new CoefCalcFromPDB($crystal::pdb);
   													  													
+}
+
+if ($crystal::crystalCoefCalc == 5)
+{
+  $crystal::crystalCoefCalcClass = new CoefCalcSAXS($crystal::cellA, $crystal::cellB, $crystal::cellC, $crystal::cellAl, $crystal::cellBe, $crystal::cellGa,
+  													$crystal::numMon, $crystal::numRes, $crystal::numRNA, $crystal::numDNA,
+  													$crystal::heavyProteinAtomNames, $crystal::heavyProteinAtomNums,
+  													$crystal::heavySolutionConcNames, $crystal::heavySolutionConcNums,
+  													$crystal::solFrac, $crystal::proteinConc);
 }
 
 $crystal::crystalProperties.put(Crystal.CRYSTAL_COEFCALC, $crystal::crystalCoefCalcClass);
@@ -164,7 +174,9 @@ crystalLine
 	| u=pdb					{ $crystal::pdb						= $u.pdb; }
 	| v=wireframeType			{ $crystal::crystalProperties.put(Crystal.CRYSTAL_WIREFRAME_TYPE, $v.value); }
 	| w=modelFile				{ $crystal::crystalProperties.put(Crystal.CRYSTAL_WIREFRAME_FILE, $w.value); }
-	  x=calculateEscape		{ $crystal::crystalProperties.put(Crystal.CRYSTAL_ELECTRON_ESCAPE, $x.value); }
+	| x=calculateEscape		{ $crystal::crystalProperties.put(Crystal.CRYSTAL_ELECTRON_ESCAPE, $x.value); }
+	| y=proteinConcentration	{ $crystal::proteinConc					=$y.value;}
+	  
 	;
 
 	
@@ -199,6 +211,7 @@ crystalCoefcalcKeyword returns [int value]
 	| RDJAVA	{ $value = 2;}
 	| RDFORTAN	{ $value = 3;}
 	| PDB	  	{ $value = 4;}
+	| SAXS		{ $value = 5;}
 	;
 DUMMY : ('D'|'d')('U'|'u')('M'|'m')('M'|'m')('Y'|'y') ;
 DEFAULT	: ('D'|'d')('E'|'e')('F'|'f')('A'|'a')('U'|'u')('L'|'l')('T'|'t');
@@ -206,6 +219,7 @@ AVERAGE : ('A'|'a')('V'|'v')('E'|'e')('R'|'r')('A'|'a')('G'|'g')('E'|'e') ;
 RDFORTAN : ('R'|'r')('D'|'d')(('V'|'v')('2'))? ;
 RDJAVA : ('R'|'r')('D'|'d')(('V'|'v')('3'))? ;
 PDB : ('E'|'e')('X'|'x')('P'|'p');
+SAXS : ('S'|'s')('A'|'a')('X'|'x')('S'|'s');
 
 crystalDim returns [Map<Object, Object> properties]
 @init { 
@@ -246,6 +260,10 @@ unitcell returns [Double dimA, Double dimB, Double dimC, Double angA, Double ang
 	;
 UNITCELL : ('U'|'u')('N'|'n')('I'|'i')('T'|'t')('C'|'c')('E'|'e')('L'|'l')('L'|'l') ;
 	
+proteinConcentration returns [Double value]
+	: PROTEINCONCENTRATION a=FLOAT {$value = Integer.parseDouble($a.text);};
+PROTEINCONCENTRATION: ('P'|'p')('R'|'r')('O'|'o')('T'|'t')('E'|'e')('I'|'i')('N'|'n')('C'|'c')('O'|'o')('N'|'n')('C'|'c') ;
+
 nummonomers returns [int value]
 	: NUMMONOMERS a=FLOAT {$value = Integer.parseInt($a.text);};
 NUMMONOMERS: ('N'|'n')('U'|'u')('M'|'m')('M'|'m')('O'|'o')('N'|'n')('O'|'o')('M'|'m')('E'|'e')('R'|'r')('S'|'s') ;
