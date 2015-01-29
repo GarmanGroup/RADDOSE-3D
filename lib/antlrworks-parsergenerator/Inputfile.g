@@ -216,8 +216,8 @@ crystalCoefcalcKeyword returns [int value]
 DUMMY : ('D'|'d')('U'|'u')('M'|'m')('M'|'m')('Y'|'y') ;
 DEFAULT	: ('D'|'d')('E'|'e')('F'|'f')('A'|'a')('U'|'u')('L'|'l')('T'|'t');
 AVERAGE : ('A'|'a')('V'|'v')('E'|'e')('R'|'r')('A'|'a')('G'|'g')('E'|'e') ;
-RDFORTAN : ('R'|'r')('D'|'d')(('V'|'v')('2'))? ;
-RDJAVA : ('R'|'r')('D'|'d')(('V'|'v')('3'))? ;
+RDFORTAN : ('R'|'r')('D'|'d')('V'|'v')('2'|'3')? ;
+RDJAVA : ('R'|'r')('D'|'d')('3')('D'|'d')? ;
 PDB : ('E'|'e')('X'|'x')('P'|'p');
 SAXS : ('S'|'s')('A'|'a')('X'|'x')('S'|'s');
 
