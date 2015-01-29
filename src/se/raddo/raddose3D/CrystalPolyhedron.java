@@ -553,10 +553,10 @@ public class CrystalPolyhedron extends Crystal {
      * calculated.
      * Currently commented out because I haven't done the grammar yet.
      */
-    /*
-     * String pEE = (String) mergedProperties.get(CRYSTAL_PHOTOELECTRON_ESCAPE);
-     * photoElectronEscape = ("ON".equals(pEE));
-     */
+
+     String pEE = (String) mergedProperties.get(CRYSTAL_ELECTRON_ESCAPE);
+     //photoElectronEscape = ("ON".equals(pEE));
+
 
     /////////////////////////////////////////////////////////////////////
     /////////////////////////////////////////////////////////////////////
@@ -564,7 +564,7 @@ public class CrystalPolyhedron extends Crystal {
     /*
      * String escapeString = (String) mergedProperties
      * .get(Crystal.CRYSTAL_PHOTOELECTRON_ESCAPE);
-     * 
+     *
      * if ("ON".equals(escapeString)) {
      * photoElectronEscape = true;
      * } else {
@@ -721,7 +721,7 @@ public class CrystalPolyhedron extends Crystal {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see se.raddo.raddose3D.Crystal#setupDepthFinding(double,
    * se.raddo.raddose3D.Wedge)
    */
@@ -773,7 +773,7 @@ public class CrystalPolyhedron extends Crystal {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see se.raddo.raddose3D.Crystal#findDepth(double[], double,
    * se.raddo.raddose3D.Wedge)
    */
@@ -1011,7 +1011,7 @@ public class CrystalPolyhedron extends Crystal {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see se.raddo.raddose3D.Crystal#getCrystCoord(int, int, int)
    */
   @Override
@@ -1021,7 +1021,7 @@ public class CrystalPolyhedron extends Crystal {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see se.raddo.raddose3D.Crystal#isCrystalAt(int, int, int)
    */
   @Override
@@ -1050,7 +1050,7 @@ public class CrystalPolyhedron extends Crystal {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see se.raddo.raddose3D.Crystal#addDose(int, int, int, double)
    */
   @Override
@@ -1061,7 +1061,7 @@ public class CrystalPolyhedron extends Crystal {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see se.raddo.raddose3D.Crystal#addFluence(int, int, int, double)
    */
   @Override
@@ -1073,7 +1073,7 @@ public class CrystalPolyhedron extends Crystal {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see se.raddo.raddose3D.Crystal#addElastic(int, int, int, double)
    */
   @Override
@@ -1085,7 +1085,7 @@ public class CrystalPolyhedron extends Crystal {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see se.raddo.raddose3D.Crystal#crystalInfo()
    */
   @Override
@@ -1110,7 +1110,7 @@ public class CrystalPolyhedron extends Crystal {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see se.raddo.raddose3D.Crystal#getCrystSizeVoxels()
    */
   @Override
@@ -1122,7 +1122,7 @@ public class CrystalPolyhedron extends Crystal {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see se.raddo.raddose3D.Crystal#getCrystSizeUM()
    */
   @Override
@@ -1134,7 +1134,7 @@ public class CrystalPolyhedron extends Crystal {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see se.raddo.raddose3D.Crystal#getDose(int, int, int)
    */
   @Override
@@ -1144,7 +1144,7 @@ public class CrystalPolyhedron extends Crystal {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see se.raddo.raddose3D.Crystal#getFluence(int, int, int)
    */
   @Override
@@ -1154,7 +1154,7 @@ public class CrystalPolyhedron extends Crystal {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see se.raddo.raddose3D.Crystal#getElastic(int, int, int)
    */
   @Override
@@ -1164,7 +1164,7 @@ public class CrystalPolyhedron extends Crystal {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see se.raddo.raddose3D.Crystal#getCrystalPixPerUM()
    */
   @Override
@@ -1174,7 +1174,7 @@ public class CrystalPolyhedron extends Crystal {
 
   /**
    * Subclasses should set indices using this method.
-   * 
+   *
    * @param tempIndices new indices
    */
   protected void setIndices(final int[][] tempIndices) {

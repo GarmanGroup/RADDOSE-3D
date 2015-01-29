@@ -30,7 +30,7 @@ public abstract class Crystal {
   /** Constant for data fields in Map constructors: Wireframe file. */
   public static final String     CRYSTAL_WIREFRAME_FILE = "WIREFRAME_FILE";
   /** Constant for data fields in Map constructors: Photoelectron escape. */
-  public static final String     CRYSTAL_PHOTOELECTRON_ESCAPE = "PHESCAPE";
+  public static final String     CRYSTAL_ELECTRON_ESCAPE = "PHESCAPE";
 
   /** Default recommended voxel resolution in voxels/micrometre. */
   protected static final Double  CRYSTAL_RESOLUTION_DEF        = 0.5d;
@@ -67,7 +67,7 @@ public abstract class Crystal {
    * Generic property constructor for crystal classes.
    * Sets the DDM object if defined, a reasonable default otherwise.
    * Sets the CoefCalc object if defined, a reasonable default otherwise.
-   * 
+   *
    * @param properties
    *          Map of type <Object, Object> that contains all crystal properties.
    *          The keys of the Map are defined by the constants in the
@@ -94,7 +94,7 @@ public abstract class Crystal {
    * orientation of the crystal, and the wedge we are exposing and return the
    * depth of the coordinate in micrometres from the surface of the crystal
    * along the [0 0 1] unit vector.
-   * 
+   *
    * @param voxCoord coordinates of voxel
    * @param deltaPhi change in phi
    * @param myWedge Wedge object
@@ -109,7 +109,7 @@ public abstract class Crystal {
   /**
    * Return the coordinates, in micrometres from the origin (centre of
    * rotation and beam intercept) of voxel ijk.
-   * 
+   *
    * @param i i coord
    * @param j j coord
    * @param k k coord
@@ -119,7 +119,7 @@ public abstract class Crystal {
 
   /**
    * returns TRUE if there is a crystal at the coordinates i, j, k.
-   * 
+   *
    * @param i i coord
    * @param j j coord
    * @param k k coord
@@ -129,7 +129,7 @@ public abstract class Crystal {
 
   /**
    * Should increment the dose array element ijk by doseVox.
-   * 
+   *
    * @param i i coord
    * @param j j coord
    * @param k k coord
@@ -139,7 +139,7 @@ public abstract class Crystal {
 
   /**
    * Should increment the fluence array element ijk by fluenceVox.
-   * 
+   *
    * @param i i coord
    * @param j j coord
    * @param k k coord
@@ -149,7 +149,7 @@ public abstract class Crystal {
 
   /**
    * Should increment the elastic yield array element ijk by fluenceVox.
-   * 
+   *
    * @param i i coord
    * @param j j coord
    * @param k k coord
@@ -175,7 +175,7 @@ public abstract class Crystal {
 
   /**
    * Return the dose at voxel ijk in MGy.
-   * 
+   *
    * @param i i coord
    * @param j j coord
    * @param k k coord
@@ -184,7 +184,7 @@ public abstract class Crystal {
 
   /**
    * Return the fluence at voxel ijk.
-   * 
+   *
    * @param i i coord
    * @param j j coord
    * @param k k coord
@@ -193,7 +193,7 @@ public abstract class Crystal {
 
   /**
    * Return the total elastic scattering from voxel ijk.
-   * 
+   *
    * @param i i coord
    * @param j j coord
    * @param k k coord
@@ -208,7 +208,7 @@ public abstract class Crystal {
 
   /**
    * Return the coefCalc object that is being used to calculate coefficients.
-   * 
+   *
    * @return
    *         CoefCalc object.
    */
@@ -218,7 +218,7 @@ public abstract class Crystal {
 
   /**
    * Retrieve the DoseDecayModel object of the crystal.
-   * 
+   *
    * @return
    *         DoseDecayModel object.
    */
@@ -230,7 +230,7 @@ public abstract class Crystal {
    * Register an observer for crystal exposures.
    * If the observer has already been registered it will not be registered
    * again.
-   * 
+   *
    * @param e
    *          The observer class to be registered
    */
@@ -243,7 +243,7 @@ public abstract class Crystal {
 
   /**
    * Expose this crystal to a given beam according to a strategy.
-   * 
+   *
    * @param beam
    *          Beam object describing the used beam.
    * @param wedge
@@ -448,7 +448,7 @@ public abstract class Crystal {
 
   /**
    * Returns a common ExposureSummary object registered to this crystal.
-   * 
+   *
    * @return
    *         An ExposureSummary object that keeps a list of automatically
    *         generated metrics regarding exposures of this crystal.
@@ -466,7 +466,7 @@ public abstract class Crystal {
    * micrometres) for the cases where the user did not explicitly specify one.
    * A built-in default resolution is considered, but the total number of voxels
    * is limited.
-   * 
+   *
    * @param x
    *          crystal length in micrometres.
    * @param y
