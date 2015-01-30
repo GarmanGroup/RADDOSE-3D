@@ -395,7 +395,7 @@ public class CoefCalcCompute extends CoefCalc {
           .println("Warning: Solvent mass calculated as a negative number...");
     }
 
-    System.out.println(String.format("Solvent fraction determined as %.2f %%.",
+    System.out.println(String.format("Solvent fraction determined as %.2f%%.",
         solventFraction * PERCENTAGE_CONVERSION));
 
     return solventFraction;
