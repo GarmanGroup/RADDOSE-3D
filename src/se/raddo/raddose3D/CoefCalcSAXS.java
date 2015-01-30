@@ -9,6 +9,11 @@ public class CoefCalcSAXS extends CoefCalcFromParams {
   private static final double UNIT_CELL_LENGTH = 1000;
 
   /**
+   * Average molecular mass of an amino acid (daltons = grams/mole)
+   */
+  private static final double  AVG_RESIDUE_MASS = 110;
+
+  /**
    * Compute results and put them in local variables absCoeff, attCoeff,
    * elasCoeff and density.
    *
@@ -104,7 +109,13 @@ public class CoefCalcSAXS extends CoefCalcFromParams {
    */
   private int calculateNumMonomers(final int numberOfResidues
       , final double proteinConc, final double volume) {
-    // FIXME Auto-generated method stub
+
+    //Calculate the total molecular mass
+    double totalMolecularMass = AVG_RESIDUE_MASS * numberOfResidues;
+
+    //Calculate molarity
+    double molarity = proteinConc / totalMolecularMass;
+
     return 0;
   }
 
