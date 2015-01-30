@@ -26,9 +26,9 @@ public abstract class Crystal {
   /** Constant for data fields in Map constructors: Dose Decay Model. */
   public static final String     CRYSTAL_DDM                   = "DECAYMODEL";
   /** Constant for data fields in Map constructors: Wireframe type. */
-  public static final String     CRYSTAL_WIREFRAME_TYPE = "WIREFRAME_TYPE";
+  public static final String     CRYSTAL_WIREFRAME_TYPE        = "WIREFRAME_TYPE";
   /** Constant for data fields in Map constructors: Wireframe file. */
-  public static final String     CRYSTAL_WIREFRAME_FILE = "WIREFRAME_FILE";
+  public static final String     CRYSTAL_WIREFRAME_FILE        = "WIREFRAME_FILE";
   /** Constant for data fields in Map constructors: Photoelectron escape. */
   public static final String     CRYSTAL_ELECTRON_ESCAPE = "PHESCAPE";
 

@@ -6,12 +6,17 @@ public class CoefCalcSAXS extends CoefCalcFromParams {
   /**
    * Default unit cell dimension
    */
-  private static final double UNIT_CELL_LENGTH = 1000;
+  private static final double   UNIT_CELL_LENGTH = 1000;
 
   /**
    * Average molecular mass of an amino acid (daltons = grams/mole)
    */
-  private static final double  AVG_RESIDUE_MASS = 110;
+  private static final double   AVG_RESIDUE_MASS = 110;
+
+  /**
+   * Conversion factor to convert Angstroms^3 to litres
+   */
+  private static final double   ANGSTROM_TO_LITRE_VOLUME_CONVERSION = 1e-27;
 
   /**
    * Compute results and put them in local variables absCoeff, attCoeff,
@@ -31,7 +36,7 @@ public class CoefCalcSAXS extends CoefCalcFromParams {
    * @param heavySolutionConcNames heavy atom solvent element symbols
    * @param heavySolutionConcNums heavy atom solvent concentrations in mM.
    * @param solventFraction solvent fraction
-   * @param proteinConcentration protein concentration in grams per litre
+   * @param proteinConc protein concentration in grams per litre
    */
   public CoefCalcSAXS(final Double cellA, final Double cellB,
       final Double cellC,
@@ -43,7 +48,7 @@ public class CoefCalcSAXS extends CoefCalcFromParams {
       final List<String> heavySolutionConcNames,
       final List<Double> heavySolutionConcNums,
       final Double solventFraction,
-      final Double proteinConcentration) {
+      final Double proteinConc) {
 
     /**
      * Create local variables for the unit cell parameters.
@@ -69,10 +74,10 @@ public class CoefCalcSAXS extends CoefCalcFromParams {
     if (a == null) {
       a = UNIT_CELL_LENGTH;
     }
-    if (beta == null) {
+    if (b == null) {
       b = UNIT_CELL_LENGTH;
     }
-    if (gamma == null) {
+    if (c == null) {
       c = UNIT_CELL_LENGTH;
     }
 
@@ -90,7 +95,7 @@ public class CoefCalcSAXS extends CoefCalcFromParams {
     double unitCellVolume = cellVolume(a, b, c, alpha, beta, gamma);
 
     //Calculate the number of monomers
-    int numMonomers = calculateNumMonomers(numResidues,proteinConcentration
+    int numMonomers = calculateNumMonomers(numResidues,proteinConc
         ,unitCellVolume);
 
     calculateAtomOccurrences(numMonomers, numResidues, numRNA, numDNA,
@@ -108,15 +113,27 @@ public class CoefCalcSAXS extends CoefCalcFromParams {
    * @return Number of monomers of the molecule in the given volume
    */
   private int calculateNumMonomers(final int numberOfResidues
-      , final double proteinConc, final double volume) {
+      , final double proteinConcentration, final double volumeAngstromsCubed) {
 
-    //Calculate the total molecular mass
-    double totalMolecularMass = AVG_RESIDUE_MASS * numberOfResidues;
+    //Calculate molarity of solution as concentration divided by the total
+    //molecular mass.
+    double molarity = proteinConcentration / (AVG_RESIDUE_MASS * numberOfResidues);
 
-    //Calculate molarity
-    double molarity = proteinConc / totalMolecularMass;
+    // Calculate volume in litres
+    double volumeLitres = ANGSTROM_TO_LITRE_VOLUME_CONVERSION * volumeAngstromsCubed;
 
-    return 0;
+    //Calculate the number of monomers
+    double numOfMon = Math.round(molarity * volumeLitres * AVOGADRO_NUM);
+
+    //Cast the result to an integer
+    int numOfMonomers = (int)(numOfMon);
+
+    System.out.println("***************");
+    System.out.println("Number of monomers is: " + numOfMonomers);
+    System.out.println("***************");
+
+    //return the result i.e. the number of monomers in the given volume.
+    return numOfMonomers;
   }
 
 }
