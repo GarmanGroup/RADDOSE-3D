@@ -125,12 +125,23 @@ public class CoefCalcSAXS extends CoefCalcFromParams {
     //Calculate the number of monomers
     double numOfMon = Math.round(molarity * volumeLitres * AVOGADRO_NUM);
 
+    //Check that the number of molecules is not smaller than 1.
+    if (numOfMon < 1) {
+      System.out.println("");
+      System.out.println("*************** WARNING ***************");
+      System.out.println("The number of monomers calculated to be in the unit cell"
+          + " volume given is less than 1");
+      System.out.println("You should manually increase the unit cell dimensions in the"
+          + " input file.");
+      System.out.println("");
+      //Set number of monomers in the cell volume to 1
+      numOfMon = 1;
+    }
+
     //Cast the result to an integer
     int numOfMonomers = (int)(numOfMon);
 
-    System.out.println("***************");
-    System.out.println("Number of monomers is: " + numOfMonomers);
-    System.out.println("***************");
+    System.out.println("Calculated number of monomers in cell volume: " + numOfMonomers);
 
     //return the result i.e. the number of monomers in the given volume.
     return numOfMonomers;
