@@ -133,19 +133,10 @@ public class CrystalCylinder extends CrystalPolyhedron {
         { 43, 45, 53}
     };
 
-    Double xdim = (Double) mergedProperties.get(Crystal.CRYSTAL_DIM_X) / 2;
-    Double ydim = (Double) mergedProperties.get(Crystal.CRYSTAL_DIM_Y) / 2;
-    Double zdim = (Double) mergedProperties.get(Crystal.CRYSTAL_DIM_Z) / 2;
+    Double radius = (Double) mergedProperties.get(Crystal.CRYSTAL_DIM_X) / 2;
+    Double length = (Double) mergedProperties.get(Crystal.CRYSTAL_DIM_Y);
 
-    double[][] tempVertices = { { -xdim, -ydim, zdim },
-        { -xdim, -ydim, -zdim },
-        { -xdim, ydim, -zdim },
-        { -xdim, ydim, zdim },
-        { xdim, -ydim, zdim },
-        { xdim, -ydim, -zdim },
-        { xdim, ydim, -zdim },
-        { xdim, ydim, zdim }
-    };
+    double[][] tempVertices = createCylinderVertices(radius, length);
 
     setIndices(tempIndices);
 
@@ -155,6 +146,53 @@ public class CrystalCylinder extends CrystalPolyhedron {
       System.arraycopy(tempVertices[i], 0, vertices[i], 0, 3);
     }
 
+  }
+
+  /**
+   * Creates the vertices required for the cylinder object
+   * @param radius of the circular cross-section of the cylinder
+   * @param length - This is the axial length of the cylinder
+   * @return an nx3 array (where n is the number of vertices) containing
+   * the x,y,z coordinates of each vertex
+   */
+  private double[][] createCylinderVertices(Double radius, Double length) {
+     
+    // Set the default number of vertices for the cylinder
+    int numOfVertices = 64;
+    
+    //Create x Coordinates for the base and the top of the cylinder
+    double base = length / 2;
+    double xCoordBase = -base;
+    double xCoordTop = base;
+    
+    // Calculate angular step around circle. Note that there are two cricles:
+    // One at the base and one at the top of the cylinder. Hence the number
+    // of vertices for each circle is numVertices/2.
+    // The negative sign is used to go anti clockwise around the circle to be
+    //consistent with the output from BLENDER software.
+    double angleToVertex = -2 * Math.PI/(numOfVertices / 2);
+    
+    //Create variable to store the x,y,z coordinates of each vertex
+    double[][] vertices = new double[numOfVertices][3]; 
+    
+    //Loop through each vertex
+    for (int vertex = 0; vertex < numOfVertices; vertex++){
+      //Calculate points around the circle
+      double yCoord = radius * Math.cos(vertex * angleToVertex);
+      double ZCoord = radius * Math.sin(vertex * angleToVertex);
+      
+      //Add points to the vertices array for the Base
+      vertices[2 * vertex][1] = xCoordBase;
+      vertices[2 * vertex][2] = yCoord;
+      vertices[2 * vertex][3] = ZCoord;
+
+      //Add points to the vertices array for the Top
+      vertices[2 * vertex + 1][1] = xCoordTop;
+      vertices[2 * vertex + 1][2] = yCoord;
+      vertices[2 * vertex + 1][3] = ZCoord;
+    }
+    
+    return vertices;
   }
 
   public CrystalCylinder(final Map<Object, Object> properties) {
