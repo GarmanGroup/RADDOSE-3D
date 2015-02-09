@@ -55,7 +55,7 @@ public abstract class Crystal {
   /** The CoefCalc method being employed to generate crystal coefficients. */
   private final CoefCalc         coefCalc;
   /** The container encasing the irradiated sample*/
-  //private final Container         sampleContainer;
+  private final Container         sampleContainer;
 
   /**
    * List of registered exposureObservers. Registered objects will be notified
@@ -93,6 +93,11 @@ public abstract class Crystal {
     } else {
       coefCalc = (CoefCalc) properties.get(Crystal.CRYSTAL_COEFCALC);
     }
+
+    sampleContainer = new Container(
+        (Double) properties.get(Crystal.CRYSTAL_CONTAINER_THICKNESS),
+        (String) properties.get(Crystal.CRYSTAL_CONTAINER_MATERIAL),
+        (Double) properties.get(Crystal.CRYSTAL_CONTAINER_DENSITY));
 
     System.out.println("Container Thickness is: " +
     properties.get(Crystal.CRYSTAL_CONTAINER_THICKNESS));
