@@ -158,6 +158,7 @@ crystalLine
 	                           			  $crystal::betaParam 					= $h.betaParam; }
 	| i=containerThickness		{ $crystal::crystalProperties.put(Crystal.CRYSTAL_CONTAINER_THICKNESS, $i.value); }
 	| j=containerMaterial		{ $crystal::crystalProperties.put(Crystal.CRYSTAL_CONTAINER_MATERIAL, $j.value); }
+	| k=containerDensity		{ $crystal::crystalProperties.put(Crystal.CRYSTAL_CONTAINER_DENSITY, $k.value); }
 	| m=unitcell			{ $crystal::cellA					= $m.dimA; 
    							  $crystal::cellB 					= $m.dimB; 	
 							  $crystal::cellC 					= $m.dimC;	
@@ -328,6 +329,11 @@ CONTAINERTHICKNESS: ('C'|'c')('O'|'o')('N'|'n')('T'|'t')('A'|'a')('I'|'i')('N'|'
 containerMaterial returns[String value]
 	: CONTAINERMATERIAL a=STRING {$value = $a.text;};
 CONTAINERMATERIAL: ('C'|'c')('O'|'o')('N'|'n')('T'|'t')('A'|'a')('I'|'i')('N'|'n')('E'|'e')('R'|'r')('M'|'m')('A'|'a')('T'|'t')('E'|'e')('R'|'r')('I'|'i')('A'|'a')('L'|'l') ;
+
+containerDensity returns[double value]
+	: CONTAINERDENSITY a=FLOAT {$value = Double.parseDouble($a.text);};
+CONTAINERDENSITY: ('C'|'c')('O'|'o')('N'|'n')('T'|'t')('A'|'a')('I'|'i')('N'|'n')('E'|'e')('R'|'r')('D'|'d')('E'|'e')('N'|'n')('S'|'s')('I'|'i')('T'|'t')('Y'|'y') ;
+
 
 // ------------------------------------------------------------------
 beam returns [Beam bObj]

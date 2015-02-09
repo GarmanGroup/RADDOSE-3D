@@ -33,8 +33,10 @@ public abstract class Crystal {
   public static final String     CRYSTAL_ELECTRON_ESCAPE       = "PHESCAPE";
   /** Constant for data fields in Map constructors: Container thickness. */
   public static final String     CRYSTAL_CONTAINER_THICKNESS   = "CONTAINER_THICKNESS";
-  /** Constant for data fields in Map constructors: Container Material. */
+  /** Constant for data fields in Map constructors: Container material. */
   public static final String     CRYSTAL_CONTAINER_MATERIAL    = "CONTAINER_MATERIAL";
+  /** Constant for data fields in Map constructors: Container density. */
+  public static final String     CRYSTAL_CONTAINER_DENSITY      = "CONTAINER_DENSITY";
 
   /** Default recommended voxel resolution in voxels/micrometre. */
   protected static final Double  CRYSTAL_RESOLUTION_DEF        = 0.5d;
@@ -97,6 +99,12 @@ public abstract class Crystal {
 
     System.out.println("Container Material is: " +
         properties.get(Crystal.CRYSTAL_CONTAINER_MATERIAL));
+
+    System.out.println("Material Density is: " +
+        properties.get(Crystal.CRYSTAL_CONTAINER_DENSITY));
+
+    boolean b = properties.get(Crystal.CRYSTAL_CONTAINER_DENSITY) instanceof Double;
+    System.out.println("Density is instance of double: " + b);
   }
 
   public abstract void setupDepthFinding(double angrad, Wedge wedge);
