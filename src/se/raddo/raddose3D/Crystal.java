@@ -52,6 +52,8 @@ public abstract class Crystal {
   private final DDM              ddm;
   /** The CoefCalc method being employed to generate crystal coefficients. */
   private final CoefCalc         coefCalc;
+  /** The container encasing the irradiated sample*/
+  //private final Container         sampleContainer;
 
   /**
    * List of registered exposureObservers. Registered objects will be notified
@@ -89,6 +91,12 @@ public abstract class Crystal {
     } else {
       coefCalc = (CoefCalc) properties.get(Crystal.CRYSTAL_COEFCALC);
     }
+
+    System.out.println("Container Thickness is: " +
+    properties.get(Crystal.CRYSTAL_CONTAINER_THICKNESS));
+
+    System.out.println("Container Material is: " +
+        properties.get(Crystal.CRYSTAL_CONTAINER_MATERIAL));
   }
 
   public abstract void setupDepthFinding(double angrad, Wedge wedge);
