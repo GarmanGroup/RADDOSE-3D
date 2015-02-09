@@ -156,6 +156,8 @@ crystalLine
 	| h=crystalDecayParam		{ $crystal::gammaParam 					= $h.gammaParam; 
 	                           			  $crystal::b0Param 					= $h.b0Param; 
 	                           			  $crystal::betaParam 					= $h.betaParam; }
+	| i=containerThickness		{ $crystal::crystalProperties.put(Crystal.CRYSTAL_CONTAINER_THICKNESS, $i.value); }
+	| j=containerMaterial		{ $crystal::crystalProperties.put(Crystal.CRYSTAL_CONTAINER_MATERIAL, $j.value); }
 	| m=unitcell			{ $crystal::cellA					= $m.dimA; 
    							  $crystal::cellB 					= $m.dimB; 	
 							  $crystal::cellC 					= $m.dimC;	
@@ -317,7 +319,15 @@ calculateEscape returns [String value]
 	: CALCULATEESCAPE a=STRING {$value = $a.text;};
 CALCULATEESCAPE  
 	:	 ('C'|'c')('A'|'a')('L'|'l')('C'|'c')('U'|'u')('L'|'l')('A'|'a')('T'|'t')('E'|'e')('E'|'e')('S'|'s')('C'|'c')('A'|'a')('P'|'p')('E'|'e') ;
+	
+containerThickness returns[double value]
+	: CONTAINERTHICKNESS a=FLOAT {$value = Double.parseDouble($a.text);};
+CONTAINERTHICKNESS: ('C'|'c')('O'|'o')('N'|'n')('T'|'t')('A'|'a')('I'|'i')('N'|'n')('E'|'e')('R'|'r')('T'|'t')('H'|'h')('I'|'i')('C'|'c')('K'|'k')('N'|'n')('E'|'e')('S'|'s')('S'|'s') ;
 
+
+containerMaterial returns[String value]
+	: CONTAINERMATERIAL a=STRING {$value = $a.text;};
+CONTAINERMATERIAL: ('C'|'c')('O'|'o')('N'|'n')('T'|'t')('A'|'a')('I'|'i')('N'|'n')('E'|'e')('R'|'r')('M'|'m')('A'|'a')('T'|'t')('E'|'e')('R'|'r')('I'|'i')('A'|'a')('L'|'l') ;
 
 // ------------------------------------------------------------------
 beam returns [Beam bObj]
