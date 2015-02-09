@@ -156,31 +156,31 @@ public class CrystalCylinder extends CrystalPolyhedron {
    * the x,y,z coordinates of each vertex
    */
   private double[][] createCylinderVertices(Double radius, Double length) {
-     
+
     // Set the default number of half the amount of vertices for the cylinder
     int numOfVertices = 32;
-    
+
     //Create x Coordinates for the base and the top of the cylinder
-    double base = length / 2;
-    double xCoordBase = -base;
-    double xCoordTop = base;
-    
+    double midPoint = length / 2;
+    double xCoordBase = -midPoint;
+    double xCoordTop = midPoint;
+
     // Calculate angular step around circle.
     // The negative sign is used to go anti clockwise around the circle to be
     //consistent with the output from BLENDER software.
     double angleToVertex = -2 * Math.PI/numOfVertices;
-    
+
     //Create variable to store the x,y,z coordinates of each vertex.
     //Note that there are two circles for the cylinder: one at the base and one
     //at the top. Hence the total number of vertices is 2 * numOfVertices
-    double[][] vertices = new double[2 * numOfVertices][3]; 
-    
+    double[][] vertices = new double[2 * numOfVertices][3];
+
     //Loop through each vertex of a circle
     for (int vertex = 0; vertex < numOfVertices; vertex++){
       //Calculate points around the circle
       double yCoord = radius * Math.cos(vertex * angleToVertex);
       double ZCoord = radius * Math.sin(vertex * angleToVertex);
-      
+
       //Add points to the vertices array for the Base
       vertices[2 * vertex][0] = xCoordBase;
       vertices[2 * vertex][1] = yCoord;
@@ -191,7 +191,7 @@ public class CrystalCylinder extends CrystalPolyhedron {
       vertices[2 * vertex + 1][1] = yCoord;
       vertices[2 * vertex + 1][2] = ZCoord;
     }
-    
+
     return vertices;
   }
 
@@ -201,7 +201,7 @@ public class CrystalCylinder extends CrystalPolyhedron {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see se.raddo.raddose3D.Crystal#crystalInfo()
    */
   @Override
