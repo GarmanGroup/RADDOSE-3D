@@ -6,6 +6,8 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  *This class defines the absorption properties of the container
@@ -13,6 +15,11 @@ import java.net.URLConnection;
  * attenuation factor to the beam before it reaches the sample.
  */
 public class Container {
+
+  /**
+   * Conversion of beam energy from MeV to KeV
+   */
+  private static final double MEV_TO_KEV = 1000.0;
 
   /**
    * The material that the container is made from
@@ -54,13 +61,25 @@ public class Container {
    * @param beam
    *        beam object describing the beam used.
    */
-  public void extractMassAttenuationCoef(Beam beam){
+  public double extractMassAttenuationCoef(Beam beam){
 
     //Define/Initialise the local variables
     URL nistURL = null;
     URLConnection nistConnection = null;
     BufferedReader br = null;
     String inputLine;
+    double nistBeamEnergyInMeV = 0;
+    double nistBeamEnergyInKeV = 0;
+    double massAttenCoeff = 0;
+    double nistBeamEnergyInKeVPrevious = 0;
+    double massAttenCoeffPrevious = 0;
+
+    // Variables used in parsing
+    boolean readLine = false;
+    Pattern openTag = Pattern.compile("<PRE>");
+    Pattern closeTag = Pattern.compile("</PRE>");
+    Pattern scientificNotation = Pattern.compile("[0-9]E[-+][0-9]");
+    Pattern existK = Pattern.compile("K");
 
     //Get the URL string
     String urlString = getNISTURL();
@@ -92,13 +111,64 @@ public class Container {
 
     //Read and parse the data from the buffered reader
     try {
-        while ((inputLine = br.readLine()) != null) {
-            System.out.println(inputLine);
-        }
-    } catch (IOException e) {
-        System.out.println("Cannot read from URL: " + urlString);
-        e.printStackTrace();
-    }
+      //While we haven't reached the end of the file read each line
+      while ((inputLine = br.readLine()) != null) {
+        //Check if the line contains the "<PRE>" and "<\PRE>" tags
+          Matcher openTagMatcher = openTag.matcher(inputLine);
+          Matcher closeTagMatcher = closeTag.matcher(inputLine);
+          if (openTagMatcher.find()) {
+              readLine = true;
+          } else if (closeTagMatcher.find()) {
+              readLine = false;
+          }
+
+          //If we are in inside the "<PRE>" tag block then check for
+          //mass coefficient table
+          if (readLine) {
+              //Look for scientific notation in the current line
+              Matcher scientificNotationotationMatcher =
+                      scientificNotation.matcher(inputLine);
+              if (scientificNotationotationMatcher.find()) {
+                //Split the string by whitespace
+                  String[] splitLine = inputLine.split("\\s+");
+                  Matcher existKMatcher = existK.matcher(inputLine);
+                  //Return the beam energy and mass attenuation coefficient values
+                  if (existKMatcher.find()) {
+                      nistBeamEnergyInMeV = Double.parseDouble(splitLine[3]);
+                      massAttenCoeff = Double.parseDouble(splitLine[4]);
+                      System.out.println(nistBeamEnergyInMeV + " " + massAttenCoeff);
+                  } else {
+                      nistBeamEnergyInMeV = Double.parseDouble(splitLine[1]);
+                      massAttenCoeff = Double.parseDouble(splitLine[2]);
+                      System.out.println(nistBeamEnergyInMeV + " " + massAttenCoeff);
+                  }
+                  //Convert the beam energy from MeV to KeV
+                  nistBeamEnergyInKeV = nistBeamEnergyInMeV * MEV_TO_KEV;
+
+                  //Check if the beam energy on this line of the NIST table
+                  //is bigger than the beam energy of the input beam
+                  if (nistBeamEnergyInKeV > beam.getPhotonEnergy()) {
+                      break;
+                  } else{
+                      nistBeamEnergyInKeVPrevious = nistBeamEnergyInKeV;
+                      massAttenCoeffPrevious = massAttenCoeff;
+                  }
+              }
+          }
+      }
+  } catch (IOException e) {
+      System.out.println("Cannot read from URL: " + urlString);
+      e.printStackTrace();
+  }
+
+  //Get the mass attenuation coefficient given by a linear interpolation
+  //between the values in the NIST table.
+  double massAttenuationCoefficient = massAttenCoeffPrevious +
+          (massAttenCoeff - massAttenCoeffPrevious) *
+          ((beam.getPhotonEnergy() - nistBeamEnergyInKeVPrevious) /
+          (nistBeamEnergyInKeV - nistBeamEnergyInKeVPrevious));
+
+  return massAttenuationCoefficient;
   }
 
   /**
