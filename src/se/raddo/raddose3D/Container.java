@@ -113,7 +113,7 @@ public class Container {
     Pattern openTag = Pattern.compile("<PRE>");
     Pattern closeTag = Pattern.compile("</PRE>");
     Pattern scientificNotation = Pattern.compile("[0-9]E[-+][0-9]");
-    Pattern existK = Pattern.compile("K");
+    Pattern existKLM = Pattern.compile("[KLM]");
 
     //Get the URL string
     String urlString = getNISTURL();
@@ -165,9 +165,9 @@ public class Container {
               if (scientificNotationotationMatcher.find()) {
                 //Split the string by whitespace
                   String[] splitLine = inputLine.split("\\s+");
-                  Matcher existKMatcher = existK.matcher(inputLine);
+                  Matcher existKLMMatcher = existKLM.matcher(inputLine);
                   //Return the beam energy and mass attenuation coefficient values
-                  if (existKMatcher.find()) {
+                  if (existKLMMatcher.find()) {
                       nistBeamEnergyInMeV = Double.parseDouble(splitLine[3]);
                       massAttenCoeff = Double.parseDouble(splitLine[4]);
                   } else {
@@ -263,7 +263,7 @@ public class Container {
   public void containerInformation() {
     String s = String.format("The mass attenuation coefficient of the %s container "
         + "is %.2f centimetres^2 per gram.%n"
-        + "The attentuation fraction of the beam due to the sample"
+        + "The attenuation fraction of the beam due to the sample"
         + " container of thickness %.2f microns is: %.2f.%n"
         ,this.material, this.massAttenuationCoefficient
         ,this.thickness, this.containerAttenuationFraction);
