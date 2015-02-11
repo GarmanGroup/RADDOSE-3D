@@ -10,7 +10,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- *This class defines the absorption properties of the container
+ * This class defines the absorption properties of the container
  * encasing the irradiated sample. This is used to add an additional
  * attenuation factor to the beam before it reaches the sample.
  */
@@ -19,7 +19,7 @@ public class Container {
   /**
    * Conversion of beam energy from MeV to KeV
    */
-  private static final double MEV_TO_KEV = 1e3;
+  private static final double MEV_TO_KEV             = 1e3;
 
   /**
    * Conversion from microns to centimeters
@@ -29,178 +29,201 @@ public class Container {
   /**
    * The material that the container is made from
    */
-  private final String material;
+  private final String        material;
 
   /**
    * The thickness of the container in microns
    */
-  private final double thickness;
+  private final double        thickness;
 
   /**
    * The density of the material in grams per centimetre cubed
    */
-  private final double density;
+  private final double        density;
 
   /**
    * The mass attenuation coefficient of the sample
    */
-  private double massAttenuationCoefficient;
+  private double              massAttenuationCoefficient;
 
   /**
    * The mass thickness of the sample. On the NIST website the mass
    * thickness is defined as the mass per unit area.
    */
-  private double massThickness;
+  private double              massThickness;
 
   /**
    * The total fraction attenuation of the X-ray beam due to the container
    */
-  private double containerAttenuationFraction;
+  private double              containerAttenuationFraction;
 
   /**
    * Constructor for the Container class.
+   *
    * @param conMaterial
-   *        String type argument giving the material of the container
-   *        encasing the irradiated sample.
+   *          String type argument giving the material of the container
+   *          encasing the irradiated sample.
    * @param conThickness
-   *        Double type argument giving the thickness of the
-   *        container.
+   *          Double type argument giving the thickness of the
+   *          container.
    */
-  public Container(double conThickness, String conMaterial, double conDensity){
+  public Container(Double conThickness, String conMaterial, Double conDensity) {
     /**
      * Initialise the instance variables
      */
-    this.material = conMaterial;
-    this.thickness = conThickness;
-    this.density = conDensity;
+
+    if (conThickness == null && conMaterial == null && conDensity == null) {
+      this.material = null;
+      this.thickness = 0;
+      this.density = 0;
+
+    } else if (conThickness == null || conMaterial == null || conDensity == null) {
+      System.out.print("Not all of the container fields have been defined. ");
+      System.out.println("Assuming no container around sample.");
+      this.material = null;
+      this.thickness = 0;
+      this.density = 0;
+
+    } else {
+      this.material = conMaterial;
+      this.thickness = conThickness;
+      this.density = conDensity;
+    }
   }
 
   /**
    * Calculate the fraction by which the beam is attenuated by the container
+   *
    * @param beam
-   *        The beam object that is used to irradiate the sample
+   *          The beam object that is used to irradiate the sample
    */
-  public void calculateContainerAttenuation(Beam beam){
+  public void calculateContainerAttenuation(Beam beam) {
     extractMassAttenuationCoef(beam);
     calculateMassThickness();
 
-    this.containerAttenuationFraction = 1 - Math.exp(-this.massAttenuationCoefficient
-        * this.massThickness);
+    this.containerAttenuationFraction = 1 - Math
+        .exp(-this.massAttenuationCoefficient
+            * this.massThickness);
   }
 
   /**
    * This method downloads the mass attenuation coefficients from NIST table
    * for the corresponding material and uses the beam energy to interpolate the
    * mass attenuation coefficient.
+   *
    * @param beam
-   *        beam object describing the beam used.
+   *          beam object describing the beam used.
    */
-  public void extractMassAttenuationCoef(Beam beam){
+  public void extractMassAttenuationCoef(Beam beam) {
 
-    //Define/Initialise the local variables
-    URL nistURL = null;
-    URLConnection nistConnection = null;
-    BufferedReader br = null;
-    String inputLine;
-    double nistBeamEnergyInMeV = 0;
-    double nistBeamEnergyInKeV = 0;
-    double massAttenCoeff = 0;
-    double nistBeamEnergyInKeVPrevious = 0;
-    double massAttenCoeffPrevious = 0;
+    if (this.material == null) {
+      this.massAttenuationCoefficient = 0;
+    } else {
+      //Define/Initialise the local variables
+      URL nistURL = null;
+      URLConnection nistConnection = null;
+      BufferedReader br = null;
+      String inputLine;
+      double nistBeamEnergyInMeV = 0;
+      double nistBeamEnergyInKeV = 0;
+      double massAttenCoeff = 0;
+      double nistBeamEnergyInKeVPrevious = 0;
+      double massAttenCoeffPrevious = 0;
 
-    // Regular expressions used in parsing
-    boolean readLine = false;
-    Pattern openTag = Pattern.compile("<PRE>");
-    Pattern closeTag = Pattern.compile("</PRE>");
-    Pattern scientificNotation = Pattern.compile("[0-9]E[-+][0-9]");
-    Pattern existKLM = Pattern.compile("[KLM]");
+      // Regular expressions used in parsing
+      boolean readLine = false;
+      Pattern openTag = Pattern.compile("<PRE>");
+      Pattern closeTag = Pattern.compile("</PRE>");
+      Pattern scientificNotation = Pattern.compile("[0-9]E[-+][0-9]");
+      Pattern existKLM = Pattern.compile("[KLM]");
 
-    //Get the URL string
-    String urlString = getNISTURL();
+      //Get the URL string
+      String urlString = getNISTURL();
 
-    //Create a URL object for the relevant NIST table
-    try {
+      //Create a URL object for the relevant NIST table
+      try {
         nistURL = new URL(urlString);
-    } catch (MalformedURLException e) {
+      } catch (MalformedURLException e) {
         System.out.println("URL " + urlString + " is malformed");
         e.printStackTrace();
-    }
+      }
 
-    //Open a URL connection
-    try {
+      //Open a URL connection
+      try {
         nistConnection = nistURL.openConnection();
-    } catch (IOException e) {
+      } catch (IOException e) {
         System.out.print("Cannot read from URL: " + urlString);
         e.printStackTrace();
-    }
+      }
 
-    //Read the data from the NIST table webpage into a buffered reader
-    try {
+      //Read the data from the NIST table webpage into a buffered reader
+      try {
         br = new BufferedReader(
-                new InputStreamReader(nistConnection.getInputStream()));
-    } catch (IOException e) {
+            new InputStreamReader(nistConnection.getInputStream()));
+      } catch (IOException e) {
         System.out.println("Cannot read from URL: " + urlString);
         e.printStackTrace();
-    }
+      }
 
-    //Read and parse the data from the buffered reader
-    try {
-      //While we haven't reached the end of the file read each line
-      while ((inputLine = br.readLine()) != null) {
-        //Check if the line contains the "<PRE>" and "<\PRE>" tags
+      //Read and parse the data from the buffered reader
+      try {
+        //While we haven't reached the end of the file read each line
+        while ((inputLine = br.readLine()) != null) {
+          //Check if the line contains the "<PRE>" and "<\PRE>" tags
           Matcher openTagMatcher = openTag.matcher(inputLine);
           Matcher closeTagMatcher = closeTag.matcher(inputLine);
           if (openTagMatcher.find()) {
-              readLine = true;
+            readLine = true;
           } else if (closeTagMatcher.find()) {
-              readLine = false;
+            readLine = false;
           }
 
           //If we are in inside the "<PRE>" tag block then check for
           //mass coefficient table
           if (readLine) {
-              //Look for scientific notation in the current line
-              Matcher scientificNotationotationMatcher =
-                      scientificNotation.matcher(inputLine);
-              if (scientificNotationotationMatcher.find()) {
-                //Split the string by whitespace
-                  String[] splitLine = inputLine.split("\\s+");
-                  Matcher existKLMMatcher = existKLM.matcher(inputLine);
-                  //Return the beam energy and mass attenuation coefficient values
-                  if (existKLMMatcher.find()) {
-                      nistBeamEnergyInMeV = Double.parseDouble(splitLine[3]);
-                      massAttenCoeff = Double.parseDouble(splitLine[4]);
-                  } else {
-                      nistBeamEnergyInMeV = Double.parseDouble(splitLine[1]);
-                      massAttenCoeff = Double.parseDouble(splitLine[2]);
-                  }
-                  //Convert the beam energy from MeV to KeV
-                  nistBeamEnergyInKeV = nistBeamEnergyInMeV * MEV_TO_KEV;
-
-                  //Check if the beam energy on this line of the NIST table
-                  //is bigger than the beam energy of the input beam
-                  if (nistBeamEnergyInKeV > beam.getPhotonEnergy()) {
-                      break;
-                  } else{
-                      nistBeamEnergyInKeVPrevious = nistBeamEnergyInKeV;
-                      massAttenCoeffPrevious = massAttenCoeff;
-                  }
+            //Look for scientific notation in the current line
+            Matcher scientificNotationotationMatcher =
+                scientificNotation.matcher(inputLine);
+            if (scientificNotationotationMatcher.find()) {
+              //Split the string by whitespace
+              String[] splitLine = inputLine.split("\\s+");
+              Matcher existKLMMatcher = existKLM.matcher(inputLine);
+              //Return the beam energy and mass attenuation coefficient values
+              if (existKLMMatcher.find()) {
+                nistBeamEnergyInMeV = Double.parseDouble(splitLine[3]);
+                massAttenCoeff = Double.parseDouble(splitLine[4]);
+              } else {
+                nistBeamEnergyInMeV = Double.parseDouble(splitLine[1]);
+                massAttenCoeff = Double.parseDouble(splitLine[2]);
               }
-          }
-      }
-  } catch (IOException e) {
-      System.out.println("Cannot read from URL: " + urlString);
-      e.printStackTrace();
-  }
+              //Convert the beam energy from MeV to KeV
+              nistBeamEnergyInKeV = nistBeamEnergyInMeV * MEV_TO_KEV;
 
-  //Get the mass attenuation coefficient given by a linear interpolation
-  //between the values in the NIST table.
-  double massAttenuationCoefficient = massAttenCoeffPrevious +
+              //Check if the beam energy on this line of the NIST table
+              //is bigger than the beam energy of the input beam
+              if (nistBeamEnergyInKeV > beam.getPhotonEnergy()) {
+                break;
+              } else {
+                nistBeamEnergyInKeVPrevious = nistBeamEnergyInKeV;
+                massAttenCoeffPrevious = massAttenCoeff;
+              }
+            }
+          }
+        }
+      } catch (IOException e) {
+        System.out.println("Cannot read from URL: " + urlString);
+        e.printStackTrace();
+      }
+
+      //Get the mass attenuation coefficient given by a linear interpolation
+      //between the values in the NIST table.
+      double massAttenuationCoefficient = massAttenCoeffPrevious +
           (massAttenCoeff - massAttenCoeffPrevious) *
           ((beam.getPhotonEnergy() - nistBeamEnergyInKeVPrevious) /
           (nistBeamEnergyInKeV - nistBeamEnergyInKeVPrevious));
 
-  this.massAttenuationCoefficient = massAttenuationCoefficient;
+      this.massAttenuationCoefficient = massAttenuationCoefficient;
+    }
 
   }
 
@@ -209,10 +232,10 @@ public class Container {
    * to the NIST table with the corresponding mass attenuation coefficients
    *
    * @return
-   *        String of the URL pointing to the location of the mass attenuation
-   *        coefficients.
+   *         String of the URL pointing to the location of the mass attenuation
+   *         coefficients.
    */
-  private String getNISTURL(){
+  private String getNISTURL() {
     return String.format("http://physics.nist.gov/PhysRefData/XrayMassCoef"
         + "/ComTab/%s.html", this.material);
   }
@@ -221,7 +244,7 @@ public class Container {
    * Calculate the mass thickness of the container. The mass thickness is
    * defined as the mass per unit area.
    */
-  private void calculateMassThickness(){
+  private void calculateMassThickness() {
     //Convert container thickness units from microns to centimeters.
     double thicknessInCentimeters = MICRONS_TO_CENTIMETERS * this.thickness;
     this.massThickness = this.density * thicknessInCentimeters;
@@ -231,9 +254,9 @@ public class Container {
    * Return the mass thickness of the container
    *
    * @return
-   *        Mass thickness of the sample
+   *         Mass thickness of the sample
    */
-  public double getMassThickness(){
+  public double getMassThickness() {
     return this.massThickness;
   }
 
@@ -241,7 +264,7 @@ public class Container {
    * Return the mass attenuation coefficient of the container
    *
    * @return
-   *        Mass attenuation coefficient
+   *         Mass attenuation coefficient
    */
   public double getMassAttenuationCoefficient() {
     return this.massAttenuationCoefficient;
@@ -251,24 +274,37 @@ public class Container {
    * Return the attenuation factor of the container
    *
    * @return
-   *        Attenuation factor
+   *         Attenuation factor
    */
-  public double getContainerAttenuationFraction(){
+  public double getContainerAttenuationFraction() {
     return this.containerAttenuationFraction;
+  }
+
+  /**
+   * Return the material from which the container is made
+   *
+   * @return
+   *        Container material
+   */
+  public String getContainerMaterial() {
+    return this.material;
   }
 
   /**
    * Construct a string that prints details about the sample container.
    */
   public void containerInformation() {
-    String s = String.format("The mass attenuation coefficient of the %s container "
-        + "is %.2f centimetres^2 per gram.%n"
-        + "The attenuation fraction of the beam due to the sample"
-        + " container of thickness %.2f microns is: %.2f.%n"
-        ,this.material, this.massAttenuationCoefficient
-        ,this.thickness, this.containerAttenuationFraction);
+    if (this.material != null) {
+      String s = String.format(
+          "The mass attenuation coefficient of the %s container "
+              + "is %.2f centimetres^2 per gram.%n"
+              + "The attenuation fraction of the beam due to the sample"
+              + " container of thickness %.2f microns is: %.2f.%n"
+          , this.material, this.massAttenuationCoefficient
+          , this.thickness, this.containerAttenuationFraction);
 
-    System.out.printf(s);
+      System.out.printf(s);
+    }
   }
 
 }
