@@ -115,13 +115,16 @@ Depending on the chosen \hyperref[crystaltype]{\Keyword{TYPE}} further declarati
 \subsection{\Keyword{TYPE}}
 \label{crystaltype}
 With the keyword \Keyword{TYPE} the underlying crystal implementation is chosen.
-Currently three distinct crystal implementations exist:\SB
+Currently four distinct crystal implementations exist:\SB
 
 \noindent \Keyword{TYPE CUBOID}
 defines a solid crystal with a cuboid shape.\SB
 
 \noindent \Keyword{TYPE SPHERICAL}
 defines a solid crystal with a spherical shape.\SB
+
+\noindent \Keyword{TYPE CYLINDER}
+defines a solid crystal with a cylindrical shape.\SB
 
 \noindent \Keyword{TYPE POLYHEDRON}
 defines an arbitrary crystal shape as a polyhedron. The wire frame type (\hyperref[wireframetype]{\Keyword{WIREFRAMETYPE} keyword} - section \hyperref[wireframetype]{section~\ref*{wireframetype}}) and file containing the model (\hyperref[modelfile]{\Keyword{MODELFILE} keyword} - section \hyperref[modelfile]{section~\ref*{modelfile}}) must be specified.\SB
@@ -149,7 +152,9 @@ specifies the location of the .obj file to be imported. \SB
 Dimensions are given in micrometres (\hbox{\textmu}m).
 The keyword \Keyword{DIMENSION} can take either one or three parameters:\SB
 
-\noindent \Keyword{DIMENSION \textit{D}} with a single number (see \hyperref[numberspec]{section \ref*{numberspec}}) as parameter is used for specifying the crystal dimensions for spherical crystals. The parameter sets the crystal diameter. This syntax cannot be used for cuboid crystals.\SB
+\noindent \Keyword{DIMENSION \textit{D}} with a single number (see \hyperref[numberspec]{section \ref*{numberspec}}) as parameter is used for specifying the crystal dimensions for spherical crystals (\hyperref[crystaltype]{\Keyword{TYPE SPHERICAL}}). The parameter sets the crystal diameter. This syntax cannot be used for cuboid crystals.\SB
+
+\noindent \Keyword{DIMENSION \textit{D H}} with two numbers as parameters \textit{D} and \textit{H} is used for specifying the crystal dimensions for cylindrical crystals (\hyperref[crystaltype]{\Keyword{TYPE CYLINDER}}). The parameter \textit{D} sets the diameter of the circular cross section of the cylinder. The parameter \textit{H} sets the height of the cylinder. This syntax cannot be used for cuboid crystals.\SB
 
 \noindent \Keyword{DIMENSION \textit{X Y Z}} with three numbers as parameters \textit{X}, \textit{Y} and \textit{Z} is used to set the dimensions for cuboid crystals (\hyperref[crystaltype]{\Keyword{TYPE CUBOID}}).
 \textit{X} defines the length of the crystal orthogonal to both the beam and the goniometer at \textit{L}=\textit{P}=0, (see below)
@@ -157,6 +162,7 @@ The keyword \Keyword{DIMENSION} can take either one or three parameters:\SB
 \textit{Z} defines the length along the beam axis.
 
 If three parameters are given for a spherical crystal (\hyperref[crystaltype]{\Keyword{TYPE SPHERICAL}}) the value for \textit{X} sets the diameter of the crystal while the values of \textit{Y} and \textit{Z} are ignored.
+If three parameters are given for a cylindrical crystal (\hyperref[crystaltype]{\Keyword{TYPE CYLINDER}}) the value for \textit{X} sets the diameter of the circular cross section, the value for \textit{Y} sets the height of the cylindrical crystal while the value \textit{Z} is ignored.
 
 % XXXX  Removed from paper version
 %\subsection{\Keyword{DDM} / \Keyword{DIFFRACTIONDECAYMODEL}}
@@ -207,6 +213,26 @@ The rotation angle to be applied to the angle of the crystal in the loop (right 
 \label{fig:angleL}
 \end{figure}
 
+\subsection{\Keyword{CONTAINERMATERIAL}}
+
+\noindent \Keyword{CONTAINERMATERIAL \textit{MATERIAL}}
+Specifies the material of the container that encases the irradiated sample. This keyword should be used when the sample is encased within a container e.g. SAXS experiment where the sample is irradiated through a capillary. The exact input for \Keyword{\textit{MATERIAL}} is given in the URL of the corresponding material on the National Institute of Standards and Technology (NIST) \href{http://physics.nist.gov/PhysRefData/XrayMassCoef/tab4.html}{Table 4 webpage}. For example, if the material is through which the crystal is irradiated is pyrex glass then click on the \href{http://physics.nist.gov/PhysRefData/XrayMassCoef/ComTab/pyrex.html}{`Glass, Borosilicate ``Pyrex''' link} and the URL is: 
+\newline
+\href{http://physics.nist.gov/PhysRefData/XrayMassCoef/ComTab/pyrex.html}{http://physics.nist.gov/PhysRefData/XrayMassCoef/ComTab/pyrex.html.}
+\newline
+The material name is given immediately before the ``.html'', in this case the word is ``pyrex''. Hence to set the container material to pyrex glass the input would be \Keyword{CONTAINERMATERIAL \textit{pyrex}}. Note that the input is case sensitive.
+
+\subsection{\Keyword{CONTAINERTHICKNESS}}
+
+\noindent \Keyword{CONTAINERTHICKNESS \textit{F}}
+Specifies the thickness of the container encasing the irradiated sample. The thickness should be given in $\mu$m.
+
+\subsection{\Keyword{CONTAINERDENSITY}}
+
+\noindent \Keyword{CONTAINERDENSITY \textit{F}}
+Specifies the density of the container encasing the irradiated sample. The density should be given in grams/centimetre.
+
+
 \newpage
 \subsection{\Keyword{ABSCOEFCALC}}
 \label{abscoefcalc}
@@ -222,11 +248,13 @@ These two commands are equivalent. Each will cause \RD to assume an absorption c
 
 \noindent \Keyword{ABSCOEFCALC RDV2}
 
-These two commands are equivalent. \RD will call a previous version of RADDOSE to estimate absorption and attenuation coefficients.\SB
-
 \noindent \Keyword{ABSCOEFCALC RDV3}
 
-This command will use the current RADDOSE-3D code to calculate the absorption and attenuation coefficients using the crystal composition specified by the user. (NOTE: If the crystal composition is specified then the \Keyword{RDV3} keyword is preferred over the other \Keyword{ABSCOEFCALC} keywords, particularly if the crystal contains DNA or RNA molecules).
+These three commands are equivalent. \RD will call a previous version of RADDOSE to estimate absorption and attenuation coefficients.\SB
+
+\noindent \Keyword{ABSCOEFCALC RD3D}
+
+This command will use the current RADDOSE-3D code to calculate the absorption and attenuation coefficients using the crystal composition specified by the user. (NOTE: If the crystal composition is specified then the \Keyword{RD3D} keyword is preferred over the other \Keyword{ABSCOEFCALC} keywords, particularly if the crystal contains DNA or RNA molecules).
 
 % XXXX  Removed from paper version
 % The path to the locally installed legacy RADDOSE executable can be specified using the \Keyword{-p} command line option (see section ...).
@@ -245,6 +273,12 @@ The use of these keywords is described in the sections \ref{RDv3Start}--\ref{RDv
 \noindent \Keyword{ABSCOEFCALC EXP}
 
 This command should be used if the crystal composition from a Protein Data Bank (PDB) entry is to be used instead of a user specied crystal composition. The current RADDOSE-3D code is then used to calculate the absorption and attenuation coefficients using the crystal composition from the PDB entry. The PDB entry must be specified using the (\hyperref[pdb]{\Keyword{PDB} keyword} - section \hyperref[pdb]{section~\ref*{pdb}}).\SB
+
+\noindent \Keyword{ABSCOEFCALC SAXS}
+
+This command will use the current RADDOSE-3D code to calculate the absorption and attenuation coefficients using the crystal composition specified by the user similarly to the keyword \Keyword{RD3D}. The major difference is that instead of supplying the number of monomers using the keyword \Keyword{NUMMONOMERS}, the user supplies the protein concentration used in the SAXS experiment using the keyword \Keyword{PROTEINCONC} (see section \hyperref[proteinconc]{\Keyword{PROTEINCONC}}).
+\newline
+Note that RADDOSE-3D treats the irradiated samples as stationary objects. Therefore if the SAXS solution is flowed through the capillary during the exposure then a suitable exposure time for the relevant volume will need to be taken into account.\SB
 
 \subsection{\Keyword{PDB}}
 \label{pdb}
@@ -350,6 +384,14 @@ The command \Keyword{SOLVENTHEAVYCONC Na 1000 Cl 1000} specifies 1M sodium chlor
 The fraction of the unit cell that is occupied by solvent. If not given explicitly, this value is estimated from \hyperref[numresidues]{\Keyword{NUMRESIDUES}}, \hyperref[numrna]{\Keyword{NUMRNA}} and \hyperref[numdna]{\Keyword{NUMDNA}} using 1.35 g/ml for protein, and 1.35 g/ml for DNA and 1.3 g/ml for RNA.
 
 % \hyperref[proteinheavyatoms]{the \Keyword{PROTEINHEAVYATOMS} keyword}.
+
+\subsection{\Keyword{PROTEINCONC}}
+\label{proteinconc}
+This keyword only has an effect when the absorption and attenuation coefficients are estimated using the keyword \Keyword{SAXS} \hyperref[abscoefcalc]{section \ref*{abscoefcalc}\SB}
+
+\noindent \Keyword{PROTEINCONC \textit{F}}
+
+The protein concentration used in the SAXS experiment in grams per litre.
 
 
 \label{RDv3End}
@@ -481,30 +523,5 @@ translation of the goniometer during exposure in \hbox{\textmu}m$/^{\circ}$ for 
 \noindent \Keyword{ROTAXBEAMOFFSET \textit{F}}
 
 the offset in \hbox{\textmu}m along \textit{X} (vertical in most set-ups) between the beam axis and the rotation axis. Used to create 'offset' scanning for improvements in dose distribution. Defaults to 0 \hbox{\textmu}m.
-
-\newpage
-
-\section{\RD for SAXS}
-
-\RD can be used to give dose estimates for SAXS experiments. Given the protein concentration, the number of molecules in a given volume can be calculated. This is equivalent to finding the number of monomers in a unit cell volume for a crystal. An example of the required calculation is given here for (mouse) glucose isomerase:
-
-Glucose isomerase (mouse) has 558 amino acids. The atomic mass for each amino acid can be used to find the accurate total atomic mass. For demonstration purposes we will use the fact that an amino acid is roughly 110 daltons. This gives a total molecular mass for the protein of $558 \times 110 = 61380$ daltons or $61380\,grams/mole$. Using a protein concentration appropriate for a SAXS experiment, here we will use a concentration of $2\,$grams/litre, the molarity of the solution can be calculated: 
-\begin{equation}
-molarity = \frac{2\,grams/litre}{61380\,grams/mole} = 3.26 \times 10^{-5}\,M.
-\end{equation} 
-Now it is necessary to choose the dimensions for an arbitrary volume such that it will contain at least 1 molecule.
-For simplicity a $1000^3\,$\AA$^3$ volume is chosen. Converting this volume to litres yields $1000^3$\,\AA$^3$ = $1 \times 10^{-18}\,L$. Multiplying this volume by the molarity of the solution calculated earlier gives the number of moles: $3.26 \times 10^{-5}\,M \times 1 \times 10^{-18}\,L = 3.26 \times 10^{-23}\,moles$.
-
-Finally the number of molecules in the chosen volume is given by multiplying the number of moles by Avogadro's number ($\approx 6.02 \times 10^{23}\,moles^{-1})$. Hence in this example, the number of molecules in the chosen volume is $3.26 \times 10^{-23} \times 6.02 \times 10^{23} = 19.63$. Since the input for the number of monomers is required to be an integer this value is rounded to 20 molecules per unit chosen volume.
-
-Therefore in the \RD input file the input line for the number of monomers would be ``\Keyword{NUMMONOMERS} 20'' and the input line for the unit cell would be ``\Keyword{UNITCELL} 1000 1000 1000''.
-
-Generally in a SAXS experiment the protein solution is passed through a cylindrical capillary. This shape can only be explicitly modelled in RADDOSE-3D as a \hyperref[crystaltype]{\Keyword{POLYHEDRON}} object. This can be modelled and exported using \href{http://www.blender.org/}{\textbf{BLENDER}} software. 
-\SB
-Further considerations:
-\begin{itemize}
-\item RADDOSE-3D treats the irradiated samples as stationary objects. Therefore if the solution is flowed through the capillary during the exposure then a suitable exposure time for the relevant volume will need to be taken into account.
-\item The absorption coefficient of the capillary is not currently taken into account.
-\end{itemize}
 
 \end{document}
