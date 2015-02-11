@@ -197,6 +197,6 @@ public class BeamGaussian implements Beam {
   @Override
   public void applyContainerAttenuation(Container sampleContainer){
     attenuatedPhotonsPerSec = photonsPerSec
-        * sampleContainer.getContainerAttenuationFraction();
+        * (1 - sampleContainer.getContainerAttenuationFraction());
   }
 }

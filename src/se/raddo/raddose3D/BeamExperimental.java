@@ -174,7 +174,7 @@ public class BeamExperimental implements Beam {
 
   @Override
   public void applyContainerAttenuation(Container sampleContainer){
-    this.attenuatedFlux = sampleContainer.getContainerAttenuationFraction()
+    this.attenuatedFlux = (1 - sampleContainer.getContainerAttenuationFraction())
         * this.totalFlux;
   }
 

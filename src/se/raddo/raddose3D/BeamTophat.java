@@ -91,6 +91,6 @@ public class BeamTophat implements Beam {
   @Override
   public void applyContainerAttenuation(Container sampleContainer){
     attenuatedPhotonsPerSec = photonsPerSec
-        * sampleContainer.getContainerAttenuationFraction();
+        * (1 - sampleContainer.getContainerAttenuationFraction());
   }
 }
