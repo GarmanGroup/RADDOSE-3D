@@ -176,6 +176,13 @@ public class BeamExperimental implements Beam {
   public void applyContainerAttenuation(Container sampleContainer){
     this.attenuatedFlux = (1 - sampleContainer.getContainerAttenuationFraction())
         * this.totalFlux;
+
+    if (sampleContainer.getContainerMaterial() != null) {
+      String s = String.format("Beam photons per second after container "
+          + "attenuation is %.2e photons per second", this.attenuatedFlux);
+
+      System.out.println(s);
+    }
   }
 
 }

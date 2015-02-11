@@ -198,5 +198,12 @@ public class BeamGaussian implements Beam {
   public void applyContainerAttenuation(Container sampleContainer){
     attenuatedPhotonsPerSec = photonsPerSec
         * (1 - sampleContainer.getContainerAttenuationFraction());
+
+    if (sampleContainer.getContainerMaterial() != null) {
+      String s = String.format("Beam photons per second after container "
+          + "attenuation is %.2e photons per second", attenuatedPhotonsPerSec);
+
+      System.out.println(s);
+    }
   }
 }
