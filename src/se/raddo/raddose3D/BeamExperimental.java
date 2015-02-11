@@ -11,9 +11,12 @@ public class BeamExperimental implements Beam {
                            beamYSize,
                            totalFlux,
                            beamEnergy;
-  private double           beamSum;
+  private double           beamSum,
+                           attenuatedFlux;
 
-  private final double[][] beamArray;
+
+  private double[][] beamArray;
+  private final Double[][] dataStructure;
 
   /**
    * This takes the arguments, and generates the beamArray double[][] which
@@ -39,16 +42,20 @@ public class BeamExperimental implements Beam {
       final Double pixelSizeX,
       final Double pixelSizeY) {
 
-    beamXSize = (datastructure[0].length + 2) * pixelSizeX;
-    beamYSize = (datastructure.length + 2) * pixelSizeY;
-    pixXSize = pixelSizeX;
-    pixYSize = pixelSizeY;
+    this.dataStructure = datastructure;
+    this.beamXSize = (datastructure[0].length + 2) * pixelSizeX;
+    this.beamYSize = (datastructure.length + 2) * pixelSizeY;
+    this.pixXSize = pixelSizeX;
+    this.pixYSize = pixelSizeY;
     this.totalFlux = totalFlux;
     this.beamEnergy = beamEnergy;
+  }
+
+  public void generateBeamArray() {
 
     // add a zero border
-    int sizeHoriz = datastructure[0].length;
-    int sizeVert = datastructure.length;
+    int sizeHoriz = dataStructure[0].length;
+    int sizeVert = dataStructure.length;
 
     double[][] beamArrayWithBorders = new double[sizeVert + 2][sizeHoriz + 2];
 
@@ -57,8 +64,8 @@ public class BeamExperimental implements Beam {
         if (i == 0 || j == 0 || i == sizeVert + 1 || j == sizeHoriz + 1) {
           beamArrayWithBorders[i][j] = 0;
         } else {
-          beamArrayWithBorders[i][j] = datastructure[i - 1][j - 1];
-          beamSum += datastructure[i - 1][j - 1];
+          beamArrayWithBorders[i][j] = dataStructure[i - 1][j - 1];
+          beamSum += dataStructure[i - 1][j - 1];
         }
       }
     }
@@ -68,13 +75,12 @@ public class BeamExperimental implements Beam {
       for (int j = 0; j < sizeHoriz + 2; j++) {
         beamArrayWithBorders[i][j] = beamArrayWithBorders[i][j]
             * KEVTOJOULES * this.beamEnergy
-            * this.totalFlux
-            / (beamSum * pixelSizeX * pixelSizeY);
+            * this.attenuatedFlux
+            / (beamSum * pixXSize * pixYSize);
       }
     }
 
-    beamArray = beamArrayWithBorders;
-
+    this.beamArray = beamArrayWithBorders;
   }
 
   /**
@@ -84,6 +90,10 @@ public class BeamExperimental implements Beam {
   @Override
   public double beamIntensity(final double coordX, final double coordY,
       final double offAxisUM) {
+
+    //Generate the beam array
+    generateBeamArray();
+
     if (Math.abs(coordX - offAxisUM) <= beamXSize / 2 - pixXSize
         && Math.abs(coordY) <= beamYSize / 2 - pixYSize) {
       /* First find the four nearest voxels */
@@ -161,7 +171,8 @@ public class BeamExperimental implements Beam {
 
   @Override
   public void applyContainerAttenuation(Container sampleContainer){
-
+    this.attenuatedFlux = sampleContainer.getContainerAttenuationFraction()
+        * this.totalFlux;
   }
 
 }

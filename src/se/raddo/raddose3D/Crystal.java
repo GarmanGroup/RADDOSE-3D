@@ -274,7 +274,11 @@ public abstract class Crystal {
 
     //Calculate the attenuation due to the sample container
     sampleContainer.calculateContainerAttenuation(beam);
+    //Print information about the attenuation to the console.
     sampleContainer.containerInformation();
+
+    //Apply the attenuation of the container to the beam
+    beam.applyContainerAttenuation(sampleContainer);
 
     // Set up angles to iterate over.
     double[] angles;
