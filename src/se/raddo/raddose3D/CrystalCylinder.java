@@ -134,9 +134,9 @@ public class CrystalCylinder extends CrystalPolyhedron {
     };
 
     Double radius = (Double) mergedProperties.get(Crystal.CRYSTAL_DIM_X) / 2;
-    Double length = (Double) mergedProperties.get(Crystal.CRYSTAL_DIM_Y);
+    Double height = (Double) mergedProperties.get(Crystal.CRYSTAL_DIM_Y);
 
-    double[][] tempVertices = createCylinderVertices(radius, length);
+    double[][] tempVertices = createCylinderVertices(radius, height);
 
     setIndices(tempIndices);
 
@@ -151,17 +151,17 @@ public class CrystalCylinder extends CrystalPolyhedron {
   /**
    * Creates the vertices required for the cylinder object
    * @param radius of the circular cross-section of the cylinder
-   * @param length - This is the axial length of the cylinder
+   * @param height - This is the axial length of the cylinder
    * @return an nx3 array (where n is the number of vertices) containing
    * the x,y,z coordinates of each vertex
    */
-  private double[][] createCylinderVertices(Double radius, Double length) {
+  private double[][] createCylinderVertices(Double radius, Double height) {
 
     // Set the default number of half the amount of vertices for the cylinder
     int numOfVertices = 32;
 
     //Create x Coordinates for the base and the top of the cylinder
-    double midPoint = length / 2;
+    double midPoint = height / 2;
     double xCoordBase = -midPoint;
     double xCoordTop = midPoint;
 
