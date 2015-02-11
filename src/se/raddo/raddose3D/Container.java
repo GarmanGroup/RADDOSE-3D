@@ -86,8 +86,6 @@ public class Container {
 
     this.containerAttenuationFraction = 1 - Math.exp(-this.massAttenuationCoefficient
         * this.massThickness);
-
-    //return this.containerAttenuationFraction;
   }
 
   /**
@@ -249,6 +247,19 @@ public class Container {
     return this.massAttenuationCoefficient;
   }
 
+  /**
+   * Return the attenuation factor of the container
+   *
+   * @return
+   *        Attenuation factor
+   */
+  public double getContainerAttenuationFraction(){
+    return this.containerAttenuationFraction;
+  }
+
+  /**
+   * Construct a string that prints details about the sample container.
+   */
   public void containerInformation() {
     String s = String.format("The mass attenuation coefficient of the %s container "
         + "is %.2f centimetres^2 per gram.%n"
@@ -258,10 +269,6 @@ public class Container {
         ,this.thickness, this.containerAttenuationFraction);
 
     System.out.printf(s);
-  }
-
-  public double getContainerAttenuationFraction(){
-    return this.containerAttenuationFraction;
   }
 
 }
