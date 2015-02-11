@@ -98,10 +98,6 @@ public abstract class Crystal {
         (Double) properties.get(Crystal.CRYSTAL_CONTAINER_THICKNESS),
         (String) properties.get(Crystal.CRYSTAL_CONTAINER_MATERIAL),
         (Double) properties.get(Crystal.CRYSTAL_CONTAINER_DENSITY));
-
-    System.out.println(properties.get(Crystal.CRYSTAL_CONTAINER_THICKNESS) + " "
-        + properties.get(Crystal.CRYSTAL_CONTAINER_MATERIAL) + " "
-        + properties.get(Crystal.CRYSTAL_CONTAINER_DENSITY));
   }
 
   public abstract void setupDepthFinding(double angrad, Wedge wedge);
