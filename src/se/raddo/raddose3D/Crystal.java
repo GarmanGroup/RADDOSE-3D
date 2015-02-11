@@ -99,17 +99,9 @@ public abstract class Crystal {
         (String) properties.get(Crystal.CRYSTAL_CONTAINER_MATERIAL),
         (Double) properties.get(Crystal.CRYSTAL_CONTAINER_DENSITY));
 
-    System.out.println("Container Thickness is: " +
-    properties.get(Crystal.CRYSTAL_CONTAINER_THICKNESS));
-
-    System.out.println("Container Material is: " +
-        properties.get(Crystal.CRYSTAL_CONTAINER_MATERIAL));
-
-    System.out.println("Material Density is: " +
-        properties.get(Crystal.CRYSTAL_CONTAINER_DENSITY));
-
-    boolean b = properties.get(Crystal.CRYSTAL_CONTAINER_DENSITY) instanceof Double;
-    System.out.println("Density is instance of double: " + b);
+    System.out.println(properties.get(Crystal.CRYSTAL_CONTAINER_THICKNESS) + " "
+        + properties.get(Crystal.CRYSTAL_CONTAINER_MATERIAL) + " "
+        + properties.get(Crystal.CRYSTAL_CONTAINER_DENSITY));
   }
 
   public abstract void setupDepthFinding(double angrad, Wedge wedge);
@@ -280,6 +272,10 @@ public abstract class Crystal {
     // Update coefficients in case the beam energy has changed.
     coefCalc.updateCoefficients(beam);
 
+    //Calculate the attenuation due to the sample container
+    sampleContainer.calculateContainerAttenuation(beam);
+    sampleContainer.containerInformation();
+
     // Set up angles to iterate over.
     double[] angles;
     if (Math.abs(wedge.getStartAng() - wedge.getEndAng()) < wedge.getAngRes()) {
@@ -418,7 +414,8 @@ public abstract class Crystal {
 
               double voxImageFluence =
                   unattenuatedBeamIntensity * beamAttenuationFactor
-                      * Math.exp(depth * beamAttenuationExpFactor);
+                      * Math.exp(depth * beamAttenuationExpFactor)
+                      * sampleContainer.getContainerAttenuationFraction();
               // Attenuates the beam for absorption
 
               double voxImageDose = fluenceToDoseFactor * voxImageFluence;

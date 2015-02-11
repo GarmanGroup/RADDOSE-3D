@@ -19,7 +19,12 @@ public class Container {
   /**
    * Conversion of beam energy from MeV to KeV
    */
-  private static final double MEV_TO_KEV = 1000.0;
+  private static final double MEV_TO_KEV = 1e3;
+
+  /**
+   * Conversion from microns to centimeters
+   */
+  private static final double MICRONS_TO_CENTIMETERS = 1e-4;
 
   /**
    * The material that the container is made from
@@ -35,6 +40,22 @@ public class Container {
    * The density of the material in grams per centimetre cubed
    */
   private final double density;
+
+  /**
+   * The mass attenuation coefficient of the sample
+   */
+  private double massAttenuationCoefficient;
+
+  /**
+   * The mass thickness of the sample. On the NIST website the mass
+   * thickness is defined as the mass per unit area.
+   */
+  private double massThickness;
+
+  /**
+   * The total fraction attenuation of the X-ray beam due to the container
+   */
+  private double containerAttenuationFraction;
 
   /**
    * Constructor for the Container class.
@@ -55,13 +76,28 @@ public class Container {
   }
 
   /**
+   * Calculate the fraction by which the beam is attenuated by the container
+   * @param beam
+   *        The beam object that is used to irradiate the sample
+   */
+  public void calculateContainerAttenuation(Beam beam){
+    extractMassAttenuationCoef(beam);
+    calculateMassThickness();
+
+    this.containerAttenuationFraction = 1 - Math.exp(-this.massAttenuationCoefficient
+        * this.massThickness);
+
+    //return this.containerAttenuationFraction;
+  }
+
+  /**
    * This method downloads the mass attenuation coefficients from NIST table
    * for the corresponding material and uses the beam energy to interpolate the
    * mass attenuation coefficient.
    * @param beam
    *        beam object describing the beam used.
    */
-  public double extractMassAttenuationCoef(Beam beam){
+  public void extractMassAttenuationCoef(Beam beam){
 
     //Define/Initialise the local variables
     URL nistURL = null;
@@ -136,11 +172,9 @@ public class Container {
                   if (existKMatcher.find()) {
                       nistBeamEnergyInMeV = Double.parseDouble(splitLine[3]);
                       massAttenCoeff = Double.parseDouble(splitLine[4]);
-                      System.out.println(nistBeamEnergyInMeV + " " + massAttenCoeff);
                   } else {
                       nistBeamEnergyInMeV = Double.parseDouble(splitLine[1]);
                       massAttenCoeff = Double.parseDouble(splitLine[2]);
-                      System.out.println(nistBeamEnergyInMeV + " " + massAttenCoeff);
                   }
                   //Convert the beam energy from MeV to KeV
                   nistBeamEnergyInKeV = nistBeamEnergyInMeV * MEV_TO_KEV;
@@ -168,7 +202,8 @@ public class Container {
           ((beam.getPhotonEnergy() - nistBeamEnergyInKeVPrevious) /
           (nistBeamEnergyInKeV - nistBeamEnergyInKeVPrevious));
 
-  return massAttenuationCoefficient;
+  this.massAttenuationCoefficient = massAttenuationCoefficient;
+
   }
 
   /**
@@ -181,9 +216,52 @@ public class Container {
    */
   private String getNISTURL(){
     return String.format("http://physics.nist.gov/PhysRefData/XrayMassCoef"
-        + "/ComTab/pyrex.html", this.material);
+        + "/ComTab/%s.html", this.material);
   }
 
+  /**
+   * Calculate the mass thickness of the container. The mass thickness is
+   * defined as the mass per unit area.
+   */
+  private void calculateMassThickness(){
+    //Convert container thickness units from microns to centimeters.
+    double thicknessInCentimeters = MICRONS_TO_CENTIMETERS * this.thickness;
+    this.massThickness = this.density * thicknessInCentimeters;
+  }
 
+  /**
+   * Return the mass thickness of the container
+   *
+   * @return
+   *        Mass thickness of the sample
+   */
+  public double getMassThickness(){
+    return this.massThickness;
+  }
+
+  /**
+   * Return the mass attenuation coefficient of the container
+   *
+   * @return
+   *        Mass attenuation coefficient
+   */
+  public double getMassAttenuationCoefficient() {
+    return this.massAttenuationCoefficient;
+  }
+
+  public void containerInformation() {
+    String s = String.format("The mass attenuation coefficient of the %s container "
+        + "is %.2f centimetres^2 per gram.%n"
+        + "The attentuation fraction of the beam due to the sample"
+        + " container of thickness %.2f microns is: %.2f.%n"
+        ,this.material, this.massAttenuationCoefficient
+        ,this.thickness, this.containerAttenuationFraction);
+
+    System.out.printf(s);
+  }
+
+  public double getContainerAttenuationFraction(){
+    return this.containerAttenuationFraction;
+  }
 
 }
