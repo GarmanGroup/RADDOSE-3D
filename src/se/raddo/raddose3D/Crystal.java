@@ -418,8 +418,7 @@ public abstract class Crystal {
 
               double voxImageFluence =
                   unattenuatedBeamIntensity * beamAttenuationFactor
-                      * Math.exp(depth * beamAttenuationExpFactor)
-                      * sampleContainer.getContainerAttenuationFraction();
+                      * Math.exp(depth * beamAttenuationExpFactor);
               // Attenuates the beam for absorption
 
               double voxImageDose = fluenceToDoseFactor * voxImageFluence;
