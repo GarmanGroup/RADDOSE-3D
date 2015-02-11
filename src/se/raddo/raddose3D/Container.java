@@ -108,7 +108,7 @@ public class Container {
     double nistBeamEnergyInKeVPrevious = 0;
     double massAttenCoeffPrevious = 0;
 
-    // Variables used in parsing
+    // Regular expressions used in parsing
     boolean readLine = false;
     Pattern openTag = Pattern.compile("<PRE>");
     Pattern closeTag = Pattern.compile("</PRE>");
