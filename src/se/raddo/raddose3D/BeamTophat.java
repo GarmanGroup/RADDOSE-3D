@@ -18,6 +18,9 @@ public class BeamTophat implements Beam {
   /** Beam energy. */
   private final Double photonEnergy;
 
+  /** Attenuated beam flux.  */
+  private double attenuatedPhotonsPerSec;
+
   /**
    * Generic property constructor for Top Hat beams. Extracts all required
    * information from a Map data structure.
@@ -61,7 +64,8 @@ public class BeamTophat implements Beam {
     // fluence.
     if (Math.abs(coordX - offAxisUM) <= beamXum / 2
         && Math.abs(coordY) <= beamYum / 2) {
-      return KEVTOJOULES * photonsPerSec * photonEnergy / (beamXum * beamYum);
+      return KEVTOJOULES * attenuatedPhotonsPerSec * photonEnergy
+          / (beamXum * beamYum);
     } else {
       return 0d;
     }
@@ -86,6 +90,7 @@ public class BeamTophat implements Beam {
 
   @Override
   public void applyContainerAttenuation(Container sampleContainer){
-
+    attenuatedPhotonsPerSec = photonsPerSec
+        * sampleContainer.getContainerAttenuationFraction();
   }
 }

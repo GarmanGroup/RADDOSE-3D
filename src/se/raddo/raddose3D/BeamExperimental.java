@@ -51,6 +51,9 @@ public class BeamExperimental implements Beam {
     this.beamEnergy = beamEnergy;
   }
 
+  /**
+   * Generate the beam array from the other instance variables
+   */
   public void generateBeamArray() {
 
     // add a zero border
