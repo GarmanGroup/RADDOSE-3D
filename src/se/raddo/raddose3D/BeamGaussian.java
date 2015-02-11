@@ -28,7 +28,7 @@ public class BeamGaussian implements Beam {
 
   private final Double        normFactor;
 
-  private final double        scaleFactor;
+  private double              scaleFactor;
 
   /** Horizontal/Vertical Gaussian distribution of the beam. */
   private final Gaussian      gX, gY;
@@ -38,6 +38,8 @@ public class BeamGaussian implements Beam {
    * half-maximum.
    */
   private static final double SIGMA_TO_FWHM = 2 * Math.sqrt(2 * Math.log(2));
+
+  private double attenuatedPhotonsPerSec;
 
   /**
    * Generic property constructor for Gaussian beams. Extracts all required
@@ -101,8 +103,13 @@ public class BeamGaussian implements Beam {
     gX = new Gaussian(0, sigmaX);
     gY = new Gaussian(0, sigmaY);
 
-    // Calculate the scale factor for this Gaussian beam.
-    scaleFactor = KEVTOJOULES * photonEnergy * photonsPerSec / normFactor;
+  }
+  /**
+   * Calculate the scale factor for the beam.
+   */
+  private void calculateScaleFactor(){
+    scaleFactor = KEVTOJOULES * photonEnergy * attenuatedPhotonsPerSec
+        / normFactor;
   }
 
   private double gaussianIntensity(final double x, final double y) {
@@ -171,6 +178,8 @@ public class BeamGaussian implements Beam {
   @Override
   public double beamIntensity(final double coordX, final double coordY,
       final double offAxisUM) {
+    //Calculate the scale factor
+    calculateScaleFactor();
 
     // Test if beam coordinate is outside collimated area,
     if ((collXum != null) && (Math.abs(coordX - offAxisUM) > collXum / 2)) {
@@ -186,6 +195,7 @@ public class BeamGaussian implements Beam {
 
   @Override
   public void applyContainerAttenuation(Container sampleContainer){
-
+    attenuatedPhotonsPerSec = photonsPerSec
+        * sampleContainer.getContainerAttenuationFraction();
   }
 }
