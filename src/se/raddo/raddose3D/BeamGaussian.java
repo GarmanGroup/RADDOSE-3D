@@ -5,10 +5,10 @@ package se.raddo.raddose3D;
  * Flux is defined as total flux within collimated region (defined by beamsize).
  */
 
+import java.util.Map;
+
 import org.apache.commons.math3.analysis.function.Gaussian;
 import org.apache.commons.math3.distribution.NormalDistribution;
-
-import java.util.Map;
 
 public class BeamGaussian implements Beam {
   /** Horizontal full width half maximum of the beam. */
@@ -50,7 +50,7 @@ public class BeamGaussian implements Beam {
    * BEAM_FWHM_Y - vertical full-width half-maximum.
    * BEAM_FLUX - flux of the beam in photons per second.
    * BEAM_ENERGY - photon energy.
-   * 
+   *
    * @param properties
    *          Map of type <Object, Object> that contains all beam properties.
    *          The keys of the Map are defined by the constants in the
@@ -112,7 +112,7 @@ public class BeamGaussian implements Beam {
   /**
    * Find the volume under a bivariate Gaussian using cumulative density
    * functions.
-   * 
+   *
    * @param x1
    *          The lower bound of x.
    * @param x2
@@ -182,5 +182,10 @@ public class BeamGaussian implements Beam {
 
     // Return normalisedGaussian * scale factor
     return gaussianIntensity((coordX - offAxisUM), coordY) * scaleFactor;
+  }
+
+  @Override
+  public void applyContainerAttenuation(Container sampleContainer){
+
   }
 }

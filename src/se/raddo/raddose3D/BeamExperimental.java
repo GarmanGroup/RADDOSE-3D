@@ -20,7 +20,7 @@ public class BeamExperimental implements Beam {
    * will be used for interpolation. This array must be in the RADDOSE-3D
    * coordinate system. It also adds a row or 0's around the
    * original array to allow for correct interpolation at the edges.
-   * 
+   *
    * @param totalFlux
    *          total flux of the beam in photons per second.
    * @param datastructure
@@ -120,7 +120,7 @@ public class BeamExperimental implements Beam {
 
   /**
    * Bilinear interpolation routine.
-   * 
+   *
    * @param v00
    *          Value at x=0, y=0.
    * @param v10
@@ -157,6 +157,11 @@ public class BeamExperimental implements Beam {
   @Override
   public double getPhotonEnergy() {
     return beamEnergy;
+  }
+
+  @Override
+  public void applyContainerAttenuation(Container sampleContainer){
+
   }
 
 }

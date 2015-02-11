@@ -27,7 +27,7 @@ public class BeamTophat implements Beam {
    * BEAM_COLL_V - vertical extent of the beam in micrometres.
    * BEAM_FLUX - flux of the beam in photons per second.
    * BEAM_ENERGY - photon energy.
-   * 
+   *
    * @param properties
    *          Map of type <Object, Object> that contains all beam properties.
    *          The keys of the Map are defined by the constants in the
@@ -82,5 +82,10 @@ public class BeamTophat implements Beam {
   @Override
   public double getPhotonEnergy() {
     return photonEnergy;
+  }
+
+  @Override
+  public void applyContainerAttenuation(Container sampleContainer){
+
   }
 }

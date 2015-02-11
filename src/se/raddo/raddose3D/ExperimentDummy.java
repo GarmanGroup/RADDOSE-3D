@@ -11,7 +11,7 @@ public class ExperimentDummy extends Experiment {
   /**
    * Cause given Input object to send its object stream to this Experiment.
    * Try avoiding complex object instantiation wherever possible.
-   * 
+   *
    * @param i
    *          Single Input type object.
    * @throws InputException
@@ -30,7 +30,7 @@ public class ExperimentDummy extends Experiment {
   /**
    * This dummy version of exposeWedge does NOT actually expose the wedge.
    * Notifies all subscribers.
-   * 
+   *
    * @param w
    *          Wedge object for exposure
    */
@@ -75,6 +75,10 @@ public class ExperimentDummy extends Experiment {
       public double getPhotonEnergy() {
         return 0;
       }
+
+      @Override
+      public void applyContainerAttenuation(Container sampleContainer){
+      }
     }
   }
 
@@ -106,7 +110,7 @@ public class ExperimentDummy extends Experiment {
        * CRYSTAL_DIM_Y (optional. Default: CRYSTAL_DIM_X)
        * CRYSTAL_DIM_Z (optional. Default: CRYSTAL_DIM_X)
        * CRYSTAL_RESOLUTION (optional. Default: 0.5)
-       * 
+       *
        * @param properties
        *          Map of type <Object, Object> that contains all crystal
        *          properties. The keys of the Map are defined by the constants
