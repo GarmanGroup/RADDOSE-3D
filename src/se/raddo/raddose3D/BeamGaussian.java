@@ -38,7 +38,8 @@ public class BeamGaussian implements Beam {
    * half-maximum.
    */
   private static final double SIGMA_TO_FWHM = 2 * Math.sqrt(2 * Math.log(2));
-  
+
+  /** Attenuated beam flux  */
   private double attenuatedPhotonsPerSec;
 
   /**
@@ -108,7 +109,7 @@ public class BeamGaussian implements Beam {
    * Calculate the scale factor for the beam.
    */
   private void calculateScaleFactor(){
-    scaleFactor = KEVTOJOULES * photonEnergy * attenuatedPhotonsPerSec 
+    scaleFactor = KEVTOJOULES * photonEnergy * attenuatedPhotonsPerSec
         / normFactor;
   }
 
@@ -195,7 +196,7 @@ public class BeamGaussian implements Beam {
 
   @Override
   public void applyContainerAttenuation(Container sampleContainer){
-    attenuatedPhotonsPerSec = photonsPerSec 
+    attenuatedPhotonsPerSec = photonsPerSec
         * sampleContainer.getContainerAttenuationFraction();
   }
 }
