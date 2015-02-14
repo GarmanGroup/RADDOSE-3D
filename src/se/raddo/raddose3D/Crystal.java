@@ -98,18 +98,6 @@ public abstract class Crystal {
         (Double) properties.get(Crystal.CRYSTAL_CONTAINER_THICKNESS),
         (String) properties.get(Crystal.CRYSTAL_CONTAINER_MATERIAL),
         (Double) properties.get(Crystal.CRYSTAL_CONTAINER_DENSITY));
-
-    System.out.println("Container Thickness is: " +
-    properties.get(Crystal.CRYSTAL_CONTAINER_THICKNESS));
-
-    System.out.println("Container Material is: " +
-        properties.get(Crystal.CRYSTAL_CONTAINER_MATERIAL));
-
-    System.out.println("Material Density is: " +
-        properties.get(Crystal.CRYSTAL_CONTAINER_DENSITY));
-
-    boolean b = properties.get(Crystal.CRYSTAL_CONTAINER_DENSITY) instanceof Double;
-    System.out.println("Density is instance of double: " + b);
   }
 
   public abstract void setupDepthFinding(double angrad, Wedge wedge);
@@ -279,6 +267,14 @@ public abstract class Crystal {
 
     // Update coefficients in case the beam energy has changed.
     coefCalc.updateCoefficients(beam);
+
+    //Calculate the attenuation due to the sample container
+    sampleContainer.calculateContainerAttenuation(beam);
+    //Print information about the attenuation to the console.
+    sampleContainer.containerInformation();
+
+    //Apply the attenuation of the container to the beam
+    beam.applyContainerAttenuation(sampleContainer);
 
     // Set up angles to iterate over.
     double[] angles;

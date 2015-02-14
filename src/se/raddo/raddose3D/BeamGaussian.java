@@ -5,10 +5,10 @@ package se.raddo.raddose3D;
  * Flux is defined as total flux within collimated region (defined by beamsize).
  */
 
+import java.util.Map;
+
 import org.apache.commons.math3.analysis.function.Gaussian;
 import org.apache.commons.math3.distribution.NormalDistribution;
-
-import java.util.Map;
 
 public class BeamGaussian implements Beam {
   /** Horizontal full width half maximum of the beam. */
@@ -28,7 +28,7 @@ public class BeamGaussian implements Beam {
 
   private final Double        normFactor;
 
-  private final double        scaleFactor;
+  private double              scaleFactor;
 
   /** Horizontal/Vertical Gaussian distribution of the beam. */
   private final Gaussian      gX, gY;
@@ -38,6 +38,9 @@ public class BeamGaussian implements Beam {
    * half-maximum.
    */
   private static final double SIGMA_TO_FWHM = 2 * Math.sqrt(2 * Math.log(2));
+
+  /** Attenuated beam flux  */
+  private double attenuatedPhotonsPerSec;
 
   /**
    * Generic property constructor for Gaussian beams. Extracts all required
@@ -50,7 +53,7 @@ public class BeamGaussian implements Beam {
    * BEAM_FWHM_Y - vertical full-width half-maximum.
    * BEAM_FLUX - flux of the beam in photons per second.
    * BEAM_ENERGY - photon energy.
-   * 
+   *
    * @param properties
    *          Map of type <Object, Object> that contains all beam properties.
    *          The keys of the Map are defined by the constants in the
@@ -101,8 +104,13 @@ public class BeamGaussian implements Beam {
     gX = new Gaussian(0, sigmaX);
     gY = new Gaussian(0, sigmaY);
 
-    // Calculate the scale factor for this Gaussian beam.
-    scaleFactor = KEVTOJOULES * photonEnergy * photonsPerSec / normFactor;
+  }
+  /**
+   * Calculate the scale factor for the beam.
+   */
+  private void calculateScaleFactor(){
+    scaleFactor = KEVTOJOULES * photonEnergy * attenuatedPhotonsPerSec
+        / normFactor;
   }
 
   private double gaussianIntensity(final double x, final double y) {
@@ -112,7 +120,7 @@ public class BeamGaussian implements Beam {
   /**
    * Find the volume under a bivariate Gaussian using cumulative density
    * functions.
-   * 
+   *
    * @param x1
    *          The lower bound of x.
    * @param x2
@@ -171,6 +179,8 @@ public class BeamGaussian implements Beam {
   @Override
   public double beamIntensity(final double coordX, final double coordY,
       final double offAxisUM) {
+    //Calculate the scale factor
+    calculateScaleFactor();
 
     // Test if beam coordinate is outside collimated area,
     if ((collXum != null) && (Math.abs(coordX - offAxisUM) > collXum / 2)) {
@@ -182,5 +192,18 @@ public class BeamGaussian implements Beam {
 
     // Return normalisedGaussian * scale factor
     return gaussianIntensity((coordX - offAxisUM), coordY) * scaleFactor;
+  }
+
+  @Override
+  public void applyContainerAttenuation(Container sampleContainer){
+    attenuatedPhotonsPerSec = photonsPerSec
+        * (1 - sampleContainer.getContainerAttenuationFraction());
+
+    if (sampleContainer.getContainerMaterial() != null) {
+      String s = String.format("Beam photons per second after container "
+          + "attenuation is %.2e photons per second", attenuatedPhotonsPerSec);
+
+      System.out.println(s);
+    }
   }
 }

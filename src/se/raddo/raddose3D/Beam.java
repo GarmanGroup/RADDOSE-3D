@@ -34,7 +34,7 @@ public interface Beam {
 
   /**
    * Returns the mean intensity at position X, Y in joules/um^2/s.
-   * 
+   *
    * @param coordX
    * @param coordY
    * @param offAxisUM
@@ -45,7 +45,7 @@ public interface Beam {
   /**
    * Returns a short description of the beam, ideally one line.
    * It should contain the beam type, flux, and energy.
-   * 
+   *
    * @return
    *         Description of the Beam.
    */
@@ -53,7 +53,7 @@ public interface Beam {
 
   /**
    * Returns flux of the beam.
-   * 
+   *
    * @return
    *         Beam flux in photons per second.
    */
@@ -61,9 +61,14 @@ public interface Beam {
 
   /**
    * Returns photon energy of the beam.
-   * 
+   *
    * @return
    *         Photon energy in keV.
    */
   public double getPhotonEnergy();
+
+  /**
+   * Applies flux attenuation due to the sample container.
+   */
+  public void applyContainerAttenuation(Container sampleContainer);
 }
