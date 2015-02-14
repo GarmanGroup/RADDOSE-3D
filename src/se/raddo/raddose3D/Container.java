@@ -38,13 +38,21 @@ public class Container {
    *        Double type argument giving the thickness of the
    *        container.
    */
-  public Container(double conThickness, String conMaterial, double conDensity){
+  public Container(Double conThickness, String conMaterial, Double conDensity){
+    
+    if (conThickness == null || conMaterial == null || conDensity == null){
+      this.material = null;
+      this.thickness = 0;
+      this.density = 0;
+    } else {
     /**
      * Initialise the instance variables
      */
     this.material = conMaterial;
     this.thickness = conThickness;
     this.density = conDensity;
+    }
+    
   }
 
   /**
@@ -99,6 +107,7 @@ public class Container {
         System.out.println("Cannot read from URL: " + urlString);
         e.printStackTrace();
     }
+    
   }
 
   /**
