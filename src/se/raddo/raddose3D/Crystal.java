@@ -31,7 +31,7 @@ public abstract class Crystal {
   public static final String     CRYSTAL_WIREFRAME_FILE        = "WIREFRAME_FILE";
   /** Constant for data fields in Map constructors: Photoelectron escape. */
   public static final String     CRYSTAL_ELECTRON_ESCAPE       = "PHESCAPE";
-  /** Constant for data fields in Map constructors: Container thickness. */
+  /** Constant for data fields in Map constructors: Container Type. */
   public static final String     CRYSTAL_CONTAINER             = "CONTAINER";
 
   /** Default recommended voxel resolution in voxels/micrometre. */
@@ -71,6 +71,7 @@ public abstract class Crystal {
    * Generic property constructor for crystal classes.
    * Sets the DDM object if defined, a reasonable default otherwise.
    * Sets the CoefCalc object if defined, a reasonable default otherwise.
+   * Sets the Container object if defined, a reasonable default otherwise.
    *
    * @param properties
    *          Map of type <Object, Object> that contains all crystal properties.
@@ -95,8 +96,6 @@ public abstract class Crystal {
     } else {
       sampleContainer = (Container) properties.get(Crystal.CRYSTAL_CONTAINER);
     }
-
-
   }
 
   public abstract void setupDepthFinding(double angrad, Wedge wedge);
