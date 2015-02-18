@@ -144,13 +144,17 @@ if ($crystal::crystalDdm == 3)
 
 $crystal::crystalProperties.put(Crystal.CRYSTAL_DDM, $crystal::crystalDdmClass);
 
-
 if ($crystal::crystalContainerMaterial == 1)
+{
+	$crystal::crystalContainerMaterialClass = new ContainerTransparent();
+}
+
+if ($crystal::crystalContainerMaterial == 2)
 {
 	$crystal::crystalContainerMaterialClass = new ContainerMixture($crystal::containerThickness, $crystal::containerDensity, $crystal::containerMixture);
 }
 
-if ($crystal::crystalContainerMaterial == 2)
+if ($crystal::crystalContainerMaterial == 3)
 {
 	$crystal::crystalContainerMaterialClass = new ContainerElemental($crystal::containerThickness, $crystal::containerDensity, $crystal::containerElementNames,
 													$crystal::containerElementNums);
@@ -351,9 +355,11 @@ crystalContainerMaterial returns [int value]
 CONTAINERMATERIALTYPE : ('C'|'c')('O'|'o')('N'|'n')('T'|'t')('A'|'a')('I'|'i')('N'|'n')('E'|'e')('R'|'r')('M'|'m')('A'|'a')('T'|'t')('E'|'e')('R'|'r')('I'|'i')('A'|'a')('L'|'l')('T'|'t')('Y'|'y')('P'|'p')('E'|'e') ;
 MATERIALTYPE : ('M'|'m')('A'|'a')('T'|'t')('E'|'e')('R'|'r')('I'|'i')('A'|'a')('L'|'l')('T'|'t')('Y'|'y')('P'|'p')('E'|'e') ;
 crystalContainerKeyword returns [int value]
-	: MIXTURE 	{ $value = 1; }
-	| ELEMENTAL 	{ $value = 2; }
+	: NONE 		{ $value = 1; }
+	| MIXTURE 	{ $value = 2; }
+	| ELEMENTAL 	{ $value = 3; }
 	;
+NONE 	: ('N'|'n')('O'|'o')('N'|'n')('E'|'e') ;
 MIXTURE : ('M'|'m')('I'|'i')('X'|'x')('T'|'t')('U'|'u')('R'|'r')('E'|'e') ;
 ELEMENTAL : ('E'|'e')('L'|'l')('E'|'e')('M'|'m')('E'|'e')('N'|'n')('T'|'t')('A'|'a')('L'|'l') ;
 	
