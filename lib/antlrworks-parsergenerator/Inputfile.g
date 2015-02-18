@@ -53,9 +53,16 @@ scope {
 	CoefCalc		crystalCoefCalcClass;
 	int			crystalDdm;
 	DDM			crystalDdmClass;	
+	int			crystalContainerMaterial;
+	Container		crystalContainerMaterialClass;
 	Double			gammaParam;
 	Double			b0Param;
-	Double			betaParam;		
+	Double			betaParam;
+	String			containerMixture;
+	Double			containerThickness;
+	Double			containerDensity;
+	List<String>	containerElementNames;
+	List<Double>	containerElementNums;		
 	String			pdb;
 	Double			proteinConc;
 	Double			cellA;
@@ -138,6 +145,20 @@ if ($crystal::crystalDdm == 3)
 $crystal::crystalProperties.put(Crystal.CRYSTAL_DDM, $crystal::crystalDdmClass);
 
 
+if ($crystal::crystalContainerMaterial == 1)
+{
+	$crystal::crystalContainerMaterialClass = new ContainerMixture($crystal::containerThickness, $crystal::containerDensity, $crystal::containerMixture);
+}
+
+if ($crystal::crystalContainerMaterial == 2)
+{
+	$crystal::crystalContainerMaterialClass = new ContainerElemental($crystal::containerThickness, $crystal::containerDensity, $crystal::containerElementNames,
+													$crystal::containerElementNums);
+}
+
+$crystal::crystalProperties.put(Crystal.CRYSTAL_CONTAINER, $crystal::crystalContainerMaterialClass);
+
+
 $cObj = crystalFactory.createCrystal($crystal::crystalType, $crystal::crystalProperties);
 }
 	: CRYSTAL crystalLine+ ;
@@ -156,9 +177,10 @@ crystalLine
 	| h=crystalDecayParam		{ $crystal::gammaParam 					= $h.gammaParam; 
 	                           			  $crystal::b0Param 					= $h.b0Param; 
 	                           			  $crystal::betaParam 					= $h.betaParam; }
-	| i=containerThickness		{ $crystal::crystalProperties.put(Crystal.CRYSTAL_CONTAINER_THICKNESS, $i.value); }
-	| j=containerMaterial		{ $crystal::crystalProperties.put(Crystal.CRYSTAL_CONTAINER_MATERIAL, $j.value); }
-	| k=containerDensity		{ $crystal::crystalProperties.put(Crystal.CRYSTAL_CONTAINER_DENSITY, $k.value); }
+	| i=containerThickness		{ $crystal::containerThickness 				= $i.value; }
+	| j=containerDensity		{ $crystal::containerDensity				= $j.value; }
+	| k=crystalContainerMaterial	{ $crystal::crystalContainerMaterial			= $k.value; }
+	| l=containerMaterialMixture	{ $crystal::containerMixture 				= $l.value; }
 	| m=unitcell			{ $crystal::cellA					= $m.dimA; 
    							  $crystal::cellB 					= $m.dimB; 	
 							  $crystal::cellC 					= $m.dimC;	
@@ -179,6 +201,8 @@ crystalLine
 	| w=modelFile				{ $crystal::crystalProperties.put(Crystal.CRYSTAL_WIREFRAME_FILE, $w.value); }
 	| x=calculateEscape		{ $crystal::crystalProperties.put(Crystal.CRYSTAL_ELECTRON_ESCAPE, $x.value); }
 	| y=proteinConcentration	{ $crystal::proteinConc					= $y.proteinConc;}
+	| z=containerMaterialElements	{ $crystal::containerElementNames	= $z.names;
+							  $crystal::containerElementNums	= $z.num;	}
 	  
 	;
 
@@ -264,8 +288,9 @@ unitcell returns [Double dimA, Double dimB, Double dimC, Double angA, Double ang
 UNITCELL : ('U'|'u')('N'|'n')('I'|'i')('T'|'t')('C'|'c')('E'|'e')('L'|'l')('L'|'l') ;
 	
 proteinConcentration returns [Double proteinConc]
-	: PROTEINCONCENTRATION a=FLOAT {$proteinConc = Double.parseDouble($a.text);};
-PROTEINCONCENTRATION: ('P'|'p')('R'|'r')('O'|'o')('T'|'t')('E'|'e')('I'|'i')('N'|'n')('C'|'c')('O'|'o')('N'|'n')('C'|'c') ;
+	: (PROTEINCONCENTRATION | PROTEINCONC) a=FLOAT {$proteinConc = Double.parseDouble($a.text);};
+PROTEINCONC: ('P'|'p')('R'|'r')('O'|'o')('T'|'t')('E'|'e')('I'|'i')('N'|'n')('C'|'c')('O'|'o')('N'|'n')('C'|'c') ;
+PROTEINCONCENTRATION: ('P'|'p')('R'|'r')('O'|'o')('T'|'t')('E'|'e')('I'|'i')('N'|'n')('C'|'c')('O'|'o')('N'|'n')('C'|'c')('E'|'e')('N'|'n')('T'|'t')('R'|'r')('A'|'a')('T'|'t')('I'|'i')('O'|'o')('N'|'n') ;
 
 nummonomers returns [int value]
 	: NUMMONOMERS a=FLOAT {$value = Integer.parseInt($a.text);};
@@ -321,14 +346,34 @@ calculateEscape returns [String value]
 CALCULATEESCAPE  
 	:	 ('C'|'c')('A'|'a')('L'|'l')('C'|'c')('U'|'u')('L'|'l')('A'|'a')('T'|'t')('E'|'e')('E'|'e')('S'|'s')('C'|'c')('A'|'a')('P'|'p')('E'|'e') ;
 	
+crystalContainerMaterial returns [int value]
+	: ( CONTAINERMATERIALTYPE | MATERIALTYPE ) e=crystalContainerKeyword { $value = $e.value; };
+CONTAINERMATERIALTYPE : ('C'|'c')('O'|'o')('N'|'n')('T'|'t')('A'|'a')('I'|'i')('N'|'n')('E'|'e')('R'|'r')('M'|'m')('A'|'a')('T'|'t')('E'|'e')('R'|'r')('I'|'i')('A'|'a')('L'|'l')('T'|'t')('Y'|'y')('P'|'p')('E'|'e') ;
+MATERIALTYPE : ('M'|'m')('A'|'a')('T'|'t')('E'|'e')('R'|'r')('I'|'i')('A'|'a')('L'|'l')('T'|'t')('Y'|'y')('P'|'p')('E'|'e') ;
+crystalContainerKeyword returns [int value]
+	: MIXTURE 	{ $value = 1; }
+	| ELEMENTAL 	{ $value = 2; }
+	;
+MIXTURE : ('M'|'m')('I'|'i')('X'|'x')('T'|'t')('U'|'u')('R'|'r')('E'|'e') ;
+ELEMENTAL : ('E'|'e')('L'|'l')('E'|'e')('M'|'m')('E'|'e')('N'|'n')('T'|'t')('A'|'a')('L'|'l') ;
+	
 containerThickness returns[double value]
 	: CONTAINERTHICKNESS a=FLOAT {$value = Double.parseDouble($a.text);};
 CONTAINERTHICKNESS: ('C'|'c')('O'|'o')('N'|'n')('T'|'t')('A'|'a')('I'|'i')('N'|'n')('E'|'e')('R'|'r')('T'|'t')('H'|'h')('I'|'i')('C'|'c')('K'|'k')('N'|'n')('E'|'e')('S'|'s')('S'|'s') ;
 
+containerMaterialMixture returns [String value]
+	: (CONTAINERMATERIALMIXTURE | MATERIALMIXTURE) a=STRING {$value = $a.text;};
+CONTAINERMATERIALMIXTURE: ('C'|'c')('O'|'o')('N'|'n')('T'|'t')('A'|'a')('I'|'i')('N'|'n')('E'|'e')('R'|'r')('M'|'m')('A'|'a')('T'|'t')('E'|'e')('R'|'r')('I'|'i')('A'|'a')('L'|'l')('M'|'m')('I'|'i')('X'|'x')('T'|'t')('U'|'u')('R'|'r')('E'|'e') ;
+MATERIALMIXTURE: ('M'|'m')('A'|'a')('T'|'t')('E'|'e')('R'|'r')('I'|'i')('A'|'a')('L'|'l')('M'|'m')('I'|'i')('X'|'x')('T'|'t')('U'|'u')('R'|'r')('E'|'e') ;
 
-containerMaterial returns[String value]
-	: CONTAINERMATERIAL a=STRING {$value = $a.text;};
-CONTAINERMATERIAL: ('C'|'c')('O'|'o')('N'|'n')('T'|'t')('A'|'a')('I'|'i')('N'|'n')('E'|'e')('R'|'r')('M'|'m')('A'|'a')('T'|'t')('E'|'e')('R'|'r')('I'|'i')('A'|'a')('L'|'l') ;
+containerMaterialElements returns[List<String> names, List<Double> num;]
+@init{
+$names 	= new ArrayList<String>();
+$num	= new ArrayList<Double>();
+}
+	: (CONTAINERMATERIALELEMENTS | MATERIALELEMENTS) (a=ELEMENT b=FLOAT {$names.add($a.text); $num.add(Double.parseDouble($b.text)); } )+ ;
+CONTAINERMATERIALELEMENTS: ('C'|'c')('O'|'o')('N'|'n')('T'|'t')('A'|'a')('I'|'i')('N'|'n')('E'|'e')('R'|'r')('M'|'m')('A'|'a')('T'|'t')('E'|'e')('R'|'r')('I'|'i')('A'|'a')('L'|'l')('E'|'e')('L'|'l')('E'|'e')('M'|'m')('E'|'e')('N'|'n')('T'|'t')('S'|'s') ;
+MATERIALELEMENTS: ('M'|'m')('A'|'a')('T'|'t')('E'|'e')('R'|'r')('I'|'i')('A'|'a')('L'|'l')('E'|'e')('L'|'l')('E'|'e')('M'|'m')('E'|'e')('N'|'n')('T'|'t')('S'|'s') ;
 
 containerDensity returns[double value]
 	: CONTAINERDENSITY a=FLOAT {$value = Double.parseDouble($a.text);};
