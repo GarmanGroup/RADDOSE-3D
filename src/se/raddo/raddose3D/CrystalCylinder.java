@@ -4,6 +4,11 @@ import java.util.Map;
 
 public class CrystalCylinder extends CrystalPolyhedron {
 
+  /**
+   * Conversion factor from microns to millimeters
+   */
+  private static final double CONVERSION_MICRONS_TO_MILLIMETERS = 1e-3;
+
   @Override
   public void loadVertices(final Map<Object, Object> mergedProperties) {
     int[][] tempIndices = {
@@ -135,7 +140,6 @@ public class CrystalCylinder extends CrystalPolyhedron {
 
     Double radius = (Double) mergedProperties.get(Crystal.CRYSTAL_DIM_X) / 2;
     Double height = (Double) mergedProperties.get(Crystal.CRYSTAL_DIM_Y);
-
     double[][] tempVertices = createCylinderVertices(radius, height);
 
     setIndices(tempIndices);
@@ -209,10 +213,10 @@ public class CrystalCylinder extends CrystalPolyhedron {
     String s = String
         .format(
             "Cylinder (Polyhedron) crystal of "
-                + "diameter %.2f mm and length %.2f mm at a "
+                + "diameter %.2f mm and height %.2f mm at a "
                 + "resolution of %.2f microns per voxel edge.",
-                crystSizeUM[0],
-                crystSizeUM[1],
+                crystSizeUM[1] * CONVERSION_MICRONS_TO_MILLIMETERS,
+                crystSizeUM[0] * CONVERSION_MICRONS_TO_MILLIMETERS,
             1 / crystalPixPerUM);
     if (l == 0 && p == 0) {
       return s;
