@@ -32,11 +32,7 @@ public abstract class Crystal {
   /** Constant for data fields in Map constructors: Photoelectron escape. */
   public static final String     CRYSTAL_ELECTRON_ESCAPE       = "PHESCAPE";
   /** Constant for data fields in Map constructors: Container thickness. */
-  public static final String     CRYSTAL_CONTAINER_THICKNESS   = "CONTAINER_THICKNESS";
-  /** Constant for data fields in Map constructors: Container material. */
-  public static final String     CRYSTAL_CONTAINER_MATERIAL    = "CONTAINER_MATERIAL";
-  /** Constant for data fields in Map constructors: Container density. */
-  public static final String     CRYSTAL_CONTAINER_DENSITY      = "CONTAINER_DENSITY";
+  public static final String     CRYSTAL_CONTAINER             = "CONTAINER";
 
   /** Default recommended voxel resolution in voxels/micrometre. */
   protected static final Double  CRYSTAL_RESOLUTION_DEF        = 0.5d;
@@ -55,7 +51,7 @@ public abstract class Crystal {
   /** The CoefCalc method being employed to generate crystal coefficients. */
   private final CoefCalc         coefCalc;
   /** The container encasing the irradiated sample*/
-  private final Container         sampleContainer;
+  private final Container        sampleContainer;
 
   /**
    * List of registered exposureObservers. Registered objects will be notified
@@ -94,10 +90,13 @@ public abstract class Crystal {
       coefCalc = (CoefCalc) properties.get(Crystal.CRYSTAL_COEFCALC);
     }
 
-    sampleContainer = new Container(
-        (Double) properties.get(Crystal.CRYSTAL_CONTAINER_THICKNESS),
-        (String) properties.get(Crystal.CRYSTAL_CONTAINER_MATERIAL),
-        (Double) properties.get(Crystal.CRYSTAL_CONTAINER_DENSITY));
+    if (properties.get(Crystal.CRYSTAL_CONTAINER) == null) {
+      sampleContainer = new ContainerTransparent();
+    } else {
+      sampleContainer = (Container) properties.get(Crystal.CRYSTAL_CONTAINER);
+    }
+
+
   }
 
   public abstract void setupDepthFinding(double angrad, Wedge wedge);
