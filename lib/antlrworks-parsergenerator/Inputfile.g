@@ -259,7 +259,9 @@ crystalDim returns [Map<Object, Object> properties]
 	(
       a=FLOAT b=FLOAT c=FLOAT { $properties.put(Crystal.CRYSTAL_DIM_X, Double.parseDouble($a.text));
                                 $properties.put(Crystal.CRYSTAL_DIM_Y, Double.parseDouble($b.text));
-                                $properties.put(Crystal.CRYSTAL_DIM_Z, Double.parseDouble($c.text)); }	
+                                $properties.put(Crystal.CRYSTAL_DIM_Z, Double.parseDouble($c.text)); }
+    | e=FLOAT f=FLOAT{ $properties.put(Crystal.CRYSTAL_DIM_X, Double.parseDouble($e.text));
+    		       $properties.put(Crystal.CRYSTAL_DIM_Y, Double.parseDouble($f.text)); }	
     | d=FLOAT { $properties.put(Crystal.CRYSTAL_DIM_X, Double.parseDouble($d.text)); }
 	) ;
 DIMENSION : ('D'|'d')('I'|'i')('M'|'m')('E'|'e')('N'|'n')('S'|'s')('I'|'i')('O'|'o')('N'|'n')('S'|'s')? ;
