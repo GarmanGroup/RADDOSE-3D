@@ -134,13 +134,13 @@ public class ContainerMixture extends Container{
       double massAttenCoeff = 0;
       double nistBeamEnergyInKeVPrevious = 0;
       double massAttenCoeffPrevious = 0;
+      int indexOfEnergyCol = -1;
 
       // Regular expressions used in parsing
       boolean readLine = false;
       Pattern openTag = Pattern.compile("<PRE>");
       Pattern closeTag = Pattern.compile("</PRE>");
       Pattern scientificNotation = Pattern.compile("[0-9]E[-+][0-9]");
-      Pattern existKLM = Pattern.compile("[KLM]");
 
       //Get the URL string
       String urlString = getNISTURL();
@@ -192,15 +192,16 @@ public class ContainerMixture extends Container{
             if (scientificNotationotationMatcher.find()) {
               //Split the string by whitespace
               String[] splitLine = inputLine.split("\\s+");
-              Matcher existKLMMatcher = existKLM.matcher(inputLine);
-              //Return the beam energy and mass attenuation coefficient values
-              if (existKLMMatcher.find()) {
-                nistBeamEnergyInMeV = Double.parseDouble(splitLine[3]);
-                massAttenCoeff = Double.parseDouble(splitLine[4]);
-              } else {
-                nistBeamEnergyInMeV = Double.parseDouble(splitLine[1]);
-                massAttenCoeff = Double.parseDouble(splitLine[2]);
+              for (int j = 0; j < splitLine.length; j++) {
+                if(splitLine[j].indexOf("E") != -1) {
+                  indexOfEnergyCol = j;
+                  break;
+                }
               }
+              //Extract the beam energy and the mass attenuation coefficient from
+              //the current line.
+              nistBeamEnergyInMeV = Double.parseDouble(splitLine[indexOfEnergyCol]);
+              massAttenCoeff = Double.parseDouble(splitLine[indexOfEnergyCol + 1]);
               //Convert the beam energy from MeV to KeV
               nistBeamEnergyInKeV = nistBeamEnergyInMeV * MEV_TO_KEV;
 
