@@ -60,14 +60,17 @@ public class ContainerMixture extends Container{
   private double              containerAttenuationFraction;
 
   /**
-   * Constructor for the Container class.
+   * Constructor for the ContainerMixture class.
    *
+   * @param conThickness
+   *          Double type argument giving the thickness of the
+   *          container in microns.
+   * @param conDensity
+   *          Double type argument giving the density of the
+   *          container in grams per centimetre cubed.
    * @param conMaterial
    *          String type argument giving the material of the container
    *          encasing the irradiated sample.
-   * @param conThickness
-   *          Double type argument giving the thickness of the
-   *          container.
    */
   public ContainerMixture(Double conThickness, Double conDensity, String conMaterial) {
     /**
