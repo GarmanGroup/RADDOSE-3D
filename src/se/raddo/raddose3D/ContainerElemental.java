@@ -92,8 +92,8 @@ public class ContainerElemental extends Container{
     /**
      * Initialise the instance variables
      */
-    this.thickness = 0;
-    this.density = 0;
+    this.thickness = conThickness;
+    this.density = conDensity;
     this.elementNamesList = containerElementNames;
     this.elementNumsList = containerElementNums;
     this.elementDB = ElementDatabase.getInstance();
