@@ -52,7 +52,7 @@
 %\addtolength{\textheight}{1in}
 \begin{center}
 \noindent \textsf{\huge\textbf{\RD Command Reference}}\\[0.3em]
-version 1.2 -- 18 December 2014\\[3.5em]
+Beta version 1.3 -- 19 February 2015\\[3.5em]
 \end{center}
 
 \noindent
@@ -140,7 +140,7 @@ specifies the wire frame model to be in .obj format. \SB
 \subsection{\Keyword{MODELFILE}}
 \label{modelfile}
 \Keyword{MODELFILE} Specifies the location of the file that contains the wire frame model of the polyhedron crystal.
-Currently only .obj (geometry definition) files can be read. The models and the .obj files can be generated using the free and open source 3D animation software \href{http://www.blender.org/}{\textbf{BLENDER}}. (NOTE: if you export a \textit{Wavefront (.obj)} file in \href{http://www.blender.org/}{\textbf{BLENDER}}, then select the option \textit{Triangulate Faces} before you export. \RD works with triangular faces for the polygons.):\SB
+Currently only .obj (geometry definition) files can be read. The models and the .obj files can be generated using the free and open source 3D animation software \href{http://www.blender.org/}{\textbf{BLENDER}}. (NOTE: if you are exporting a \textit{Wavefront (.obj)} file in \href{http://www.blender.org/}{\textbf{BLENDER}}, then select the option \textit{Triangulate Faces} before you finalise the export. \RD works with triangular faces for the polygons.):\SB
 
 \noindent \Keyword{MODELFILE \textit{SOMEMODELFILE.OBJ}}
 specifies the location of the .obj file to be imported. \SB
@@ -150,9 +150,9 @@ specifies the location of the .obj file to be imported. \SB
 \label{crystaldimension}
 \Keyword{DIMENSION} specifies the size of the crystal.
 Dimensions are given in micrometres (\hbox{\textmu}m).
-The keyword \Keyword{DIMENSION} can take either one or three parameters:\SB
+The keyword \Keyword{DIMENSION} can take either one, two or three parameters:\SB
 
-\noindent \Keyword{DIMENSION \textit{D}} with a single number (see \hyperref[numberspec]{section \ref*{numberspec}}) as parameter is used for specifying the crystal dimensions for spherical crystals (\hyperref[crystaltype]{\Keyword{TYPE SPHERICAL}}). The parameter sets the crystal diameter. This syntax cannot be used for cuboid crystals.\SB
+\noindent \Keyword{DIMENSION \textit{D}} with a single number (see \hyperref[numberspec]{section \ref*{numberspec}}) as the parameter \textit{D} is used for specifying the crystal dimensions for spherical crystals (\hyperref[crystaltype]{\Keyword{TYPE SPHERICAL}}). The parameter sets the crystal diameter. This syntax cannot be used for cuboid or cylindrical crystals.\SB
 
 \noindent \Keyword{DIMENSION \textit{D H}} with two numbers as parameters \textit{D} and \textit{H} is used for specifying the crystal dimensions for cylindrical crystals (\hyperref[crystaltype]{\Keyword{TYPE CYLINDER}}). The parameter \textit{D} sets the diameter of the circular cross section of the cylinder. The parameter \textit{H} sets the height of the cylinder. This syntax cannot be used for cuboid crystals.\SB
 
@@ -185,10 +185,16 @@ If three parameters are given for a cylindrical crystal (\hyperref[crystaltype]{
 
 \noindent \Keyword{PIXELSPERMICRON \textit{F}} 
 specifies the resolution of the voxel grid used to represent the crystal in voxels/\hbox{\textmu}m. Defaults to 0.5 voxels/\hbox{\textmu}m.
+\newline
+Note: When running \RD with large dimension values (with SAXS the capillary dimensions typically range in the millimetre range) RADDOSE-3D can terminate with the folling error: 
+\newline
+\textit{Error during invocation of se.raddo.raddose3D.CrystalCylinder: Java heap space}. 
+\newline
+This is because there is too much memory being used. reducing the pixels per micron will sort this problem and also improve the speed of the program. The cost for the speed improvement is the resolution of the sample voxelization. 
 
 	
 \subsection{\Keyword{ANGLEP}}
-
+\label{anglep}
 \noindent \Keyword{ANGLEP \textit{F}}
 sets the angle in the plane of the loop between the crystal \textit{Y} axis and the goniometer axis. The angle is to be given in degrees, but without the degree symbol ($^\circ$). The default \textit{P} ('plane') angle is $0^\circ$.
 
@@ -199,6 +205,8 @@ The rotation angle to be applied to the crystal in the plane of the loop (right 
 \caption{Schematic of \Keyword{ANGLEP}. Figure courtesy of John Bremridge.}
 \label{fig:angleP}
 \end{figure}
+\newline
+Note that when using the \Keyword{ABSCOEFCALC SAXS} option (section \hyperref[abscoefcalc]{\Keyword{ABSCOEFCALC}}) angle \textit{P} is automatically rotated by an additional 90$^{\circ}$. This is particularly useful for SAXS experiments where the solution is contained in a cylindrical shaped capillary so that the beam direction is perpendicular to the height (axial) dimension of the cylinder.
 
 \subsection{\Keyword{ANGLEL}}
 
@@ -213,14 +221,35 @@ The rotation angle to be applied to the angle of the crystal in the loop (right 
 \label{fig:angleL}
 \end{figure}
 
-\subsection{\Keyword{CONTAINERMATERIAL}}
+\newpage
 
-\noindent \Keyword{CONTAINERMATERIAL \textit{MATERIAL}}
-Specifies the material of the container that encases the irradiated sample. This keyword should be used when the sample is encased within a container e.g. SAXS experiment where the sample is irradiated through a capillary. The exact input for \Keyword{\textit{MATERIAL}} is given in the URL of the corresponding material on the National Institute of Standards and Technology (NIST) \href{http://physics.nist.gov/PhysRefData/XrayMassCoef/tab4.html}{Table 4 webpage}. For example, if the material is through which the crystal is irradiated is pyrex glass then click on the \href{http://physics.nist.gov/PhysRefData/XrayMassCoef/ComTab/pyrex.html}{`Glass, Borosilicate ``Pyrex''' link} and the URL is: 
+\subsection{\Keyword{CONTAINERMATERIALTYPE}}
+
+\noindent \Keyword{CONTAINERMATERIALTYPE \textit{MATERIALTYPE}}
+Specifies the material type of the container that encases the irradiated sample. This keyword should be used when the sample is encased within a container e.g. SAXS experiment where the sample is irradiated through a capillary. Currently three distinct container material type implementations exist:\SB
+
+\noindent \Keyword{CONTAINERMATERIALTYPE NONE}
+The sample is not encased inside any type of container hence there is no attenuation of the beam prior to making contact with the sample. This is the case with a standard X-ray crystallography experiment. This option is selected as the default if the \Keyword{CONTAINERMATERIALTYPE} is not defined.\SB
+
+\noindent \Keyword{CONTAINERMATERIALTYPE MIXTURE}
+Defines a container encasing the irradiated sample which is a mixture of elements, determined by the name of the mixture. If this option is used then the user must specify the material mixture (see section \hyperref[materialmixture]{\Keyword{MATERIALMIXTURE}}).\SB
+
+\noindent \Keyword{CONTAINERMATERIALTYPE ELEMENTAL}
+Defines a container encasing the irradiated sample in terms of its component elements. If this option is used then the user must specify the list of the material's component elements (see section \hyperref[materialelements]{\Keyword{MATERIALELEMENTS}}).\SB
+
+\subsection{\Keyword{MATERIALMIXTURE}}
+\label{materialmixture}
+\noindent \Keyword{MATERIALMIXTURE \textit{MATERIAL}}
+Specifies the material of the container that encases the irradiated sample by its mixture name. The exact input for \Keyword{\textit{MATERIAL}} is given in the URL of the corresponding material on the National Institute of Standards and Technology (NIST) \href{http://physics.nist.gov/PhysRefData/XrayMassCoef/tab4.html}{Table 4 webpage (click here)}. For example, if the material through which the sample is irradiated is pyrex glass then click on the \href{http://physics.nist.gov/PhysRefData/XrayMassCoef/ComTab/pyrex.html}{`Glass, Borosilicate ``Pyrex''' link} and the URL is: 
 \newline
-\href{http://physics.nist.gov/PhysRefData/XrayMassCoef/ComTab/pyrex.html}{http://physics.nist.gov/PhysRefData/XrayMassCoef/ComTab/pyrex.html.}
+\href{http://physics.nist.gov/PhysRefData/XrayMassCoef/ComTab/pyrex.html}{http://physics.nist.gov/PhysRefData/XrayMassCoef/ComTab/\textbf{pyrex}.html.}
 \newline
-The material name is given immediately before the ``.html'', in this case the word is ``pyrex''. Hence to set the container material to pyrex glass the input would be \Keyword{CONTAINERMATERIAL \textit{pyrex}}. Note that the input is case sensitive.
+The material name is given immediately before the ``.html'' and after the last forward slash ``/'', in this case the word is ``pyrex''. Hence to set the container material to pyrex glass the input would be \Keyword{MATERIALMIXTURE \textit{pyrex}}. Note that the input is case sensitive an internet connection is required for this option to work.
+
+\subsection{\Keyword{MATERIALELEMENTS}}
+\label{materialelements}
+\noindent \Keyword{MATERIALELEMENTS \textit{El I} (\textit{El I} (\textit{El I} ..))}
+Specifies the material of the container that encases the irradiated sample by a list of the component elements of the material. The mass attenuation coefficients for each element are downloaded from the National Institute of Standards and Technology (NIST) \href{http://physics.nist.gov/PhysRefData/XrayMassCoef/tab3.html}{Table 3 webpage (click here)}. For example, if the material through which the sample is irradiated is quartz, which has the formula SiO$_2$ then the input would be \Keyword{MATERIALMIXTURE \textit{Si 1 O 2}}. Note that an internet connection is required for this option to work.
 
 \subsection{\Keyword{CONTAINERTHICKNESS}}
 
@@ -293,7 +322,7 @@ Where \Keyword{\textit{CODE}} is the four letter code of the PDB entry to be dow
  \hyperref[numdna]{\Keyword{NUMDNA}},
  \hyperref[proteinheavyatoms]{\Keyword{PROTEINHEAVYATOMS}} and
  \hyperref[solventfraction]{\Keyword{SOLVENTFRACTION}}, and hence these keywords are not needed. 
-It will NOT calculate \hyperref[solventheavyconc]{\Keyword{SOLVENTHEAVYCONC}} so if there are any heavy atoms in the solvent then they will have to be specified.
+It will NOT calculate \hyperref[solventheavyconc]{\Keyword{SOLVENTHEAVYCONC}} so if there are any heavy atoms in the solvent then they will have to be specified. Note that an internet connection is required for this option to work.
 
 \subsection{\Keyword{UNITCELL}}
 \label{RDv3Start}
@@ -499,6 +528,8 @@ specifies the total exposure time for this wedge in seconds.
 \noindent \Keyword{ANGULARRESOLUTION \textit{F}}
 
 specifies the angular step size used for wedge iterations in degrees ($^\circ$). Defaults to $2^\circ$.
+\newline
+Note: If very small wedges are being used e.g. $<5^{\circ}$ then the angular resolution should be decreased.
 
 
 
