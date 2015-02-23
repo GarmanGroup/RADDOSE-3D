@@ -104,6 +104,32 @@
   </jar>
  </target>
 
+ <target name="jar-osgi">
+  <!-- Get reported Raddose3D revision number -->
+  <java classname="se.raddo.raddose3D.Version" classpath="bin" failonerror="true" outputproperty="raddose.version"/>
+  <echo message="Reported Raddose3D version is ${raddose.version}" />
+
+  <jar destfile="raddose3d-osgi.jar" basedir="bin" excludes="se/raddo/raddose3D/tests/** se/raddo/raddose3D/server/**">
+   <zipfileset includes="**/*.class" src="lib/antlr-3.4/antlr-3.4-cutdown.jar"/>
+   <fileset dir=".">
+    <include name="constants/MuCalcConstants.txt" />
+   </fileset>
+
+   <manifest>
+    <attribute name="Implementation-Vendor" value="E. F. Garman group"/>
+    <attribute name="Implementation-Title" value="RADDOSE-3D"/>
+    <attribute name="Implementation-Version" value="${raddose.version}"/>
+    <attribute name="Bundle-ManifestVersion" value="2"/>
+   	<attribute name="Bundle-SymbolicName" value="se.raddo.raddose3D"/>
+   	<attribute name="Bundle-Name" value="RADDOSE 3D"/>
+   	<attribute name="Bundle-Description" value="time- and space-resolved modelling of dose in macromolecular crystallography"/>
+    <attribute name="Bundle-DocURL" value="http://raddo.se/"/>
+    <attribute name="Bundle-Copyright" value="E. F. Garman group"/>
+    <attribute name="Require-Bundle" value="org.apache.commons.math;version=3.0"/>
+   </manifest>
+  </jar>
+ </target>
+
  <target name="jar-server">
   <!-- Get reported Raddose3D revision number -->
   <java classname="se.raddo.raddose3D.Version" classpath="bin" failonerror="true" outputproperty="raddose.version"/>
