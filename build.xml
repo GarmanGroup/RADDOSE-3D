@@ -126,7 +126,7 @@
     <attribute name="Bundle-Description" value="time- and space-resolved modelling of dose in macromolecular crystallography"/>
     <attribute name="Bundle-DocURL" value="http://raddo.se/"/>
     <attribute name="Bundle-Copyright" value="E. F. Garman group"/>
-    <attribute name="Require-Bundle" value="org.apache.commons.math;version=3.0"/>
+    <attribute name="Import-Package" value="org.apache.commons.math3.analysis.function;version=3.0,org.apache.commons.math3.distribution;version=3.0"/>
     <attribute name="Exported-Packages" value="se.raddo.raddose3D"/>
    </manifest>
   </jar>
