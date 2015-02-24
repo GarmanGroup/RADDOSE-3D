@@ -120,12 +120,14 @@
     <attribute name="Implementation-Title" value="RADDOSE-3D"/>
     <attribute name="Implementation-Version" value="${raddose.version}"/>
     <attribute name="Bundle-ManifestVersion" value="2"/>
-   	<attribute name="Bundle-SymbolicName" value="se.raddo.raddose3D"/>
-   	<attribute name="Bundle-Name" value="RADDOSE 3D"/>
-   	<attribute name="Bundle-Description" value="time- and space-resolved modelling of dose in macromolecular crystallography"/>
+    <attribute name="Bundle-SymbolicName" value="se.raddo.raddose3D; singleton:=true"/>
+    <attribute name="Bundle-Version" value="${raddose.version}"/>
+    <attribute name="Bundle-Name" value="RADDOSE 3D"/>
+    <attribute name="Bundle-Description" value="time- and space-resolved modelling of dose in macromolecular crystallography"/>
     <attribute name="Bundle-DocURL" value="http://raddo.se/"/>
     <attribute name="Bundle-Copyright" value="E. F. Garman group"/>
     <attribute name="Require-Bundle" value="org.apache.commons.math;version=3.0"/>
+    <attribute name="Exported-Packages" value="se.raddo.raddose3D"/>
    </manifest>
   </jar>
  </target>
