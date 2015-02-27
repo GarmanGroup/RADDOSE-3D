@@ -136,7 +136,7 @@ public class OutputSummaryText implements ExposeObserver, Output,
     w.write("Wedge " + wedgeNum + ":\n");
     w.write(wdg.wedgeProperties() + crystalCoefCalc.toString() + "\n");
 
-    w.write(String.format("%-42s: %.4f MGy%n",
+    w.write(String.format("%-42s: %.6f MGy%n",
         "Average Diffraction Weighted Dose",
         expSummary.getAvgDiffractedDose()));
     w.write(String.format("%-42s: %.2e photons%n",
@@ -146,16 +146,16 @@ public class OutputSummaryText implements ExposeObserver, Output,
         "Diffraction Efficiency (Elastic Yield/DWD)",
         expSummary.getWedgeElastic() / expSummary.getAvgDiffractedDose()));
 
-    w.write(String.format("%-42s: %.4f MGy%n",
+    w.write(String.format("%-42s: %.6f MGy%n",
         "Average Dose (Whole Crystal)",
         expSummary.getAvgDoseWholeCrystal()));
-    w.write(String.format("%-42s: %.4f MGy%n",
+    w.write(String.format("%-42s: %.6f MGy%n",
         "Average Dose (Exposed Region)",
         expSummary.getAvgDoseExposedRegion()));
-    w.write(String.format("%-42s: %.4f MGy%n",
+    w.write(String.format("%-42s: %.6f MGy%n",
         "Max Dose",
         expSummary.getMaxDose()));
-    w.write(String.format("%-42s: %.4f MGy%n",
+    w.write(String.format("%-42s: %.6f MGy%n",
         String.format(
             "Average Dose (%.1f %% of total absorbed energy threshold"
                 + " (%.2f MGy))",
