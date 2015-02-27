@@ -52,7 +52,7 @@ public class OutputSummaryText implements ExposeObserver, Output,
    * OUTPUT_HISTMAX - upper bound of the penultimate bin of the resulting
    * * histogram.
    * OUTPUT_ABS_ENERGY_THRESH - custom TAD to be reported.
-   * 
+   *
    * @param properties
    *          Map of type <Object, Object> that contains all output properties.
    *          The keys of the Map are defined by the constants in the
@@ -136,7 +136,7 @@ public class OutputSummaryText implements ExposeObserver, Output,
     w.write("Wedge " + wedgeNum + ":\n");
     w.write(wdg.wedgeProperties() + crystalCoefCalc.toString() + "\n");
 
-    w.write(String.format("%-42s: %.2f MGy%n",
+    w.write(String.format("%-42s: %.4f MGy%n",
         "Average Diffraction Weighted Dose",
         expSummary.getAvgDiffractedDose()));
     w.write(String.format("%-42s: %.2e photons%n",
@@ -146,16 +146,16 @@ public class OutputSummaryText implements ExposeObserver, Output,
         "Diffraction Efficiency (Elastic Yield/DWD)",
         expSummary.getWedgeElastic() / expSummary.getAvgDiffractedDose()));
 
-    w.write(String.format("%-42s: %.2f MGy%n",
+    w.write(String.format("%-42s: %.4f MGy%n",
         "Average Dose (Whole Crystal)",
         expSummary.getAvgDoseWholeCrystal()));
-    w.write(String.format("%-42s: %.2f MGy%n",
+    w.write(String.format("%-42s: %.4f MGy%n",
         "Average Dose (Exposed Region)",
         expSummary.getAvgDoseExposedRegion()));
-    w.write(String.format("%-42s: %.3f MGy%n",
+    w.write(String.format("%-42s: %.4f MGy%n",
         "Max Dose",
         expSummary.getMaxDose()));
-    w.write(String.format("%-42s: %.2f MGy%n",
+    w.write(String.format("%-42s: %.4f MGy%n",
         String.format(
             "Average Dose (%.1f %% of total absorbed energy threshold"
                 + " (%.2f MGy))",
