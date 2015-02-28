@@ -79,6 +79,10 @@ public class ExperimentDummy extends Experiment {
       @Override
       public void applyContainerAttenuation(Container sampleContainer){
       }
+
+      @Override
+      public void generateBeamArray() {        
+      }
     }
   }
 

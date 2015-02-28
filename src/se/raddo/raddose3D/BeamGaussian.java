@@ -193,6 +193,9 @@ public class BeamGaussian implements Beam {
     // Return normalisedGaussian * scale factor
     return gaussianIntensity((coordX - offAxisUM), coordY) * scaleFactor;
   }
+  
+  @Override
+  public void generateBeamArray() {};
 
   @Override
   public void applyContainerAttenuation(Container sampleContainer){

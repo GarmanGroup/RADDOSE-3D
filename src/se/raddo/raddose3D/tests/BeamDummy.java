@@ -42,4 +42,8 @@ public class BeamDummy implements Beam {
   public void applyContainerAttenuation(Container sampleContainer){
 
   }
+
+  @Override
+  public void generateBeamArray() {    
+  }
 }

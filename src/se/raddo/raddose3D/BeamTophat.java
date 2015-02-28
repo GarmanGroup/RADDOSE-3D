@@ -87,6 +87,9 @@ public class BeamTophat implements Beam {
   public double getPhotonEnergy() {
     return photonEnergy;
   }
+  
+  @Override
+  public void generateBeamArray() {};
 
   @Override
   public void applyContainerAttenuation(Container sampleContainer){

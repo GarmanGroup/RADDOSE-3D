@@ -54,6 +54,7 @@ public class BeamExperimental implements Beam {
   /**
    * Generate the beam array from the other instance variables
    */
+  @Override
   public void generateBeamArray() {
 
     // add a zero border
@@ -93,9 +94,6 @@ public class BeamExperimental implements Beam {
   @Override
   public double beamIntensity(final double coordX, final double coordY,
       final double offAxisUM) {
-
-    //Generate the beam array
-    generateBeamArray();
 
     if (Math.abs(coordX - offAxisUM) <= beamXSize / 2 - pixXSize
         && Math.abs(coordY) <= beamYSize / 2 - pixYSize) {

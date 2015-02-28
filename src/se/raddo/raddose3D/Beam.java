@@ -66,7 +66,12 @@ public interface Beam {
    *         Photon energy in keV.
    */
   public double getPhotonEnergy();
-
+  
+  /**
+   * Generates a beam array
+   */
+  public void generateBeamArray();
+  
   /**
    * Applies flux attenuation due to the sample container.
    */
