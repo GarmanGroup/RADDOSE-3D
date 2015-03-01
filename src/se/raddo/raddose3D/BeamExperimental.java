@@ -57,6 +57,9 @@ public class BeamExperimental implements Beam {
   @Override
   public void generateBeamArray() {
 
+    //set beam sum to zero
+    beamSum = 0;
+    
     // add a zero border
     int sizeHoriz = dataStructure[0].length;
     int sizeVert = dataStructure.length;
