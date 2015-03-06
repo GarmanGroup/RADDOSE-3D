@@ -135,6 +135,14 @@ if ($crystal::crystalCoefCalc == 6)
   													$crystal::solFrac, $crystal::seqFile);
 }
 
+if ($crystal::crystalCoefCalc == 7)
+{
+  $crystal::crystalCoefCalcClass = new CoefCalcFromSequenceSAXS($crystal::cellA, $crystal::cellB, $crystal::cellC, $crystal::cellAl, $crystal::cellBe, $crystal::cellGa,
+  													$crystal::heavyProteinAtomNames, $crystal::heavyProteinAtomNums,
+  													$crystal::heavySolutionConcNames, $crystal::heavySolutionConcNums,
+  													$crystal::solFrac, $crystal::proteinConc, $crystal::seqFile);
+}
+
 $crystal::crystalProperties.put(Crystal.CRYSTAL_COEFCALC, $crystal::crystalCoefCalcClass);
 
 if ($crystal::crystalDdm == 1)
@@ -255,6 +263,7 @@ crystalCoefcalcKeyword returns [int value]
 	| PDB	  	{ $value = 4;}
 	| SAXS		{ $value = 5;}
 	| SEQUENCE	{ $value = 6;}
+	| SAXSSEQ	{ $value = 7;}
 	;
 DUMMY : ('D'|'d')('U'|'u')('M'|'m')('M'|'m')('Y'|'y') ;
 DEFAULT	: ('D'|'d')('E'|'e')('F'|'f')('A'|'a')('U'|'u')('L'|'l')('T'|'t');
@@ -263,7 +272,8 @@ RDFORTAN : ('R'|'r')('D'|'d')('V'|'v')('2'|'3')? ;
 RDJAVA : ('R'|'r')('D'|'d')('3')('D'|'d')? ;
 PDB : ('E'|'e')('X'|'x')('P'|'p');
 SAXS : ('S'|'s')('A'|'a')('X'|'x')('S'|'s');
-SEQUENCE : ('S'|'s')('E'|'e')('Q'|'q')('U'|'u')('E'|'e')('N'|'n')('C'|'c')('E'|'e');	
+SEQUENCE : ('S'|'s')('E'|'e')('Q'|'q')('U'|'u')('E'|'e')('N'|'n')('C'|'c')('E'|'e');
+SAXSSEQ : ('S'|'s')('A'|'a')('X'|'x')('S'|'s')('S'|'s')('E'|'e')('Q'|'q');
 
 crystalDim returns [Map<Object, Object> properties]
 @init { 
