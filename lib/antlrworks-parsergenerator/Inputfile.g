@@ -64,6 +64,7 @@ scope {
 	List<String>	containerElementNames;
 	List<Double>	containerElementNums;		
 	String			pdb;
+	String			seqFile;
 	Double			proteinConc;
 	Double			cellA;
 	Double			cellB;
@@ -123,6 +124,15 @@ if ($crystal::crystalCoefCalc == 5)
   													$crystal::heavyProteinAtomNames, $crystal::heavyProteinAtomNums,
   													$crystal::heavySolutionConcNames, $crystal::heavySolutionConcNums,
   													$crystal::solFrac, $crystal::proteinConc);
+}
+
+if ($crystal::crystalCoefCalc == 6)
+{
+  $crystal::crystalCoefCalcClass = new CoefCalcFromSequence($crystal::cellA, $crystal::cellB, $crystal::cellC, $crystal::cellAl, $crystal::cellBe, $crystal::cellGa,
+  													$crystal::numMon,
+  													$crystal::heavyProteinAtomNames, $crystal::heavyProteinAtomNums,
+  													$crystal::heavySolutionConcNames, $crystal::heavySolutionConcNums,
+  													$crystal::solFrac, $crystal::seqFile);
 }
 
 $crystal::crystalProperties.put(Crystal.CRYSTAL_COEFCALC, $crystal::crystalCoefCalcClass);
@@ -207,6 +217,7 @@ crystalLine
 	| y=proteinConcentration	{ $crystal::proteinConc					= $y.proteinConc;}
 	| z=containerMaterialElements	{ $crystal::containerElementNames	= $z.names;
 							  $crystal::containerElementNums	= $z.num;	}
+	| aa=sequenceFile 		{ $crystal::seqFile 		= $aa.value; }
 	  
 	;
 
@@ -243,6 +254,7 @@ crystalCoefcalcKeyword returns [int value]
 	| RDFORTAN	{ $value = 3;}
 	| PDB	  	{ $value = 4;}
 	| SAXS		{ $value = 5;}
+	| SEQUENCE	{ $value = 6;}
 	;
 DUMMY : ('D'|'d')('U'|'u')('M'|'m')('M'|'m')('Y'|'y') ;
 DEFAULT	: ('D'|'d')('E'|'e')('F'|'f')('A'|'a')('U'|'u')('L'|'l')('T'|'t');
@@ -251,6 +263,7 @@ RDFORTAN : ('R'|'r')('D'|'d')('V'|'v')('2'|'3')? ;
 RDJAVA : ('R'|'r')('D'|'d')('3')('D'|'d')? ;
 PDB : ('E'|'e')('X'|'x')('P'|'p');
 SAXS : ('S'|'s')('A'|'a')('X'|'x')('S'|'s');
+SEQUENCE : ('S'|'s')('E'|'e')('Q'|'q')('U'|'u')('E'|'e')('N'|'n')('C'|'c')('E'|'e');	
 
 crystalDim returns [Map<Object, Object> properties]
 @init { 
@@ -386,6 +399,11 @@ MATERIALELEMENTS: ('M'|'m')('A'|'a')('T'|'t')('E'|'e')('R'|'r')('I'|'i')('A'|'a'
 containerDensity returns[double value]
 	: CONTAINERDENSITY a=FLOAT {$value = Double.parseDouble($a.text);};
 CONTAINERDENSITY: ('C'|'c')('O'|'o')('N'|'n')('T'|'t')('A'|'a')('I'|'i')('N'|'n')('E'|'e')('R'|'r')('D'|'d')('E'|'e')('N'|'n')('S'|'s')('I'|'i')('T'|'t')('Y'|'y') ;
+
+sequenceFile returns[String value] 
+	: (SEQUENCEFILE | SEQFILE) a=STRING {$value = $a.text;};
+SEQUENCEFILE : 	('S'|'s')('E'|'e')('Q'|'q')('U'|'u')('E'|'e')('N'|'n')('C'|'c')('E'|'e')('F'|'f')('I'|'i')('L'|'l')('E'|'e');
+SEQFILE :	('S'|'s')('E'|'e')('Q'|'q')('F'|'f')('I'|'i')('L'|'l')('E'|'e');
 
 
 // ------------------------------------------------------------------
