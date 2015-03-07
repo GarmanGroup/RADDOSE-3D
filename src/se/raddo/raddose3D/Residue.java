@@ -9,10 +9,13 @@ public class Residue {
   /** Identifier for the residue. */
   private String identifier;
 
-  /** Numbers of atoms per residue. */
+  /** Numbers of atoms in the residue. */
   private int    carbons, hydrogens, oxygens, nitrogens,
                  sulphurs, seleniums,
                  phosphoruses, type;
+  
+  /** Molecular Weight of the residue. */
+  private double molecularWeight;
 
   /**
    * Creates a residue with identifier and light atom constituents.
@@ -26,10 +29,12 @@ public class Residue {
    * @param ss no. of sulphurs
    * @param ps no. of phosphoruses
    * @param typ TYPE_PROTEIN, TYPE_RNA or TYPE_DNA.
+   * @param ses no. of seleniums
+   * @param wt molecular weight
    */
   public Residue(final String id, final int cs, final int hs, final int os,
       final int ns, final int ss, final int ps, final int typ,
-      final int ses) {
+      final int ses, final double wt) {
     identifier = id;
     carbons = cs;
     hydrogens = hs;
@@ -39,6 +44,7 @@ public class Residue {
     phosphoruses = ps;
     seleniums = ses;
     type = typ;
+    molecularWeight = wt;
   }
 
   /**
@@ -123,6 +129,15 @@ public class Residue {
    */
   public String getIdentifier() {
     return this.identifier;
+  }
+  
+  /**
+   * Get the moleculare weight of the residue (g/mol).
+   *
+   * @return double giving the molecular weight.
+   */
+  public double getMolecularWeight() {
+    return this.molecularWeight;
   }
 
 }
