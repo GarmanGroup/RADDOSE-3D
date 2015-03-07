@@ -13,9 +13,7 @@ public class CoefCalcFromParams extends CoefCalcCompute {
    * Simple Constructor that does nothing.
    * Created for subclasses
    */
-  public CoefCalcFromParams(){
-
-  }
+  public CoefCalcFromParams(){}
 
   /**
    * Compute results and put them in local variables absCoeff, attCoeff,

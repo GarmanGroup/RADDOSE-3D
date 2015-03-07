@@ -20,6 +20,12 @@ public class CoefCalcFromSequence extends CoefCalcCompute{
   int residueType;
   
   /**
+   * Simple Constructor that does nothing.
+   * Created for subclasses
+   */
+  public CoefCalcFromSequence(){}
+  
+  /**
    * Compute results and put them in local variables absCoeff, attCoeff,
    * elasCoeff and density.
    *
