@@ -14,6 +14,11 @@ public class CoefCalcFromSequence extends CoefCalcCompute{
   protected static final double RIGHT_ANGLE = 90;
   
   /**
+   * Total molecular weight of the molecule in the sequence file.
+   */
+  protected double totalMolecularWeight;
+  
+  /**
    * An identifier for the residue type that is being read in the current line
    * if the sequence file.
    */
@@ -202,7 +207,7 @@ public class CoefCalcFromSequence extends CoefCalcCompute{
   /**
    * Parses the sequence line. Explicitly it loops through every character in
    * the line to determine each residue in the sequence and the atomic
-   * occurrences
+   * occurrences. It also sums the molecular weights of each residue
    * 
    * @param line String containing the current line of the sequence file.
    */
@@ -212,7 +217,10 @@ public class CoefCalcFromSequence extends CoefCalcCompute{
       resID = line.substring(i, i + 1);
       Residue residue = ResidueDatabase.getInstance().getResidue(resID,
           this.residueType);
-          
+
+      this.totalMolecularWeight = this.totalMolecularWeight
+          + residue.getMolecularWeight();
+      
       updateAtomicAndMacromolecularOccurrences(residue);
     }
   }

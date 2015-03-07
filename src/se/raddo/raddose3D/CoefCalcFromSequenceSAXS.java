@@ -77,22 +77,23 @@ public class CoefCalcFromSequenceSAXS extends CoefCalcFromSequence {
     System.out.println("Parsing sequence file: " + seqFile);
     parseSequenceFile(seqFile);
     System.out.println("Residue occurrences determined from sequence file:");
-    System.out.printf("Number of Amino Acids: %.0f%n" , this.getNumAminoAcids());
-    if (this.getNumDNA() > 0){
+    System.out.printf("Number of Amino Acids: %.0f%n", this.getNumAminoAcids());
+    if (this.getNumDNA() > 0) {
       System.out.printf("Number of DNA Residues: %.0f%n", this.getNumDNA());
     }
     if (this.getNumRNA() > 0) {
       System.out.printf("Number of RNA Residues: %.0f%n", this.getNumRNA());
     }
-    
+    System.out.printf("The total molecular weight is: %.2f g/mol%n",
+        this.totalMolecularWeight);
+
     //Calculate the number of monomers
-    int numMonomers = calculateNumMonomers(this.getNumAminoAcids(), proteinConc
-        ,unitCellVolume);
-    
-    calculateHeavyAtomOccurrences(numMonomers, sf, heavyProteinAtomNames, 
+    int numMonomers = calculateNumMonomers(proteinConc, unitCellVolume);
+
+    calculateHeavyAtomOccurrences(numMonomers, sf, heavyProteinAtomNames,
         heavyProteinAtomNums, heavySolutionConcNames, heavySolutionConcNums);
   }
-  
+
   public void calculateHeavyAtomOccurrences(int monomers, Double solventFraction,
       List<String> heavyProteinAtomNames, List<Double> heavyProteinAtomNums,
       List<String> heavySolvConcNames, List<Double> heavySolvConcNums) {
@@ -137,12 +138,11 @@ public class CoefCalcFromSequenceSAXS extends CoefCalcFromSequence {
    * @param volume Given volume considered for calculation
    * @return Number of monomers of the molecule in the given volume
    */
-  private int calculateNumMonomers(final double numberOfResidues
-      , final double proteinConcentration, final double volumeAngstromsCubed) {
+  private int calculateNumMonomers(final double proteinConcentration, final double volumeAngstromsCubed) {
 
     //Calculate molarity of solution as concentration divided by the total
     //molecular mass.
-    double molarity = proteinConcentration / (AVG_RESIDUE_MASS * numberOfResidues);
+    double molarity = proteinConcentration / (this.totalMolecularWeight);
 
     // Calculate volume in litres
     double volumeLitres = ANGSTROM_TO_LITRE_VOLUME_CONVERSION * volumeAngstromsCubed;
