@@ -158,8 +158,7 @@ public class CoefCalcFromPDB extends CoefCalcCompute {
 
       System.out.println("PDB file unit cell: " + a + " " + b + " "
           + c + " " + alpha + " " + beta + " " + gamma);
-
-      System.out.println("Number of monomers: " + this.getNumMonomers());
+      
       cellVolume(a, b, c, alpha, beta, gamma);
     } catch (NumberFormatException e) {
       System.out
@@ -449,6 +448,7 @@ public class CoefCalcFromPDB extends CoefCalcCompute {
     this.setNumMonomers(csSymmetryOperators * ncsSymmetryOperators);
 
     multiplyAtoms(this.getNumMonomers());
+    System.out.println("Number of monomers: " + this.getNumMonomers());
 
     double solventFraction = calculateSolventFractionFromNums();
     calculateSolventWater(solventFraction);
