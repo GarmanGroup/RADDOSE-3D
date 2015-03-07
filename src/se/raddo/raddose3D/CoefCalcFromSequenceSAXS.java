@@ -14,11 +14,6 @@ public class CoefCalcFromSequenceSAXS extends CoefCalcFromSequence {
   private static final double   UNIT_CELL_LENGTH = 1000;
 
   /**
-   * Average molecular mass of an amino acid (daltons = grams/mole)
-   */
-  private static final double   AVG_RESIDUE_MASS = 110;
-
-  /**
    * Conversion factor to convert Angstroms^3 to litres
    */
   private static final double   ANGSTROM_TO_LITRE_VOLUME_CONVERSION = 1e-27;
@@ -89,9 +84,12 @@ public class CoefCalcFromSequenceSAXS extends CoefCalcFromSequence {
 
     //Calculate the number of monomers
     int numMonomers = calculateNumMonomers(proteinConc, unitCellVolume);
-
+    this.setNumMonomers(numMonomers);
+    
     calculateHeavyAtomOccurrences(numMonomers, sf, heavyProteinAtomNames,
         heavyProteinAtomNums, heavySolutionConcNames, heavySolutionConcNums);
+    
+    multiplyAtoms(this.getNumMonomers());
   }
 
   public void calculateHeavyAtomOccurrences(int monomers, Double solventFraction,
@@ -116,8 +114,6 @@ public class CoefCalcFromSequenceSAXS extends CoefCalcFromSequence {
     // Combine concentrations of heavy atoms in the
     // solvent and add these to the unit cell.
     addSolventConcentrations(heavySolvConcNames, heavySolvConcNums);
-    
-    this.setNumMonomers(monomers);
 
     // If the solvent fraction has not been specified.
     double newSolventFraction = solventFraction;

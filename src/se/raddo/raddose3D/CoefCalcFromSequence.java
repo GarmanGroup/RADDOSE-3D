@@ -73,12 +73,16 @@ public class CoefCalcFromSequence extends CoefCalcCompute{
     if (solventFraction != null) {
       sf = solventFraction;
     }
+    
+    this.setNumMonomers(numMonomers);
 
     cellVolume(cellA, cellB, cellC, alpha, beta, gamma);
 
     calculateAtomOccurrences(numMonomers, sf, heavyProteinAtomNames, 
         heavyProteinAtomNums, heavySolutionConcNames, heavySolutionConcNums,
-        sequenceFile); 
+        sequenceFile);
+    
+    multiplyAtoms(this.getNumMonomers());
   }
   
   /**
@@ -128,8 +132,6 @@ public class CoefCalcFromSequence extends CoefCalcCompute{
     if (this.getNumRNA() > 0) {
       System.out.printf("Number of RNA Residues: %.0f%n", this.getNumRNA());
     }
-    
-    this.setNumMonomers(monomers);
 
     // If the solvent fraction has not been specified.
     double newSolventFraction = solventFraction;

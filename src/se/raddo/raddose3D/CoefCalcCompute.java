@@ -186,7 +186,7 @@ public class CoefCalcCompute extends CoefCalc {
     for (Element e : presentElements) {
       mass += totalAtoms(e) * e.getAtomicWeightInGrams();
     }
-
+    
     density = mass * MASS_TO_CELL_VOLUME / (cellVolume * UNITSPERMILLIUNIT);
 
     double energy = b.getPhotonEnergy();
