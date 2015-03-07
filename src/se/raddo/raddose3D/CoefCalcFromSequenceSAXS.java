@@ -2,7 +2,7 @@ package se.raddo.raddose3D;
 
 import java.util.List;
 
-public class CoefCalcFromSequenceSAXS extends CoefCalcCompute {
+public class CoefCalcFromSequenceSAXS extends CoefCalcFromSequence {
   /**
    * Right angle.
    */
@@ -27,7 +27,7 @@ public class CoefCalcFromSequenceSAXS extends CoefCalcCompute {
       Double cellAlpha, Double cellBeta, Double cellGamma, 
       List<String> heavyProteinAtomNames, List<Double> heavyProteinAtomNums, 
       List<String> heavySolutionConcNames, List<Double> heavySolutionConcNums, 
-      Double solFrac, Double solventFraction, String sequenceFile) {
+      Double solventFraction, Double proteinConc, String seqFile) {
     
     /**
      * Create local variables for the unit cell parameters.
@@ -72,7 +72,104 @@ public class CoefCalcFromSequenceSAXS extends CoefCalcCompute {
     //Calculate the Unit Cell Volume
     //This method exists in CoefCalcCompute Class
     double unitCellVolume = cellVolume(a, b, c, alpha, beta, gamma);
+    
+    //Parse the given sequence file
+    System.out.println("Parsing sequence file: " + seqFile);
+    parseSequenceFile(seqFile);
+    System.out.println("Residue occurrences determined from sequence file:");
+    System.out.printf("Number of Amino Acids: %.0f%n" , this.getNumAminoAcids());
+    if (this.getNumDNA() > 0){
+      System.out.printf("Number of DNA Residues: %.0f%n", this.getNumDNA());
+    }
+    if (this.getNumRNA() > 0) {
+      System.out.printf("Number of RNA Residues: %.0f%n", this.getNumRNA());
+    }
+    
+    //Calculate the number of monomers
+    int numMonomers = calculateNumMonomers(this.getNumAminoAcids(), proteinConc
+        ,unitCellVolume);
+    
+    calculateHeavyAtomOccurrences(numMonomers, sf, heavyProteinAtomNames, 
+        heavyProteinAtomNums, heavySolutionConcNames, heavySolutionConcNums);
+  }
+  
+  public void calculateHeavyAtomOccurrences(int monomers, Double solventFraction,
+      List<String> heavyProteinAtomNames, List<Double> heavyProteinAtomNums,
+      List<String> heavySolvConcNames, List<Double> heavySolvConcNums) {
 
+    // Start by dealing with heavy atom in the
+    // protein and adding these to the unit cell.
+    if (heavyProteinAtomNames != null) {
+      for (int i = 0; i < heavyProteinAtomNames.size(); i++) {
+        Element heavyAtom = getParser()
+            .getElement(heavyProteinAtomNames.get(i));
+
+        // note: heavy atoms are provided per monomer,
+        // so multiply by number of monomers.
+        incrementMacromolecularOccurrence(heavyAtom,
+            heavyProteinAtomNums.get(i)
+                * monomers);
+      }
+    }
+
+    // Combine concentrations of heavy atoms in the
+    // solvent and add these to the unit cell.
+    addSolventConcentrations(heavySolvConcNames, heavySolvConcNums);
+    
+    this.setNumMonomers(monomers);
+
+    // If the solvent fraction has not been specified.
+    double newSolventFraction = solventFraction;
+
+    if (solventFraction <= 0) {
+      newSolventFraction = calculateSolventFractionFromNums();
+    }
+
+    calculateSolventWater(newSolventFraction);
+  }
+  
+  /**
+   * Method that calculates the number of protein molecules in a given volume
+   * in a solution for a SAXS experiment.
+   *
+   * @param numberOfResidues Number of residues per molecule unit (monomer)
+   * @param proteinConc Concentration of the protein in the SAXS experiment
+   * @param volume Given volume considered for calculation
+   * @return Number of monomers of the molecule in the given volume
+   */
+  private int calculateNumMonomers(final double numberOfResidues
+      , final double proteinConcentration, final double volumeAngstromsCubed) {
+
+    //Calculate molarity of solution as concentration divided by the total
+    //molecular mass.
+    double molarity = proteinConcentration / (AVG_RESIDUE_MASS * numberOfResidues);
+
+    // Calculate volume in litres
+    double volumeLitres = ANGSTROM_TO_LITRE_VOLUME_CONVERSION * volumeAngstromsCubed;
+
+    //Calculate the number of monomers
+    double numOfMon = Math.round(molarity * volumeLitres * AVOGADRO_NUM);
+
+    //Check that the number of molecules is not smaller than 1.
+    if (numOfMon < 1) {
+      System.out.println("");
+      System.out.println("*************** WARNING ***************");
+      System.out.println("The number of monomers calculated to be in the unit cell"
+          + " volume given is less than 1");
+      System.out.println("You should manually increase the unit cell dimensions in the"
+          + " input file.");
+      System.out.println("");
+      //Set number of monomers in the cell volume to 1
+      numOfMon = 1;
+    }
+
+    //Cast the result to an integer
+    int numOfMonomers = (int)(numOfMon);
+
+    System.out.println("Calculated number of monomers in cell volume: " + numOfMonomers);
+
+    //return the result i.e. the number of monomers in the given volume.
+    return numOfMonomers;
   }
 
 }
