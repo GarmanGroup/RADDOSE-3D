@@ -18,6 +18,18 @@ public class ExperimentTest {
   Beam    b = mock(Beam.class);
   
   @Test
+  public void testExperimentWithCrystalAndNullValues() {
+    Experiment e = new Experiment();
+    OutputTestSubscriber testsubscriber = mock(OutputTestSubscriber.class);
+
+    e.addObserver(testsubscriber);
+    
+    verify(testsubscriber, never()).publishBeam(null);
+    testsubscriber.publishBeam(null);
+    verify(testsubscriber, never()).publishBeam(null);
+  }
+
+  @Test
   public void testExperimentSimple() {
     Experiment e = new Experiment();
     OutputTestSubscriber testsubscriber = new OutputTestSubscriber();
