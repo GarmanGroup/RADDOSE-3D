@@ -25,7 +25,7 @@ public class ExperimentTest {
     e.addObserver(testsubscriber);
     
     verify(testsubscriber, never()).publishBeam(null);
-    testsubscriber.publishBeam(null);
+    testsubscriber.publishBeam(b);
     verify(testsubscriber, never()).publishBeam(null);
   }
 
