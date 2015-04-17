@@ -268,6 +268,7 @@
    <auxClasspath path="${basedir}/lib/antlr-3.4/antlr-3.4-cutdown.jar"/>
    <auxClasspath path="${basedir}/lib/commons-math3-3.0/commons-math3-3.0.jar"/>
    <auxClasspath path="${basedir}/lib/testng-6.8/testng-6.8.jar"/>
+   <auxClasspath path="${basedir}/lib/mockito-1.9.5/mockito-all-1.9.5.jar"/>
    <auxClasspath path="${basedir}/bin"/>
    <sourcePath path="${basedir}/src" />
   </findbugs>
@@ -292,7 +293,10 @@
  <path id="testng">
   <fileset dir="lib/testng-6.8">
    <include name="*.jar"/>
- </fileset>
+  </fileset>
+  <fileset dir="lib/mockito-1.9.5">
+   <include name="*.jar"/>
+  </fileset>
  </path>
 
   <path id="pmd.classpath">
