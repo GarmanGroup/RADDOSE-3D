@@ -1,6 +1,8 @@
 package se.raddo.raddose3D.tests;
 
 import static org.testng.Assert.*;
+
+import org.mockito.verification.VerificationMode;
 import org.testng.annotations.*;
 
 import se.raddo.raddose3D.Beam;
@@ -9,7 +11,6 @@ import se.raddo.raddose3D.Experiment;
 import se.raddo.raddose3D.ExperimentDummy;
 import se.raddo.raddose3D.Output;
 import se.raddo.raddose3D.Wedge;
-
 import static org.mockito.Mockito.*;
 
 public class ExperimentTest {
@@ -24,9 +25,9 @@ public class ExperimentTest {
 
     e.addObserver(testsubscriber);
     
-    verify(testsubscriber, never()).publishBeam(null);
-    testsubscriber.publishBeam(b);
-    verify(testsubscriber, never()).publishBeam(null);
+    verify(testsubscriber, never()).publishBeam(any(Beam.class));
+    testsubscriber.publishBeam(null);
+    verify(testsubscriber, never()).publishBeam(any(Beam.class));
   }
 
   @Test
