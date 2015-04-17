@@ -200,6 +200,8 @@ public class CoefCalcTests {
    * Random numbers used for CoefCalc - currently not
    * used as a Jenkins test because Jenkins cannot run
    * the old raddose executable.
+   * 
+   * TODO: Refactor into Jenkins compatible test
    */
   public static void main(final String[] cmdLineParams) {
     int testCount = 5;

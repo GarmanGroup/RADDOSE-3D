@@ -1,6 +1,6 @@
 package se.raddo.raddose3D.tests;
 
-import org.testng.Assert;
+import static org.testng.Assert.*;
 import org.testng.annotations.Test;
 
 import se.raddo.raddose3D.Wedge;
@@ -13,19 +13,10 @@ import se.raddo.raddose3D.Wedge;
 
 public class WedgeTest {
 
-  @Test
+  @Test(expectedExceptions = RuntimeException.class)
   /** Instantiation should fail if required parameters are missing. */
-  public void testInstantiationFail() {
-    try {
-      new Wedge(null, null, null, null, null, null, null, null, null, null,
-          null);
-    } catch (RuntimeException e) {
-      System.out.println(e);
-      System.out.println("@Test - testInstantiationFail");
-      return;
-    }
-
-    Assert.fail("Wedge instantiation accepted invalid input (should fail)");
+  public void testInstantiationShouldFailWithoutRequiredParameters() {
+    new Wedge(null, null, null, null, null, null, null, null, null, null, null);
   }
 
   @Test

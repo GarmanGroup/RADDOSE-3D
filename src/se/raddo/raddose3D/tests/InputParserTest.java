@@ -5,7 +5,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.testng.Assert;
+import static org.testng.Assert.*;
+
 import org.testng.annotations.*;
 
 import se.raddo.raddose3D.Beam;
@@ -22,44 +23,32 @@ import se.raddo.raddose3D.Wedge;
 
 /**
  * Test cases for InputParser and package raddoseParser
- * 
- * @author Markus Gerstel
  */
 
 public class InputParserTest {
 
-  @Test(timeOut = 2000)
-  public void InputParserReadInvalidFile() {
+  @Test(timeOut = 2000,expectedExceptions=InputException.class)
+  public void InputParserShouldFailOnInvalidFile() throws Exception {
     InputParser parser = new InputParserString("Crystals\nare\nfun\n");
     Initializer i = new InputParserTestInit();
 
-    Assert.assertNotNull(parser);
+    assertNotNull(parser);
 
-    try {
-      parser.sendData(i);
-    } catch (InputException e) {
-      return;
-    }
-
-    Assert.fail("Parser accepted invalid input file (should fail)");
+    parser.sendData(i);
   }
 
   @Test(timeOut = 2000)
-  public void InputParserReadEmptyFile() {
+  public void InputParserReadEmptyFile() throws Exception {
     InputParser parser = new InputParserString("");
     InputParserTestInit init = new InputParserTestInit();
 
-    Assert.assertNotNull(parser);
+    assertNotNull(parser);
 
-    try {
-      parser.sendData(init);
-    } catch (InputException e) {
-      Assert.fail("Parser failed on empty input file");
-    }
+    parser.sendData(init);
 
-    Assert.assertEquals(init.crystals.size(), 0);
-    Assert.assertEquals(init.beams.size(), 0);
-    Assert.assertEquals(init.wedges.size(), 0);
+    assertEquals(init.crystals.size(), 0);
+    assertEquals(init.beams.size(), 0);
+    assertEquals(init.wedges.size(), 0);
   }
 
   private String sampleFile_Simple() {
@@ -80,7 +69,7 @@ public class InputParserTest {
   }
 
   @Test(timeOut = 3000)
-  public void InputParserReadValidSimpleFile() {
+  public void InputParserReadValidSimpleFile() throws Exception {
     InputParser parser = new InputParserString(sampleFile_Simple());
     InputParserTestInit init = new InputParserTestInit();
     TestCrystalFactory testCF = new TestCrystalFactory();
@@ -88,23 +77,17 @@ public class InputParserTest {
     parser.setCrystalFactory(testCF);
     parser.setBeamFactory(testBF);
 
-    try {
-      parser.sendData(init);
-    } catch (InputException e) {
-      Assert.fail("Parser failed on valid simple input file\n" + e.toString());
-    }
+    parser.sendData(init);
 
-    Assert.assertEquals(init.crystals.size(), 1);
-    Assert.assertEquals(init.beams.size(), 1);
-    Assert.assertEquals(init.wedges.size(), 1);
+    assertEquals(init.crystals.size(), 1);
+    assertEquals(init.beams.size(), 1);
+    assertEquals(init.wedges.size(), 1);
 
-    Assert
-        .assertTrue(
+    assertTrue(
             init.crystals.get(0) instanceof CrystalDummy,
             "Crystal not stored");
-    Assert.assertEquals(testCF.createEvents, 1,
-        "Seen more than one create event");
-    Assert.assertEquals(testCF.lastSeenType, "Cuboid",
+    assertEquals(testCF.createEvents, 1, "Seen more than one create event");
+    assertEquals(testCF.lastSeenType, "Cuboid",
         "Crystal type set incorrectly (" + testCF.lastSeenType + ")");
 
     Map<Object, Object> properties;
@@ -134,25 +117,25 @@ public class InputParserTest {
         match = true;
       }
       if (me.getKey().equals(Crystal.CRYSTAL_COEFCALC)) {
-        Assert.assertTrue(me.getValue() instanceof CoefCalcAverage,
+        assertTrue(me.getValue() instanceof CoefCalcAverage,
             "CoefCalc not initialized with CoefCalcDummy");
         match = true;
       }
       if (me.getKey().equals(Crystal.CRYSTAL_DDM)) {
-        Assert.assertTrue(me.getValue() instanceof DDMSimple,
+        assertTrue(me.getValue() instanceof DDMSimple,
             "DDM is of wrong type");
         match = true;
       }
       if (!match) {
-        Assert.fail("Unexpected crystal property " + me.getKey() + " set. ("
+        fail("Unexpected crystal property " + me.getKey() + " set. ("
             + me.getValue() + ")");
       }
     }
 
-    Assert.assertTrue(
+    assertTrue(
         init.beams.get(0) instanceof BeamDummy,
         "Beam not stored");
-    Assert.assertEquals(testBF.createEvents, 1,
+    assertEquals(testBF.createEvents, 1,
         "Seen more than one beam create event");
     Assertion.equals(testBF.lastSeenType, "Gaussian", "Beam type");
 
@@ -190,13 +173,13 @@ public class InputParserTest {
         match = true;
       }
       if (!match) {
-        Assert.fail("Unexpected beam property " + me.getKey() + " set. ("
+        fail("Unexpected beam property " + me.getKey() + " set. ("
             + me.getValue() + ")");
       }
     }
 
     Wedge w = init.wedges.get(0);
-    Assert.assertNotNull(w, "Wedge not stored");
+    assertNotNull(w, "Wedge not stored");
     Assertion.equals(w.getAngRes(), Math.toRadians(2.6),
         "Wedge angular resolution");
     Assertion.equals(w.getStartAng(), Math.toRadians(0), "Wedge start angle");
@@ -249,7 +232,7 @@ public class InputParserTest {
   }
 
   @Test(timeOut = 3000)
-  public void InputParserReadValidComplexFile1() {
+  public void InputParserReadValidComplexFile1() throws Exception {
     InputParser parser = new InputParserString(sampleFile_Complex_1());
     InputParserTestInit init = new InputParserTestInit();
     TestCrystalFactory testCF = new TestCrystalFactory();
@@ -257,23 +240,18 @@ public class InputParserTest {
     parser.setCrystalFactory(testCF);
     parser.setBeamFactory(testBF);
 
-    try {
-      parser.sendData(init);
-    } catch (InputException e) {
-      Assert.fail("Parser failed on valid simple input file\n" + e.toString());
-    }
+    parser.sendData(init);
+    
+    assertEquals(init.crystals.size(), 1);
+    assertEquals(init.beams.size(), 1);
+    assertEquals(init.wedges.size(), 1);
 
-    Assert.assertEquals(init.crystals.size(), 1);
-    Assert.assertEquals(init.beams.size(), 1);
-    Assert.assertEquals(init.wedges.size(), 1);
-
-    Assert
-        .assertTrue(
+    assertTrue(
             init.crystals.get(0) instanceof CrystalDummy,
             "Crystal not stored");
-    Assert.assertEquals(testCF.createEvents, 1,
+    assertEquals(testCF.createEvents, 1,
         "Seen more than one crystal create event");
-    Assert.assertEquals(testCF.lastSeenType, "Cuboid", "Crystal type");
+    assertEquals(testCF.lastSeenType, "Cuboid", "Crystal type");
 
     Map<Object, Object> properties;
     Iterator<Map.Entry<Object, Object>> iter;
@@ -309,27 +287,27 @@ public class InputParserTest {
         match = true;
       }
       if (me.getKey().equals(Crystal.CRYSTAL_COEFCALC)) {
-        Assert.assertTrue(me.getValue() instanceof CoefCalcAverage,
+        assertTrue(me.getValue() instanceof CoefCalcAverage,
             "CoefCalc not initialized with CoefCalcDummy");
         match = true;
       }
       if (me.getKey().equals(Crystal.CRYSTAL_DDM)) {
-        Assert.assertTrue(me.getValue() instanceof DDMSimple,
+        assertTrue(me.getValue() instanceof DDMSimple,
             "DDM is of wrong type");
         match = true;
       }
       if (!match) {
-        Assert.fail("Unexpected crystal property " + me.getKey() + " set. ("
+        fail("Unexpected crystal property " + me.getKey() + " set. ("
             + me.getValue() + ")");
       }
     }
 
-    Assert.assertTrue(
+    assertTrue(
         init.beams.get(0) instanceof BeamDummy,
         "Beam not stored");
-    Assert.assertEquals(testBF.createEvents, 1,
+    assertEquals(testBF.createEvents, 1,
         "Seen more than one beam create event");
-    Assert.assertEquals(testBF.lastSeenType, "Gaussian",
+    assertEquals(testBF.lastSeenType, "Gaussian",
         "Beam type set incorrectly (" + testBF.lastSeenType + ")");
 
     properties = testBF.getSeenProperties();
@@ -360,13 +338,13 @@ public class InputParserTest {
         match = true;
       }
       if (!match) {
-        Assert.fail("Unexpected beam property " + me.getKey() + " set. ("
+        fail("Unexpected beam property " + me.getKey() + " set. ("
             + me.getValue() + ")");
       }
     }
 
     Wedge w = init.wedges.get(0);
-    Assert.assertNotNull(w, "Wedge not stored");
+    assertNotNull(w, "Wedge not stored");
 
     Assertion.equals(w.getAngRes(), Math.toRadians(2.6d),
         "Wedge angular resolution");
@@ -385,7 +363,7 @@ public class InputParserTest {
   }
 
   @Test(timeOut = 3000)
-  public void InputParserReadValidComplexFile2() {
+  public void InputParserReadValidComplexFile2() throws Exception {
     InputParser parser = new InputParserString(sampleFile_Complex_2());
     InputParserTestInit init = new InputParserTestInit();
     TestCrystalFactory testCF = new TestCrystalFactory();
@@ -393,23 +371,18 @@ public class InputParserTest {
     parser.setCrystalFactory(testCF);
     parser.setBeamFactory(testBF);
 
-    try {
-      parser.sendData(init);
-    } catch (InputException e) {
-      Assert.fail("Parser failed on valid simple input file\n" + e.toString());
-    }
+    parser.sendData(init);
 
-    Assert.assertEquals(init.crystals.size(), 1);
-    Assert.assertEquals(init.beams.size(), 1);
-    Assert.assertEquals(init.wedges.size(), 1);
+    assertEquals(init.crystals.size(), 1);
+    assertEquals(init.beams.size(), 1);
+    assertEquals(init.wedges.size(), 1);
 
-    Assert
-        .assertTrue(
+    assertTrue(
             init.crystals.get(0) instanceof CrystalDummy,
             "Crystal not stored");
-    Assert.assertEquals(testCF.createEvents, 1,
+    assertEquals(testCF.createEvents, 1,
         "Seen more than one create event");
-    Assert.assertEquals(testCF.lastSeenType, "SpHeRiCaL",
+    assertEquals(testCF.lastSeenType, "SpHeRiCaL",
         "Crystal type set incorrectly (" + testCF.lastSeenType + ")");
     Map<Object, Object> properties;
 
@@ -429,25 +402,25 @@ public class InputParserTest {
         match = true;
       }
       if (me.getKey().equals(Crystal.CRYSTAL_COEFCALC)) {
-        Assert.assertTrue(me.getValue() instanceof CoefCalcAverage,
+        assertTrue(me.getValue() instanceof CoefCalcAverage,
             "CoefCalc not initialized with CoefCalcDummy");
         match = true;
       }
       if (me.getKey().equals(Crystal.CRYSTAL_DDM)) {
-        Assert.assertTrue(me.getValue() instanceof DDMSimple,
+        assertTrue(me.getValue() instanceof DDMSimple,
             "DDM is of wrong type");
         match = true;
       }
       if (!match) {
-        Assert.fail("Unexpected crystal property " + me.getKey() + " set. ("
+        fail("Unexpected crystal property " + me.getKey() + " set. ("
             + me.getValue() + ")");
       }
     }
 
-    Assert.assertTrue(
+    assertTrue(
         init.beams.get(0) instanceof BeamDummy,
         "Beam not stored");
-    Assert.assertEquals(testBF.createEvents, 1,
+    assertEquals(testBF.createEvents, 1,
         "Seen more than one beam create event");
     Assertion.equals(testBF.lastSeenType, "Tophat", "Beam type");
 
@@ -479,13 +452,13 @@ public class InputParserTest {
         match = true;
       }
       if (!match) {
-        Assert.fail("Unexpected beam property " + me.getKey() + " set. ("
+        fail("Unexpected beam property " + me.getKey() + " set. ("
             + me.getValue() + ")");
       }
     }
 
     Wedge w = init.wedges.get(0);
-    Assert.assertNotNull(w, "Wedge not stored");
+    assertNotNull(w, "Wedge not stored");
 
     Assertion.equals(w.getAngRes(), Math.toRadians(2.6),
         "Wedge angular resolution");

@@ -4,7 +4,7 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 
-import org.testng.Assert;
+import static org.testng.Assert.*;
 import org.testng.annotations.*;
 
 import se.raddo.raddose3D.Writer;
@@ -22,34 +22,24 @@ public class WriterStringTest {
     w.write("bla");
     w.close();
 
-    Assert.assertEquals(((WriterString) w).getDataString(), "asdf\nbla");
+    assertEquals(((WriterString) w).getDataString(), "asdf\nbla");
     System.out.println("@Test - testWriterString");
   }
 
-  @Test
-  public void testWriterStringAfterClose() {
+  @Test(expectedExceptions = RuntimeException.class)
+  public void testWritingAfterClosingShouldFailWithString() {
     Writer w = new WriterString();
-    Boolean exceptionEncountered = false;
-
     w.write("asdf");
     w.close();
+    w.write("asdf");
+  }
 
-    try {
-      w.write("asdf");
-    } catch (RuntimeException e) {
-      exceptionEncountered = true;
-    }
-    Assert.assertTrue(exceptionEncountered);
-
-    exceptionEncountered = false;
-    try {
-      w.write(new StringBuffer("asdf"));
-    } catch (RuntimeException e) {
-      exceptionEncountered = true;
-    }
-    Assert.assertTrue(exceptionEncountered);
-
-    System.out.println("@Test - testWriterStringAfterClose");
+  @Test(expectedExceptions = RuntimeException.class)
+  public void testWritingAfterClosingShouldFailWithStringBuffer() {
+    Writer w = new WriterString();
+    w.write("asdf");
+    w.close();
+    w.write(new StringBuffer("asdf"));
   }
 
   @Test
@@ -64,7 +54,7 @@ public class WriterStringTest {
     p.write("bla");
     p.close();
 
-    Assert.assertEquals(w.getDataString(), "asdf\nbla");
+    assertEquals(w.getDataString(), "asdf\nbla");
     System.out.println("@Test - testWriterStringAsOutputStream");
   }
 

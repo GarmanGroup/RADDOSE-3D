@@ -1,6 +1,6 @@
 package se.raddo.raddose3D.tests;
 
-import org.testng.Assert;
+import static org.testng.Assert.*;
 import org.testng.annotations.*;
 
 import se.raddo.raddose3D.Beam;
@@ -23,22 +23,22 @@ public class ExperimentTest {
     e.addObserver(testsubscriber);
 
     // No message sent yet
-    Assert.assertNull(testsubscriber.lastseenobject);
-    Assert.assertNull(testsubscriber.lastseencrystal);
-    Assert.assertNull(testsubscriber.lastseenbeam);
-    Assert.assertNull(testsubscriber.lastseenwedge);
-    Assert.assertEquals(testsubscriber.seenobjects, 0);
-    Assert.assertEquals(testsubscriber.seenclose, 0);
+    assertNull(testsubscriber.lastseenobject);
+    assertNull(testsubscriber.lastseencrystal);
+    assertNull(testsubscriber.lastseenbeam);
+    assertNull(testsubscriber.lastseenwedge);
+    assertEquals(testsubscriber.seenobjects, 0);
+    assertEquals(testsubscriber.seenclose, 0);
 
     e.setCrystal(c);
 
     // One object sent
-    Assert.assertEquals(testsubscriber.lastseenobject, c);
-    Assert.assertEquals(testsubscriber.lastseencrystal, c);
-    Assert.assertNull(testsubscriber.lastseenbeam);
-    Assert.assertNull(testsubscriber.lastseenwedge);
-    Assert.assertEquals(testsubscriber.seenobjects, 1);
-    Assert.assertEquals(testsubscriber.seenclose, 0);
+    assertEquals(testsubscriber.lastseenobject, c);
+    assertEquals(testsubscriber.lastseencrystal, c);
+    assertNull(testsubscriber.lastseenbeam);
+    assertNull(testsubscriber.lastseenwedge);
+    assertEquals(testsubscriber.seenobjects, 1);
+    assertEquals(testsubscriber.seenclose, 0);
 
     // Null values should be handled gracefully and ignored
     e.setBeam(null);
@@ -46,12 +46,12 @@ public class ExperimentTest {
     e.exposeWedge(null);
 
     // One object sent
-    Assert.assertEquals(testsubscriber.lastseenobject, c);
-    Assert.assertEquals(testsubscriber.lastseencrystal, c);
-    Assert.assertNull(testsubscriber.lastseenbeam);
-    Assert.assertNull(testsubscriber.lastseenwedge);
-    Assert.assertEquals(testsubscriber.seenobjects, 1);
-    Assert.assertEquals(testsubscriber.seenclose, 0);
+    assertEquals(testsubscriber.lastseenobject, c);
+    assertEquals(testsubscriber.lastseencrystal, c);
+    assertNull(testsubscriber.lastseenbeam);
+    assertNull(testsubscriber.lastseenwedge);
+    assertEquals(testsubscriber.seenobjects, 1);
+    assertEquals(testsubscriber.seenclose, 0);
 
     e.close();
 
@@ -66,22 +66,22 @@ public class ExperimentTest {
     e.addObserver(testsubscriber);
 
     // No message sent yet
-    Assert.assertNull(testsubscriber.lastseenobject);
-    Assert.assertNull(testsubscriber.lastseencrystal);
-    Assert.assertNull(testsubscriber.lastseenbeam);
-    Assert.assertNull(testsubscriber.lastseenwedge);
-    Assert.assertEquals(testsubscriber.seenobjects, 0);
-    Assert.assertEquals(testsubscriber.seenclose, 0);
+    assertNull(testsubscriber.lastseenobject);
+    assertNull(testsubscriber.lastseencrystal);
+    assertNull(testsubscriber.lastseenbeam);
+    assertNull(testsubscriber.lastseenwedge);
+    assertEquals(testsubscriber.seenobjects, 0);
+    assertEquals(testsubscriber.seenclose, 0);
 
     e.setCrystal(c);
 
     // One object sent
-    Assert.assertEquals(testsubscriber.lastseenobject, c);
-    Assert.assertEquals(testsubscriber.lastseencrystal, c);
-    Assert.assertNull(testsubscriber.lastseenbeam);
-    Assert.assertNull(testsubscriber.lastseenwedge);
-    Assert.assertEquals(testsubscriber.seenobjects, 1);
-    Assert.assertEquals(testsubscriber.seenclose, 0);
+    assertEquals(testsubscriber.lastseenobject, c);
+    assertEquals(testsubscriber.lastseencrystal, c);
+    assertNull(testsubscriber.lastseenbeam);
+    assertNull(testsubscriber.lastseenwedge);
+    assertEquals(testsubscriber.seenobjects, 1);
+    assertEquals(testsubscriber.seenclose, 0);
 
     // Subscribe second listener
     e.addObserver(testsubscriber);
@@ -89,12 +89,12 @@ public class ExperimentTest {
     e.exposeWedge(w);
 
     // Three objects sent (1 + 2x1)
-    Assert.assertEquals(testsubscriber.lastseenobject, w);
-    Assert.assertEquals(testsubscriber.lastseencrystal, c);
-    Assert.assertNull(testsubscriber.lastseenbeam);
-    Assert.assertEquals(testsubscriber.lastseenwedge, w);
-    Assert.assertEquals(testsubscriber.seenobjects, 3);
-    Assert.assertEquals(testsubscriber.seenclose, 0);
+    assertEquals(testsubscriber.lastseenobject, w);
+    assertEquals(testsubscriber.lastseencrystal, c);
+    assertNull(testsubscriber.lastseenbeam);
+    assertEquals(testsubscriber.lastseenwedge, w);
+    assertEquals(testsubscriber.seenobjects, 3);
+    assertEquals(testsubscriber.seenclose, 0);
 
     // Null values should be handled gracefully and ignored
     e.setBeam(null);
@@ -102,12 +102,12 @@ public class ExperimentTest {
     e.exposeWedge(null);
 
     // Three objects sent (1 + 2x1)
-    Assert.assertEquals(testsubscriber.lastseenobject, w);
-    Assert.assertEquals(testsubscriber.lastseencrystal, c);
-    Assert.assertNull(testsubscriber.lastseenbeam);
-    Assert.assertEquals(testsubscriber.lastseenwedge, w);
-    Assert.assertEquals(testsubscriber.seenobjects, 3);
-    Assert.assertEquals(testsubscriber.seenclose, 0);
+    assertEquals(testsubscriber.lastseenobject, w);
+    assertEquals(testsubscriber.lastseencrystal, c);
+    assertNull(testsubscriber.lastseenbeam);
+    assertEquals(testsubscriber.lastseenwedge, w);
+    assertEquals(testsubscriber.seenobjects, 3);
+    assertEquals(testsubscriber.seenclose, 0);
 
     // Subscribe third listener
     e.addObserver(testsubscriber);
@@ -115,22 +115,22 @@ public class ExperimentTest {
     e.setBeam(b);
 
     // Six objects sent (1 + 2x1 + 3x1)
-    Assert.assertEquals(testsubscriber.lastseenobject, b);
-    Assert.assertEquals(testsubscriber.lastseencrystal, c);
-    Assert.assertEquals(testsubscriber.lastseenbeam, b);
-    Assert.assertEquals(testsubscriber.lastseenwedge, w);
-    Assert.assertEquals(testsubscriber.seenobjects, 6);
-    Assert.assertEquals(testsubscriber.seenclose, 0);
+    assertEquals(testsubscriber.lastseenobject, b);
+    assertEquals(testsubscriber.lastseencrystal, c);
+    assertEquals(testsubscriber.lastseenbeam, b);
+    assertEquals(testsubscriber.lastseenwedge, w);
+    assertEquals(testsubscriber.seenobjects, 6);
+    assertEquals(testsubscriber.seenclose, 0);
 
     e.close();
 
     // Output flushed (3x 1)
-    Assert.assertEquals(testsubscriber.lastseenobject, b);
-    Assert.assertEquals(testsubscriber.lastseencrystal, c);
-    Assert.assertEquals(testsubscriber.lastseenbeam, b);
-    Assert.assertEquals(testsubscriber.lastseenwedge, w);
-    Assert.assertEquals(testsubscriber.seenobjects, 6);
-    Assert.assertEquals(testsubscriber.seenclose, 3);
+    assertEquals(testsubscriber.lastseenobject, b);
+    assertEquals(testsubscriber.lastseencrystal, c);
+    assertEquals(testsubscriber.lastseenbeam, b);
+    assertEquals(testsubscriber.lastseenwedge, w);
+    assertEquals(testsubscriber.seenobjects, 6);
+    assertEquals(testsubscriber.seenclose, 3);
 
     System.out.println("@Test - testExperimentComplex");
   }

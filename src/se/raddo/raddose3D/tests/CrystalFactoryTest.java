@@ -2,7 +2,8 @@ package se.raddo.raddose3D.tests;
 
 import java.util.HashMap;
 
-import org.testng.Assert;
+import static org.testng.Assert.*;
+
 import org.testng.annotations.*;
 
 import se.raddo.raddose3D.CoefCalcAverage;
@@ -20,7 +21,7 @@ public class CrystalFactoryTest {
     CrystalFactory cf = new CrystalFactory();
 
     Crystal c = cf.createCrystal("cuboid", defaultProperties());
-    Assert.assertTrue(c instanceof CrystalCuboid);
+    assertTrue(c instanceof CrystalCuboid);
     Assertion.equals(c.getCrystalPixPerUM(), CRYSTALRESOLUTIONMARKER,
         "Resolution");
 
@@ -32,56 +33,23 @@ public class CrystalFactoryTest {
     CrystalFactory cf = new CrystalFactory();
 
     Crystal c = cf.createCrystal("spherical", defaultProperties());
-    Assert.assertTrue(c instanceof CrystalSpherical);
+    assertTrue(c instanceof CrystalSpherical);
     Assertion.equals(c.getCrystalPixPerUM(), CRYSTALRESOLUTIONMARKER,
         "Resolution");
 
     System.out.println("@Test - testCrystalFactorySpherical");
   }
 
-  @Test
-  public void testCrystalFactoryInvalid() {
+  @Test(expectedExceptions = RuntimeException.class)
+  public void testCrystalFactoryShouldFailOnInvalidInput() {
     CrystalFactory cf = new CrystalFactory();
-
-    try {
-      cf.createCrystal("invalid", defaultProperties());
-    } catch (RuntimeException e) {
-      System.out.println(e);
-      System.out.println("@Test - testCrystalFactoryInvalid");
-      return;
-    }
-
-    Assert.fail("CrystalFactory accepted invalid input (should fail)");
+    cf.createCrystal("invalid", defaultProperties());
   }
 
-  @Test
-  public void testCrystalFactoryEmpty() {
+  @Test(expectedExceptions = RuntimeException.class)
+  public void testCrystalFactoryShouldFailOnEmptyInput() {
     CrystalFactory cf = new CrystalFactory();
-
-    try {
-      cf.createCrystal("", defaultProperties());
-    } catch (RuntimeException e) {
-      System.out.println(e);
-      System.out.println("@Test - testCrystalFactoryEmpty");
-      return;
-    }
-
-    Assert.fail("CrystalFactory accepted empty input (should fail)");
-  }
-
-  @Test
-  public void testCrystalFactoryFactory() {
-    CrystalFactory cf = new CrystalFactory();
-
-    try {
-      cf.createCrystal("factory", defaultProperties());
-    } catch (RuntimeException e) {
-      System.out.println(e);
-      System.out.println("@Test - testCrystalFactoryFactory");
-      return;
-    }
-
-    Assert.fail("CrystalFactory accepted input 'factory' (should fail)");
+    cf.createCrystal("", defaultProperties());
   }
 
   @Test
@@ -90,7 +58,7 @@ public class CrystalFactoryTest {
 
     Crystal c = cf.createCrystal("se.raddo.raddose3D.tests.CrystalDummy",
         defaultProperties());
-    Assert.assertTrue(c instanceof CrystalDummy);
+    assertTrue(c instanceof CrystalDummy);
 
     System.out.println("@Test - testCrystalFactoryDummy");
   }
