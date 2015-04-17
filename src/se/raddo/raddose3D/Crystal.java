@@ -453,7 +453,7 @@ public abstract class Crystal {
    *         An ExposureSummary object that keeps a list of automatically
    *         generated metrics regarding exposures of this crystal.
    */
-  public ExposureSummary getExposureSummary() {
+  public synchronized ExposureSummary getExposureSummary() {
     if (exposureSummaryObserver == null) {
       exposureSummaryObserver = new ExposureSummary();
       addObserver(exposureSummaryObserver);
