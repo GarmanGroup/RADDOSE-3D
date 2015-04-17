@@ -21,13 +21,43 @@ public class ExperimentTest {
   @Test
   public void testExperimentWithCrystalAndNullValues() {
     Experiment e = new Experiment();
-    OutputTestSubscriber testsubscriber = mock(OutputTestSubscriber.class);
+    Output testsubscriber = mock(Output.class);
 
     e.addObserver(testsubscriber);
-    
+
+    // No message sent yet
+    verify(testsubscriber, never()).publishCrystal(any(Crystal.class));
     verify(testsubscriber, never()).publishBeam(any(Beam.class));
-    testsubscriber.publishBeam(null);
+    verify(testsubscriber, never()).publishWedge(any(Wedge.class));
+    verify(testsubscriber, never()).close();
+
+    e.setCrystal(c);
+
+    // One object sent
+    verify(testsubscriber, times(1)).publishCrystal(any(Crystal.class));
+    verify(testsubscriber, times(1)).publishCrystal(c);
     verify(testsubscriber, never()).publishBeam(any(Beam.class));
+    verify(testsubscriber, never()).publishWedge(any(Wedge.class));
+    verify(testsubscriber, never()).close();
+
+    // Null values should be handled gracefully and ignored
+    e.setBeam(null);
+    e.setCrystal(null);
+    e.exposeWedge(null);
+
+    // Still only one object sent
+    verify(testsubscriber, times(1)).publishCrystal(any(Crystal.class));
+    verify(testsubscriber, never()).publishBeam(any(Beam.class));
+    verify(testsubscriber, never()).publishWedge(any(Wedge.class));
+    verify(testsubscriber, never()).close();
+
+    e.close();
+
+    // And closed
+    verify(testsubscriber, times(1)).publishCrystal(any(Crystal.class));
+    verify(testsubscriber, never()).publishBeam(any(Beam.class));
+    verify(testsubscriber, never()).publishWedge(any(Wedge.class));
+    verify(testsubscriber, times(1)).close();
   }
 
   @Test
