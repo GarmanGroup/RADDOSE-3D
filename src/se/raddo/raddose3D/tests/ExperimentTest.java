@@ -10,11 +10,13 @@ import se.raddo.raddose3D.ExperimentDummy;
 import se.raddo.raddose3D.Output;
 import se.raddo.raddose3D.Wedge;
 
-public class ExperimentTest {
-  Crystal c = new CrystalDummy();
-  Wedge   w = new Wedge(0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d);
-  Beam    b = new BeamDummy();
+import static org.mockito.Mockito.*;
 
+public class ExperimentTest {
+  Crystal c = mock(Crystal.class);
+  Wedge   w = mock(Wedge.class);
+  Beam    b = mock(Beam.class);
+  
   @Test
   public void testExperimentSimple() {
     Experiment e = new Experiment();
