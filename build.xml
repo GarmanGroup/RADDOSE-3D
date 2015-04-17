@@ -192,6 +192,7 @@
    <classpath refid="antlr" />
    <classpath refid="math3" />
    <classpath refid="testng" />
+   <classpath refid="mockito" />
 
    <bottom><![CDATA[<br/>Documentation for source <em>revision ${repository.revision}, created on ${timestamp}</em>]]></bottom>
   </javadoc>
@@ -208,6 +209,7 @@
    <xmlfileset dir="." includes="testng.xml"/> 
    <classpath refid="antlr" />
    <classpath refid="math3" />
+   <classpath refid="mockito" />
   </testng>
  </target>
 
@@ -218,6 +220,7 @@
    <xmlfileset dir="." includes="testng.xml"/> 
    <classpath refid="antlr" />
    <classpath refid="math3" />
+   <classpath refid="mockito" />
   </testng>
  </target>
 
@@ -294,12 +297,15 @@
   <fileset dir="lib/testng-6.8">
    <include name="*.jar"/>
   </fileset>
+ </path>
+
+ <path id="mockito">
   <fileset dir="lib/mockito-1.9.5">
    <include name="*.jar"/>
   </fileset>
  </path>
 
-  <path id="pmd.classpath">
+ <path id="pmd.classpath">
   <pathelement location="${build}"/>
   <fileset dir="lib/pmd-5.1.1">
    <include name="*.jar"/>
