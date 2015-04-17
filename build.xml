@@ -36,6 +36,7 @@
    <classpath refid="antlr" />
    <classpath refid="math3" />
    <classpath refid="testng" />
+   <classpath refid="mockito" />
   </javac>
  </target>
 
@@ -49,6 +50,7 @@
    <classpath refid="antlr" />
    <classpath refid="math3" />
    <classpath refid="testng" />
+   <classpath refid="mockito" />
   </javac>
  </target>
 
@@ -64,6 +66,7 @@
    <classpath refid="antlr" />
    <classpath refid="math3" />
    <classpath refid="testng" />
+   <classpath refid="mockito" />
   </javac>
  </target>
 
@@ -79,6 +82,7 @@
    <classpath refid="antlr" />
    <classpath refid="math3" />
    <classpath refid="testng" />
+   <classpath refid="mockito" />
   </javac>
  </target>
 
