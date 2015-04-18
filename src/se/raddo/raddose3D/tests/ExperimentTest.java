@@ -18,40 +18,6 @@ public class ExperimentTest {
 
   @Test
   public void testExperimentWithCrystalAndNullValues() {
-    Experiment e = new Experiment();
-    Output testsubscriber = mock(Output.class);
-
-    e.addObserver(testsubscriber);
-
-    // No message sent yet
-    verify(testsubscriber, never()).publishCrystal(any(Crystal.class));
-    verify(testsubscriber, never()).publishBeam(any(Beam.class));
-    verify(testsubscriber, never()).publishWedge(any(Wedge.class));
-
-    e.setCrystal(c);
-    // Null values should be handled gracefully and ignored
-    e.setBeam(null);
-    e.setCrystal(null);
-    e.exposeWedge(null);
-    
-    // One object sent
-    verify(testsubscriber, times(1)).publishCrystal(any(Crystal.class));
-    verify(testsubscriber, times(1)).publishCrystal(c);
-    verify(testsubscriber, never()).publishBeam(any(Beam.class));
-    verify(testsubscriber, never()).publishWedge(any(Wedge.class));    
-    verify(testsubscriber, never()).close();
-    
-    e.close();
-
-    // And closed
-    verify(testsubscriber, times(1)).publishCrystal(any(Crystal.class));
-    verify(testsubscriber, never()).publishBeam(any(Beam.class));
-    verify(testsubscriber, never()).publishWedge(any(Wedge.class));
-    verify(testsubscriber, times(1)).close();
-  }
-
-  @Test
-  public void testExperimentWithCrystalAndNullValuesSimpler() {
     // arrange
     Experiment e = new Experiment();
     Output testsubscriber = mock(Output.class);
@@ -59,82 +25,62 @@ public class ExperimentTest {
     // act
     e.addObserver(testsubscriber);
     e.setCrystal(c);
-    e.setBeam(null);
+    e.setBeam(null); // Null values should be handled gracefully and ignored
     e.setCrystal(null);
     e.exposeWedge(null);
     e.close();
 
     // assert
     InOrder inOrder = inOrder(testsubscriber);
-    inOrder.verify(testsubscriber).close();
     inOrder.verify(testsubscriber).publishCrystal(c);
-    
+    inOrder.verify(testsubscriber).close();
     verify(testsubscriber, times(1)).publishCrystal(any(Crystal.class));
     verify(testsubscriber, never()).publishBeam(any(Beam.class));
     verify(testsubscriber, never()).publishWedge(any(Wedge.class));
     verify(testsubscriber, times(1)).close();
   }
 
-  /* This may be a bit overspecified... */
   @Test
-  public void testExperimentWithTwoSubscribers() {
+  public void testExperimentWithMultipleSubscribers() {
+    // arrange
+    Experiment e = new ExperimentDummy();
     Output testsubscriberOne = mock(Output.class);
     Output testsubscriberTwo = mock(Output.class);
     Output testsubscriberThree = mock(Output.class);
     
-    Experiment e = new ExperimentDummy();
+    // act
     e.addObserver(testsubscriberOne);
     e.setCrystal(c);
     e.addObserver(testsubscriberTwo);
-
-    // One object sent to first subscriber, none to second
-    verify(testsubscriberOne, times(1)).publishCrystal(any(Crystal.class));
-    verify(testsubscriberOne, times(1)).publishCrystal(c);
-    verify(testsubscriberOne, never()).publishWedge(any(Wedge.class));
-    verify(testsubscriberTwo, never()).publishWedge(any(Wedge.class));
-
     e.exposeWedge(w);
-    // Null values should be handled gracefully and ignored
-    e.setBeam(null);
+    e.setBeam(null); // Null values should be handled gracefully and ignored
     e.setCrystal(null);
     e.exposeWedge(null);
-
-    // Two objects sent to first subscriber, one to second
-    verify(testsubscriberOne, never()).publishBeam(any(Beam.class));
-    verify(testsubscriberOne, times(1)).publishWedge(any(Wedge.class));
-    verify(testsubscriberOne, times(1)).publishWedge(w);
-    verify(testsubscriberTwo, never()).publishBeam(any(Beam.class));
-    verify(testsubscriberTwo, times(1)).publishWedge(any(Wedge.class));
-    verify(testsubscriberTwo, times(1)).publishWedge(w);
-
-    // Subscribe third listener
     e.addObserver(testsubscriberThree);
     e.setBeam(b);
-
-    // Check subscriber status
-    verify(testsubscriberOne, times(1)).publishBeam(any(Beam.class));
-    verify(testsubscriberOne, times(1)).publishBeam(b);
-    verify(testsubscriberOne, times(1)).publishWedge(any(Wedge.class));
-    verify(testsubscriberOne, never()).close();
-    
-    verify(testsubscriberTwo, times(1)).publishBeam(any(Beam.class));
-    verify(testsubscriberTwo, times(1)).publishBeam(b);
-    verify(testsubscriberTwo, times(1)).publishWedge(any(Wedge.class));
-    verify(testsubscriberTwo, never()).close();
-
-    verify(testsubscriberThree, times(1)).publishBeam(any(Beam.class));
-    verify(testsubscriberThree, times(1)).publishBeam(b);
-    verify(testsubscriberThree, never()).publishWedge(any(Wedge.class));
-    verify(testsubscriberThree, never()).close();
-
     e.close();
 
-    // Check subscriber status
+    // assert
+    InOrder inOrder = inOrder(testsubscriberOne);
+    inOrder.verify(testsubscriberOne).publishCrystal(c);
+    inOrder.verify(testsubscriberOne).publishWedge(w);
+    inOrder.verify(testsubscriberOne).publishBeam(b);
+    inOrder.verify(testsubscriberOne).close();
+    
+    inOrder = inOrder(testsubscriberTwo);
+    inOrder.verify(testsubscriberTwo).publishWedge(w);
+    inOrder.verify(testsubscriberTwo).publishBeam(b);
+    inOrder.verify(testsubscriberTwo).close();
+    
+    inOrder = inOrder(testsubscriberThree);
+    inOrder.verify(testsubscriberThree).publishBeam(b);
+    inOrder.verify(testsubscriberThree).close();
+    
     verify(testsubscriberOne, times(1)).publishCrystal(any(Crystal.class));
     verify(testsubscriberOne, times(1)).publishBeam(any(Beam.class));
     verify(testsubscriberOne, times(1)).publishWedge(any(Wedge.class));
     verify(testsubscriberOne, times(1)).close();
-    
+
     verify(testsubscriberTwo, never()).publishCrystal(any(Crystal.class));
     verify(testsubscriberTwo, times(1)).publishBeam(any(Beam.class));
     verify(testsubscriberTwo, times(1)).publishWedge(any(Wedge.class));
