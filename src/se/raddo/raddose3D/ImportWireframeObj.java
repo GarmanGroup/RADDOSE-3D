@@ -53,6 +53,9 @@ public class ImportWireframeObj implements ImportWireframe {
    * Opens file and takes any line from the file beginning
    * with the identifier token (e.g. "v " or "f ") and splits
    * into the component numbers, and stores the values.
+   * 
+   * @throws IOException
+   *           Error occured when reading from file.
    */
   private void loadWireframeFile() throws IOException {
     FileInputStream is = new FileInputStream(wireframeFileName);
