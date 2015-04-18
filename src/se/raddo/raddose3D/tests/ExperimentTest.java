@@ -1,5 +1,6 @@
 package se.raddo.raddose3D.tests;
 
+import org.mockito.InOrder;
 import org.testng.annotations.*;
 
 import se.raddo.raddose3D.Beam;
@@ -14,7 +15,7 @@ public class ExperimentTest {
   private final Crystal c = mock(Crystal.class);
   private final Wedge   w = mock(Wedge.class);
   private final Beam    b = mock(Beam.class);
-  
+
   @Test
   public void testExperimentWithCrystalAndNullValues() {
     Experiment e = new Experiment();
@@ -43,6 +44,31 @@ public class ExperimentTest {
     e.close();
 
     // And closed
+    verify(testsubscriber, times(1)).publishCrystal(any(Crystal.class));
+    verify(testsubscriber, never()).publishBeam(any(Beam.class));
+    verify(testsubscriber, never()).publishWedge(any(Wedge.class));
+    verify(testsubscriber, times(1)).close();
+  }
+
+  @Test
+  public void testExperimentWithCrystalAndNullValuesSimpler() {
+    // arrange
+    Experiment e = new Experiment();
+    Output testsubscriber = mock(Output.class);
+
+    // act
+    e.addObserver(testsubscriber);
+    e.setCrystal(c);
+    e.setBeam(null);
+    e.setCrystal(null);
+    e.exposeWedge(null);
+    e.close();
+
+    // assert
+    InOrder inOrder = inOrder(testsubscriber);
+    inOrder.verify(testsubscriber).close();
+    inOrder.verify(testsubscriber).publishCrystal(c);
+    
     verify(testsubscriber, times(1)).publishCrystal(any(Crystal.class));
     verify(testsubscriber, never()).publishBeam(any(Beam.class));
     verify(testsubscriber, never()).publishWedge(any(Wedge.class));
