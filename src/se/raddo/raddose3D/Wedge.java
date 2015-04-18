@@ -255,24 +255,24 @@ public class Wedge {
   }
 
   /**
-   * Returns starting X axis translation
-   * @return X axis translation in um.
+   * Returns starting X axis translation.
+   * @return X axis translation in micrometres.
    */
   public Double getStartX() {
     return properties.get(WedgeProperties.START_POSITION_X);
   }
 
   /**
-   * Returns starting Y axis translation
-   * @return Y axis translation in um.
+   * Returns starting Y axis translation.
+   * @return Y axis translation in micrometres.
    */
   public Double getStartY() {
     return properties.get(WedgeProperties.START_POSITION_Y);
   }
 
   /**
-   * Returns starting Z axis translation
-   * @return Z axis translation in um.
+   * Returns starting Z axis translation.
+   * @return Z axis translation in micrometres.
    */
   public Double getStartZ() {
     return properties.get(WedgeProperties.START_POSITION_Z);
@@ -318,6 +318,8 @@ public class Wedge {
   /**
    * Returns three-dimensional vector containing X, Y, and Z
    * translations per radian.
+   * @param deltaPhi
+   *          angle of rotation in radians
    * @return double[3] containing translations per radian in um.
    */
   public Double[] getTranslationVector(final double deltaPhi) {

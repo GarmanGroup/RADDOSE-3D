@@ -4,19 +4,19 @@ import java.util.List;
 
 public class CoefCalcSAXS extends CoefCalcFromParams {
   /**
-   * Default unit cell dimension
+   * Default unit cell dimension.
    */
-  private static final double   UNIT_CELL_LENGTH = 1000;
+  private static final double UNIT_CELL_LENGTH                    = 1000;
 
   /**
-   * Average molecular mass of an amino acid (daltons = grams/mole)
+   * Average molecular mass of an amino acid (daltons = grams/mole).
    */
-  private static final double   AVG_RESIDUE_MASS = 110;
+  private static final double AVG_RESIDUE_MASS                    = 110;
 
   /**
-   * Conversion factor to convert Angstroms^3 to litres
+   * Conversion factor to convert Angstroms^3 to litres.
    */
-  private static final double   ANGSTROM_TO_LITRE_VOLUME_CONVERSION = 1e-27;
+  private static final double ANGSTROM_TO_LITRE_VOLUME_CONVERSION = 1e-27;
 
   /**
    * Compute results and put them in local variables absCoeff, attCoeff,
@@ -50,7 +50,7 @@ public class CoefCalcSAXS extends CoefCalcFromParams {
       final Double solventFraction,
       final Double proteinConc) {
 
-    /**
+    /*
      * Create local variables for the unit cell parameters.
      * These don't have to be given in the input file for this module.
      * If these values are null then give suitable defaults.
@@ -95,8 +95,8 @@ public class CoefCalcSAXS extends CoefCalcFromParams {
     double unitCellVolume = cellVolume(a, b, c, alpha, beta, gamma);
 
     //Calculate the number of monomers
-    int numMonomers = calculateNumMonomers(numResidues,proteinConc
-        ,unitCellVolume);
+    int numMonomers = calculateNumMonomers(numResidues, proteinConc,
+        unitCellVolume);
 
     calculateAtomOccurrences(numMonomers, numResidues, numRNA, numDNA,
         sf, heavyProteinAtomNames, heavyProteinAtomNums,
@@ -108,19 +108,22 @@ public class CoefCalcSAXS extends CoefCalcFromParams {
    * in a solution for a SAXS experiment.
    *
    * @param numberOfResidues Number of residues per molecule unit (monomer)
-   * @param proteinConc Concentration of the protein in the SAXS experiment
-   * @param volume Given volume considered for calculation
+   * @param proteinConcentration Concentration of the protein in the SAXS
+   *          experiment
+   * @param volumeAngstromsCubed Given volume considered for calculation
    * @return Number of monomers of the molecule in the given volume
    */
-  private int calculateNumMonomers(final int numberOfResidues
-      , final double proteinConcentration, final double volumeAngstromsCubed) {
+  private int calculateNumMonomers(final int numberOfResidues,
+      final double proteinConcentration, final double volumeAngstromsCubed) {
 
     //Calculate molarity of solution as concentration divided by the total
     //molecular mass.
-    double molarity = proteinConcentration / (AVG_RESIDUE_MASS * numberOfResidues);
+    double molarity = proteinConcentration
+        / (AVG_RESIDUE_MASS * numberOfResidues);
 
     // Calculate volume in litres
-    double volumeLitres = ANGSTROM_TO_LITRE_VOLUME_CONVERSION * volumeAngstromsCubed;
+    double volumeLitres = ANGSTROM_TO_LITRE_VOLUME_CONVERSION
+        * volumeAngstromsCubed;
 
     //Calculate the number of monomers
     double numOfMon = Math.round(molarity * volumeLitres * AVOGADRO_NUM);
@@ -129,19 +132,22 @@ public class CoefCalcSAXS extends CoefCalcFromParams {
     if (numOfMon < 1) {
       System.out.println("");
       System.out.println("*************** WARNING ***************");
-      System.out.println("The number of monomers calculated to be in the unit cell"
-          + " volume given is less than 1");
-      System.out.println("You should manually increase the unit cell dimensions in the"
-          + " input file.");
+      System.out
+          .println("The number of monomers calculated to be in the unit cell"
+              + " volume given is less than 1");
+      System.out
+          .println("You should manually increase the unit cell dimensions in the"
+              + " input file.");
       System.out.println("");
       //Set number of monomers in the cell volume to 1
       numOfMon = 1;
     }
 
     //Cast the result to an integer
-    int numOfMonomers = (int)(numOfMon);
+    int numOfMonomers = (int) (numOfMon);
 
-    System.out.println("Calculated number of monomers in cell volume: " + numOfMonomers);
+    System.out.println("Calculated number of monomers in cell volume: "
+        + numOfMonomers);
 
     //return the result i.e. the number of monomers in the given volume.
     return numOfMonomers;
