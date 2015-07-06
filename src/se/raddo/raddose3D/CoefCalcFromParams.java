@@ -13,7 +13,9 @@ public class CoefCalcFromParams extends CoefCalcCompute {
    * Simple Constructor that does nothing.
    * Created for subclasses
    */
-  public CoefCalcFromParams(){}
+  public CoefCalcFromParams(){
+    
+  }
 
   /**
    * Compute results and put them in local variables absCoeff, attCoeff,
@@ -114,9 +116,10 @@ public class CoefCalcFromParams extends CoefCalcCompute {
 
     // Combine concentrations of heavy atoms in the
     // solvent and add these to the unit cell.
-
-    addSolventConcentrations(heavySolvConcNames, heavySolvConcNums);
-
+    if (heavySolvConcNames != null) {
+      addSolventConcentrations(heavySolvConcNames, heavySolvConcNums);
+    }
+    
     this.setNumMonomers(monomers);
     this.setNumAminoAcids(numResidues);
     this.setNumRNA(numRNAresidues);
