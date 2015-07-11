@@ -74,6 +74,10 @@ public class CoefCalcFromSequence extends CoefCalcCompute{
       sf = solventFraction;
     }
     
+    if (numMonomers == 0) {
+      System.out.println("*************** WARNING ***************");
+      System.out.println("The number of monomers is zero. No protein in crystal!!!");
+    }
     this.setNumMonomers(numMonomers);
 
     cellVolume(cellA, cellB, cellC, alpha, beta, gamma);
