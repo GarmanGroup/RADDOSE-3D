@@ -123,7 +123,9 @@ public class CoefCalcFromSequence extends CoefCalcCompute{
 
     // Combine concentrations of heavy atoms in the
     // solvent and add these to the unit cell.
-    addSolventConcentrations(heavySolvConcNames, heavySolvConcNums);
+    if (heavySolvConcNames != null) {
+      addSolventConcentrations(heavySolvConcNames, heavySolvConcNums);
+    }
     
     //Parse the given sequence file
     System.out.println("Parsing sequence file: " + seqFile);
