@@ -113,7 +113,9 @@ public class CoefCalcFromSequenceSAXS extends CoefCalcFromSequence {
 
     // Combine concentrations of heavy atoms in the
     // solvent and add these to the unit cell.
-    addSolventConcentrations(heavySolvConcNames, heavySolvConcNums);
+    if (heavySolvConcNames != null) {
+      addSolventConcentrations(heavySolvConcNames, heavySolvConcNums);
+    }
 
     // If the solvent fraction has not been specified.
     double newSolventFraction = solventFraction;
