@@ -155,7 +155,7 @@ public class ContainerElemental extends Container{
       double massAttenCoeffPrevious = 0;
       double totalWeight = 0;
 
-      //Create arrays to store the mass attenuation coeffcients and the atomic weights
+      //Create arrays to store the mass attenuation coefficients and the atomic weights
       //of each element in the container material.
       double[] elementMassAttCoeffs = new double[this.elementNamesList.size()];
       double[] elementAtomicWeights = new double[this.elementNamesList.size()];
