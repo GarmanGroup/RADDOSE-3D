@@ -139,10 +139,9 @@ public class ContainerElemental extends Container{
    *          beam object describing the beam used.
    */
   public void extractMassAttenuationCoef(Beam beam) {
-
-    if (this.material == null) {
-      this.massAttenuationCoefficient = 0;
-    } else {
+    
+    this.massAttenuationCoefficient = 0;
+    if (this.material != null) {
       //Define/Initialise the local variables
       URL nistURL = null;
       URLConnection nistConnection = null;
