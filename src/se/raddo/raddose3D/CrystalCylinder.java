@@ -171,7 +171,7 @@ public class CrystalCylinder extends CrystalPolyhedron {
 
     // Calculate angular step around circle.
     // The negative sign is used to go anti clockwise around the circle to be
-    //consistent with the output from BLENDER software.
+    // consistent with the output from BLENDER software.
     double angleToVertex = -2 * Math.PI/numOfVertices;
 
     //Create variable to store the x,y,z coordinates of each vertex.
