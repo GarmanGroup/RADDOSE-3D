@@ -26,8 +26,8 @@ import se.raddo.raddose3D.CrystalSpherical;
 public class CrystalBasicTests {
   private static final Double   res  = 0.78;
   private static final Double   dim1 = 100d;
-  private static final Double   dim2 = 200d;
-  private static final Double   dim3 = 300d;
+  private static final Double   dim2 = 125d;
+  private static final Double   dim3 = 150d;
   private static final CoefCalc coef = new CoefCalcAverage();
 
   // Instances of all crystal subClasses should be put here, so that they can be tested. 
