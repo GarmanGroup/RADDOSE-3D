@@ -128,6 +128,16 @@ public abstract class Crystal {
   public abstract boolean isCrystalAt(int i, int j, int k);
 
   /**
+   * Get the escape factor for a voxel in the crystal
+   *
+   * @param i i coord
+   * @param j j coord
+   * @param k k coord
+   * @return escapeFactor at crystal coordinates x, y, z
+   */
+  public abstract double getEscapeFactor(int i, int j, int k);
+
+  /**
    * Should increment the dose array element ijk by doseVox.
    *
    * @param i i coord
@@ -396,7 +406,7 @@ public abstract class Crystal {
                       * Math.exp(depth * beamAttenuationExpFactor);
               // Attenuates the beam for absorption
 
-              double voxImageDose = fluenceToDoseFactor * voxImageFluence;
+              double voxImageDose = fluenceToDoseFactor * voxImageFluence * getEscapeFactor(i, j, k);
               // MGy
 
               double voxElasticYield = fluenceToElasticFactor * voxImageFluence;

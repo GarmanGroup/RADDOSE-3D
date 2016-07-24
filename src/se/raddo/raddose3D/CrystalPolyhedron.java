@@ -1055,7 +1055,7 @@ public class CrystalPolyhedron extends Crystal {
   @Override
   public void addDose(final int i, final int j, final int k,
       final double doseIncrease) {
-    dose[i][j][k] += doseIncrease * escapeFactor[i][j][k];
+    dose[i][j][k] += doseIncrease; //* escapeFactor[i][j][k];
   }
 
   /*
@@ -1169,6 +1169,16 @@ public class CrystalPolyhedron extends Crystal {
   @Override
   public double getCrystalPixPerUM() {
     return crystalPixPerUM;
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see se.raddo.raddose3D.Crystal#getEscapeFactor(int, int, int)
+   */
+  @Override
+  public double getEscapeFactor(final int i, final int j, final int k) {
+    return escapeFactor[i][j][k];
   }
 
   /**
