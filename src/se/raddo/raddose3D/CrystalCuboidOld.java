@@ -491,6 +491,18 @@ public class CrystalCuboidOld extends Crystal {
     return cross;
   }
 
+  /*
+   * (non-Javadoc)
+   *
+   * @see se.raddo.raddose3D.Crystal#getEscapeFactor(int, int, int)
+   * 
+   * This class is no longer used so this method has only been added
+   * to prevent error warnings.
+   */
+  @Override
+  public double getEscapeFactor(final int i, final int j, final int k) {
+    return 1.0;
+  }
   // Commented out because not needed at the moment, but it's worth having
   // this for future dev.
   //  private static double[] add3(double[] a, double[] b) {
