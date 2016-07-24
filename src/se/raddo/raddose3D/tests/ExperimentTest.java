@@ -1,6 +1,6 @@
 package se.raddo.raddose3D.tests;
 
-import org.testng.Assert;
+import org.mockito.InOrder;
 import org.testng.annotations.*;
 
 import se.raddo.raddose3D.Beam;
@@ -9,164 +9,86 @@ import se.raddo.raddose3D.Experiment;
 import se.raddo.raddose3D.ExperimentDummy;
 import se.raddo.raddose3D.Output;
 import se.raddo.raddose3D.Wedge;
+import static org.mockito.Mockito.*;
 
 public class ExperimentTest {
-  Crystal c = new CrystalDummy();
-  Wedge   w = new Wedge(0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d);
-  Beam    b = new BeamDummy();
+  private final Crystal c = mock(Crystal.class);
+  private final Wedge   w = mock(Wedge.class);
+  private final Beam    b = mock(Beam.class);
 
   @Test
-  public void testExperimentSimple() {
+  public void testExperimentWithCrystalAndNullValues() {
+    // arrange
     Experiment e = new Experiment();
-    OutputTestSubscriber testsubscriber = new OutputTestSubscriber();
+    Output testsubscriber = mock(Output.class);
 
+    // act
     e.addObserver(testsubscriber);
-
-    // No message sent yet
-    Assert.assertNull(testsubscriber.lastseenobject);
-    Assert.assertNull(testsubscriber.lastseencrystal);
-    Assert.assertNull(testsubscriber.lastseenbeam);
-    Assert.assertNull(testsubscriber.lastseenwedge);
-    Assert.assertEquals(testsubscriber.seenobjects, 0);
-    Assert.assertEquals(testsubscriber.seenclose, 0);
-
     e.setCrystal(c);
-
-    // One object sent
-    Assert.assertEquals(testsubscriber.lastseenobject, c);
-    Assert.assertEquals(testsubscriber.lastseencrystal, c);
-    Assert.assertNull(testsubscriber.lastseenbeam);
-    Assert.assertNull(testsubscriber.lastseenwedge);
-    Assert.assertEquals(testsubscriber.seenobjects, 1);
-    Assert.assertEquals(testsubscriber.seenclose, 0);
-
-    // Null values should be handled gracefully and ignored
-    e.setBeam(null);
+    e.setBeam(null); // Null values should be handled gracefully and ignored
     e.setCrystal(null);
     e.exposeWedge(null);
-
-    // One object sent
-    Assert.assertEquals(testsubscriber.lastseenobject, c);
-    Assert.assertEquals(testsubscriber.lastseencrystal, c);
-    Assert.assertNull(testsubscriber.lastseenbeam);
-    Assert.assertNull(testsubscriber.lastseenwedge);
-    Assert.assertEquals(testsubscriber.seenobjects, 1);
-    Assert.assertEquals(testsubscriber.seenclose, 0);
-
     e.close();
 
-    System.out.println("@Test - testExperimentSimple");
+    // assert
+    InOrder inOrder = inOrder(testsubscriber);
+    inOrder.verify(testsubscriber).publishCrystal(c);
+    inOrder.verify(testsubscriber).close();
+    verify(testsubscriber, times(1)).publishCrystal(any(Crystal.class));
+    verify(testsubscriber, never()).publishBeam(any(Beam.class));
+    verify(testsubscriber, never()).publishWedge(any(Wedge.class));
+    verify(testsubscriber, times(1)).close();
   }
 
   @Test
-  public void testExperimentComplex() {
+  public void testExperimentWithMultipleSubscribers() {
+    // arrange
     Experiment e = new ExperimentDummy();
-    OutputTestSubscriber testsubscriber = new OutputTestSubscriber();
-
-    e.addObserver(testsubscriber);
-
-    // No message sent yet
-    Assert.assertNull(testsubscriber.lastseenobject);
-    Assert.assertNull(testsubscriber.lastseencrystal);
-    Assert.assertNull(testsubscriber.lastseenbeam);
-    Assert.assertNull(testsubscriber.lastseenwedge);
-    Assert.assertEquals(testsubscriber.seenobjects, 0);
-    Assert.assertEquals(testsubscriber.seenclose, 0);
-
+    Output testsubscriberOne = mock(Output.class);
+    Output testsubscriberTwo = mock(Output.class);
+    Output testsubscriberThree = mock(Output.class);
+    
+    // act
+    e.addObserver(testsubscriberOne);
     e.setCrystal(c);
-
-    // One object sent
-    Assert.assertEquals(testsubscriber.lastseenobject, c);
-    Assert.assertEquals(testsubscriber.lastseencrystal, c);
-    Assert.assertNull(testsubscriber.lastseenbeam);
-    Assert.assertNull(testsubscriber.lastseenwedge);
-    Assert.assertEquals(testsubscriber.seenobjects, 1);
-    Assert.assertEquals(testsubscriber.seenclose, 0);
-
-    // Subscribe second listener
-    e.addObserver(testsubscriber);
-
+    e.addObserver(testsubscriberTwo);
     e.exposeWedge(w);
-
-    // Three objects sent (1 + 2x1)
-    Assert.assertEquals(testsubscriber.lastseenobject, w);
-    Assert.assertEquals(testsubscriber.lastseencrystal, c);
-    Assert.assertNull(testsubscriber.lastseenbeam);
-    Assert.assertEquals(testsubscriber.lastseenwedge, w);
-    Assert.assertEquals(testsubscriber.seenobjects, 3);
-    Assert.assertEquals(testsubscriber.seenclose, 0);
-
-    // Null values should be handled gracefully and ignored
-    e.setBeam(null);
+    e.setBeam(null); // Null values should be handled gracefully and ignored
     e.setCrystal(null);
     e.exposeWedge(null);
-
-    // Three objects sent (1 + 2x1)
-    Assert.assertEquals(testsubscriber.lastseenobject, w);
-    Assert.assertEquals(testsubscriber.lastseencrystal, c);
-    Assert.assertNull(testsubscriber.lastseenbeam);
-    Assert.assertEquals(testsubscriber.lastseenwedge, w);
-    Assert.assertEquals(testsubscriber.seenobjects, 3);
-    Assert.assertEquals(testsubscriber.seenclose, 0);
-
-    // Subscribe third listener
-    e.addObserver(testsubscriber);
-
+    e.addObserver(testsubscriberThree);
     e.setBeam(b);
-
-    // Six objects sent (1 + 2x1 + 3x1)
-    Assert.assertEquals(testsubscriber.lastseenobject, b);
-    Assert.assertEquals(testsubscriber.lastseencrystal, c);
-    Assert.assertEquals(testsubscriber.lastseenbeam, b);
-    Assert.assertEquals(testsubscriber.lastseenwedge, w);
-    Assert.assertEquals(testsubscriber.seenobjects, 6);
-    Assert.assertEquals(testsubscriber.seenclose, 0);
-
     e.close();
 
-    // Output flushed (3x 1)
-    Assert.assertEquals(testsubscriber.lastseenobject, b);
-    Assert.assertEquals(testsubscriber.lastseencrystal, c);
-    Assert.assertEquals(testsubscriber.lastseenbeam, b);
-    Assert.assertEquals(testsubscriber.lastseenwedge, w);
-    Assert.assertEquals(testsubscriber.seenobjects, 6);
-    Assert.assertEquals(testsubscriber.seenclose, 3);
+    // assert
+    InOrder inOrder = inOrder(testsubscriberOne);
+    inOrder.verify(testsubscriberOne).publishCrystal(c);
+    inOrder.verify(testsubscriberOne).publishWedge(w);
+    inOrder.verify(testsubscriberOne).publishBeam(b);
+    inOrder.verify(testsubscriberOne).close();
+    
+    inOrder = inOrder(testsubscriberTwo);
+    inOrder.verify(testsubscriberTwo).publishWedge(w);
+    inOrder.verify(testsubscriberTwo).publishBeam(b);
+    inOrder.verify(testsubscriberTwo).close();
+    
+    inOrder = inOrder(testsubscriberThree);
+    inOrder.verify(testsubscriberThree).publishBeam(b);
+    inOrder.verify(testsubscriberThree).close();
+    
+    verify(testsubscriberOne, times(1)).publishCrystal(any(Crystal.class));
+    verify(testsubscriberOne, times(1)).publishBeam(any(Beam.class));
+    verify(testsubscriberOne, times(1)).publishWedge(any(Wedge.class));
+    verify(testsubscriberOne, times(1)).close();
 
-    System.out.println("@Test - testExperimentComplex");
-  }
+    verify(testsubscriberTwo, never()).publishCrystal(any(Crystal.class));
+    verify(testsubscriberTwo, times(1)).publishBeam(any(Beam.class));
+    verify(testsubscriberTwo, times(1)).publishWedge(any(Wedge.class));
+    verify(testsubscriberTwo, times(1)).close();
 
-  private static class OutputTestSubscriber implements Output {
-    public long    seenobjects     = 0;
-    public long    seenclose       = 0;
-    public Object  lastseenobject  = null;
-    public Crystal lastseencrystal = null;
-    public Beam    lastseenbeam    = null;
-    public Wedge   lastseenwedge   = null;
-
-    @Override
-    public void publishCrystal(Crystal c) {
-      seenobjects = seenobjects + 1;
-      lastseenobject = c;
-      lastseencrystal = c;
-    }
-
-    @Override
-    public void publishBeam(Beam b) {
-      seenobjects = seenobjects + 1;
-      lastseenobject = b;
-      lastseenbeam = b;
-    }
-
-    @Override
-    public void publishWedge(Wedge w) {
-      seenobjects = seenobjects + 1;
-      lastseenobject = w;
-      lastseenwedge = w;
-    }
-
-    @Override
-    public void close() {
-      seenclose = seenclose + 1;
-    }
+    verify(testsubscriberThree, never()).publishCrystal(any(Crystal.class));
+    verify(testsubscriberThree, times(1)).publishBeam(any(Beam.class));
+    verify(testsubscriberThree, never()).publishWedge(any(Wedge.class));
+    verify(testsubscriberThree, times(1)).close();
   }
 }

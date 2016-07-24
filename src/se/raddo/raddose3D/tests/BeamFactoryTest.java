@@ -2,7 +2,7 @@ package se.raddo.raddose3D.tests;
 
 import java.util.HashMap;
 
-import org.testng.Assert;
+import static org.testng.Assert.*;
 import org.testng.annotations.*;
 
 import se.raddo.raddose3D.Beam;
@@ -19,7 +19,7 @@ public class BeamFactoryTest {
     BeamFactory bf = new BeamFactory();
 
     Beam b = bf.createBeam("tophat", defaultProperties());
-    Assert.assertTrue(b instanceof BeamTophat);
+    assertTrue(b instanceof BeamTophat);
     Assertion.equals(b.getPhotonEnergy(), BEAMENERGYMARKER,
         "Beam Energy");
 
@@ -31,56 +31,23 @@ public class BeamFactoryTest {
     BeamFactory bf = new BeamFactory();
 
     Beam b = bf.createBeam("gaussian", defaultProperties());
-    Assert.assertTrue(b instanceof BeamGaussian);
+    assertTrue(b instanceof BeamGaussian);
     Assertion.equals(b.getPhotonEnergy(), BEAMENERGYMARKER,
         "Beam Energy");
 
     System.out.println("@Test - testBeamFactoryGaussian");
   }
 
-  @Test
-  public void testBeamFactoryInvalid() {
+  @Test(expectedExceptions = RuntimeException.class)
+  public void testBeamFactoryShouldFailOnInvalidInput() {
     BeamFactory bf = new BeamFactory();
-
-    try {
-      bf.createBeam("invalid", defaultProperties());
-    } catch (RuntimeException e) {
-      System.out.println(e);
-      System.out.println("@Test - testBeamFactoryInvalid");
-      return;
-    }
-
-    Assert.fail("BeamFactory accepted invalid input (should fail)");
+    bf.createBeam("invalid", defaultProperties());
   }
 
-  @Test
-  public void testBeamFactoryEmpty() {
+  @Test(expectedExceptions = RuntimeException.class)
+  public void testBeamFactoryShouldFailOnEmptyInput() {
     BeamFactory bf = new BeamFactory();
-
-    try {
-      bf.createBeam("", defaultProperties());
-    } catch (RuntimeException e) {
-      System.out.println(e);
-      System.out.println("@Test - testBeamFactoryEmpty");
-      return;
-    }
-
-    Assert.fail("BeamFactory accepted empty input (should fail)");
-  }
-
-  @Test
-  public void testBeamFactoryFactory() {
-    BeamFactory bf = new BeamFactory();
-
-    try {
-      bf.createBeam("", defaultProperties());
-    } catch (RuntimeException e) {
-      System.out.println(e);
-      System.out.println("@Test - testBeamFactoryFactory");
-      return;
-    }
-
-    Assert.fail("BeamFactory accepted input 'factory' (should fail)");
+    bf.createBeam("", defaultProperties());
   }
 
   @Test
@@ -90,7 +57,7 @@ public class BeamFactoryTest {
     Beam b = bf.createBeam("se.raddo.raddose3D.tests.BeamDummy",
         defaultProperties());
 
-    Assert.assertTrue(b instanceof BeamDummy);
+    assertTrue(b instanceof BeamDummy);
 
     System.out.println("@Test - testBeamFactoryDummy");
   }

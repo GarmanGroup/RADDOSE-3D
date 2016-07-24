@@ -1,6 +1,6 @@
 package se.raddo.raddose3D.tests;
 
-import org.testng.Assert;
+import static org.testng.Assert.*;
 import org.testng.annotations.Test;
 
 import se.raddo.raddose3D.Element;
@@ -20,7 +20,7 @@ public class ElementDatabaseTest {
     Element s16 = edb.getElement(16);
     Assertion.isNotNull(s16, "Could not find sulphur by element number");
 
-    Assert.assertSame(s, s16);
+    assertSame(s, s16);
 
     ElementTest et = new ElementTest();
     et.sulphurTests(s);
@@ -31,7 +31,7 @@ public class ElementDatabaseTest {
     Element o8 = edb.getElement(8);
     Assertion.isNotNull(o8, "Could not find oxygen by element number");
 
-    Assert.assertSame(o, o8);
+    assertSame(o, o8);
 
     for (int i = 1; i <= 83; i++) {
       Element e = edb.getElement(i);

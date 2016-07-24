@@ -10,6 +10,7 @@ import java.util.Map;
 import org.apache.commons.math3.analysis.function.Gaussian;
 import org.apache.commons.math3.distribution.NormalDistribution;
 
+/** An X-ray beam class with a 2d Gaussian beam profile. */
 public class BeamGaussian implements Beam {
   /** Horizontal full width half maximum of the beam. */
   private final Double        fwhmX;
@@ -113,6 +114,12 @@ public class BeamGaussian implements Beam {
         / normFactor;
   }
 
+  /**
+   * Returns the value at a position of the 2d Gaussian.
+   * @param x x-position
+   * @param y y-position
+   * @return 2d Gaussian function value.
+   */
   private double gaussianIntensity(final double x, final double y) {
     return gX.value(x) * gY.value(y);
   }
@@ -193,7 +200,7 @@ public class BeamGaussian implements Beam {
     // Return normalisedGaussian * scale factor
     return gaussianIntensity((coordX - offAxisUM), coordY) * scaleFactor;
   }
-  
+
   @Override
   public void generateBeamArray() {};
 

@@ -1,6 +1,6 @@
 package se.raddo.raddose3D.tests;
 
-import org.testng.Assert;
+import static org.testng.Assert.*;
 import org.testng.annotations.*;
 
 import se.raddo.raddose3D.Histogram;
@@ -10,11 +10,11 @@ public class HistogramTest {
   @Test
   public void histogramInitialization() {
     Histogram h = new Histogram(0, 10, 5);
-    Assert.assertNotNull(h);
-    Assert.assertEquals(h.getObservationCount(), 0);
-    Assert.assertNull(h.getPositionMean());
-    Assert.assertNull(h.getWeightMean());
-    Assert.assertNull(h.getWeightedPositionMean());
+    assertNotNull(h);
+    assertEquals(h.getObservationCount(), 0);
+    assertNull(h.getPositionMean());
+    assertNull(h.getWeightMean());
+    assertNull(h.getWeightedPositionMean());
   }
 
   @Test
@@ -22,11 +22,11 @@ public class HistogramTest {
     Histogram h = new Histogram(0, 10, 5);
     // Buckets are: x<0 0<=x<2 2<=x<4 4<=x<6 6<=x<8 8<=x<10 x>=10
 
-    Assert.assertNotNull(h);
-    Assert.assertEquals(h.getObservationCount(), 0);
-    Assert.assertNull(h.getPositionMean());
-    Assert.assertNull(h.getWeightMean());
-    Assert.assertNull(h.getWeightedPositionMean());
+    assertNotNull(h);
+    assertEquals(h.getObservationCount(), 0);
+    assertNull(h.getPositionMean());
+    assertNull(h.getWeightMean());
+    assertNull(h.getWeightedPositionMean());
 
     h.addObservation(3);
     h.addObservation(4);
@@ -43,7 +43,7 @@ public class HistogramTest {
     h.addObservation(8);
     h.addObservation(14);
 
-    Assert.assertEquals(h.getObservationCount(), 10);
+    assertEquals(h.getObservationCount(), 10);
     Assertion.equals(h.getPositionMean(), 6.35, "histogram mean");
 
     Assertion.equals(h.getWeightMean(), 1, "histogram value mean");
@@ -105,11 +105,11 @@ public class HistogramTest {
     Histogram h = new Histogram(0, 8, 4);
     // Buckets are: x<0 0<=x<2 2<=x<4 4<=x<6 6<=x<8 x>=8
 
-    Assert.assertNotNull(h);
-    Assert.assertEquals(h.getObservationCount(), 0);
-    Assert.assertNull(h.getPositionMean());
-    Assert.assertNull(h.getWeightMean());
-    Assert.assertNull(h.getWeightedPositionMean());
+    assertNotNull(h);
+    assertEquals(h.getObservationCount(), 0);
+    assertNull(h.getPositionMean());
+    assertNull(h.getWeightMean());
+    assertNull(h.getWeightedPositionMean());
 
     h.addValue(-2, 0.5);
     h.addValue(1.3, 1);
@@ -119,7 +119,7 @@ public class HistogramTest {
     h.addValue(9, 0.5);
     h.addValue(2.1, 1.7);
 
-    Assert.assertEquals(h.getObservationCount(), 7);
+    assertEquals(h.getObservationCount(), 7);
    
     Assertion.equals(h.getPositionMean(), 25.4 / 7, "histogram position mean");
     // mean of all positions: 

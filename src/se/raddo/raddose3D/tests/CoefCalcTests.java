@@ -200,6 +200,8 @@ public class CoefCalcTests {
    * Random numbers used for CoefCalc - currently not
    * used as a Jenkins test because Jenkins cannot run
    * the old raddose executable.
+   * 
+   * TODO: Refactor into Jenkins compatible test
    */
   public static void main(final String[] cmdLineParams) {
     int testCount = 5;
@@ -228,7 +230,7 @@ public class CoefCalcTests {
       double unit_cell_length = 100;
 
       int protein_residues = 100;
-      int rna_residues = Math.abs(random.nextInt()) % 80 + 20;
+      int rna_residues = random.nextInt(80) + 20;
 
       CoefCalcFromParams coefCalc = new CoefCalcFromParams(
           unit_cell_length, unit_cell_length, unit_cell_length, 90.0, 90.0,

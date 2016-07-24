@@ -14,7 +14,7 @@ public class CoefCalcFromParams extends CoefCalcCompute {
    * Created for subclasses
    */
   public CoefCalcFromParams(){
-    
+
   }
 
   /**

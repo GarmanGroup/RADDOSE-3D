@@ -36,6 +36,7 @@
    <classpath refid="antlr" />
    <classpath refid="math3" />
    <classpath refid="testng" />
+   <classpath refid="mockito" />
   </javac>
  </target>
 
@@ -49,6 +50,7 @@
    <classpath refid="antlr" />
    <classpath refid="math3" />
    <classpath refid="testng" />
+   <classpath refid="mockito" />
   </javac>
  </target>
 
@@ -64,6 +66,7 @@
    <classpath refid="antlr" />
    <classpath refid="math3" />
    <classpath refid="testng" />
+   <classpath refid="mockito" />
   </javac>
  </target>
 
@@ -79,6 +82,7 @@
    <classpath refid="antlr" />
    <classpath refid="math3" />
    <classpath refid="testng" />
+   <classpath refid="mockito" />
   </javac>
  </target>
 
@@ -100,6 +104,34 @@
     <attribute name="Implementation-Vendor" value="E. F. Garman group"/>
     <attribute name="Implementation-Title" value="RADDOSE-3D"/>
     <attribute name="Implementation-Version" value="${raddose.version}"/>
+   </manifest>
+  </jar>
+ </target>
+
+ <target name="jar-osgi">
+  <!-- Get reported Raddose3D revision number -->
+  <java classname="se.raddo.raddose3D.Version" classpath="bin" failonerror="true" outputproperty="raddose.version"/>
+  <echo message="Reported Raddose3D version is ${raddose.version}" />
+
+  <jar destfile="raddose3d-osgi.jar" basedir="bin" excludes="se/raddo/raddose3D/tests/** se/raddo/raddose3D/server/**">
+   <zipfileset includes="**/*.class" src="lib/antlr-3.4/antlr-3.4-cutdown.jar"/>
+   <fileset dir=".">
+    <include name="constants/MuCalcConstants.txt" />
+   </fileset>
+
+   <manifest>
+    <attribute name="Implementation-Vendor" value="E. F. Garman group"/>
+    <attribute name="Implementation-Title" value="RADDOSE-3D"/>
+    <attribute name="Implementation-Version" value="${raddose.version}"/>
+    <attribute name="Bundle-ManifestVersion" value="2"/>
+    <attribute name="Bundle-SymbolicName" value="se.raddo.raddose3D; singleton:=true"/>
+    <attribute name="Bundle-Version" value="${raddose.version}"/>
+    <attribute name="Bundle-Name" value="RADDOSE 3D"/>
+    <attribute name="Bundle-Description" value="time- and space-resolved modelling of dose in macromolecular crystallography"/>
+    <attribute name="Bundle-DocURL" value="http://raddo.se/"/>
+    <attribute name="Bundle-Copyright" value="E. F. Garman group"/>
+    <attribute name="Import-Package" value="org.apache.commons.math3.analysis.function;version=3.0,org.apache.commons.math3.distribution;version=3.0"/>
+    <attribute name="Export-Package" value="se.raddo.raddose3D"/>
    </manifest>
   </jar>
  </target>
@@ -164,6 +196,7 @@
    <classpath refid="antlr" />
    <classpath refid="math3" />
    <classpath refid="testng" />
+   <classpath refid="mockito" />
 
    <bottom><![CDATA[<br/>Documentation for source <em>revision ${repository.revision}, created on ${timestamp}</em>]]></bottom>
   </javadoc>
@@ -180,6 +213,7 @@
    <xmlfileset dir="." includes="testng.xml"/> 
    <classpath refid="antlr" />
    <classpath refid="math3" />
+   <classpath refid="mockito" />
   </testng>
  </target>
 
@@ -190,6 +224,7 @@
    <xmlfileset dir="." includes="testng.xml"/> 
    <classpath refid="antlr" />
    <classpath refid="math3" />
+   <classpath refid="mockito" />
   </testng>
  </target>
 
@@ -240,6 +275,7 @@
    <auxClasspath path="${basedir}/lib/antlr-3.4/antlr-3.4-cutdown.jar"/>
    <auxClasspath path="${basedir}/lib/commons-math3-3.0/commons-math3-3.0.jar"/>
    <auxClasspath path="${basedir}/lib/testng-6.8/testng-6.8.jar"/>
+   <auxClasspath path="${basedir}/lib/mockito-1.9.5/mockito-all-1.9.5.jar"/>
    <auxClasspath path="${basedir}/bin"/>
    <sourcePath path="${basedir}/src" />
   </findbugs>
@@ -264,10 +300,16 @@
  <path id="testng">
   <fileset dir="lib/testng-6.8">
    <include name="*.jar"/>
- </fileset>
+  </fileset>
  </path>
 
-  <path id="pmd.classpath">
+ <path id="mockito">
+  <fileset dir="lib/mockito-1.9.5">
+   <include name="*.jar"/>
+  </fileset>
+ </path>
+
+ <path id="pmd.classpath">
   <pathelement location="${build}"/>
   <fileset dir="lib/pmd-5.1.1">
    <include name="*.jar"/>

@@ -2,7 +2,7 @@ package se.raddo.raddose3D.tests;
 
 import java.util.HashMap;
 
-import org.testng.Assert;
+import static org.testng.Assert.*;
 import org.testng.annotations.*;
 
 import se.raddo.raddose3D.Crystal;
@@ -20,9 +20,9 @@ public class CrystalCuboidTest {
    * Tests value against target. Includes testing for null and nice error
    * messages
    */
-  private void EqualsAssertion(Double value, Double target, String name) {
-    Assert.assertNotNull(value, name + " is null");
-    Assert.assertTrue(Math.abs(value - target) < dblRoundingTolerance,
+  private static void assertEquals(Double value, Double target, String name) {
+    assertNotNull(value, name + " is null");
+    assertTrue(Math.abs(value - target) < dblRoundingTolerance,
         name + " set incorrectly (" + value + ")");
   }
 
@@ -78,34 +78,34 @@ public class CrystalCuboidTest {
         for (int k = 0; k < z; k++) {
           double id[] = c.getCrystCoord(i, j, k);
 
-          EqualsAssertion(cEquivalentP360.getCrystCoord(i, j, k)[0], id[0],
+          assertEquals(cEquivalentP360.getCrystCoord(i, j, k)[0], id[0],
               "P360-x");
-          EqualsAssertion(cEquivalentP360.getCrystCoord(i, j, k)[1], id[1],
+          assertEquals(cEquivalentP360.getCrystCoord(i, j, k)[1], id[1],
               "P360-y");
-          EqualsAssertion(cEquivalentP360.getCrystCoord(i, j, k)[2], id[2],
+          assertEquals(cEquivalentP360.getCrystCoord(i, j, k)[2], id[2],
               "P360-z");
 
-          EqualsAssertion(cEquivalentL360.getCrystCoord(i, j, k)[0], id[0],
+          assertEquals(cEquivalentL360.getCrystCoord(i, j, k)[0], id[0],
               "L360-x");
-          EqualsAssertion(cEquivalentL360.getCrystCoord(i, j, k)[1], id[1],
+          assertEquals(cEquivalentL360.getCrystCoord(i, j, k)[1], id[1],
               "L360-y");
-          EqualsAssertion(cEquivalentL360.getCrystCoord(i, j, k)[2], id[2],
+          assertEquals(cEquivalentL360.getCrystCoord(i, j, k)[2], id[2],
               "L360-z");
 
-          EqualsAssertion(cEquivalentPL360.getCrystCoord(i, j, k)[0], id[0],
+          assertEquals(cEquivalentPL360.getCrystCoord(i, j, k)[0], id[0],
               "PL360-x");
-          EqualsAssertion(cEquivalentPL360.getCrystCoord(i, j, k)[1], id[1],
+          assertEquals(cEquivalentPL360.getCrystCoord(i, j, k)[1], id[1],
               "PL360-y");
-          EqualsAssertion(cEquivalentPL360.getCrystCoord(i, j, k)[2], id[2],
+          assertEquals(cEquivalentPL360.getCrystCoord(i, j, k)[2], id[2],
               "PL360-z");
 
-          EqualsAssertion(-1 * cP180.getCrystCoord(i, j, k)[0], id[0], "P180-x");
-          EqualsAssertion(-1 * cP180.getCrystCoord(i, j, k)[1], id[1], "P180-y");
-          EqualsAssertion(cP180.getCrystCoord(i, j, k)[2], id[2], "P180-z");
+          assertEquals(-1 * cP180.getCrystCoord(i, j, k)[0], id[0], "P180-x");
+          assertEquals(-1 * cP180.getCrystCoord(i, j, k)[1], id[1], "P180-y");
+          assertEquals(cP180.getCrystCoord(i, j, k)[2], id[2], "P180-z");
 
-          EqualsAssertion(cL180.getCrystCoord(i, j, k)[0], id[0], "L180-x");
-          EqualsAssertion(-1 * cL180.getCrystCoord(i, j, k)[1], id[1], "L180-y");
-          EqualsAssertion(-1 * cL180.getCrystCoord(i, j, k)[2], id[2], "L180-z");
+          assertEquals(cL180.getCrystCoord(i, j, k)[0], id[0], "L180-x");
+          assertEquals(-1 * cL180.getCrystCoord(i, j, k)[1], id[1], "L180-y");
+          assertEquals(-1 * cL180.getCrystCoord(i, j, k)[2], id[2], "L180-z");
         }
       }
 
@@ -154,7 +154,7 @@ public class CrystalCuboidTest {
       tempInvCoords[2] = testInvCoords[0] * Math.sin(angles) + testInvCoords[2]
           * Math.cos(angles); //Rotate Z
 
-      Assert.assertTrue(Math.abs(tempCoords[1] - tempInvCoords[1]) <= 1e-10,
+      assertTrue(Math.abs(tempCoords[1] - tempInvCoords[1]) <= 1e-10,
           "y does not match under inversion");
       if (Math.abs(tempCoords[1] - tempInvCoords[1]) <= 1e-10)
         System.out.println("y coords match");
@@ -181,7 +181,7 @@ public class CrystalCuboidTest {
 
       double depthDelta = sumdepths1 - sumdepths2;
       System.out.println("depthdelta = " + depthDelta);
-      Assert.assertTrue(Math.abs(sumdepths1 - sumdepths2) <= 1e-10,
+      assertTrue(Math.abs(sumdepths1 - sumdepths2) <= 1e-10,
           "depths are not matched under symmetry");
     }
   }

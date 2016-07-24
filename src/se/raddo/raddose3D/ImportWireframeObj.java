@@ -2,12 +2,15 @@ package se.raddo.raddose3D;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
+/*
+ * TODO: This whole class appears to be overly complicated. The subclass seems
+ * unnecessary and the int->double->int conversion is probably not helpful.
+ */
 /**
  * Returns vertices and indices for use by CrystalPolyhedron.
  * Vertices have not been rotated by the initial rotation angles
@@ -16,7 +19,12 @@ import java.util.List;
  */
 public class ImportWireframeObj implements ImportWireframe {
   /** Import file name of OBJ file type. */
-  private final String wireframeFileName;
+  private final String      wireframeFileName;
+
+  /** List of vertices from OBJ file. */
+  private final List<Triad> vertexTriads;
+  /** List of faces from OBJ file. */
+  private final List<Triad> faceTriads;
 
   /**
    * Sets up a wireframe object and sets file name for later
@@ -26,92 +34,86 @@ public class ImportWireframeObj implements ImportWireframe {
    */
   public ImportWireframeObj(final String filename) {
     if (filename == null) {
-      System.out.println("Filename not found, please set ModelFile");
-      throw new RuntimeException();
+      throw new IllegalArgumentException(
+          "Filename not found, please set ModelFile");
     }
 
     wireframeFileName = filename;
+    vertexTriads = new ArrayList<Triad>();
+    faceTriads = new ArrayList<Triad>();
+    try {
+      loadWireframeFile();
+    } catch (IOException e) {
+      throw new IllegalArgumentException(
+          "Could not read wireframe file ".concat(filename), e);
+    }
   }
 
   /**
    * Opens file and takes any line from the file beginning
    * with the identifier token (e.g. "v " or "f ") and splits
-   * into the component numbers, and returns a double ListArray
-   * containing these values.
+   * into the component numbers, and stores the values.
    * 
-   * @param identifier at beginning of lines to be interested in, two
-   *          characters.
-   * @return List<Triad> array containing triplets of doubles.
+   * @throws IOException
+   *           Error occured when reading from file.
    */
-  public List<Triad> getTriadList(final String identifier) {
-    BufferedReader br = null;
-    InputStreamReader isr = null;
-
-    List<Triad> triads = new ArrayList<Triad>();
-
-    try {
-      FileInputStream is = new FileInputStream(wireframeFileName);
-      isr = new InputStreamReader(is);
-      br = new BufferedReader(isr);
-    } catch (FileNotFoundException e) {
-      // give up
-      System.out.println("Cannot find import file for wireframe.");
-    }
+  private void loadWireframeFile() throws IOException {
+    FileInputStream is = new FileInputStream(wireframeFileName);
+    InputStreamReader isr = new InputStreamReader(is);
+    BufferedReader br = new BufferedReader(isr);
 
     String line;
+    String[] components;
 
-    try {
-      while ((line = br.readLine()) != null) {
-        // only interested in lines beginning with "v "
-        if (identifier.equals(line.substring(0, 2))) {
-          String[] components = line.split(" ", -1);
-
-          // if components are not 4, then this was a false positive
-          if (components.length < 4)
-            continue;
-
-          // components should be: "v", x, y, z.
-
-          // TODO: there could be a localization bug here
-          Triad newVertex = new Triad(
-              Double.parseDouble(components[1]),
-              Double.parseDouble(components[2]),
-              Double.parseDouble(components[3]));
-
-          triads.add(newVertex);
+    while ((line = br.readLine()) != null) {
+      // vertex lines begin with 'v '
+      if ("v ".equals(line.substring(0, 2))) {
+        components = line.split(" ", -1);
+        // if components are not 4, then this was a false positive
+        if (components.length < 4) {
+          continue;
         }
+
+        // components should be: "v", x, y, z.
+
+        // TODO: there could be a localization bug here
+        Triad newVertex = new Triad(
+            Double.parseDouble(components[1]),
+            Double.parseDouble(components[2]),
+            Double.parseDouble(components[3]));
+
+        vertexTriads.add(newVertex);
       }
-    } catch (IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
+      // face lines begin with 'v '
+      if ("f ".equals(line.substring(0, 2))) {
+        components = line.split(" ", -1);
+        // if components are not 4, then this was a false positive
+        if (components.length < 4) {
+          continue;
+        }
 
-    try {
-      br.close();
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+        // components should be: "f", x, y, z.
 
-    if (isr != null) {
-      try {
-        isr.close();
-      } catch (IOException e1) {
-        // TODO Auto-generated catch block
-        e1.printStackTrace();
+        // TODO: there could be a localization bug here
+        Triad newVertex = new Triad(
+            Double.parseDouble(components[1]),
+            Double.parseDouble(components[2]),
+            Double.parseDouble(components[3]));
+
+        faceTriads.add(newVertex);
       }
     }
-
-    return triads;
+    br.close();
+    isr.close();
   }
 
   @Override
   public double[][] getVertices() {
-    List<Triad> triads = getTriadList("v "); // vertex
+    double[][] returnVertices = new double[vertexTriads.size()][3];
 
-    double[][] returnVertices = new double[triads.size()][3];
-
-    for (int i = 0; i < triads.size(); i++) {
-      System.arraycopy(triads.get(i).getXYZ(), 0, returnVertices[i], 0, 3);
+    for (int i = 0; i < vertexTriads.size(); i++) {
+      System
+          .arraycopy(vertexTriads.get(i).getXYZ(), 0, returnVertices[i], 0, 3);
     }
 
     return returnVertices;
@@ -119,12 +121,10 @@ public class ImportWireframeObj implements ImportWireframe {
 
   @Override
   public int[][] getIndices() {
-    List<Triad> triads = getTriadList("f "); // face
+    int[][] returnIndices = new int[faceTriads.size()][3];
 
-    int[][] returnIndices = new int[triads.size()][3];
-
-    for (int i = 0; i < triads.size(); i++) {
-      double[] xyz = triads.get(i).getXYZ();
+    for (int i = 0; i < faceTriads.size(); i++) {
+      double[] xyz = faceTriads.get(i).getXYZ();
       returnIndices[i][0] = (int) xyz[0];
       returnIndices[i][1] = (int) xyz[1];
       returnIndices[i][2] = (int) xyz[2];
@@ -137,7 +137,7 @@ public class ImportWireframeObj implements ImportWireframe {
    * Small triad class which looks after xyz coordinates before
    * being sent back to the caller object.
    */
-  class Triad {
+  private static class Triad {
     /** xyz coordinates. */
     private double[] xyz = new double[3];
 

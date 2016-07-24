@@ -7,7 +7,6 @@ import se.raddo.raddose3D.parser.InputfileLexer;
 import se.raddo.raddose3D.parser.InputfileParser;
 
 /** Extremly basic instantiation tests of the InputfileParser.
- * @author Markus Gerstel
  */
 public class RaddoseParserTest {
 

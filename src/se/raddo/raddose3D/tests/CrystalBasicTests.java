@@ -14,7 +14,7 @@ package se.raddo.raddose3D.tests;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.testng.Assert;
+import static org.testng.Assert.*;
 import org.testng.annotations.*;
 
 import se.raddo.raddose3D.CoefCalc;
@@ -26,8 +26,8 @@ import se.raddo.raddose3D.CrystalSpherical;
 public class CrystalBasicTests {
   private static final Double   res  = 0.78;
   private static final Double   dim1 = 100d;
-  private static final Double   dim2 = 200d;
-  private static final Double   dim3 = 300d;
+  private static final Double   dim2 = 125d;
+  private static final Double   dim3 = 150d;
   private static final CoefCalc coef = new CoefCalcAverage();
 
   // Instances of all crystal subClasses should be put here, so that they can be tested. 
@@ -57,7 +57,7 @@ public class CrystalBasicTests {
   public void testResolution() {
     ArrayList<Crystal> cl = generateCrystals();
     for (Crystal c : cl) {
-      Assert.assertEquals(c.getCrystalPixPerUM(), res, c.crystalInfo());
+      assertEquals(c.getCrystalPixPerUM(), res, c.crystalInfo());
     }
   }
 
@@ -67,11 +67,11 @@ public class CrystalBasicTests {
     ArrayList<Crystal> cl = generateCrystals();
     for (Crystal c : cl) {
       c.addDose(1, 2, 3, 0.1);
-      Assert.assertEquals(c.getDose(1, 2, 3), 0.1, c.crystalInfo()
+      assertEquals(c.getDose(1, 2, 3), 0.1, c.crystalInfo()
           + "fails to initialise Dose");
 
       c.addDose(1, 2, 3, 0.9);
-      Assert.assertEquals(c.getDose(1, 2, 3), 1.0, c.crystalInfo()
+      assertEquals(c.getDose(1, 2, 3), 1.0, c.crystalInfo()
           + "fails to initialise Dose");
     }
   }
@@ -85,11 +85,11 @@ public class CrystalBasicTests {
     ArrayList<Crystal> cl = generateCrystals();
     for (Crystal c : cl) {
       c.addFluence(1, 2, 3, 0.1);
-      Assert.assertEquals(c.getFluence(1, 2, 3), 0.1, c.crystalInfo()
+      assertEquals(c.getFluence(1, 2, 3), 0.1, c.crystalInfo()
           + "fails to initialise Fluence.");
 
       c.addFluence(1, 2, 3, 0.9);
-      Assert.assertEquals(c.getFluence(1, 2, 3), 1.0, c.crystalInfo()
+      assertEquals(c.getFluence(1, 2, 3), 1.0, c.crystalInfo()
           + "fails to increment Fluence.");
     }
   }
@@ -131,25 +131,37 @@ public class CrystalBasicTests {
         }
       }
 
-      Assert.assertTrue(Math.abs(minX + (c.getCrystSizeUM()[0] / 2)) < 1 / c
-          .getCrystalPixPerUM(), c.crystalInfo()
-          + "minX  value more than 1 pixRes unit away from specified size.");
-      Assert.assertTrue(Math.abs(minY + (c.getCrystSizeUM()[1] / 2)) < 1 / c
-          .getCrystalPixPerUM(), c.crystalInfo()
-          + "minY  value more than 1 pixRes unit away from specified size.");
-      Assert.assertTrue(Math.abs(minZ + (c.getCrystSizeUM()[2] / 2)) < 1 / c
-          .getCrystalPixPerUM(), c.crystalInfo()
-          + "minZ  value more than 1 pixRes unit away from specified size.");
+      assertTrue(
+          Math.abs(minX + (c.getCrystSizeUM()[0] / 2)) < 1 / c
+              .getCrystalPixPerUM(),
+          c.crystalInfo()
+              + "minX  value more than 1 pixRes unit away from specified size.");
+      assertTrue(
+          Math.abs(minY + (c.getCrystSizeUM()[1] / 2)) < 1 / c
+              .getCrystalPixPerUM(),
+          c.crystalInfo()
+              + "minY  value more than 1 pixRes unit away from specified size.");
+      assertTrue(
+          Math.abs(minZ + (c.getCrystSizeUM()[2] / 2)) < 1 / c
+              .getCrystalPixPerUM(),
+          c.crystalInfo()
+              + "minZ  value more than 1 pixRes unit away from specified size.");
 
-      Assert.assertTrue(Math.abs(maxX - (c.getCrystSizeUM()[0] / 2)) < 1 / c
-          .getCrystalPixPerUM(), c.crystalInfo()
-          + "maxX  value more than 1 pixRes unit away from specified size.");
-      Assert.assertTrue(Math.abs(maxY - (c.getCrystSizeUM()[1] / 2)) < 1 / c
-          .getCrystalPixPerUM(), c.crystalInfo()
-          + "maxY  value more than 1 pixRes unit away from specified size.");
-      Assert.assertTrue(Math.abs(maxZ - (c.getCrystSizeUM()[2] / 2)) < 1 / c
-          .getCrystalPixPerUM(), c.crystalInfo()
-          + "maxZ  value more than 1 pixRes unit away from specified size.");
+      assertTrue(
+          Math.abs(maxX - (c.getCrystSizeUM()[0] / 2)) < 1 / c
+              .getCrystalPixPerUM(),
+          c.crystalInfo()
+              + "maxX  value more than 1 pixRes unit away from specified size.");
+      assertTrue(
+          Math.abs(maxY - (c.getCrystSizeUM()[1] / 2)) < 1 / c
+              .getCrystalPixPerUM(),
+          c.crystalInfo()
+              + "maxY  value more than 1 pixRes unit away from specified size.");
+      assertTrue(
+          Math.abs(maxZ - (c.getCrystSizeUM()[2] / 2)) < 1 / c
+              .getCrystalPixPerUM(),
+          c.crystalInfo()
+              + "maxZ  value more than 1 pixRes unit away from specified size.");
     }
   }
 
@@ -162,7 +174,7 @@ public class CrystalBasicTests {
       for (int i = 0; i < c.getCrystSizeVoxels()[0]; i++) {
         for (int j = 0; j < c.getCrystSizeVoxels()[1]; j++) {
           for (int k = 0; k < c.getCrystSizeVoxels()[2]; k++) {
-            Assert.assertNotNull(c.getCrystCoord(i, j, k), c.crystalInfo()
+            assertNotNull(c.getCrystCoord(i, j, k), c.crystalInfo()
                 + "crystCoord has null voxels at i,j,k = " + i + ", " + j
                 + ", " + k);
           }

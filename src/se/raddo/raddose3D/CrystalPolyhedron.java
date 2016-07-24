@@ -141,14 +141,13 @@ public class CrystalPolyhedron extends Crystal {
    * Contains an i, j, k vector per triangle.
    * Should have same no. of entries as the indices array.
    */
-  private double[][]            normals                       = null,
-      rotatedNormals = null;
+  private double[][]            normals, rotatedNormals;
 
   /**
    * Distances from origin for each of the triangle planes.
    * Should have same no. of entries as the indices array.
    */
-  private double[]              originDistances, rotatedOriginDistances = null;
+  private double[]              originDistances, rotatedOriginDistances;
 
   /**
    * Vector class containing magical vector methods
@@ -651,17 +650,7 @@ public class CrystalPolyhedron extends Crystal {
       originDistancesUsed[i] = distanceFromOrigin;
     }
 
-    if (!rotated) {
-      originDistances = new double[indices.length];
-      normals = new double[indices.length][3];
-
-      for (int i = 0; i < normalsUsed.length; i++) {
-        System.arraycopy(normalsUsed[i], 0, normals[i], 0, 3);
-      }
-
-      System.arraycopy(originDistancesUsed, 0, originDistances, 0,
-          indices.length);
-    } else {
+    if (rotated) {
       rotatedOriginDistances = new double[indices.length];
       rotatedNormals = new double[indices.length][3];
 
@@ -670,6 +659,16 @@ public class CrystalPolyhedron extends Crystal {
       }
 
       System.arraycopy(originDistancesUsed, 0, rotatedOriginDistances, 0,
+          indices.length);
+    } else {
+      originDistances = new double[indices.length];
+      normals = new double[indices.length][3];
+
+      for (int i = 0; i < normalsUsed.length; i++) {
+        System.arraycopy(normalsUsed[i], 0, normals[i], 0, 3);
+      }
+
+      System.arraycopy(originDistancesUsed, 0, originDistances, 0,
           indices.length);
     }
   }
@@ -825,7 +824,7 @@ public class CrystalPolyhedron extends Crystal {
     }
 
     // sanity check that point is within crystal
-    if (distancesFound.size() == 0 || distancesFound.size() % 2 == 0) {
+    if (distancesFound.isEmpty() || distancesFound.size() % 2 == 0) {
       return 0;
     }
 

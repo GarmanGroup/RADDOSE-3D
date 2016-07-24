@@ -36,9 +36,13 @@ public class ExposureSummary implements ExposeObserver {
   private int                                 occupiedVoxels;
 
   // exposure summary variables exposureComplete()
+  /** Diffraction weighted dose (Zeldin et al, 2013, PNAS). */
   private Double                              avgDiffractedDose;
+  /** Average dose throughout the whole crystal. */
   private Double                              avgDoseWholeCrystal;
+  /** Average dose of the exposed crystal regions. */
   private Double                              avgDoseExposedRegion;
+  /** Fraction of the crystal volume that has been illuminated. */
   private Double                              usedVolumeFraction;
   private Double                              doseInefficiency;
 
@@ -270,6 +274,12 @@ public class ExposureSummary implements ExposeObserver {
     return cachedDoseContrast;
   }
 
+  /**
+   * Returns the fraction of the crystal volume that has been illuminated.
+   *
+   * @return
+   *         fraction between 0 and 1.
+   */
   public Double getUsedVolumeFraction() {
     return usedVolumeFraction;
   }

@@ -9,5 +9,6 @@
 	<classpathentry kind="lib" path="lib/antlr-3.4/antlr-3.4-cutdown.jar"/>
 	<classpathentry kind="lib" path="lib/testng-6.8/testng-6.8.jar"/>
 	<classpathentry kind="lib" path="lib/mysql-connector-java-5.1.22/mysql-connector-java-5.1.22-bin.jar"/>
+	<classpathentry kind="lib" path="lib/mockito-1.9.5/mockito-all-1.9.5.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

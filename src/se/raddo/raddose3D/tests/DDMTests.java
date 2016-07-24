@@ -1,6 +1,6 @@
 package se.raddo.raddose3D.tests;
 
-import org.testng.Assert;
+import static org.testng.Assert.*;
 import org.testng.annotations.Test;
 
 import se.raddo.raddose3D.DDMLeal;
@@ -37,7 +37,7 @@ public class DDMTests {
     }
 
     //Check that the decay value is equal to 1
-    Assert.assertTrue(equalToOne,"DDMSimple calculate decay");
+    assertTrue(equalToOne,"DDMSimple calculate decay");
 
     System.out.println("@Test - testDDMSimpleIsOne");
   }
@@ -66,7 +66,7 @@ public class DDMTests {
     }
 
     //Check that the decay value is equal to 1
-    Assert.assertTrue(withinRangeZeroToOne,"DDMLinear decay range 0 < x < 1");
+    assertTrue(withinRangeZeroToOne,"DDMLinear decay range 0 < x < 1");
 
     System.out.println("@Test - testDDMLinearDecayRange");
   }
@@ -104,7 +104,7 @@ public class DDMTests {
     }
 
     //Check that the RDE is within range
-    Assert.assertTrue(withinRangeZeroToOne, "DDMLeal should be within range 0 < x < 1");
+    assertTrue(withinRangeZeroToOne, "DDMLeal should be within range 0 < x < 1");
 
     System.out.println("@Test - testDDMLealDecayRange");
   }
@@ -139,7 +139,7 @@ public class DDMTests {
     }
 
     //Check that the decay value is equal to 1
-    Assert.assertTrue(monotonicDecrease,"DDMLinear should monotonically decrease");
+    assertTrue(monotonicDecrease,"DDMLinear should monotonically decrease");
 
     System.out.println("@Test - testDDMLinearMonotonicDecrease");
   }
@@ -183,7 +183,7 @@ public class DDMTests {
     }
 
     //Check that the RDE is within range
-    Assert.assertTrue(monotonicDecrease, "DDMLeal should monotonically decrease");
+    assertTrue(monotonicDecrease, "DDMLeal should monotonically decrease");
 
     System.out.println("@Test - testDDMLealMonotonicDecrease");
   }
@@ -201,7 +201,7 @@ public class DDMTests {
     zeroDoseDecayValue = myLinearDDM.calcDecay(zeroDose);
 
     //Check that the decay value is equal to 1
-    Assert.assertEquals(zeroDoseDecayValue, 1, tolerance,"DDMLinear should be 1 at zero dose");
+    assertEquals(zeroDoseDecayValue, 1, tolerance,"DDMLinear should be 1 at zero dose");
 
     System.out.println("@Test - testDDMLinearZeroDoseDecay");
   }
@@ -221,7 +221,7 @@ public class DDMTests {
     zeroDoseRDE = myLealDDM.getIntegratedIntensity(zeroDose) / zeroDoseIntegratedIntensity;
 
     //Check that the decay value is equal to 1
-    Assert.assertEquals(zeroDoseRDE, 1, tolerance,"DDMLeal should be 1 at zero dose");
+    assertEquals(zeroDoseRDE, 1, tolerance,"DDMLeal should be 1 at zero dose");
 
     System.out.println("@Test - testDDMLealZeroDoseDecay");
   }
