@@ -88,4 +88,9 @@ public class CrystalDummy extends Crystal {
   public double getElastic(int i, int j, int k) {
     return 0;
   }
+
+  @Override
+  public double getEscapeFactor(int i, int j, int k) {
+    return 1.0;
+  }
 }
