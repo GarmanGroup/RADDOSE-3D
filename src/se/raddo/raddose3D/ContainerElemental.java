@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
  * The container introduces an additional attenuation factor to the
  * beam before it reaches the sample.
  */
-public class ContainerElemental extends Container{
+public class ContainerElemental implements Container{
 
   /**
    * Conversion of beam energy from MeV to KeV
