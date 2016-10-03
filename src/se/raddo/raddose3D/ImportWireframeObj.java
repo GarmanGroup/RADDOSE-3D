@@ -80,11 +80,11 @@ public class ImportWireframeObj implements ImportWireframe {
         Triad newVertex = new Triad(
             Double.parseDouble(components[1]),
             Double.parseDouble(components[2]),
-            Double.parseDouble(components[3]));
-
+            Double.parseDouble(components[3]));  
+        
         vertexTriads.add(newVertex);
       }
-      // face lines begin with 'v '
+      // face lines begin with 'f '
       if ("f ".equals(line.substring(0, 2))) {
         components = line.split(" ", -1);
         // if components are not 4, then this was a false positive
@@ -92,13 +92,14 @@ public class ImportWireframeObj implements ImportWireframe {
           continue;
         }
 
-        // components should be: "f", x, y, z.
+        // components typically of form: "f", "x//a//e", "y//b//f", "z//c//g". 
+        // Require only x, y, z here
 
         // TODO: there could be a localization bug here
         Triad newVertex = new Triad(
-            Double.parseDouble(components[1]),
-            Double.parseDouble(components[2]),
-            Double.parseDouble(components[3]));
+            Double.parseDouble(components[1].split("//")[0]),
+            Double.parseDouble(components[2].split("//")[0]),
+            Double.parseDouble(components[3].split("//")[0]));
 
         faceTriads.add(newVertex);
       }
