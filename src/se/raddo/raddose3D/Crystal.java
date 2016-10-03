@@ -270,10 +270,10 @@ public abstract class Crystal {
     sampleContainer.calculateContainerAttenuation(beam);
     //Print information about the attenuation to the console.
     sampleContainer.containerInformation();
-
+    
     //Apply the attenuation of the container to the beam
     beam.applyContainerAttenuation(sampleContainer);
-    
+
     //Generate beam array.
     //NOTE: this only does anything for the experimental beam class.
     //The beam implementation should change so that an array is an instance property
