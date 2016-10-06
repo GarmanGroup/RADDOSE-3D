@@ -344,10 +344,9 @@ public abstract class Crystal {
     final double absorptionFraction =
         1 - Math.exp(-1 * coefCalc.getAbsorptionCoefficient()
             / getCrystalPixPerUM());
-    // absorption of the beam by a voxel
+    // absorption fraction of the beam by a voxel
     
-    final double fluenceToDoseFactor =
-        // exposure for the Voxel (J) * fraction absorbed by voxel
+    final double absorptionFractionPerKg =
         absorptionFraction / voxelMass * GY_TO_MGY;
     
     final double fluenceToElasticFactor = -1
@@ -410,7 +409,7 @@ public abstract class Crystal {
               
               double voxImageEnergy = beamEnergy * voxImageFluence;
 
-              double voxImageDose = fluenceToDoseFactor * voxImageEnergy;
+              double voxImageDose = absorptionFractionPerKg * voxImageEnergy;
               // MGy
 
               double voxElasticYield = fluenceToElasticFactor * voxImageEnergy;
