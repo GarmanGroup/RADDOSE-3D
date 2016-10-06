@@ -175,6 +175,9 @@ public class CoefCalcCompute extends CoefCalc {
     solventConcentration = new HashMap<Element, Double>();
   }
   
+  /**
+   * Calculate the density of the crystal from its composition.
+   */
   protected void calculateDensity() {
     // density is easy. Loop through all atoms and calculate total mass.
     // then express as g / cm-3.
