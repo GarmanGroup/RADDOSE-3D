@@ -103,7 +103,7 @@ public class BeamGaussian implements Beam {
     gY = new Gaussian(0, sigmaY);
 
     // Calculate the scale factor for this Gaussian beam.
-    scaleFactor = KEVTOJOULES * photonEnergy * photonsPerSec / normFactor;
+    scaleFactor = photonsPerSec / normFactor;
   }
 
   /**

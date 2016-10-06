@@ -67,7 +67,6 @@ public class BeamExperimental implements Beam {
     for (int i = 0; i < sizeVert + 2; i++) {
       for (int j = 0; j < sizeHoriz + 2; j++) {
         beamArrayWithBorders[i][j] = beamArrayWithBorders[i][j]
-            * KEVTOJOULES * this.beamEnergy
             * this.totalFlux
             / (beamSum * pixelSizeX * pixelSizeY);
       }

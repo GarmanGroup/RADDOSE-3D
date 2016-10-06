@@ -61,7 +61,7 @@ public class BeamTophat implements Beam {
     // fluence.
     if (Math.abs(coordX - offAxisUM) <= beamXum / 2
         && Math.abs(coordY) <= beamYum / 2) {
-      return KEVTOJOULES * photonsPerSec * photonEnergy / (beamXum * beamYum);
+      return photonsPerSec / (beamXum * beamYum);
     } else {
       return 0d;
     }
