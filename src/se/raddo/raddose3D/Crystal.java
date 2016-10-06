@@ -51,7 +51,8 @@ public abstract class Crystal {
   private final DDM              ddm;
   /** The CoefCalc method being employed to generate crystal coefficients. */
   private final CoefCalc         coefCalc;
-
+  /** The mass of each voxel in the crystal */
+  private final double           voxelMass;
   /**
    * List of registered exposureObservers. Registered objects will be notified
    * of individual voxel exposure events and can also inspect the Crystal object
@@ -88,6 +89,11 @@ public abstract class Crystal {
     } else {
       coefCalc = (CoefCalc) properties.get(Crystal.CRYSTAL_COEFCALC);
     }
+    
+    double crystalPixPerUM = (Double) properties.get(Crystal.CRYSTAL_RESOLUTION);
+    // Calculate voxel mass: 1um^3/1m/ml
+    // (= 1e-18/1e3) / [volume (um^-3) *density (g/ml)]
+    voxelMass = 1e-15 * (Math.pow(crystalPixPerUM, -3) * coefCalc.getDensity());
   }
 
   public abstract void setupDepthFinding(double angrad, Wedge wedge);
@@ -327,14 +333,10 @@ public abstract class Crystal {
     setupDepthFinding(angle, wedge);
     
     final double fluenceToDoseFactor = -1
-        * Math.expm1(-1 * coefCalc.getAbsorptionCoefficient()
-            / getCrystalPixPerUM())
         // exposure for the Voxel (J) * fraction absorbed by voxel
-        / (1e-15 * (Math.pow(getCrystalPixPerUM(), -3) * coefCalc
-            .getDensity()))
-        // Voxel mass: 1um^3/1m/ml
-        // (= 1e-18/1e3) / [volume (um^-3) *density (g/ml)]
-        * GY_TO_MGY;
+        * Math.expm1(-1 * coefCalc.getAbsorptionCoefficient()
+            / getCrystalPixPerUM()) / voxelMass * GY_TO_MGY;
+    
     final double fluenceToElasticFactor = -1
         * Math.expm1(-1 * coefCalc.getElasticCoefficient()
         / getCrystalPixPerUM())
