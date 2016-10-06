@@ -839,6 +839,8 @@ public class CoefCalcFromPDB extends CoefCalcCompute {
     Residue.createResidueArray();
 
     downloadPDB(pdbName);
+    
+    super.calculateDensity();
   }
 
   /**
@@ -864,6 +866,7 @@ public class CoefCalcFromPDB extends CoefCalcCompute {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
+    super.calculateDensity();
   }
 
   /**

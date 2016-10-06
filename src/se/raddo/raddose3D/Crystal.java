@@ -322,7 +322,7 @@ public abstract class Crystal {
     final double anglecos = Math.cos(angle);
     final double anglesin = Math.sin(angle);
     setupDepthFinding(angle, wedge);
-
+    
     final double fluenceToDoseFactor = -1
         * Math.expm1(-1 * coefCalc.getAbsorptionCoefficient()
             / getCrystalPixPerUM())

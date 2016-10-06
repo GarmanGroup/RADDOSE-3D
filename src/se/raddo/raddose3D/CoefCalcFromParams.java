@@ -73,6 +73,8 @@ public class CoefCalcFromParams extends CoefCalcCompute {
     calculateAtomOccurrences(numMonomers, numResidues, numRNA, numDNA,
         sf, heavyProteinAtomNames, heavyProteinAtomNums,
         heavySolutionConcNames, heavySolutionConcNums);
+    
+    super.calculateDensity();
   }
 
   /**

@@ -14,6 +14,8 @@ public class CoefCalcCompute extends CoefCalc {
    */
   private double                     absCoeff, attCoeff, elasCoeff, density,
                                      cellVolume;
+  
+  private Set<Element>               presentElements;
 
   /**
    * Percentage conversion.
@@ -172,14 +174,13 @@ public class CoefCalcCompute extends CoefCalc {
     solventOccurrence = new HashMap<Element, Double>();
     solventConcentration = new HashMap<Element, Double>();
   }
-
-  @Override
-  public void updateCoefficients(final Beam b) {
+  
+  protected void calculateDensity() {
     // density is easy. Loop through all atoms and calculate total mass.
     // then express as g / cm-3.
     double mass = 0;
 
-    Set<Element> presentElements = new HashSet<Element>();
+    presentElements = new HashSet<Element>();
     presentElements.addAll(solventOccurrence.keySet());
     presentElements.addAll(macromolecularOccurrence.keySet());
 
@@ -188,6 +189,10 @@ public class CoefCalcCompute extends CoefCalc {
     }
 
     density = mass * MASS_TO_CELL_VOLUME / (cellVolume * UNITSPERMILLIUNIT);
+  }
+
+  @Override
+  public void updateCoefficients(final Beam b) {
 
     double energy = b.getPhotonEnergy();
 
