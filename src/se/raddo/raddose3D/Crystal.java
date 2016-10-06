@@ -39,7 +39,10 @@ public abstract class Crystal {
   public static final int        STATICEXPOSURE                = 100;
   
   /** Conversion factor from Gy to MGy. */
-  public static final double        GY_TO_MGY                  = 1e-6;
+  private static final double        GY_TO_MGY                 = 1e-6;
+  
+  /** Unit conversion to get voxel mass in kg. */
+  private static final double        UNIT_CONVERSION           = 1e-15;
 
   /**
    * Upper voxel limit for default resolution.
@@ -91,9 +94,10 @@ public abstract class Crystal {
     }
     
     double crystalPixPerUM = (Double) properties.get(Crystal.CRYSTAL_RESOLUTION);
-    // Calculate voxel mass: 1um^3/1m/ml
-    // (= 1e-18/1e3) / [volume (um^-3) *density (g/ml)]
-    voxelMass = 1e-15 * (Math.pow(crystalPixPerUM, -3) * coefCalc.getDensity());
+    // Calculate voxel mass (kg) = voxelVolume (um^3) * density (g/cm^3) *
+    //                             unitConversionFactor
+    voxelMass = UNIT_CONVERSION * (Math.pow(crystalPixPerUM, -3) * 
+        coefCalc.getDensity());
   }
 
   public abstract void setupDepthFinding(double angrad, Wedge wedge);
