@@ -334,7 +334,7 @@ public abstract class Crystal {
             .getDensity()))
         // Voxel mass: 1um^3/1m/ml
         // (= 1e-18/1e3) / [volume (um^-3) *density (g/ml)]
-        * GY_TO_MGY; // MGy
+        * GY_TO_MGY;
     final double fluenceToElasticFactor = -1
         * Math.expm1(-1 * coefCalc.getElasticCoefficient()
         / getCrystalPixPerUM())
