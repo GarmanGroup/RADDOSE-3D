@@ -37,6 +37,9 @@ public abstract class Crystal {
 
   /** Number of exposure-steps when crystal is exposed without rotation. */
   public static final int        STATICEXPOSURE                = 100;
+  
+  /** Conversion factor from Gy to MGy. */
+  public static final double        GY_TO_MGY                  = 1e-6;
 
   /**
    * Upper voxel limit for default resolution.
@@ -331,7 +334,7 @@ public abstract class Crystal {
             .getDensity()))
         // Voxel mass: 1um^3/1m/ml
         // (= 1e-18/1e3) / [volume (um^-3) *density (g/ml)]
-        * 1e-6; // MGy
+        * GY_TO_MGY; // MGy
     final double fluenceToElasticFactor = -1
         * Math.expm1(-1 * coefCalc.getElasticCoefficient()
         / getCrystalPixPerUM())
