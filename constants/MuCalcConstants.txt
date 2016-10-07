@@ -43,9 +43,9 @@
 #		K edge alpha 1																																												
 #		L edge beta 1																																												
 #		L edge alpha 1																																												
-#		L1																																												
 #		L2																																												
-#		LJ3																																												
+#		L3																																												
+#		LJ3	# NOT SURE WHAT THIS ACTUALLY IS																																											
 #		FEK																																												
 #		FEL 1																																												
 #		FEL 2																																												
