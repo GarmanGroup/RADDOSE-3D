@@ -1,5 +1,7 @@
 #	MuCal Library Part I																																													
 #	Converted from hard-coded Fortran library by Helen Ginn Apr 2014																																													
+#	Fortran code can be found at: https://github.com/GarmanGroup/RADDOSE-3D-internal/tree/master/legacy-raddose																																													
+#	Note: that the code is in a pricate repository which is only accessible to members of the Garman Group Github organisation 																																													
 #																																														
 #	Coefficients are expressed as a natural logarithm																																													
 #	Problem: can't read units of some of the values																																													
@@ -48,6 +50,10 @@
 #		FEL 1																																												
 #		FEL 2																																												
 #		FEL 3																																												
+#		K edge ratio																																												
+#		L1 edge ratio																																												
+#		L2 edge ratio																																												
+#		L3 edge ratio																																												
 #																																											kedge ratio	l1 edge ra	l2 edge ra	l3 edge ra
 1	H	1.40E-02	0.00E+00		2.45E+00	-3.35E+00	-4.71E-02	7.10E-03	0.00E+00	0.00E+00	0.00E+00	0.00E+00	0.00E+00	0.00E+00	0.00E+00	0.00E+00	0.00E+00	0.00E+00	0.00E+00	0.00E+00	8.90E-05	1.67E+00	1.01E+00	-1.19E-01	-9.37E-01	-2.01E-01	1.07E-02	-2.16E+00	1.33E+00	-3.06E-01	1.85E-02					0.00E+00	0.00E+00	0.00E+00	0.00E+00	0.00E+00	0.00E+00	0.00E+00				
 2	HE	2.50E-02	0.00E+00		6.06E+00	-3.29E+00	-1.07E-01	1.44E-02	0.00E+00	0.00E+00	0.00E+00	0.00E+00	0.00E+00	0.00E+00	0.00E+00	0.00E+00	0.00E+00	0.00E+00	0.00E+00	0.00E+00	1.79E-04	6.65E+00	4.00E+00	1.05E+00	-8.52E-02	-4.04E-01	2.69E-02	-2.56E+00	2.03E+00	-4.49E-01	2.80E-02					0.00E+00	0.00E+00	0.00E+00	0.00E+00	0.00E+00	0.00E+00	0.00E+00				
