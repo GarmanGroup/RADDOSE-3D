@@ -14,7 +14,10 @@ public class CoefCalcCompute extends CoefCalc {
    */
   private double                     absCoeff, attCoeff, elasCoeff, density,
                                      cellVolume;
-  
+  /**
+   * Set of the unique elements present in the crystal (including solvent
+   * and macromolecular)
+   */
   private Set<Element>               presentElements;
 
   /**
