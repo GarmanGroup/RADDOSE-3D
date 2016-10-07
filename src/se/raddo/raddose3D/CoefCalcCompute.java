@@ -200,7 +200,15 @@ public class CoefCalcCompute extends CoefCalc {
 
     density = mass * MASS_TO_CELL_VOLUME / (cellVolume * UNITSPERMILLIUNIT);
   }
-
+  
+  
+  /**
+   * Calculates the absorption, attenuation and elastic coefficients for the 
+   * crystal and updates the corresponding instance properties
+   * 
+   *  @param b
+   *    Beam object which contains the properties that describe the incident beam.
+   */
   @Override
   public void updateCoefficients(final Beam b) {
     Map<String, Double> absCoefficients = calculateCoefficients(b.getPhotonEnergy());
