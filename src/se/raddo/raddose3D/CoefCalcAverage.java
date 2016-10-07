@@ -74,4 +74,13 @@ public class CoefCalcAverage extends CoefCalc {
   public void updateCoefficients(final Beam b) {
     // Does nothing
   }
+
+  @Override
+  public double calcFluorescentEscapeCorrectedAbsorbedEnergy(Beam beam) {
+    System.out.println("********** WARNING **********");
+    System.out.println("No X-ray Fluorescent escape correction is implemented " +
+    "for the 'Average/Dummy' calculated crystal composition.");
+    System.out.println("No X-ray Fluorescent escape correction is being applied.");
+    return beam.getPhotonEnergy();
+  }
 }

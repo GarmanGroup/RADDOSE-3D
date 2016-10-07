@@ -341,4 +341,13 @@ public class CoefCalcRaddose extends CoefCalc {
   public static final void setRADDOSEExecutable(final String pathToExecutable) {
     raddosePathOverride = pathToExecutable;
   }
+
+  @Override
+  public double calcFluorescentEscapeCorrectedAbsorbedEnergy(Beam beam) {
+    System.out.println("********** WARNING **********");
+    System.out.println("No X-ray Fluorescent escape correction is implemented " +
+    "for the 'RADDOSE Version 2' calculated crystal composition.");
+    System.out.println("No X-ray Fluorescent escape correction is being applied.");
+    return beam.getPhotonEnergy();
+  }
 }

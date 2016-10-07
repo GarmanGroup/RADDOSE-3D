@@ -42,4 +42,15 @@ public abstract class CoefCalc {
    *         crystal density in g/ml.
    */
   public abstract double getDensity();
+  
+  /**
+   * Calculates the absorbed energy within the crystal corrected for
+   * X-ray Fluorescence.
+   * 
+   * @param beam
+   *          Beam object
+   * @return
+   *         absorbed energy.
+   */
+  public abstract double calcFluorescentEscapeCorrectedAbsorbedEnergy(Beam beam);
 }
