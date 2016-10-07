@@ -150,6 +150,10 @@ public class CoefCalcCompute extends CoefCalc {
    * Element database keeping the coefficients of all elements.
    */
   private final ElementDatabase      elementDB;
+  
+  private static final String        PHOTOELECTRIC                = "Photoelectric";
+  private static final String        ELASTIC                      = "Elastic";
+  private static final String        TOTAL                        = "Total";
 
   /**
    * Number of atoms (only those that are not part of the protein), per
@@ -199,9 +203,24 @@ public class CoefCalcCompute extends CoefCalc {
 
   @Override
   public void updateCoefficients(final Beam b) {
-
-    double energy = b.getPhotonEnergy();
-
+    Map<String, Double> absCoefficients = calculateCoefficients(b.getPhotonEnergy());
+    absCoeff = absCoefficients.get(PHOTOELECTRIC);
+    attCoeff = absCoefficients.get(TOTAL);
+    elasCoeff = absCoefficients.get(ELASTIC);
+  }
+  
+  /**
+   * Calculates the absorption, attenuation and elastic coefficients for
+   * the entire crystal.
+   * 
+   * @param energy
+   *          The energy in KeV of the incident photons.
+   * @return
+   *         Map containing the calculated coefficient values.
+   */
+  private Map<String, Double> calculateCoefficients(final double energy) {
+    
+    Map<String, Double> absCoeffs = new HashMap<String, Double>();
     double crossSectionPhotoElectric = 0;
     double crossSectionCoherent = 0;
     double crossSectionTotal = 0;
@@ -209,7 +228,7 @@ public class CoefCalcCompute extends CoefCalc {
     // take cross section contributions from each individual atom
     // weighted by the cell volume
     Map<Element.CrossSection, Double> cs;
-    for (Element e : presentElements) {
+    for (Element e : this.presentElements) {
       cs = e.getAbsCoefficients(energy);
       crossSectionPhotoElectric += totalAtoms(e)
           * cs.get(CrossSection.PHOTOELECTRIC) / cellVolume
@@ -221,10 +240,62 @@ public class CoefCalcCompute extends CoefCalc {
           * cs.get(CrossSection.TOTAL) / cellVolume
           / UNITSPERDECIUNIT;
     }
+    crossSectionPhotoElectric = crossSectionPhotoElectric / UNITSPERMILLIUNIT;
+    crossSectionTotal = crossSectionTotal / UNITSPERMILLIUNIT;
+    crossSectionCoherent = crossSectionCoherent / UNITSPERMILLIUNIT;
+    
+    absCoeffs.put(PHOTOELECTRIC, crossSectionPhotoElectric);
+    absCoeffs.put(ELASTIC, crossSectionCoherent);
+    absCoeffs.put(TOTAL, crossSectionTotal);
+    
+    return absCoeffs;
+  }
+  
+  /**
+   * Calculates the absorption, attenuation and elastic coefficients for
+   * the given set of elements.
+   * 
+   * @param energy
+   *          The energy in KeV of the incident photons.
+   * @param elementSet
+   *          A set of elements for which the the coefficients are 
+   *          calculated from.
+   *          
+   * @return
+   *         Map containing the calculated coefficient values.
+   */
+  private Map<String, Double> calculateCoefficients(final double energy, 
+      final Set<Element> elementSet) {
+    
+    Map<String, Double> absCoeffs = new HashMap<String, Double>();
+    double crossSectionPhotoElectric = 0;
+    double crossSectionCoherent = 0;
+    double crossSectionTotal = 0;
 
-    absCoeff = crossSectionPhotoElectric / UNITSPERMILLIUNIT;
-    attCoeff = crossSectionTotal / UNITSPERMILLIUNIT;
-    elasCoeff = crossSectionCoherent / UNITSPERMILLIUNIT;
+    // take cross section contributions from each individual atom
+    // weighted by the cell volume
+    Map<Element.CrossSection, Double> cs;
+    for (Element e : elementSet) {
+      cs = e.getAbsCoefficients(energy);
+      crossSectionPhotoElectric += totalAtoms(e)
+          * cs.get(CrossSection.PHOTOELECTRIC) / cellVolume
+          / UNITSPERDECIUNIT;
+      crossSectionCoherent += totalAtoms(e)
+          * cs.get(CrossSection.COHERENT) / cellVolume
+          / UNITSPERDECIUNIT;
+      crossSectionTotal += totalAtoms(e)
+          * cs.get(CrossSection.TOTAL) / cellVolume
+          / UNITSPERDECIUNIT;
+    }
+    crossSectionPhotoElectric = crossSectionPhotoElectric / UNITSPERMILLIUNIT;
+    crossSectionTotal = crossSectionTotal / UNITSPERMILLIUNIT;
+    crossSectionCoherent = crossSectionCoherent / UNITSPERMILLIUNIT;
+    
+    absCoeffs.put(PHOTOELECTRIC, crossSectionPhotoElectric);
+    absCoeffs.put(ELASTIC, crossSectionCoherent);
+    absCoeffs.put(TOTAL, crossSectionTotal);
+    
+    return absCoeffs;
   }
 
   @Override
