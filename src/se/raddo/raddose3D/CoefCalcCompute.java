@@ -305,6 +305,47 @@ public class CoefCalcCompute extends CoefCalc {
     
     return absCoeffs;
   }
+  
+  /**
+   * Calculate the absorbed energy in the crystal which is corrected for
+   * fluorescent escape. The implementation largely follows the one 
+   * outlined in the Paithankar et al. (2009). Namely equation 6
+   * 
+   * The resulting Energy, E, is equal to the beam energy, E_b, minus
+   * the energy lost from fluorescent escape from K, L1, L2 and L3 
+   * shells
+   * 
+   * E = E_b - (E_K * P_K + E_L1 * P_L1 + E_L2 * P_L2 + E_L3 * P_L3)
+   * 
+   * where E_X is the X-edge energy of the corresponding element and P_X
+   * is the probability of emission and escape of a Fluorescent X-ray.
+   * 
+   * P_X is calculated as:
+   * 
+   * P_X = A * B * C
+   * 
+   * where:
+   *    A: probability of K-shell (or L-shell) ionization given byL
+   *    (1 - 1/x_EDGE_RATIO)
+   *    B: K-shell (or L-shell) fluorescence yield
+   *    C: fluorescent X-ray escape probability, which is given by
+   *    C = exp(-mu x)
+   *    where herE mu is the absorption coefficient of the crystal at 
+   *    the fluorescent X-ray energy which is equal to the difference
+   *    between the edge energies of the shell from which the electron
+   *    started from to the shell which is dropped to.
+   * @param beam
+   *             Beam object which contains the properties that 
+   *             describe the incident beam.
+   *             
+   * @return correctedAbsEnergy
+   *             The energy that is actually absorbed in the crystal 
+   *             once X-ray fluorescent escape has been accounted for. 
+   */
+  public double calcFluorescentEscapeCorrectedAbsorbedEnergy(Beam beam) {
+    double correctedAbsEnergy = beam.getPhotonEnergy();
+    return correctedAbsEnergy;
+  }
 
   @Override
   public double getAbsorptionCoefficient() {
