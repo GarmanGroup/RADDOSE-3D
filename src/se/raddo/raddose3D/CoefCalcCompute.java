@@ -342,6 +342,7 @@ public class CoefCalcCompute extends CoefCalc {
    *             The energy that is actually absorbed in the crystal 
    *             once X-ray fluorescent escape has been accounted for. 
    */
+  @Override
   public double calcFluorescentEscapeCorrectedAbsorbedEnergy(Beam beam) {
     double correctedAbsEnergy = beam.getPhotonEnergy();
     return correctedAbsEnergy;
