@@ -29,6 +29,12 @@ public class Element {
    * Stored absorption edge coefficients.
    */
   private final Map<AbsorptionEdge, Double[]>               coefficients;
+  
+  /**
+   * Probability of K, L1, L2, L3 shell ionisation
+   */
+  private final double         probKShellIonisation, probL1ShellIonisation, 
+                               probL2ShellIonisation, probL3ShellIonisation;
 
   /**
    * List of absorption edges.
@@ -100,6 +106,11 @@ public class Element {
     elementData = new HashMap<ElementDatabase.DatabaseFields, Double>(
         elementInformation);
     coefficients = edgeCoefficients(elementInformation);
+    
+    probKShellIonisation  = 1 - 1 / getKEdgeRatio();
+    probL1ShellIonisation = 1 - 1 / getL1EdgeRatio();
+    probL2ShellIonisation = 1 - 1 / getL2EdgeRatio();
+    probL3ShellIonisation = 1 - 1 / getL3EdgeRatio();
   }
 
   /**
@@ -409,7 +420,7 @@ public class Element {
    * @return
    *         the K edge ratio
    */
-  public Double getKEdgeRatio() {
+  private Double getKEdgeRatio() {
     return elementData.get(DatabaseFields.K_EDGE_RATIO);
   }
   
@@ -421,7 +432,7 @@ public class Element {
    * @return
    *         the L1 edge ratio
    */
-  public Double getL1EdgeRatio() {
+  private Double getL1EdgeRatio() {
     return elementData.get(DatabaseFields.L1_EDGE_RATIO);
   }
   
@@ -433,7 +444,7 @@ public class Element {
    * @return
    *         the L2 edge ratio
    */
-  public Double getL2EdgeRatio() {
+  private Double getL2EdgeRatio() {
     return elementData.get(DatabaseFields.L2_EDGE_RATIO);
   }
   
@@ -445,7 +456,7 @@ public class Element {
    * @return
    *         the L3 edge ratio
    */
-  public Double getL3EdgeRatio() {
+  private Double getL3EdgeRatio() {
     return elementData.get(DatabaseFields.L3_EDGE_RATIO);
   }
   
@@ -487,5 +498,45 @@ public class Element {
    */
   public Double getL3ShellFluorescenceYield() {
     return elementData.get(DatabaseFields.FLUORESCENCE_YIELD_L3);
+  }
+  
+  /**
+   * Return the probability of K shell ionisation
+   * 
+   * @return
+   *        the probability of K shell ionisation.
+   */
+  public Double getKShellIonisationProb() {
+    return this.probKShellIonisation;
+  }
+  
+  /**
+   * Return the probability of L1 shell ionisation
+   * 
+   * @return
+   *        the probability of L1 shell ionisation.
+   */
+  public Double getL1ShellIonisationProb() {
+    return this.probL1ShellIonisation;
+  }
+  
+  /**
+   * Return the probability of L2 shell ionisation
+   * 
+   * @return
+   *        the probability of L2 shell ionisation.
+   */
+  public Double getL2ShellIonisationProb() {
+    return this.probL2ShellIonisation;
+  }
+  
+  /**
+   * Return the probability of L3 shell ionisation
+   * 
+   * @return
+   *        the probability of L3 shell ionisation.
+   */
+  public Double getL3ShellIonisationProb() {
+    return this.probL3ShellIonisation;
   }
 }
