@@ -325,7 +325,7 @@ public class CoefCalcCompute extends CoefCalc {
    * P_X = A * B * C
    * 
    * where:
-   *    A: probability of K-shell (or L-shell) ionization given byL
+   *    A: probability of K-shell (or L-shell) ionization given by
    *    (1 - 1/x_EDGE_RATIO)
    *    B: K-shell (or L-shell) fluorescence yield
    *    C: fluorescent X-ray escape probability, which is given by
