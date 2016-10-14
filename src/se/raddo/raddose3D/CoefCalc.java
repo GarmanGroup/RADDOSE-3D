@@ -52,5 +52,5 @@ public abstract class CoefCalc {
    * @return
    *         absorbed energy.
    */
-  public abstract double calcFluorescentEscapeCorrectedAbsorbedEnergy(Beam beam);
+  public abstract double[][] getFluorescentEscapeFactors(Beam beam);
 }

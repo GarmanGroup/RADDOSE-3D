@@ -20,6 +20,11 @@ import java.util.Scanner;
 public class CoefCalcRaddose extends CoefCalc {
   /** Constant for unit conversion. */
   private static final long UNITSPERMILLIUNIT = 1000L;
+  
+  /**
+   * Number of X-ray Fluorescent escape factors
+   */
+  private static final int NUM_FLUOR_ESCAPE_FACTORS  = 17;
 
   /**
    * Suggested location of RADDOSE executable.
@@ -343,11 +348,15 @@ public class CoefCalcRaddose extends CoefCalc {
   }
 
   @Override
-  public double calcFluorescentEscapeCorrectedAbsorbedEnergy(Beam beam) {
+  public double[][] getFluorescentEscapeFactors(Beam beam) {
     System.out.println("********** WARNING **********");
     System.out.println("No X-ray Fluorescent escape correction is implemented " +
     "for the 'RADDOSE Version 2' calculated crystal composition.");
     System.out.println("No X-ray Fluorescent escape correction is being applied.");
-    return beam.getPhotonEnergy();
+    double[][] fluorEscapeFactors = new double[1][NUM_FLUOR_ESCAPE_FACTORS];
+    for (int i = 0; i < NUM_FLUOR_ESCAPE_FACTORS; i++){
+      fluorEscapeFactors[0][i] = 0.0;
+    }
+    return fluorEscapeFactors;
   }
 }

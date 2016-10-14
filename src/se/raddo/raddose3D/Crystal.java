@@ -268,8 +268,7 @@ public abstract class Crystal {
     // Update coefficients in case the beam energy has changed.
     coefCalc.updateCoefficients(beam);
     
-    double absorbedEnergy = Beam.KEVTOJOULES * 
-        coefCalc.calcFluorescentEscapeCorrectedAbsorbedEnergy(beam);
+    double[][] fluorEscapeFactors = coefCalc.getFluorescentEscapeFactors(beam);
     
     double beamEnergyInJoules = beam.getPhotonEnergy() 
         * Beam.KEVTOJOULES;
@@ -302,7 +301,7 @@ public abstract class Crystal {
     for (int n = 0; n < angles.length; n++) {
       // Expose one angle
       exposeAngle(angles[n], beam, wedge, n, angles.length, 
-          beamEnergyInJoules, absorbedEnergy);
+          beamEnergyInJoules, fluorEscapeFactors);
 
       for (ExposeObserver eo : exposureObservers) {
         eo.imageComplete(n, angles[n]);
@@ -333,7 +332,7 @@ public abstract class Crystal {
 
   private void exposeAngle(final double angle, final Beam beam,
       final Wedge wedge, final int anglenum, final int anglecount,
-      final double beamEnergy, final double depositedEnergy) {
+      final double beamEnergy, final double[][] fluorEscapeFactors) {
 
     final int[] crystalSize = getCrystSizeVoxels();
 
@@ -410,7 +409,7 @@ public abstract class Crystal {
                       * Math.exp(depth * beamAttenuationExpFactor);
               // Attenuates the beam for absorption
               
-              double voxImageEnergy = depositedEnergy * voxImageFluence;
+              double voxImageEnergy = voxImageFluence;
 
               double voxImageDose = absorptionFractionPerKg * voxImageEnergy;
               // MGy
