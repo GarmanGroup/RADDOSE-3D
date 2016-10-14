@@ -379,7 +379,7 @@ public class CoefCalcCompute extends CoefCalc {
         kShellEnergy = e.getKEdge();
         kFactorA = e.getKShellIonisationProb();
         kFactorB = e.getKShellFluorescenceYield();
-        photonMuAbsK = calculateCoefficients(e.getKEdge() - e.getL1Edge(), e);
+        photonMuAbsK = calculateCoefficients(e.getKEdge() - e.getL1Edge());
         escapeMuAbsK = photonMuAbsK.get(PHOTOELECTRIC);
       } else {
         kShellEnergy = 0.0;
@@ -392,7 +392,7 @@ public class CoefCalcCompute extends CoefCalc {
         l1ShellEnergy = e.getL1Edge();
         l1FactorA = e.getL1ShellIonisationProb();
         l1FactorB = e.getL1ShellFluorescenceYield();
-        photonMuAbsL1 = calculateCoefficients(e.getL1Edge() - e.getM1Edge(), e);
+        photonMuAbsL1 = calculateCoefficients(e.getL1Edge() - e.getM1Edge());
         escapeMuAbsL1 = photonMuAbsL1.get(PHOTOELECTRIC);
       } else {
         l1ShellEnergy = 0.0;
@@ -405,7 +405,7 @@ public class CoefCalcCompute extends CoefCalc {
         l2ShellEnergy = e.getL2Edge();
         l2FactorA = e.getL2ShellIonisationProb();
         l2FactorB = e.getL2ShellFluorescenceYield();
-        photonMuAbsL2 = calculateCoefficients(e.getL2Edge() - e.getM1Edge(), e);
+        photonMuAbsL2 = calculateCoefficients(e.getL2Edge() - e.getM1Edge());
         escapeMuAbsL2 = photonMuAbsL2.get(PHOTOELECTRIC);
       } else {
         l2ShellEnergy = 0.0;
@@ -418,7 +418,7 @@ public class CoefCalcCompute extends CoefCalc {
         l3ShellEnergy = e.getL3Edge();
         l3FactorA = e.getL3ShellIonisationProb();
         l3FactorB = e.getL3ShellFluorescenceYield();
-        photonMuAbsL3 = calculateCoefficients(e.getL3Edge() - e.getM1Edge(), e);
+        photonMuAbsL3 = calculateCoefficients(e.getL3Edge() - e.getM1Edge());
         escapeMuAbsL3 = photonMuAbsL3.get(PHOTOELECTRIC);
       } else {
         l3ShellEnergy = 0.0;
