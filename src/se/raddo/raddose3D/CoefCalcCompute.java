@@ -388,7 +388,8 @@ public class CoefCalcCompute extends CoefCalc {
         escapeMuAbsK = 0.0;
       }
       
-      if (beam.getPhotonEnergy() > e.getL1Edge()) {
+      if (beam.getPhotonEnergy() > e.getL1Edge() &&
+          e.getAtomicNumber() > MIN_ATOMIC_NUM_FOR_K_SHELL_IONISATION) {
         l1ShellEnergy = e.getL1Edge();
         l1FactorA = e.getL1ShellIonisationProb();
         l1FactorB = e.getL1ShellFluorescenceYield();
@@ -401,7 +402,8 @@ public class CoefCalcCompute extends CoefCalc {
         escapeMuAbsL1 = 0.0;
       }
       
-      if (beam.getPhotonEnergy() > e.getL2Edge()) {
+      if (beam.getPhotonEnergy() > e.getL2Edge() &&
+          e.getAtomicNumber() > MIN_ATOMIC_NUM_FOR_K_SHELL_IONISATION) {
         l2ShellEnergy = e.getL2Edge();
         l2FactorA = e.getL2ShellIonisationProb();
         l2FactorB = e.getL2ShellFluorescenceYield();
@@ -414,7 +416,8 @@ public class CoefCalcCompute extends CoefCalc {
         escapeMuAbsL2 = 0.0;
       }
       
-      if (beam.getPhotonEnergy() > e.getL3Edge()) {
+      if (beam.getPhotonEnergy() > e.getL3Edge() &&
+          e.getAtomicNumber() > MIN_ATOMIC_NUM_FOR_K_SHELL_IONISATION) {
         l3ShellEnergy = e.getL3Edge();
         l3FactorA = e.getL3ShellIonisationProb();
         l3FactorB = e.getL3ShellFluorescenceYield();
