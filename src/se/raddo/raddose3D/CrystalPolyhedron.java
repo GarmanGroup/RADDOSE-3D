@@ -916,7 +916,9 @@ public class CrystalPolyhedron extends Crystal {
             }
           }
 
-          if (closeToSurface) {
+          if (!closeToSurface) {
+            escapeFactor[i][j][k] = 1.0;
+          } else {
             // if voxel is within 3 um of a surface, take a grid of r, theta and phi
             // and calculate for every r within 0.5 um and 5 um, what proportion
             // exit the crystal.
@@ -1055,7 +1057,7 @@ public class CrystalPolyhedron extends Crystal {
   @Override
   public void addDose(final int i, final int j, final int k,
       final double doseIncrease) {
-    dose[i][j][k] += doseIncrease * escapeFactor[i][j][k];
+    dose[i][j][k] += doseIncrease; //* escapeFactor[i][j][k];
   }
 
   /*
@@ -1169,6 +1171,16 @@ public class CrystalPolyhedron extends Crystal {
   @Override
   public double getCrystalPixPerUM() {
     return crystalPixPerUM;
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see se.raddo.raddose3D.Crystal#getEscapeFactor(int, int, int)
+   */
+  @Override
+  public double getEscapeFactor(final int i, final int j, final int k) {
+    return escapeFactor[i][j][k];
   }
 
   /**

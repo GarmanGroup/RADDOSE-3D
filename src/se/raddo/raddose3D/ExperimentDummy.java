@@ -220,6 +220,11 @@ public class ExperimentDummy extends Experiment {
       public double getElastic(final int i, final int j, final int k) {
         return 0;
       }
+
+      @Override
+      public double getEscapeFactor(int i, int j, int k) {
+        return 1.0;
+      }
     }
   }
 }
