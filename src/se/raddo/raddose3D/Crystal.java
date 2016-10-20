@@ -148,6 +148,17 @@ public abstract class Crystal {
   public abstract void addDose(int i, int j, int k, double doseIncrease);
 
   /**
+   * Should increment the dose array element ijk by doseVox. 
+   * This accounts for PE energy transfer to nearby voxels.
+   *
+   * @param i i coord
+   * @param j j coord
+   * @param k k coord
+   * @param doseIncrease
+   */
+  public abstract void addDoseAfterPE(int i, int j, int k, double doseIncrease);
+  
+  /**
    * Should increment the fluence array element ijk by fluenceVox.
    *
    * @param i i coord
@@ -406,14 +417,14 @@ public abstract class Crystal {
                       * Math.exp(depth * beamAttenuationExpFactor);
               // Attenuates the beam for absorption
 
-              double voxImageDose = fluenceToDoseFactor * voxImageFluence * getEscapeFactor(i, j, k);
+              double voxImageDose = fluenceToDoseFactor * voxImageFluence;// * getEscapeFactor(i, j, k);
               // MGy
 
               double voxElasticYield = fluenceToElasticFactor * voxImageFluence;
 
               if (voxImageDose > 0) {
                 addFluence(i, j, k, voxImageFluence);
-                addDose(i, j, k, voxImageDose);
+                addDose(i, j, k, voxImageDose); // addDoseAfterPE(i, j, k, voxImageDose); to run with new photoelectron escape
                 addElastic(i, j, k, voxElasticYield);
               } else if (voxImageDose < 0) {
                 throw new ArithmeticException(
