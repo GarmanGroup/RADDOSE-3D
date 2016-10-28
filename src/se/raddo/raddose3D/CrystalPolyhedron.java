@@ -548,7 +548,11 @@ public class CrystalPolyhedron extends Crystal {
           tempCrystCoords[i][j][k][1] = y2 * Math.cos(l) + z2 * Math.sin(l);
           tempCrystCoords[i][j][k][2] = -1 * y2 * Math.sin(l) + z2
               * Math.cos(l);
-
+          
+          //This implementation to find the average depth is so primitive that it's
+          //terrible. This is here as a placeholder so we can calculate X-ray 
+          //fluorescent escape. This needs to be changed to a more sophisticated
+          //calculation.
           Double xlength = (Double) properties.get(CrystalPolyhedron.CRYSTAL_DIM_X)/2;
           Double ylength = (Double) properties.get(CrystalPolyhedron.CRYSTAL_DIM_Y)/2;
           Double zlength = (Double) properties.get(CrystalPolyhedron.CRYSTAL_DIM_Z)/2;
