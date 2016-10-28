@@ -159,7 +159,8 @@ public class CoefCalcCompute extends CoefCalc {
   private static final String        PHOTOELECTRIC                = "Photoelectric";
   private static final String        ELASTIC                      = "Elastic";
   private static final String        TOTAL                        = "Total";
-  private static final double        MIN_ATOMIC_NUM_FOR_K_SHELL_IONISATION = 10;
+  private static final double        MIN_ATOMIC_NUM_FOR_K_SHELL_IONISATION = 11;
+  private static final double        MIN_ATOMIC_NUM_FOR_L_SHELL_IONISATION = 16;
 
   /**
    * Number of atoms (only those that are not part of the protein), per
@@ -375,7 +376,7 @@ public class CoefCalcCompute extends CoefCalc {
     for (Element e : this.presentElements) {
       elAbsCoeffs = calculateCoefficients(beam.getPhotonEnergy(), e);
       if (beam.getPhotonEnergy() > e.getKEdge() &&
-          e.getAtomicNumber() > MIN_ATOMIC_NUM_FOR_K_SHELL_IONISATION) {
+          e.getAtomicNumber() >= MIN_ATOMIC_NUM_FOR_K_SHELL_IONISATION) {
         kShellEnergy = e.getKEdge();
         kFactorA = e.getKShellIonisationProb();
         kFactorB = e.getKShellFluorescenceYield();
@@ -389,7 +390,7 @@ public class CoefCalcCompute extends CoefCalc {
       }
       
       if (beam.getPhotonEnergy() > e.getL1Edge() &&
-          e.getAtomicNumber() > MIN_ATOMIC_NUM_FOR_K_SHELL_IONISATION) {
+          e.getAtomicNumber() >= MIN_ATOMIC_NUM_FOR_L_SHELL_IONISATION) {
         l1ShellEnergy = e.getL1Edge();
         l1FactorA = e.getL1ShellIonisationProb();
         l1FactorB = e.getL1ShellFluorescenceYield();
@@ -403,7 +404,7 @@ public class CoefCalcCompute extends CoefCalc {
       }
       
       if (beam.getPhotonEnergy() > e.getL2Edge() &&
-          e.getAtomicNumber() > MIN_ATOMIC_NUM_FOR_K_SHELL_IONISATION) {
+          e.getAtomicNumber() >= MIN_ATOMIC_NUM_FOR_L_SHELL_IONISATION) {
         l2ShellEnergy = e.getL2Edge();
         l2FactorA = e.getL2ShellIonisationProb();
         l2FactorB = e.getL2ShellFluorescenceYield();
@@ -417,7 +418,7 @@ public class CoefCalcCompute extends CoefCalc {
       }
       
       if (beam.getPhotonEnergy() > e.getL3Edge() &&
-          e.getAtomicNumber() > MIN_ATOMIC_NUM_FOR_K_SHELL_IONISATION) {
+          e.getAtomicNumber() >= MIN_ATOMIC_NUM_FOR_L_SHELL_IONISATION) {
         l3ShellEnergy = e.getL3Edge();
         l3FactorA = e.getL3ShellIonisationProb();
         l3FactorB = e.getL3ShellFluorescenceYield();
