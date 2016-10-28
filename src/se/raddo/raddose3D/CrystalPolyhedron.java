@@ -114,7 +114,7 @@ public class CrystalPolyhedron extends Crystal {
   private double[][][]          expandedRotatedVertices;
   
   /**
-   * Average distance to from voxel to edge of the crysta in "all" 
+   * Average distance to from voxel to edge of the crystal in "all" 
    * directions
    */
   public double[][][]           avg_depth;
@@ -547,8 +547,12 @@ public class CrystalPolyhedron extends Crystal {
           tempCrystCoords[i][j][k][1] = y2 * Math.cos(l) + z2 * Math.sin(l);
           tempCrystCoords[i][j][k][2] = -1 * y2 * Math.sin(l) + z2
               * Math.cos(l);
-          
-          avg_depth[i][j][k] = (x/2 + y/2 + z/2)/2;
+          /*
+          Double xlength = (Double) properties.get(CrystalPolyhedron.CRYSTAL_DIM_X)/2;
+          Double ylength = (Double) properties.get(CrystalPolyhedron.CRYSTAL_DIM_Y)/2;
+          Double zlength = (Double) properties.get(CrystalPolyhedron.CRYSTAL_DIM_Z)/2;
+          avg_depth[i][j][k] = x2; //(xlength + ylength + zlength)/3;
+          */
         }
       }
     }
