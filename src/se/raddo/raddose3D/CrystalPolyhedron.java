@@ -112,6 +112,12 @@ public class CrystalPolyhedron extends Crystal {
    * by the corresponding rotatedVertex.
    */
   private double[][][]          expandedRotatedVertices;
+  
+  /**
+   * Average distance to from voxel to edge of the crysta in "all" 
+   * directions
+   */
+  public double[][][]           avg_depth;
 
   /* Indices for cuboid */
   /*
@@ -541,6 +547,8 @@ public class CrystalPolyhedron extends Crystal {
           tempCrystCoords[i][j][k][1] = y2 * Math.cos(l) + z2 * Math.sin(l);
           tempCrystCoords[i][j][k][2] = -1 * y2 * Math.sin(l) + z2
               * Math.cos(l);
+          
+          avg_depth[i][j][k] = (x/2 + y/2 + z/2)/2;
         }
       }
     }
@@ -1181,5 +1189,14 @@ public class CrystalPolyhedron extends Crystal {
     for (int i = 0; i < tempIndices.length; i++) {
       System.arraycopy(tempIndices[i], 0, indices[i], 0, 3);
     }
+  }
+  
+  /**
+   * return the proportion of energy deducted due to fluorescent 
+   * escape.
+   */
+  public double addDose(final int i, final int j, final int k,
+      final double[][] fluorEscapeFactors) {
+    return 0.0;
   }
 }
