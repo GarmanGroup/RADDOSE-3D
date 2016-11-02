@@ -60,13 +60,20 @@ public abstract class Crystal {
    */
   private double totalEscapedDose                               = 0;
 
-  /** The mass of each voxel in the crystal */
-  private final double           voxelMass;
   /**
    * Cumulative dose both remaining in crystal and lost through photoelectron escape
    */
   private double totalCrystalDose                               = 0;
+  
+  /** The mass of each voxel in the crystal */
+  private final double           voxelMass;
 
+  /**
+   * whether photoelectron escape should be included
+   */
+  private final boolean photoElectronEscape;
+  
+  
   /**
    * List of registered exposureObservers. Registered objects will be notified
    * of individual voxel exposure events and can also inspect the Crystal object
@@ -109,6 +116,9 @@ public abstract class Crystal {
     //                             unitConversionFactor
     voxelMass = UNIT_CONVERSION * (Math.pow(crystalPixPerUM, -3) *
         coefCalc.getDensity());
+    
+    String pEE = (String) properties.get(CRYSTAL_ELECTRON_ESCAPE);
+    photoElectronEscape = ("TRUE".equals(pEE));
   }
 
   public abstract void setupDepthFinding(double angrad, Wedge wedge);
@@ -466,10 +476,14 @@ public abstract class Crystal {
               if (voxImageDose > 0) {
 
                 addFluence(i, j, k, voxImageFluence);
-//                addDose(i, j, k, voxImageDose);
-                double doseLostFromCrystal = addDoseAfterPE(i, j, k, voxImageDose); //to run with new photoelectron escape
-                totalEscapedDose += doseLostFromCrystal;
-                totalCrystalDose += voxImageDose;
+                
+                if (photoElectronEscape) {
+                  double doseLostFromCrystal = addDoseAfterPE(i, j, k, voxImageDose); //to run with new photoelectron escape
+                  totalEscapedDose += doseLostFromCrystal;
+                  totalCrystalDose += voxImageDose;
+                } else {
+                  addDose(i, j, k, voxImageDose);
+                }
 
                 addElastic(i, j, k, voxElasticYield);
               } else if (voxImageDose < 0) {
