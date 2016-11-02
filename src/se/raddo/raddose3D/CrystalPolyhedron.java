@@ -61,12 +61,48 @@ public class CrystalPolyhedron extends Crystal {
   private static final double   MEAN_ELECTRON_TRAVEL_DISTANCE = 3.;
 
   /**
+   * Constants for calculation of Gumbel distribution mu and beta parameters.
+   */
+  private static final double[] GUMBEL_DISTN_CALC_PARAMS = {0.0094,0.0575,0.002,0.0096};
+  
+  /**
+   * Distance bins travelled by a photoelectron.
+   */
+  private static final double[]   PE_DISTANCES_TRAVELLED = {0, 1., 1.5, 2., 2.5,
+      3., 3.5, 4., 5., 6., 7., 8. };
+ 
+  /**
+   * length of distance bins travelled by photoelectron.
+   */
+  private final int peDistBins;
+  
+  /**
+   * Max angle for photoelectron direction vectors.
+   */
+  private static final double   PE_ANGLE_LIMIT = 0.99*2*Math.PI;
+  
+  /**
+   * Number of divisions to split the photoelectron direction vectors.
+   */
+  private static final int   PE_ANGLE_RESOLUTION = 6;
+  
+  /**
+   * 3d array for voxels where photoelectrons can reach
+   */
+  private final double[][][] relativeVoxXYZ;
+
+  /**
+   * Proportion of voxel dose deposited at each distance
+   * from voxel due to photoelectron escape
+   */
+  private final double[]   propnDoseDepositedAtDist;
+  
+  /**
    * A boolean (int for extensibility to deeper segmentation) array.
    * Fourth dimension is a two element array, first element
    * is a flag (calculated/not calculated) and second element is
    * a boolean (crystal/not crystal).
    */
-
   private final boolean[][][][] crystOcc;
 
   /**
@@ -596,7 +632,13 @@ public class CrystalPolyhedron extends Crystal {
 
     if (!calculatedEscapeFactors) {
       calculateEscapeFactors();
-    }
+    }    
+    
+    // Initialise beam-independent crystal photolectron escape properties
+    peDistBins = PE_DISTANCES_TRAVELLED.length;
+    propnDoseDepositedAtDist = new double[peDistBins];
+    relativeVoxXYZ = new double[peDistBins][PE_ANGLE_RESOLUTION * PE_ANGLE_RESOLUTION][3];
+    
   }
 
   /**
@@ -858,6 +900,164 @@ public class CrystalPolyhedron extends Crystal {
       gammaDistribution[i] = numerator / denominator;
     }
   }
+  
+  private void calculateGumbelDistribution(final double[] distancesTravelled,
+      double[] gumbelDistribution, final double mu, final double beta,
+      final int bins) {
+    for (int i = 0; i < bins; i++) {
+      double x = distancesTravelled[i];
+      double z = (x - mu)/beta;
+      
+      gumbelDistribution[i] = Math.exp(-(z + Math.exp(-z))) / beta;
+    }
+  }
+  
+  private double[] getGumbelParamsForBeamEnergy(final double beamEnergy) {
+    // Gumbel distribution for mean photoelectron path lengths depend on 
+    // beam energy. Derived from Ben Gayther's 2016 summer project work
+    
+    double[] gumbParams = new double[2];
+    gumbParams[0] = GUMBEL_DISTN_CALC_PARAMS[0]*Math.pow(beamEnergy,2) 
+        + GUMBEL_DISTN_CALC_PARAMS[1]*beamEnergy; //mu
+    gumbParams[1] = GUMBEL_DISTN_CALC_PARAMS[2]*Math.pow(beamEnergy,2) 
+        + GUMBEL_DISTN_CALC_PARAMS[3]*beamEnergy; //beta
+    
+    return gumbParams;
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see se.raddo.raddose3D.Crystal#setPEparamsForCurrentBeam(double)
+   */
+  @Override
+  public void setPEparamsForCurrentBeam(final double beamEnergy) {
+    // Initialise crystal photolectron escape properties here for current beam
+    findVoxelsReachedByPE();
+    calcProportionVoxDoseDepositedByDist(beamEnergy);  
+  }
+  
+  private void calcProportionVoxDoseDepositedByDist(final double beamEnergy) {
+    // calculate the fraction of energy deposited by PE up to each 
+    // distance, assuming PE distances follow a given distribution
+
+    // Set up a mean path length distribution
+    double[] pathLengthDistn = new double[peDistBins];
+        
+    // UNCOMMENT TO USE THE GAMMA DISTRIBUTION INSTEAD OF GUMBEL
+    // calculateGammaDistribution(distancesTravelled, pathLengthDistn, 2,
+    // MEAN_ELECTRON_TRAVEL_DISTANCE, bins);
+    double[] distnParams = getGumbelParamsForBeamEnergy(beamEnergy);
+    calculateGumbelDistribution(PE_DISTANCES_TRAVELLED, pathLengthDistn, distnParams[0],
+        distnParams[1], peDistBins);
+    
+    // find total area under specified distribution
+    double distnIntegral = 0;
+    for (int l = 0; l < peDistBins-1; l++) {
+      double width = PE_DISTANCES_TRAVELLED[l + 1] - PE_DISTANCES_TRAVELLED[l];
+      double height = (pathLengthDistn[l + 1] + pathLengthDistn[l]) / 2;
+      distnIntegral += width * height;
+    }  
+    
+    for (int l = peDistBins-1; l > 0; l--) {
+      double width = PE_DISTANCES_TRAVELLED[l] - PE_DISTANCES_TRAVELLED[l-1];
+      double height = (pathLengthDistn[l] + pathLengthDistn[l-1]) / 2;
+
+      if (l == peDistBins-1) 
+      {
+        propnDoseDepositedAtDist[l] = width * height / (l * distnIntegral);
+      } else {
+        propnDoseDepositedAtDist[l] = propnDoseDepositedAtDist[l+1] 
+            + width * height / (l * distnIntegral);
+      }
+    }
+  }
+  
+  private void findVoxelsReachedByPE() {
+    double step = PE_ANGLE_LIMIT / PE_ANGLE_RESOLUTION;  
+    
+    int counter = -1;
+    for (double theta = 0; theta < PE_ANGLE_LIMIT; theta += step) {
+      for (double phi = 0; phi < PE_ANGLE_LIMIT; phi += step) {
+        // calculate x, y, z coordinates of voxel[i][j][k]
+        // plus the polar coordinates for r, theta, phi
+        counter += 1;
+        double xNorm = Math.sin(theta) * Math.cos(phi);
+        double yNorm = Math.sin(theta) * Math.sin(phi);
+        double zNorm = Math.cos(theta);
+        
+        for (int m = 0; m < peDistBins; m++) {
+          // calculate r in voxel coordinates rather than pixels
+          double r = PE_DISTANCES_TRAVELLED[m] * this.crystalPixPerUM; 
+          relativeVoxXYZ[m][counter][0] = r * xNorm;
+          relativeVoxXYZ[m][counter][1] = r * yNorm;
+          relativeVoxXYZ[m][counter][2] = r * zNorm;
+        }
+      }
+    }
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see se.raddo.raddose3D.Crystal#addDoseAfterPE(int, int, int, double, double)
+   */
+  @Override
+  public double addDoseAfterPE(final int i, final int j, final int k,
+      final double doseIncrease) {
+       
+    double doseLostFromCrystal = 0;
+    
+    // calculate whether this voxel is within
+    // 5 um of a surface
+    boolean closeToSurface = false;
+    
+    for (int n = 0; n < indices.length; n++) {
+      double[] voxCoord = getCrystCoord(i, j, k);
+
+      double distanceToPlane = Vector.rayTraceDistance(normals[n],
+          normals[n], voxCoord, originDistances[n]);
+
+      if (distanceToPlane < PE_DISTANCES_TRAVELLED[peDistBins - 1]) {
+        closeToSurface = true;
+        break;
+      }
+    }
+    
+    if (!closeToSurface) {
+      // if not close to surface, add all dose to voxel 
+      dose[i][j][k] += doseIncrease;
+    } else {
+      // if voxel is within the specified min distance to surface, take a grid 
+      // of r, theta and phi and calculate for every r within 0.5 um and 
+      // 5 um, what proportion exit the crystal.
+               
+      for (int m = 0; m < peDistBins; m++) {   
+        for (int q = 0; q < PE_ANGLE_RESOLUTION*PE_ANGLE_RESOLUTION; q++) { 
+          double x = relativeVoxXYZ[m][q][0];
+          double y = relativeVoxXYZ[m][q][1];
+          double z = relativeVoxXYZ[m][q][2];
+
+          // get dose transferred to these located voxels 
+          // at the distance r away (due to PE movement)
+          double partialDose = doseIncrease * propnDoseDepositedAtDist[m] 
+              / Math.pow(PE_ANGLE_RESOLUTION,2);
+          
+          // add counts to total & total within crystal in order to
+          // calculate the proportion for a given r.       
+          if (isCrystalAt((int) (i + x), (int) (j + y),
+              (int) (k + z))) {              
+            // get dose transferred to this new voxel (due to PE movement)
+            addDose((int) (i + x), (int) (j + y),
+            (int) (k + z), partialDose);
+          } else {
+            doseLostFromCrystal += partialDose;
+          }
+        }    
+      }
+    }
+    return doseLostFromCrystal;
+  }    
 
   private void calculateEscapeFactors() {
     System.out.println("Calculating escape factors...");

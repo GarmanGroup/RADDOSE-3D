@@ -48,7 +48,17 @@ public abstract class Crystal {
   private final DDM              ddm;
   /** The CoefCalc method being employed to generate crystal coefficients. */
   private final CoefCalc         coefCalc;
+  
+  /**
+   * Cumulative dose lost from crystal due to photoelectron escape
+   */
+  private double totalEscapedDose                               = 0;
 
+  /**
+   * Cumulative dose both remaining in crystal and lost through photoelectron escape
+   */
+  private double totalCrystalDose                               = 0;
+  
   /**
    * List of registered exposureObservers. Registered objects will be notified
    * of individual voxel exposure events and can also inspect the Crystal object
@@ -155,8 +165,16 @@ public abstract class Crystal {
    * @param j j coord
    * @param k k coord
    * @param doseIncrease
+   * @return voxel dose lost from crystal
    */
-  public abstract void addDoseAfterPE(int i, int j, int k, double doseIncrease);
+  public abstract double addDoseAfterPE(int i, int j, int k, double doseIncrease);
+  
+  /**
+   * set new photoelectron trajectory parameters for current beam
+   *
+   * @param beamEnergy
+   */
+  public abstract void setPEparamsForCurrentBeam(double beamEnergy);
   
   /**
    * Should increment the fluence array element ijk by fluenceVox.
@@ -275,6 +293,9 @@ public abstract class Crystal {
 
     // Update coefficients in case the beam energy has changed.
     coefCalc.updateCoefficients(beam);
+    
+    // Update photoelectron escape parameters for current beam
+    setPEparamsForCurrentBeam(beam.getPhotonEnergy());
 
     // Set up angles to iterate over.
     double[] angles;
@@ -298,7 +319,7 @@ public abstract class Crystal {
 
     for (ExposeObserver eo : exposureObservers) {
       eo.exposureStart(angles.length);
-    }
+    } 
 
     // The main meat of it:
     for (int n = 0; n < angles.length; n++) {
@@ -310,6 +331,9 @@ public abstract class Crystal {
       }
 
     } // end of looping over angles
+    
+    double fractionEscapedDose = totalEscapedDose/totalCrystalDose;
+    System.out.println(String.format("\nFraction of escaped dose: %.2f", fractionEscapedDose));
 
     for (int i = 0; i < getCrystSizeVoxels()[0]; i++) {
       for (int j = 0; j < getCrystSizeVoxels()[1]; j++) {
@@ -424,7 +448,10 @@ public abstract class Crystal {
 
               if (voxImageDose > 0) {
                 addFluence(i, j, k, voxImageFluence);
-                addDose(i, j, k, voxImageDose); // addDoseAfterPE(i, j, k, voxImageDose); to run with new photoelectron escape
+//                addDose(i, j, k, voxImageDose);         
+                double doseLostFromCrystal = addDoseAfterPE(i, j, k, voxImageDose); //to run with new photoelectron escape
+                totalEscapedDose += doseLostFromCrystal;
+                totalCrystalDose += voxImageDose;
                 addElastic(i, j, k, voxElasticYield);
               } else if (voxImageDose < 0) {
                 throw new ArithmeticException(

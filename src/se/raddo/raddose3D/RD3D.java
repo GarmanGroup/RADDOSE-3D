@@ -1,6 +1,5 @@
 package se.raddo.raddose3D;
 
-
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
