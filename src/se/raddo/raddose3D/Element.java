@@ -29,6 +29,12 @@ public class Element {
    * Stored absorption edge coefficients.
    */
   private final Map<AbsorptionEdge, Double[]>               coefficients;
+  
+  /**
+   * Probability of K, L1, L2, L3 shell ionisation
+   */
+  private final double         probKShellIonisation, probL1ShellIonisation, 
+                               probL2ShellIonisation, probL3ShellIonisation;
 
   /**
    * List of absorption edges.
@@ -100,6 +106,11 @@ public class Element {
     elementData = new HashMap<ElementDatabase.DatabaseFields, Double>(
         elementInformation);
     coefficients = edgeCoefficients(elementInformation);
+    
+    probKShellIonisation  = 1 - 1 / getKEdgeRatio();
+    probL1ShellIonisation = 1 - 1 / getL1EdgeRatio();
+    probL2ShellIonisation = 1 - 1 / getL2EdgeRatio();
+    probL3ShellIonisation = 1 - 1 / getL3EdgeRatio();
   }
 
   /**
@@ -349,5 +360,183 @@ public class Element {
    */
   public Double getAtomicWeightInGrams() {
     return getAtomicWeight() * ATOMIC_MASS_UNIT;
+  }
+  
+  /**
+   * Return the K edge energy in keV of the element
+   * 
+   * @return
+   *         the K edge energy in keV
+   */
+  public Double getKEdge() {
+    return elementData.get(DatabaseFields.EDGE_K);
+  }
+  
+  /**
+   * Return the L1 edge energy in keV of the element
+   * 
+   * @return
+   *         the L1 edge energy in keV
+   */
+  public Double getL1Edge() {
+    return elementData.get(DatabaseFields.EDGE_L);
+  }
+  
+  /**
+   * Return the L2 edge energy in keV of the element
+   * 
+   * @return
+   *         the L2 edge energy in keV
+   */
+  public Double getL2Edge() {
+    return elementData.get(DatabaseFields.L2);
+  }
+  
+  /**
+   * Return the L3 edge energy in keV of the element
+   * 
+   * @return
+   *         the L3 edge energy in keV
+   */
+  public Double getL3Edge() {
+    return elementData.get(DatabaseFields.L3);
+  }
+  
+  /**
+   * Return the M1 edge energy in keV of the element
+   * 
+   * @return
+   *         the M1 edge energy in keV
+   */
+  public Double getM1Edge() {
+    return elementData.get(DatabaseFields.EDGE_M);
+  }
+  
+  /**
+   * Return the K edge ratio which is defined as the ratio
+   * of the K shell to L1 shell photoelectric cross sections.
+   * i.e. muK / muL1
+   * 
+   * @return
+   *         the K edge ratio
+   */
+  private Double getKEdgeRatio() {
+    return elementData.get(DatabaseFields.K_EDGE_RATIO);
+  }
+  
+  /**
+   * Return the L1 edge ratio which is defined as the ratio
+   * of the L1 shell to M shell photoelectric cross sections.
+   * i.e. muL1 / muM
+   * 
+   * @return
+   *         the L1 edge ratio
+   */
+  private Double getL1EdgeRatio() {
+    return elementData.get(DatabaseFields.L1_EDGE_RATIO);
+  }
+  
+  /**
+   * Return the L2 edge ratio which is defined as the ratio
+   * of the L2 shell to M shell photoelectric cross sections.
+   * i.e. muL2 / muM
+   * 
+   * @return
+   *         the L2 edge ratio
+   */
+  private Double getL2EdgeRatio() {
+    return elementData.get(DatabaseFields.L2_EDGE_RATIO);
+  }
+  
+  /**
+   * Return the L3 edge ratio which is defined as the ratio
+   * of the L3 shell to M shell photoelectric cross sections.
+   * i.e. muL3 / muM
+   * 
+   * @return
+   *         the L3 edge ratio
+   */
+  private Double getL3EdgeRatio() {
+    return elementData.get(DatabaseFields.L3_EDGE_RATIO);
+  }
+  
+  /**
+   * Return the K shell fluorescence yield of the atom
+   * 
+   * @return
+   *         the K shell fluorescence yield
+   */
+  public Double getKShellFluorescenceYield() {
+    return elementData.get(DatabaseFields.FLUORESCENCE_YIELD_K);
+  }
+  
+  /**
+   * Return the L1 shell fluorescence yield of the atom
+   * 
+   * @return
+   *         the L1 shell fluorescence yield
+   */
+  public Double getL1ShellFluorescenceYield() {
+    return elementData.get(DatabaseFields.FLUORESCENCE_YIELD_L1);
+  }
+  
+  /**
+   * Return the L2 shell fluorescence yield of the atom
+   * 
+   * @return
+   *         the L2 shell fluorescence yield
+   */
+  public Double getL2ShellFluorescenceYield() {
+    return elementData.get(DatabaseFields.FLUORESCENCE_YIELD_L2);
+  }
+  
+  /**
+   * Return the L3 shell fluorescence yield of the atom
+   * 
+   * @return
+   *         the L3 shell fluorescence yield
+   */
+  public Double getL3ShellFluorescenceYield() {
+    return elementData.get(DatabaseFields.FLUORESCENCE_YIELD_L3);
+  }
+  
+  /**
+   * Return the probability of K shell ionisation
+   * 
+   * @return
+   *        the probability of K shell ionisation.
+   */
+  public Double getKShellIonisationProb() {
+    return this.probKShellIonisation;
+  }
+  
+  /**
+   * Return the probability of L1 shell ionisation
+   * 
+   * @return
+   *        the probability of L1 shell ionisation.
+   */
+  public Double getL1ShellIonisationProb() {
+    return this.probL1ShellIonisation;
+  }
+  
+  /**
+   * Return the probability of L2 shell ionisation
+   * 
+   * @return
+   *        the probability of L2 shell ionisation.
+   */
+  public Double getL2ShellIonisationProb() {
+    return this.probL2ShellIonisation;
+  }
+  
+  /**
+   * Return the probability of L3 shell ionisation
+   * 
+   * @return
+   *        the probability of L3 shell ionisation.
+   */
+  public Double getL3ShellIonisationProb() {
+    return this.probL3ShellIonisation;
   }
 }

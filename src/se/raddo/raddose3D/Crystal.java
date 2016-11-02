@@ -38,6 +38,12 @@ public abstract class Crystal {
   /** Number of exposure-steps when crystal is exposed without rotation. */
   public static final int        STATICEXPOSURE                = 100;
 
+  /** Conversion factor from Gy to MGy. */
+  private static final double        GY_TO_MGY                 = 1e-6;
+
+  /** Unit conversion to get voxel mass in kg. */
+  private static final double        UNIT_CONVERSION           = 1e-15;
+
   /**
    * Upper voxel limit for default resolution.
    * Resolution will be reduced if voxel number would otherwise exceed this.
@@ -48,17 +54,19 @@ public abstract class Crystal {
   private final DDM              ddm;
   /** The CoefCalc method being employed to generate crystal coefficients. */
   private final CoefCalc         coefCalc;
-  
+
   /**
    * Cumulative dose lost from crystal due to photoelectron escape
    */
   private double totalEscapedDose                               = 0;
 
+  /** The mass of each voxel in the crystal */
+  private final double           voxelMass;
   /**
    * Cumulative dose both remaining in crystal and lost through photoelectron escape
    */
   private double totalCrystalDose                               = 0;
-  
+
   /**
    * List of registered exposureObservers. Registered objects will be notified
    * of individual voxel exposure events and can also inspect the Crystal object
@@ -95,6 +103,12 @@ public abstract class Crystal {
     } else {
       coefCalc = (CoefCalc) properties.get(Crystal.CRYSTAL_COEFCALC);
     }
+
+    double crystalPixPerUM = (Double) properties.get(Crystal.CRYSTAL_RESOLUTION);
+    // Calculate voxel mass (kg) = voxelVolume (um^3) * density (g/cm^3) *
+    //                             unitConversionFactor
+    voxelMass = UNIT_CONVERSION * (Math.pow(crystalPixPerUM, -3) *
+        coefCalc.getDensity());
   }
 
   public abstract void setupDepthFinding(double angrad, Wedge wedge);
@@ -158,7 +172,7 @@ public abstract class Crystal {
   public abstract void addDose(int i, int j, int k, double doseIncrease);
 
   /**
-   * Should increment the dose array element ijk by doseVox. 
+   * Should increment the dose array element ijk by doseVox.
    * This accounts for PE energy transfer to nearby voxels.
    *
    * @param i i coord
@@ -168,14 +182,14 @@ public abstract class Crystal {
    * @return voxel dose lost from crystal
    */
   public abstract double addDoseAfterPE(int i, int j, int k, double doseIncrease);
-  
+
   /**
    * set new photoelectron trajectory parameters for current beam
    *
    * @param beamEnergy
    */
   public abstract void setPEparamsForCurrentBeam(double beamEnergy);
-  
+
   /**
    * Should increment the fluence array element ijk by fluenceVox.
    *
@@ -293,9 +307,13 @@ public abstract class Crystal {
 
     // Update coefficients in case the beam energy has changed.
     coefCalc.updateCoefficients(beam);
-    
-    // Update photoelectron escape parameters for current beam
+
     setPEparamsForCurrentBeam(beam.getPhotonEnergy());
+
+    double[][] fluorEscapeFactors = coefCalc.getFluorescentEscapeFactors(beam);
+
+    double beamEnergyInJoules = beam.getPhotonEnergy()
+        * Beam.KEVTOJOULES;
 
     // Set up angles to iterate over.
     double[] angles;
@@ -319,19 +337,20 @@ public abstract class Crystal {
 
     for (ExposeObserver eo : exposureObservers) {
       eo.exposureStart(angles.length);
-    } 
+    }
 
     // The main meat of it:
     for (int n = 0; n < angles.length; n++) {
       // Expose one angle
-      exposeAngle(angles[n], beam, wedge, n, angles.length);
+      exposeAngle(angles[n], beam, wedge, n, angles.length,
+          beamEnergyInJoules, fluorEscapeFactors);
 
       for (ExposeObserver eo : exposureObservers) {
         eo.imageComplete(n, angles[n]);
       }
 
     } // end of looping over angles
-    
+
     double fractionEscapedDose = totalEscapedDose/totalCrystalDose;
     System.out.println(String.format("\nFraction of escaped dose: %.2f", fractionEscapedDose));
 
@@ -357,7 +376,8 @@ public abstract class Crystal {
   }
 
   private void exposeAngle(final double angle, final Beam beam,
-      final Wedge wedge, final int anglenum, final int anglecount) {
+      final Wedge wedge, final int anglenum, final int anglecount,
+      final double beamEnergy, final double[][] fluorEscapeFactors) {
 
     final int[] crystalSize = getCrystSizeVoxels();
 
@@ -368,15 +388,14 @@ public abstract class Crystal {
     final double anglesin = Math.sin(angle);
     setupDepthFinding(angle, wedge);
 
-    final double fluenceToDoseFactor = -1
-        * Math.expm1(-1 * coefCalc.getAbsorptionCoefficient()
-            / getCrystalPixPerUM())
-        // exposure for the Voxel (J) * fraction absorbed by voxel
-        / (1e-15 * (Math.pow(getCrystalPixPerUM(), -3) * coefCalc
-            .getDensity()))
-        // Voxel mass: 1um^3/1m/ml
-        // (= 1e-18/1e3) / [volume (um^-3) *density (g/ml)]
-        * 1e-6; // MGy
+    final double absorptionFraction =
+        1 - Math.exp(-1 * coefCalc.getAbsorptionCoefficient()
+            / getCrystalPixPerUM());
+    // absorption fraction of the beam by a voxel
+
+    final double absorptionFractionPerKg =
+        absorptionFraction / voxelMass * GY_TO_MGY;
+
     final double fluenceToElasticFactor = -1
         * Math.expm1(-1 * coefCalc.getElasticCoefficient()
         / getCrystalPixPerUM())
@@ -384,11 +403,6 @@ public abstract class Crystal {
         //   = J scattered
         / (beam.getPhotonEnergy() * Beam.KEVTOJOULES);
         // J scattered / [(keV/photon) / (J/keV)] = photons scattered
-
-    final double energyPerFluence =
-        1 - Math.exp(-1 * coefCalc.getAbsorptionCoefficient()
-            / getCrystalPixPerUM());
-    // absorption of the beam by a voxel
 
     final double beamAttenuationFactor = Math.pow(getCrystalPixPerUM(), -2)
         * wedge.getTotSec() / anglecount;
@@ -435,23 +449,28 @@ public abstract class Crystal {
                * Assigning exposure (joules incident) and dose (J/kg absorbed)
                * to the voxel.
                */
-
               double voxImageFluence =
                   unattenuatedBeamIntensity * beamAttenuationFactor
-                      * Math.exp(depth * beamAttenuationExpFactor);
+                      * Math.exp(depth * beamAttenuationExpFactor)
+                      * beamEnergy;
               // Attenuates the beam for absorption
 
-              double voxImageDose = fluenceToDoseFactor * voxImageFluence;// * getEscapeFactor(i, j, k);
+              double voxImageEnergy = voxImageFluence;
+
+              double voxImageDose = absorptionFractionPerKg * voxImageEnergy;
               // MGy
 
-              double voxElasticYield = fluenceToElasticFactor * voxImageFluence;
+              double voxElasticYield = fluenceToElasticFactor *
+                  voxImageFluence; //* beamEnergy;
 
               if (voxImageDose > 0) {
+
                 addFluence(i, j, k, voxImageFluence);
-//                addDose(i, j, k, voxImageDose);         
+//                addDose(i, j, k, voxImageDose);
                 double doseLostFromCrystal = addDoseAfterPE(i, j, k, voxImageDose); //to run with new photoelectron escape
                 totalEscapedDose += doseLostFromCrystal;
                 totalCrystalDose += voxImageDose;
+
                 addElastic(i, j, k, voxElasticYield);
               } else if (voxImageDose < 0) {
                 throw new ArithmeticException(
@@ -464,11 +483,11 @@ public abstract class Crystal {
                   getDDM().calcDecay(interpolatedVoxelDose);
 
               // Fluence times the fraction of the beam absorbed by the voxel
-              double absorbedEnergy = voxImageFluence * energyPerFluence;
+              double absorbedEnergy = voxImageEnergy * absorptionFraction;
 
               for (ExposeObserver eo : exposureObservers) {
                 eo.exposureObservation(anglenum, i, j, k, voxImageDose,
-                    totalVoxelDose, voxImageFluence,
+                    totalVoxelDose, voxImageEnergy,
                     relativeDiffractionEfficiency, absorbedEnergy,
                     voxElasticYield);
               }

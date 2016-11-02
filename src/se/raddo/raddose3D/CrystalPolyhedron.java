@@ -148,6 +148,12 @@ public class CrystalPolyhedron extends Crystal {
    * by the corresponding rotatedVertex.
    */
   private double[][][]          expandedRotatedVertices;
+  
+  /**
+   * Average distance to from voxel to edge of the crystal in "all" 
+   * directions
+   */
+  public double[][][]           avgDepth;
 
   /* Indices for cuboid */
   /*
@@ -547,7 +553,8 @@ public class CrystalPolyhedron extends Crystal {
      * Calculate Crystal Coordinates, and assign them:
      * (This needs to be turned into a rotation-based subroutine!)
      */
-
+    
+    double[][][] tempAvgDepth = new double[nx][ny][nz];
     double[][][][] tempCrystCoords = new double[nx][ny][nz][3];
 
     for (int i = 0; i < nx; i++) {
@@ -577,11 +584,21 @@ public class CrystalPolyhedron extends Crystal {
           tempCrystCoords[i][j][k][1] = y2 * Math.cos(l) + z2 * Math.sin(l);
           tempCrystCoords[i][j][k][2] = -1 * y2 * Math.sin(l) + z2
               * Math.cos(l);
+          
+          //This implementation to find the average depth is so primitive that it's
+          //terrible. This is here as a placeholder so we can calculate X-ray 
+          //fluorescent escape. This needs to be changed to a more sophisticated
+          //calculation.
+          Double xlength = (Double) properties.get(CrystalPolyhedron.CRYSTAL_DIM_X)/2;
+          Double ylength = (Double) properties.get(CrystalPolyhedron.CRYSTAL_DIM_Y)/2;
+          Double zlength = (Double) properties.get(CrystalPolyhedron.CRYSTAL_DIM_Z)/2;
+          tempAvgDepth[i][j][k] = (xlength + ylength + zlength)/3;
         }
       }
     }
 
     crystCoord = tempCrystCoords; // Final value
+    avgDepth = tempAvgDepth;
 
     /*
      * Set the value of the boolean for whether photoelectron escape should be
@@ -1393,5 +1410,14 @@ public class CrystalPolyhedron extends Crystal {
     for (int i = 0; i < tempIndices.length; i++) {
       System.arraycopy(tempIndices[i], 0, indices[i], 0, 3);
     }
+  }
+  
+  /**
+   * return the proportion of energy deducted due to fluorescent 
+   * escape.
+   */
+  public double addDose(final int i, final int j, final int k,
+      final double[][] fluorEscapeFactors) {
+    return 0.0;
   }
 }
