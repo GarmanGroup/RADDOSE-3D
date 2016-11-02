@@ -406,7 +406,8 @@ public abstract class Crystal {
                */
               double voxImageFluence = 
                   unattenuatedBeamIntensity * beamAttenuationFactor
-                      * Math.exp(depth * beamAttenuationExpFactor);
+                      * Math.exp(depth * beamAttenuationExpFactor)
+                      * beamEnergy;
               // Attenuates the beam for absorption
               
               double voxImageEnergy = voxImageFluence;
@@ -415,7 +416,7 @@ public abstract class Crystal {
               // MGy
 
               double voxElasticYield = fluenceToElasticFactor * 
-                  voxImageFluence * beamEnergy;
+                  voxImageFluence; //* beamEnergy;
 
               if (voxImageDose > 0) {
                 addFluence(i, j, k, voxImageEnergy);
