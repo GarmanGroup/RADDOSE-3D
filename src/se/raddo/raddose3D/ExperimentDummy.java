@@ -225,6 +225,15 @@ public class ExperimentDummy extends Experiment {
       public double getEscapeFactor(int i, int j, int k) {
         return 1.0;
       }
+
+      @Override
+      public double addDoseAfterPE(int i, int j, int k, double doseIncrease) {
+        return 0;
+      }
+
+      @Override
+      public void setPEparamsForCurrentBeam(double beamEnergy) {        
+      }
     }
   }
 }

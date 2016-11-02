@@ -250,4 +250,13 @@ public class CrystalSpherical extends Crystal {
   public double getEscapeFactor(final int i, final int j, final int k) {
     return 1.0;
   }
+
+  @Override
+  public double addDoseAfterPE(int i, int j, int k, double doseIncrease) {
+    return 0;
+  }
+
+  @Override
+  public void setPEparamsForCurrentBeam(double beamEnergy) {    
+  }
 }
