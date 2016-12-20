@@ -465,8 +465,20 @@ public abstract class Crystal {
                       * beamEnergy;
               // Attenuates the beam for absorption
 
+              /*
+               * I think that we need to reduce the voxImageEnergy due to 
+               * X-ray fluorescence escape in the first line below this 
+               * comment!
+               * 
+               * One other consideration is whether you put the code for
+               * Energy reduction by X-ray fluorescence before the code to 
+               * reduce the dose due to photoelectron escape (PE). This is 
+               * because the inner shell electron has to be ejected before 
+               * X-ray fluorescence takes place. Hence there's an argument
+               * for doing PE first
+               */
               double voxImageEnergy = voxImageFluence;
-
+              
               double voxImageDose = absorptionFractionPerKg * voxImageEnergy;
               // MGy
 
