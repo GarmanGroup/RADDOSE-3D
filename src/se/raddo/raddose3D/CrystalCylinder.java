@@ -1,6 +1,7 @@
 package se.raddo.raddose3D;
 
 import java.util.Map;
+import java.util.Objects;
 
 public class CrystalCylinder extends CrystalPolyhedron {
 
@@ -141,6 +142,7 @@ public class CrystalCylinder extends CrystalPolyhedron {
     Double radius = (Double) mergedProperties.get(Crystal.CRYSTAL_DIM_X) / 2;
     Double height = (Double) mergedProperties.get(Crystal.CRYSTAL_DIM_Y);
     double[][] tempVertices = createCylinderVertices(radius, height);
+    rotateVertices(tempVertices, 90, "z");
 
     setIndices(tempIndices);
 
@@ -149,7 +151,6 @@ public class CrystalCylinder extends CrystalPolyhedron {
     for (int i = 0; i < tempVertices.length; i++) {
       System.arraycopy(tempVertices[i], 0, vertices[i], 0, 3);
     }
-
   }
 
   /**
@@ -197,6 +198,106 @@ public class CrystalCylinder extends CrystalPolyhedron {
     }
 
     return vertices;
+  }
+  
+  /**
+   * Rotates the vertices of the cylinder given an angle (in degrees) and 
+   * the axis around which the rotation is performed.
+   * @param vertices
+   *            2D array of the vertices to be rotated.
+   * @param angle
+   *            Angle of rotation in degrees.
+   * @param axis
+   *            axis about which the rotation is performed. Either "x", "y"
+   *            or "z". 
+   */
+  private void rotateVertices(double[][] vertices, double angle, String axis) {
+    double[][] rotationMatrix = createRotationMatrix(angle, axis);
+    for (int vertex = 0; vertex < vertices.length; vertex++) {
+      double[] point = {vertices[vertex][0], vertices[vertex][1], vertices[vertex][2]};
+      double[] rotatedPoint = rotatePoint(rotationMatrix, point);
+      vertices[vertex][0] = rotatedPoint[0];
+      vertices[vertex][1] = rotatedPoint[1];
+      vertices[vertex][2] = rotatedPoint[2];
+    }
+  }
+  
+  /**
+   * Rotates rotate a point 
+   * @param matrix
+   *            3x3 rotation matrix.
+   * @param point
+   *            3x1 array containing the x, y, z coordinates of a point.
+   * @return rotatedPoint
+   *            3x1 array containing the rotated x, y, z coordinates of 
+   *            the input point.
+   */
+  private double[] rotatePoint(double[][] matrix, double[] point) {
+    double[] rotatedPoint = new double[3];
+    for (int i = 0; i < rotatedPoint.length; i++) {
+      rotatedPoint[i] = matrix[i][0] * point[0] + matrix[i][1] * point[1] + matrix[i][2] * point[2];
+    }
+    return rotatedPoint;
+  }
+  
+  /**
+   * Creates the 3x3 rotation matrix to rotate a 3 dimensional point around
+   * the x, y, or z axis. If none of these axes are given then the 
+   * returned matrix is the identity.
+   * @param angle
+   *            Angle of rotation in degrees.
+   * @param axis
+   *            axis about which the rotation is performed. Either "x", "y"
+   *            or "z".
+   * @return rotationMatrix
+   *            3x3 rotation matrix.
+   */
+  private double[][] createRotationMatrix(double angle, String axis) {
+    final double[][] rotationMatrix = new double[3][3];
+    double angleInRadians = Math.toRadians(angle);
+    if (Objects.equals(axis, "x")) {
+      rotationMatrix[0][0] = 1;
+      rotationMatrix[0][1] = 0;
+      rotationMatrix[0][2] = 0;
+      rotationMatrix[1][0] = 0;
+      rotationMatrix[1][1] = Math.cos(angleInRadians);
+      rotationMatrix[1][2] = -Math.sin(angleInRadians);
+      rotationMatrix[2][0] = 0;
+      rotationMatrix[2][1] = Math.sin(angleInRadians);
+      rotationMatrix[2][2] = Math.cos(angleInRadians);
+    } else if (Objects.equals(axis, "y")) {
+      rotationMatrix[0][0] = Math.cos(angleInRadians);
+      rotationMatrix[0][1] = 0;
+      rotationMatrix[0][2] = Math.sin(angleInRadians);
+      rotationMatrix[1][0] = 0;
+      rotationMatrix[1][1] = 1;
+      rotationMatrix[1][2] = 0;
+      rotationMatrix[2][0] = -Math.sin(angleInRadians);
+      rotationMatrix[2][1] = 0;
+      rotationMatrix[2][2] = Math.cos(angleInRadians);
+    } else if (Objects.equals(axis, "z")) {
+      rotationMatrix[0][0] = Math.cos(angleInRadians);
+      rotationMatrix[0][1] = -Math.sin(angleInRadians);
+      rotationMatrix[0][2] = 0;
+      rotationMatrix[1][0] = Math.sin(angleInRadians);
+      rotationMatrix[1][1] = Math.cos(angleInRadians);
+      rotationMatrix[1][2] = 0;
+      rotationMatrix[2][0] = 0;
+      rotationMatrix[2][1] = 0;
+      rotationMatrix[2][2] = 1;
+    } else { 
+      System.out.println("No suitable axis value has been given. No rotation applied (using identity matrix)");
+      rotationMatrix[0][0] = 1;
+      rotationMatrix[0][1] = 0;
+      rotationMatrix[0][2] = 0;
+      rotationMatrix[1][0] = 0;
+      rotationMatrix[1][1] = 1;
+      rotationMatrix[1][2] = 0;
+      rotationMatrix[2][0] = 0;
+      rotationMatrix[2][1] = 0;
+      rotationMatrix[2][2] = 1;
+    }
+    return rotationMatrix;
   }
 
   public CrystalCylinder(final Map<Object, Object> properties) {

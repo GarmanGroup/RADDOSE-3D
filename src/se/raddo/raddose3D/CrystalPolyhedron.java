@@ -12,12 +12,7 @@ import java.util.Map;
 /**
  * @author magd3052
  */
-public class CrystalPolyhedron extends Crystal {
-  /**
-   * Right angle.
-   */
-  private static final double RIGHT_ANGLE = 90;
-
+public class CrystalPolyhedron extends Crystal {  
   /** Resolution of crystal in 1/um. */
   protected final double        crystalPixPerUM;
 
@@ -444,12 +439,7 @@ public class CrystalPolyhedron extends Crystal {
         "no L angle specified");
 
     // Assign the rotation variables that can be set directly from the constructor
-    if (mergedProperties.get(Crystal.CRYSTAL_COEFCALC).getClass() == CoefCalcSAXS.class ||
-        mergedProperties.get(Crystal.CRYSTAL_COEFCALC).getClass() == CoefCalcFromSequenceSAXS.class) {
-      p = Math.toRadians((Double) mergedProperties.get(Crystal.CRYSTAL_ANGLE_P) + RIGHT_ANGLE);
-    } else {
-      p = Math.toRadians((Double) mergedProperties.get(Crystal.CRYSTAL_ANGLE_P));
-    }
+    p = Math.toRadians((Double) mergedProperties.get(Crystal.CRYSTAL_ANGLE_P));
     l = Math.toRadians((Double) mergedProperties.get(Crystal.CRYSTAL_ANGLE_L));
 
     loadVertices(mergedProperties);
