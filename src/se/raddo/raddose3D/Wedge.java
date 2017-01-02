@@ -187,15 +187,19 @@ public class Wedge {
 
     if ((properties.get(WedgeProperties.START_POSITION_X) != 0)
         || (properties.get(WedgeProperties.START_POSITION_Y) != 0)
+        || (properties.get(WedgeProperties.START_POSITION_Z) != 0)
         || (properties.get(WedgeProperties.TRANSLATION_X) != 0)
-        || (properties.get(WedgeProperties.TRANSLATION_Y) != 0)) {
+        || (properties.get(WedgeProperties.TRANSLATION_Y) != 0)
+        || (properties.get(WedgeProperties.TRANSLATION_Z) != 0)) {
       s = s.concat(String.format(
-          "Start is offset by [%f, %f] um [x,y].%n"
-              + "Helical scanning is at [%f, %f] um/deg in [x,y]%n",
+          "Start is offset by [%f, %f, %f] um [x,y,z].%n"
+              + "Helical scanning is at [%f, %f, %f] um/deg in [x,y,z]%n",
           properties.get(WedgeProperties.START_POSITION_X),
           properties.get(WedgeProperties.START_POSITION_Y),
+          properties.get(WedgeProperties.START_POSITION_Z),
           Math.toRadians(properties.get(WedgeProperties.TRANSLATION_X)),
-          Math.toRadians(properties.get(WedgeProperties.TRANSLATION_Y))));
+          Math.toRadians(properties.get(WedgeProperties.TRANSLATION_Y)),
+          Math.toRadians(properties.get(WedgeProperties.TRANSLATION_Z))));
     }
 
     return s;

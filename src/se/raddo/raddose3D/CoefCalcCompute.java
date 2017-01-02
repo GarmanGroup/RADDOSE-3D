@@ -186,7 +186,7 @@ public class CoefCalcCompute extends CoefCalc {
     for (Element e : presentElements) {
       mass += totalAtoms(e) * e.getAtomicWeightInGrams();
     }
-
+    
     density = mass * MASS_TO_CELL_VOLUME / (cellVolume * UNITSPERMILLIUNIT);
 
     double energy = b.getPhotonEnergy();
@@ -239,7 +239,7 @@ public class CoefCalcCompute extends CoefCalc {
   /**
    * @return the numAminoAcids
    */
-  protected double getNumAminoAcids() {
+  public double getNumAminoAcids() {
     return numAminoAcids;
   }
 
@@ -260,7 +260,7 @@ public class CoefCalcCompute extends CoefCalc {
   /**
    * @return the numRNA
    */
-  protected double getNumRNA() {
+  public double getNumRNA() {
     return numRNA;
   }
 
@@ -281,7 +281,7 @@ public class CoefCalcCompute extends CoefCalc {
   /**
    * @return the numDNA
    */
-  protected double getNumDNA() {
+  public double getNumDNA() {
     return numDNA;
   }
 

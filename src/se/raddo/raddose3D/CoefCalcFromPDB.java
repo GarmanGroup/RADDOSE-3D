@@ -6,7 +6,6 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -117,384 +116,11 @@ public class CoefCalcFromPDB extends CoefCalcCompute {
 
   /** Directive first six characters - end pos. */
   protected static final int DIRECTIVE_END_POS         = 6;
-
+  
   /**
-   * Residue looks after the 20 amino acids, 4 RNA bases and
-   * 4 DNA bases and provides CoefCalcPDB class with their
-   * C/H/N/O/S/P content.
-   * 
-   * @author magd3052
+   * Residue database keeping the atomic composition of all residues.
    */
-  public static class Residue {
-    /** 3-letter code identifier found in PDB. */
-    private final String         identifier;
-    /** Numbers of atoms per residue. */
-    private final int            carbons, hydrogens, oxygens, nitrogens,
-                                 sulphurs, seleniums, 
-                                 phosphoruses, type;
-    /** Static list which holds all residues. */
-    private static List<Residue> residueArray        = new ArrayList<Residue>();
-
-    /** Alanine identifier. */
-    private static final String  ALANINE_ID          = "ALA";
-    /** Alanine no. of atoms per residue. */
-    private static final int     ALANINE_C           = 3, ALANINE_H = 7,
-                                                     ALANINE_N = 1,
-        ALANINE_O = 2,
-        ALANINE_S = 0, ALANINE_P = 0;
-
-    /** Arginine identifier. */
-    private static final String  ARGININE_ID         = "ARG";
-    /** Arginine no. of atoms per residue. */
-    private static final int     ARGININE_C          = 6, ARGININE_H = 15,
-                                                     ARGININE_N = 4,
-                                                     ARGININE_O = 1,
-                                                     ARGININE_S = 0,
-                                                     ARGININE_P = 0;
-
-    /** Asparagine identifier. */
-    private static final String  ASPARAGINE_ID       = "ASN";
-    /** Asparagine no. of atoms per residue. */
-    private static final int     ASPARAGINE_C        = 4, ASPARAGINE_H = 8,
-                                                     ASPARAGINE_N = 2,
-                                                     ASPARAGINE_O = 2,
-                                                     ASPARAGINE_S = 0,
-                                                     ASPARAGINE_P = 0;
-
-    /** Aspartate identifier. */
-    private static final String  ASPARTATE_ID        = "ASP";
-    /** Aspartate no. of atoms per residue. */
-    private static final int     ASPARTATE_C         = 4, ASPARTATE_H = 5,
-                                                     ASPARTATE_N = 1,
-                                                     ASPARTATE_O = 3,
-                                                     ASPARTATE_S = 0,
-                                                     ASPARTATE_P = 0;
-
-    /** Cysteine identifier. */
-    private static final String  CYSTEINE_ID         = "CYS";
-    /** Cysteine no. of atoms per residue. */
-    private static final int     CYSTEINE_C          = 3, CYSTEINE_H = 5,
-                                                     CYSTEINE_N = 1,
-                                                     CYSTEINE_O = 1,
-                                                     CYSTEINE_S = 1,
-                                                     CYSTEINE_P = 0;
-
-    /** Glutamine identifier. */
-    private static final String  GLUTAMINE_ID        = "GLN";
-    /** Glutamine no. of atoms per residue. */
-    private static final int     GLUTAMINE_C         = 5, GLUTAMINE_H = 8,
-                                                     GLUTAMINE_N = 2,
-                                                     GLUTAMINE_O = 2,
-                                                     GLUTAMINE_S = 0,
-                                                     GLUTAMINE_P = 0;
-
-    /** Glutamate identifier. */
-    private static final String  GLUTAMATE_ID        = "GLU";
-    /** Glutamate no. of atoms per residue. */
-    private static final int     GLUTAMATE_C         = 5, GLUTAMATE_H = 7,
-                                                     GLUTAMATE_N = 1,
-                                                     GLUTAMATE_O = 3,
-                                                     GLUTAMATE_S = 0,
-                                                     GLUTAMATE_P = 0;
-
-    /** Glycine identifier. */
-    private static final String  GLYCINE_ID          = "GLY";
-    /** Glycine no. of atoms per residue. */
-    private static final int     GLYCINE_C           = 2, GLYCINE_H = 3,
-                                                     GLYCINE_N = 1,
-        GLYCINE_O = 1,
-        GLYCINE_S = 0, GLYCINE_P = 0;
-
-    /** Histidine identifier. */
-    private static final String  HISTIDINE_ID        = "HIS";
-    /** Histidine no. of atoms per residue. */
-    private static final int     HISTIDINE_C         = 6, HISTIDINE_H = 7,
-                                                     HISTIDINE_N = 3,
-                                                     HISTIDINE_O = 1,
-                                                     HISTIDINE_S = 0,
-                                                     HISTIDINE_P = 0;
-
-    /** Isoleucine identifier. */
-    private static final String  ISOLEUCINE_ID       = "ILE";
-    /** Isoleucine no. of atoms per residue. */
-    private static final int     ISOLEUCINE_C        = 6, ISOLEUCINE_H = 11,
-                                                     ISOLEUCINE_N = 1,
-                                                     ISOLEUCINE_O = 1,
-                                                     ISOLEUCINE_S = 0,
-                                                     ISOLEUCINE_P = 0;
-
-    /** Leucine identifier. */
-    private static final String  LEUCINE_ID          = "LEU";
-    /** Leucine no. of atoms per residue. */
-    private static final int     LEUCINE_C           = 6, LEUCINE_H = 11,
-                                                     LEUCINE_N = 1,
-        LEUCINE_O = 1,
-        LEUCINE_S = 0, LEUCINE_P = 0;
-
-    /** Lysine identifier. */
-    private static final String  LYSINE_ID           = "LYS";
-    /** Lysine no. of atoms per residue. */
-    private static final int     LYSINE_C            = 6, LYSINE_H = 12,
-                                                     LYSINE_N = 2,
-        LYSINE_O = 1,
-        LYSINE_S = 0, LYSINE_P = 0;
-
-    /** Methionine identifier. */
-    private static final String  METHIONINE_ID       = "MET";
-    /** Methionine no. of atoms per residue. */
-    private static final int     METHIONINE_C        = 5, METHIONINE_H = 9,
-                                                     METHIONINE_N = 1,
-                                                     METHIONINE_O = 1,
-                                                     METHIONINE_S = 1,
-                                                     METHIONINE_P = 0;
-
-    /** Selenomethionine identifier. */
-    private static final String  SELENOMETHIONINE_ID = "MSE";
-    /** Methionine no. of atoms per residue. */
-    private static final int     SELENOMETHIONINE_C  = 5,
-        SELENOMETHIONINE_H = 9,
-        SELENOMETHIONINE_N = 1,
-        SELENOMETHIONINE_O = 1,
-        SELENOMETHIONINE_S = 0,
-        SELENOMETHIONINE_SE = 1,
-        SELENOMETHIONINE_P = 0;
-
-    /** Phenylalanine identifier. */
-    private static final String  PHENYLALANINE_ID    = "PHE";
-    /** Phenylalanine no. of atoms per residue. */
-    private static final int     PHENYLALANINE_C     = 9, PHENYLALANINE_H = 9,
-                                                     PHENYLALANINE_N = 1,
-                                                     PHENYLALANINE_O = 1,
-                                                     PHENYLALANINE_S = 0,
-                                                     PHENYLALANINE_P = 0;
-
-    /** Proline identifier. */
-    private static final String  PROLINE_ID          = "PRO";
-    /** Proline no. of atoms per residue. */
-    private static final int     PROLINE_C           = 5, PROLINE_H = 7,
-                                                     PROLINE_N = 1,
-        PROLINE_O = 1,
-        PROLINE_S = 0, PROLINE_P = 0;
-
-    /** Serine identifier. */
-    private static final String  SERINE_ID           = "SER";
-    /** Serine no. of atoms per residue. */
-    private static final int     SERINE_C            = 3, SERINE_H = 5,
-                                                     SERINE_N = 1,
-        SERINE_O = 2,
-        SERINE_S = 0, SERINE_P = 0;
-
-    /** Threonine identifier. */
-    private static final String  THREONINE_ID        = "THR";
-    /** Threonine no. of atoms per residue. */
-    private static final int     THREONINE_C         = 4, THREONINE_H = 7,
-                                                     THREONINE_N = 1,
-                                                     THREONINE_O = 2,
-                                                     THREONINE_S = 0,
-                                                     THREONINE_P = 0;
-
-    /** tryptophan identifier. */
-    private static final String  TRYPTOPHAN_ID       = "TRP";
-    /** Tryptophan no. of atoms per residue. */
-    private static final int     TRYPTOPHAN_C        = 11, TRYPTOPHAN_H = 10,
-                                                     TRYPTOPHAN_N = 2,
-                                                     TRYPTOPHAN_O = 1,
-                                                     TRYPTOPHAN_S = 0,
-                                                     TRYPTOPHAN_P = 0;
-
-    /** tyrosine identifier. */
-    private static final String  TYROSINE_ID         = "TYR";
-    /** Tyrosine no. of atoms per residue. */
-    private static final int     TYROSINE_C          = 9, TYROSINE_H = 9,
-                                                     TYROSINE_N = 1,
-                                                     TYROSINE_O = 2,
-                                                     TYROSINE_S = 0,
-                                                     TYROSINE_P = 0;
-
-    /** valine identifier. */
-    private static final String  VALINE_ID           = "VAL";
-    /** Valine no. of atoms per residue. */
-    private static final int     VALINE_C            = 5, VALINE_H = 9,
-                                                     VALINE_N = 1,
-        VALINE_O = 1,
-        VALINE_S = 0, VALINE_P = 0;
-
-    /** AMP identifier. */
-    private static final String  AMP_ID              = "  A";
-    /** AMP no. of atoms per residue. */
-    private static final int     AMP_C               = 10, AMP_H = 12,
-        AMP_N = 5,
-        AMP_O = 6, AMP_S = 0,
-        AMP_P = 1;
-
-    /** UMP identifier. */
-    private static final String  UMP_ID              = "  U";
-    /** UMP no. of atoms per residue. */
-    private static final int     UMP_C               = 9, UMP_H = 11,
-        UMP_N = 2,
-        UMP_O = 8, UMP_S = 0,
-        UMP_P = 1;
-
-    /** GMP identifier. */
-    private static final String  GMP_ID              = "  G";
-    /** GMP no. of atoms per residue. */
-    private static final int     GMP_C               = 10, GMP_H = 12,
-        GMP_N = 5,
-        GMP_O = 7, GMP_S = 0,
-        GMP_P = 1;
-
-    /** CMP identifier. */
-    private static final String  CMP_ID              = "  C";
-    /** CMP no. of atoms per residue. */
-    private static final int     CMP_C               = 9, CMP_H = 12,
-        CMP_N = 3,
-        CMP_O = 7, CMP_S = 0,
-        CMP_P = 1;
-
-    /** dAMP identifier. */
-    private static final String  DAMP_ID             = " DA";
-    /** dAMP no. of atoms per residue. */
-    private static final int     DAMP_C              = 10, DAMP_H = 12,
-                                                     DAMP_N = 5, DAMP_O = 5,
-                                                     DAMP_S = 0, DAMP_P = 1;
-
-    /** dTMP identifier. */
-    private static final String  DTMP_ID             = " DT";
-    /** dTMP no. of atoms per residue. */
-    private static final int     DTMP_C              = 10, DTMP_H = 11,
-                                                     DTMP_N = 2, DTMP_O = 7,
-                                                     DTMP_S = 0, DTMP_P = 1;
-
-    /** dGMP identifier. */
-    private static final String  DGMP_ID             = " DG";
-    /** dGMP no. of atoms per residue. */
-    private static final int     DGMP_C              = 10, DGMP_H = 12,
-                                                     DGMP_N = 5, DGMP_O = 6,
-                                                     DGMP_S = 0, DGMP_P = 1;
-
-    /** dCMP identifier. */
-    private static final String  DCMP_ID             = " DC";
-    /** dCMP no. of atoms per residue. */
-    private static final int     DCMP_C              = 9, DCMP_H = 12,
-        DCMP_N = 3,
-        DCMP_O = 6, DCMP_S = 0,
-        DCMP_P = 1;
-
-    /** identifiers for type of residue. */
-    private static final int     TYPE_PROTEIN        = 1, TYPE_RNA = 2,
-                                                     TYPE_DNA = 3;
-
-    /**
-     * Creates a residue with identifier and light atom constituents.
-     * ID for RNA/DNA should have preceding spaces, e.g. " DA".
-     * 
-     * @param id PDB identifier
-     * @param cs no. of carbons
-     * @param hs no. of hydrogens
-     * @param os no. of oxygens
-     * @param ns no. of nitrogens
-     * @param ss no. of sulphurs
-     * @param ps no. of phosphoruses
-     * @param typ TYPE_PROTEIN, TYPE_RNA or TYPE_DNA.
-     */
-    public Residue(final String id, final int cs, final int hs, final int os,
-        final int ns, final int ss, final int ps, final int typ, final int ses) {
-      identifier = id;
-      carbons = cs;
-      hydrogens = hs;
-      oxygens = os;
-      nitrogens = ns;
-      sulphurs = ss;
-      phosphoruses = ps;
-      seleniums = ses;
-      type = typ;
-
-      residueArray.add(this);
-    }
-
-    /**
-     * creates residue array which is added to the static library of residues
-     * for future access.
-     */
-    public static void createResidueArray() {
-
-      new Residue(ALANINE_ID, ALANINE_C, ALANINE_H, ALANINE_O, ALANINE_N,
-          ALANINE_S, ALANINE_P, TYPE_PROTEIN, 0);
-      new Residue(ARGININE_ID, ARGININE_C, ARGININE_H, ARGININE_O, ARGININE_N,
-          ARGININE_S, ARGININE_P, TYPE_PROTEIN, 0);
-      new Residue(ASPARAGINE_ID, ASPARAGINE_C, ASPARAGINE_H, ASPARAGINE_O,
-          ASPARAGINE_N, ASPARAGINE_S, ASPARAGINE_P, TYPE_PROTEIN, 0);
-      new Residue(ASPARTATE_ID, ASPARTATE_C, ASPARTATE_H, ASPARTATE_O,
-          ASPARTATE_N, ASPARTATE_S, ASPARTATE_P, TYPE_PROTEIN, 0);
-      new Residue(CYSTEINE_ID, CYSTEINE_C, CYSTEINE_H, CYSTEINE_O, CYSTEINE_N,
-          CYSTEINE_S, CYSTEINE_P, TYPE_PROTEIN, 0);
-      new Residue(GLUTAMINE_ID, GLUTAMINE_C, GLUTAMINE_H, GLUTAMINE_O,
-          GLUTAMINE_N, GLUTAMINE_S, GLUTAMINE_P, TYPE_PROTEIN, 0);
-      new Residue(GLUTAMATE_ID, GLUTAMATE_C, GLUTAMATE_H, GLUTAMATE_O,
-          GLUTAMATE_N, GLUTAMATE_S, GLUTAMATE_P, TYPE_PROTEIN, 0);
-      new Residue(GLYCINE_ID, GLYCINE_C, GLYCINE_H, GLYCINE_O, GLYCINE_N,
-          GLYCINE_S, GLYCINE_P, TYPE_PROTEIN, 0);
-      new Residue(HISTIDINE_ID, HISTIDINE_C, HISTIDINE_H, HISTIDINE_O,
-          HISTIDINE_N, HISTIDINE_S, HISTIDINE_P, TYPE_PROTEIN, 0);
-      new Residue(ISOLEUCINE_ID, ISOLEUCINE_C, ISOLEUCINE_H, ISOLEUCINE_O,
-          ISOLEUCINE_N, ISOLEUCINE_S, ISOLEUCINE_P, TYPE_PROTEIN, 0);
-      new Residue(LEUCINE_ID, LEUCINE_C, LEUCINE_H, LEUCINE_O, LEUCINE_N,
-          LEUCINE_S, LEUCINE_P, TYPE_PROTEIN, 0);
-      new Residue(LYSINE_ID, LYSINE_C, LYSINE_H, LYSINE_O, LYSINE_N, LYSINE_S,
-          LYSINE_P, TYPE_PROTEIN, 0);
-      new Residue(METHIONINE_ID, METHIONINE_C, METHIONINE_H, METHIONINE_O,
-          METHIONINE_N, METHIONINE_S, METHIONINE_P, TYPE_PROTEIN, 0);
-      new Residue(SELENOMETHIONINE_ID, SELENOMETHIONINE_C, SELENOMETHIONINE_H, SELENOMETHIONINE_O,
-          SELENOMETHIONINE_N, SELENOMETHIONINE_S, SELENOMETHIONINE_P, TYPE_PROTEIN, SELENOMETHIONINE_SE);
-      new Residue(PHENYLALANINE_ID, PHENYLALANINE_C, PHENYLALANINE_H,
-          PHENYLALANINE_O, PHENYLALANINE_N, PHENYLALANINE_S, PHENYLALANINE_P,
-          TYPE_PROTEIN, 0);
-      new Residue(PROLINE_ID, PROLINE_C, PROLINE_H, PROLINE_O, PROLINE_N,
-          PROLINE_S, PROLINE_P, TYPE_PROTEIN, 0);
-      new Residue(SERINE_ID, SERINE_C, SERINE_H, SERINE_O, SERINE_N, SERINE_S,
-          SERINE_P, TYPE_PROTEIN, 0);
-      new Residue(THREONINE_ID, THREONINE_C, THREONINE_H, THREONINE_O,
-          THREONINE_N, THREONINE_S, THREONINE_P, TYPE_PROTEIN, 0);
-      new Residue(TRYPTOPHAN_ID, TRYPTOPHAN_C, TRYPTOPHAN_H, TRYPTOPHAN_O,
-          TRYPTOPHAN_N, TRYPTOPHAN_S, TRYPTOPHAN_P, TYPE_PROTEIN, 0);
-      new Residue(TYROSINE_ID, TYROSINE_C, TYROSINE_H, TYROSINE_O, TYROSINE_N,
-          TYROSINE_S, TYROSINE_P, TYPE_PROTEIN, 0);
-      new Residue(VALINE_ID, VALINE_C, VALINE_H, VALINE_O, VALINE_N, VALINE_S,
-          VALINE_P, TYPE_PROTEIN, 0);
-
-      new Residue(AMP_ID, AMP_C, AMP_H, AMP_O, AMP_N, AMP_S, AMP_P, TYPE_RNA, 0);
-      new Residue(UMP_ID, UMP_C, UMP_H, UMP_O, UMP_N, UMP_S, UMP_P, TYPE_RNA, 0);
-      new Residue(GMP_ID, GMP_C, GMP_H, GMP_O, GMP_N, GMP_S, GMP_P, TYPE_RNA, 0);
-      new Residue(CMP_ID, CMP_C, CMP_H, CMP_O, CMP_N, CMP_S, CMP_P, TYPE_RNA, 0);
-
-      new Residue(DAMP_ID, DAMP_C, DAMP_H, DAMP_O, DAMP_N, DAMP_S, DAMP_P,
-          TYPE_DNA, 0);
-      new Residue(DTMP_ID, DTMP_C, DTMP_H, DTMP_O, DTMP_N, DTMP_S, DTMP_P,
-          TYPE_DNA, 0);
-      new Residue(DGMP_ID, DGMP_C, DGMP_H, DGMP_O, DGMP_N, DGMP_S, DGMP_P,
-          TYPE_DNA, 0);
-      new Residue(DCMP_ID, DCMP_C, DCMP_H, DCMP_O, DCMP_N, DCMP_S, DCMP_P,
-          TYPE_DNA, 0);
-
-    }
-
-    /**
-     * Static function which can take an ID and return the appropriate
-     * residue from the holding array.
-     * 
-     * @param id identifier in PDB.
-     * @return Residue object.
-     */
-    public static Residue residueWithName(final String id) {
-      for (Residue r : residueArray) {
-        if (r.identifier.equals(id)) {
-          return r;
-        }
-      }
-
-      return null;
-    }
-  }
+  private ResidueDatabase      residueDB;
 
   // these variables are important for PDB downloading and parsing.
 
@@ -532,8 +158,7 @@ public class CoefCalcFromPDB extends CoefCalcCompute {
 
       System.out.println("PDB file unit cell: " + a + " " + b + " "
           + c + " " + alpha + " " + beta + " " + gamma);
-
-      System.out.println("Number of monomers: " + this.getNumMonomers());
+      
       cellVolume(a, b, c, alpha, beta, gamma);
     } catch (NumberFormatException e) {
       System.out
@@ -662,6 +287,7 @@ public class CoefCalcFromPDB extends CoefCalcCompute {
    * 
    * @param inputLine line from PDB
    */
+  @SuppressWarnings("static-access")
   public void parseSeqResLine(final String inputLine) {
     String sequenceOnly = inputLine.substring(SEQRES_START, inputLine.length());
 
@@ -673,8 +299,9 @@ public class CoefCalcFromPDB extends CoefCalcCompute {
             sequenceOnly.length());
         continue;
       }
-
-      Residue residue = Residue.residueWithName(threeLetters);
+      
+      residueDB = ResidueDatabase.getInstance();
+      Residue residue = residueDB.getResidue(threeLetters);
 
       if (residue == null) {
         System.out
@@ -685,11 +312,11 @@ public class CoefCalcFromPDB extends CoefCalcCompute {
         continue;
       }
 
-      if (residue.type == Residue.TYPE_PROTEIN) {
+      if (residue.getResidueType() == residueDB.TYPE_PROTEIN) {
         this.incrementNumAminoAcids(1);
-      } else if (residue.type == Residue.TYPE_RNA) {
+      } else if (residue.getResidueType() == residueDB.TYPE_RNA) {
         this.incrementNumRNA(1);
-      } else if (residue.type == Residue.TYPE_DNA) {
+      } else if (residue.getResidueType() == residueDB.TYPE_DNA) {
         this.incrementNumDNA(1);
       }
 
@@ -701,19 +328,19 @@ public class CoefCalcFromPDB extends CoefCalcCompute {
       Element sulphurs = this.getParser().getElement("S");
       Element seleniums = this.getParser().getElement("SE");     
       
-      setMacromolecularOccurrence(hydrogen, residue.hydrogens
+      setMacromolecularOccurrence(hydrogen, residue.getHydrogens()
           + getMacromolecularOccurrence(hydrogen));
-      setMacromolecularOccurrence(oxygen, residue.oxygens
+      setMacromolecularOccurrence(oxygen, residue.getOxygens()
           + getMacromolecularOccurrence(oxygen));
-      setMacromolecularOccurrence(carbon, residue.carbons
+      setMacromolecularOccurrence(carbon, residue.getCarbons()
           + getMacromolecularOccurrence(carbon));
-      setMacromolecularOccurrence(nitrogen, residue.nitrogens
+      setMacromolecularOccurrence(nitrogen, residue.getNitrogens()
           + getMacromolecularOccurrence(nitrogen));
-      setMacromolecularOccurrence(phosphorus, residue.phosphoruses
+      setMacromolecularOccurrence(phosphorus, residue.getPhosphoruses()
           + getMacromolecularOccurrence(phosphorus));
-      setMacromolecularOccurrence(sulphurs, residue.sulphurs
+      setMacromolecularOccurrence(sulphurs, residue.getSulphurs()
           + getMacromolecularOccurrence(sulphurs));
-      setMacromolecularOccurrence(seleniums, residue.seleniums
+      setMacromolecularOccurrence(seleniums, residue.getSeleniums()
           + getMacromolecularOccurrence(seleniums));
       
       sequenceOnly = sequenceOnly.substring(SEQRES_RESI_LENGTH + 1,
@@ -821,6 +448,7 @@ public class CoefCalcFromPDB extends CoefCalcCompute {
     this.setNumMonomers(csSymmetryOperators * ncsSymmetryOperators);
 
     multiplyAtoms(this.getNumMonomers());
+    System.out.println("Number of monomers: " + this.getNumMonomers());
 
     double solventFraction = calculateSolventFractionFromNums();
     calculateSolventWater(solventFraction);
@@ -835,8 +463,6 @@ public class CoefCalcFromPDB extends CoefCalcCompute {
    */
   public CoefCalcFromPDB(final String pdbCode) {
     String pdbName = pdbCode.toUpperCase();
-
-    Residue.createResidueArray();
 
     downloadPDB(pdbName);
   }
@@ -853,8 +479,6 @@ public class CoefCalcFromPDB extends CoefCalcCompute {
       final List<String> heavySolvConcNames,
       final List<Double> heavySolvConcNums) {
     String pdbNameUpperCase = pdbName.toUpperCase();
-
-    Residue.createResidueArray();
 
     this.addSolventConcentrations(heavySolvConcNames, heavySolvConcNums);
 

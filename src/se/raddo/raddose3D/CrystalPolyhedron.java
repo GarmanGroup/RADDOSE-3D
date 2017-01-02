@@ -12,8 +12,7 @@ import java.util.Map;
 /**
  * @author magd3052
  */
-public class CrystalPolyhedron extends Crystal {
-
+public class CrystalPolyhedron extends Crystal {  
   /** Resolution of crystal in 1/um. */
   protected final double        crystalPixPerUM;
 

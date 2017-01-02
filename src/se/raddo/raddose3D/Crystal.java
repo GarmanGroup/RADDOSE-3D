@@ -30,7 +30,9 @@ public abstract class Crystal {
   /** Constant for data fields in Map constructors: Wireframe file. */
   public static final String     CRYSTAL_WIREFRAME_FILE        = "WIREFRAME_FILE";
   /** Constant for data fields in Map constructors: Photoelectron escape. */
-  public static final String     CRYSTAL_ELECTRON_ESCAPE = "PHESCAPE";
+  public static final String     CRYSTAL_ELECTRON_ESCAPE       = "PHESCAPE";
+  /** Constant for data fields in Map constructors: Container Type. */
+  public static final String     CRYSTAL_CONTAINER             = "CONTAINER";
 
   /** Default recommended voxel resolution in voxels/micrometre. */
   protected static final Double  CRYSTAL_RESOLUTION_DEF        = 0.5d;
@@ -48,6 +50,8 @@ public abstract class Crystal {
   private final DDM              ddm;
   /** The CoefCalc method being employed to generate crystal coefficients. */
   private final CoefCalc         coefCalc;
+  /** The container encasing the irradiated sample*/
+  private final Container        sampleContainer;
 
   /**
    * List of registered exposureObservers. Registered objects will be notified
@@ -67,6 +71,7 @@ public abstract class Crystal {
    * Generic property constructor for crystal classes.
    * Sets the DDM object if defined, a reasonable default otherwise.
    * Sets the CoefCalc object if defined, a reasonable default otherwise.
+   * Sets the Container object if defined, a reasonable default otherwise.
    *
    * @param properties
    *          Map of type <Object, Object> that contains all crystal properties.
@@ -84,6 +89,12 @@ public abstract class Crystal {
       coefCalc = new CoefCalcAverage();
     } else {
       coefCalc = (CoefCalc) properties.get(Crystal.CRYSTAL_COEFCALC);
+    }
+
+    if (properties.get(Crystal.CRYSTAL_CONTAINER) == null) {
+      sampleContainer = new ContainerTransparent();
+    } else {
+      sampleContainer = (Container) properties.get(Crystal.CRYSTAL_CONTAINER);
     }
   }
 
@@ -254,6 +265,20 @@ public abstract class Crystal {
 
     // Update coefficients in case the beam energy has changed.
     coefCalc.updateCoefficients(beam);
+
+    //Calculate the attenuation due to the sample container
+    sampleContainer.calculateContainerAttenuation(beam);
+    //Print information about the attenuation to the console.
+    sampleContainer.containerInformation();
+    
+    //Apply the attenuation of the container to the beam
+    beam.applyContainerAttenuation(sampleContainer);
+
+    //Generate beam array.
+    //NOTE: this only does anything for the experimental beam class.
+    //The beam implementation should change so that an array is an instance property
+    //for each type of beam.
+    beam.generateBeamArray();
 
     // Set up angles to iterate over.
     double[] angles;

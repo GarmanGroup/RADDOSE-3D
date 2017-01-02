@@ -119,7 +119,7 @@ public class CoefCalcFromParams extends CoefCalcCompute {
     if (heavySolvConcNames != null) {
       addSolventConcentrations(heavySolvConcNames, heavySolvConcNums);
     }
-
+    
     this.setNumMonomers(monomers);
     this.setNumAminoAcids(numResidues);
     this.setNumRNA(numRNAresidues);
