@@ -19,6 +19,8 @@ http://www.bioch.ox.ac.uk/garmangroup
 Usage
 ------
 
+For the full RADDOSE-3D documentation [see here.](https://github.com/GarmanGroup/RADDOSE-3D/blob/master/doc/user-guide.pdf) Below are a two examples showing how to run RADDOSE-3D for a simple MX experiment and for a SAXS experiment.
+
 #### Simple example
 This example shows how you can run RADDOSE-3D to simulate a macromolecular crystallography experiment where a crystal of insulin is exposed to a Gaussian profile X-ray beam for 50 seconds with a 90⁰ rotation. This example can be run directly using the [RADDOSE-3D web server interface](http://www.raddo.se/).   
 The following text can be added to any plain text file.
@@ -82,6 +84,49 @@ Save this in a file of your choice (here we'll call it "MyInput.txt"). We can th
 java -jar raddose3d.jar -i path/to/MyInput.txt
 ```
 and this should produce the required output.
+
+#### SAXS example
+Below is an example in which we simulate a SAXS experiment with BSA. RADDOSE-3D can read in the sample composition from a FASTA sequence formatted file, so you can save a sequence file in the working directory (here we've used the sequence from the structure with PDB code: **4OR0**). We have assumed a protein concentration of 2 mg/ml.    
+Because SAXS samples are container within a cylindrical quartz capillary (on BM29 at the ESRF) with inner diameter on 1.7mm and a wall thickness of 50 microns, we have to define **Container** to describe this. The elemental composition of quartz is Si 1 O 2 and the density of quartz is 2.643 g/cm^3.    
+The other input parameters are defined as in the *simple example* above and a more detailed description of all parameters can be found in the [RADDOSE-3D documentation.](https://github.com/GarmanGroup/RADDOSE-3D/blob/master/doc/user-guide.pdf)
+```
+##############################################################################
+#                                 Crystal Block                              #
+##############################################################################
+Crystal
+Type Cylinder           
+Dimensions 1700 1000
+PixelsPerMicron 0.01    
+CoefCalc  SAXSseq           
+SeqFile 4OR0.fasta  # PDB code 4OR0
+ProteinConc 2	      
+ContainerMaterialType elemental
+MaterialElements Si 1 O 2
+ContainerThickness 50
+ContainerDensity 2.648
+
+##############################################################################
+#                                  Beam Block                                #
+##############################################################################
+Beam
+Type Gaussian            
+Flux 2e12                
+FWHM 700 700                
+Energy 12.1               
+Collimation Rectangular 1000 1000
+
+##############################################################################
+#                                  Wedge Block                               #
+##############################################################################
+
+Wedge 0 0                                   
+ExposureTime 50           
+# AngularResolution 2
+```
+As with the example above, save this in a file of your choice (here we'll call it "MyInput.txt"). We can then open up a terminal/command prompt, change directory to wherever the RADDOSE-3D executable jar file is located and run:
+```
+java -jar raddose3d.jar -i path/to/MyInput.txt
+```
 
 #### Considerations when running RADDOSE-3D for some special cases.
 
