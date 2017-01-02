@@ -97,7 +97,7 @@ They can therefore by freely used to format the file for increased readability.
 
 The order of statements within a \Class{Crystal}, \Class{Beam} and \Class{Wedge} block generally is not relevant.
 There are two exceptions to this rule: The leading keyword (\Keyword{CRYSTAL}, \Keyword{BEAM}, \Keyword{WEDGE}) \textbf{must} be the first keyword of the block. If a keyword is repeated within the same block, then
-% -- unless specified otherwise -- 
+% -- unless specified otherwise --
 the latter will always override the former.
 
 Every block must be self-contained, e.g. the energy set for the previous \Class{Beam} is not remembered when setting up the following \Class{Beam}, and must be repeated.
@@ -183,30 +183,28 @@ If three parameters are given for a cylindrical crystal (\hyperref[crystaltype]{
 
 \subsection{\Keyword{PIXELSPERMICRON}}
 
-\noindent \Keyword{PIXELSPERMICRON \textit{F}} 
+\noindent \Keyword{PIXELSPERMICRON \textit{F}}
 specifies the resolution of the voxel grid used to represent the crystal in voxels/\hbox{\textmu}m. Defaults to 0.5 voxels/\hbox{\textmu}m.
 \newline
-Note: When running \RD with large dimension values (with SAXS the capillary dimensions typically range in the millimetre range) RADDOSE-3D can terminate with the folling error: 
+Note: When running \RD with large dimension values (with SAXS the capillary dimensions typically range in the millimetre range) RADDOSE-3D can terminate with the folling error:
 \newline
-\textit{Error during invocation of se.raddo.raddose3D.CrystalCylinder: Java heap space}. 
+\textit{Error during invocation of se.raddo.raddose3D.CrystalCylinder: Java heap space}.
 \newline
-This is because there is too much memory being used. reducing the pixels per micron will sort this problem and also improve the speed of the program. The cost for the speed improvement is the resolution of the sample voxelization. 
+This is because there is too much memory being used. reducing the pixels per micron will sort this problem and also improve the speed of the program. The cost for the speed improvement is the resolution of the sample voxelization.
 
-	
+
 \subsection{\Keyword{ANGLEP}}
 \label{anglep}
 \noindent \Keyword{ANGLEP \textit{F}}
 sets the angle in the plane of the loop between the crystal \textit{Y} axis and the goniometer axis. The angle is to be given in degrees, but without the degree symbol ($^\circ$). The default \textit{P} ('plane') angle is $0^\circ$.
 
-The rotation angle to be applied to the crystal in the plane of the loop (right handed rotation about \textit{Z} axis applied to all voxels, as shown in figure \ref{fig:angleP}). 
+The rotation angle to be applied to the crystal in the plane of the loop (right handed rotation about \textit{Z} axis applied to all voxels, as shown in figure \ref{fig:angleP}).
 \begin{figure}[h!]
 \centering
 \includegraphics[width=0.5\textwidth]{Figs-for-Markus-from-JB-19-5-13-1.pdf}
 \caption{Schematic of \Keyword{ANGLEP}. Figure courtesy of John Bremridge.}
 \label{fig:angleP}
 \end{figure}
-\newline
-Note that when using the \Keyword{ABSCOEFCALC SAXS} option (section \hyperref[abscoefcalc]{\Keyword{ABSCOEFCALC}}) angle \textit{P} is automatically rotated by an additional 90$^{\circ}$. This is particularly useful for SAXS experiments where the solution is contained in a cylindrical shaped capillary so that the beam direction is perpendicular to the height (axial) dimension of the cylinder.
 
 \subsection{\Keyword{ANGLEL}}
 
@@ -240,7 +238,7 @@ Defines a container encasing the irradiated sample in terms of its component ele
 \subsection{\Keyword{MATERIALMIXTURE}}
 \label{materialmixture}
 \noindent \Keyword{MATERIALMIXTURE \textit{MATERIAL}}
-Specifies the material of the container that encases the irradiated sample by its mixture name. The exact input for \Keyword{\textit{MATERIAL}} is given in the URL of the corresponding material on the National Institute of Standards and Technology (NIST) \href{http://physics.nist.gov/PhysRefData/XrayMassCoef/tab4.html}{Table 4 webpage (click here)}. For example, if the material through which the sample is irradiated is pyrex glass then click on the \href{http://physics.nist.gov/PhysRefData/XrayMassCoef/ComTab/pyrex.html}{`Glass, Borosilicate ``Pyrex''' link} and the URL is: 
+Specifies the material of the container that encases the irradiated sample by its mixture name. The exact input for \Keyword{\textit{MATERIAL}} is given in the URL of the corresponding material on the National Institute of Standards and Technology (NIST) \href{http://physics.nist.gov/PhysRefData/XrayMassCoef/tab4.html}{Table 4 webpage (click here)}. For example, if the material through which the sample is irradiated is pyrex glass then click on the \href{http://physics.nist.gov/PhysRefData/XrayMassCoef/ComTab/pyrex.html}{`Glass, Borosilicate ``Pyrex''' link} and the URL is:
 \newline
 \href{http://physics.nist.gov/PhysRefData/XrayMassCoef/ComTab/pyrex.html}{http://physics.nist.gov/PhysRefData/XrayMassCoef/ComTab/\textbf{pyrex}.html.}
 \newline
@@ -267,7 +265,7 @@ Specifies the density of the container encasing the irradiated sample. The densi
 \label{abscoefcalc}
 This keyword specifies whether the program should use average absorption and attenuation coefficients, or whether it should calculate them from input crystal parameters.\SB
 
-\noindent \Keyword{ABSCOEFCALC AVERAGE} 
+\noindent \Keyword{ABSCOEFCALC AVERAGE}
 
 \noindent \Keyword{ABSCOEFCALC DUMMY}
 
@@ -297,7 +295,7 @@ The composition of the crystal has to be described using the keywords
  \hyperref[proteinheavyatoms]{\Keyword{PROTEINHEAVYATOMS}},
  \hyperref[solventheavyconc]{\Keyword{SOLVENTHEAVYCONC}} and
  \hyperref[solventfraction]{\Keyword{SOLVENTFRACTION}}.
-The use of these keywords is described in the sections \ref{RDv3Start}--\ref{RDv3End} below.\SB 
+The use of these keywords is described in the sections \ref{RDv3Start}--\ref{RDv3End} below.\SB
 
 \noindent \Keyword{ABSCOEFCALC EXP}
 
@@ -312,7 +310,7 @@ Note that RADDOSE-3D treats the irradiated samples as stationary objects. Theref
 \subsection{\Keyword{PDB}}
 \label{pdb}
 
-\noindent \Keyword{PDB \textit{CODE}} 
+\noindent \Keyword{PDB \textit{CODE}}
 
 Where \Keyword{\textit{CODE}} is the four letter code of the PDB entry to be downloaded. From the PDB entry \RD will calculate
  \hyperref[unitcell]{\Keyword{UNITCELL}},
@@ -321,7 +319,7 @@ Where \Keyword{\textit{CODE}} is the four letter code of the PDB entry to be dow
  \hyperref[numrna]{\Keyword{NUMRNA}},
  \hyperref[numdna]{\Keyword{NUMDNA}},
  \hyperref[proteinheavyatoms]{\Keyword{PROTEINHEAVYATOMS}} and
- \hyperref[solventfraction]{\Keyword{SOLVENTFRACTION}}, and hence these keywords are not needed. 
+ \hyperref[solventfraction]{\Keyword{SOLVENTFRACTION}}, and hence these keywords are not needed.
 It will NOT calculate \hyperref[solventheavyconc]{\Keyword{SOLVENTHEAVYCONC}} so if there are any heavy atoms in the solvent then they will have to be specified. Note that an internet connection is required for this option to work.
 
 \subsection{\Keyword{UNITCELL}}
