@@ -133,7 +133,6 @@ java -jar raddose3d.jar -i path/to/MyInput.txt
 - If you have a **small crystal** (< 20μm³ for example) then the default `Pixels per micron` value (0.5) will be too small and this will result in inaccurate dose values. To avoid this, the `PixelsPerMicron` keyword needs to be set in the `Crystal` block and needs to be increased from 0.5. This increases the resolution and hence will increase the amount of time taken for RADDOSE-3D to run.
 - If the crystal is not rotated at all then specify `Wedge 0 0` in the input file and **don't** specify the `AngularResolution`. RADDOSE-3D will automatically account for this.
 - If the crystal is rotated over a small, non-zero angular range, (e.g. < 20⁰) then the `AngularResolution` value should be set to value at least 10 times smaller than the overall angular range. For example if the crystal is rotated by 5⁰ then the `AngularResolution` should be set to a maximum value of 0.5.
-- If you don't specify the `SolventHeavyConc` then RADDOSE-3D crashes with an error ([see this issue](https://github.com/GarmanGroup/RADDOSE-3D/issues/1)). To avoid this run the solvent heavy concentration can be specified as `SolventHeavyConc S 0`. This is a known bug which will be fixed for the next RADDOSE-3D release.
 
 Contributors:
 -------------
