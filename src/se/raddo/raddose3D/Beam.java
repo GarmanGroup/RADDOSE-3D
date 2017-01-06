@@ -5,7 +5,6 @@ package se.raddo.raddose3D;
  * methods.
  */
 
- 
 public interface Beam {
 
   /** Constant for data fields in Map constructors: Horizontal collimation. */
