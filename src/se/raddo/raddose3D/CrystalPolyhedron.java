@@ -50,7 +50,7 @@ public class CrystalPolyhedron extends Crystal {
   /**
    * Boolean to determine if escapeFactors have been calculated yet or not.
    */
-  private boolean               calculatedEscapeFactors       = false;
+  private boolean               calculatedEscapeFactors  = false;
 
   /**
    * Average mean distance travelled by electron.
