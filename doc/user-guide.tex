@@ -295,17 +295,30 @@ The composition of the crystal has to be described using the keywords
  \hyperref[proteinheavyatoms]{\Keyword{PROTEINHEAVYATOMS}},
  \hyperref[solventheavyconc]{\Keyword{SOLVENTHEAVYCONC}} and
  \hyperref[solventfraction]{\Keyword{SOLVENTFRACTION}}.
-The use of these keywords is described in the sections \ref{RDv3Start}--\ref{RDv3End} below.\SB
+The use of these keywords is described in the sections \ref{RDv3Start}--\ref{RDv3End} below. Note that the \Keyword{SOLVENTFRACTION} keyword is now optional. If it's not given then RADDOSE-3D will calculate it.\SB
 
 \noindent \Keyword{ABSCOEFCALC EXP}
 
-This command should be used if the crystal composition from a Protein Data Bank (PDB) entry is to be used instead of a user specied crystal composition. The current RADDOSE-3D code is then used to calculate the absorption and attenuation coefficients using the crystal composition from the PDB entry. The PDB entry must be specified using the (\hyperref[pdb]{\Keyword{PDB} keyword} - section \hyperref[pdb]{section~\ref*{pdb}}).\SB
+This command should be used if the crystal composition from a Protein Data Bank (PDB) entry is to be used instead of a user specified crystal composition. The current RADDOSE-3D code is then used to calculate the absorption and attenuation coefficients using the crystal composition from the PDB entry. The PDB entry must be specified using the (\hyperref[pdb]{\Keyword{PDB} keyword} - section \hyperref[pdb]{section~\ref*{pdb}}).\SB
+
+\noindent \Keyword{ABSCOEFCALC SEQUENCE}
+
+This command should be used if the sample composition from a sequence file is to be used instead of a user specified crystal composition. The sequence file should be in \href{https://en.wikipedia.org/wiki/FASTA_format}{\textbf{FASTA}} file format. If this command is used then the composition of the crystal can be specified using the following keywords
+\hyperref[unitcell]{\Keyword{UNITCELL}},
+\hyperref[seqfile]{\Keyword{SEQFILE}},
+\hyperref[nummonomers]{\Keyword{NUMMONOMERS}},
+\hyperref[solventheavyconc]{\Keyword{SOLVENTHEAVYCONC}}
+\SB
 
 \noindent \Keyword{ABSCOEFCALC SAXS}
 
-This command will use the current RADDOSE-3D code to calculate the absorption and attenuation coefficients using the crystal composition specified by the user similarly to the keyword \Keyword{RD3D}. The major difference is that instead of supplying the number of monomers using the keyword \Keyword{NUMMONOMERS}, the user supplies the protein concentration used in the SAXS experiment using the keyword \Keyword{PROTEINCONC} (see section \hyperref[proteinconc]{\Keyword{PROTEINCONC}}).
+This command will use the current RADDOSE-3D code to calculate the absorption and attenuation coefficients using the sample composition specified by the user similarly to the keyword \Keyword{RD3D}. The major difference is that instead of supplying the number of monomers using the keyword \Keyword{NUMMONOMERS}, the user supplies the protein concentration used in the SAXS experiment using the keyword \Keyword{PROTEINCONC} (see section \hyperref[proteinconc]{\Keyword{PROTEINCONC}}).
 \newline
 Note that RADDOSE-3D treats the irradiated samples as stationary objects. Therefore if the SAXS solution is flowed through the capillary during the exposure then a suitable exposure time for the relevant volume will need to be taken into account.\SB
+
+\noindent \Keyword{ABSCOEFCALC SAXSSEQ}
+
+This command will use the current RADDOSE-3D code to calculate the absorption and attenuation coefficients using the sample composition specified by the user similarly to the keyword \Keyword{SAXS}. The major difference is that you no longer need to give the number of residues or the protein heavy atom composition. Instead the user needs to specify where the sequence file is located using the \Keyword{SEQFILE}.
 
 \subsection{\Keyword{PDB}}
 \label{pdb}
@@ -321,6 +334,12 @@ Where \Keyword{\textit{CODE}} is the four letter code of the PDB entry to be dow
  \hyperref[proteinheavyatoms]{\Keyword{PROTEINHEAVYATOMS}} and
  \hyperref[solventfraction]{\Keyword{SOLVENTFRACTION}}, and hence these keywords are not needed.
 It will NOT calculate \hyperref[solventheavyconc]{\Keyword{SOLVENTHEAVYCONC}} so if there are any heavy atoms in the solvent then they will have to be specified. Note that an internet connection is required for this option to work.
+
+\subsection{\Keyword{SEQFILE}}
+\label{seqfile}
+
+\Keyword{SEQFILE \textit{FILENAME}} specifies the location of the file that contains the sequence of the chosen sample.
+Only sequence files in the \href{https://en.wikipedia.org/wiki/FASTA_format}{\textbf{FASTA}} format can be read. \SB
 
 \subsection{\Keyword{UNITCELL}}
 \label{RDv3Start}
