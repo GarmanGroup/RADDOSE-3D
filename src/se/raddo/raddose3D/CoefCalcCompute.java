@@ -312,9 +312,20 @@ public class CoefCalcCompute extends CoefCalc {
   }
   
   /**
+   * FOR STEVE:
+   * This method is called in the "expose" method in the "Crystal" class.
+   * The resulting variable that's returned from that method call is then
+   * passed to a call to the method in the crystal class called 
+   * "exposeAngle". That's the method where the effect of X-ray fluorescence 
+   * should be added. I've written some comments in that section of the code
+   * to help you out. When you've finished with this, you should delete this
+   * comment :)
+   * 
    * Store (3 of 4 of) the factors required for calculating X-ray
    * fluorescent escape. The implementation largely follows the one 
-   * outlined in the Paithankar et al. (2009). Namely equation 6.
+   * outlined in the Paithankar et al. (2009) Absorbed dose calculations 
+   * for macromolecular crystals: improvements to RADDOSE. Namely 
+   * equation 6.
    * 
    * The resulting Energy, E, is equal to the beam energy, E_b, minus
    * the energy lost from fluorescent escape from K, L1, L2 and L3 
@@ -343,9 +354,12 @@ public class CoefCalcCompute extends CoefCalc {
    *             Beam object which contains the properties that 
    *             describe the incident beam.
    *             
-   * @return correctedAbsEnergy
-   *             The energy that is actually absorbed in the crystal 
-   *             once X-ray fluorescent escape has been accounted for. 
+   * @return fluorEscapeFactors
+   *             The factors that will be used when calculating the 
+   *             energy that should be subtracted due to fluorescence
+   *             escape. The variable is a 2D array. Each row 
+   *             corresponds to a different element and each column
+   *             corresponds to a different component of the equation.
    */
   @Override
   public double[][] getFluorescentEscapeFactors(Beam beam) {
