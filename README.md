@@ -177,7 +177,10 @@ Found RADDOSE at ../raddose but could not execute`
    - you need to create a folder in your working directory called `constants`.       
    - make a copy of the `MuCalcConstants.txt` file from [here](https://github.com/GarmanGroup/RADDOSE-3D/tree/master/constants) in that folder.    
 
-   This error should only occur when the `CoefCalc` input values are either: `RD3D`, `EXP`, `SAXS`, `SEQUENCE` or `SAXSSEQ`. 
+   This error should only occur when the `CoefCalc` input values are either: `RD3D`, `EXP`, `SAXS`, `SEQUENCE` or `SAXSSEQ`.
+
+### Known Issues
+- RADDOSE-3D does not currently give accurate dose values at high X-ray energies (> 20 keV). This is going to be fixed for the next release. If you are hoping to calculate doses for high energies then you should run RADDOSE V2 using the [online web server](http://www.raddo.se/legacy/).  
 
 Contributors:
 -------------
