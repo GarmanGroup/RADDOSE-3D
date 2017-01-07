@@ -115,7 +115,7 @@ If you come across an error, namely: `Error accessing element database file cons
 #### SAXS example
 Below is an example in which we simulate a SAXS experiment with BSA. RADDOSE-3D can read in the sample composition from a FASTA sequence formatted file, so you can save a sequence file in the working directory (here we've used the sequence from the structure with PDB code: **4OR0**). We have assumed a protein concentration of 2 mg/ml.    
 Because SAXS samples are container within a cylindrical quartz capillary (on BM29 at the ESRF) with inner diameter on 1.7mm and a wall thickness of 50 microns, we have to define **Container** to describe this. The elemental composition of quartz is Si 1 O 2 and the density of quartz is 2.643 g/cm^3.    
-The other input parameters are defined as in the *simple example* above and a more detailed description of all parameters can be found in the [RADDOSE-3D documentation.](https://github.com/GarmanGroup/RADDOSE-3D/blob/master/doc/user-guide.pdf)
+The other input parameters are defined as in the *simple example* above and a more detailed description of all parameters can be found in the [RADDOSE-3D documentation.](https://github.com/GarmanGroup/RADDOSE-3D/blob/master/doc/user-guide.pdf) For full details on the modifications of RADDOSE-3D for SAXS experiments see [this paper by Brooks-Bartlett *et al.* (2017) JSR.](https://doi.org/10.1107/S1600577516015083)
 ```
 ##############################################################################
 #  Crystal Block ("Crystal" is still used but we are defining a SAXS sample) #
