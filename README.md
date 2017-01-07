@@ -181,7 +181,11 @@ Found RADDOSE at ../raddose but could not execute`
    This error should only occur when the `CoefCalc` input values are either: `RD3D`, `EXP`, `SAXS`, `SEQUENCE` or `SAXSSEQ`.
 
 
-- The `flux` value that is provided in the `Beam` block in the input file represents the **flux at the sample position after collimation.** This can lead to ostensibly surprising results. For example if you run 1 simulation and get a dose value, we'll say dose 1, and then run a second simulation with the same inputs except the collimation has been reduced, then the second dose value, dose 2, will be larger than dose 1. This happens because the same flux in both simulations is spread over a smaller area in the second simulation. So the dose distribution in the crystal is spread over a smaller volume but it has received the same number of photons in that volume as in the first simulation. 
+- The `flux` value that is provided in the `Beam` block in the input file represents the **flux at the sample position after collimation.** This can lead to ostensibly surprising results. For example if you run 1 simulation and get a dose value, we'll say dose 1, and then run a second simulation with the same inputs except the collimation has been reduced, then the second dose value, dose 2, will be larger than dose 1. This happens because the same flux in both simulations is spread over a smaller area in the second simulation. So the dose distribution in the crystal is spread over a smaller volume but it has received the same number of photons in that volume as in the first simulation.
+
+### Interpreting the output
+A discussion of the output is given in the original RADDOSE-3D paper - [Zeldin, Gerstel, Garman. (2013). J. Appl. Cryst. 46, 1225-1230.](#Contributers)   
+The `Max dose` given by RADDOSE-3D is the dose value that is comparable to the dose output by the predecessor program [RADDOSE V2](https://doi.org/10.1107/S0909049508040430). However the dose value that is the most informative and representative of the damage state of the crystal is the **Average Diffraction Weighted Dose**. The details of this quantity can be found in [this paper by Zeldin *et al.* (2013) PNAS](https://doi.org/10.1073/pnas.1315879110).
 
 ### Known Issues
 - RADDOSE-3D does not currently give accurate dose values at high X-ray energies (> 20 keV). This is going to be fixed for the next release. If you are hoping to calculate doses for high energies then you should run RADDOSE V2 using the [online web server](http://www.raddo.se/legacy/).  
