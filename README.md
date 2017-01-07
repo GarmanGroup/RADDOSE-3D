@@ -161,9 +161,10 @@ If you come across an error, namely: `Error accessing element database file cons
 - If you have a **small crystal** (< 20μm³ for example) then the default `PixelsPerMicron` value (0.5) will be too small and this will result in inaccurate dose values. To avoid this, the `PixelsPerMicron` keyword needs to be set in the `Crystal` block and needs to be increased from 0.5. This increases the resolution and hence will increase the amount of time taken for RADDOSE-3D to run.
 - If the crystal is not rotated at all then specify `Wedge 0 0` in the input file and **don't** specify the `AngularResolution`. RADDOSE-3D will automatically account for this.
 - If the crystal is rotated over a small, non-zero angular range, (e.g. < 20⁰) then the `AngularResolution` value should be set to value at least 10 times smaller than the overall angular range. For example if the crystal is rotated by 5⁰ then the `AngularResolution` should be set to a maximum value of 0.5.
+- If you have a **big crystal** then RADDOSE-3D may take quite a while to run using the default `PixelsPerMicron` value of 0.5. To reduce the computation time you can reduce that value. However reducing the `PixelsPerMicron` will decrease the accuracy of the calculation so it is important to determine a suitable accuracy threshold. Try running RADDOSE-3D with a few different values to determine a when the dose value approaches convergence of the dose value.  
 
 ### "Gotchas" when running RADDOSE-3D
-- If you have a **big crystal** or the `PixelsPerMicron` value is set **too big** then Java will fail with the error: `Error during invocation of se.raddo.raddose3D.CrystalCylinder: Java heap space`. To rectify this problem:
+- If you have a **very big crystal** or the `PixelsPerMicron` value is set **too big** then Java will fail with the error: `Error during invocation of se.raddo.raddose3D.CrystalCylinder: Java heap space`. To rectify this problem:
    - you need to reduce the value of the `PixelsPerMicron` value.
 
    *This problem is highly likely when running with SAXS samples* because they are typically contained in capillaries with are much bigger than crystals in MX, which RADDOSE-3D was initially written for.
