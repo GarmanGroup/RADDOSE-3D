@@ -22,7 +22,7 @@ SolventFraction 0.6436
 Beam
 Type Experimentalpgm  # Tell RADDOSE-3D that it should expect an experimental beam
 File tophat_beam_experimental.pgm  # location of experimental beam file
-PixelSize 0.336 0.310  # Pixel size in microns
+PixelSize 0.310 0.336  # Pixel size in microns
 Flux 1.9e11
 Energy 12.7
 
