@@ -12,8 +12,8 @@ public class CoefCalcCompute extends CoefCalc {
   /**
    * Identified coefficients and density from last program run. Final variables.
    */
-  private double                     absCoeff, attCoeff, elasCoeff, density,
-                                     cellVolume;
+  private double                     absCoeff, absCoeffcomp, absCoeffphoto, attCoeff, elasCoeff, density,
+                                     cellVolume; //absCoeff2 added for Compton
 
   /**
    * Percentage conversion.
@@ -194,6 +194,7 @@ public class CoefCalcCompute extends CoefCalc {
     double crossSectionPhotoElectric = 0;
     double crossSectionCoherent = 0;
     double crossSectionTotal = 0;
+    double crossSectionCompton = 0;   // Added for COMPTON
 
     // take cross section contributions from each individual atom
     // weighted by the cell volume
@@ -209,9 +210,14 @@ public class CoefCalcCompute extends CoefCalc {
       crossSectionTotal += totalAtoms(e)
           * cs.get(CrossSection.TOTAL) / cellVolume
           / UNITSPERDECIUNIT;
+      crossSectionCompton += totalAtoms(e)   // Added for COMPTON
+          * cs.get(CrossSection.COMPTON) / cellVolume
+          / UNITSPERDECIUNIT;
     }
-
     absCoeff = crossSectionPhotoElectric / UNITSPERMILLIUNIT;
+    absCoeffphoto = absCoeff; // This holds value for only Photelectric
+    absCoeffcomp = crossSectionCompton / UNITSPERMILLIUNIT;  //This holds value for only Compton
+    absCoeff = absCoeff + absCoeffcomp; //Adds Compton and Photoelectric
     attCoeff = crossSectionTotal / UNITSPERMILLIUNIT;
     elasCoeff = crossSectionCoherent / UNITSPERMILLIUNIT;
   }
@@ -329,12 +335,15 @@ public class CoefCalcCompute extends CoefCalc {
   @Override
   public String toString() {
     return String.format(
-        "Crystal coefficients calculated with RADDOSE-3D. %n"
+          "%n"
+            + "Crystal coefficients calculated with RADDOSE-3D. %n"
             + "Absorption Coefficient: %.2e /um.%n"
+            + "Photelectric: %.2e /um.%n"
+            + "Compton: %.2e /um.%n"
             + "Attenuation Coefficient: %.2e /um.%n"
             + "Elastic Coefficient: %.2e /um.%n"
             + "Density: %.2f g/ml.%n",
-        absCoeff, attCoeff, elasCoeff, density);
+        absCoeff, absCoeffcomp, absCoeffphoto, attCoeff, elasCoeff, density);
   }
 
   /**

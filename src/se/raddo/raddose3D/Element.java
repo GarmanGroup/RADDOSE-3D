@@ -74,6 +74,10 @@ public class Element {
      */
     PHOTOELECTRIC,
     /**
+     * Cross-section for Compton scattering
+     */
+    COMPTON,      //************This added for COMPTON**************
+    /**
      * Cross-section for coherent (elastic) scattering.
      */
     COHERENT,
@@ -237,7 +241,7 @@ public class Element {
       elastic = baxForEdge(energy, AbsorptionEdge.C);
     }
 
-    double binx = 0;
+    double binx = 0;   //   Calculates Compton
     if (elementData.get(ElementDatabase.DatabaseFields.INCOHERENT_COEFF_0) != 0)
     {
       binx = baxForEdge(energy, AbsorptionEdge.I);
@@ -248,6 +252,7 @@ public class Element {
     Map<CrossSection, Double> results = new HashMap<CrossSection, Double>();
     results.put(CrossSection.COHERENT, elastic);
     results.put(CrossSection.PHOTOELECTRIC, photoelectric); // mu, abs coeff.
+    results.put(CrossSection.COMPTON,binx);      // Added for COMPTON
     results.put(CrossSection.TOTAL, attenuation);
     return results;
   }
