@@ -90,7 +90,7 @@ and this should produce the required output.
 
 - If you have a **small crystal** (< 20μm³ for example) then the default `PixelsPerMicron` value (0.5) will be too small and this will result in inaccurate dose values. To avoid this, the `PixelsPerMicron` keyword needs to be set in the `Crystal` block and needs to be increased from 0.5. This increases the resolution and hence will increase the amount of time taken for RADDOSE-3D to run.
 - If the crystal is not rotated at all then specify `Wedge 0 0` in the input file and **don't** specify the `AngularResolution`. RADDOSE-3D will automatically account for this.
-- If the crystal is rotated over a small, non-zero angular range, (e.g. < 20⁰) then the `AngularResolution` value should be set to value at least 10 times smaller than the overall angular range. For example if the crystal is rotated by 5⁰ then the `AngularResolution` should be set to a maximum value of 0.5.
+- If the crystal is rotated over a small, non-zero angular range, (e.g. < 20⁰) then the `AngularResolution` value should be set to value at least 100 times smaller than the overall angular range. For example if the crystal is rotated by 5⁰ then the `AngularResolution` should be set to a maximum value of 0.05. Thank you to **Leigh Carter** at [Global Phasing](https://www.globalphasing.com/) for performing the systematic analysis to obtain a suitable value for this case.
 - If you have a **big crystal/sample** then RADDOSE-3D may take quite a while to run using the default `PixelsPerMicron` value of 0.5. To reduce the computation time you can reduce that value. However reducing the `PixelsPerMicron` will decrease the accuracy of the calculation so it is important to determine a suitable accuracy threshold. Try running RADDOSE-3D with a few different values to determine a when the dose value approaches convergence of the dose value. This is likely to be the case when running a simulation for a SAXS experiment. If the sample is too big then you'll come across an error: `Error during invocation of se.raddo.raddose3D.CrystalCylinder: Java heap space`. This means you'll have to further reduce the `PixelsPerMicron` value.
 
 ### "Gotchas" when running RADDOSE-3D
@@ -127,6 +127,8 @@ Contributors:
 * Markus Gerstel
 * Jonny Brooks-Bartlett
 * Helen Ginn
+* Charlie Bury
+* Steven Walsh
 
 **Please cite**
 Zeldin, Gerstel, Garman. (2013). J. Appl. Cryst. 46, 1225-1230.
