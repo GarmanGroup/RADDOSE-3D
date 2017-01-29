@@ -19,7 +19,7 @@ http://www.bioch.ox.ac.uk/garmangroup
 Usage
 ------
 
-For the full RADDOSE-3D documentation [see here.](https://github.com/GarmanGroup/RADDOSE-3D/blob/master/doc/user-guide.pdf) Below are a two examples showing how to run RADDOSE-3D for a simple MX experiment and for a SAXS experiment.
+For the full RADDOSE-3D documentation [see here.](https://github.com/GarmanGroup/RADDOSE-3D/blob/master/doc/user-guide.pdf) Examples of running RADDOSE-3D for different sample types are included in the [examples folder](https://github.com/GarmanGroup/RADDOSE-3D/tree/master/examples). Below is an example showing how to run RADDOSE-3D for a simple macromolecular crystallography (MX) experiment.
 
 #### Simple example
 This example shows how you can run RADDOSE-3D to simulate a macromolecular crystallography experiment where a crystal of insulin is exposed to a Gaussian profile X-ray beam for 50 seconds with a 90⁰ rotation. This example can be run directly using the [RADDOSE-3D web server interface](http://www.raddo.se/).   
@@ -85,76 +85,6 @@ Save this in a file of your choice (here we'll call it "MyInput.txt"). We can th
 java -jar raddose3d.jar -i path/to/MyInput.txt
 ```
 and this should produce the required output.
-
-#### PDB example
-If the structure of a protein has already been determined and has a PDB entry then RADDOSE-3D can read the atomic composition straight from the web and you don't need to specify the composition of the sample (you'll need to make sure that you have an internet connection). This makes the running of RADDOSE-3D much simpler. Here is an example input file:
-```
-Crystal
-Type Cuboid
-Dimensions 100 100 100
-AbsCoefCalc EXP             # This tells RADDOSE-3D that it should expect a PDB file
-Pdb 1dwa                    # PDB Code
-SolventHeavyConc S 2700     # Specifying heavy atoms in the solvent
-PixelsPerMicron 0.2
-
-Beam
-Type TopHat                 # Tophat beam profile
-Energy 12.40
-Collimation Rectangular 160 160
-Flux 6.00e12
-
-Wedge 0 90
-exposureTime 100
-```
-As with the example above, save this in a file of your choice (here we'll call it "MyInput.txt"). We can then open up a terminal/command prompt, change directory to wherever the RADDOSE-3D executable jar file is located and run:
-```
-java -jar raddose3d.jar -i path/to/MyInput.txt
-```
-If you come across an error, namely: `Error accessing element database file constants/MuCalcConstants.txt`, see the [Gotchas](https://github.com/GarmanGroup/RADDOSE-3D#gotchas-when-running-raddose-3d) section for notes on how to solve the problem.
-
-#### SAXS example
-Below is an example in which we simulate a SAXS experiment with BSA. RADDOSE-3D can read in the sample composition from a FASTA sequence formatted file, so you can save a sequence file in the working directory (here we've used the sequence from the structure with PDB code: **4OR0**). We have assumed a protein concentration of 2 mg/ml.    
-Because SAXS samples are container within a cylindrical quartz capillary (on BM29 at the ESRF) with inner diameter on 1.7mm and a wall thickness of 50 microns, we have to define **Container** to describe this. The elemental composition of quartz is Si 1 O 2 and the density of quartz is 2.643 g/cm^3.    
-The other input parameters are defined as in the *simple example* above and a more detailed description of all parameters can be found in the [RADDOSE-3D documentation.](https://github.com/GarmanGroup/RADDOSE-3D/blob/master/doc/user-guide.pdf) For full details on the modifications of RADDOSE-3D for SAXS experiments see [this paper by Brooks-Bartlett *et al.* (2017) JSR.](https://doi.org/10.1107/S1600577516015083)
-```
-##############################################################################
-#  Crystal Block ("Crystal" is still used but we are defining a SAXS sample) #
-##############################################################################
-Crystal
-Type Cylinder           
-Dimensions 1700 1000
-PixelsPerMicron 0.01    
-CoefCalc  SAXSseq           
-SeqFile 4OR0.fasta  # PDB code 4OR0
-ProteinConc 2	      
-ContainerMaterialType elemental
-MaterialElements Si 1 O 2
-ContainerThickness 50
-ContainerDensity 2.648
-
-##############################################################################
-#                                  Beam Block                                #
-##############################################################################
-Beam
-Type Gaussian            
-Flux 2e12                
-FWHM 700 700                
-Energy 12.1               
-Collimation Rectangular 1000 1000
-
-##############################################################################
-#                                  Wedge Block                               #
-##############################################################################
-
-Wedge 0 0                                   
-ExposureTime 50           
-# AngularResolution 2
-```
-As with the example above, save this in a file of your choice (here we'll call it "MyInput.txt"). We can then open up a terminal/command prompt, change directory to wherever the RADDOSE-3D executable jar file is located and run:
-```
-java -jar raddose3d.jar -i path/to/MyInput.txt
-```
-If you come across an error, namely: `Error accessing element database file constants/MuCalcConstants.txt`, see the [Gotchas](https://github.com/GarmanGroup/RADDOSE-3D#gotchas-when-running-raddose-3d) section for notes on how to solve the problem.
 
 #### Considerations when running RADDOSE-3D for some special cases.
 
