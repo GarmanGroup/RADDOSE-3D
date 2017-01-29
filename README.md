@@ -128,7 +128,7 @@ Contributors:
 * Jonny Brooks-Bartlett
 * Helen Ginn
 * Charlie Bury
-* Steven Walsh
+* Steve Walsh
 
 **Please cite**
 Zeldin, Gerstel, Garman. (2013). J. Appl. Cryst. 46, 1225-1230.

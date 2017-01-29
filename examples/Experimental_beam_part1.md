@@ -39,3 +39,26 @@ If you come across an error, namely: `Error accessing element database file cons
 
    This error should only occur when the `CoefCalc` input values are either: `RD3D`, `EXP`, `SAXS`, `SEQUENCE` or `SAXSSEQ`.   
    See the  [Gotchas](https://github.com/GarmanGroup/RADDOSE-3D#gotchas-when-running-raddose-3d) section for notes on how to solve other problems that may arise when running RADDOSE-3D.
+
+For completeness, the equivalent specification of the Tophat beam without an experimental image file is
+```
+Crystal  # Specification for an insulin crystal
+Dimensions 89 74 40
+Type Cuboid
+CoefCalc RD3D
+NumMonomers 8
+NumResidues 153
+ProteinHeavyAtoms Zn 2 S 6
+SolventHeavyConc P 425
+UnitCell 78.4 78.4 78.4
+SolventFraction 0.6436
+
+Beam
+Type Tophat
+Flux 1.9e11
+Energy 12.7
+Collimation Rectangular 140 140
+
+Wedge 0 90  # 90 degree rotation
+ExposureTime 45  # 45 second exposure
+```
