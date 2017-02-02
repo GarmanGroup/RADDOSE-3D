@@ -113,6 +113,10 @@ Found RADDOSE at ../raddose but could not execute`
 
 - The `flux` value that is provided in the `Beam` block in the input file represents the **flux at the sample position after collimation.** This can lead to ostensibly surprising results. For example if you run 1 simulation and get a dose value, we'll say dose 1, and then run a second simulation with the same inputs except the collimation has been reduced, then the second dose value, dose 2, will be larger than dose 1. This happens because the same flux in both simulations is spread over a smaller area in the second simulation. So the dose distribution in the crystal is spread over a smaller volume but it has received the same number of photons in that volume as in the first simulation.
 
+- If you run a simulation where you have used a PDB entry to specify the sample composition ([see this example](https://github.com/GarmanGroup/RADDOSE-3D/blob/master/examples/PDB_example.md)) but you don't specify any solvent heavy atoms you'll get the following error: `Exception in thread "main" java.lang.NullPointerException`. This is because RADDOSE-3D is expecting you to specify the heavy solvent concentration using the `SolventHeavyConc` keyword. **This is a bug!** This will be fixed for the next release but for now the workaround is to add the following to the input file if you don't have any heavy solvents:
+`SolventHeavyConc Na 0`
+
+
 ### Interpreting the output
 A discussion of the output is given in the original RADDOSE-3D paper - [Zeldin, Gerstel, Garman. (2013). J. Appl. Cryst. 46, 1225-1230.](#Contributers)   
 The `Max dose` given by RADDOSE-3D is the dose value that is comparable to the dose output by the predecessor program [RADDOSE V2](https://doi.org/10.1107/S0909049508040430). However the dose value that is the most informative and representative of the damage state of the crystal is the **Average Diffraction Weighted Dose**. The details of this quantity can be found in [this paper by Zeldin *et al.* (2013) PNAS](https://doi.org/10.1073/pnas.1315879110).

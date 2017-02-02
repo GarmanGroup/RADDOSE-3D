@@ -30,3 +30,5 @@ If you come across an error, namely: `Error accessing element database file cons
 
    This error should only occur when the `CoefCalc` input values are either: `RD3D`, `EXP`, `SAXS`, `SEQUENCE` or `SAXSSEQ`.   
    See the  [Gotchas](https://github.com/GarmanGroup/RADDOSE-3D#gotchas-when-running-raddose-3d) section for notes on how to solve other problems that may arise when running RADDOSE-3D.
+
+If you run a simulation where you have used a PDB entry to specify the sample composition (as above) but you don't specify any solvent heavy atoms you'll get the following error: `Exception in thread "main" java.lang.NullPointerException`. This is because RADDOSE-3D is expecting you to specify the heavy solvent concentration using the `SolventHeavyConc` keyword. **This is a bug!** This will be fixed for the next release but for now the workaround is to add the following to the input file if you don't have any heavy solvents: `SolventHeavyConc Na 0`
