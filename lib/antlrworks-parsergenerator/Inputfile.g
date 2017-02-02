@@ -110,7 +110,7 @@ if ($crystal::crystalCoefCalc == 3) {
 
 if ($crystal::crystalCoefCalc == 4)
 {
-  if ($crystal::heavySolutionConcNames.size() > 0)
+  if ($crystal::heavySolutionConcNames != null)
   	$crystal::crystalCoefCalcClass = new CoefCalcFromPDB($crystal::pdb, $crystal::heavySolutionConcNames, $crystal::heavySolutionConcNums);
   else
 	$crystal::crystalCoefCalcClass = new CoefCalcFromPDB($crystal::pdb);

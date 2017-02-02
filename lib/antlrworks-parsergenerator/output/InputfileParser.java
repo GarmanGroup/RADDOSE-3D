@@ -1,4 +1,4 @@
-// $ANTLR 3.4 C:\\Users\\jonathan\\workspace\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g 2015-03-06 17:09:48
+// $ANTLR 3.4 C:\\Users\\jonathan\\workspace\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g 2017-02-02 22:27:28
 
 package se.raddo.raddose3D.parser;
 import se.raddo.raddose3D.*;
@@ -357,7 +357,7 @@ public class InputfileParser extends Parser {
 
             if (((crystal_scope)crystal_stack.peek()).crystalCoefCalc == 4)
             {
-              if (((crystal_scope)crystal_stack.peek()).heavySolutionConcNames.size() > 0)
+              if (((crystal_scope)crystal_stack.peek()).heavySolutionConcNames != null)
               	((crystal_scope)crystal_stack.peek()).crystalCoefCalcClass = new CoefCalcFromPDB(((crystal_scope)crystal_stack.peek()).pdb, ((crystal_scope)crystal_stack.peek()).heavySolutionConcNames, ((crystal_scope)crystal_stack.peek()).heavySolutionConcNums);
               else
             	((crystal_scope)crystal_stack.peek()).crystalCoefCalcClass = new CoefCalcFromPDB(((crystal_scope)crystal_stack.peek()).pdb);
