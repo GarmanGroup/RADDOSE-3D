@@ -2,6 +2,7 @@ RADDOSE-3D - time- and space-resolved modelling of dose in macromolecular crysta
 ==========================================================================================  
 
 [![Build Status](https://travis-ci.org/GarmanGroup/RADDOSE-3D.svg?branch=master)](https://travis-ci.org/GarmanGroup/RADDOSE-3D)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.228172.svg)](https://doi.org/10.5281/zenodo.228172)
 
 RADDOSE-3D allows the macroscopic modelling of an X-ray diffraction
 experiment for the purpose of better predicting radiation-damage progression.
