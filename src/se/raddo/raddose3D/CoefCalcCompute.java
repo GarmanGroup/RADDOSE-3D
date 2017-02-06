@@ -343,7 +343,7 @@ public class CoefCalcCompute extends CoefCalc {
             + "Attenuation Coefficient: %.2e /um.%n"
             + "Elastic Coefficient: %.2e /um.%n"
             + "Density: %.2f g/ml.%n",
-        absCoeff, absCoeffcomp, absCoeffphoto, attCoeff, elasCoeff, density);
+        absCoeff, absCoeffphoto, absCoeffcomp, attCoeff, elasCoeff, density);
   }
 
   /**
