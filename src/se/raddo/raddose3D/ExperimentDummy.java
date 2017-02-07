@@ -234,6 +234,12 @@ public class ExperimentDummy extends Experiment {
       @Override
       public void setPEparamsForCurrentBeam(double beamEnergy) {        
       }
+
+      @Override
+      public double addDoseAfterFL(int i, int j, int k, double doseIncrease) {
+        // TODO Auto-generated method stub
+        return 0;
+      }
     }
   }
 }

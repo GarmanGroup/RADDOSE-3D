@@ -92,4 +92,17 @@ public class CoefCalcAverage extends CoefCalc {
     }
     return fluorEscapeFactors;
   }
+
+  @Override
+  public double getComptonCoefficient() {
+/*    Does nothing, needed to prevent error in this class when Compton was added, 
+       Compton is already included in ABSORPTION_COEFFICIENT in this class;*/
+    return 0;
+  }
+
+  @Override
+  public double getRatioPhotElectrontoCompton() {
+ // Does nothing, needed to prevent error in this class when Ratio was added, this would never be called from here;
+    return 0;
+  }
 }

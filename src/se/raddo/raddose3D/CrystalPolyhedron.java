@@ -65,8 +65,10 @@ public class CrystalPolyhedron extends Crystal {
   /**
    * Distance bins travelled by a photoelectron.
    */
-  private static final double[]   PE_DISTANCES_TRAVELLED = {0, 1., 1.5, 2., 2.5,
+  private static final double[]     PE_DISTANCES_TRAVELLED = {0, 1., 1.5, 2., 2.5,
       3., 3.5, 4., 5., 6., 7., 8. };
+  
+  private static final double[]     FL_DISTANCES_TRAVELLED = {};
  
   /**
    * length of distance bins travelled by photoelectron.
@@ -635,7 +637,6 @@ public class CrystalPolyhedron extends Crystal {
     peDistBins = PE_DISTANCES_TRAVELLED.length;
     propnDoseDepositedAtDist = new double[peDistBins];
     relativeVoxXYZ = new double[peDistBins][PE_ANGLE_RESOLUTION * PE_ANGLE_RESOLUTION][3];
-    
   }
 
   /**
@@ -1000,7 +1001,7 @@ public class CrystalPolyhedron extends Crystal {
    * @see se.raddo.raddose3D.Crystal#addDoseAfterPE(int, int, int, double, double)
    */
   @Override
-  public double addDoseAfterPE(final int i, final int j, final int k,
+  public double addDoseAfterPE(final int i, final int j, final int k, //!!!!!!!!!!!!!!!Look here
       final double doseIncrease) {
        
     double doseLostFromCrystal = 0;
@@ -1036,7 +1037,7 @@ public class CrystalPolyhedron extends Crystal {
 
           // get dose transferred to these located voxels 
           // at the distance r away (due to PE movement)
-          double partialDose = doseIncrease * propnDoseDepositedAtDist[m] 
+          double partialDose = doseIncrease * propnDoseDepositedAtDist[m] //Different for fluorescence
               / Math.pow(PE_ANGLE_RESOLUTION,2);
           
           // add counts to total & total within crystal in order to
@@ -1053,9 +1054,66 @@ public class CrystalPolyhedron extends Crystal {
       }
     }
     return doseLostFromCrystal;
-  }    
+  } 
+  
+  @Override
+  public double addDoseAfterFL(final int i, final int j, final int k, //!!!!!!!!!Needs lots of changing!!
+      final double doseIncrease) {
+       
+    double doseLostFromCrystal = 0;
+    
+    // calculate whether this voxel classified as close to surface
+    boolean closeToSurface = false;
+    
+    for (int n = 0; n < indices.length; n++) {
+      double[] voxCoord = getCrystCoord(i, j, k);
 
-  private void calculateEscapeFactors() {
+      double distanceToPlane = Vector.rayTraceDistance(normals[n],
+          normals[n], voxCoord, originDistances[n]);
+
+      if (distanceToPlane < FL_DISTANCES_TRAVELLED[0]) { //Need to work out the distance the photon will travel
+        closeToSurface = true;
+        break;
+      }
+    }
+    
+    if (!closeToSurface) {
+      // if not close to surface, add all dose to voxel 
+      dose[i][j][k] += doseIncrease;
+    } else {
+      // if voxel is within the specified min distance to surface, take a grid 
+      // of r, theta and phi and calculate for every r within 0.5 um and 
+      // 5 um, what proportion exit the crystal.
+               
+      for (int m = 0; m < peDistBins; m++) {   
+        for (int q = 0; q < PE_ANGLE_RESOLUTION*PE_ANGLE_RESOLUTION; q++) { 
+          double x = relativeVoxXYZ[m][q][0];
+          double y = relativeVoxXYZ[m][q][1];
+          double z = relativeVoxXYZ[m][q][2];
+
+          // get dose transferred to these located voxels 
+          // at the distance r away (due to PE movement)
+          double partialDose = doseIncrease * propnDoseDepositedAtDist[m] //**********Need to work out the energy the photon takes away equation 6 here? 
+              / Math.pow(PE_ANGLE_RESOLUTION,2);
+          
+          // add counts to total & total within crystal in order to
+          // calculate the proportion for a given r.       
+          if (isCrystalAt((int) (i + x), (int) (j + y),
+              (int) (k + z))) {              
+            // get dose transferred to this new voxel (due to PE movement)
+            addDose((int) (i + x), (int) (j + y),
+            (int) (k + z), partialDose);
+          } else {
+            doseLostFromCrystal += partialDose;
+          }
+        }    
+      }
+    }
+    return doseLostFromCrystal;
+  }
+  
+
+  private void calculateEscapeFactors() {   //Dont know if this is old code??
     System.out.println("Calculating escape factors...");
 
     // These are the bins at which the function will be calculated

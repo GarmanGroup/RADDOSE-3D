@@ -34,13 +34,32 @@ public abstract class CoefCalc {
    *         elastic scattering coefficient in units m^-1 (tbc)
    */
   public abstract double getElasticCoefficient();
+  
+  /**
+   * Returns the current Compton scattering
+   * coefficient.
+   * 
+   * @return
+   *         compton scattering coefficient in units m^-1 (tbc)
+   */
+  public abstract double getComptonCoefficient();
+  
+  
+  /**
+   * Returns the ratio of photoelectric to compton scattering.
+   * 
+   * @return
+   *         ratio
+   */
+  public abstract double getRatioPhotElectrontoCompton();
 
   /**
    * Returns the density of the crystal.
    * 
    * @return
    *         crystal density in g/ml.
-   */
+   */ 
+  
   public abstract double getDensity();
   
   /**

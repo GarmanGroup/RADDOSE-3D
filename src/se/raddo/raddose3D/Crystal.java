@@ -1,6 +1,7 @@
 package se.raddo.raddose3D;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -71,8 +72,7 @@ public abstract class Crystal {
   /**
    * whether photoelectron escape should be included
    */
-  private final boolean photoElectronEscape;
-  
+  private final boolean photoElectronEscape; 
   
   /**
    * List of registered exposureObservers. Registered objects will be notified
@@ -192,6 +192,8 @@ public abstract class Crystal {
    * @return voxel dose lost from crystal
    */
   public abstract double addDoseAfterPE(int i, int j, int k, double doseIncrease);
+  
+  public abstract double addDoseAfterFL(int i, int j, int k, double doseIncrease);
 
   /**
    * set new photoelectron trajectory parameters for current beam
@@ -317,7 +319,6 @@ public abstract class Crystal {
 
     // Update coefficients in case the beam energy has changed.
     coefCalc.updateCoefficients(beam);
-
     setPEparamsForCurrentBeam(beam.getPhotonEnergy());
 
     double[][] fluorEscapeFactors = coefCalc.getFluorescentEscapeFactors(beam);
@@ -361,7 +362,7 @@ public abstract class Crystal {
 
     } // end of looping over angles
 
-    double fractionEscapedDose = totalEscapedDose/totalCrystalDose;
+    double fractionEscapedDose = totalEscapedDose/totalCrystalDose; //!!!!!!!!!Whats this? This towards the end?
     System.out.println(String.format("\nFraction of escaped dose: %.2f", fractionEscapedDose));
 
     for (int i = 0; i < getCrystSizeVoxels()[0]; i++) {
@@ -481,18 +482,25 @@ public abstract class Crystal {
               
               double voxImageDose = absorptionFractionPerKg * voxImageEnergy;
               // MGy
-
               double voxElasticYield = fluenceToElasticFactor *
                   voxImageFluence; //* beamEnergy;
-
+              
               if (voxImageDose > 0) {
 
                 addFluence(i, j, k, voxImageFluence);
                 
-                if (photoElectronEscape) {
-                  double doseLostFromCrystal = addDoseAfterPE(i, j, k, voxImageDose); //to run with new photoelectron escape
+                if (photoElectronEscape) {  //This currently neglects energy lost due to binding energy - add this later
+                  double ratio = coefCalc.getRatioPhotElectrontoCompton();
+                  double voxImageDosePhotoabs = voxImageDose*ratio;
+                  double voxImageDoseCompton = voxImageDose - voxImageDosePhotoabs;
+/*                System.out.println("HERE!!!!!!!!!!");
+                  System.out.println(voxImageDose);
+                  System.out.println(voxImageDosePhotoabs);
+                  System.out.println(voxImageDoseCompton);*/
+                  double doseLostFromCrystal = addDoseAfterPE(i, j, k, voxImageDosePhotoabs); //to run with new photoelectron escape
                   totalEscapedDose += doseLostFromCrystal;
                   totalCrystalDose += voxImageDose;
+                  addDose(i, j, k, voxImageDoseCompton);  //This will be updated to account for fluorescent x-ray escape
                 } else {
                   addDose(i, j, k, voxImageDose);
                 }
@@ -583,4 +591,6 @@ public abstract class Crystal {
     reductionFactor = Math.pow(reductionFactor, 1d / 3d);
     return reductionFactor;
   }
+
+
 }

@@ -12,8 +12,8 @@ public class CoefCalcCompute extends CoefCalc {
   /**
    * Identified coefficients and density from last program run. Final variables.
    */
-  private double                     absCoeff, attCoeff, elasCoeff, density,
-                                     cellVolume;
+  private double                     absCoeffcomp, absCoeffphoto, absphotocomp, attCoeff, elasCoeff, density, cellVolume; //absCoeffcomp added for Compton
+
   /**
    * Set of the unique elements present in the crystal (including solvent
    * and macromolecular)
@@ -157,8 +157,10 @@ public class CoefCalcCompute extends CoefCalc {
   private final ElementDatabase      elementDB;
   
   private static final String        PHOTOELECTRIC                = "Photoelectric";
+  private static final String        COMPTON                      = "Compton";
   private static final String        ELASTIC                      = "Elastic";
   private static final String        TOTAL                        = "Total";
+  private static final String        PHOTOCOMP                    = "Photocomp";
   private static final double        MIN_ATOMIC_NUM_FOR_K_SHELL_IONISATION = 11;
   private static final double        MIN_ATOMIC_NUM_FOR_L_SHELL_IONISATION = 16;
 
@@ -217,11 +219,13 @@ public class CoefCalcCompute extends CoefCalc {
    *    Beam object which contains the properties that describe the incident beam.
    */
   @Override
-  public void updateCoefficients(final Beam b) {
+  public void updateCoefficients(final Beam b) { 
     Map<String, Double> absCoefficients = calculateCoefficients(b.getPhotonEnergy());
-    absCoeff = absCoefficients.get(PHOTOELECTRIC);
     attCoeff = absCoefficients.get(TOTAL);
     elasCoeff = absCoefficients.get(ELASTIC);
+    absCoeffcomp = absCoefficients.get(COMPTON);
+    absCoeffphoto = absCoefficients.get(PHOTOELECTRIC);
+    absphotocomp = absCoefficients.get(PHOTOCOMP); 
   }
   
   /**
@@ -239,6 +243,8 @@ public class CoefCalcCompute extends CoefCalc {
     double crossSectionPhotoElectric = 0;
     double crossSectionCoherent = 0;
     double crossSectionTotal = 0;
+    double crossSectionCompton = 0;   // Added for COMPTON
+    double photocomp = 0;
 
     // take cross section contributions from each individual atom
     // weighted by the cell volume
@@ -254,15 +260,23 @@ public class CoefCalcCompute extends CoefCalc {
       crossSectionTotal += totalAtoms(e)
           * cs.get(CrossSection.TOTAL) / cellVolume
           / UNITSPERDECIUNIT;
+      crossSectionCompton += totalAtoms(e)   // Added for COMPTON
+          * cs.get(CrossSection.COMPTON) / cellVolume
+          / UNITSPERDECIUNIT;
     }
     crossSectionPhotoElectric = crossSectionPhotoElectric / UNITSPERMILLIUNIT;
     crossSectionTotal = crossSectionTotal / UNITSPERMILLIUNIT;
     crossSectionCoherent = crossSectionCoherent / UNITSPERMILLIUNIT;
+    crossSectionCompton = crossSectionCompton/ UNITSPERMILLIUNIT;
+    photocomp = crossSectionCompton + crossSectionPhotoElectric;
     
     absCoeffs.put(PHOTOELECTRIC, crossSectionPhotoElectric);
     absCoeffs.put(ELASTIC, crossSectionCoherent);
     absCoeffs.put(TOTAL, crossSectionTotal);
-    
+    absCoeffs.put(COMPTON, crossSectionCompton);
+    absCoeffs.put(PHOTOCOMP, photocomp);
+/*    System.out.println(absCoeffs);
+    System.out.println("entire");*/
     return absCoeffs;
   }
   
@@ -286,6 +300,9 @@ public class CoefCalcCompute extends CoefCalc {
     double crossSectionPhotoElectric = 0;
     double crossSectionCoherent = 0;
     double crossSectionTotal = 0;
+    double crossSectionCompton = 0;   // Added for COMPTON
+    double photocomp = 0;
+    
 
     // take cross section contributions from each individual atom
     // weighted by the cell volume
@@ -300,14 +317,24 @@ public class CoefCalcCompute extends CoefCalc {
     crossSectionTotal += totalAtoms(element)
         * cs.get(CrossSection.TOTAL) / cellVolume
         / UNITSPERDECIUNIT;
+    crossSectionCompton += totalAtoms(element)   // Added for COMPTON
+        * cs.get(CrossSection.COMPTON) / cellVolume
+        / UNITSPERDECIUNIT;
+    
+    
     crossSectionPhotoElectric = crossSectionPhotoElectric / UNITSPERMILLIUNIT;
     crossSectionTotal = crossSectionTotal / UNITSPERMILLIUNIT;
     crossSectionCoherent = crossSectionCoherent / UNITSPERMILLIUNIT;
+    crossSectionCompton = crossSectionCompton/ UNITSPERMILLIUNIT;
+    photocomp = crossSectionCompton + crossSectionPhotoElectric;
     
     absCoeffs.put(PHOTOELECTRIC, crossSectionPhotoElectric);
     absCoeffs.put(ELASTIC, crossSectionCoherent);
     absCoeffs.put(TOTAL, crossSectionTotal);
-    
+    absCoeffs.put(COMPTON, crossSectionCompton);
+    absCoeffs.put(PHOTOCOMP, photocomp);
+/*    System.out.println(absCoeffs);
+    System.out.println("individual");*/
     return absCoeffs;
   }
   
@@ -331,25 +358,33 @@ public class CoefCalcCompute extends CoefCalc {
    * the energy lost from fluorescent escape from K, L1, L2 and L3 
    * shells
    * 
-   * E = E_b - (E_K * P_K + E_L1 * P_L1 + E_L2 * P_L2 + E_L3 * P_L3)
+   * This is second part of equation 6:
+   * (E = E_b - ((E_K * P_K) + (E_L1 * P_L1) + (E_L2 * P_L2) + (E_L3 * P_L3)))
    * 
-   * where E_X is the X-edge energy of the corresponding element and P_X
-   * is the probability of emission and escape of a Fluorescent X-ray.
+   * E = Resulting energy that initially escapes
+   * E_b = bean incident energy
    * 
-   * P_X is calculated as:
+   * where 
+   * E_x is the X-edge energy of the corresponding element ****got this already in fluorescent escape factors method****
+   * P_x is the probability of emission and escape of a Fluorescent X-ray.
    * 
-   * P_X = A * B * C
+   * P_x is calculated as:
    * 
+   * P_x = A * B * C
+   *  
    * where:
    *    A: probability of K-shell (or L-shell) ionization given by
-   *    (1 - 1/x_EDGE_RATIO)
-   *    B: K-shell (or L-shell) fluorescence yield
+   *    (1 - 1/x_EDGE_RATIO)   ****got this already in fluorescent escape factors method****
+   *    
+   *    B: K-shell (or L-shell) fluorescence yield ****got this already in fluorescent escape factors method****
+   *    
    *    C: fluorescent X-ray escape probability, which is given by
    *    C = exp(-mu x)
-   *    where herE mu is the absorption coefficient of the crystal at 
+   *    where here mu is the absorption coefficient of the crystal at 
    *    the fluorescent X-ray energy which is equal to the difference
    *    between the edge energies of the shell from which the electron
    *    started from to the shell which is dropped to.
+   *    
    * @param beam
    *             Beam object which contains the properties that 
    *             describe the incident beam.
@@ -391,11 +426,11 @@ public class CoefCalcCompute extends CoefCalc {
       elAbsCoeffs = calculateCoefficients(beam.getPhotonEnergy(), e);
       if (beam.getPhotonEnergy() > e.getKEdge() &&
           e.getAtomicNumber() >= MIN_ATOMIC_NUM_FOR_K_SHELL_IONISATION) {
-        kShellEnergy = e.getKEdge();
-        kFactorA = e.getKShellIonisationProb();
-        kFactorB = e.getKShellFluorescenceYield();
-        photonMuAbsK = calculateCoefficients(e.getKEdge() - e.getL1Edge());
-        escapeMuAbsK = photonMuAbsK.get(PHOTOELECTRIC);
+        kShellEnergy = e.getKEdge();                                //K shell energy : checked from element database class
+        kFactorA = e.getKShellIonisationProb();                     //Probability of K shell ionization: checked worked out in element class
+        kFactorB = e.getKShellFluorescenceYield();                  //K shell fluorescent yield: checked from element database class
+        photonMuAbsK = calculateCoefficients(e.getKEdge() - e.getL1Edge()); //difference between the edge energies needed for fluorescent escape probability
+        escapeMuAbsK = photonMuAbsK.get(PHOTOELECTRIC);             //Fluorescent escape probability
       } else {
         kShellEnergy = 0.0;
         kFactorA = 0.0;
@@ -445,7 +480,7 @@ public class CoefCalcCompute extends CoefCalc {
         escapeMuAbsL3 = 0.0;
       }
       
-      double muAbsFrac = elAbsCoeffs.get(PHOTOELECTRIC) / absCoeff;
+      double muAbsFrac = elAbsCoeffs.get(PHOTOELECTRIC) / absCoeffphoto;
       
       fluorEscapeFactors[element_counter][0] = muAbsFrac;
       fluorEscapeFactors[element_counter][1] = kShellEnergy;
@@ -472,7 +507,12 @@ public class CoefCalcCompute extends CoefCalc {
 
   @Override
   public double getAbsorptionCoefficient() {
-    return absCoeff;
+    return absCoeffphoto;
+  }
+  
+  @Override
+  public double getComptonCoefficient() {
+    return absCoeffcomp;
   }
 
   @Override
@@ -489,7 +529,16 @@ public class CoefCalcCompute extends CoefCalc {
   public double getDensity() {
     return density;
   }
-
+  
+  @Override
+  public double getRatioPhotElectrontoCompton(){
+    double photoAbsorption = getAbsorptionCoefficient();
+    double comptonAbsortion = getComptonCoefficient();
+    double Total = photoAbsorption + comptonAbsortion;
+    double ratio = (photoAbsorption / Total);
+    return ratio;
+  }
+  
   /**
    * @return the numAminoAcids
    */
@@ -583,14 +632,28 @@ public class CoefCalcCompute extends CoefCalc {
   @Override
   public String toString() {
     return String.format(
-        "Crystal coefficients calculated with RADDOSE-3D. %n"
+        "%n"
+            + "Crystal coefficients calculated with RADDOSE-3D. %n"
             + "Absorption Coefficient: %.2e /um.%n"
+            + "Photelectric: %.2e /um.%n"
+            + "Compton: %.2e /um.%n"
             + "Attenuation Coefficient: %.2e /um.%n"
             + "Elastic Coefficient: %.2e /um.%n"
             + "Density: %.2f g/ml.%n",
-        absCoeff, attCoeff, elasCoeff, density);
+        absphotocomp, absCoeffphoto, absCoeffcomp, attCoeff, elasCoeff, density);
+  }
+  protected void getCompRatio(){
+    double ratio = absCoeffcomp/absphotocomp;
+    System.out.println("here!!!!!!!!!!!!!!!!!");
+    System.out.println(elasCoeff);
+    System.out.println(ratio);
   }
 
+  public double getPhotoRatio(){
+    double ratio = absCoeffphoto/absphotocomp; 
+    return ratio;
+  }
+    
   /**
    * Calculating solvent fraction from numbers of amino acids, RNA residues and
    * DNA residues in the unit cell.

@@ -80,11 +80,15 @@ public class Element {
      */
     PHOTOELECTRIC,
     /**
+     * Cross-section for Compton scattering
+     */
+    COMPTON,      //************This added for COMPTON**************    
+    /**
      * Cross-section for coherent (elastic) scattering.
      */
     COHERENT,
     /**
-     * Attenuation cross-section.
+     * Cross-section for coherent (elastic) scattering and incoherent (inelastic) Compton scattering.
      */
     TOTAL
   }
@@ -259,7 +263,9 @@ public class Element {
     Map<CrossSection, Double> results = new HashMap<CrossSection, Double>();
     results.put(CrossSection.COHERENT, elastic);
     results.put(CrossSection.PHOTOELECTRIC, photoelectric); // mu, abs coeff.
+    results.put(CrossSection.COMPTON,binx);      // Added for COMPTON
     results.put(CrossSection.TOTAL, attenuation);
+    
     return results;
   }
 
@@ -507,7 +513,7 @@ public class Element {
    *        the probability of K shell ionisation.
    */
   public Double getKShellIonisationProb() {
-    return this.probKShellIonisation;
+    return this.probKShellIonisation; //worked out at top of this class around line 400
   }
   
   /**

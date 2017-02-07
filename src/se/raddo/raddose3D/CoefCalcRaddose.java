@@ -359,4 +359,16 @@ public class CoefCalcRaddose extends CoefCalc {
     }
     return fluorEscapeFactors;
   }
+
+  @Override
+  public double getComptonCoefficient() {
+ // Does nothing, needed to prevent error in this class when Compton was added;
+    return 0;
+  }
+
+  @Override
+  public double getRatioPhotElectrontoCompton() {
+ // Does nothing, needed to prevent error in this class when Ratio was added;
+    return 0;
+  }
 }
