@@ -371,4 +371,10 @@ public class CoefCalcRaddose extends CoefCalc {
  // Does nothing, needed to prevent error in this class when Ratio was added;
     return 0;
   }
+
+  @Override
+  public double getPhotoCoefficient() {
+ // Does nothing, needed to prevent error in this class when Photo was added as an individual coefficient;
+    return 0;
+  }
 }

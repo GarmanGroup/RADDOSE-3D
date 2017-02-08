@@ -10,7 +10,7 @@ public abstract class CoefCalc {
   public abstract void updateCoefficients(Beam b);
 
   /**
-   * Returns the current absorption coefficient (photoelectric effect).
+   * Returns the current absorption coefficient. (Photoelectric and Compton)
    * 
    * @return
    *         absorption coefficient in units m^-1 (tbc)
@@ -34,6 +34,16 @@ public abstract class CoefCalc {
    *         elastic scattering coefficient in units m^-1 (tbc)
    */
   public abstract double getElasticCoefficient();
+  
+  /**
+   * Returns the current Photoelectron effect
+   * coefficient.
+   * 
+   * @return
+   *         Photoelectron effect coefficient in units m^-1 (tbc)
+   *         **/
+  
+  public abstract double getPhotoCoefficient();
   
   /**
    * Returns the current Compton scattering

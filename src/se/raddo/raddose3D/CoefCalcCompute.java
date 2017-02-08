@@ -507,6 +507,11 @@ public class CoefCalcCompute extends CoefCalc {
 
   @Override
   public double getAbsorptionCoefficient() {
+    return absphotocomp;
+  }
+  
+  @Override
+  public double getPhotoCoefficient() {
     return absCoeffphoto;
   }
   
@@ -532,7 +537,7 @@ public class CoefCalcCompute extends CoefCalc {
   
   @Override
   public double getRatioPhotElectrontoCompton(){
-    double photoAbsorption = getAbsorptionCoefficient();
+    double photoAbsorption = getPhotoCoefficient();
     double comptonAbsortion = getComptonCoefficient();
     double Total = photoAbsorption + comptonAbsortion;
     double ratio = (photoAbsorption / Total);

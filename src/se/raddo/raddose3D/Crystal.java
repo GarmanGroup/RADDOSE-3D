@@ -491,6 +491,8 @@ public abstract class Crystal {
                 
                 if (photoElectronEscape) {  //This currently neglects energy lost due to binding energy - add this later
                   double ratio = coefCalc.getRatioPhotElectrontoCompton();
+                  System.out.println("HERE!!!!!!!!");
+                  System.out.println(ratio);
                   double voxImageDosePhotoabs = voxImageDose*ratio;
                   double voxImageDoseCompton = voxImageDose - voxImageDosePhotoabs;
 /*                System.out.println("HERE!!!!!!!!!!");
