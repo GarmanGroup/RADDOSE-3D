@@ -323,6 +323,47 @@ public abstract class Crystal {
 
     double[][] fluorEscapeFactors = coefCalc.getFluorescentEscapeFactors(beam);
 
+      double beamenergy = beam.getPhotonEnergy();
+      double[][] fluorescentescapefactors = coefCalc.getFluorescentEscapeFactors(beam);
+      double shellenergy = 0;
+      double energy = 0;
+      for (int i = 0; i < 7; i++){
+        System.out.print("Element ");
+        System.out.print(i);
+        System.out.print(" !!!!!!");
+        System.out.print("\n");
+
+        for (int j = 1; j < 17; j+=4){
+           energy = fluorescentescapefactors[i][j];
+           double px = 0;
+           System.out.print("NEW SHELL!!!!");
+           System.out.print("\n");
+           System.out.print("Energy");
+           System.out.print("\n");
+           System.out.println(fluorescentescapefactors[i][j]);
+           System.out.print("Probability of ioization");
+           System.out.print("\n");
+           System.out.println(fluorescentescapefactors[i][j+1]);
+           System.out.print("Fluorescent yield");
+           System.out.print("\n");
+           System.out.println(fluorescentescapefactors[i][j+2]);
+           System.out.print("Escape Probability");
+           System.out.print("\n");
+           System.out.println(fluorescentescapefactors[i][j+3]);
+           px = fluorescentescapefactors[i][j+1]*fluorescentescapefactors[i][j+2]*fluorescentescapefactors[i][j+3];
+           System.out.print("PX");
+           System.out.print("\n");
+           System.out.println(px);
+           energy = energy * px;
+           System.out.print(" Energy at this point");
+           System.out.print("\n");
+           System.out.println(energy);
+           beamenergy = beamenergy - energy;
+          }
+        System.out.println("Beam ernergy!!");
+        System.out.println(beamenergy);
+      }
+
     double beamEnergyInJoules = beam.getPhotonEnergy()
         * Beam.KEVTOJOULES;
 
@@ -491,8 +532,6 @@ public abstract class Crystal {
                 
                 if (photoElectronEscape) {  //This currently neglects energy lost due to binding energy - add this later
                   double ratio = coefCalc.getRatioPhotElectrontoCompton();
-                  System.out.println("HERE!!!!!!!!");
-                  System.out.println(ratio);
                   double voxImageDosePhotoabs = voxImageDose*ratio;
                   double voxImageDoseCompton = voxImageDose - voxImageDosePhotoabs;
 /*                System.out.println("HERE!!!!!!!!!!");
@@ -533,6 +572,7 @@ public abstract class Crystal {
       } // j
     } // k : end of looping over crystal voxels
   }
+ 
 
   @SuppressWarnings("unused")
   @Deprecated

@@ -337,6 +337,10 @@ public class CoefCalcCompute extends CoefCalc {
     System.out.println("individual");*/
     return absCoeffs;
   }
+
+
+  
+
   
   /**
    * FOR STEVE:
@@ -396,6 +400,7 @@ public class CoefCalcCompute extends CoefCalc {
    *             corresponds to a different element and each column
    *             corresponds to a different component of the equation.
    */
+  
   @Override
   public double[][] getFluorescentEscapeFactors(Beam beam) {
     double[][] fluorEscapeFactors = new double[presentElements.size()][NUM_FLUOR_ESCAPE_FACTORS];
@@ -502,6 +507,7 @@ public class CoefCalcCompute extends CoefCalc {
       
       element_counter += 1;
     }
+
     return fluorEscapeFactors;
   }
 

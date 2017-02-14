@@ -33,7 +33,7 @@ public class Element {
   /**
    * Probability of K, L1, L2, L3 shell ionisation
    */
-  private final double         probKShellIonisation, probL1ShellIonisation, 
+  private double         probKShellIonisation, probL1ShellIonisation, 
                                probL2ShellIonisation, probL3ShellIonisation;
 
   /**
@@ -110,11 +110,25 @@ public class Element {
     elementData = new HashMap<ElementDatabase.DatabaseFields, Double>(
         elementInformation);
     coefficients = edgeCoefficients(elementInformation);
-    
-    probKShellIonisation  = 1 - 1 / getKEdgeRatio();
+    double test = getKEdgeRatio();
+/*    System.out.println("HERE!!!!!!!!!!");
+    System.out.println(test);*/
+    probKShellIonisation = 1 - 1 / getKEdgeRatio();
     probL1ShellIonisation = 1 - 1 / getL1EdgeRatio();
     probL2ShellIonisation = 1 - 1 / getL2EdgeRatio();
     probL3ShellIonisation = 1 - 1 / getL3EdgeRatio();
+    if (probKShellIonisation == Double.NEGATIVE_INFINITY){   //If statements added as some ratios were equalling -Infinity becuase some Edge ratios were 0
+      probKShellIonisation = 0;
+    }
+    if (probL1ShellIonisation == Double.NEGATIVE_INFINITY){
+      probL1ShellIonisation = 0;
+    }
+    if (probL2ShellIonisation == Double.NEGATIVE_INFINITY){
+      probL2ShellIonisation = 0;
+    }
+    if (probL3ShellIonisation == Double.NEGATIVE_INFINITY){
+      probL3ShellIonisation = 0;
+    }
   }
 
   /**
