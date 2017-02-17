@@ -322,7 +322,7 @@ public abstract class Crystal {
     setPEparamsForCurrentBeam(beam.getPhotonEnergy());
 
     double[][] fluorEscapeFactors = coefCalc.getFluorescentEscapeFactors(beam);
-
+/*
       double beamenergy = beam.getPhotonEnergy();
       double[][] fluorescentescapefactors = coefCalc.getFluorescentEscapeFactors(beam);
       double shellenergy = 0;
@@ -363,7 +363,7 @@ public abstract class Crystal {
         System.out.println("Beam ernergy!!");
         System.out.println(beamenergy);
       }
-
+*/
     double beamEnergyInJoules = beam.getPhotonEnergy()
         * Beam.KEVTOJOULES;
 
