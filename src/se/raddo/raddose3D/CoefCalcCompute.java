@@ -244,15 +244,7 @@ public class CoefCalcCompute extends CoefCalc {
     double crossSectionCoherent = 0;
     double crossSectionTotal = 0;
     double crossSectionCompton = 0;   // Added for COMPTON
-    double photocomp = 0;
-    
-    for (Element f : this.presentElements) {
-      Object check = f.getElementName();
-      //check = totalAtoms(e);
-      System.out.println("HERE!!!!!!!!!!!");
-      System.out.println(check);
-    }
-    
+    double photocomp = 0;    
 
     // take cross section contributions from each individual atom
     // weighted by the cell volume
@@ -434,11 +426,9 @@ public class CoefCalcCompute extends CoefCalc {
     Map<String, Double> photonMuAbsL2;
     Map<String, Double> photonMuAbsL3;
     Map<String, Double> elAbsCoeffs;
-    Map<String, Double> elname;
     
     for (Element e : this.presentElements) {
       elAbsCoeffs = calculateCoefficients(beam.getPhotonEnergy(), e);
-     // elname = e.getAtomicNumber();
       if (beam.getPhotonEnergy() > e.getKEdge() &&
           e.getAtomicNumber() >= MIN_ATOMIC_NUM_FOR_K_SHELL_IONISATION) {
         kShellEnergy = e.getKEdge();                                //K shell energy : checked from element database class
@@ -446,7 +436,8 @@ public class CoefCalcCompute extends CoefCalc {
         kFactorB = e.getKShellFluorescenceYield();                  //K shell fluorescent yield: checked from element database class
         photonMuAbsK = calculateCoefficients(e.getKEdge() - e.getL1Edge()); //difference between the edge energies needed for fluorescent escape probability
         escapeMuAbsK = photonMuAbsK.get(PHOTOELECTRIC);             //Fluorescent escape probability
-      } else {
+      } 
+      else {
         kShellEnergy = 0.0;
         kFactorA = 0.0;
         kFactorB = 0.0;
@@ -460,7 +451,8 @@ public class CoefCalcCompute extends CoefCalc {
         l1FactorB = e.getL1ShellFluorescenceYield();
         photonMuAbsL1 = calculateCoefficients(e.getL1Edge() - e.getM1Edge());
         escapeMuAbsL1 = photonMuAbsL1.get(PHOTOELECTRIC);
-      } else {
+      } 
+      else {
         l1ShellEnergy = 0.0;
         l1FactorA = 0.0;
         l1FactorB = 0.0;
@@ -474,7 +466,8 @@ public class CoefCalcCompute extends CoefCalc {
         l2FactorB = e.getL2ShellFluorescenceYield();
         photonMuAbsL2 = calculateCoefficients(e.getL2Edge() - e.getM1Edge());
         escapeMuAbsL2 = photonMuAbsL2.get(PHOTOELECTRIC);
-      } else {
+      } 
+      else {
         l2ShellEnergy = 0.0;
         l2FactorA = 0.0;
         l2FactorB = 0.0;
@@ -488,7 +481,8 @@ public class CoefCalcCompute extends CoefCalc {
         l3FactorB = e.getL3ShellFluorescenceYield();
         photonMuAbsL3 = calculateCoefficients(e.getL3Edge() - e.getM1Edge());
         escapeMuAbsL3 = photonMuAbsL3.get(PHOTOELECTRIC);
-      } else {
+      } 
+      else {
         l3ShellEnergy = 0.0;
         l3FactorA = 0.0;
         l3FactorB = 0.0;
@@ -498,23 +492,22 @@ public class CoefCalcCompute extends CoefCalc {
       double muAbsFrac = elAbsCoeffs.get(PHOTOELECTRIC) / absCoeffphoto;
       
       fluorEscapeFactors[element_counter][0] = muAbsFrac;
-      //fluorEscapeFactors[element_counter][1] = elname;
-      fluorEscapeFactors[element_counter][2] = kShellEnergy;
-      fluorEscapeFactors[element_counter][3] = kFactorA;
-      fluorEscapeFactors[element_counter][4] = kFactorB;
-      fluorEscapeFactors[element_counter][5] = escapeMuAbsK;
-      fluorEscapeFactors[element_counter][6] = l1ShellEnergy;
-      fluorEscapeFactors[element_counter][7] = l1FactorA;
-      fluorEscapeFactors[element_counter][8] = l1FactorB;
-      fluorEscapeFactors[element_counter][9] = escapeMuAbsL1;
-      fluorEscapeFactors[element_counter][10] = l2ShellEnergy;
-      fluorEscapeFactors[element_counter][11] = l2FactorA;
-      fluorEscapeFactors[element_counter][12] = l2FactorB;
-      fluorEscapeFactors[element_counter][13] = escapeMuAbsL2;
-      fluorEscapeFactors[element_counter][14] = l3ShellEnergy;
-      fluorEscapeFactors[element_counter][15] = l3FactorA;
-      fluorEscapeFactors[element_counter][16] = l3FactorB;
-      fluorEscapeFactors[element_counter][17] = escapeMuAbsL3;
+      fluorEscapeFactors[element_counter][1] = kShellEnergy;
+      fluorEscapeFactors[element_counter][2] = kFactorA;
+      fluorEscapeFactors[element_counter][3] = kFactorB;
+      fluorEscapeFactors[element_counter][4] = escapeMuAbsK;
+      fluorEscapeFactors[element_counter][5] = l1ShellEnergy;
+      fluorEscapeFactors[element_counter][6] = l1FactorA;
+      fluorEscapeFactors[element_counter][7] = l1FactorB;
+      fluorEscapeFactors[element_counter][8] = escapeMuAbsL1;
+      fluorEscapeFactors[element_counter][9] = l2ShellEnergy;
+      fluorEscapeFactors[element_counter][10] = l2FactorA;
+      fluorEscapeFactors[element_counter][11] = l2FactorB;
+      fluorEscapeFactors[element_counter][12] = escapeMuAbsL2;
+      fluorEscapeFactors[element_counter][13] = l3ShellEnergy;
+      fluorEscapeFactors[element_counter][14] = l3FactorA;
+      fluorEscapeFactors[element_counter][15] = l3FactorB;
+      fluorEscapeFactors[element_counter][16] = escapeMuAbsL3;
       
       element_counter += 1;
     }

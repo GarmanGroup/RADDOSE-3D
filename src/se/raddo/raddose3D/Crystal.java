@@ -60,6 +60,10 @@ public abstract class Crystal {
    * Cumulative dose lost from crystal due to photoelectron escape
    */
   private double totalEscapedDose                               = 0;
+  
+  
+  
+  private double fluorescentEscapedDose                         = 0;
 
   /**
    * Cumulative dose both remaining in crystal and lost through photoelectron escape
@@ -322,48 +326,27 @@ public abstract class Crystal {
     setPEparamsForCurrentBeam(beam.getPhotonEnergy());
 
     double[][] fluorEscapeFactors = coefCalc.getFluorescentEscapeFactors(beam);
-/*
-      double beamenergy = beam.getPhotonEnergy();
-      double[][] fluorescentescapefactors = coefCalc.getFluorescentEscapeFactors(beam);
-      double shellenergy = 0;
-      double energy = 0;
-      for (int i = 0; i < 7; i++){
-        System.out.print("Element ");
-        System.out.print(i);
-        System.out.print(" !!!!!!");
-        System.out.print("\n");
-
-        for (int j = 1; j < 17; j+=4){
-           energy = fluorescentescapefactors[i][j];
-           double px = 0;
-           System.out.print("NEW SHELL!!!!");
-           System.out.print("\n");
-           System.out.print("Energy");
-           System.out.print("\n");
-           System.out.println(fluorescentescapefactors[i][j]);
-           System.out.print("Probability of ioization");
-           System.out.print("\n");
-           System.out.println(fluorescentescapefactors[i][j+1]);
-           System.out.print("Fluorescent yield");
-           System.out.print("\n");
-           System.out.println(fluorescentescapefactors[i][j+2]);
-           System.out.print("Escape Probability");
-           System.out.print("\n");
-           System.out.println(fluorescentescapefactors[i][j+3]);
-           px = fluorescentescapefactors[i][j+1]*fluorescentescapefactors[i][j+2]*fluorescentescapefactors[i][j+3];
-           System.out.print("PX");
-           System.out.print("\n");
-           System.out.println(px);
-           energy = energy * px;
-           System.out.print(" Energy at this point");
-           System.out.print("\n");
-           System.out.println(energy);
-           beamenergy = beamenergy - energy;
-          }
-        System.out.println("Beam ernergy!!");
-        System.out.println(beamenergy);
+    
+    
+   //Takes the fluorescent escape factors and calculates the energy that can escape by fluorescence
+    double[][] fluorescentescapefactors = coefCalc.getFluorescentEscapeFactors(beam);
+    double shellenergy = 0;
+    double energy = 0;
+    for (int i = 0; i < 7; i++){
+      double muratio = fluorescentescapefactors[i][0];
+      for (int j = 1; j < 17; j+=4){
+        energy = fluorescentescapefactors[i][j];
+        double px = 0;
+        px = fluorescentescapefactors[i][j+1]*fluorescentescapefactors[i][j+2]*fluorescentescapefactors[i][j+3];
+        energy = energy * px;
+        shellenergy = (energy + shellenergy) * muratio;
+        fluorescentEscapedDose = fluorescentEscapedDose + shellenergy;
+        
+        }
       }
-*/
+      System.out.println("Energy that may escape by fluorescence!!");
+      System.out.println(fluorescentEscapedDose);
+
     double beamEnergyInJoules = beam.getPhotonEnergy()
         * Beam.KEVTOJOULES;
 
@@ -535,7 +518,7 @@ public abstract class Crystal {
                   double voxImageDosePhotoabs = voxImageDose*ratio;
                   double voxImageDoseCompton = voxImageDose - voxImageDosePhotoabs;
 /*                System.out.println("HERE!!!!!!!!!!");
-                  System.out.println(voxImageDose);
+                  System.out.println(ratio);
                   System.out.println(voxImageDosePhotoabs);
                   System.out.println(voxImageDoseCompton);*/
                   double doseLostFromCrystal = addDoseAfterPE(i, j, k, voxImageDosePhotoabs); //to run with new photoelectron escape
