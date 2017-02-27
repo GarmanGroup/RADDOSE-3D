@@ -276,7 +276,7 @@ public class InputfileParser extends Parser {
         Double          solFrac;
         HashMap<Object, Object> crystalProperties;
     }
-    protected Stack crystal_stack = new Stack();
+    protected Stack<InputfileParser.crystal_scope> crystal_stack = new Stack<>();
 
 
 
@@ -2656,7 +2656,7 @@ public class InputfileParser extends Parser {
         String beamType;
         HashMap<Object, Object> beamProperties;
     }
-    protected Stack beam_stack = new Stack();
+    protected Stack<InputfileParser.beam_scope> beam_stack = new Stack<>();
 
 
 
@@ -3254,7 +3254,7 @@ public class InputfileParser extends Parser {
         Double  translateZ;
         Double  rotationOffset;
     }
-    protected Stack wedge_stack = new Stack();
+    protected Stack<InputfileParser.wedge_scope> wedge_stack = new Stack<>();
 
 
 
