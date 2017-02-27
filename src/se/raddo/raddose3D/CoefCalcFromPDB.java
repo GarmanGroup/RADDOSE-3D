@@ -312,11 +312,11 @@ public class CoefCalcFromPDB extends CoefCalcCompute {
         continue;
       }
 
-      if (residue.getResidueType() == residueDB.TYPE_PROTEIN) {
+      if (residue.getResidueType() == ResidueDatabase.TYPE_PROTEIN) {
         this.incrementNumAminoAcids(1);
-      } else if (residue.getResidueType() == residueDB.TYPE_RNA) {
+      } else if (residue.getResidueType() == ResidueDatabase.TYPE_RNA) {
         this.incrementNumRNA(1);
-      } else if (residue.getResidueType() == residueDB.TYPE_DNA) {
+      } else if (residue.getResidueType() == ResidueDatabase.TYPE_DNA) {
         this.incrementNumDNA(1);
       }
 
