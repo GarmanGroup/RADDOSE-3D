@@ -288,8 +288,8 @@ public class InputfileParser extends Parser {
 
 
          
-        ((crystal_scope)crystal_stack.peek()).crystalCoefCalc = 2; // 0 = error, 1 = Simple, 2 = DEFAULT, 3 = RDV2, 4 = PDB, 5 = SAXS
-                ((crystal_scope)crystal_stack.peek()).crystalProperties = new HashMap<Object, Object>();
+        (crystal_stack.peek()).crystalCoefCalc = 2; // 0 = error, 1 = Simple, 2 = DEFAULT, 3 = RDV2, 4 = PDB, 5 = SAXS
+                (crystal_stack.peek()).crystalProperties = new HashMap<Object, Object>();
 
         try {
             // C:\\Users\\jonathan\\workspace\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:186:2: ( CRYSTAL ( crystalLine )+ )
@@ -335,100 +335,100 @@ public class InputfileParser extends Parser {
             }
 
              
-            if (((crystal_scope)crystal_stack.peek()).crystalCoefCalc == 1) {
-              ((crystal_scope)crystal_stack.peek()).crystalCoefCalcClass = new CoefCalcAverage();
+            if ((crystal_stack.peek()).crystalCoefCalc == 1) {
+              (crystal_stack.peek()).crystalCoefCalcClass = new CoefCalcAverage();
             }
-            if (((crystal_scope)crystal_stack.peek()).crystalCoefCalc == 2)
+            if ((crystal_stack.peek()).crystalCoefCalc == 2)
             {
-              ((crystal_scope)crystal_stack.peek()).crystalCoefCalcClass = new CoefCalcFromParams(((crystal_scope)crystal_stack.peek()).cellA, ((crystal_scope)crystal_stack.peek()).cellB, ((crystal_scope)crystal_stack.peek()).cellC, ((crystal_scope)crystal_stack.peek()).cellAl, ((crystal_scope)crystal_stack.peek()).cellBe, ((crystal_scope)crystal_stack.peek()).cellGa,
-                                                                ((crystal_scope)crystal_stack.peek()).numMon, ((crystal_scope)crystal_stack.peek()).numRes, ((crystal_scope)crystal_stack.peek()).numRNA, ((crystal_scope)crystal_stack.peek()).numDNA,
-                                                                ((crystal_scope)crystal_stack.peek()).heavyProteinAtomNames, ((crystal_scope)crystal_stack.peek()).heavyProteinAtomNums,
-                                                                ((crystal_scope)crystal_stack.peek()).heavySolutionConcNames, ((crystal_scope)crystal_stack.peek()).heavySolutionConcNums,
-                                                                ((crystal_scope)crystal_stack.peek()).solFrac);
+              (crystal_stack.peek()).crystalCoefCalcClass = new CoefCalcFromParams((crystal_stack.peek()).cellA, (crystal_stack.peek()).cellB, (crystal_stack.peek()).cellC, (crystal_stack.peek()).cellAl, (crystal_stack.peek()).cellBe, (crystal_stack.peek()).cellGa,
+                                                                (crystal_stack.peek()).numMon, (crystal_stack.peek()).numRes, (crystal_stack.peek()).numRNA, (crystal_stack.peek()).numDNA,
+                                                                (crystal_stack.peek()).heavyProteinAtomNames, (crystal_stack.peek()).heavyProteinAtomNums,
+                                                                (crystal_stack.peek()).heavySolutionConcNames, (crystal_stack.peek()).heavySolutionConcNums,
+                                                                (crystal_stack.peek()).solFrac);
             }
 
-            if (((crystal_scope)crystal_stack.peek()).crystalCoefCalc == 3) {
-              ((crystal_scope)crystal_stack.peek()).crystalCoefCalcClass = new CoefCalcRaddose(((crystal_scope)crystal_stack.peek()).cellA, ((crystal_scope)crystal_stack.peek()).cellB, ((crystal_scope)crystal_stack.peek()).cellC, ((crystal_scope)crystal_stack.peek()).cellAl, ((crystal_scope)crystal_stack.peek()).cellBe, ((crystal_scope)crystal_stack.peek()).cellGa,
-                                                                ((crystal_scope)crystal_stack.peek()).numMon, ((crystal_scope)crystal_stack.peek()).numRes, ((crystal_scope)crystal_stack.peek()).numRNA, ((crystal_scope)crystal_stack.peek()).numDNA,
-                                                                ((crystal_scope)crystal_stack.peek()).heavyProteinAtomNames, ((crystal_scope)crystal_stack.peek()).heavyProteinAtomNums,
-                                                                ((crystal_scope)crystal_stack.peek()).heavySolutionConcNames, ((crystal_scope)crystal_stack.peek()).heavySolutionConcNums,
-                                                                ((crystal_scope)crystal_stack.peek()).solFrac);
+            if ((crystal_stack.peek()).crystalCoefCalc == 3) {
+              (crystal_stack.peek()).crystalCoefCalcClass = new CoefCalcRaddose((crystal_stack.peek()).cellA, (crystal_stack.peek()).cellB, (crystal_stack.peek()).cellC, (crystal_stack.peek()).cellAl, (crystal_stack.peek()).cellBe, (crystal_stack.peek()).cellGa,
+                                                                (crystal_stack.peek()).numMon, (crystal_stack.peek()).numRes, (crystal_stack.peek()).numRNA, (crystal_stack.peek()).numDNA,
+                                                                (crystal_stack.peek()).heavyProteinAtomNames, (crystal_stack.peek()).heavyProteinAtomNums,
+                                                                (crystal_stack.peek()).heavySolutionConcNames, (crystal_stack.peek()).heavySolutionConcNums,
+                                                                (crystal_stack.peek()).solFrac);
             }
 
-            if (((crystal_scope)crystal_stack.peek()).crystalCoefCalc == 4)
+            if ((crystal_stack.peek()).crystalCoefCalc == 4)
             {
-              if (((crystal_scope)crystal_stack.peek()).heavySolutionConcNames != null)
-                ((crystal_scope)crystal_stack.peek()).crystalCoefCalcClass = new CoefCalcFromPDB(((crystal_scope)crystal_stack.peek()).pdb, ((crystal_scope)crystal_stack.peek()).heavySolutionConcNames, ((crystal_scope)crystal_stack.peek()).heavySolutionConcNums);
+              if ((crystal_stack.peek()).heavySolutionConcNames != null)
+                (crystal_stack.peek()).crystalCoefCalcClass = new CoefCalcFromPDB((crystal_stack.peek()).pdb, (crystal_stack.peek()).heavySolutionConcNames, (crystal_stack.peek()).heavySolutionConcNums);
               else
-                ((crystal_scope)crystal_stack.peek()).crystalCoefCalcClass = new CoefCalcFromPDB(((crystal_scope)crystal_stack.peek()).pdb);
+                (crystal_stack.peek()).crystalCoefCalcClass = new CoefCalcFromPDB((crystal_stack.peek()).pdb);
                                                                                                                     
             }
 
-            if (((crystal_scope)crystal_stack.peek()).crystalCoefCalc == 5)
+            if ((crystal_stack.peek()).crystalCoefCalc == 5)
             {
-              ((crystal_scope)crystal_stack.peek()).crystalCoefCalcClass = new CoefCalcSAXS(((crystal_scope)crystal_stack.peek()).cellA, ((crystal_scope)crystal_stack.peek()).cellB, ((crystal_scope)crystal_stack.peek()).cellC, ((crystal_scope)crystal_stack.peek()).cellAl, ((crystal_scope)crystal_stack.peek()).cellBe, ((crystal_scope)crystal_stack.peek()).cellGa,
-                                                                ((crystal_scope)crystal_stack.peek()).numRes, ((crystal_scope)crystal_stack.peek()).numRNA, ((crystal_scope)crystal_stack.peek()).numDNA,
-                                                                ((crystal_scope)crystal_stack.peek()).heavyProteinAtomNames, ((crystal_scope)crystal_stack.peek()).heavyProteinAtomNums,
-                                                                ((crystal_scope)crystal_stack.peek()).heavySolutionConcNames, ((crystal_scope)crystal_stack.peek()).heavySolutionConcNums,
-                                                                ((crystal_scope)crystal_stack.peek()).solFrac, ((crystal_scope)crystal_stack.peek()).proteinConc);
+              (crystal_stack.peek()).crystalCoefCalcClass = new CoefCalcSAXS((crystal_stack.peek()).cellA, (crystal_stack.peek()).cellB, (crystal_stack.peek()).cellC, (crystal_stack.peek()).cellAl, (crystal_stack.peek()).cellBe, (crystal_stack.peek()).cellGa,
+                                                                (crystal_stack.peek()).numRes, (crystal_stack.peek()).numRNA, (crystal_stack.peek()).numDNA,
+                                                                (crystal_stack.peek()).heavyProteinAtomNames, (crystal_stack.peek()).heavyProteinAtomNums,
+                                                                (crystal_stack.peek()).heavySolutionConcNames, (crystal_stack.peek()).heavySolutionConcNums,
+                                                                (crystal_stack.peek()).solFrac, (crystal_stack.peek()).proteinConc);
             }
 
-            if (((crystal_scope)crystal_stack.peek()).crystalCoefCalc == 6)
+            if ((crystal_stack.peek()).crystalCoefCalc == 6)
             {
-              ((crystal_scope)crystal_stack.peek()).crystalCoefCalcClass = new CoefCalcFromSequence(((crystal_scope)crystal_stack.peek()).cellA, ((crystal_scope)crystal_stack.peek()).cellB, ((crystal_scope)crystal_stack.peek()).cellC, ((crystal_scope)crystal_stack.peek()).cellAl, ((crystal_scope)crystal_stack.peek()).cellBe, ((crystal_scope)crystal_stack.peek()).cellGa,
-                                                                ((crystal_scope)crystal_stack.peek()).numMon,
-                                                                ((crystal_scope)crystal_stack.peek()).heavyProteinAtomNames, ((crystal_scope)crystal_stack.peek()).heavyProteinAtomNums,
-                                                                ((crystal_scope)crystal_stack.peek()).heavySolutionConcNames, ((crystal_scope)crystal_stack.peek()).heavySolutionConcNums,
-                                                                ((crystal_scope)crystal_stack.peek()).solFrac, ((crystal_scope)crystal_stack.peek()).seqFile);
+              (crystal_stack.peek()).crystalCoefCalcClass = new CoefCalcFromSequence((crystal_stack.peek()).cellA, (crystal_stack.peek()).cellB, (crystal_stack.peek()).cellC, (crystal_stack.peek()).cellAl, (crystal_stack.peek()).cellBe, (crystal_stack.peek()).cellGa,
+                                                                (crystal_stack.peek()).numMon,
+                                                                (crystal_stack.peek()).heavyProteinAtomNames, (crystal_stack.peek()).heavyProteinAtomNums,
+                                                                (crystal_stack.peek()).heavySolutionConcNames, (crystal_stack.peek()).heavySolutionConcNums,
+                                                                (crystal_stack.peek()).solFrac, (crystal_stack.peek()).seqFile);
             }
 
-            if (((crystal_scope)crystal_stack.peek()).crystalCoefCalc == 7)
+            if ((crystal_stack.peek()).crystalCoefCalc == 7)
             {
-              ((crystal_scope)crystal_stack.peek()).crystalCoefCalcClass = new CoefCalcFromSequenceSAXS(((crystal_scope)crystal_stack.peek()).cellA, ((crystal_scope)crystal_stack.peek()).cellB, ((crystal_scope)crystal_stack.peek()).cellC, ((crystal_scope)crystal_stack.peek()).cellAl, ((crystal_scope)crystal_stack.peek()).cellBe, ((crystal_scope)crystal_stack.peek()).cellGa,
-                                                                ((crystal_scope)crystal_stack.peek()).heavyProteinAtomNames, ((crystal_scope)crystal_stack.peek()).heavyProteinAtomNums,
-                                                                ((crystal_scope)crystal_stack.peek()).heavySolutionConcNames, ((crystal_scope)crystal_stack.peek()).heavySolutionConcNums,
-                                                                ((crystal_scope)crystal_stack.peek()).solFrac, ((crystal_scope)crystal_stack.peek()).proteinConc, ((crystal_scope)crystal_stack.peek()).seqFile);
+              (crystal_stack.peek()).crystalCoefCalcClass = new CoefCalcFromSequenceSAXS((crystal_stack.peek()).cellA, (crystal_stack.peek()).cellB, (crystal_stack.peek()).cellC, (crystal_stack.peek()).cellAl, (crystal_stack.peek()).cellBe, (crystal_stack.peek()).cellGa,
+                                                                (crystal_stack.peek()).heavyProteinAtomNames, (crystal_stack.peek()).heavyProteinAtomNums,
+                                                                (crystal_stack.peek()).heavySolutionConcNames, (crystal_stack.peek()).heavySolutionConcNums,
+                                                                (crystal_stack.peek()).solFrac, (crystal_stack.peek()).proteinConc, (crystal_stack.peek()).seqFile);
             }
 
-            ((crystal_scope)crystal_stack.peek()).crystalProperties.put(Crystal.CRYSTAL_COEFCALC, ((crystal_scope)crystal_stack.peek()).crystalCoefCalcClass);
+            (crystal_stack.peek()).crystalProperties.put(Crystal.CRYSTAL_COEFCALC, (crystal_stack.peek()).crystalCoefCalcClass);
 
-            if (((crystal_scope)crystal_stack.peek()).crystalDdm == 1)
+            if ((crystal_stack.peek()).crystalDdm == 1)
             {
-                ((crystal_scope)crystal_stack.peek()).crystalDdmClass = new DDMSimple();
+                (crystal_stack.peek()).crystalDdmClass = new DDMSimple();
             }
 
-            if (((crystal_scope)crystal_stack.peek()).crystalDdm == 2)
+            if ((crystal_stack.peek()).crystalDdm == 2)
             {
-                ((crystal_scope)crystal_stack.peek()).crystalDdmClass = new DDMLinear();
+                (crystal_stack.peek()).crystalDdmClass = new DDMLinear();
             }
 
-            if (((crystal_scope)crystal_stack.peek()).crystalDdm == 3)
+            if ((crystal_stack.peek()).crystalDdm == 3)
             {
-                ((crystal_scope)crystal_stack.peek()).crystalDdmClass = new DDMLeal(((crystal_scope)crystal_stack.peek()).gammaParam, ((crystal_scope)crystal_stack.peek()).b0Param, ((crystal_scope)crystal_stack.peek()).betaParam);
+                (crystal_stack.peek()).crystalDdmClass = new DDMLeal((crystal_stack.peek()).gammaParam, (crystal_stack.peek()).b0Param, (crystal_stack.peek()).betaParam);
             }
 
-            ((crystal_scope)crystal_stack.peek()).crystalProperties.put(Crystal.CRYSTAL_DDM, ((crystal_scope)crystal_stack.peek()).crystalDdmClass);
+            (crystal_stack.peek()).crystalProperties.put(Crystal.CRYSTAL_DDM, (crystal_stack.peek()).crystalDdmClass);
 
-            if (((crystal_scope)crystal_stack.peek()).crystalContainerMaterial == 1)
+            if ((crystal_stack.peek()).crystalContainerMaterial == 1)
             {
-                ((crystal_scope)crystal_stack.peek()).crystalContainerMaterialClass = new ContainerTransparent();
+                (crystal_stack.peek()).crystalContainerMaterialClass = new ContainerTransparent();
             }
 
-            if (((crystal_scope)crystal_stack.peek()).crystalContainerMaterial == 2)
+            if ((crystal_stack.peek()).crystalContainerMaterial == 2)
             {
-                ((crystal_scope)crystal_stack.peek()).crystalContainerMaterialClass = new ContainerMixture(((crystal_scope)crystal_stack.peek()).containerThickness, ((crystal_scope)crystal_stack.peek()).containerDensity, ((crystal_scope)crystal_stack.peek()).containerMixture);
+                (crystal_stack.peek()).crystalContainerMaterialClass = new ContainerMixture((crystal_stack.peek()).containerThickness, (crystal_stack.peek()).containerDensity, (crystal_stack.peek()).containerMixture);
             }
 
-            if (((crystal_scope)crystal_stack.peek()).crystalContainerMaterial == 3)
+            if ((crystal_stack.peek()).crystalContainerMaterial == 3)
             {
-                ((crystal_scope)crystal_stack.peek()).crystalContainerMaterialClass = new ContainerElemental(((crystal_scope)crystal_stack.peek()).containerThickness, ((crystal_scope)crystal_stack.peek()).containerDensity, ((crystal_scope)crystal_stack.peek()).containerElementNames,
-                                                                ((crystal_scope)crystal_stack.peek()).containerElementNums);
+                (crystal_stack.peek()).crystalContainerMaterialClass = new ContainerElemental((crystal_stack.peek()).containerThickness, (crystal_stack.peek()).containerDensity, (crystal_stack.peek()).containerElementNames,
+                                                                (crystal_stack.peek()).containerElementNums);
             }
 
-            ((crystal_scope)crystal_stack.peek()).crystalProperties.put(Crystal.CRYSTAL_CONTAINER, ((crystal_scope)crystal_stack.peek()).crystalContainerMaterialClass);
+            (crystal_stack.peek()).crystalProperties.put(Crystal.CRYSTAL_CONTAINER, (crystal_stack.peek()).crystalContainerMaterialClass);
 
 
-            cObj = crystalFactory.createCrystal(((crystal_scope)crystal_stack.peek()).crystalType, ((crystal_scope)crystal_stack.peek()).crystalProperties);
+            cObj = crystalFactory.createCrystal((crystal_stack.peek()).crystalType, (crystal_stack.peek()).crystalProperties);
 
         }
         catch (RecognitionException re) {
@@ -667,7 +667,7 @@ public class InputfileParser extends Parser {
                     state._fsp--;
 
 
-                     ((crystal_scope)crystal_stack.peek()).crystalType = a; 
+                     (crystal_stack.peek()).crystalType = a; 
 
                     }
                     break;
@@ -680,7 +680,7 @@ public class InputfileParser extends Parser {
                     state._fsp--;
 
 
-                     ((crystal_scope)crystal_stack.peek()).crystalDdm = b; 
+                     (crystal_stack.peek()).crystalDdm = b; 
 
                     }
                     break;
@@ -693,7 +693,7 @@ public class InputfileParser extends Parser {
                     state._fsp--;
 
 
-                     ((crystal_scope)crystal_stack.peek()).crystalCoefCalc = c; 
+                     (crystal_stack.peek()).crystalCoefCalc = c; 
 
                     }
                     break;
@@ -707,7 +707,7 @@ public class InputfileParser extends Parser {
 
 
                      if (d != null) {
-                                                   ((crystal_scope)crystal_stack.peek()).crystalProperties.putAll(d);
+                                                   (crystal_stack.peek()).crystalProperties.putAll(d);
                                                   }; 
 
                     }
@@ -721,7 +721,7 @@ public class InputfileParser extends Parser {
                     state._fsp--;
 
 
-                     ((crystal_scope)crystal_stack.peek()).crystalProperties.put(Crystal.CRYSTAL_RESOLUTION, e); 
+                     (crystal_stack.peek()).crystalProperties.put(Crystal.CRYSTAL_RESOLUTION, e); 
 
                     }
                     break;
@@ -734,7 +734,7 @@ public class InputfileParser extends Parser {
                     state._fsp--;
 
 
-                     ((crystal_scope)crystal_stack.peek()).crystalProperties.put(Crystal.CRYSTAL_ANGLE_P, f); 
+                     (crystal_stack.peek()).crystalProperties.put(Crystal.CRYSTAL_ANGLE_P, f); 
 
                     }
                     break;
@@ -747,7 +747,7 @@ public class InputfileParser extends Parser {
                     state._fsp--;
 
 
-                     ((crystal_scope)crystal_stack.peek()).crystalProperties.put(Crystal.CRYSTAL_ANGLE_L, g); 
+                     (crystal_stack.peek()).crystalProperties.put(Crystal.CRYSTAL_ANGLE_L, g); 
 
                     }
                     break;
@@ -760,9 +760,9 @@ public class InputfileParser extends Parser {
                     state._fsp--;
 
 
-                     ((crystal_scope)crystal_stack.peek()).gammaParam = (h!=null?h.gammaParam:null); 
-                                                              ((crystal_scope)crystal_stack.peek()).b0Param = (h!=null?h.b0Param:null); 
-                                                              ((crystal_scope)crystal_stack.peek()).betaParam = (h!=null?h.betaParam:null); 
+                     (crystal_stack.peek()).gammaParam = (h!=null?h.gammaParam:null); 
+                                                              (crystal_stack.peek()).b0Param = (h!=null?h.b0Param:null); 
+                                                              (crystal_stack.peek()).betaParam = (h!=null?h.betaParam:null); 
 
                     }
                     break;
@@ -775,7 +775,7 @@ public class InputfileParser extends Parser {
                     state._fsp--;
 
 
-                     ((crystal_scope)crystal_stack.peek()).containerThickness = i; 
+                     (crystal_stack.peek()).containerThickness = i; 
 
                     }
                     break;
@@ -788,7 +788,7 @@ public class InputfileParser extends Parser {
                     state._fsp--;
 
 
-                     ((crystal_scope)crystal_stack.peek()).containerDensity = j; 
+                     (crystal_stack.peek()).containerDensity = j; 
 
                     }
                     break;
@@ -801,7 +801,7 @@ public class InputfileParser extends Parser {
                     state._fsp--;
 
 
-                     ((crystal_scope)crystal_stack.peek()).crystalContainerMaterial = k; 
+                     (crystal_stack.peek()).crystalContainerMaterial = k; 
 
                     }
                     break;
@@ -814,7 +814,7 @@ public class InputfileParser extends Parser {
                     state._fsp--;
 
 
-                     ((crystal_scope)crystal_stack.peek()).containerMixture = l; 
+                     (crystal_stack.peek()).containerMixture = l; 
 
                     }
                     break;
@@ -827,12 +827,12 @@ public class InputfileParser extends Parser {
                     state._fsp--;
 
 
-                     ((crystal_scope)crystal_stack.peek()).cellA = (m!=null?m.dimA:null); 
-                                                  ((crystal_scope)crystal_stack.peek()).cellB = (m!=null?m.dimB:null);  
-                                                  ((crystal_scope)crystal_stack.peek()).cellC = (m!=null?m.dimC:null);  
-                                                  ((crystal_scope)crystal_stack.peek()).cellAl = (m!=null?m.angA:null);
-                                                  ((crystal_scope)crystal_stack.peek()).cellBe = (m!=null?m.angB:null);     
-                                                  ((crystal_scope)crystal_stack.peek()).cellGa = (m!=null?m.angC:null); 
+                     (crystal_stack.peek()).cellA = (m!=null?m.dimA:null); 
+                                                  (crystal_stack.peek()).cellB = (m!=null?m.dimB:null);  
+                                                  (crystal_stack.peek()).cellC = (m!=null?m.dimC:null);  
+                                                  (crystal_stack.peek()).cellAl = (m!=null?m.angA:null);
+                                                  (crystal_stack.peek()).cellBe = (m!=null?m.angB:null);     
+                                                  (crystal_stack.peek()).cellGa = (m!=null?m.angC:null); 
 
                     }
                     break;
@@ -1017,7 +1017,7 @@ public class InputfileParser extends Parser {
                     state._fsp--;
 
 
-                     ((crystal_scope)crystal_stack.peek()).seqFile = aa; 
+                     (crystal_stack.peek()).seqFile = aa; 
 
                     }
                     break;
