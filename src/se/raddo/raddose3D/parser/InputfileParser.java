@@ -845,7 +845,7 @@ public class InputfileParser extends Parser {
                     state._fsp--;
 
 
-                     ((crystal_scope)crystal_stack.peek()).numMon = n;  
+                     (crystal_stack.peek()).numMon = n;  
 
                     }
                     break;
@@ -858,7 +858,7 @@ public class InputfileParser extends Parser {
                     state._fsp--;
 
 
-                     ((crystal_scope)crystal_stack.peek()).numRes = o;  
+                     (crystal_stack.peek()).numRes = o;  
 
                     }
                     break;
@@ -871,7 +871,7 @@ public class InputfileParser extends Parser {
                     state._fsp--;
 
 
-                     ((crystal_scope)crystal_stack.peek()).numRNA = p;  
+                     (crystal_stack.peek()).numRNA = p;  
 
                     }
                     break;
@@ -884,7 +884,7 @@ public class InputfileParser extends Parser {
                     state._fsp--;
 
 
-                     ((crystal_scope)crystal_stack.peek()).numDNA = q;  
+                     (crystal_stack.peek()).numDNA = q;  
 
                     }
                     break;
@@ -897,8 +897,8 @@ public class InputfileParser extends Parser {
                     state._fsp--;
 
 
-                     ((crystal_scope)crystal_stack.peek()).heavyProteinAtomNames = (r!=null?r.names:null);
-                                                  ((crystal_scope)crystal_stack.peek()).heavyProteinAtomNums = (r!=null?r.num:null);    
+                     (crystal_stack.peek()).heavyProteinAtomNames = (r!=null?r.names:null);
+                                                  (crystal_stack.peek()).heavyProteinAtomNums = (r!=null?r.num:null);    
 
                     }
                     break;
@@ -911,8 +911,8 @@ public class InputfileParser extends Parser {
                     state._fsp--;
 
 
-                     ((crystal_scope)crystal_stack.peek()).heavySolutionConcNames = (s!=null?s.names:null);
-                                                  ((crystal_scope)crystal_stack.peek()).heavySolutionConcNums = (s!=null?s.num:null);   
+                     (crystal_stack.peek()).heavySolutionConcNames = (s!=null?s.names:null);
+                                                  (crystal_stack.peek()).heavySolutionConcNums = (s!=null?s.num:null);   
 
                     }
                     break;
@@ -925,7 +925,7 @@ public class InputfileParser extends Parser {
                     state._fsp--;
 
 
-                     ((crystal_scope)crystal_stack.peek()).solFrac = t; 
+                     (crystal_stack.peek()).solFrac = t; 
 
                     }
                     break;
@@ -938,7 +938,7 @@ public class InputfileParser extends Parser {
                     state._fsp--;
 
 
-                     ((crystal_scope)crystal_stack.peek()).pdb = u; 
+                     (crystal_stack.peek()).pdb = u; 
 
                     }
                     break;
@@ -951,7 +951,7 @@ public class InputfileParser extends Parser {
                     state._fsp--;
 
 
-                     ((crystal_scope)crystal_stack.peek()).crystalProperties.put(Crystal.CRYSTAL_WIREFRAME_TYPE, v); 
+                     (crystal_stack.peek()).crystalProperties.put(Crystal.CRYSTAL_WIREFRAME_TYPE, v); 
 
                     }
                     break;
@@ -964,7 +964,7 @@ public class InputfileParser extends Parser {
                     state._fsp--;
 
 
-                     ((crystal_scope)crystal_stack.peek()).crystalProperties.put(Crystal.CRYSTAL_WIREFRAME_FILE, w); 
+                     (crystal_stack.peek()).crystalProperties.put(Crystal.CRYSTAL_WIREFRAME_FILE, w); 
 
                     }
                     break;
@@ -977,7 +977,7 @@ public class InputfileParser extends Parser {
                     state._fsp--;
 
 
-                     ((crystal_scope)crystal_stack.peek()).crystalProperties.put(Crystal.CRYSTAL_ELECTRON_ESCAPE, x); 
+                     (crystal_stack.peek()).crystalProperties.put(Crystal.CRYSTAL_ELECTRON_ESCAPE, x); 
 
                     }
                     break;
@@ -990,7 +990,7 @@ public class InputfileParser extends Parser {
                     state._fsp--;
 
 
-                     ((crystal_scope)crystal_stack.peek()).proteinConc = y;
+                     (crystal_stack.peek()).proteinConc = y;
 
                     }
                     break;
@@ -1003,8 +1003,8 @@ public class InputfileParser extends Parser {
                     state._fsp--;
 
 
-                     ((crystal_scope)crystal_stack.peek()).containerElementNames = (z!=null?z.names:null);
-                                                  ((crystal_scope)crystal_stack.peek()).containerElementNums = (z!=null?z.num:null);    
+                     (crystal_stack.peek()).containerElementNames = (z!=null?z.names:null);
+                                                  (crystal_stack.peek()).containerElementNums = (z!=null?z.num:null);    
 
                     }
                     break;
