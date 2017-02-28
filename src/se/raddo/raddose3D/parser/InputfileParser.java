@@ -2668,7 +2668,7 @@ public class InputfileParser extends Parser {
 
 
          
-                ((beam_scope)beam_stack.peek()).beamProperties = new HashMap<Object, Object>();
+                (beam_stack.peek()).beamProperties = new HashMap<Object, Object>();
 
         try {
             // C:\\Users\\jonathan\\workspace\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:431:2: ( BEAM ( beamLine )+ )
@@ -2714,7 +2714,7 @@ public class InputfileParser extends Parser {
             }
 
              
-                    bObj = beamFactory.createBeam(((beam_scope)beam_stack.peek()).beamType, ((beam_scope)beam_stack.peek()).beamProperties);
+                    bObj = beamFactory.createBeam((beam_stack.peek()).beamType, (beam_stack.peek()).beamProperties);
 
         }
         catch (RecognitionException re) {
@@ -2808,7 +2808,7 @@ public class InputfileParser extends Parser {
 
                     a=(Token)match(input,STRING,FOLLOW_STRING_in_beamLine4260); 
 
-                     ((beam_scope)beam_stack.peek()).beamType = (a!=null?a.getText():null); 
+                     (beam_stack.peek()).beamType = (a!=null?a.getText():null); 
 
                     }
                     break;
@@ -2821,7 +2821,7 @@ public class InputfileParser extends Parser {
                     state._fsp--;
 
 
-                     ((beam_scope)beam_stack.peek()).beamProperties.put(Beam.BEAM_FLUX, b); 
+                     (beam_stack.peek()).beamProperties.put(Beam.BEAM_FLUX, b); 
 
                     }
                     break;
@@ -2834,8 +2834,8 @@ public class InputfileParser extends Parser {
                     state._fsp--;
 
 
-                     ((beam_scope)beam_stack.peek()).beamProperties.put(Beam.BEAM_FWHM_X, (c!=null?c.x:null)); 
-                                                   ((beam_scope)beam_stack.peek()).beamProperties.put(Beam.BEAM_FWHM_Y, (c!=null?c.y:null)); 
+                     (beam_stack.peek()).beamProperties.put(Beam.BEAM_FWHM_X, (c!=null?c.x:null)); 
+                                                   (beam_stack.peek()).beamProperties.put(Beam.BEAM_FWHM_Y, (c!=null?c.y:null)); 
 
                     }
                     break;
@@ -2848,7 +2848,7 @@ public class InputfileParser extends Parser {
                     state._fsp--;
 
 
-                     ((beam_scope)beam_stack.peek()).beamProperties.put(Beam.BEAM_ENERGY, d); 
+                     (beam_stack.peek()).beamProperties.put(Beam.BEAM_ENERGY, d); 
 
                     }
                     break;
@@ -2862,7 +2862,7 @@ public class InputfileParser extends Parser {
 
 
                      if (e != null) {
-                                                    ((beam_scope)beam_stack.peek()).beamProperties.putAll(e);
+                                                    (beam_stack.peek()).beamProperties.putAll(e);
                                                    } 
 
                     }
@@ -2876,7 +2876,7 @@ public class InputfileParser extends Parser {
                     state._fsp--;
 
 
-                     ((beam_scope)beam_stack.peek()).beamProperties.put(Beam.BEAM_EXTFILE, f); 
+                     (beam_stack.peek()).beamProperties.put(Beam.BEAM_EXTFILE, f); 
 
                     }
                     break;
@@ -2889,7 +2889,7 @@ public class InputfileParser extends Parser {
                     state._fsp--;
 
 
-                     ((beam_scope)beam_stack.peek()).beamProperties.putAll(g); 
+                     (beam_stack.peek()).beamProperties.putAll(g); 
 
                     }
                     break;
@@ -3280,8 +3280,8 @@ public class InputfileParser extends Parser {
 
             b=(Token)match(input,FLOAT,FOLLOW_FLOAT_in_wedge5058); 
 
-            ((wedge_scope)wedge_stack.peek()).startAng = Double.parseDouble((a!=null?a.getText():null));
-                                         ((wedge_scope)wedge_stack.peek()).endAng = Double.parseDouble((b!=null?b.getText():null)); 
+            (wedge_stack.peek()).startAng = Double.parseDouble((a!=null?a.getText():null));
+                                         (wedge_stack.peek()).endAng = Double.parseDouble((b!=null?b.getText():null)); 
 
             // C:\\Users\\jonathan\\workspace\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:515:4: ( wedgeLine )+
             int cnt16=0;
@@ -3321,7 +3321,7 @@ public class InputfileParser extends Parser {
             }
 
              
-            wObj = new Wedge(((wedge_scope)wedge_stack.peek()).angRes, ((wedge_scope)wedge_stack.peek()).startAng, ((wedge_scope)wedge_stack.peek()).endAng, ((wedge_scope)wedge_stack.peek()).expTime, ((wedge_scope)wedge_stack.peek()).offsetX, ((wedge_scope)wedge_stack.peek()).offsetY, ((wedge_scope)wedge_stack.peek()).offsetZ, ((wedge_scope)wedge_stack.peek()).translateX, ((wedge_scope)wedge_stack.peek()).translateY, ((wedge_scope)wedge_stack.peek()).translateZ, ((wedge_scope)wedge_stack.peek()).rotationOffset);
+            wObj = new Wedge((wedge_stack.peek()).angRes, (wedge_stack.peek()).startAng, (wedge_stack.peek()).endAng, (wedge_stack.peek()).expTime, (wedge_stack.peek()).offsetX, (wedge_stack.peek()).offsetY, (wedge_stack.peek()).offsetZ, (wedge_stack.peek()).translateX, (wedge_stack.peek()).translateY, (wedge_stack.peek()).translateZ, (wedge_stack.peek()).rotationOffset);
 
         }
         catch (RecognitionException re) {
@@ -3400,7 +3400,7 @@ public class InputfileParser extends Parser {
                     state._fsp--;
 
 
-                    ((wedge_scope)wedge_stack.peek()).expTime =a; 
+                    (wedge_stack.peek()).expTime =a; 
 
                     }
                     break;
@@ -3413,7 +3413,7 @@ public class InputfileParser extends Parser {
                     state._fsp--;
 
 
-                    ((wedge_scope)wedge_stack.peek()).angRes =b; 
+                    (wedge_stack.peek()).angRes =b; 
 
                     }
                     break;
@@ -3426,9 +3426,9 @@ public class InputfileParser extends Parser {
                     state._fsp--;
 
 
-                    ((wedge_scope)wedge_stack.peek()).offsetX =(c!=null?c.x:null);
-                                                 ((wedge_scope)wedge_stack.peek()).offsetY =(c!=null?c.y:null);
-                                                 ((wedge_scope)wedge_stack.peek()).offsetZ =(c!=null?c.z:null); 
+                    (wedge_stack.peek()).offsetX =(c!=null?c.x:null);
+                                                 (wedge_stack.peek()).offsetY =(c!=null?c.y:null);
+                                                 (wedge_stack.peek()).offsetZ =(c!=null?c.z:null); 
 
                     }
                     break;
@@ -3441,9 +3441,9 @@ public class InputfileParser extends Parser {
                     state._fsp--;
 
 
-                    ((wedge_scope)wedge_stack.peek()).translateX =(d!=null?d.x:null);
-                                                 ((wedge_scope)wedge_stack.peek()).translateY =(d!=null?d.y:null);
-                                                 ((wedge_scope)wedge_stack.peek()).translateZ =(d!=null?d.z:null); 
+                    (wedge_stack.peek()).translateX =(d!=null?d.x:null);
+                                                 (wedge_stack.peek()).translateY =(d!=null?d.y:null);
+                                                 (wedge_stack.peek()).translateZ =(d!=null?d.z:null); 
 
                     }
                     break;
@@ -3456,7 +3456,7 @@ public class InputfileParser extends Parser {
                     state._fsp--;
 
 
-                    ((wedge_scope)wedge_stack.peek()).rotationOffset =e; 
+                    (wedge_stack.peek()).rotationOffset =e; 
 
                     }
                     break;
