@@ -126,6 +126,11 @@ public class InputParserTest {
             "DDM is of wrong type");
         match = true;
       }
+      if (me.getKey().equals(Crystal.CRYSTAL_CONTAINER)) {
+        assertNull(me.getValue(),
+            "Crystal container is of wrong type");
+        match = true;
+      }
       if (!match) {
         fail("Unexpected crystal property " + me.getKey() + " set. ("
             + me.getValue() + ")");
@@ -411,6 +416,11 @@ public class InputParserTest {
             "DDM is of wrong type");
         match = true;
       }
+      if (me.getKey().equals(Crystal.CRYSTAL_CONTAINER)) {
+        assertNull(me.getValue(),
+            "Crystal container is of wrong type");
+        match = true;
+      }
       if (!match) {
         fail("Unexpected crystal property " + me.getKey() + " set. ("
             + me.getValue() + ")");
@@ -449,6 +459,11 @@ public class InputParserTest {
       if (me.getKey().equals(Beam.BEAM_COLL_V)) {
         Assertion.equals((Double) me.getValue(), 15,
             "Beam vertical collimation");
+        match = true;
+      }
+      if (me.getKey().equals(Crystal.CRYSTAL_CONTAINER)) {
+        assertNull(me.getValue(),
+            "Crystal container is of wrong type");
         match = true;
       }
       if (!match) {
