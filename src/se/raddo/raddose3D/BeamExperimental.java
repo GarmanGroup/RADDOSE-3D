@@ -41,7 +41,7 @@ public class BeamExperimental implements Beam {
       final Double totalFlux, final Double beamEnergy,
       final Double pixelSizeX,
       final Double pixelSizeY) {
-
+    
     this.dataStructure = datastructure;
     this.beamXSize = (datastructure[0].length + 2) * pixelSizeX;
     this.beamYSize = (datastructure.length + 2) * pixelSizeY;
@@ -97,19 +97,18 @@ public class BeamExperimental implements Beam {
   @Override
   public double beamIntensity(final double coordX, final double coordY,
       final double offAxisUM) {
-
     if (Math.abs(coordX - offAxisUM) <= beamXSize / 2 - pixXSize
         && Math.abs(coordY) <= beamYSize / 2 - pixYSize) {
       /* First find the four nearest voxels */
       double realX = (coordX - offAxisUM + beamXSize / 2);
       double realY = (coordY + beamYSize / 2);
-
+      System.out.println(beamArray);
       int voxelHorizontal = (int) Math.floor(realX / pixXSize - 0.5);
       int voxelVertical = (int) Math.floor(realY / pixYSize - 0.5);
-
-      if (voxelHorizontal < beamArray[0].length
+      if (voxelHorizontal < beamArray[0].length     //null pointer exception here
           && voxelVertical < beamArray.length) {
 
+        
         float fracX = (float) (realX / pixXSize - (voxelHorizontal + 0.5));
         float fracY = (float) (realY / pixYSize - (voxelVertical + 0.5));
 

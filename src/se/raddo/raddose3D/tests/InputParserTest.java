@@ -12,6 +12,7 @@ import org.testng.annotations.*;
 import se.raddo.raddose3D.Beam;
 import se.raddo.raddose3D.BeamFactory;
 import se.raddo.raddose3D.CoefCalcAverage;
+import se.raddo.raddose3D.Container;
 import se.raddo.raddose3D.Crystal;
 import se.raddo.raddose3D.CrystalFactory;
 import se.raddo.raddose3D.DDMSimple;
@@ -177,6 +178,11 @@ public class InputParserTest {
             "Beam vertical collimation");
         match = true;
       }
+      if (me.getKey().equals(Crystal.CRYSTAL_CONTAINER)) {
+        assertNull(me.getValue(),
+            "Crystal container is of wrong type");
+        match = true;
+      }
       if (!match) {
         fail("Unexpected beam property " + me.getKey() + " set. ("
             + me.getValue() + ")");
@@ -299,6 +305,11 @@ public class InputParserTest {
       if (me.getKey().equals(Crystal.CRYSTAL_DDM)) {
         assertTrue(me.getValue() instanceof DDMSimple,
             "DDM is of wrong type");
+        match = true;
+      }
+      if (me.getKey().equals(Crystal.CRYSTAL_CONTAINER)) {
+        assertNull(me.getValue(),
+            "Crystal container is of wrong type");
         match = true;
       }
       if (!match) {

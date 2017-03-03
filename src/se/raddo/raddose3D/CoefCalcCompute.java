@@ -217,7 +217,7 @@ public class CoefCalcCompute extends CoefCalc {
     absCoeff = crossSectionPhotoElectric / UNITSPERMILLIUNIT;
     absCoeffphoto = absCoeff; // This holds value for only Photelectric
     absCoeffcomp = crossSectionCompton / UNITSPERMILLIUNIT;  //This holds value for only Compton
-    absCoeff = absCoeff + absCoeffcomp; //Adds Compton and Photoelectric
+    //SabsCoeff = absCoeff + absCoeffcomp; //Adds Compton and Photoelectric
     attCoeff = crossSectionTotal / UNITSPERMILLIUNIT;
     elasCoeff = crossSectionCoherent / UNITSPERMILLIUNIT;
   }

@@ -219,8 +219,33 @@ public class Element {
         sum += coeffs[i] * Math.pow(Math.log(energy), i);
       }
     }
-
     return Math.exp(sum);
+  }
+  
+  private double ComptonAbsorption(final double energy, final AbsorptionEdge edge) {
+    // calculation from logarithmic coefficients in McMaster tables.
+
+    double sum = 0;
+    double newenergy = 0;
+    newenergy = getComptonElectronEnergy(energy);
+    Double[] coeffs = coefficients.get(edge);
+
+    for (int i = 0; i < POLYNOMIAL_EXPANSION; i++) {
+      if (energy == 1) {
+        /*
+         * This is actually wrong, as it causes a discontinuity in the
+         * cross-section function. However, this is how Pathikrit Bandyopadhyay
+         * chose to implement it, so it stays. It also only affects values at
+         * E = 1keV.
+         */
+        sum += coeffs[i];
+      } else {
+        sum += coeffs[i] * Math.pow(Math.log(newenergy), i);
+        System.out.println(newenergy);
+      }
+    }
+    return Math.exp(sum);
+
   }
 
   /**
@@ -235,24 +260,31 @@ public class Element {
    */
   public Map<CrossSection, Double> getAbsCoefficients(final double energy) {
     double photoelectric = getPhotoelectricXSForEnergy(energy);
+    double comptonelectron = getComptonElectronEnergy(energy);
 
     double elastic = 0;
     if (elementData.get(ElementDatabase.DatabaseFields.COHERENT_COEFF_0) != 0) {
       elastic = baxForEdge(energy, AbsorptionEdge.C);
     }
 
-    double binx = 0;   //   Calculates Compton
+    double comptonAttenuation = 0;   //   Calculates Compton attenuation, ie all energy that can interact with the crystal by Compton
     if (elementData.get(ElementDatabase.DatabaseFields.INCOHERENT_COEFF_0) != 0)
     {
-      binx = baxForEdge(energy, AbsorptionEdge.I);
+      comptonAttenuation = baxForEdge(energy, AbsorptionEdge.I);
+    }
+    
+    double comtptonAbsorption = 0;
+    if (elementData.get(ElementDatabase.DatabaseFields.INCOHERENT_COEFF_0) != 0)
+    {
+      comtptonAbsorption = ComptonAbsorption(energy, AbsorptionEdge.I); //Must change the method called here
     }
 
-    double attenuation = photoelectric + elastic + binx;
+    double attenuation = photoelectric + elastic + comptonAttenuation;
 
     Map<CrossSection, Double> results = new HashMap<CrossSection, Double>();
     results.put(CrossSection.COHERENT, elastic);
     results.put(CrossSection.PHOTOELECTRIC, photoelectric); // mu, abs coeff.
-    results.put(CrossSection.COMPTON,binx);      // Added for COMPTON
+    results.put(CrossSection.COMPTON,comptonAttenuation);      // Added for COMPTON
     results.put(CrossSection.TOTAL, attenuation);
     return results;
   }
@@ -320,6 +352,16 @@ public class Element {
     }
 
     return photoelectric;
+  }
+  
+  private double getComptonElectronEnergy(final double energy){     //Calculates the compton electron energy using equation 6: Paithankar 2010
+    double electronweight = 9.10938356E-31;
+    double csquared = 3E8*3E8;
+    double mcsquared = electronweight * csquared;
+    double energyinjoules = energy * 1.60218e-16;
+    double electronenergy = mcsquared / (2*energyinjoules + mcsquared);
+    electronenergy = energyinjoules * (1 - (Math.pow(electronenergy, 0.5)));
+    return electronenergy;  
   }
 
   /**
