@@ -241,7 +241,6 @@ public class Element {
         sum += coeffs[i];
       } else {
         sum += coeffs[i] * Math.pow(Math.log(newenergy), i);
-        System.out.println(newenergy);
       }
     }
     return Math.exp(sum);

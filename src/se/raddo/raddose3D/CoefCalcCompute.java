@@ -339,7 +339,7 @@ public class CoefCalcCompute extends CoefCalc {
             + "Crystal coefficients calculated with RADDOSE-3D. %n"
             + "Absorption Coefficient: %.2e /um.%n"
             + "Photoelectric Absorption: %.2e /um.%n"
-            + "Compton Inelastic Scattering: %.2e /um.%n"
+            + "Compton Inelastic Scattering (added to attenuation but not absorption): %.2e /um.%n"
             + "Attenuation Coefficient: %.2e /um.%n"
             + "Elastic Coefficient: %.2e /um.%n"
             + "Density: %.2f g/ml.%n",

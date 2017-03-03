@@ -102,7 +102,6 @@ public class BeamExperimental implements Beam {
       /* First find the four nearest voxels */
       double realX = (coordX - offAxisUM + beamXSize / 2);
       double realY = (coordY + beamYSize / 2);
-      System.out.println(beamArray);
       int voxelHorizontal = (int) Math.floor(realX / pixXSize - 0.5);
       int voxelVertical = (int) Math.floor(realY / pixYSize - 0.5);
       if (voxelHorizontal < beamArray[0].length     //null pointer exception here

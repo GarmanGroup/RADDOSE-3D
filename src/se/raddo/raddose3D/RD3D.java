@@ -11,6 +11,7 @@ import java.util.List;
  * RADDOSE-3D main class for command line invocation.
  */
 public final class RD3D {
+  
   /** Conversion factor for ns/s. */
   private static final long NANOSECONDSPERSECOND = 1000000000L;
   /** List of prepared input modules for the simulation. */
