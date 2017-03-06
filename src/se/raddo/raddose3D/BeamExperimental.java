@@ -16,6 +16,7 @@ public class BeamExperimental implements Beam {
 
 
   private double[][] beamArray;
+  double[][] beamArrayWithBorders;
   private final Double[][] dataStructure;
 
   /**
@@ -56,15 +57,12 @@ public class BeamExperimental implements Beam {
    */
   @Override
   public void generateBeamArray() {
-
     //set beam sum to zero
     beamSum = 0;
-    
     // add a zero border
     int sizeHoriz = dataStructure[0].length;
     int sizeVert = dataStructure.length;
-
-    double[][] beamArrayWithBorders = new double[sizeVert + 2][sizeHoriz + 2];
+    beamArrayWithBorders = new double[sizeVert + 2][sizeHoriz + 2];
 
     for (int i = 0; i < sizeVert + 2; i++) {
       for (int j = 0; j < sizeHoriz + 2; j++) {
@@ -86,7 +84,6 @@ public class BeamExperimental implements Beam {
             / (beamSum * pixXSize * pixYSize);
       }
     }
-
     this.beamArray = beamArrayWithBorders;
   }
 
@@ -97,6 +94,7 @@ public class BeamExperimental implements Beam {
   @Override
   public double beamIntensity(final double coordX, final double coordY,
       final double offAxisUM) {
+    beamArray = beamArrayWithBorders;
     if (Math.abs(coordX - offAxisUM) <= beamXSize / 2 - pixXSize
         && Math.abs(coordY) <= beamYSize / 2 - pixYSize) {
       /* First find the four nearest voxels */
@@ -106,8 +104,6 @@ public class BeamExperimental implements Beam {
       int voxelVertical = (int) Math.floor(realY / pixYSize - 0.5);
       if (voxelHorizontal < beamArray[0].length     //null pointer exception here
           && voxelVertical < beamArray.length) {
-
-        
         float fracX = (float) (realX / pixXSize - (voxelHorizontal + 0.5));
         float fracY = (float) (realY / pixYSize - (voxelVertical + 0.5));
 
