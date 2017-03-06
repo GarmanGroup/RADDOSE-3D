@@ -33,6 +33,7 @@ public class Element {
   /**
    * List of absorption edges.
    */
+  
   private enum AbsorptionEdge {
     /** innermost electron shell, 1 shell. */
     K,
@@ -226,8 +227,8 @@ public class Element {
     // calculation from logarithmic coefficients in McMaster tables.
 
     double sum = 0;
-    double newenergy = 0;
-    newenergy = getComptonElectronEnergy(energy);
+    double electronenergy = 0;
+    electronenergy = getComptonElectronEnergy(energy);
     Double[] coeffs = coefficients.get(edge);
 
     for (int i = 0; i < POLYNOMIAL_EXPANSION; i++) {
@@ -240,7 +241,7 @@ public class Element {
          */
         sum += coeffs[i];
       } else {
-        sum += coeffs[i] * Math.pow(Math.log(newenergy), i);
+        sum += coeffs[i] * Math.pow(Math.log(electronenergy), i);
       }
     }
     return Math.exp(sum);
@@ -259,7 +260,6 @@ public class Element {
    */
   public Map<CrossSection, Double> getAbsCoefficients(final double energy) {
     double photoelectric = getPhotoelectricXSForEnergy(energy);
-    double comptonelectron = getComptonElectronEnergy(energy);
 
     double elastic = 0;
     if (elementData.get(ElementDatabase.DatabaseFields.COHERENT_COEFF_0) != 0) {
@@ -272,18 +272,20 @@ public class Element {
       comptonAttenuation = baxForEdge(energy, AbsorptionEdge.I);
     }
     
-    double comtptonAbsorption = 0;
+    double comtptonAbsorption = 0;  //  Calculates the energy that is actually deposited into the crystal via Compton
     if (elementData.get(ElementDatabase.DatabaseFields.INCOHERENT_COEFF_0) != 0)
     {
-      comtptonAbsorption = ComptonAbsorption(energy, AbsorptionEdge.I); //Must change the method called here
+      double electronenergy = 0;
+      electronenergy = getComptonElectronEnergy(energy);
+      comtptonAbsorption = ComptonAbsorption(electronenergy, AbsorptionEdge.I);
     }
-
+    
     double attenuation = photoelectric + elastic + comptonAttenuation;
 
     Map<CrossSection, Double> results = new HashMap<CrossSection, Double>();
     results.put(CrossSection.COHERENT, elastic);
     results.put(CrossSection.PHOTOELECTRIC, photoelectric); // mu, abs coeff.
-    results.put(CrossSection.COMPTON,comptonAttenuation);      // Added for COMPTON
+    results.put(CrossSection.COMPTON,comtptonAbsorption);      // Added for COMPTON
     results.put(CrossSection.TOTAL, attenuation);
     return results;
   }
@@ -353,13 +355,14 @@ public class Element {
     return photoelectric;
   }
   
-  private double getComptonElectronEnergy(final double energy){     //Calculates the compton electron energy using equation 6: Paithankar 2010
+  public double getComptonElectronEnergy(final double energy){     //Calculates the compton electron energy using equation 6: Paithankar 2010
     double electronweight = 9.10938356E-31;
     double csquared = 3E8*3E8;
     double mcsquared = electronweight * csquared;
     double energyinjoules = energy * 1.60218e-16;
     double electronenergy = mcsquared / (2*energyinjoules + mcsquared);
     electronenergy = energyinjoules * (1 - (Math.pow(electronenergy, 0.5)));
+    electronenergy = electronenergy * 6.242e+15;
     return electronenergy;  
   }
 
@@ -396,4 +399,5 @@ public class Element {
   public Double getAtomicWeightInGrams() {
     return getAtomicWeight() * ATOMIC_MASS_UNIT;
   }
+  
 }

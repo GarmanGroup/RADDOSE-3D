@@ -56,7 +56,7 @@ public class BeamExperimental implements Beam {
    * Generate the beam array from the other instance variables
    */
   @Override
-  public void generateBeamArray() {
+  public void generateBeamArray() {     //This has been added as a new method so is no longer automatically called by BeamExperimental
     //set beam sum to zero
     beamSum = 0;
     // add a zero border
