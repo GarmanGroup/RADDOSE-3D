@@ -36,6 +36,15 @@ public abstract class CoefCalc {
   public abstract double getElasticCoefficient();
 
   /**
+   * Returns the current inelastic X-ray (compton, incoherent) scattering
+   * coefficient.
+   * 
+   * @return
+   *         inelastic scattering coefficient in units m^-1 (tbc)
+   */
+  public abstract double getInelasticCoefficient();
+  
+  /**
    * Returns the density of the crystal.
    * 
    * @return

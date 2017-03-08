@@ -12,7 +12,7 @@ public class CoefCalcCompute extends CoefCalc {
   /**
    * Identified coefficients and density from last program run. Final variables.
    */
-  private double                     absCoeff, absCoeffcomp, absCoeffphoto, attCoeff, elasCoeff, density,
+  private double                     absCoeff, attCoeff, elasCoeff, density, compattenuation,
                                      cellVolume; //absCoeff2 added for Compton
 
   /**
@@ -194,7 +194,7 @@ public class CoefCalcCompute extends CoefCalc {
     double crossSectionPhotoElectric = 0;
     double crossSectionCoherent = 0;
     double crossSectionTotal = 0;
-    double crossSectionCompton = 0;   // Added for COMPTON
+    double crossSectionComptonAttenuation = 0;
 
     // take cross section contributions from each individual atom
     // weighted by the cell volume
@@ -210,17 +210,15 @@ public class CoefCalcCompute extends CoefCalc {
       crossSectionTotal += totalAtoms(e)
           * cs.get(CrossSection.TOTAL) / cellVolume
           / UNITSPERDECIUNIT;
-      crossSectionCompton += totalAtoms(e)   // Added for COMPTON
-          * cs.get(CrossSection.COMPTON) / cellVolume
-          / UNITSPERDECIUNIT;
+      crossSectionComptonAttenuation += totalAtoms(e)   // Added for COMPTON
+          * cs.get(CrossSection.COMPTON_ATTENUATION) / cellVolume
+          / UNITSPERDECIUNIT;     
     }
     
     absCoeff = crossSectionPhotoElectric / UNITSPERMILLIUNIT;
-    absCoeffphoto = absCoeff; // This holds value for only Photelectric
-    absCoeffcomp = crossSectionCompton / UNITSPERMILLIUNIT;  //This holds value for only Compton
-    absCoeff = absCoeff + absCoeffcomp; //Adds Compton and Photoelectric
     attCoeff = crossSectionTotal / UNITSPERMILLIUNIT;
     elasCoeff = crossSectionCoherent / UNITSPERMILLIUNIT;
+    compattenuation = crossSectionComptonAttenuation / UNITSPERMILLIUNIT;
   }
 
   @Override
@@ -236,6 +234,11 @@ public class CoefCalcCompute extends CoefCalc {
   @Override
   public double getElasticCoefficient() {
     return elasCoeff;
+  }
+  
+  @Override
+  public double getInelasticCoefficient() {
+    return compattenuation;
   }
 
   @Override
@@ -337,14 +340,15 @@ public class CoefCalcCompute extends CoefCalc {
   public String toString() {
     return String.format(
           "%n"
-            + "Crystal coefficients calculated with RADDOSE-3D. %n"
-            + "Absorption Coefficient: %.2e /um.%n"
-            + "Photoelectric Absorption: %.2e /um.%n"
-            + "Compton Inelastic Scattering (added to attenuation but not absorption): %.2e /um.%n"
-            + "Attenuation Coefficient: %.2e /um.%n"
+            + "Crystal coefficients calculated with RADDOSE-3D: %n"
+            + "%n"
+            + "Photoelectric Coefficient: %.2e /um.%n"
+            + "Inelastic Coefficient: %.2e /um.%n"
             + "Elastic Coefficient: %.2e /um.%n"
+            + "Attenuation Coefficient: %.2e /um.%n"
+            + "%n"
             + "Density: %.2f g/ml.%n",
-        absCoeff, absCoeffphoto, absCoeffcomp, attCoeff, elasCoeff, density);
+       absCoeff, compattenuation, elasCoeff, attCoeff, density);
   }
 
   /**

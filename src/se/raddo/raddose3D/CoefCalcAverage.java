@@ -74,4 +74,10 @@ public class CoefCalcAverage extends CoefCalc {
   public void updateCoefficients(final Beam b) {
     // Does nothing
   }
+
+  @Override
+  public double getInelasticCoefficient() {
+    // Added to prevent error
+    return 0;
+  }
 }

@@ -357,6 +357,18 @@ public abstract class Crystal {
         // Voxel mass: 1um^3/1m/ml
         // (= 1e-18/1e3) / [volume (um^-3) *density (g/ml)]
         * 1e-6; // MGy
+    
+    final double fluenceToDoseFactorCompton = -1
+    * Math.expm1(-1 * coefCalc.getInelasticCoefficient()
+        / getCrystalPixPerUM())
+    // exposure for the Voxel (J) * fraction absorbed by voxel
+    / (1e-15 * (Math.pow(getCrystalPixPerUM(), -3) * coefCalc
+        .getDensity()))
+    // Voxel mass: 1um^3/1m/ml
+    // (= 1e-18/1e3) / [volume (um^-3) *density (g/ml)]
+    * 1e-6; // MGy
+    //
+       
     final double fluenceToElasticFactor = -1
         * Math.expm1(-1 * coefCalc.getElasticCoefficient()
         / getCrystalPixPerUM())
@@ -415,20 +427,30 @@ public abstract class Crystal {
                * Assigning exposure (joules incident) and dose (J/kg absorbed)
                * to the voxel.
                */
-
-              double voxImageFluence =
+              double voxImageFluence =     // Attenuates the beam for absorption in joules 
                   unattenuatedBeamIntensity * beamAttenuationFactor
-                      * Math.exp(depth * beamAttenuationExpFactor);
-              // Attenuates the beam for absorption
+                      * Math.exp(depth * beamAttenuationExpFactor);              
+              
+              double electronweight = 9.10938356E-31;
+              double csquared = 3E8*3E8;
+              double beamenergy = (beam.getPhotonEnergy() * Beam.KEVTOJOULES);
+              double mcsquared = electronweight * csquared;
+              double voxImageElectronEnergyDose = mcsquared / (2*beamenergy + mcsquared);
+              voxImageElectronEnergyDose = (beamenergy * (1 - (Math.pow(voxImageElectronEnergyDose, 0.5))));   //Compton electron energy in joules          
+ 
+              double numberofphotons = voxImageFluence / beamenergy; //This gives I0 in equation 9 in Karthik 2010, dividing by beam energy leaves photons per um^2/s
 
               double voxImageDose = fluenceToDoseFactor * voxImageFluence;
-              // MGy
+              
+              double voxImageDoseCompton = fluenceToDoseFactorCompton * voxImageElectronEnergyDose * numberofphotons;  
+              //Use the Compton electron energy instead of voxImageFluence, this is why the number of photons per um^2/s is needed
 
               double voxElasticYield = fluenceToElasticFactor * voxImageFluence;
 
               if (voxImageDose > 0) {
                 addFluence(i, j, k, voxImageFluence);
                 addDose(i, j, k, voxImageDose);
+                //addDose(i, j, k, voxImageDoseCompton);
                 addElastic(i, j, k, voxElasticYield);
               } else if (voxImageDose < 0) {
                 throw new ArithmeticException(

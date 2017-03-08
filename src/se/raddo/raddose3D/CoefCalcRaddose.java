@@ -341,4 +341,10 @@ public class CoefCalcRaddose extends CoefCalc {
   public static final void setRADDOSEExecutable(final String pathToExecutable) {
     raddosePathOverride = pathToExecutable;
   }
+
+  @Override
+  public double getInelasticCoefficient() {
+    // Added to prevent error
+    return 0;
+  }
 }
