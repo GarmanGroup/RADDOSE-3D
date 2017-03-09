@@ -437,20 +437,19 @@ public abstract class Crystal {
               double mcsquared = electronweight * csquared;
               double voxImageElectronEnergyDose = mcsquared / (2*beamenergy + mcsquared);
               voxImageElectronEnergyDose = (beamenergy * (1 - (Math.pow(voxImageElectronEnergyDose, 0.5))));   //Compton electron energy in joules          
- 
+              
               double numberofphotons = voxImageFluence / beamenergy; //This gives I0 in equation 9 in Karthik 2010, dividing by beam energy leaves photons per um^2/s
-
               double voxImageDose = fluenceToDoseFactor * voxImageFluence;
               
-              double voxImageDoseCompton = fluenceToDoseFactorCompton * voxImageElectronEnergyDose * numberofphotons;  
-              //Use the Compton electron energy instead of voxImageFluence, this is why the number of photons per um^2/s is needed
-
+              double voxImageComptonFluence = numberofphotons * voxImageElectronEnergyDose; //Re-calculate voxImageFluence using Compton electron energy
+              double voxImageDoseCompton = fluenceToDoseFactorCompton * voxImageComptonFluence;  
+              
               double voxElasticYield = fluenceToElasticFactor * voxImageFluence;
 
               if (voxImageDose > 0) {
                 addFluence(i, j, k, voxImageFluence);
                 addDose(i, j, k, voxImageDose);
-                //addDose(i, j, k, voxImageDoseCompton);
+                addDose(i, j, k, voxImageDoseCompton);
                 addElastic(i, j, k, voxElasticYield);
               } else if (voxImageDose < 0) {
                 throw new ArithmeticException(
@@ -464,6 +463,9 @@ public abstract class Crystal {
 
               // Fluence times the fraction of the beam absorbed by the voxel
               double absorbedEnergy = voxImageFluence * energyPerFluence;
+              double comptonabsorbedEnergy = voxImageComptonFluence * energyPerFluence;
+              
+              absorbedEnergy = absorbedEnergy + comptonabsorbedEnergy;
 
               for (ExposeObserver eo : exposureObservers) {
                 eo.exposureObservation(anglenum, i, j, k, voxImageDose,
