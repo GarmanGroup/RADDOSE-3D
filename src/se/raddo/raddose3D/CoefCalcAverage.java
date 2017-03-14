@@ -94,22 +94,10 @@ public class CoefCalcAverage extends CoefCalc {
   }
 
   @Override
-  public double getComptonCoefficient() {
+  public double getInelasticCoefficient() {
 /*    Does nothing, needed to prevent error in this class when Compton was added, 
        Compton is already included in ABSORPTION_COEFFICIENT in this class;*/
     return 0;
   }
 
-  @Override
-  public double getRatioPhotElectrontoCompton() {
- // Does nothing, needed to prevent error in this class when Ratio was added, this would never be called from here;
-    return 0;
-  }
-
-  @Override
-  public double getPhotoCoefficient() {
-    /*    Does nothing, needed to prevent error in this class when Photoelectric was added as an individual coefficient, 
-    Photoelectric is already included in ABSORPTION_COEFFICIENT in this class;*/
-    return 0;
-  }
 }

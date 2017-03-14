@@ -80,9 +80,9 @@ public class Element {
      */
     PHOTOELECTRIC,
     /**
-     * Cross-section for Compton scattering
+     * Cross-section for Inelastic scattering
      */
-    COMPTON,      //************This added for COMPTON**************    
+    INELASTIC,      //************This added for COMPTON**************    
     /**
      * Cross-section for coherent (elastic) scattering.
      */
@@ -277,7 +277,7 @@ public class Element {
     Map<CrossSection, Double> results = new HashMap<CrossSection, Double>();
     results.put(CrossSection.COHERENT, elastic);
     results.put(CrossSection.PHOTOELECTRIC, photoelectric); // mu, abs coeff.
-    results.put(CrossSection.COMPTON,binx);      // Added for COMPTON
+    results.put(CrossSection.INELASTIC,binx);      // Added for COMPTON
     results.put(CrossSection.TOTAL, attenuation);
     
     return results;

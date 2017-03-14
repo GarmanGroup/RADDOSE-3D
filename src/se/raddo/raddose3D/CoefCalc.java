@@ -36,32 +36,13 @@ public abstract class CoefCalc {
   public abstract double getElasticCoefficient();
   
   /**
-   * Returns the current Photoelectron effect
+   * Returns the current Inelastic scattering
    * coefficient.
    * 
    * @return
-   *         Photoelectron effect coefficient in units m^-1 (tbc)
-   *         **/
-  
-  public abstract double getPhotoCoefficient();
-  
-  /**
-   * Returns the current Compton scattering
-   * coefficient.
-   * 
-   * @return
-   *         compton scattering coefficient in units m^-1 (tbc)
+   *         Inelastic scattering coefficient in units m^-1 (tbc)
    */
-  public abstract double getComptonCoefficient();
-  
-  
-  /**
-   * Returns the ratio of photoelectric to compton scattering.
-   * 
-   * @return
-   *         ratio
-   */
-  public abstract double getRatioPhotElectrontoCompton();
+  public abstract double getInelasticCoefficient();
 
   /**
    * Returns the density of the crystal.

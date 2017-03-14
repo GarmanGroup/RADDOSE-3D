@@ -157,7 +157,7 @@ public class CoefCalcCompute extends CoefCalc {
   private final ElementDatabase      elementDB;
   
   private static final String        PHOTOELECTRIC                = "Photoelectric";
-  private static final String        COMPTON                      = "Compton";
+  private static final String        INELASTIC                      = "Inelastic";
   private static final String        ELASTIC                      = "Elastic";
   private static final String        TOTAL                        = "Total";
   private static final String        PHOTOCOMP                    = "Photocomp";
@@ -223,7 +223,7 @@ public class CoefCalcCompute extends CoefCalc {
     Map<String, Double> absCoefficients = calculateCoefficients(b.getPhotonEnergy());
     attCoeff = absCoefficients.get(TOTAL);
     elasCoeff = absCoefficients.get(ELASTIC);
-    absCoeffcomp = absCoefficients.get(COMPTON);
+    absCoeffcomp = absCoefficients.get(INELASTIC);
     absCoeffphoto = absCoefficients.get(PHOTOELECTRIC);
     absphotocomp = absCoefficients.get(PHOTOCOMP); 
   }
@@ -243,7 +243,7 @@ public class CoefCalcCompute extends CoefCalc {
     double crossSectionPhotoElectric = 0;
     double crossSectionCoherent = 0;
     double crossSectionTotal = 0;
-    double crossSectionCompton = 0;   // Added for COMPTON
+    double crossSectionInelastic = 0;   // Added for COMPTON
     double photocomp = 0;    
 
     // take cross section contributions from each individual atom
@@ -260,20 +260,20 @@ public class CoefCalcCompute extends CoefCalc {
       crossSectionTotal += totalAtoms(e)
           * cs.get(CrossSection.TOTAL) / cellVolume
           / UNITSPERDECIUNIT;
-      crossSectionCompton += totalAtoms(e)   // Added for COMPTON
-          * cs.get(CrossSection.COMPTON) / cellVolume
+      crossSectionInelastic += totalAtoms(e)   // Added for COMPTON
+          * cs.get(CrossSection.INELASTIC) / cellVolume
           / UNITSPERDECIUNIT;
     }
     crossSectionPhotoElectric = crossSectionPhotoElectric / UNITSPERMILLIUNIT;
     crossSectionTotal = crossSectionTotal / UNITSPERMILLIUNIT;
     crossSectionCoherent = crossSectionCoherent / UNITSPERMILLIUNIT;
-    crossSectionCompton = crossSectionCompton/ UNITSPERMILLIUNIT;
-    photocomp = crossSectionCompton + crossSectionPhotoElectric;
+    crossSectionInelastic = crossSectionInelastic/ UNITSPERMILLIUNIT;
+    photocomp = crossSectionInelastic + crossSectionPhotoElectric;
     
     absCoeffs.put(PHOTOELECTRIC, crossSectionPhotoElectric);
     absCoeffs.put(ELASTIC, crossSectionCoherent);
     absCoeffs.put(TOTAL, crossSectionTotal);
-    absCoeffs.put(COMPTON, crossSectionCompton);
+    absCoeffs.put(INELASTIC, crossSectionInelastic);
     absCoeffs.put(PHOTOCOMP, photocomp);
 /*    System.out.println(absCoeffs);
     System.out.println("entire");*/
@@ -300,7 +300,7 @@ public class CoefCalcCompute extends CoefCalc {
     double crossSectionPhotoElectric = 0;
     double crossSectionCoherent = 0;
     double crossSectionTotal = 0;
-    double crossSectionCompton = 0;   // Added for COMPTON
+    double crossSectionInelastic = 0;   // Added for COMPTON
     double photocomp = 0;
     
 
@@ -317,21 +317,21 @@ public class CoefCalcCompute extends CoefCalc {
     crossSectionTotal += totalAtoms(element)
         * cs.get(CrossSection.TOTAL) / cellVolume
         / UNITSPERDECIUNIT;
-    crossSectionCompton += totalAtoms(element)   // Added for COMPTON
-        * cs.get(CrossSection.COMPTON) / cellVolume
+    crossSectionInelastic += totalAtoms(element)   // Added for COMPTON
+        * cs.get(CrossSection.INELASTIC) / cellVolume
         / UNITSPERDECIUNIT;
     
     
     crossSectionPhotoElectric = crossSectionPhotoElectric / UNITSPERMILLIUNIT;
     crossSectionTotal = crossSectionTotal / UNITSPERMILLIUNIT;
     crossSectionCoherent = crossSectionCoherent / UNITSPERMILLIUNIT;
-    crossSectionCompton = crossSectionCompton/ UNITSPERMILLIUNIT;
-    photocomp = crossSectionCompton + crossSectionPhotoElectric;
+    crossSectionInelastic = crossSectionInelastic/ UNITSPERMILLIUNIT;
+    photocomp = crossSectionInelastic + crossSectionPhotoElectric;
     
     absCoeffs.put(PHOTOELECTRIC, crossSectionPhotoElectric);
     absCoeffs.put(ELASTIC, crossSectionCoherent);
     absCoeffs.put(TOTAL, crossSectionTotal);
-    absCoeffs.put(COMPTON, crossSectionCompton);
+    absCoeffs.put(INELASTIC, crossSectionInelastic);
     absCoeffs.put(PHOTOCOMP, photocomp);
 /*    System.out.println(absCoeffs);
     System.out.println("individual");*/
@@ -517,16 +517,11 @@ public class CoefCalcCompute extends CoefCalc {
 
   @Override
   public double getAbsorptionCoefficient() {
-    return absphotocomp;
-  }
-  
-  @Override
-  public double getPhotoCoefficient() {
     return absCoeffphoto;
   }
   
   @Override
-  public double getComptonCoefficient() {
+  public double getInelasticCoefficient() {
     return absCoeffcomp;
   }
 
@@ -543,15 +538,6 @@ public class CoefCalcCompute extends CoefCalc {
   @Override
   public double getDensity() {
     return density;
-  }
-  
-  @Override
-  public double getRatioPhotElectrontoCompton(){
-    double photoAbsorption = getPhotoCoefficient();
-    double comptonAbsortion = getComptonCoefficient();
-    double Total = photoAbsorption + comptonAbsortion;
-    double ratio = (photoAbsorption / Total);
-    return ratio;
   }
   
   /**
@@ -649,24 +635,12 @@ public class CoefCalcCompute extends CoefCalc {
     return String.format(
         "%n"
             + "Crystal coefficients calculated with RADDOSE-3D. %n"
-            + "Absorption Coefficient: %.2e /um.%n"
-            + "Photelectric: %.2e /um.%n"
-            + "Compton: %.2e /um.%n"
-            + "Attenuation Coefficient: %.2e /um.%n"
+            + "Photelectric Coefficient: %.2e /um.%n"
+            + "Inelastic Coefficient: %.2e /um.%n"
             + "Elastic Coefficient: %.2e /um.%n"
+            + "Attenuation Coefficient: %.2e /um.%n"
             + "Density: %.2f g/ml.%n",
-        absphotocomp, absCoeffphoto, absCoeffcomp, attCoeff, elasCoeff, density);
-  }
-  protected void getCompRatio(){
-    double ratio = absCoeffcomp/absphotocomp;
-    System.out.println("here!!!!!!!!!!!!!!!!!");
-    System.out.println(elasCoeff);
-    System.out.println(ratio);
-  }
-
-  public double getPhotoRatio(){
-    double ratio = absCoeffphoto/absphotocomp; 
-    return ratio;
+        absCoeffphoto, absCoeffcomp, elasCoeff, attCoeff, density);
   }
     
   /**

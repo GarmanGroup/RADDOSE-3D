@@ -361,20 +361,9 @@ public class CoefCalcRaddose extends CoefCalc {
   }
 
   @Override
-  public double getComptonCoefficient() {
+  public double getInelasticCoefficient() {
  // Does nothing, needed to prevent error in this class when Compton was added;
     return 0;
   }
 
-  @Override
-  public double getRatioPhotElectrontoCompton() {
- // Does nothing, needed to prevent error in this class when Ratio was added;
-    return 0;
-  }
-
-  @Override
-  public double getPhotoCoefficient() {
- // Does nothing, needed to prevent error in this class when Photo was added as an individual coefficient;
-    return 0;
-  }
 }
