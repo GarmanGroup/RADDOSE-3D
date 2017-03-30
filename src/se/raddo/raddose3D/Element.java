@@ -110,9 +110,9 @@ public class Element {
     elementData = new HashMap<ElementDatabase.DatabaseFields, Double>(
         elementInformation);
     coefficients = edgeCoefficients(elementInformation);
-    double test = getKEdgeRatio();
-/*    System.out.println("HERE!!!!!!!!!!");
-    System.out.println(test);*/
+  }
+  
+  public void EdgeRatio (){
     probKShellIonisation = 1 - 1 / getKEdgeRatio();
     probL1ShellIonisation = 1 - 1 / getL1EdgeRatio();
     probL2ShellIonisation = 1 - 1 / getL2EdgeRatio();

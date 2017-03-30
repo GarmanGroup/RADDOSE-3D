@@ -384,9 +384,6 @@ public abstract class Crystal {
 
     double fractionEscapedDose = totalEscapedDose/totalCrystalDose; //!!!!!!!!!Whats this? This towards the end?
     
-    System.out.println("\nHERE!!!!!");
-    System.out.println(totalEscapedDose);
-    
     for (int i = 0; i < getCrystSizeVoxels()[0]; i++) {
       for (int j = 0; j < getCrystSizeVoxels()[1]; j++) {
         for (int k = 0; k < getCrystSizeVoxels()[2]; k++) {
