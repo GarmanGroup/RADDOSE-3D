@@ -69,7 +69,7 @@ public abstract class Crystal {
   private double totalCrystalDose                               = 0;
   
   /** The mass of each voxel in the crystal */
-  private final double           voxelMass;
+  private double voxelMass                                      = 0;
 
   /**
    * whether photoelectron escape should be included
@@ -112,12 +112,6 @@ public abstract class Crystal {
     } else {
       coefCalc = (CoefCalc) properties.get(Crystal.CRYSTAL_COEFCALC);
     }
-
-    double crystalPixPerUM = (Double) properties.get(Crystal.CRYSTAL_RESOLUTION);
-    // Calculate voxel mass (kg) = voxelVolume (um^3) * density (g/cm^3) *
-    //                             unitConversionFactor
-    voxelMass = UNIT_CONVERSION * (Math.pow(crystalPixPerUM, -3) *
-        coefCalc.getDensity());
     
     String pEE = (String) properties.get(CRYSTAL_ELECTRON_ESCAPE);
     photoElectronEscape = ("TRUE".equals(pEE));
@@ -439,6 +433,11 @@ public abstract class Crystal {
             * 1e-6; // MGy
             //
 
+        // Calculate voxel mass (kg) = voxelVolume (um^3) * density (g/cm^3) *
+        //                             unitConversionFactor
+        voxelMass = UNIT_CONVERSION * (Math.pow(getCrystalPixPerUM(), -3) *
+            coefCalc.getDensity());
+                
     final double absorptionFractionPerKg =
         absorptionFraction / voxelMass * GY_TO_MGY;   
 
