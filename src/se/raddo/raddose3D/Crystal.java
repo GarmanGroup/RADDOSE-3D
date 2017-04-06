@@ -322,24 +322,28 @@ public abstract class Crystal {
     
    //Takes the fluorescent escape factors and calculates the energy that can escape by fluorescence
     double[][] fluorescentescapefactors = coefCalc.getFluorescentEscapeFactors(beam);
-    double shellenergy = 0;
-    double energy = 0;
-    for (int i = 0; i < 7; i++){
-      double muratio = fluorescentescapefactors[i][0];
-      for (int j = 1; j < 17; j+=4){
-        energy = fluorescentescapefactors[i][j];
-        double px = 0;
-        px = fluorescentescapefactors[i][j+1]*fluorescentescapefactors[i][j+2]*fluorescentescapefactors[i][j+3];
-        energy = energy * px;
-        shellenergy = (energy + shellenergy) * muratio;
-        fluorescentEscapedDose = fluorescentEscapedDose + shellenergy;
-        
-        }
+    double energy = beam.getPhotonEnergy();
+    double length = fluorescentescapefactors.length;
+    for (int i = 0; i < length; i++){    //loops over each atom type
+      double muratio = fluorescentescapefactors[i][0]; // µj/µpe
+      double K1, L1, L2, L3;
+      double K1px = fluorescentescapefactors[i][2]*fluorescentescapefactors[i][3]*fluorescentescapefactors[i][4]; //K-shell ionization x K-shell fluorescence yield x fluorescentX-ray escape probability
+      double L1px = fluorescentescapefactors[i][6]*fluorescentescapefactors[i][7]*fluorescentescapefactors[i][8];
+      double L2px = fluorescentescapefactors[i][10]*fluorescentescapefactors[i][11]*fluorescentescapefactors[i][12];
+      double L3px = fluorescentescapefactors[i][14]*fluorescentescapefactors[i][15]*fluorescentescapefactors[i][16];
+      K1 = fluorescentescapefactors[i][1] * K1px; // K1px is multiplied by the K1 edge energy
+      L1 = fluorescentescapefactors[i][5] * L1px;
+      L2 = fluorescentescapefactors[i][9] * L2px;
+      L3 = fluorescentescapefactors[i][13] * L3px;
+      energy = (energy - K1 - L1 - L2 - L3) * muratio; // beam energy minus K1, L1, L2 and L3 multipled my µj/µpe
+      fluorescentEscapedDose = fluorescentEscapedDose + energy; // Adds energy that can escape for each atom type
       }
 
     double beamEnergyInJoules = beam.getPhotonEnergy()
         * Beam.KEVTOJOULES;
-
+    
+    fluorescentEscapedDose = fluorescentEscapedDose * Beam.KEVTOJOULES;
+    
     // Set up angles to iterate over.
     double[] angles;
     if (Math.abs(wedge.getStartAng() - wedge.getEndAng()) < wedge.getAngRes()) {
@@ -395,8 +399,9 @@ public abstract class Crystal {
     }
     
     if (photoElectronEscape) {
-      System.out.println(String.format("\nEnergy that may escape by Photoelectron Escape: %.2f", fractionEscapedDose));
-      System.out.println(String.format("Energy that may escape by Fluorescent Escape: %.5f\n", fluorescentEscapedDose));
+      System.out.println(String.format("\nEnergy that may escape by Photoelectron Escape: %.2e", fractionEscapedDose));
+      System.out.print(String.format("Total energy that may escape by Fluorescent Escape: %.2e", fluorescentEscapedDose));
+      System.out.println(" J.\n");
     }
 
     ///////////////////////////////////////////////////////
@@ -495,9 +500,9 @@ public abstract class Crystal {
                * to the voxel.
                */
               double voxImageFluence =
-                  unattenuatedBeamIntensity * beamAttenuationFactor
+                  (unattenuatedBeamIntensity) * beamAttenuationFactor
                       * Math.exp(depth * beamAttenuationExpFactor)
-                      * beamEnergy;
+                      * (beamEnergy);// - fluorescentEscapedDose);
               // Attenuates the beam for absorption
 
               /*

@@ -1014,7 +1014,6 @@ public class CrystalPolyhedron extends Crystal {
 
       double distanceToPlane = Vector.rayTraceDistance(normals[n],
           normals[n], voxCoord, originDistances[n]);
-
       if (distanceToPlane < PE_DISTANCES_TRAVELLED[peDistBins - 1]) {
         closeToSurface = true;
         break;
@@ -1071,7 +1070,8 @@ public class CrystalPolyhedron extends Crystal {
       double distanceToPlane = Vector.rayTraceDistance(normals[n],
           normals[n], voxCoord, originDistances[n]);
 
-      if (distanceToPlane < FL_DISTANCES_TRAVELLED[0]) { //Need to work out the distance the photon will travel
+
+      if (distanceToPlane < FL_DISTANCES_TRAVELLED[0]) { //Need to be half the thickness of crystal
         closeToSurface = true;
         break;
       }

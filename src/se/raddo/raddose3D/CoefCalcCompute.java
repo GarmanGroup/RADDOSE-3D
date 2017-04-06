@@ -405,22 +405,8 @@ public class CoefCalcCompute extends CoefCalc {
   public double[][] getFluorescentEscapeFactors(Beam beam) {
     double[][] fluorEscapeFactors = new double[presentElements.size()][NUM_FLUOR_ESCAPE_FACTORS];
     int element_counter = 0;
-    double kShellEnergy;
-    double kFactorA;
-    double kFactorB;
-    double escapeMuAbsK;
-    double l1ShellEnergy;
-    double l1FactorA;
-    double l1FactorB;
-    double escapeMuAbsL1;
-    double l2ShellEnergy;
-    double l2FactorA;
-    double l2FactorB;
-    double escapeMuAbsL2;
-    double l3ShellEnergy;
-    double l3FactorA;
-    double l3FactorB;
-    double escapeMuAbsL3;
+    double kShellEnergy,kFactorA,kFactorB,escapeMuAbsK,l1ShellEnergy,l1FactorA,l1FactorB,escapeMuAbsL1,l2ShellEnergy,l2FactorA,
+    l2FactorB,escapeMuAbsL2,l3ShellEnergy,l3FactorA,l3FactorB,escapeMuAbsL3;
     Map<String, Double> photonMuAbsK;
     Map<String, Double> photonMuAbsL1;
     Map<String, Double> photonMuAbsL2;
@@ -511,7 +497,6 @@ public class CoefCalcCompute extends CoefCalc {
       
       element_counter += 1;
     }
-
     return fluorEscapeFactors;
   }
 

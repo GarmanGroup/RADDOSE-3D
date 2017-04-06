@@ -527,7 +527,7 @@ public class Element {
    *        the probability of K shell ionisation.
    */
   public Double getKShellIonisationProb() {
-    return this.probKShellIonisation; //worked out at top of this class around line 400
+    return this.probKShellIonisation; //worked out at top of this class around line 115
   }
   
   /**
