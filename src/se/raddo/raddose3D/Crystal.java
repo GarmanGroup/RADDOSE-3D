@@ -325,7 +325,7 @@ public abstract class Crystal {
     double energy = beam.getPhotonEnergy();
     double length = fluorescentescapefactors.length;
     for (int i = 0; i < length; i++){    //loops over each atom type
-      double muratio = fluorescentescapefactors[i][0]; // µj/µpe
+      double muratio = fluorescentescapefactors[i][0]; // uj/upe
       double K1, L1, L2, L3;
       double K1px = fluorescentescapefactors[i][2]*fluorescentescapefactors[i][3]*fluorescentescapefactors[i][4]; //K-shell ionization x K-shell fluorescence yield x fluorescentX-ray escape probability
       double L1px = fluorescentescapefactors[i][6]*fluorescentescapefactors[i][7]*fluorescentescapefactors[i][8];
@@ -335,7 +335,7 @@ public abstract class Crystal {
       L1 = fluorescentescapefactors[i][5] * L1px;
       L2 = fluorescentescapefactors[i][9] * L2px;
       L3 = fluorescentescapefactors[i][13] * L3px;
-      energy = (energy - K1 - L1 - L2 - L3) * muratio; // beam energy minus K1, L1, L2 and L3 multipled my µj/µpe
+      energy = (energy - K1 - L1 - L2 - L3) * muratio; // beam energy minus K1, L1, L2 and L3 multipled my uj/upe
       fluorescentEscapedDose = fluorescentEscapedDose + energy; // Adds energy that can escape for each atom type
       }
 
