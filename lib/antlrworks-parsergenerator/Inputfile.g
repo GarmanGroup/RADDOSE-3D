@@ -75,7 +75,9 @@ scope {
 	int 			numMon;
 	int 			numRes; 
 	int 			numRNA;
-	int 			numDNA; 
+	int 			numDNA;
+	List<String>    smallMoleAtomNames;
+	List<Double>    smallMoleAtomNums; 
 	List<String>	heavyProteinAtomNames;
 	List<Double>	heavyProteinAtomNums;
 	List<String>	heavySolutionConcNames;
@@ -142,6 +144,17 @@ if ($crystal::crystalCoefCalc == 7)
   													$crystal::heavySolutionConcNames, $crystal::heavySolutionConcNums,
   													$crystal::solFrac, $crystal::proteinConc, $crystal::seqFile);
 }
+
+if ($crystal::crystalCoefCalc == 8)
+{
+  $crystal::crystalCoefCalcClass = new CoefCalcSmallMolecule($crystal::cellA, $crystal::cellB, $crystal::cellC, $crystal::cellAl, $crystal::cellBe, $crystal::cellGa,
+   													$crystal::numMon,
+  													$crystal::smallMoleAtomNames, $crystal::smallMoleAtomNums,
+  													$crystal::heavySolutionConcNames, $crystal::heavySolutionConcNums,
+  													$crystal::solFrac);
+}
+
+
 
 $crystal::crystalProperties.put(Crystal.CRYSTAL_COEFCALC, $crystal::crystalCoefCalcClass);
 
@@ -226,6 +239,8 @@ crystalLine
 	| z=containerMaterialElements	{ $crystal::containerElementNames	= $z.names;
 							  $crystal::containerElementNums	= $z.num;	}
 	| aa=sequenceFile 		{ $crystal::seqFile 		= $aa.value; }
+	| ab=smallMoleAtoms             {$crystal::smallMoleAtomNames   = $ab.names;
+							$crystal::smallMoleAtomNums		= $ab.num;	}
 	  
 	;
 
@@ -264,6 +279,7 @@ crystalCoefcalcKeyword returns [int value]
 	| SAXS		{ $value = 5;}
 	| SEQUENCE	{ $value = 6;}
 	| SAXSSEQ	{ $value = 7;}
+	| SMALLMOLE     { $value = 8;}
 	;
 DUMMY : ('D'|'d')('U'|'u')('M'|'m')('M'|'m')('Y'|'y') ;
 DEFAULT	: ('D'|'d')('E'|'e')('F'|'f')('A'|'a')('U'|'u')('L'|'l')('T'|'t');
@@ -274,6 +290,7 @@ PDB : ('E'|'e')('X'|'x')('P'|'p');
 SAXS : ('S'|'s')('A'|'a')('X'|'x')('S'|'s');
 SEQUENCE : ('S'|'s')('E'|'e')('Q'|'q')('U'|'u')('E'|'e')('N'|'n')('C'|'c')('E'|'e');
 SAXSSEQ : ('S'|'s')('A'|'a')('X'|'x')('S'|'s')('S'|'s')('E'|'e')('Q'|'q');
+SMALLMOLE : ('S'|'s')('M'|'m')('A'|'a')('L'|'l')('L'|'l')('M'|'m')('O'|'o')('L'|'l')('E'|'e');
 
 crystalDim returns [Map<Object, Object> properties]
 @init { 
@@ -345,6 +362,14 @@ $num	= new ArrayList<Double>();
 	: PROTEINHEAVYATOMS (a=ELEMENT b=FLOAT {$names.add($a.text); $num.add(Double.parseDouble($b.text)); } )+ ; 	
 PROTEINHEAVYATOMS : ('P'|'p')('R'|'r')('O'|'o')('T'|'t')('E'|'e')('I'|'i')('N'|'n')('H'|'h')('E'|'e')('A'|'a')('V'|'v')('Y'|'y')('A'|'a')('T'|'t')('O'|'o')('M'|'m')('S'|'s') ;
 ELEMENT : ('A'..'Z' | 'a'..'z')('A'..'Z' | 'a'..'z')? ;
+
+smallMoleAtoms returns [List<String> names, List<Double> num;]
+@init{
+$names 	= new ArrayList<String>();
+$num	= new ArrayList<Double>();
+}
+	: SMALLMOLEATOMS (a=ELEMENT b=FLOAT {$names.add($a.text); $num.add(Double.parseDouble($b.text)); } )+ ; 	
+SMALLMOLEATOMS : ('S'|'s')('M'|'m')('A'|'a')('L'|'l')('L'|'l')('M'|'m')('O'|'o')('L'|'l')('E'|'e')('A'|'a')('T'|'t')('O'|'o')('M'|'m')('S'|'s') ;
 
 heavySolutionConc returns [List<String> names, List<Double> num;]
 @init{
