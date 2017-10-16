@@ -22,6 +22,26 @@ public class CoefCalcFromPDB extends CoefCalcCompute {
   private boolean            foundCryst1;
 
   /**
+   * Found hetatm line containing hetatm information?
+   */
+  private boolean            foundHetatm;
+  
+  /**
+   * Found seqres line containing residue sequence information?
+   */
+  private boolean            foundSeqres;
+  
+  /**
+   * Found remark line containing symmetry operators for space group?
+   */
+  private boolean            foundRemark;
+  
+  /**
+   * Found mtrix1 line containing non-crystallographic symmetry information?
+   */
+  private boolean            foundMtrix1;
+  
+  /**
    * Have we already warned the user that the occupancy column is empty?
    */
   private boolean            occupancyWarning;
@@ -357,6 +377,7 @@ public class CoefCalcFromPDB extends CoefCalcCompute {
    */
   public void parsePDBLine(final String inputLine) {
     String directive = inputLine.substring(0, DIRECTIVE_END_POS);
+    // TODO: a check that the parsing was successful in lines other than CRYST1?
 
     if ("CRYST1".equals(directive)) {
       parseCryst1Line(inputLine);
@@ -365,18 +386,31 @@ public class CoefCalcFromPDB extends CoefCalcCompute {
 
     if ("HETATM".equals(directive)) {
       parseHetAtomLine(inputLine);
+      foundHetatm = true;
+    } else {
+      foundHetatm = false;
     }
 
     if ("SEQRES".equals(directive)) {
       parseSeqResLine(inputLine);
+      foundSeqres = true;
+    } else {
+      foundSeqres = false;
     }
 
     if ("REMARK".equals(directive)) {
       parseRemarkLine(inputLine);
+      foundRemark = true;
+    } else {
+      foundRemark = false;
     }
 
     if ("MTRIX1".equals(directive)) {
       parseMatrixLine(inputLine);
+      foundMtrix1 = true;
+    }
+    else {
+      foundMtrix1 = false;
     }
   }
 
@@ -425,8 +459,11 @@ public class CoefCalcFromPDB extends CoefCalcCompute {
       // TODO Auto-generated catch block
       System.out.println("Cannot read from URL.");
       e.printStackTrace();
+    } catch (IndexOutOfBoundsException e) {
+      System.out.println("Line length error encounted in URL line");
+      e.printStackTrace();
     }
-
+    
     try {
       in.close();
     } catch (IOException e) {
@@ -439,7 +476,14 @@ public class CoefCalcFromPDB extends CoefCalcCompute {
           .println("Could not find CRYST1 line "
               + "containing unit cell information.");
     }
-
+    
+    if (!foundCryst1 && !foundHetatm && !foundSeqres && 
+        !foundRemark && !foundMtrix1) {
+      System.out
+          .println("No neccessary information found in URL - "
+              + "There seems to be something wrong with URL.");
+    }
+      
     System.out.println("Crystallographic symmetry operators: "
         + csSymmetryOperators);
     System.out.println("Non-crystallographic symmetry operators: "
