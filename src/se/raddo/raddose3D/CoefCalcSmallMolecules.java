@@ -1,0 +1,128 @@
+package se.raddo.raddose3D;
+
+import java.util.List;
+
+public class CoefCalcSmallMolecules extends CoefCalcCompute {
+  /**
+   * Right angle.
+   */
+  protected static final double RIGHT_ANGLE = 90;
+
+
+  /**
+   * Simple Constructor that does nothing.
+   * Created for subclasses
+   */
+  public CoefCalcSmallMolecules(){
+
+  }
+
+  /**
+   * Compute results and put them in local variables absCoeff, attCoeff,
+   * elasCoeff and density.
+   *
+   * @param cellA cell dimension a
+   * @param cellB cell dimension b
+   * @param cellC cell dimension c
+   * @param cellAlpha cell angle alpha
+   * @param cellBeta cell angle beta
+   * @param cellGamma cell angle gamma
+   * @param numMonomers number of monomers
+   * @param smallMoleAtomNames symbols of each atom type per monomer
+   * @param smallMoleAtomNums number of each atom type per monomer
+   * @param heavySolutionConcNames heavy atom solvent element symbols
+   * @param heavySolutionConcNums heavy atom solvent concentrations in mM.
+   * @param solventFraction solvent fraction
+   */
+  public CoefCalcSmallMolecules(final Double cellA, final Double cellB,
+      final Double cellC,
+      final Double cellAlpha, final Double cellBeta, final Double cellGamma,
+      final int numMonomers,
+      final List<String> smallMoleAtomNames,
+      final List<Double> smallMoleAtomNums,
+      final List<String> heavySolutionConcNames,
+      final List<Double> heavySolutionConcNums,
+      final Double solventFraction) {
+
+    Double alpha = cellAlpha;
+    Double beta = cellBeta;
+    Double gamma = cellGamma;
+
+    if (alpha == null) {
+      alpha = RIGHT_ANGLE;
+    }
+    if (beta == null) {
+      beta = RIGHT_ANGLE;
+    }
+    if (gamma == null) {
+      gamma = RIGHT_ANGLE;
+    }
+
+    Double sf = -1.0;
+
+    if (solventFraction != null) {
+      sf = solventFraction;
+    }
+
+    cellVolume(cellA, cellB, cellC, alpha, beta, gamma);
+
+    calculateAtomOccurrences(numMonomers,
+        sf, smallMoleAtomNames, smallMoleAtomNums,
+        heavySolutionConcNames, heavySolutionConcNums);
+  }
+
+  /**
+   * Calculate the macromolecular mass (etc.) and add the appropriate numbers of
+   * atom occurrences to the parser's atom array.
+   *
+   * @param monomers number of monomers
+   * @param solventFraction solvent fraction
+   * @param smallMoleAtomNames symbols of each atom type per monomer
+   * @param smallMoleAtomNums number of each atom type per monomer
+   * @param heavySolvConcNames heavy atom solvent element symbols
+   * @param heavySolvConcNums heavy atom solvent concentrations in mM.
+   */
+  public void calculateAtomOccurrences(final int monomers,
+      final double solventFraction,
+      final List<String> smallMoleAtomNames,
+      final List<Double> smallMoleAtomNums,
+      final List<String> heavySolvConcNames,
+      final List<Double> heavySolvConcNums) {
+
+    // Start by dealing with the atoms in each small molecule
+    // and adding these to the unit cell.    
+    if (smallMoleAtomNames != null) {
+      for (int i = 0; i < smallMoleAtomNames.size(); i++) {
+        Element smallMoleAtom = getParser()
+            .getElement(smallMoleAtomNames.get(i));
+
+        // note: small molecule atoms are provided per monomer,
+        // so multiply by number of monomers.
+        incrementMacromolecularOccurrence(smallMoleAtom,
+            smallMoleAtomNums.get(i)
+                * monomers);
+      }
+    }
+
+    // Combine concentrations of heavy atoms in the
+    // solvent and add these to the unit cell.
+    if (heavySolvConcNames != null) {
+      addSolventConcentrations(heavySolvConcNames, heavySolvConcNums);
+    }
+    
+    this.setNumMonomers(monomers);
+
+    boolean fillRestWithWater = false;
+    
+    if (fillRestWithWater) {
+    // If the solvent fraction has not been specified.
+    double newSolventFraction = solventFraction;
+
+    if (solventFraction <= 0) {
+      newSolventFraction = calculateSolventFractionFromNums();
+    }
+
+    calculateSolventWater(newSolventFraction);
+  }
+  }
+}
