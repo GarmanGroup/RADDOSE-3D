@@ -543,11 +543,6 @@ public class CoefCalcFromPDB extends CoefCalcCompute {
    *         A URL pointing to the PDB text file of the given PDB entry.
    */
   private String getPDBURL(final String pdbName) {
-    // Below is old URL that no longer appears to work
-    //return String.format("http://www.pdb.org/pdb/download/downloadFile.do?"
-    //    + "fileFormat=pdb&compression=NO&structureId=%s", pdbName);
-    // New URL supplied here that appears to work
-    return String.format("https://files.rcsb.org/download/%s.pdb", pdbName);
-
+    return String.format("https://files.rcsb.org/view/%s%s", pdbName, ".pdb");
   }
 }
