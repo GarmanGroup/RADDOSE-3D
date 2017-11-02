@@ -135,7 +135,7 @@ public class Wedge {
       Math.toRadians(angularResolution));
     }
     else {
-      System.out.println("\nANGULAR RESOLUTUON TOO BIG - RESETTING TO DEFAULT\n");
+      System.out.println("\nANGULAR RESOLUTION TOO BIG - RESETTING TO DEFAULT\n");
       wedgeProperties.put(WedgeProperties.ANGULAR_RESOLUTION,
       Math.toRadians(2));   // This re-sets the angular resolution to 2 if it has been set too high
     }
