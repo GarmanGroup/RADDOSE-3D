@@ -3,6 +3,8 @@ package se.raddo.raddose3D;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.FileInputStream;
+import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -438,8 +440,8 @@ public class CoefCalcFromPDB extends CoefCalcCompute {
     }
 
     BufferedReader in = null;
-
     InputStreamReader isr = null;
+    
     try {
       isr = new InputStreamReader(
           pdbConnection.getInputStream());
@@ -447,7 +449,35 @@ public class CoefCalcFromPDB extends CoefCalcCompute {
       // TODO Auto-generated catch block
       System.out.println("Cannot read from URL.");
     }
+    
     in = new BufferedReader(isr);
+    readPDBFile(in);
+    
+  }
+  
+  /**
+   * Loads the PDB file from specified path
+   * @param pdbPath
+   */
+  public void getPDBFile(final String pdbPath) {
+    BufferedReader in = null;
+    InputStreamReader isr = null;
+    try {
+      File file = new File (pdbPath); 
+      isr = new InputStreamReader(new FileInputStream(file));
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      System.out.println("Cannot read from specified path.");
+    }
+    in = new BufferedReader(isr);
+    readPDBFile(in);
+  }
+
+  /**
+   * initiates parsing of PDB line byline.
+   * @param in
+   */
+  public void readPDBFile(BufferedReader in) {
 
     String inputLine;
 
@@ -497,7 +527,7 @@ public class CoefCalcFromPDB extends CoefCalcCompute {
     double solventFraction = calculateSolventFractionFromNums();
     calculateSolventWater(solventFraction);
   }
-
+  
   /**
    * constructor class which takes a pdbName and initiates downloading of PDB
    * and determination
@@ -506,9 +536,16 @@ public class CoefCalcFromPDB extends CoefCalcCompute {
    * @param pdbCode four letter PDB code
    */
   public CoefCalcFromPDB(final String pdbCode) {
-    String pdbName = pdbCode.toUpperCase();
+    if(isFile(pdbCode)) {
+      // Get info form PDB file
+      getPDBFile(pdbCode);
+    }
+    else {
+    // Get info from URL
+      String pdbName = pdbCode.toUpperCase();
+      downloadPDB(pdbName);
+    }
 
-    downloadPDB(pdbName);
   }
 
   /**
@@ -522,16 +559,30 @@ public class CoefCalcFromPDB extends CoefCalcCompute {
   public CoefCalcFromPDB(final String pdbName,
       final List<String> heavySolvConcNames,
       final List<Double> heavySolvConcNums) {
-    String pdbNameUpperCase = pdbName.toUpperCase();
 
     this.addSolventConcentrations(heavySolvConcNames, heavySolvConcNums);
 
-    try {
-      downloadPDB(pdbNameUpperCase);
-    } catch (Exception e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+    if(isFile(pdbName)) {
+      // Get info form PDB file
+      try {
+        getPDBFile(pdbName);
+      } catch (Exception e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
     }
+    else {
+    // Get info from URL
+      String pdbNameUpperCase = pdbName.toUpperCase();
+      try {
+        downloadPDB(pdbNameUpperCase);
+      } catch (Exception e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+    }
+    
+
   }
 
   /**
@@ -545,4 +596,22 @@ public class CoefCalcFromPDB extends CoefCalcCompute {
   private String getPDBURL(final String pdbName) {
     return String.format("https://files.rcsb.org/view/%s%s", pdbName, ".pdb");
   }
-}
+  
+  /**
+   * Check if the pdb entry is a pdb URL code or a path to a pdb file
+   * @param pdbEntry
+   *          The entered pdb code or file
+   * @return
+   *        A boolean, true = file and false is not  
+   */
+  private boolean isFile(final String pdbEntry) {
+    if (pdbEntry.endsWith(".pdb")) {
+      return true;
+    }
+      else {
+        return false;
+      }
+    }
+      
+  }
+
