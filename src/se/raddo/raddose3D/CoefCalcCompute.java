@@ -270,6 +270,8 @@ public class CoefCalcCompute extends CoefCalc {
     crossSectionInelastic = crossSectionInelastic/ UNITSPERMILLIUNIT;
     photocomp = crossSectionInelastic + crossSectionPhotoElectric;
     
+   
+    
     absCoeffs.put(PHOTOELECTRIC, crossSectionPhotoElectric);
     absCoeffs.put(ELASTIC, crossSectionCoherent);
     absCoeffs.put(TOTAL, crossSectionTotal);
@@ -415,12 +417,15 @@ public class CoefCalcCompute extends CoefCalc {
     
     for (Element e : this.presentElements) {
       elAbsCoeffs = calculateCoefficients(beam.getPhotonEnergy(), e);
+      e.EdgeRatio();
       if (beam.getPhotonEnergy() > e.getKEdge() &&
           e.getAtomicNumber() >= MIN_ATOMIC_NUM_FOR_K_SHELL_IONISATION) {
         kShellEnergy = e.getKEdge();                                //K shell energy : checked from element database class
         kFactorA = e.getKShellIonisationProb();                     //Probability of K shell ionization: checked worked out in element class
         kFactorB = e.getKShellFluorescenceYield();                  //K shell fluorescent yield: checked from element database class
+        //This gives energy of fluorescence. Is this always from L1 shell or can it be from others? Does it make much difference? Can you do a weighted average???
         photonMuAbsK = calculateCoefficients(e.getKEdge() - e.getL1Edge()); //difference between the edge energies needed for fluorescent escape probability
+        //This takes muabs as mupe. I assume fluorescence too low energy to consider compton in muabs???
         escapeMuAbsK = photonMuAbsK.get(PHOTOELECTRIC);             //Fluorescent escape probability
       } 
       else {
@@ -494,6 +499,7 @@ public class CoefCalcCompute extends CoefCalc {
       fluorEscapeFactors[element_counter][14] = l3FactorA;
       fluorEscapeFactors[element_counter][15] = l3FactorB;
       fluorEscapeFactors[element_counter][16] = escapeMuAbsL3;
+      
       
       element_counter += 1;
     }

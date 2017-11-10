@@ -526,12 +526,16 @@ public class CrystalCuboidOld extends Crystal {
   //  }
 
   @Override
-  public double addDoseAfterPE(int i, int j, int k, double doseIncrease) {
+  public double addDoseAfterPE(int i, int j, int k, double doseIncreasePE, double doseIncreaseFL) {
     return 0;
   }
 
   @Override
   public void setPEparamsForCurrentBeam(double beamEnergy) {    
+  }
+  
+  @Override
+  public void setFLparamsForCurrentBeam(final double[][] feFactors){
   }
 
   @Override

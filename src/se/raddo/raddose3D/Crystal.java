@@ -76,6 +76,8 @@ public abstract class Crystal {
    */
   private final boolean photoElectronEscape; 
   
+  public double[][] fluorescenceEnergyPerEvent;
+  public double[][] fluorescenceProportionEvent;
   /**
    * List of registered exposureObservers. Registered objects will be notified
    * of individual voxel exposure events and can also inspect the Crystal object
@@ -184,10 +186,11 @@ public abstract class Crystal {
    * @param i i coord
    * @param j j coord
    * @param k k coord
-   * @param doseIncrease
+   * @param doseIncreasePE
+   * @param doseIncreaseFL
    * @return voxel dose lost from crystal
    */
-  public abstract double addDoseAfterPE(int i, int j, int k, double doseIncrease);
+  public abstract double addDoseAfterPE(int i, int j, int k, double doseIncreasePE, double doseIncreaseFL);
   
   public abstract double addDoseAfterFL(int i, int j, int k, double doseIncrease);
 
@@ -197,7 +200,7 @@ public abstract class Crystal {
    * @param beamEnergy
    */
   public abstract void setPEparamsForCurrentBeam(double beamEnergy);
-
+  public abstract void setFLparamsForCurrentBeam(final double[][] feFactors);
   /**
    * Should increment the fluence array element ijk by fluenceVox.
    *
@@ -301,7 +304,55 @@ public abstract class Crystal {
       e.register(this);
     }
   }
-
+  public void getFluorescenceEnergyPerEvent(double[][] fluorescentEscapeFactors) {
+    int length = fluorescentEscapeFactors.length;
+   fluorescenceEnergyPerEvent = new double[length][4];
+  for (int i = 0; i < length; i++){    //loops over each atom type
+    double muratio = fluorescentEscapeFactors[i][0]; // uj/upe
+    double K1, L1, L2, L3;
+    //this is hard to read maybe change it to a map or something
+    double K1px = fluorescentEscapeFactors[i][2]*fluorescentEscapeFactors[i][3]; //K-shell ionization x K-shell fluorescence yield
+    double L1px = fluorescentEscapeFactors[i][6]*fluorescentEscapeFactors[i][7];
+    double L2px = fluorescentEscapeFactors[i][10]*fluorescentEscapeFactors[i][11];
+    double L3px = fluorescentEscapeFactors[i][14]*fluorescentEscapeFactors[i][15];
+    K1 = fluorescentEscapeFactors[i][1] * K1px; // K1px is multiplied by the K1 edge energy
+    L1 = fluorescentEscapeFactors[i][5] * L1px;
+    L2 = fluorescentEscapeFactors[i][9] * L2px;
+    L3 = fluorescentEscapeFactors[i][13] * L3px;
+    //calculate energy per event
+    fluorescenceEnergyPerEvent[i][0] = K1 * muratio * Beam.KEVTOJOULES;
+    fluorescenceEnergyPerEvent[i][1] = L1 * muratio * Beam.KEVTOJOULES;
+    fluorescenceEnergyPerEvent[i][2] = L2 * muratio * Beam.KEVTOJOULES;
+    fluorescenceEnergyPerEvent[i][3] = L3 * muratio * Beam.KEVTOJOULES;
+    
+  }
+  }
+// Calculates the amount of energy that must be sent out. atm it has no N term so need to take into account fluence on this
+  public double calcFluorescence(final Beam beam, double[][] fluorescentEscapeFactors) {
+    //Could probably do this in CofCalcsCompute to avoid looping again
+   // double[][] fluorescentEscapeFactors = coefCalc.getFluorescentEscapeFactors(beam);
+    double length = fluorescentEscapeFactors.length;
+    double fluorescentEnergyToRelease = 0;
+  for (int i = 0; i < length; i++){    //loops over each atom type
+    double muratio = fluorescentEscapeFactors[i][0]; // uj/upe
+    double K1, L1, L2, L3;
+    //this is hard to read maybe change it to a map or something
+    double K1px = fluorescentEscapeFactors[i][2]*fluorescentEscapeFactors[i][3]; //K-shell ionization x K-shell fluorescence yield
+    double L1px = fluorescentEscapeFactors[i][6]*fluorescentEscapeFactors[i][7];
+    double L2px = fluorescentEscapeFactors[i][10]*fluorescentEscapeFactors[i][11];
+    double L3px = fluorescentEscapeFactors[i][14]*fluorescentEscapeFactors[i][15];
+    K1 = fluorescentEscapeFactors[i][1] * K1px; // K1px is multiplied by the K1 edge energy
+    L1 = fluorescentEscapeFactors[i][5] * L1px;
+    L2 = fluorescentEscapeFactors[i][9] * L2px;
+    L3 = fluorescentEscapeFactors[i][13] * L3px;
+    fluorescentEnergyToRelease = fluorescentEnergyToRelease + ((K1 + L1 + L2 + L3) * muratio); 
+    //the units are kEV
+    }
+  //Convert keV to Joules
+  fluorescentEnergyToRelease = fluorescentEnergyToRelease * Beam.KEVTOJOULES; 
+  return fluorescentEnergyToRelease;
+  }
+  
   /**
    * Expose this crystal to a given beam according to a strategy.
    *
@@ -315,11 +366,15 @@ public abstract class Crystal {
 
     // Update coefficients in case the beam energy has changed.
     coefCalc.updateCoefficients(beam);
-    setPEparamsForCurrentBeam(beam.getPhotonEnergy());
+    
+    //Set up PE and FE - no need to do this is PE false
+    double[][] feFactors = coefCalc.getFluorescentEscapeFactors(beam); // Move this lower down when tidying
+    setPEparamsForCurrentBeam(beam.getPhotonEnergy()); 
 
-    double[][] fluorEscapeFactors = coefCalc.getFluorescentEscapeFactors(beam);
+   // double[][] fluorEscapeFactors = coefCalc.getFluorescentEscapeFactors(beam);
     
-    
+    /** Code below just used to output total escaped dose. I'm not sure it's right because I think C is incorrect
+     * 
    //Takes the fluorescent escape factors and calculates the energy that can escape by fluorescence
     double[][] fluorescentescapefactors = coefCalc.getFluorescentEscapeFactors(beam);
     double energy = beam.getPhotonEnergy();
@@ -339,10 +394,21 @@ public abstract class Crystal {
       fluorescentEscapedDose = fluorescentEscapedDose + energy; // Adds energy that can escape for each atom type
       }
 
+    fluorescentEscapedDose = fluorescentEscapedDose * Beam.KEVTOJOULES; //converting escaped dose to joules
+    
+    */
+    
+    
+    
+    
+    
+    
+    
+    
     double beamEnergyInJoules = beam.getPhotonEnergy()
         * Beam.KEVTOJOULES;
     
-    fluorescentEscapedDose = fluorescentEscapedDose * Beam.KEVTOJOULES;
+    
     
     // Set up angles to iterate over.
     double[] angles;
@@ -372,7 +438,7 @@ public abstract class Crystal {
     for (int n = 0; n < angles.length; n++) {
       // Expose one angle
       exposeAngle(angles[n], beam, wedge, n, angles.length,
-          beamEnergyInJoules, fluorEscapeFactors);
+          beamEnergyInJoules, feFactors);
 
       for (ExposeObserver eo : exposureObservers) {
         eo.imageComplete(n, angles[n]);
@@ -380,7 +446,7 @@ public abstract class Crystal {
 
     } // end of looping over angles
 
-    double fractionEscapedDose = totalEscapedDose/totalCrystalDose; //!!!!!!!!!Whats this? This towards the end?
+    double fractionEscapedDose = totalEscapedDose/totalCrystalDose; //Just to test escaped dose
     
     for (int i = 0; i < getCrystSizeVoxels()[0]; i++) {
       for (int j = 0; j < getCrystSizeVoxels()[1]; j++) {
@@ -411,7 +477,7 @@ public abstract class Crystal {
 
   private void exposeAngle(final double angle, final Beam beam,
       final Wedge wedge, final int anglenum, final int anglecount,
-      final double beamEnergy, final double[][] fluorEscapeFactors) {
+      final double beamEnergy, final double[][] feFactors) {
 
     final int[] crystalSize = getCrystSizeVoxels();
 
@@ -423,7 +489,7 @@ public abstract class Crystal {
     setupDepthFinding(angle, wedge);
 
     final double absorptionFraction =
-        1 - Math.exp(-1 * coefCalc.getAbsorptionCoefficient()
+        1 - Math.exp(-1 * coefCalc.getAbsorptionCoefficient()  //I am confused wouldn't this need uniform irradiation? Come back to
             / getCrystalPixPerUM());
     // absorption fraction of the beam by a voxel
     
@@ -458,7 +524,7 @@ public abstract class Crystal {
         * wedge.getTotSec() / anglecount;
     // Area in um^2 of a voxel * time per angular step
 
-    final double beamAttenuationExpFactor = -coefCalc
+    final double beamAttenuationExpFactor = -coefCalc     
         .getAttenuationCoefficient();
 
     double[] crystCoords;
@@ -524,7 +590,7 @@ public abstract class Crystal {
               double mcsquared = electronweight * csquared;
               double voxImageElectronEnergyDose = mcsquared / (2*beamenergy + mcsquared);
               voxImageElectronEnergyDose = (beamenergy * (1 - (Math.pow(voxImageElectronEnergyDose, 0.5)))); //Compton electron energy in joules
-              
+              //Check that N is correct - may need voxel volume as well to get units right
               double numberofphotons = voxImageFluence / beamenergy; //This gives I0 in equation 9 in Karthik 2010, dividing by beam energy leaves photons per um^2/s
               double voxImageEnergy = voxImageFluence;
               double voxImageComptonFluence = numberofphotons * voxImageElectronEnergyDose; //Re-calculate voxImageFluence using Compton electron energy
@@ -536,19 +602,43 @@ public abstract class Crystal {
               double voxElasticYield = fluenceToElasticFactor *
                   voxImageFluence; //* beamEnergy;
               
+              
               if (voxImageDose > 0) {
 
                 addFluence(i, j, k, voxImageFluence);
                 
                 if (photoElectronEscape) {  //This currently neglects energy lost due to binding energy - add this later
-                  double doseLostFromCrystal = addDoseAfterPE(i, j, k, voxImageDose); //to run with new photoelectron escape
+                 //Fl part
+                  //Calc % energy contribution of each event
+                  getFluorescenceEnergyPerEvent(feFactors);
+                  double fluorescenceEnergyRelease = calcFluorescence(beam, feFactors);
+                  fluorescenceProportionEvent = new double[feFactors.length][4];
+                  for (int m = 0; m < feFactors.length; m++) {
+                    fluorescenceProportionEvent[m][0] = fluorescenceEnergyPerEvent[m][0] / fluorescenceEnergyRelease; //K
+                    fluorescenceProportionEvent[m][1] = fluorescenceEnergyPerEvent[m][1] / fluorescenceEnergyRelease; //L1
+                    fluorescenceProportionEvent[m][2] = fluorescenceEnergyPerEvent[m][2] / fluorescenceEnergyRelease; //L2
+                    fluorescenceProportionEvent[m][3] = fluorescenceEnergyPerEvent[m][3] / fluorescenceEnergyRelease; //L3
+                  }
+                //Energy to be released by voxel
+                  fluorescenceEnergyRelease = fluorescenceEnergyRelease * numberofphotons;
+                //convert this to a dose to be released
+                  double voxImageFlDoseRelease = absorptionFractionPerKg * fluorescenceEnergyRelease;
+                  //Set up Fl parameters and calculate distance distribution
+                  setFLparamsForCurrentBeam(feFactors);
+                  //Do PE
+                  double dosePE = voxImageDose - voxImageFlDoseRelease;
+                  double doseLostFromCrystal = addDoseAfterPE(i, j, k, dosePE, voxImageFlDoseRelease); //to run with new photoelectron escape
+                 // double doseLostFromCrystal = addDoseAfterPE(i, j, k, voxImageDose); //to run with new photoelectron escape
                   totalEscapedDose += doseLostFromCrystal;
                   totalCrystalDose += voxImageDose;
+                  //addFluorescence
+              //    addDose(i, j, k, voxImageFlDoseRelease); //comment out as now sending along tracks
                 } else {
                   addDose(i, j, k, voxImageDose);
                 }
                 addDose(i, j, k, voxImageDoseCompton);
                 addElastic(i, j, k, voxElasticYield);
+
               } else if (voxImageDose < 0) {
                 throw new ArithmeticException(
                     "negative dose encountered - this should never happen");
