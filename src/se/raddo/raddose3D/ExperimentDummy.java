@@ -232,7 +232,7 @@ public class ExperimentDummy extends Experiment {
       }
 
       @Override
-      public void setPEparamsForCurrentBeam(double beamEnergy) {        
+      public void setPEparamsForCurrentBeam(double beamEnergy, double feFactors[][]) {        
       }
       
       @Override
