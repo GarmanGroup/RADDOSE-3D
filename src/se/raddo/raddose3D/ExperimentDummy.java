@@ -227,7 +227,7 @@ public class ExperimentDummy extends Experiment {
       }
 
       @Override
-      public double addDoseAfterPE(int i, int j, int k, double doseIncreasePE, double doseIncreaseFL){
+      public double addDoseAfterPE(int i, int j, int k, double doseIncreasePE){
         return 0;
       }
 
@@ -240,7 +240,7 @@ public class ExperimentDummy extends Experiment {
       }
 
       @Override
-      public double addDoseAfterFL(int i, int j, int k, double doseIncrease) {
+      public double addDoseAfterFL(int i, int j, int k, double doseIncreaseFL) {
         // TODO Auto-generated method stub
         return 0;
       }

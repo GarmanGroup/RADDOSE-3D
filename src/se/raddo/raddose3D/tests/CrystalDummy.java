@@ -95,7 +95,7 @@ public class CrystalDummy extends Crystal {
   }
 
   @Override
-  public double addDoseAfterPE(int i, int j, int k, double doseIncreasePE, double doseIncreaaseFL) {
+  public double addDoseAfterPE(int i, int j, int k, double doseIncreasePE) {
     return 0;
   }
 
@@ -108,7 +108,7 @@ public class CrystalDummy extends Crystal {
   }
 
   @Override
-  public double addDoseAfterFL(int i, int j, int k, double doseIncrease) {
+  public double addDoseAfterFL(int i, int j, int k, double doseIncreaseFL) {
     return 0;
   }
 }

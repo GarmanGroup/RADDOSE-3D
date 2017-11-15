@@ -252,7 +252,7 @@ public class CrystalSpherical extends Crystal {
   }
 
   @Override
-  public double addDoseAfterPE(int i, int j, int k, double doseIncreasePE, double doseIncreaseFL) {
+  public double addDoseAfterPE(int i, int j, int k, double doseIncreasePEL) {
     return 0;
   }
 
@@ -265,7 +265,7 @@ public class CrystalSpherical extends Crystal {
   }
 
   @Override
-  public double addDoseAfterFL(int i, int j, int k, double doseIncrease) {
+  public double addDoseAfterFL(int i, int j, int k, double doseIncreaseFL) {
     return 0;
   }
 }
