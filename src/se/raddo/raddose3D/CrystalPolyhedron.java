@@ -933,32 +933,6 @@ public class CrystalPolyhedron extends Crystal {
      */
     return depth;
   }
-/* old code
-  private double factorial(final int n) {
-    int total = 1;
-    for (int i = 1; i <= n; i++) {
-      total *= i;
-    }
-    return total;
-  }
-  */
-/* Old code
-  private void calculateGammaDistribution(final double[] distancesTravelled,
-      double[] gammaDistribution, final int k, final double theta,
-      final int bins) {
-    for (int i = 0; i < bins; i++) {
-      double x = distancesTravelled[i];
-      double numLeft = Math.pow(x, k - 1);
-      double numRight = Math.exp(-x / theta);
-      double numerator = numLeft * numRight;
-      double denomLeft = Math.pow(theta, k);
-      double denomRight = factorial(k - 1);
-      double denominator = denomLeft * denomRight;
-
-      gammaDistribution[i] = numerator / denominator;
-    }
-  }
-  */ 
   
   /**
    * Calculates the distance distribution for a photoelectron
@@ -1092,9 +1066,6 @@ public class CrystalPolyhedron extends Crystal {
     // Set up a mean path length distribution
     double[] pathLengthDistn = new double[peDistBins];
         
-    // UNCOMMENT TO USE THE GAMMA DISTRIBUTION INSTEAD OF GUMBEL
-    // calculateGammaDistribution(distancesTravelled, pathLengthDistn, 2,
-    // MEAN_ELECTRON_TRAVEL_DISTANCE, bins);
     double[] distnParams = getGumbelParamsForBeamEnergy(beamEnergy);
     calculateGumbelDistribution(PE_DISTANCES_TRAVELLED, pathLengthDistn, distnParams[0],
         distnParams[1], peDistBins);
@@ -1107,14 +1078,25 @@ public class CrystalPolyhedron extends Crystal {
       distnIntegral += width * height;
     }  
     
+    /*
+     * The following code calculates the proportion of dose deposited along
+     * each track by the travelling PE
+     */  
     for (int l = peDistBins-1; l > 0; l--) {
       double width = PE_DISTANCES_TRAVELLED[l] - PE_DISTANCES_TRAVELLED[l-1];
       double height = (pathLengthDistn[l] + pathLengthDistn[l-1]) / 2;
 
       if (l == peDistBins-1) 
       {
+        // the proportion of energy deposited at the end of the PE track. The division
+        // by l is since the energy carried by PEs is deposited linearly at
+        // l divisions along the track up to this point
         propnDoseDepositedAtDist[l] = width * height / (l * distnIntegral);
       } else {
+        // the amount of energy deposited by PEs stopping at this distance (divided
+        // by l to account for energy being deposited linearly up to this point),
+        // plus the energy deposited by PEs travelling further than this stopping 
+        // distance that also deposit a fraction of their energy at this distance
         propnDoseDepositedAtDist[l] = propnDoseDepositedAtDist[l+1] 
             + width * height / (l * distnIntegral);
       }
@@ -1190,39 +1172,40 @@ flRelativeVoxXYZ = new double[feFactors.length][4][flDistBins][PE_ANGLE_RESOLUTI
    * @see se.raddo.raddose3D.Crystal#addDoseAfterPE(int, int, int, double, double)
    */
   @Override
-  public double addDoseAfterPE(final int i, final int j, final int k, //!!!!!!!!!!!!!!!Look here
+  public double addDoseAfterPE(final int i, final int j, final int k,
       final double doseIncreasePE) {
        
     double doseLostFromCrystalPE = 0;
-    
-    // calculate whether this voxel classified as close to surface
-    boolean closeToSurface = false;
-  //  boolean closeToSurfaceFL = false; // FL different distance so calculate if this is close to surface
-    
-    for (int n = 0; n < indices.length; n++) {
-      double[] voxCoord = getCrystCoord(i, j, k);
-      double distanceToPlane = Vector.rayTraceDistance(normals[n],
-          normals[n], voxCoord, originDistances[n]);
-      //do PE first as this as so far has a smaller distance possibility
-      
-      //TO TEST
-
-      
-      if (distanceToPlane < PE_DISTANCES_TRAVELLED[peDistBins - 1]) {
-        closeToSurface = true;
-    //    closeToSurfaceFL = true;
-     //   System.out.println(distanceToPlane);
-        break;
+ 
+    /* 
+     * NOTE: currently the code will run the PE escape code for every voxel
+     * in the crystal. For large crystals or when the pixels per micron value
+     * is large, this will take a very large time to run. The boolean below
+     * instead allows the PE escape code to run only for voxels determined
+     * to be close to the voxel boundaries. This is not set by default, since
+     * it appears that the pixels per micron value can significantly change
+     * which voxels are assigned as close to surface (thus significantly changing
+     * the reported dose). 
+     * TODO: find a rigorous way to assign voxels close to surface
+    */ 
+    boolean findCloseToSurface = false;
+    boolean closeToSurface = false;      
+    if (findCloseToSurface) {
+      // calculate whether this voxel classified as close to surface and  
+      // PE escape should be considered
+      for (int n = 0; n < indices.length; n++) {
+        double[] voxCoord = getCrystCoord(i, j, k);
+        double distanceToPlane = Vector.rayTraceDistance(normals[n],
+            normals[n], voxCoord, originDistances[n]);
+        if (distanceToPlane < PE_DISTANCES_TRAVELLED[peDistBins - 1]) {
+          closeToSurface = true;
+          break;
+        } 
       }
-      
-      /*
-      if (distanceToPlane < FL_DISTANCES_TRAVELLED[flDistBins - 1]) {
-        closeToSurfaceFL = true;
-        break;
-      }
-      */
+    } else {
       closeToSurface = true;
     }
+    
     if (!closeToSurface) {
       // if not close to surface, add all dose to voxel 
       dose[i][j][k] += doseIncreasePE;
@@ -1257,19 +1240,6 @@ flRelativeVoxXYZ = new double[feFactors.length][4][flDistBins][PE_ANGLE_RESOLUTI
         }    
       }
     }
-    
-    //Now do same for fluorescence - Split up later because this is going to be way too long
-    /*
-    if (!closeToSurfaceFL) {
-      dose[i][j][k] += doseIncreaseFL;
-      //TO TEST
-      
-    }
-    else {
-    */
-
- //   }
- 
     return doseLostFromCrystalPE;
   } 
   
@@ -1314,222 +1284,7 @@ flRelativeVoxXYZ = new double[feFactors.length][4][flDistBins][PE_ANGLE_RESOLUTI
     }
     }
     return doseLostFromCrystalFL;
-  }
-  
-  
-  /* code not used
-  //Maybe use this one once I have it working above!!!!!!!!!!!!!!!!!!!!!!!!!
-  @Override
-  public double addDoseAfterFL(final int i, final int j, final int k, //!!!!!!!!!Needs lots of changing!!
-      final double doseIncrease) {
-       
-    double doseLostFromCrystal = 0;
-    
-    // calculate whether this voxel classified as close to surface
-    boolean closeToSurface = false;
-    
-    for (int n = 0; n < indices.length; n++) {
-      double[] voxCoord = getCrystCoord(i, j, k);
-
-      double distanceToPlane = Vector.rayTraceDistance(normals[n],
-          normals[n], voxCoord, originDistances[n]);
-
-
-      if (distanceToPlane < FL_DISTANCES_TRAVELLED[0]) { //Need to be half the thickness of crystal
-        closeToSurface = true;
-        break;
-      }
-    }
-    
-    if (!closeToSurface) {
-      // if not close to surface, add all dose to voxel 
-      dose[i][j][k] += doseIncrease;
-    } else {
-      // if voxel is within the specified min distance to surface, take a grid 
-      // of r, theta and phi and calculate for every r within 0.5 um and 
-      // 5 um, what proportion exit the crystal.
-               
-      for (int m = 0; m < peDistBins; m++) {   
-        for (int q = 0; q < PE_ANGLE_RESOLUTION*PE_ANGLE_RESOLUTION; q++) { 
-          double x = relativeVoxXYZ[m][q][0];
-          double y = relativeVoxXYZ[m][q][1];
-          double z = relativeVoxXYZ[m][q][2];
-
-          // get dose transferred to these located voxels 
-          // at the distance r away (due to PE movement)
-          double partialDose = doseIncrease * propnDoseDepositedAtDist[m]  
-              / Math.pow(PE_ANGLE_RESOLUTION,2);
-          
-          // add counts to total & total within crystal in order to
-          // calculate the proportion for a given r.       
-          if (isCrystalAt((int) (i + x), (int) (j + y),
-              (int) (k + z))) {              
-            // get dose transferred to this new voxel (due to PE movement)
-            addDose((int) (i + x), (int) (j + y),
-            (int) (k + z), partialDose);
-          } else {
-            doseLostFromCrystal += partialDose;
-          }
-        }    
-      }
-    }
-    return doseLostFromCrystal;
-  }
-  */
-
-  /* code not used
-  private void calculateEscapeFactors() {   //Dont know if this is old code??
-    System.out.println("Calculating escape factors...");
-
-    // These are the bins at which the function will be calculated
-    // turn this into a calculated function
-    double[] distancesTravelled = { 1., 1.5, 2., 2.5, 3., 3.5, 4.,
-        5., 6., 7., 8. };
-    int bins = distancesTravelled.length;
-
-    // Set up a gamma distribution with k = 2, theta = 3 um
-    double[] gammaDistribution = new double[bins];
-    calculateGammaDistribution(distancesTravelled, gammaDistribution, 2,
-        MEAN_ELECTRON_TRAVEL_DISTANCE, bins);
-
-    double gammaIntegral = 0;
-
-    for (int l = 0; l < bins - 1; l++) {
-      double width = distancesTravelled[l + 1] - distancesTravelled[l];
-      double height = (gammaDistribution[l + 1] + gammaDistribution[l]) / 2;
-      gammaIntegral += width * height;
-    }
-
-    //    double[] escapeDistribution = new double[bins];
-
-    // for every voxel...
-    final int[] crystalSize = getCrystSizeVoxels();
-
-    // statistics on voxels near surface
-    int totalVoxels = 0;
-    int interestingVoxels = 0;
-
-    for (int i = 0; i < crystalSize[0]; i++) {
-      for (int j = 0; j < crystalSize[1]; j++) {
-        for (int k = 0; k < crystalSize[2]; k++) {
-          // skip if not crystal
-          if (!isCrystalAt(i, j, k))
-            continue;
-
-          // calculate whether each voxel[i][j][k] is within
-          // 5 um of a surface
-          boolean closeToSurface = false;
-
-          totalVoxels++;
-
-          for (int n = 0; n < indices.length; n++) {
-            double[] voxCoord = getCrystCoord(i, j, k);
-
-            double distanceToPlane = Vector.rayTraceDistance(normals[n],
-                normals[n], voxCoord, originDistances[n]);
-
-            if (distanceToPlane < distancesTravelled[bins - 1])
-            {
-              closeToSurface = true;
-              break;
-            }
-          }
-
-          if (!closeToSurface) {
-            escapeFactor[i][j][k] = 1.0;
-          } else {
-            // if voxel is within 3 um of a surface, take a grid of r, theta and phi
-            // and calculate for every r within 0.5 um and 5 um, what proportion
-            // exit the crystal.
-
-            double[] occupancyDistribution = new double[bins];
-
-            for (int m = 0; m < bins; m++) {
-              // calculate r in voxel coordinates rather than pixels
-              double r = distancesTravelled[m] * this.crystalPixPerUM;
-
-              double angleLimit = 2 * Math.PI;
-              double resolution = 6.;
-              double step = angleLimit / resolution;
-
-              double totalCount = 0;
-              double totalCountWithinCrystal = 0;
-
-              for (double theta = 0; theta <= angleLimit; theta += step) {
-                for (double phi = 0; phi <= angleLimit; phi += step) {
-                  // calculate x, y, z coordinates of voxel[i][j][k]
-                  // plus the polar coordinates for r, theta, phi
-
-                  double x = r * Math.sin(theta) * Math.cos(phi);
-                  double y = r * Math.sin(theta) * Math.sin(phi);
-                  double z = r * Math.cos(theta);
-
-                  // add counts to total & total within crystal in order to
-                  // calculate the proportion for a given r.
-
-                  totalCount++;
-                  if (isCrystalAt((int) (i + x), (int) (j + y),
-                      (int) (k + z))) {
-                    totalCountWithinCrystal++;
-                  }
-                }
-              }
-
-              occupancyDistribution[m] = totalCountWithinCrystal / totalCount;
-
-              // debug
-              /*
-               * System.out.println(distancesTravelled[l] +
-               * "\t" + occupancyDistribution[l] + "\t" +
-               * gammaDistribution[l]);
-               */
-           // }
-
-            // Take the values of the gamma distribution at each r
-            // Multiply this value by the r distribution and
-            // numerically integrate
-/*
-            double[] combinedDistribution = new double[bins];
-
-            for (int l = 0; l < bins; l++) {
-              combinedDistribution[l] =
-                  gammaDistribution[l] * occupancyDistribution[l];
-              //   System.out.println(combinedDistribution[l]);
-            }
-
-            double integral = 0;
-
-            for (int l = 0; l < bins - 1; l++) {
-              double width = distancesTravelled[l + 1] - distancesTravelled[l];
-              double height =
-                  (combinedDistribution[l + 1] + combinedDistribution[l]) / 2;
-              integral += width * height;
-            }
-
-            integral /= gammaIntegral;
-
-            // stats
-            if (integral < 1) {
-              interestingVoxels++;
-            }
-
-            // Assign to escapeFactor[i][j][k].
-
-            escapeFactor[i][j][k] = integral;
-          }
-        }
-      }
-    }
-
-    double percentage = 100 * (double) interestingVoxels / totalVoxels;
-
-    System.out.println(String.format("%.1f", percentage)
-        + "% of voxels have a non-unity escape factor");
-
-    calculatedEscapeFactors = true;
-  }
-  /*
-/*
+  }  
   
   /*
    * (non-Javadoc)
