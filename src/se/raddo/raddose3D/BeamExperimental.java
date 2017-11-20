@@ -11,16 +11,20 @@ public class BeamExperimental implements Beam {
                            beamYSize,
                            totalFlux,
                            beamEnergy;
-  private double           beamSum;
+  private double           beamSum,
+                           attenuatedFlux;
 
-  private final double[][] beamArray;
+
+  private double[][] beamArray;
+  double[][] beamArrayWithBorders;
+  private final Double[][] dataStructure;
 
   /**
    * This takes the arguments, and generates the beamArray double[][] which
    * will be used for interpolation. This array must be in the RADDOSE-3D
    * coordinate system. It also adds a row or 0's around the
    * original array to allow for correct interpolation at the edges.
-   * 
+   *
    * @param totalFlux
    *          total flux of the beam in photons per second.
    * @param datastructure
@@ -38,27 +42,35 @@ public class BeamExperimental implements Beam {
       final Double totalFlux, final Double beamEnergy,
       final Double pixelSizeX,
       final Double pixelSizeY) {
-
-    beamXSize = (datastructure[0].length + 2) * pixelSizeX;
-    beamYSize = (datastructure.length + 2) * pixelSizeY;
-    pixXSize = pixelSizeX;
-    pixYSize = pixelSizeY;
+    
+    this.dataStructure = datastructure;
+    this.beamXSize = (datastructure[0].length + 2) * pixelSizeX;
+    this.beamYSize = (datastructure.length + 2) * pixelSizeY;
+    this.pixXSize = pixelSizeX;
+    this.pixYSize = pixelSizeY;
     this.totalFlux = totalFlux;
     this.beamEnergy = beamEnergy;
+  }
 
+  /**
+   * Generate the beam array from the other instance variables
+   */
+  @Override
+  public void generateBeamArray() {     //This has been added as a new method so is no longer automatically called by BeamExperimental
+    //set beam sum to zero
+    beamSum = 0;
     // add a zero border
-    int sizeHoriz = datastructure[0].length;
-    int sizeVert = datastructure.length;
-
-    double[][] beamArrayWithBorders = new double[sizeVert + 2][sizeHoriz + 2];
+    int sizeHoriz = dataStructure[0].length;
+    int sizeVert = dataStructure.length;
+    beamArrayWithBorders = new double[sizeVert + 2][sizeHoriz + 2];
 
     for (int i = 0; i < sizeVert + 2; i++) {
       for (int j = 0; j < sizeHoriz + 2; j++) {
         if (i == 0 || j == 0 || i == sizeVert + 1 || j == sizeHoriz + 1) {
           beamArrayWithBorders[i][j] = 0;
         } else {
-          beamArrayWithBorders[i][j] = datastructure[i - 1][j - 1];
-          beamSum += datastructure[i - 1][j - 1];
+          beamArrayWithBorders[i][j] = dataStructure[i - 1][j - 1];
+          beamSum += dataStructure[i - 1][j - 1];
         }
       }
     }
@@ -67,14 +79,12 @@ public class BeamExperimental implements Beam {
     for (int i = 0; i < sizeVert + 2; i++) {
       for (int j = 0; j < sizeHoriz + 2; j++) {
         beamArrayWithBorders[i][j] = beamArrayWithBorders[i][j]
-            * KEVTOJOULES * this.beamEnergy // This caused tests to fail so added it back in, dont know why it was removed!
-            * this.totalFlux
-            / (beamSum * pixelSizeX * pixelSizeY);
+            * KEVTOJOULES * this.beamEnergy
+            * this.attenuatedFlux
+            / (beamSum * pixXSize * pixYSize);
       }
     }
-
-    beamArray = beamArrayWithBorders;
-
+    this.beamArray = beamArrayWithBorders;
   }
 
   /**
@@ -84,18 +94,16 @@ public class BeamExperimental implements Beam {
   @Override
   public double beamIntensity(final double coordX, final double coordY,
       final double offAxisUM) {
+    beamArray = beamArrayWithBorders;
     if (Math.abs(coordX - offAxisUM) <= beamXSize / 2 - pixXSize
         && Math.abs(coordY) <= beamYSize / 2 - pixYSize) {
       /* First find the four nearest voxels */
       double realX = (coordX - offAxisUM + beamXSize / 2);
       double realY = (coordY + beamYSize / 2);
-
       int voxelHorizontal = (int) Math.floor(realX / pixXSize - 0.5);
       int voxelVertical = (int) Math.floor(realY / pixYSize - 0.5);
-
-      if (voxelHorizontal < beamArray[0].length
+      if (voxelHorizontal < beamArray[0].length     //null pointer exception here
           && voxelVertical < beamArray.length) {
-
         float fracX = (float) (realX / pixXSize - (voxelHorizontal + 0.5));
         float fracY = (float) (realY / pixYSize - (voxelVertical + 0.5));
 
@@ -120,7 +128,7 @@ public class BeamExperimental implements Beam {
 
   /**
    * Bilinear interpolation routine.
-   * 
+   *
    * @param v00
    *          Value at x=0, y=0.
    * @param v10
@@ -157,6 +165,19 @@ public class BeamExperimental implements Beam {
   @Override
   public double getPhotonEnergy() {
     return beamEnergy;
+  }
+
+  @Override
+  public void applyContainerAttenuation(Container sampleContainer){
+    this.attenuatedFlux = (1 - sampleContainer.getContainerAttenuationFraction())
+        * this.totalFlux;
+
+    if (sampleContainer.getContainerMaterial() != null) {
+      String s = String.format("Beam photons per second after container "
+          + "attenuation is %.2e photons per second", this.attenuatedFlux);
+
+      System.out.println(s);
+    }
   }
 
 }

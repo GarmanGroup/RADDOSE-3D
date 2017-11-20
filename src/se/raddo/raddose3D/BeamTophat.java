@@ -18,6 +18,9 @@ public class BeamTophat implements Beam {
   /** Beam energy. */
   private final Double photonEnergy;
 
+  /** Attenuated beam flux.  */
+  private double attenuatedPhotonsPerSec;
+
   /**
    * Generic property constructor for Top Hat beams. Extracts all required
    * information from a Map data structure.
@@ -27,7 +30,7 @@ public class BeamTophat implements Beam {
    * BEAM_COLL_V - vertical extent of the beam in micrometres.
    * BEAM_FLUX - flux of the beam in photons per second.
    * BEAM_ENERGY - photon energy.
-   * 
+   *
    * @param properties
    *          Map of type <Object, Object> that contains all beam properties.
    *          The keys of the Map are defined by the constants in the
@@ -61,7 +64,9 @@ public class BeamTophat implements Beam {
     // fluence.
     if (Math.abs(coordX - offAxisUM) <= beamXum / 2
         && Math.abs(coordY) <= beamYum / 2) {
-      return photonsPerSec / (beamXum * beamYum);
+
+      return KEVTOJOULES * attenuatedPhotonsPerSec * photonEnergy
+          / (beamXum * beamYum);
     } else {
       return 0d;
     }
@@ -82,5 +87,21 @@ public class BeamTophat implements Beam {
   @Override
   public double getPhotonEnergy() {
     return photonEnergy;
+  }
+  
+  @Override
+  public void generateBeamArray() {};
+
+  @Override
+  public void applyContainerAttenuation(Container sampleContainer){
+    attenuatedPhotonsPerSec = photonsPerSec
+        * (1 - sampleContainer.getContainerAttenuationFraction());
+
+    if (sampleContainer.getContainerMaterial() != null) {
+      String s = String.format("Beam photons per second after container "
+          + "attenuation is %.2e photons per second", attenuatedPhotonsPerSec);
+
+      System.out.println(s);
+    }
   }
 }

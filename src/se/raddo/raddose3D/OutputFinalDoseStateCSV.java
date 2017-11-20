@@ -64,29 +64,30 @@ public class OutputFinalDoseStateCSV implements Output {
     for (int i = 0; i < crystal.getCrystSizeVoxels()[0]; i++) {
       for (int j = 0; j < crystal.getCrystSizeVoxels()[1]; j++) {
         for (int k = 0; k < crystal.getCrystSizeVoxels()[2]; k++) {
-          w.write(((float) crystal.getCrystCoord(i, j, k)[0]) + ","
-              + ((float) crystal.getCrystCoord(i, j, k)[1]) + ","
-              + ((float) crystal.getCrystCoord(i, j, k)[2]) + ",");
-
-          float dose = (float) crystal.getDose(i, j, k);
-          if (dose <= Float.MIN_VALUE) {
+          if (crystal.isCrystalAt(i, j, k)) {   //Added to prevent voxels outside of crystal being included in the .csv output
+            w.write(((float) crystal.getCrystCoord(i, j, k)[0]) + ","
+                + ((float) crystal.getCrystCoord(i, j, k)[1]) + ","
+                + ((float) crystal.getCrystCoord(i, j, k)[2]) + ",");
+            float dose = (float) crystal.getDose(i, j, k);
+            if (dose <= Float.MIN_VALUE) {
             w.write("0,");
-          } else {
-            w.write(dose + ",");
-          }
+            } else {
+              w.write(dose + ",");
+            }
 
-          float fluence = (float) crystal.getFluence(i, j, k);
-          if (fluence <= Float.MIN_VALUE) {
-            w.write("0,");
-          } else {
-            w.write(fluence + ",");
-          }
+            float fluence = (float) crystal.getFluence(i, j, k);
+            if (fluence <= Float.MIN_VALUE) {
+              w.write("0,");
+            } else {
+              w.write(fluence + ",");
+            }
 
-          float elastic = (float) crystal.getElastic(i, j, k);
-          if (elastic <= Float.MIN_VALUE) {
-            w.write("0\n");
-          } else {
-            w.write(elastic + "\n");
+            float elastic = (float) crystal.getElastic(i, j, k);
+            if (elastic <= Float.MIN_VALUE) {
+              w.write("0\n");
+            } else {
+              w.write(elastic + "\n");
+            }
           }
         }
       }

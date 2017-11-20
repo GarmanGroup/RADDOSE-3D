@@ -99,5 +99,4 @@ public class CoefCalcAverage extends CoefCalc {
        Compton is already included in ABSORPTION_COEFFICIENT in this class;*/
     return 0;
   }
-
 }

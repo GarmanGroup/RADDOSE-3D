@@ -362,8 +362,7 @@ public class CoefCalcRaddose extends CoefCalc {
 
   @Override
   public double getInelasticCoefficient() {
- // Does nothing, needed to prevent error in this class when Compton was added;
+    // Added to prevent error
     return 0;
   }
-
 }

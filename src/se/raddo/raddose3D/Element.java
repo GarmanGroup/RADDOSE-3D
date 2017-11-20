@@ -39,6 +39,7 @@ public class Element {
   /**
    * List of absorption edges.
    */
+  
   private enum AbsorptionEdge {
     /** innermost electron shell, 1 shell. */
     K,
@@ -80,15 +81,15 @@ public class Element {
      */
     PHOTOELECTRIC,
     /**
-     * Cross-section for Inelastic scattering
-     */
-    INELASTIC,      //************This added for COMPTON**************    
-    /**
      * Cross-section for coherent (elastic) scattering.
      */
     COHERENT,
     /**
-     * Cross-section for coherent (elastic) scattering and incoherent (inelastic) Compton scattering.
+     * Incoherent (inelastic) Compton scattering.
+     */
+    COMPTON,
+    /**
+     * Cross-section for coherent (elastic) scattering.
      */
     TOTAL
   }
@@ -244,10 +245,9 @@ public class Element {
         sum += coeffs[i] * Math.pow(Math.log(energy), i);
       }
     }
-
     return Math.exp(sum);
   }
-
+  
   /**
    * Obtain the photoelectric, elastic and incoherent cross-sections for a given
    * energy and calculate the total cross-section.
@@ -266,18 +266,22 @@ public class Element {
       elastic = baxForEdge(energy, AbsorptionEdge.C);
     }
 
-    double binx = 0;
+    /*
+     *   Calculates Compton attenuation, ie all energy that can interact 
+     *   with the crystal by Compton inelastic scattering
+     */
+    double comptonAttenuation = 0;   
     if (elementData.get(ElementDatabase.DatabaseFields.INCOHERENT_COEFF_0) != 0)
     {
-      binx = baxForEdge(energy, AbsorptionEdge.I);
+      comptonAttenuation = baxForEdge(energy, AbsorptionEdge.I);
     }
-
-    double attenuation = photoelectric + elastic + binx;
+    
+    double attenuation = photoelectric + elastic + comptonAttenuation;
 
     Map<CrossSection, Double> results = new HashMap<CrossSection, Double>();
     results.put(CrossSection.COHERENT, elastic);
-    results.put(CrossSection.PHOTOELECTRIC, photoelectric); // mu, abs coeff.
-    results.put(CrossSection.INELASTIC,binx);      // Added for COMPTON
+    results.put(CrossSection.PHOTOELECTRIC, photoelectric);   
+     results.put(CrossSection.COMPTON,comptonAttenuation);
     results.put(CrossSection.TOTAL, attenuation);
     
     return results;

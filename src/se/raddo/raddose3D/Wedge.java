@@ -123,18 +123,21 @@ public class Wedge {
       final Double offAxisRotationUm) {
     Map<WedgeProperties, Double> wedgeProperties =
         new HashMap<WedgeProperties, Double>();
-
     /* Compulsory variables */
     // TODO: Setting the angles in degrees, but getting them in radians? Why?
     wedgeProperties
         .put(WedgeProperties.ANGLE_START, Math.toRadians(startAngle));
     wedgeProperties.put(WedgeProperties.ANGLE_END, Math.toRadians(endAngle));
     wedgeProperties.put(WedgeProperties.EXPOSURE_TIME, totalSecondsExposure);
-
     /* Optional variables */
-    if (angularResolution != null) {
+    if (angularResolution != null && ((endAngle - startAngle) / angularResolution) > 10) {   // I've added an extra bit to check the angular resolution is not too big
       wedgeProperties.put(WedgeProperties.ANGULAR_RESOLUTION,
-          Math.toRadians(angularResolution));
+      Math.toRadians(angularResolution));
+    }
+    else {
+      System.out.println("\nANGULAR RESOLUTION TOO BIG - RESETTING TO DEFAULT\n");
+      wedgeProperties.put(WedgeProperties.ANGULAR_RESOLUTION,
+      Math.toRadians(2));   // This re-sets the angular resolution to 2 if it has been set too high
     }
     if (startXposition != null) {
       wedgeProperties.put(WedgeProperties.START_POSITION_X, startXposition);
@@ -187,15 +190,19 @@ public class Wedge {
 
     if ((properties.get(WedgeProperties.START_POSITION_X) != 0)
         || (properties.get(WedgeProperties.START_POSITION_Y) != 0)
+        || (properties.get(WedgeProperties.START_POSITION_Z) != 0)
         || (properties.get(WedgeProperties.TRANSLATION_X) != 0)
-        || (properties.get(WedgeProperties.TRANSLATION_Y) != 0)) {
+        || (properties.get(WedgeProperties.TRANSLATION_Y) != 0)
+        || (properties.get(WedgeProperties.TRANSLATION_Z) != 0)) {
       s = s.concat(String.format(
-          "Start is offset by [%f, %f] um [x,y].%n"
-              + "Helical scanning is at [%f, %f] um/deg in [x,y]%n",
+          "Start is offset by [%f, %f, %f] um [x,y,z].%n"
+              + "Helical scanning is at [%f, %f, %f] um/deg in [x,y,z]%n",
           properties.get(WedgeProperties.START_POSITION_X),
           properties.get(WedgeProperties.START_POSITION_Y),
+          properties.get(WedgeProperties.START_POSITION_Z),
           Math.toRadians(properties.get(WedgeProperties.TRANSLATION_X)),
-          Math.toRadians(properties.get(WedgeProperties.TRANSLATION_Y))));
+          Math.toRadians(properties.get(WedgeProperties.TRANSLATION_Y)),
+          Math.toRadians(properties.get(WedgeProperties.TRANSLATION_Z))));
     }
 
     return s;

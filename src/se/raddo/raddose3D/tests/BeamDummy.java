@@ -3,11 +3,12 @@ package se.raddo.raddose3D.tests;
 import java.util.Map;
 
 import se.raddo.raddose3D.Beam;
+import se.raddo.raddose3D.Container;
 
 /**
  * A minimal implementation of the Beam interface, which does... nothing.
  * This class is only for test purposes.
- * 
+ *
  * @author Markus Gerstel
  */
 public class BeamDummy implements Beam {
@@ -35,5 +36,14 @@ public class BeamDummy implements Beam {
   @Override
   public double getPhotonEnergy() {
     return 0;
+  }
+
+  @Override
+  public void applyContainerAttenuation(Container sampleContainer){
+
+  }
+
+  @Override
+  public void generateBeamArray() {    
   }
 }

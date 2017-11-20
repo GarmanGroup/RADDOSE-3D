@@ -184,7 +184,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "CRYSTAL"
@@ -243,7 +243,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "TYPE"
@@ -472,7 +472,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "DIFFRACTIONDECAYMODEL"
@@ -521,7 +521,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "DDM"
@@ -600,7 +600,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "SIMPLE"
@@ -679,7 +679,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "LINEAR"
@@ -738,7 +738,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "LEAL"
@@ -857,7 +857,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "DECAYPARAM"
@@ -1003,7 +1003,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "ABSCOEFCALC"
@@ -1072,7 +1072,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "DUMMY"
@@ -1161,7 +1161,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "DEFAULT"
@@ -1250,7 +1250,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "AVERAGE"
@@ -1326,7 +1326,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "RDFORTAN"
@@ -1400,7 +1400,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "RDJAVA"
@@ -1449,7 +1449,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "PDB"
@@ -1508,7 +1508,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "SAXS"
@@ -1607,7 +1607,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "SEQUENCE"
@@ -1696,7 +1696,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "SAXSSEQ"
@@ -1832,7 +1832,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "DIMENSION"
@@ -1911,7 +1911,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "ANGLEP"
@@ -1990,7 +1990,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "ANGLEL"
@@ -2159,7 +2159,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "PIXELSPERMICRON"
@@ -2258,7 +2258,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "UNITCELL"
@@ -2387,7 +2387,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "PROTEINCONC"
@@ -2606,7 +2606,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "PROTEINCONCENTRATION"
@@ -2735,7 +2735,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "NUMMONOMERS"
@@ -2864,7 +2864,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "NUMRESIDUES"
@@ -2943,7 +2943,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "NUMRNA"
@@ -3022,7 +3022,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "NUMDNA"
@@ -3211,7 +3211,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "PROTEINHEAVYATOMS"
@@ -3267,7 +3267,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "ELEMENT"
@@ -3446,7 +3446,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "SOLVENTHEAVYCONC"
@@ -3615,7 +3615,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "SOLVENTFRACTION"
@@ -3664,7 +3664,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "PDBNAME"
@@ -3854,7 +3854,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "WIREFRAMETYPE"
@@ -3963,7 +3963,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "MODELFILE"
@@ -4132,7 +4132,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "CALCULATEESCAPE"
@@ -4361,7 +4361,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "CONTAINERMATERIALTYPE"
@@ -4500,7 +4500,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "MATERIALTYPE"
@@ -4559,7 +4559,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "NONE"
@@ -4648,7 +4648,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "MIXTURE"
@@ -4757,7 +4757,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "ELEMENTAL"
@@ -4956,7 +4956,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "CONTAINERTHICKNESS"
@@ -5215,7 +5215,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "CONTAINERMATERIALMIXTURE"
@@ -5384,7 +5384,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "MATERIALMIXTURE"
@@ -5653,7 +5653,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "CONTAINERMATERIALELEMENTS"
@@ -5832,7 +5832,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "MATERIALELEMENTS"
@@ -6011,7 +6011,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "CONTAINERDENSITY"
@@ -6150,7 +6150,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "SEQUENCEFILE"
@@ -6239,7 +6239,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "SEQFILE"
@@ -6298,7 +6298,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "BEAM"
@@ -6357,7 +6357,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "FLUX"
@@ -6416,7 +6416,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "FWHM"
@@ -6495,7 +6495,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "ENERGY"
@@ -6544,7 +6544,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "KEV"
@@ -6603,7 +6603,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "FILE"
@@ -6712,7 +6712,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "PIXELSIZE"
@@ -6841,7 +6841,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "COLLIMATION"
@@ -6970,7 +6970,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "RECTANGULAR"
@@ -7069,7 +7069,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "CIRCULAR"
@@ -7188,7 +7188,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "HORIZONTAL"
@@ -7287,7 +7287,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "VERTICAL"
@@ -7356,7 +7356,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "WEDGE"
@@ -7495,7 +7495,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "EXPOSURETIME"
@@ -7684,7 +7684,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "ANGULARRESOLUTION"
@@ -7813,7 +7813,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "STARTOFFSET"
@@ -8012,7 +8012,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "TRANSLATEPERDEGREE"
@@ -8181,7 +8181,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "ROTAXBEAMOFFSET"
@@ -8241,24 +8241,24 @@ public class InputfileLexer extends Lexer {
 
 
                         switch (alt8) {
-                        case 1 :
-                            // C:\\Users\\jonathan\\workspace\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:
-                            {
-                            if ( (input.LA(1) >= '0' && input.LA(1) <= '9') ) {
-                                input.consume();
-                            }
-                            else {
-                                MismatchedSetException mse = new MismatchedSetException(null,input);
-                                recover(mse);
-                                throw mse;
-                            }
+                    	case 1 :
+                    	    // C:\\Users\\jonathan\\workspace\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:
+                    	    {
+                    	    if ( (input.LA(1) >= '0' && input.LA(1) <= '9') ) {
+                    	        input.consume();
+                    	    }
+                    	    else {
+                    	        MismatchedSetException mse = new MismatchedSetException(null,input);
+                    	        recover(mse);
+                    	        throw mse;
+                    	    }
 
 
-                            }
-                            break;
+                    	    }
+                    	    break;
 
-                        default :
-                            if ( cnt8 >= 1 ) break loop8;
+                    	default :
+                    	    if ( cnt8 >= 1 ) break loop8;
                                 EarlyExitException eee =
                                     new EarlyExitException(8, input);
                                 throw eee;
@@ -8285,24 +8285,24 @@ public class InputfileLexer extends Lexer {
 
 
                         switch (alt9) {
-                        case 1 :
-                            // C:\\Users\\jonathan\\workspace\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:
-                            {
-                            if ( (input.LA(1) >= '0' && input.LA(1) <= '9') ) {
-                                input.consume();
-                            }
-                            else {
-                                MismatchedSetException mse = new MismatchedSetException(null,input);
-                                recover(mse);
-                                throw mse;
-                            }
+                    	case 1 :
+                    	    // C:\\Users\\jonathan\\workspace\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:
+                    	    {
+                    	    if ( (input.LA(1) >= '0' && input.LA(1) <= '9') ) {
+                    	        input.consume();
+                    	    }
+                    	    else {
+                    	        MismatchedSetException mse = new MismatchedSetException(null,input);
+                    	        recover(mse);
+                    	        throw mse;
+                    	    }
 
 
-                            }
-                            break;
+                    	    }
+                    	    break;
 
-                        default :
-                            if ( cnt9 >= 1 ) break loop9;
+                    	default :
+                    	    if ( cnt9 >= 1 ) break loop9;
                                 EarlyExitException eee =
                                     new EarlyExitException(9, input);
                                 throw eee;
@@ -8325,24 +8325,24 @@ public class InputfileLexer extends Lexer {
 
 
                         switch (alt10) {
-                        case 1 :
-                            // C:\\Users\\jonathan\\workspace\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:
-                            {
-                            if ( (input.LA(1) >= '0' && input.LA(1) <= '9') ) {
-                                input.consume();
-                            }
-                            else {
-                                MismatchedSetException mse = new MismatchedSetException(null,input);
-                                recover(mse);
-                                throw mse;
-                            }
+                    	case 1 :
+                    	    // C:\\Users\\jonathan\\workspace\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:
+                    	    {
+                    	    if ( (input.LA(1) >= '0' && input.LA(1) <= '9') ) {
+                    	        input.consume();
+                    	    }
+                    	    else {
+                    	        MismatchedSetException mse = new MismatchedSetException(null,input);
+                    	        recover(mse);
+                    	        throw mse;
+                    	    }
 
 
-                            }
-                            break;
+                    	    }
+                    	    break;
 
-                        default :
-                            break loop10;
+                    	default :
+                    	    break loop10;
                         }
                     } while (true);
 
@@ -8367,24 +8367,24 @@ public class InputfileLexer extends Lexer {
 
 
                         switch (alt11) {
-                        case 1 :
-                            // C:\\Users\\jonathan\\workspace\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:
-                            {
-                            if ( (input.LA(1) >= '0' && input.LA(1) <= '9') ) {
-                                input.consume();
-                            }
-                            else {
-                                MismatchedSetException mse = new MismatchedSetException(null,input);
-                                recover(mse);
-                                throw mse;
-                            }
+                    	case 1 :
+                    	    // C:\\Users\\jonathan\\workspace\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:
+                    	    {
+                    	    if ( (input.LA(1) >= '0' && input.LA(1) <= '9') ) {
+                    	        input.consume();
+                    	    }
+                    	    else {
+                    	        MismatchedSetException mse = new MismatchedSetException(null,input);
+                    	        recover(mse);
+                    	        throw mse;
+                    	    }
 
 
-                            }
-                            break;
+                    	    }
+                    	    break;
 
-                        default :
-                            if ( cnt11 >= 1 ) break loop11;
+                    	default :
+                    	    if ( cnt11 >= 1 ) break loop11;
                                 EarlyExitException eee =
                                     new EarlyExitException(11, input);
                                 throw eee;
@@ -8425,7 +8425,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "FLOAT"
@@ -8486,24 +8486,24 @@ public class InputfileLexer extends Lexer {
 
 
                 switch (alt15) {
-                case 1 :
-                    // C:\\Users\\jonathan\\workspace\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:
-                    {
-                    if ( (input.LA(1) >= '0' && input.LA(1) <= '9') ) {
-                        input.consume();
-                    }
-                    else {
-                        MismatchedSetException mse = new MismatchedSetException(null,input);
-                        recover(mse);
-                        throw mse;
-                    }
+            	case 1 :
+            	    // C:\\Users\\jonathan\\workspace\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:
+            	    {
+            	    if ( (input.LA(1) >= '0' && input.LA(1) <= '9') ) {
+            	        input.consume();
+            	    }
+            	    else {
+            	        MismatchedSetException mse = new MismatchedSetException(null,input);
+            	        recover(mse);
+            	        throw mse;
+            	    }
 
 
-                    }
-                    break;
+            	    }
+            	    break;
 
-                default :
-                    if ( cnt15 >= 1 ) break loop15;
+            	default :
+            	    if ( cnt15 >= 1 ) break loop15;
                         EarlyExitException eee =
                             new EarlyExitException(15, input);
                         throw eee;
@@ -8517,7 +8517,7 @@ public class InputfileLexer extends Lexer {
 
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "EXPONENT"
@@ -8596,24 +8596,24 @@ public class InputfileLexer extends Lexer {
 
 
                 switch (alt17) {
-                case 1 :
-                    // C:\\Users\\jonathan\\workspace\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:
-                    {
-                    if ( (input.LA(1) >= '\u0000' && input.LA(1) <= '\t')||(input.LA(1) >= '\u000B' && input.LA(1) <= '\f')||(input.LA(1) >= '\u000E' && input.LA(1) <= '\uFFFF') ) {
-                        input.consume();
-                    }
-                    else {
-                        MismatchedSetException mse = new MismatchedSetException(null,input);
-                        recover(mse);
-                        throw mse;
-                    }
+            	case 1 :
+            	    // C:\\Users\\jonathan\\workspace\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:
+            	    {
+            	    if ( (input.LA(1) >= '\u0000' && input.LA(1) <= '\t')||(input.LA(1) >= '\u000B' && input.LA(1) <= '\f')||(input.LA(1) >= '\u000E' && input.LA(1) <= '\uFFFF') ) {
+            	        input.consume();
+            	    }
+            	    else {
+            	        MismatchedSetException mse = new MismatchedSetException(null,input);
+            	        recover(mse);
+            	        throw mse;
+            	    }
 
 
-                    }
-                    break;
+            	    }
+            	    break;
 
-                default :
-                    break loop17;
+            	default :
+            	    break loop17;
                 }
             } while (true);
 
@@ -8647,7 +8647,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "COMMENT"
@@ -8678,7 +8678,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "WS"
@@ -8704,24 +8704,24 @@ public class InputfileLexer extends Lexer {
 
 
                 switch (alt19) {
-                case 1 :
-                    // C:\\Users\\jonathan\\workspace\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:
-                    {
-                    if ( input.LA(1)=='$'||(input.LA(1) >= '-' && input.LA(1) <= '.')||(input.LA(1) >= '0' && input.LA(1) <= '9')||(input.LA(1) >= 'A' && input.LA(1) <= 'Z')||input.LA(1)=='_'||(input.LA(1) >= 'a' && input.LA(1) <= 'z') ) {
-                        input.consume();
-                    }
-                    else {
-                        MismatchedSetException mse = new MismatchedSetException(null,input);
-                        recover(mse);
-                        throw mse;
-                    }
+            	case 1 :
+            	    // C:\\Users\\jonathan\\workspace\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:
+            	    {
+            	    if ( input.LA(1)=='$'||(input.LA(1) >= '-' && input.LA(1) <= '.')||(input.LA(1) >= '0' && input.LA(1) <= '9')||(input.LA(1) >= 'A' && input.LA(1) <= 'Z')||input.LA(1)=='_'||(input.LA(1) >= 'a' && input.LA(1) <= 'z') ) {
+            	        input.consume();
+            	    }
+            	    else {
+            	        MismatchedSetException mse = new MismatchedSetException(null,input);
+            	        recover(mse);
+            	        throw mse;
+            	    }
 
 
-                    }
-                    break;
+            	    }
+            	    break;
 
-                default :
-                    if ( cnt19 >= 1 ) break loop19;
+            	default :
+            	    if ( cnt19 >= 1 ) break loop19;
                         EarlyExitException eee =
                             new EarlyExitException(19, input);
                         throw eee;
@@ -8736,7 +8736,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "STRING"

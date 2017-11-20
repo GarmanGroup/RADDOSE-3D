@@ -1,6 +1,9 @@
 package se.raddo.raddose3D.tests;
 
 import java.util.Random;
+
+import static org.testng.Assert.assertTrue;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,11 +15,17 @@ import se.raddo.raddose3D.Beam;
 import se.raddo.raddose3D.BeamTophat;
 import se.raddo.raddose3D.CoefCalcFromParams;
 import se.raddo.raddose3D.CoefCalcRaddose;
+import se.raddo.raddose3D.CoefCalcFromSequenceSAXS;
 
 /**
  * @author magd3052
  */
 public class CoefCalcTests {
+  /**
+   * Right angle.
+   */
+  protected static final double RIGHT_ANGLE = 90;
+  
   /**
    * Take a unit cell consisting entirely of water and make sure
    * number of hydrogens is twice the number of oxygens.
@@ -194,6 +203,49 @@ public class CoefCalcTests {
         "Elastic Coefficient", 0.000005);
     Assertion.equals(coefCalc.getAttenuationCoefficient(), 4.97e-04,
         "Attenuation Coefficient", 0.000005);
+  }
+  
+  /**
+   * This test checks that the sequence file parser is able to
+   * parse the correct number of protein, DNA and RNA residues.
+   */
+  public void testSequenceParser() {
+    List<String> heavyProtAtomNames = new ArrayList<String>();
+    List<Double> heavyProtAtomNums = new ArrayList<Double>();
+
+    List<String> heavySolutionConcNames = new ArrayList<String>();
+    List<Double> heavySolutionConcNums = new ArrayList<Double>();
+
+    heavyProtAtomNames.add("S");
+    heavyProtAtomNums.add(10.0);
+
+    heavySolutionConcNames.add("Na");
+    heavySolutionConcNames.add("Cl");
+    heavySolutionConcNums.add(1200.);
+    heavySolutionConcNums.add(200.);
+    
+    CoefCalcFromSequenceSAXS coefCalc = new CoefCalcFromSequenceSAXS(100.0, 100.0, 
+        100.0, RIGHT_ANGLE, RIGHT_ANGLE, RIGHT_ANGLE, heavyProtAtomNames,
+        heavyProtAtomNums, heavySolutionConcNames, heavySolutionConcNums,
+        -1.0, 1.0, "TestSequence.fasta");
+    
+    boolean correctNumProtein = false;
+    if (coefCalc.getNumAminoAcids() == 25) {
+      correctNumProtein = true;
+    }
+    assertTrue(correctNumProtein, "Sequence file parser is not counting the correct amount of protein residues");
+    
+    boolean correctNumDNA = false;
+    if (coefCalc.getNumDNA() == 9) {
+      correctNumDNA = true;
+    }
+    assertTrue(correctNumDNA, "Sequence file parser is not counting the correct amount of DNA residues");
+    
+    boolean correctNumRNA = false;
+    if (coefCalc.getNumRNA() == 4) {
+      correctNumRNA = true;
+    }
+    assertTrue(correctNumRNA, "Sequence file parser is not counting the correct amount of RNA residues");
   }
 
   /**

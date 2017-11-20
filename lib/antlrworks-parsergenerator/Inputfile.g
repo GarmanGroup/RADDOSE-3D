@@ -53,10 +53,18 @@ scope {
 	CoefCalc		crystalCoefCalcClass;
 	int			crystalDdm;
 	DDM			crystalDdmClass;	
+	int			crystalContainerMaterial;
+	Container		crystalContainerMaterialClass;
 	Double			gammaParam;
 	Double			b0Param;
-	Double			betaParam;		
+	Double			betaParam;
+	String			containerMixture;
+	Double			containerThickness;
+	Double			containerDensity;
+	List<String>	containerElementNames;
+	List<Double>	containerElementNums;		
 	String			pdb;
+	String			seqFile;
 	Double			proteinConc;
 	Double			cellA;
 	Double			cellB;
@@ -102,7 +110,7 @@ if ($crystal::crystalCoefCalc == 3) {
 
 if ($crystal::crystalCoefCalc == 4)
 {
-  if ($crystal::heavySolutionConcNames.size() > 0)
+  if ($crystal::heavySolutionConcNames != null)
   	$crystal::crystalCoefCalcClass = new CoefCalcFromPDB($crystal::pdb, $crystal::heavySolutionConcNames, $crystal::heavySolutionConcNums);
   else
 	$crystal::crystalCoefCalcClass = new CoefCalcFromPDB($crystal::pdb);
@@ -116,6 +124,23 @@ if ($crystal::crystalCoefCalc == 5)
   													$crystal::heavyProteinAtomNames, $crystal::heavyProteinAtomNums,
   													$crystal::heavySolutionConcNames, $crystal::heavySolutionConcNums,
   													$crystal::solFrac, $crystal::proteinConc);
+}
+
+if ($crystal::crystalCoefCalc == 6)
+{
+  $crystal::crystalCoefCalcClass = new CoefCalcFromSequence($crystal::cellA, $crystal::cellB, $crystal::cellC, $crystal::cellAl, $crystal::cellBe, $crystal::cellGa,
+  													$crystal::numMon,
+  													$crystal::heavyProteinAtomNames, $crystal::heavyProteinAtomNums,
+  													$crystal::heavySolutionConcNames, $crystal::heavySolutionConcNums,
+  													$crystal::solFrac, $crystal::seqFile);
+}
+
+if ($crystal::crystalCoefCalc == 7)
+{
+  $crystal::crystalCoefCalcClass = new CoefCalcFromSequenceSAXS($crystal::cellA, $crystal::cellB, $crystal::cellC, $crystal::cellAl, $crystal::cellBe, $crystal::cellGa,
+  													$crystal::heavyProteinAtomNames, $crystal::heavyProteinAtomNums,
+  													$crystal::heavySolutionConcNames, $crystal::heavySolutionConcNums,
+  													$crystal::solFrac, $crystal::proteinConc, $crystal::seqFile);
 }
 
 $crystal::crystalProperties.put(Crystal.CRYSTAL_COEFCALC, $crystal::crystalCoefCalcClass);
@@ -137,6 +162,24 @@ if ($crystal::crystalDdm == 3)
 
 $crystal::crystalProperties.put(Crystal.CRYSTAL_DDM, $crystal::crystalDdmClass);
 
+if ($crystal::crystalContainerMaterial == 1)
+{
+	$crystal::crystalContainerMaterialClass = new ContainerTransparent();
+}
+
+if ($crystal::crystalContainerMaterial == 2)
+{
+	$crystal::crystalContainerMaterialClass = new ContainerMixture($crystal::containerThickness, $crystal::containerDensity, $crystal::containerMixture);
+}
+
+if ($crystal::crystalContainerMaterial == 3)
+{
+	$crystal::crystalContainerMaterialClass = new ContainerElemental($crystal::containerThickness, $crystal::containerDensity, $crystal::containerElementNames,
+													$crystal::containerElementNums);
+}
+
+$crystal::crystalProperties.put(Crystal.CRYSTAL_CONTAINER, $crystal::crystalContainerMaterialClass);
+
 
 $cObj = crystalFactory.createCrystal($crystal::crystalType, $crystal::crystalProperties);
 }
@@ -156,6 +199,10 @@ crystalLine
 	| h=crystalDecayParam		{ $crystal::gammaParam 					= $h.gammaParam; 
 	                           			  $crystal::b0Param 					= $h.b0Param; 
 	                           			  $crystal::betaParam 					= $h.betaParam; }
+	| i=containerThickness		{ $crystal::containerThickness 				= $i.value; }
+	| j=containerDensity		{ $crystal::containerDensity				= $j.value; }
+	| k=crystalContainerMaterial	{ $crystal::crystalContainerMaterial			= $k.value; }
+	| l=containerMaterialMixture	{ $crystal::containerMixture 				= $l.value; }
 	| m=unitcell			{ $crystal::cellA					= $m.dimA; 
    							  $crystal::cellB 					= $m.dimB; 	
 							  $crystal::cellC 					= $m.dimC;	
@@ -176,6 +223,9 @@ crystalLine
 	| w=modelFile				{ $crystal::crystalProperties.put(Crystal.CRYSTAL_WIREFRAME_FILE, $w.value); }
 	| x=calculateEscape		{ $crystal::crystalProperties.put(Crystal.CRYSTAL_ELECTRON_ESCAPE, $x.value); }
 	| y=proteinConcentration	{ $crystal::proteinConc					= $y.proteinConc;}
+	| z=containerMaterialElements	{ $crystal::containerElementNames	= $z.names;
+							  $crystal::containerElementNums	= $z.num;	}
+	| aa=sequenceFile 		{ $crystal::seqFile 		= $aa.value; }
 	  
 	;
 
@@ -212,6 +262,8 @@ crystalCoefcalcKeyword returns [int value]
 	| RDFORTAN	{ $value = 3;}
 	| PDB	  	{ $value = 4;}
 	| SAXS		{ $value = 5;}
+	| SEQUENCE	{ $value = 6;}
+	| SAXSSEQ	{ $value = 7;}
 	;
 DUMMY : ('D'|'d')('U'|'u')('M'|'m')('M'|'m')('Y'|'y') ;
 DEFAULT	: ('D'|'d')('E'|'e')('F'|'f')('A'|'a')('U'|'u')('L'|'l')('T'|'t');
@@ -220,6 +272,8 @@ RDFORTAN : ('R'|'r')('D'|'d')('V'|'v')('2'|'3')? ;
 RDJAVA : ('R'|'r')('D'|'d')('3')('D'|'d')? ;
 PDB : ('E'|'e')('X'|'x')('P'|'p');
 SAXS : ('S'|'s')('A'|'a')('X'|'x')('S'|'s');
+SEQUENCE : ('S'|'s')('E'|'e')('Q'|'q')('U'|'u')('E'|'e')('N'|'n')('C'|'c')('E'|'e');
+SAXSSEQ : ('S'|'s')('A'|'a')('X'|'x')('S'|'s')('S'|'s')('E'|'e')('Q'|'q');
 
 crystalDim returns [Map<Object, Object> properties]
 @init { 
@@ -228,7 +282,9 @@ crystalDim returns [Map<Object, Object> properties]
 	(
       a=FLOAT b=FLOAT c=FLOAT { $properties.put(Crystal.CRYSTAL_DIM_X, Double.parseDouble($a.text));
                                 $properties.put(Crystal.CRYSTAL_DIM_Y, Double.parseDouble($b.text));
-                                $properties.put(Crystal.CRYSTAL_DIM_Z, Double.parseDouble($c.text)); }	
+                                $properties.put(Crystal.CRYSTAL_DIM_Z, Double.parseDouble($c.text)); }
+    | e=FLOAT f=FLOAT{ $properties.put(Crystal.CRYSTAL_DIM_X, Double.parseDouble($e.text));
+    		       $properties.put(Crystal.CRYSTAL_DIM_Y, Double.parseDouble($f.text)); }	
     | d=FLOAT { $properties.put(Crystal.CRYSTAL_DIM_X, Double.parseDouble($d.text)); }
 	) ;
 DIMENSION : ('D'|'d')('I'|'i')('M'|'m')('E'|'e')('N'|'n')('S'|'s')('I'|'i')('O'|'o')('N'|'n')('S'|'s')? ;
@@ -261,8 +317,9 @@ unitcell returns [Double dimA, Double dimB, Double dimC, Double angA, Double ang
 UNITCELL : ('U'|'u')('N'|'n')('I'|'i')('T'|'t')('C'|'c')('E'|'e')('L'|'l')('L'|'l') ;
 	
 proteinConcentration returns [Double proteinConc]
-	: PROTEINCONCENTRATION a=FLOAT {$proteinConc = Double.parseDouble($a.text);};
-PROTEINCONCENTRATION: ('P'|'p')('R'|'r')('O'|'o')('T'|'t')('E'|'e')('I'|'i')('N'|'n')('C'|'c')('O'|'o')('N'|'n')('C'|'c') ;
+	: (PROTEINCONCENTRATION | PROTEINCONC) a=FLOAT {$proteinConc = Double.parseDouble($a.text);};
+PROTEINCONC: ('P'|'p')('R'|'r')('O'|'o')('T'|'t')('E'|'e')('I'|'i')('N'|'n')('C'|'c')('O'|'o')('N'|'n')('C'|'c') ;
+PROTEINCONCENTRATION: ('P'|'p')('R'|'r')('O'|'o')('T'|'t')('E'|'e')('I'|'i')('N'|'n')('C'|'c')('O'|'o')('N'|'n')('C'|'c')('E'|'e')('N'|'n')('T'|'t')('R'|'r')('A'|'a')('T'|'t')('I'|'i')('O'|'o')('N'|'n') ;
 
 nummonomers returns [int value]
 	: NUMMONOMERS a=FLOAT {$value = Integer.parseInt($a.text);};
@@ -317,6 +374,46 @@ calculateEscape returns [String value]
 	: CALCULATEESCAPE a=STRING {$value = $a.text;};
 CALCULATEESCAPE  
 	:	 ('C'|'c')('A'|'a')('L'|'l')('C'|'c')('U'|'u')('L'|'l')('A'|'a')('T'|'t')('E'|'e')('E'|'e')('S'|'s')('C'|'c')('A'|'a')('P'|'p')('E'|'e') ;
+	
+crystalContainerMaterial returns [int value]
+	: ( CONTAINERMATERIALTYPE | MATERIALTYPE ) e=crystalContainerKeyword { $value = $e.value; };
+CONTAINERMATERIALTYPE : ('C'|'c')('O'|'o')('N'|'n')('T'|'t')('A'|'a')('I'|'i')('N'|'n')('E'|'e')('R'|'r')('M'|'m')('A'|'a')('T'|'t')('E'|'e')('R'|'r')('I'|'i')('A'|'a')('L'|'l')('T'|'t')('Y'|'y')('P'|'p')('E'|'e') ;
+MATERIALTYPE : ('M'|'m')('A'|'a')('T'|'t')('E'|'e')('R'|'r')('I'|'i')('A'|'a')('L'|'l')('T'|'t')('Y'|'y')('P'|'p')('E'|'e') ;
+crystalContainerKeyword returns [int value]
+	: NONE 		{ $value = 1; }
+	| MIXTURE 	{ $value = 2; }
+	| ELEMENTAL 	{ $value = 3; }
+	;
+NONE 	: ('N'|'n')('O'|'o')('N'|'n')('E'|'e') ;
+MIXTURE : ('M'|'m')('I'|'i')('X'|'x')('T'|'t')('U'|'u')('R'|'r')('E'|'e') ;
+ELEMENTAL : ('E'|'e')('L'|'l')('E'|'e')('M'|'m')('E'|'e')('N'|'n')('T'|'t')('A'|'a')('L'|'l') ;
+	
+containerThickness returns[double value]
+	: CONTAINERTHICKNESS a=FLOAT {$value = Double.parseDouble($a.text);};
+CONTAINERTHICKNESS: ('C'|'c')('O'|'o')('N'|'n')('T'|'t')('A'|'a')('I'|'i')('N'|'n')('E'|'e')('R'|'r')('T'|'t')('H'|'h')('I'|'i')('C'|'c')('K'|'k')('N'|'n')('E'|'e')('S'|'s')('S'|'s') ;
+
+containerMaterialMixture returns [String value]
+	: (CONTAINERMATERIALMIXTURE | MATERIALMIXTURE) a=STRING {$value = $a.text;};
+CONTAINERMATERIALMIXTURE: ('C'|'c')('O'|'o')('N'|'n')('T'|'t')('A'|'a')('I'|'i')('N'|'n')('E'|'e')('R'|'r')('M'|'m')('A'|'a')('T'|'t')('E'|'e')('R'|'r')('I'|'i')('A'|'a')('L'|'l')('M'|'m')('I'|'i')('X'|'x')('T'|'t')('U'|'u')('R'|'r')('E'|'e') ;
+MATERIALMIXTURE: ('M'|'m')('A'|'a')('T'|'t')('E'|'e')('R'|'r')('I'|'i')('A'|'a')('L'|'l')('M'|'m')('I'|'i')('X'|'x')('T'|'t')('U'|'u')('R'|'r')('E'|'e') ;
+
+containerMaterialElements returns[List<String> names, List<Double> num;]
+@init{
+$names 	= new ArrayList<String>();
+$num	= new ArrayList<Double>();
+}
+	: (CONTAINERMATERIALELEMENTS | MATERIALELEMENTS) (a=ELEMENT b=FLOAT {$names.add($a.text); $num.add(Double.parseDouble($b.text)); } )+ ;
+CONTAINERMATERIALELEMENTS: ('C'|'c')('O'|'o')('N'|'n')('T'|'t')('A'|'a')('I'|'i')('N'|'n')('E'|'e')('R'|'r')('M'|'m')('A'|'a')('T'|'t')('E'|'e')('R'|'r')('I'|'i')('A'|'a')('L'|'l')('E'|'e')('L'|'l')('E'|'e')('M'|'m')('E'|'e')('N'|'n')('T'|'t')('S'|'s') ;
+MATERIALELEMENTS: ('M'|'m')('A'|'a')('T'|'t')('E'|'e')('R'|'r')('I'|'i')('A'|'a')('L'|'l')('E'|'e')('L'|'l')('E'|'e')('M'|'m')('E'|'e')('N'|'n')('T'|'t')('S'|'s') ;
+
+containerDensity returns[double value]
+	: CONTAINERDENSITY a=FLOAT {$value = Double.parseDouble($a.text);};
+CONTAINERDENSITY: ('C'|'c')('O'|'o')('N'|'n')('T'|'t')('A'|'a')('I'|'i')('N'|'n')('E'|'e')('R'|'r')('D'|'d')('E'|'e')('N'|'n')('S'|'s')('I'|'i')('T'|'t')('Y'|'y') ;
+
+sequenceFile returns[String value] 
+	: (SEQUENCEFILE | SEQFILE) a=STRING {$value = $a.text;};
+SEQUENCEFILE : 	('S'|'s')('E'|'e')('Q'|'q')('U'|'u')('E'|'e')('N'|'n')('C'|'c')('E'|'e')('F'|'f')('I'|'i')('L'|'l')('E'|'e');
+SEQFILE :	('S'|'s')('E'|'e')('Q'|'q')('F'|'f')('I'|'i')('L'|'l')('E'|'e');
 
 
 // ------------------------------------------------------------------

@@ -208,8 +208,7 @@
  
  <target name="test">
   <mkdir dir="${report.dir}"/>
-  
-  <testng outputdir="${report.dir}" classpathref="classes" excludedgroups="advanced" haltOnfailure="true"> 
+  <testng outputdir="${report.dir}" classpathref="classes" excludedgroups="advanced" haltOnfailure="true">
    <xmlfileset dir="." includes="testng.xml"/> 
    <classpath refid="antlr" />
    <classpath refid="math3" />
@@ -219,8 +218,7 @@
 
  <target name="test-all">
   <mkdir dir="${report.dir}"/>
-  
-  <testng outputdir="${report.dir}" classpathref="classes" configFailurePolicy="continue" haltOnfailure="true"> 
+  <testng outputdir="${report.dir}" classpathref="classes" configFailurePolicy="continue" haltOnfailure="true">
    <xmlfileset dir="." includes="testng.xml"/> 
    <classpath refid="antlr" />
    <classpath refid="math3" />

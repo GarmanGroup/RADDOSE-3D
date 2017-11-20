@@ -31,7 +31,9 @@ public abstract class Crystal {
   /** Constant for data fields in Map constructors: Wireframe file. */
   public static final String     CRYSTAL_WIREFRAME_FILE        = "WIREFRAME_FILE";
   /** Constant for data fields in Map constructors: Photoelectron escape. */
-  public static final String     CRYSTAL_ELECTRON_ESCAPE = "PHESCAPE";
+  public static final String     CRYSTAL_ELECTRON_ESCAPE       = "PHESCAPE";
+  /** Constant for data fields in Map constructors: Container Type. */
+  public static final String     CRYSTAL_CONTAINER             = "CONTAINER";
 
   /** Default recommended voxel resolution in voxels/micrometre. */
   protected static final Double  CRYSTAL_RESOLUTION_DEF        = 0.5d;
@@ -55,6 +57,8 @@ public abstract class Crystal {
   private final DDM              ddm;
   /** The CoefCalc method being employed to generate crystal coefficients. */
   private final CoefCalc         coefCalc;
+  /** The container encasing the irradiated sample*/
+  private final Container        sampleContainer;
 
   /**
    * Cumulative dose lost from crystal
@@ -118,6 +122,7 @@ public abstract class Crystal {
    * Generic property constructor for crystal classes.
    * Sets the DDM object if defined, a reasonable default otherwise.
    * Sets the CoefCalc object if defined, a reasonable default otherwise.
+   * Sets the Container object if defined, a reasonable default otherwise.
    *
    * @param properties
    *          Map of type <Object, Object> that contains all crystal properties.
@@ -136,7 +141,13 @@ public abstract class Crystal {
     } else {
       coefCalc = (CoefCalc) properties.get(Crystal.CRYSTAL_COEFCALC);
     }
-    
+
+    if (properties.get(Crystal.CRYSTAL_CONTAINER) == null) {
+      sampleContainer = new ContainerTransparent();
+    } else {
+      sampleContainer = (Container) properties.get(Crystal.CRYSTAL_CONTAINER);
+    }
+
     String pEE = (String) properties.get(CRYSTAL_ELECTRON_ESCAPE);
     photoElectronEscape = ("TRUE".equals(pEE));
   }
@@ -445,9 +456,21 @@ public abstract class Crystal {
     setFLparamsForCurrentBeam(feFactors);
     }
 
-    double beamEnergyInJoules = beam.getPhotonEnergy()
-        * Beam.KEVTOJOULES;
+
+    //Calculate the attenuation due to the sample container
+    sampleContainer.calculateContainerAttenuation(beam);
+    //Print information about the attenuation to the console.
+    sampleContainer.containerInformation();
     
+    //Apply the attenuation of the container to the beam
+    beam.applyContainerAttenuation(sampleContainer);
+
+    //Generate beam array.
+    //NOTE: this only does anything for the experimental beam class.
+    //The beam implementation should change so that an array is an instance property
+    //for each type of beam.
+    beam.generateBeamArray();
+
     // Set up angles to iterate over.
     double[] angles;
     if (Math.abs(wedge.getStartAng() - wedge.getEndAng()) < wedge.getAngRes()) {
@@ -475,8 +498,7 @@ public abstract class Crystal {
     // The main meat of it:
     for (int n = 0; n < angles.length; n++) {
       // Expose one angle
-      exposeAngle(angles[n], beam, wedge, n, angles.length,
-          beamEnergyInJoules, fluorescenceEnergyRelease, augerEnergy);
+      exposeAngle(angles[n], beam, wedge, n, angles.length, fluorescenceEnergyRelease, augerEnergy);
 
       for (ExposeObserver eo : exposureObservers) {
         eo.imageComplete(n, angles[n]);
@@ -517,8 +539,7 @@ public abstract class Crystal {
   }
 
   private void exposeAngle(final double angle, final Beam beam,
-      final Wedge wedge, final int anglenum, final int anglecount,
-      final double beamEnergy,  double fluorescenceEnergyRelease, double augerEnergy) {
+      final Wedge wedge, final int anglenum, final int anglecount,  double fluorescenceEnergyRelease, double augerEnergy) {
 
     final int[] crystalSize = getCrystSizeVoxels();
 
@@ -529,10 +550,11 @@ public abstract class Crystal {
     final double anglesin = Math.sin(angle);
     setupDepthFinding(angle, wedge);
 
-    final double absorptionFraction =
-        1 - Math.exp(-1 * coefCalc.getAbsorptionCoefficient() 
+
+    final double energyPerFluence =
+        1 - Math.exp(-1 * coefCalc.getAbsorptionCoefficient()
             / getCrystalPixPerUM());
-    // absorption fraction of the beam by a voxel
+    // absorption of the beam by a voxel
     
         final double fluenceToDoseFactorCompton = -1
             * Math.expm1(-1 * coefCalc.getInelasticCoefficient()
@@ -545,13 +567,16 @@ public abstract class Crystal {
             * 1e-6; // MGy
             //
 
-        // Calculate voxel mass (kg) = voxelVolume (um^3) * density (g/cm^3) *
-        //                             unitConversionFactor
-        voxelMass = UNIT_CONVERSION * (Math.pow(getCrystalPixPerUM(), -3) *
-            coefCalc.getDensity());
-                
-    final double absorptionFractionPerKg =
-        absorptionFraction / voxelMass * GY_TO_MGY;   
+    final double fluenceToDoseFactor = -1
+        * Math.expm1(-1 * coefCalc.getAbsorptionCoefficient()
+            / getCrystalPixPerUM())
+        // exposure for the Voxel (J) * fraction absorbed by voxel
+        / (1e-15 * (Math.pow(getCrystalPixPerUM(), -3) * coefCalc
+            .getDensity()))
+        // Voxel mass: 1um^3/1m/ml
+        // (= 1e-18/1e3) / [volume (um^-3) *density (g/ml)]
+        * 1e-6; // MGy
+
 
     final double fluenceToElasticFactor = -1
         * Math.expm1(-1 * coefCalc.getElasticCoefficient()
@@ -606,44 +631,30 @@ public abstract class Crystal {
                * Assigning exposure (joules incident) and dose (J/kg absorbed)
                * to the voxel.
                */
-              double voxImageFluence =
-                  (unattenuatedBeamIntensity) * beamAttenuationFactor
-                      * Math.exp(depth * beamAttenuationExpFactor)
-                      * (beamEnergy);
-              // Attenuates the beam for absorption
 
-              /*
-               * I think that we need to reduce the voxImageEnergy due to 
-               * X-ray fluorescence escape in the first line below this 
-               * comment!
-               * 
-               * One other consideration is whether you put the code for
-               * Energy reduction by X-ray fluorescence before the code to 
-               * reduce the dose due to photoelectron escape (PE). This is 
-               * because the inner shell electron has to be ejected before 
-               * X-ray fluorescence takes place. Hence there's an argument
-               * for doing PE first
-               */
+
+              double voxImageFluence =     // Attenuates the beam for absorption in joules 
+                  unattenuatedBeamIntensity * beamAttenuationFactor
+                      * Math.exp(depth * beamAttenuationExpFactor);              
+
               
               double electronweight = 9.10938356E-31;
               double csquared = 3E8*3E8;
               double beamenergy = (beam.getPhotonEnergy() * Beam.KEVTOJOULES);
               double mcsquared = electronweight * csquared;
               double voxImageElectronEnergyDose = mcsquared / (2*beamenergy + mcsquared);
+
               voxImageElectronEnergyDose = (beamenergy * (1 - (Math.pow(voxImageElectronEnergyDose, 0.5)))); //Compton electron energy in joules
-              //Check that N is correct - may need voxel volume as well to get units right
               double numberofphotons = voxImageFluence / beamenergy; //This gives I0 in equation 9 in Karthik 2010, dividing by beam energy leaves photons per um^2/s
-              double voxImageEnergy = voxImageFluence;
               double voxImageComptonFluence = numberofphotons * voxImageElectronEnergyDose; //Re-calculate voxImageFluence using Compton electron energy
               double voxImageDoseCompton = fluenceToDoseFactorCompton * voxImageComptonFluence;
-              
-              double voxImageDose = absorptionFractionPerKg * voxImageEnergy;
               
               // MGy
               double voxElasticYield = fluenceToElasticFactor *
                   voxImageFluence; //* beamEnergy;
-              
-              
+
+              double voxImageDose = fluenceToDoseFactor * voxImageFluence;
+
               if (voxImageDose > 0) {
 
                 addFluence(i, j, k, voxImageFluence);
@@ -653,7 +664,7 @@ public abstract class Crystal {
                 //Energy to be released by voxel
                   double totFluorescenceEnergyRelease = fluorescenceEnergyRelease * numberofphotons; //Don't think this number of photons is right for me
                 //convert this to a dose to be released
-                  double voxImageFlDoseRelease = absorptionFractionPerKg * totFluorescenceEnergyRelease;
+                  double voxImageFlDoseRelease = fluenceToDoseFactor * totFluorescenceEnergyRelease;
                   //Set up Fl parameters and calculate distance distribution
                   
                   //TOTEST
@@ -661,7 +672,7 @@ public abstract class Crystal {
                   
                   //auger part
                   //Dose in voxel
-                  double totAugerDose = augerEnergy * numberofphotons * absorptionFractionPerKg;
+                  double totAugerDose = augerEnergy * numberofphotons * fluenceToDoseFactor;
                   
                   //Do PE
                   double dosePE = voxImageDose - voxImageFlDoseRelease - totAugerDose;
@@ -693,6 +704,7 @@ public abstract class Crystal {
                 } else {
                   addDose(i, j, k, voxImageDose);
                 }
+
                 addDose(i, j, k, voxImageDoseCompton);
                 addElastic(i, j, k, voxElasticYield);
 
@@ -708,11 +720,17 @@ public abstract class Crystal {
                   getDDM().calcDecay(interpolatedVoxelDose);
 
               // Fluence times the fraction of the beam absorbed by the voxel
-              double absorbedEnergy = voxImageEnergy * absorptionFraction;
+
 //may need to pass in different things or pass in more and change in observer
+
+              double absorbedEnergy = voxImageFluence * energyPerFluence;
+              double comptonabsorbedEnergy = voxImageComptonFluence * energyPerFluence;
+              
+              absorbedEnergy = absorbedEnergy + comptonabsorbedEnergy;
+
               for (ExposeObserver eo : exposureObservers) {
                 eo.exposureObservation(anglenum, i, j, k, voxImageDose,
-                    totalVoxelDose, voxImageEnergy,
+                    totalVoxelDose, voxImageFluence,
                     relativeDiffractionEfficiency, absorbedEnergy,
                     voxElasticYield);
               }
