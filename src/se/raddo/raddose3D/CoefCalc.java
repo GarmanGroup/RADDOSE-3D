@@ -34,15 +34,6 @@ public abstract class CoefCalc {
    *         elastic scattering coefficient in units m^-1 (tbc)
    */
   public abstract double getElasticCoefficient();
-  
-  /**
-   * Returns the current Inelastic scattering
-   * coefficient.
-   * 
-   * @return
-   *         Inelastic scattering coefficient in units m^-1 (tbc)
-   */
-  public abstract double getInelasticCoefficient();
 
   /**
    * Returns the current inelastic X-ray (compton, incoherent) scattering
