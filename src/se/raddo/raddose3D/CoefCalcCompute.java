@@ -157,7 +157,6 @@ public class CoefCalcCompute extends CoefCalc {
   private final ElementDatabase      elementDB;
   
   private static final String        PHOTOELECTRIC                = "Photoelectric";
-  private static final String        INELASTIC                    = "Inelastic";
   private static final String        ELASTIC                      = "Elastic";
   private static final String        TOTAL                        = "Total";
   private static final String        COMPTON                      = "Compton Attenuation";
@@ -222,7 +221,7 @@ public class CoefCalcCompute extends CoefCalc {
     Map<String, Double> absCoefficients = calculateCoefficients(b.getPhotonEnergy());
     attCoeff = absCoefficients.get(TOTAL);
     elasCoeff = absCoefficients.get(ELASTIC);
-    absCoeffcomp = absCoefficients.get(INELASTIC);
+    absCoeffcomp = absCoefficients.get(COMPTON);
     absCoeffphoto = absCoefficients.get(PHOTOELECTRIC);
   }
   
