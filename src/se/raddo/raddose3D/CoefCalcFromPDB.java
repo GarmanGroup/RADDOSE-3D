@@ -545,7 +545,8 @@ public class CoefCalcFromPDB extends CoefCalcCompute {
       String pdbName = pdbCode.toUpperCase();
       downloadPDB(pdbName);
     }
-
+    
+    super.calculateDensity();
   }
 
   /**
@@ -581,8 +582,7 @@ public class CoefCalcFromPDB extends CoefCalcCompute {
         e.printStackTrace();
       }
     }
-    
-
+    super.calculateDensity();
   }
 
   /**

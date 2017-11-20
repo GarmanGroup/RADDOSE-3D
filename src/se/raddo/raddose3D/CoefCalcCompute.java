@@ -12,8 +12,13 @@ public class CoefCalcCompute extends CoefCalc {
   /**
    * Identified coefficients and density from last program run. Final variables.
    */
-  private double                     absCoeff, attCoeff, elasCoeff, density, compattenuation,
-                                     cellVolume; //absCoeff2 added for Compton
+  private double                     absCoeffcomp, absCoeffphoto, attCoeff, elasCoeff, density, cellVolume;
+  
+  /**
+   * Set of the unique elements present in the crystal (including solvent
+   * and macromolecular)
+   */
+  private Set<Element>               presentElements;
 
   /**
    * Percentage conversion.
@@ -120,6 +125,11 @@ public class CoefCalcCompute extends CoefCalc {
   protected static final double      OXYGENS_PER_DNA_NUCLEOTIDE   = 6;
   /** phosphoruses per DNA nucleotide. */
   protected static final double      PHOSPHORI_PER_DNA_NUCLEOTIDE = 1;
+  
+  /**
+   * Number of X-ray Fluorescent escape factors
+   */
+  private static final int NUM_FLUOR_ESCAPE_FACTORS  = 18;
 
   /**
    * Number of amino acids.
@@ -145,6 +155,13 @@ public class CoefCalcCompute extends CoefCalc {
    * Element database keeping the coefficients of all elements.
    */
   private final ElementDatabase      elementDB;
+  
+  private static final String        PHOTOELECTRIC                = "Photoelectric";
+  private static final String        ELASTIC                      = "Elastic";
+  private static final String        TOTAL                        = "Total";
+  private static final String        COMPTON                      = "Compton Attenuation";
+  private static final double        MIN_ATOMIC_NUM_FOR_K_SHELL_IONISATION = 11;
+  private static final double        MIN_ATOMIC_NUM_FOR_L_SHELL_IONISATION = 16;
 
   /**
    * Number of atoms (only those that are not part of the protein), per
@@ -172,14 +189,16 @@ public class CoefCalcCompute extends CoefCalc {
     solventOccurrence = new HashMap<Element, Double>();
     solventConcentration = new HashMap<Element, Double>();
   }
-
-  @Override
-  public void updateCoefficients(final Beam b) {
+  
+  /**
+   * Calculate the density of the crystal from its composition.
+   */
+  protected void calculateDensity() {
     // density is easy. Loop through all atoms and calculate total mass.
     // then express as g / cm-3.
     double mass = 0;
 
-    Set<Element> presentElements = new HashSet<Element>();
+    presentElements = new HashSet<Element>();
     presentElements.addAll(solventOccurrence.keySet());
     presentElements.addAll(macromolecularOccurrence.keySet());
 
@@ -188,9 +207,36 @@ public class CoefCalcCompute extends CoefCalc {
     }
     
     density = mass * MASS_TO_CELL_VOLUME / (cellVolume * UNITSPERMILLIUNIT);
-
-    double energy = b.getPhotonEnergy();
-
+  }
+  
+  /**
+   * Calculates the absorption, attenuation and elastic coefficients for the 
+   * crystal and updates the corresponding instance properties
+   * 
+   *  @param b
+   *    Beam object which contains the properties that describe the incident beam.
+   */
+  @Override
+  public void updateCoefficients(final Beam b) { 
+    Map<String, Double> absCoefficients = calculateCoefficients(b.getPhotonEnergy());
+    attCoeff = absCoefficients.get(TOTAL);
+    elasCoeff = absCoefficients.get(ELASTIC);
+    absCoeffcomp = absCoefficients.get(COMPTON);
+    absCoeffphoto = absCoefficients.get(PHOTOELECTRIC);
+  }
+  
+  /**
+   * Calculates the absorption, attenuation and elastic coefficients for
+   * the entire crystal.
+   * 
+   * @param energy
+   *          The energy in KeV of the incident photons.
+   * @return
+   *         Map containing the calculated coefficient values.
+   */
+  private Map<String, Double> calculateCoefficients(final double energy) {
+    
+    Map<String, Double> absCoeffs = new HashMap<String, Double>();
     double crossSectionPhotoElectric = 0;
     double crossSectionCoherent = 0;
     double crossSectionTotal = 0;
@@ -199,7 +245,7 @@ public class CoefCalcCompute extends CoefCalc {
     // take cross section contributions from each individual atom
     // weighted by the cell volume
     Map<Element.CrossSection, Double> cs;
-    for (Element e : presentElements) {
+    for (Element e : this.presentElements) {
       cs = e.getAbsCoefficients(energy);
       crossSectionPhotoElectric += totalAtoms(e)
           * cs.get(CrossSection.PHOTOELECTRIC) / cellVolume
@@ -210,20 +256,192 @@ public class CoefCalcCompute extends CoefCalc {
       crossSectionTotal += totalAtoms(e)
           * cs.get(CrossSection.TOTAL) / cellVolume
           / UNITSPERDECIUNIT;
-      crossSectionComptonAttenuation += totalAtoms(e)   // Added for COMPTON
-          * cs.get(CrossSection.COMPTON_ATTENUATION) / cellVolume
-          / UNITSPERDECIUNIT;     
+      crossSectionComptonAttenuation += totalAtoms(e) 
+          * cs.get(CrossSection.COMPTON) / cellVolume
+          / UNITSPERDECIUNIT;  
     }
+    crossSectionPhotoElectric = crossSectionPhotoElectric / UNITSPERMILLIUNIT;
+    crossSectionTotal = crossSectionTotal / UNITSPERMILLIUNIT;
+    crossSectionCoherent = crossSectionCoherent / UNITSPERMILLIUNIT;
+    crossSectionComptonAttenuation = crossSectionComptonAttenuation/ UNITSPERMILLIUNIT;
     
-    absCoeff = crossSectionPhotoElectric / UNITSPERMILLIUNIT;
-    attCoeff = crossSectionTotal / UNITSPERMILLIUNIT;
-    elasCoeff = crossSectionCoherent / UNITSPERMILLIUNIT;
-    compattenuation = crossSectionComptonAttenuation / UNITSPERMILLIUNIT;
+    absCoeffs.put(PHOTOELECTRIC, crossSectionPhotoElectric);
+    absCoeffs.put(ELASTIC, crossSectionCoherent);
+    absCoeffs.put(COMPTON, crossSectionComptonAttenuation);
+    absCoeffs.put(TOTAL, crossSectionTotal);
+
+    return absCoeffs;
+  }
+  
+  /**
+   * Calculates the absorption, attenuation and elastic coefficients for
+   * the given set of elements.
+   * 
+   * @param energy
+   *          The energy in KeV of the incident photons.
+   * @param elementSet
+   *          A set of elements for which the the coefficients are 
+   *          calculated from.
+   *          
+   * @return
+   *         Map containing the calculated coefficient values.
+   */
+  private Map<String, Double> calculateCoefficients(final double energy, 
+      final Element element) {
+    
+    Map<String, Double> absCoeffs = new HashMap<String, Double>();
+    double crossSectionPhotoElectric = 0;
+    double crossSectionCoherent = 0;
+    double crossSectionTotal = 0;
+    double crossSectionComptonAttenuation = 0;
+
+    // take cross section contributions from each individual atom
+    // weighted by the cell volume
+    Map<Element.CrossSection, Double> cs;
+    cs = element.getAbsCoefficients(energy);
+    crossSectionPhotoElectric += totalAtoms(element)
+        * cs.get(CrossSection.PHOTOELECTRIC) / cellVolume
+        / UNITSPERDECIUNIT;
+    crossSectionCoherent += totalAtoms(element)
+        * cs.get(CrossSection.COHERENT) / cellVolume
+        / UNITSPERDECIUNIT;
+    crossSectionTotal += totalAtoms(element)
+        * cs.get(CrossSection.TOTAL) / cellVolume
+        / UNITSPERDECIUNIT;
+    crossSectionComptonAttenuation += totalAtoms(element)  
+        * cs.get(CrossSection.COMPTON) / cellVolume
+        / UNITSPERDECIUNIT;    
+    
+    crossSectionPhotoElectric = crossSectionPhotoElectric / UNITSPERMILLIUNIT;
+    crossSectionTotal = crossSectionTotal / UNITSPERMILLIUNIT;
+    crossSectionCoherent = crossSectionCoherent / UNITSPERMILLIUNIT;
+    crossSectionComptonAttenuation = crossSectionComptonAttenuation/ UNITSPERMILLIUNIT;
+    
+    absCoeffs.put(PHOTOELECTRIC, crossSectionPhotoElectric);
+    absCoeffs.put(ELASTIC, crossSectionCoherent);
+    absCoeffs.put(COMPTON, crossSectionComptonAttenuation);
+    absCoeffs.put(TOTAL, crossSectionTotal);
+
+    return absCoeffs;
+  }
+
+  @Override
+  public double[][] getFluorescentEscapeFactors(Beam beam) {
+    double[][] fluorEscapeFactors = new double[presentElements.size()][NUM_FLUOR_ESCAPE_FACTORS];
+    int element_counter = 0;
+    double kShellEnergy,kFactorA,kFactorB,escapeMuAbsK,l1ShellEnergy,l1FactorA,l1FactorB,escapeMuAbsL1,l2ShellEnergy,l2FactorA,
+    l2FactorB,escapeMuAbsL2,l3ShellEnergy,l3FactorA,l3FactorB,escapeMuAbsL3;
+    Map<String, Double> photonMuAbsK;
+    Map<String, Double> photonMuAbsL1;
+    Map<String, Double> photonMuAbsL2;
+    Map<String, Double> photonMuAbsL3;
+    Map<String, Double> elAbsCoeffs;
+    
+    for (Element e : this.presentElements) {
+      elAbsCoeffs = calculateCoefficients(beam.getPhotonEnergy(), e);
+      e.EdgeRatio();
+      if (beam.getPhotonEnergy() > e.getKEdge() &&
+          e.getAtomicNumber() >= MIN_ATOMIC_NUM_FOR_K_SHELL_IONISATION) {
+        //K shell energy : checked from element database class
+        kShellEnergy = e.getKEdge();
+        //Probability of K shell ionization: checked worked out in element class
+        kFactorA = e.getKShellIonisationProb();               
+        //K shell fluorescent yield: checked from element database class
+        kFactorB = e.getKShellFluorescenceYield();
+        //This gives difference between the edge energies needed for fluorescent escape probability.
+        // Only L1 shell as this is most likely and gives a relevant result
+        photonMuAbsK = calculateCoefficients(e.getKEdge() - e.getL1Edge());
+        //Fluorescent escape probability. This takes muabs as mupe. 
+        //Fluorescence too low energy to consider compton in muabs
+        escapeMuAbsK = photonMuAbsK.get(PHOTOELECTRIC);
+      } 
+      else {
+        kShellEnergy = 0.0;
+        kFactorA = 0.0;
+        kFactorB = 0.0;
+        escapeMuAbsK = 0.0;
+      }
+      
+      if (beam.getPhotonEnergy() > e.getL1Edge() &&
+          e.getAtomicNumber() >= MIN_ATOMIC_NUM_FOR_L_SHELL_IONISATION) {
+        l1ShellEnergy = e.getL1Edge();
+        l1FactorA = e.getL1ShellIonisationProb();
+        l1FactorB = e.getL1ShellFluorescenceYield();
+        photonMuAbsL1 = calculateCoefficients(e.getL1Edge() - e.getM1Edge());
+        escapeMuAbsL1 = photonMuAbsL1.get(PHOTOELECTRIC);
+      } 
+      else {
+        l1ShellEnergy = 0.0;
+        l1FactorA = 0.0;
+        l1FactorB = 0.0;
+        escapeMuAbsL1 = 0.0;
+      }
+      
+      if (beam.getPhotonEnergy() > e.getL2Edge() &&
+          e.getAtomicNumber() >= MIN_ATOMIC_NUM_FOR_L_SHELL_IONISATION) {
+        l2ShellEnergy = e.getL2Edge();
+        l2FactorA = e.getL2ShellIonisationProb();
+        l2FactorB = e.getL2ShellFluorescenceYield();
+        photonMuAbsL2 = calculateCoefficients(e.getL2Edge() - e.getM1Edge());
+        escapeMuAbsL2 = photonMuAbsL2.get(PHOTOELECTRIC);
+      } 
+      else {
+        l2ShellEnergy = 0.0;
+        l2FactorA = 0.0;
+        l2FactorB = 0.0;
+        escapeMuAbsL2 = 0.0;
+      }
+      
+      if (beam.getPhotonEnergy() > e.getL3Edge() &&
+          e.getAtomicNumber() >= MIN_ATOMIC_NUM_FOR_L_SHELL_IONISATION) {
+        l3ShellEnergy = e.getL3Edge();
+        l3FactorA = e.getL3ShellIonisationProb();
+        l3FactorB = e.getL3ShellFluorescenceYield();
+        photonMuAbsL3 = calculateCoefficients(e.getL3Edge() - e.getM1Edge());
+        escapeMuAbsL3 = photonMuAbsL3.get(PHOTOELECTRIC);
+      } 
+      else {
+        l3ShellEnergy = 0.0;
+        l3FactorA = 0.0;
+        l3FactorB = 0.0;
+        escapeMuAbsL3 = 0.0;
+      }
+      
+      double muAbsFrac = elAbsCoeffs.get(PHOTOELECTRIC) / absCoeffphoto;
+      
+      //TODO change these to be something more readable, like a map structure
+      fluorEscapeFactors[element_counter][0] = muAbsFrac;
+      fluorEscapeFactors[element_counter][1] = kShellEnergy;
+      fluorEscapeFactors[element_counter][2] = kFactorA;
+      fluorEscapeFactors[element_counter][3] = kFactorB;
+      fluorEscapeFactors[element_counter][4] = escapeMuAbsK;
+      fluorEscapeFactors[element_counter][5] = l1ShellEnergy;
+      fluorEscapeFactors[element_counter][6] = l1FactorA;
+      fluorEscapeFactors[element_counter][7] = l1FactorB;
+      fluorEscapeFactors[element_counter][8] = escapeMuAbsL1;
+      fluorEscapeFactors[element_counter][9] = l2ShellEnergy;
+      fluorEscapeFactors[element_counter][10] = l2FactorA;
+      fluorEscapeFactors[element_counter][11] = l2FactorB;
+      fluorEscapeFactors[element_counter][12] = escapeMuAbsL2;
+      fluorEscapeFactors[element_counter][13] = l3ShellEnergy;
+      fluorEscapeFactors[element_counter][14] = l3FactorA;
+      fluorEscapeFactors[element_counter][15] = l3FactorB;
+      fluorEscapeFactors[element_counter][16] = escapeMuAbsL3;
+      
+      
+      element_counter += 1;
+    }
+    return fluorEscapeFactors;
   }
 
   @Override
   public double getAbsorptionCoefficient() {
-    return absCoeff;
+    return absCoeffphoto;
+  }
+  
+  @Override
+  public double getInelasticCoefficient() {
+    return absCoeffcomp;
   }
 
   @Override
@@ -235,17 +453,12 @@ public class CoefCalcCompute extends CoefCalc {
   public double getElasticCoefficient() {
     return elasCoeff;
   }
-  
-  @Override
-  public double getInelasticCoefficient() {
-    return compattenuation;
-  }
 
   @Override
   public double getDensity() {
     return density;
   }
-
+  
   /**
    * @return the numAminoAcids
    */
@@ -339,18 +552,16 @@ public class CoefCalcCompute extends CoefCalc {
   @Override
   public String toString() {
     return String.format(
-          "%n"
-            + "Crystal coefficients calculated with RADDOSE-3D: %n"
-            + "%n"
-            + "Photoelectric Absorption Coefficient: %.2e /um.%n"
+        "%n"
+            + "Crystal coefficients calculated with RADDOSE-3D. %n"
+            + "Photelectric Coefficient: %.2e /um.%n"
             + "Inelastic Coefficient: %.2e /um.%n"
             + "Elastic Coefficient: %.2e /um.%n"
             + "Attenuation Coefficient: %.2e /um.%n"
-            + "%n"
             + "Density: %.2f g/ml.%n",
-       absCoeff, compattenuation, elasCoeff, attCoeff, density);
+        absCoeffphoto, absCoeffcomp, elasCoeff, attCoeff, density);
   }
-
+    
   /**
    * Calculating solvent fraction from numbers of amino acids, RNA residues and
    * DNA residues in the unit cell.

@@ -63,7 +63,6 @@ public final class RD3D {
    */
   public static void main(final String[] cmdLineParams) {
     RD3D raddose = new RD3D(cmdLineParams);
-
     if (raddose.runExperiment()) {
       System.out.println(String.format(
           "RADDOSE-3D terminated after %.1f seconds",
@@ -162,7 +161,6 @@ public final class RD3D {
       "PMD.CyclomaticComplexity" })
   private void parseCommandLineParameters(final String[] cmdLineParams) {
     OutputFactory of = new OutputFactory();
-
     String command;
     for (int i = 0; i < cmdLineParams.length; i++) {
       command = cmdLineParams[i].toLowerCase();
@@ -301,6 +299,7 @@ public final class RD3D {
   /**
    * writes basic command line usage instructions to STDOUT.
    */
+  
   private static void printCommandlineHelp() {
     System.out.println("raddose   --   command line options  ("
         + Version.VERSION_STRING + ")");

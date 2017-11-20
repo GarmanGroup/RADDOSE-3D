@@ -14,7 +14,7 @@ public class CrystalDummy extends Crystal {
   public CrystalDummy() {
     super(new HashMap<Object, Object>());
   }
-
+  
   public CrystalDummy(Map<Object, Object> properties) {
     super(properties);
   }
@@ -86,6 +86,29 @@ public class CrystalDummy extends Crystal {
 
   @Override
   public double getElastic(int i, int j, int k) {
+    return 0;
+  }
+
+  @Override
+  public double getEscapeFactor(int i, int j, int k) {
+    return 1.0;
+  }
+
+  @Override
+  public double addDoseAfterPE(int i, int j, int k, double doseIncreasePE) {
+    return 0;
+  }
+
+  @Override
+  public void setPEparamsForCurrentBeam(double beamEnergy, double feFactors[][]) {    
+  }
+  
+  @Override
+  public void setFLparamsForCurrentBeam(final double[][] feFactors) {
+  }
+
+  @Override
+  public double addDoseAfterFL(int i, int j, int k, double doseIncreaseFL) {
     return 0;
   }
 }

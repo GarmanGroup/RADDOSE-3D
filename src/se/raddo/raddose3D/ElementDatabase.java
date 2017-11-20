@@ -65,7 +65,15 @@ public class ElementDatabase {
     L2(36),
 
     /** L3. */
-    L3(37);
+    L3(37),
+    
+    /** Fluorescent yields */
+    FLUORESCENCE_YIELD_K(39), FLUORESCENCE_YIELD_L1(40),
+    FLUORESCENCE_YIELD_L2(41), FLUORESCENCE_YIELD_L3(42),
+    
+    /** Edge Ratios */
+    K_EDGE_RATIO(43), L1_EDGE_RATIO(44), L2_EDGE_RATIO(45),
+    L3_EDGE_RATIO(46);
 
     /**
      * The position of each element in the database line. Index starting at 0.

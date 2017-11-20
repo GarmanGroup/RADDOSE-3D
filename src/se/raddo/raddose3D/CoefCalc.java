@@ -10,7 +10,7 @@ public abstract class CoefCalc {
   public abstract void updateCoefficients(Beam b);
 
   /**
-   * Returns the current absorption coefficient (photoelectric effect).
+   * Returns the current absorption coefficient. (Photoelectric and Compton)
    * 
    * @return
    *         absorption coefficient in units m^-1 (tbc)
@@ -49,6 +49,18 @@ public abstract class CoefCalc {
    * 
    * @return
    *         crystal density in g/ml.
-   */
+   */ 
+  
   public abstract double getDensity();
+  
+  /**
+   * Calculates the absorbed energy within the crystal corrected for
+   * X-ray Fluorescence.
+   * 
+   * @param beam
+   *          Beam object
+   * @return
+   *         absorbed energy.
+   */
+  public abstract double[][] getFluorescentEscapeFactors(Beam beam);
 }
