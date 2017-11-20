@@ -663,28 +663,18 @@ public class CrystalPolyhedron extends Crystal {
 //    }    
     
     // Initialise beam-independent crystal photoelectron escape properties
-    //Get user defined bins if entered
-    boolean userEnteredPE = false;
-    boolean userEnteredFL = false;
-    if (flRes != null) {
-      try {
+    //Get fl bins
+    if (flRes != null) { //if user defined
         flDistBins = Integer.parseInt(flRes.trim());
-        userEnteredFL = true;
-      } catch (NumberFormatException nfe) {
-        System.out.println("The fluoresence and photoelectron resolution must be an integer, default values used");
-        userEnteredFL = false;
-      }
     }
-    if (peRes != null) {
-      try {
+    else { //default
+      flDistBins = 4;
+    }
+      //Get PE bins
+    if (peRes != null) { //if user entered
         peDistBins = Integer.parseInt(peRes.trim());
-        userEnteredPE = true;
-      } catch (NumberFormatException nfe) {
-        System.out.println("The fluoresence and photoelectron resolution must be an integer, default values used");
-        userEnteredPE = false;
-      }
     }
-    if (userEnteredPE == false) {
+    else { //default
       //set the pixel size in um
       double pixelSize = 1/crystalPixPerUM;
       if (pixelSize >= 8) {
@@ -701,21 +691,13 @@ public class CrystalPolyhedron extends Crystal {
         peDistBins += 1;
       }
     }
-    //Maybe put a statement here to stop it being way too high if ppm way too high???
-    //TO Test
-   // peDistBins = 20;
-    
+// Get PE distances
     PE_DISTANCES_TRAVELLED = new double[peDistBins];
     double binInterval = (double) 8 / (peDistBins - 1);
     for (int i = 0; i < peDistBins; i++) {
       PE_DISTANCES_TRAVELLED[i] = i * binInterval;
     } 
-   //old code - peDistBins = PE_DISTANCES_TRAVELLED.length;
-    //change this
-   // flDistBins = FL_DISTANCES_TRAVELLED.length;
-    if (userEnteredFL == false) {
-    flDistBins = 4;
-    }
+
     propnDoseDepositedAtDist = new double[peDistBins];
     relativeVoxXYZ = new double[peDistBins][PE_ANGLE_RESOLUTION * PE_ANGLE_RESOLUTION][3]; 
   }
