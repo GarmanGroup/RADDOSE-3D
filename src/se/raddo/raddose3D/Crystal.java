@@ -32,6 +32,12 @@ public abstract class Crystal {
   public static final String     CRYSTAL_WIREFRAME_FILE        = "WIREFRAME_FILE";
   /** Constant for data fields in Map constructors: Photoelectron escape. */
   public static final String     CRYSTAL_ELECTRON_ESCAPE       = "PHESCAPE";
+  /** Constant for data fields in Map constructors: Fluorescent escape. */
+  public static final String     CRYSTAL_FLUORESCENT_ESCAPE       = "FLESCAPE";
+  /** Constant for data fields in Map constructors: Photoelectron resolution. */
+  public static final String     CRYSTAL_PHOTOELECTRON_RESOLUTION       = "PHRES";
+  /** Constant for data fields in Map constructors: Fluorescent resolution. */
+  public static final String     CRYSTAL_FLUORESCENT_RESOLUTION       = "FLRES";
   /** Constant for data fields in Map constructors: Container Type. */
   public static final String     CRYSTAL_CONTAINER             = "CONTAINER";
 
@@ -93,6 +99,14 @@ public abstract class Crystal {
    */
   private final boolean photoElectronEscape; 
   
+  /**
+   * whether fluorescent escape should be included
+   */
+  private final boolean fluorescentEscape; 
+  
+  public String flRes;
+  
+  public String peRes;
   
   /**
    * The energy of each fluorescent event
@@ -147,9 +161,17 @@ public abstract class Crystal {
     } else {
       sampleContainer = (Container) properties.get(Crystal.CRYSTAL_CONTAINER);
     }
-
+// Get whether to calculate the escapes
     String pEE = (String) properties.get(CRYSTAL_ELECTRON_ESCAPE);
+    pEE = pEE.toUpperCase();
     photoElectronEscape = ("TRUE".equals(pEE));
+    
+    String fE = (String) properties.get(CRYSTAL_FLUORESCENT_ESCAPE);
+    fE = fE.toUpperCase();
+    fluorescentEscape = ("TRUE".equals(fE));
+    //Get the resolutions
+    flRes = (String) properties.get(CRYSTAL_FLUORESCENT_RESOLUTION);
+    peRes = (String) properties.get(CRYSTAL_PHOTOELECTRON_RESOLUTION);
   }
 
   public abstract void setupDepthFinding(double angrad, Wedge wedge);
@@ -240,7 +262,7 @@ public abstract class Crystal {
    *
    * @param beamEnergy
    */
-  public abstract void setPEparamsForCurrentBeam(double beamEnergy, final double[][] feFactors);
+  public abstract void setPEparamsForCurrentBeam(double beamEnergy);
   public abstract void setFLparamsForCurrentBeam(final double[][] feFactors);
   /**
    * Should increment the fluence array element ijk by fluenceVox.
@@ -347,7 +369,7 @@ public abstract class Crystal {
   }
   
   /**
-   * Calculates the general Auger energy at eahc angle that is later applied to each voxel using nummber of photons
+   * Calculates the general Auger energy at eahc angle that is later applied to each voxel using number of photons
    * 
    * @param fluorescentEscapeFactors
    * @return auger energy
@@ -436,13 +458,13 @@ public abstract class Crystal {
     double fluorescenceEnergyRelease = 0;
     double augerEnergy = 0;
     //Set up PE and FE - no need to do this is PE false
-    if (photoElectronEscape) {
     double[][] feFactors = coefCalc.getFluorescentEscapeFactors(beam); 
-    setPEparamsForCurrentBeam(beam.getPhotonEnergy(), feFactors); 
-    
+    if (photoElectronEscape) {
+    setPEparamsForCurrentBeam(beam.getPhotonEnergy()); 
     //Calc Auger
     augerEnergy = getAugerEnergy(feFactors);
-    
+    }
+   if (fluorescentEscape) {
     //Calc % energy contribution of each event
     getFluorescenceEnergyPerEvent(feFactors);
     fluorescenceEnergyRelease = calcFluorescence(beam, feFactors);
@@ -529,6 +551,8 @@ public abstract class Crystal {
     if (photoElectronEscape) {
       System.out.print(String.format("\nEnergy that may escape by Photoelectron Escape: %.2e", totalEscapedDosePE));
       System.out.println(" J.\n");
+    }
+    if (fluorescentEscape) {
       System.out.print(String.format("Total energy that may escape by Fluorescent Escape: %.2e", totalEscapedDoseFL));
       System.out.println(" J.\n");
     }
@@ -656,16 +680,16 @@ public abstract class Crystal {
               double voxImageDose = fluenceToDoseFactor * voxImageFluence;
 
               if (voxImageDose > 0) {
+                totalCrystalDose += voxImageDose;
 
                 addFluence(i, j, k, voxImageFluence);
                 
-                if (photoElectronEscape) {  //This currently neglects energy lost due to binding energy - add this later
+                if (photoElectronEscape == true && fluorescentEscape == true) {
                  //Fl part
                 //Energy to be released by voxel
-                  double totFluorescenceEnergyRelease = fluorescenceEnergyRelease * numberofphotons; //Don't think this number of photons is right for me
+                  double totFluorescenceEnergyRelease = fluorescenceEnergyRelease * numberofphotons;
                 //convert this to a dose to be released
                   double voxImageFlDoseRelease = fluenceToDoseFactor * totFluorescenceEnergyRelease;
-                  //Set up Fl parameters and calculate distance distribution
                   
                   //TOTEST
                  //  voxImageFlDoseRelease = 0;
@@ -686,7 +710,7 @@ public abstract class Crystal {
                   totalEscapedDosePE +=  doseLostFromCrystalPE;
                   totalEscapedDoseFL += doseLostFromCrytsalFL;
                   totalEscapedDose += doseLostFromCrystalPE + doseLostFromCrytsalFL;
-                  totalCrystalDose += voxImageDose;
+
                   
                   //These to test
                   totalFlEnergyToRelease += voxImageFlDoseRelease;
@@ -701,7 +725,31 @@ public abstract class Crystal {
                   // add PE To test
                 //  addDose(i, j, k, voxImageDose - voxImageFlDoseRelease);
                   
-                } else {
+                } 
+                else if (photoElectronEscape == true && fluorescentEscape == false) { //only do PE escape
+                  //Dose in voxel
+                  double totAugerDose = augerEnergy * numberofphotons * fluenceToDoseFactor;
+                  //Do PE
+                  double dosePE = voxImageDose - totAugerDose;
+                  double doseLostFromCrystalPE = addDoseAfterPE(i, j, k, dosePE);
+                  totalEscapedDosePE +=  doseLostFromCrystalPE;
+                  totalEscapedDose += doseLostFromCrystalPE;
+                  //add Auger to Voxel
+                  addDose(i, j, k, totAugerDose);
+                }
+                else if (photoElectronEscape == false && fluorescentEscape == true) { //only do Fluorescent escape
+                  //Energy to be released by voxel
+                  double totFluorescenceEnergyRelease = fluorescenceEnergyRelease * numberofphotons;
+                //convert this to a dose to be released
+                  double voxImageFlDoseRelease = fluenceToDoseFactor * totFluorescenceEnergyRelease;
+                  double doseLeft = voxImageDose - voxImageFlDoseRelease;
+                  double doseLostFromCrytsalFL = addDoseAfterFL(i, j, k, voxImageFlDoseRelease);
+                  addDose(i, j, k, doseLeft);
+                  totalEscapedDoseFL += doseLostFromCrytsalFL;
+                  totalEscapedDose +=  doseLostFromCrytsalFL;
+                  
+                }
+                else { // no escape
                   addDose(i, j, k, voxImageDose);
                 }
 

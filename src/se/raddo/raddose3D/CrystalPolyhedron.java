@@ -90,7 +90,7 @@ public class CrystalPolyhedron extends Crystal {
   /**
    * length of distance bins travelled by fluorescence.
    */
-  private final int flDistBins;
+  private int flDistBins;
   
   /**
    * Max angle for photoelectron direction vectors.
@@ -663,23 +663,44 @@ public class CrystalPolyhedron extends Crystal {
 //    }    
     
     // Initialise beam-independent crystal photoelectron escape properties
-    
-    //set the pixel size in um
-    double pixelSize = 1/crystalPixPerUM;
-    if (pixelSize >= 8) {
-      peDistBins = 2;  // 0 and 8
-    }
-    else {
-      //number of bins = 1 + roundup(8/pixelSize).
-      peDistBins = 1 + (int) Math.ceil(8/pixelSize);
-      //So I need to improve it a bit at the lower range
-      if (peDistBins < 8){
-        peDistBins = 8;
+    //Get user defined bins if entered
+    boolean userEnteredPE = false;
+    boolean userEnteredFL = false;
+    if (flRes != null) {
+      try {
+        flDistBins = Integer.parseInt(flRes.trim());
+        userEnteredFL = true;
+      } catch (NumberFormatException nfe) {
+        System.out.println("The fluoresence and photoelectron resolution must be an integer, default values used");
+        userEnteredFL = false;
       }
-      //erring on side of caution
-      peDistBins += 1;
     }
-    
+    if (peRes != null) {
+      try {
+        peDistBins = Integer.parseInt(peRes.trim());
+        userEnteredPE = true;
+      } catch (NumberFormatException nfe) {
+        System.out.println("The fluoresence and photoelectron resolution must be an integer, default values used");
+        userEnteredPE = false;
+      }
+    }
+    if (userEnteredPE == false) {
+      //set the pixel size in um
+      double pixelSize = 1/crystalPixPerUM;
+      if (pixelSize >= 8) {
+        peDistBins = 2;  // 0 and 8
+      }
+      else {
+        //number of bins = 1 + roundup(8/pixelSize).
+        peDistBins = 1 + (int) Math.ceil(8/pixelSize);
+        //So I need to improve it a bit at the lower range
+        if (peDistBins < 8){
+          peDistBins = 8;
+        }
+        //erring on side of caution
+        peDistBins += 1;
+      }
+    }
     //Maybe put a statement here to stop it being way too high if ppm way too high???
     //TO Test
    // peDistBins = 20;
@@ -692,7 +713,9 @@ public class CrystalPolyhedron extends Crystal {
    //old code - peDistBins = PE_DISTANCES_TRAVELLED.length;
     //change this
    // flDistBins = FL_DISTANCES_TRAVELLED.length;
-    flDistBins = 3;
+    if (userEnteredFL == false) {
+    flDistBins = 4;
+    }
     propnDoseDepositedAtDist = new double[peDistBins];
     relativeVoxXYZ = new double[peDistBins][PE_ANGLE_RESOLUTION * PE_ANGLE_RESOLUTION][3]; 
   }
@@ -1044,7 +1067,7 @@ public class CrystalPolyhedron extends Crystal {
    * @see se.raddo.raddose3D.Crystal#setPEparamsForCurrentBeam(double)
    */
   @Override
-  public void setPEparamsForCurrentBeam(final double beamEnergy, final double feFactors[][]) {
+  public void setPEparamsForCurrentBeam(final double beamEnergy) {
     // Initialise crystal photolectron escape properties here for current beam
     findVoxelsReachedByPE();
     calcProportionVoxDoseDepositedByDist(beamEnergy);  

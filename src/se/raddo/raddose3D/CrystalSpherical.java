@@ -257,7 +257,7 @@ public class CrystalSpherical extends Crystal {
   }
 
   @Override
-  public void setPEparamsForCurrentBeam(double beamEnergy, double feFactors[][]) {    
+  public void setPEparamsForCurrentBeam(double beamEnergy) {    
   }
   
   @Override

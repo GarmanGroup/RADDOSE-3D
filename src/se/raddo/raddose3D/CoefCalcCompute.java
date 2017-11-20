@@ -218,7 +218,7 @@ public class CoefCalcCompute extends CoefCalc {
    */
   @Override
   public void updateCoefficients(final Beam b) { 
-    Map<String, Double> absCoefficients = calculateCoefficients(b.getPhotonEnergy());
+    Map<String, Double> absCoefficients = calculateCoefficientsAll(b.getPhotonEnergy());
     attCoeff = absCoefficients.get(TOTAL);
     elasCoeff = absCoefficients.get(ELASTIC);
     absCoeffcomp = absCoefficients.get(COMPTON);
@@ -234,7 +234,7 @@ public class CoefCalcCompute extends CoefCalc {
    * @return
    *         Map containing the calculated coefficient values.
    */
-  private Map<String, Double> calculateCoefficients(final double energy) {
+  private Map<String, Double> calculateCoefficientsAll(final double energy) {
     
     Map<String, Double> absCoeffs = new HashMap<String, Double>();
     double crossSectionPhotoElectric = 0;
@@ -286,7 +286,7 @@ public class CoefCalcCompute extends CoefCalc {
    * @return
    *         Map containing the calculated coefficient values.
    */
-  private Map<String, Double> calculateCoefficients(final double energy, 
+  private Map<String, Double> calculateCoefficientsElement(final double energy, 
       final Element element) {
     
     Map<String, Double> absCoeffs = new HashMap<String, Double>();
@@ -338,7 +338,7 @@ public class CoefCalcCompute extends CoefCalc {
     Map<String, Double> elAbsCoeffs;
     
     for (Element e : this.presentElements) {
-      elAbsCoeffs = calculateCoefficients(beam.getPhotonEnergy(), e);
+      elAbsCoeffs = calculateCoefficientsElement(beam.getPhotonEnergy(), e);
       e.EdgeRatio();
       if (beam.getPhotonEnergy() > e.getKEdge() &&
           e.getAtomicNumber() >= MIN_ATOMIC_NUM_FOR_K_SHELL_IONISATION) {
@@ -350,7 +350,7 @@ public class CoefCalcCompute extends CoefCalc {
         kFactorB = e.getKShellFluorescenceYield();
         //This gives difference between the edge energies needed for fluorescent escape probability.
         // Only L1 shell as this is most likely and gives a relevant result
-        photonMuAbsK = calculateCoefficients(e.getKEdge() - e.getL1Edge());
+        photonMuAbsK = calculateCoefficientsAll(e.getKEdge() - e.getL1Edge());
         //Fluorescent escape probability. This takes muabs as mupe. 
         //Fluorescence too low energy to consider compton in muabs
         escapeMuAbsK = photonMuAbsK.get(PHOTOELECTRIC);
@@ -367,7 +367,7 @@ public class CoefCalcCompute extends CoefCalc {
         l1ShellEnergy = e.getL1Edge();
         l1FactorA = e.getL1ShellIonisationProb();
         l1FactorB = e.getL1ShellFluorescenceYield();
-        photonMuAbsL1 = calculateCoefficients(e.getL1Edge() - e.getM1Edge());
+        photonMuAbsL1 = calculateCoefficientsAll(e.getL1Edge() - e.getM1Edge());
         escapeMuAbsL1 = photonMuAbsL1.get(PHOTOELECTRIC);
       } 
       else {
@@ -382,7 +382,7 @@ public class CoefCalcCompute extends CoefCalc {
         l2ShellEnergy = e.getL2Edge();
         l2FactorA = e.getL2ShellIonisationProb();
         l2FactorB = e.getL2ShellFluorescenceYield();
-        photonMuAbsL2 = calculateCoefficients(e.getL2Edge() - e.getM1Edge());
+        photonMuAbsL2 = calculateCoefficientsAll(e.getL2Edge() - e.getM1Edge());
         escapeMuAbsL2 = photonMuAbsL2.get(PHOTOELECTRIC);
       } 
       else {
@@ -397,7 +397,7 @@ public class CoefCalcCompute extends CoefCalc {
         l3ShellEnergy = e.getL3Edge();
         l3FactorA = e.getL3ShellIonisationProb();
         l3FactorB = e.getL3ShellFluorescenceYield();
-        photonMuAbsL3 = calculateCoefficients(e.getL3Edge() - e.getM1Edge());
+        photonMuAbsL3 = calculateCoefficientsAll(e.getL3Edge() - e.getM1Edge());
         escapeMuAbsL3 = photonMuAbsL3.get(PHOTOELECTRIC);
       } 
       else {
