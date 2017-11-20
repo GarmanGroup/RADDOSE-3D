@@ -44,7 +44,7 @@ UnitCell   78.02  78.02  78.02  # unit cell size: a, b, c
                                 # alpha, beta and gamma angles default to 90°
 NumMonomers  24                 # number of monomers in unit cell
 NumResidues  51                 # number of residues per monomer
-ProteinHeavyAtoms Zn 2 S 6      # heavy atoms added to protein part of the
+ProteinHeavyAtoms Zn 0.333 S 6  # heavy atoms added to protein part of the
                                 # monomer, i.e. S, coordinated metals,
                                 # Se in Se-Met
 SolventHeavyConc P 425          # concentration of elements in the solvent
