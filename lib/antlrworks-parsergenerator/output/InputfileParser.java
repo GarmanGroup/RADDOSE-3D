@@ -1,4 +1,4 @@
-// $ANTLR 3.4 C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g 2017-11-20 16:24:48
+// $ANTLR 3.4 C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g 2017-11-21 09:15:55
 
 package se.raddo.raddose3D.parser;
 import se.raddo.raddose3D.*;
@@ -508,9 +508,9 @@ public class InputfileParser extends Parser {
 
         String bb =null;
 
-        String cc =null;
+        int cc =0;
 
-        String dd =null;
+        int dd =0;
 
 
         try {
@@ -2752,9 +2752,9 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "flResolution"
-    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:426:1: flResolution returns [String value] : FLRESOLUTION a= FLOAT ;
-    public final String flResolution() throws RecognitionException {
-        String value = null;
+    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:426:1: flResolution returns [int value] : FLRESOLUTION a= FLOAT ;
+    public final int flResolution() throws RecognitionException {
+        int value = 0;
 
 
         Token a=null;
@@ -2767,7 +2767,7 @@ public class InputfileParser extends Parser {
 
             a=(Token)match(input,FLOAT,FOLLOW_FLOAT_in_flResolution4359); 
 
-            value = (a!=null?a.getText():null);
+            value = Integer.parseInt((a!=null?a.getText():null));
 
             }
 
@@ -2787,9 +2787,9 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "peResolution"
-    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:430:1: peResolution returns [String value] : PERESOLUTION a= FLOAT ;
-    public final String peResolution() throws RecognitionException {
-        String value = null;
+    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:430:1: peResolution returns [int value] : PERESOLUTION a= FLOAT ;
+    public final int peResolution() throws RecognitionException {
+        int value = 0;
 
 
         Token a=null;
@@ -2802,7 +2802,7 @@ public class InputfileParser extends Parser {
 
             a=(Token)match(input,FLOAT,FOLLOW_FLOAT_in_peResolution4445); 
 
-            value = (a!=null?a.getText():null);
+            value = Integer.parseInt((a!=null?a.getText():null));
 
             }
 

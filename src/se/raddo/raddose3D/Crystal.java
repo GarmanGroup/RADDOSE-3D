@@ -35,7 +35,7 @@ public abstract class Crystal {
   /** Constant for data fields in Map constructors: Fluorescent escape. */
   public static final String     CRYSTAL_FLUORESCENT_ESCAPE       = "FLESCAPE";
   /** Constant for data fields in Map constructors: Photoelectron resolution. */
-  public static final String     CRYSTAL_PHOTOELECTRON_RESOLUTION       = "PHRES";
+  public static final String     CRYSTAL_PHOTOELECTRON_RESOLUTION       = "PERES";
   /** Constant for data fields in Map constructors: Fluorescent resolution. */
   public static final String     CRYSTAL_FLUORESCENT_RESOLUTION       = "FLRES";
   /** Constant for data fields in Map constructors: Container Type. */
@@ -104,9 +104,7 @@ public abstract class Crystal {
    */
   private final boolean fluorescentEscape; 
   
-  public String flRes;
-  
-  public String peRes;
+
   
   /**
    * The energy of each fluorescent event
@@ -169,9 +167,7 @@ public abstract class Crystal {
     String fE = (String) properties.get(CRYSTAL_FLUORESCENT_ESCAPE);
     fE = fE.toUpperCase();
     fluorescentEscape = ("TRUE".equals(fE));
-    //Get the resolutions
-    flRes = (String) properties.get(CRYSTAL_FLUORESCENT_RESOLUTION);
-    peRes = (String) properties.get(CRYSTAL_PHOTOELECTRON_RESOLUTION);
+
   }
 
   public abstract void setupDepthFinding(double angrad, Wedge wedge);

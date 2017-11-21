@@ -26,6 +26,10 @@ public class CrystalPolyhedron extends Crystal {
   protected final double        p;
 
   protected final double        l;
+  
+  protected final int flRes;
+  
+  protected final int peRes;
 
   /**
    * 3 element array defining dimensions of
@@ -494,6 +498,8 @@ public class CrystalPolyhedron extends Crystal {
     Map<Object, Object> mergedProperties = new HashMap<Object, Object>();
     mergedProperties.put(Crystal.CRYSTAL_ANGLE_P, 0d);
     mergedProperties.put(Crystal.CRYSTAL_ANGLE_L, 0d);
+    mergedProperties.put(Crystal.CRYSTAL_FLUORESCENT_RESOLUTION, 0);
+    mergedProperties.put(Crystal.CRYSTAL_PHOTOELECTRON_RESOLUTION, 0);
     mergedProperties.putAll(properties);
 
     // Check for valid parameters
@@ -663,16 +669,18 @@ public class CrystalPolyhedron extends Crystal {
 //    }    
     
     // Initialise beam-independent crystal photoelectron escape properties
-    //Get fl bins
-    if (flRes != null) { //if user defined
-        flDistBins = Integer.parseInt(flRes.trim());
+    //Get fl bins    
+    flRes = (int) mergedProperties.get(Crystal.CRYSTAL_FLUORESCENT_RESOLUTION);
+    peRes = (int) mergedProperties.get(Crystal.CRYSTAL_PHOTOELECTRON_RESOLUTION);
+    if (flRes >= 2) { //if user defined and sensible
+      flDistBins = flRes;
     }
     else { //default
       flDistBins = 4;
     }
       //Get PE bins
-    if (peRes != null) { //if user entered
-        peDistBins = Integer.parseInt(peRes.trim());
+    if (peRes >= 2) { //if user defined and sensible
+      peDistBins = peRes;
     }
     else { //default
       //set the pixel size in um
