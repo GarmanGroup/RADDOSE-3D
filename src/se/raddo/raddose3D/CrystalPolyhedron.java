@@ -27,9 +27,9 @@ public class CrystalPolyhedron extends Crystal {
 
   protected final double        l;
   
- // protected final int flRes;
+  protected final int flRes;
   
- // protected final int peRes;
+  protected final int peRes;
 
   /**
    * 3 element array defining dimensions of
@@ -498,8 +498,8 @@ public class CrystalPolyhedron extends Crystal {
     Map<Object, Object> mergedProperties = new HashMap<Object, Object>();
     mergedProperties.put(Crystal.CRYSTAL_ANGLE_P, 0d);
     mergedProperties.put(Crystal.CRYSTAL_ANGLE_L, 0d);
-//    mergedProperties.put(Crystal.CRYSTAL_FLUORESCENT_RESOLUTION, 0);
- //   mergedProperties.put(Crystal.CRYSTAL_PHOTOELECTRON_RESOLUTION, 0);
+    mergedProperties.put(Crystal.CRYSTAL_FLUORESCENT_RESOLUTION, 0);
+    mergedProperties.put(Crystal.CRYSTAL_PHOTOELECTRON_RESOLUTION, 0);
     mergedProperties.putAll(properties);
 
     // Check for valid parameters
@@ -671,19 +671,19 @@ public class CrystalPolyhedron extends Crystal {
     // Initialise beam-independent crystal photoelectron escape properties
     //Get fl bins  
     
- //  flRes = (int) mergedProperties.get(Crystal.CRYSTAL_FLUORESCENT_RESOLUTION);
- //   peRes = (int) mergedProperties.get(Crystal.CRYSTAL_PHOTOELECTRON_RESOLUTION);
- //   if (flRes >= 2) { //if user defined and sensible
- //     flDistBins = flRes;
- //   }
-  //  else { //default
+   flRes = (int) mergedProperties.get(Crystal.CRYSTAL_FLUORESCENT_RESOLUTION);
+    peRes = (int) mergedProperties.get(Crystal.CRYSTAL_PHOTOELECTRON_RESOLUTION);
+    if (flRes >= 2) { //if user defined and sensible
+      flDistBins = flRes;
+    }
+    else { //default
       flDistBins = 4;
-  //  }
+    }
       //Get PE bins
- //   if (peRes >= 2) { //if user defined and sensible
-  //    peDistBins = peRes;
- //   }
-  //  else { //default
+    if (peRes >= 2) { //if user defined and sensible
+      peDistBins = peRes;
+    }
+    else { //default
       //set the pixel size in um
       double pixelSize = 1/crystalPixPerUM;
       if (pixelSize >= 8) {
@@ -699,7 +699,7 @@ public class CrystalPolyhedron extends Crystal {
         //erring on side of caution
         peDistBins += 1;
       }
- //   }
+    }
 // Get PE distances
     PE_DISTANCES_TRAVELLED = new double[peDistBins];
     double binInterval = (double) 8 / (peDistBins - 1);
