@@ -27,9 +27,9 @@ public class CrystalPolyhedron extends Crystal {
 
   protected final double        l;
   
-  protected final int flRes;
+  protected  int flRes;
   
-  protected final int peRes;
+  protected  int peRes;
 
   /**
    * 3 element array defining dimensions of
@@ -670,15 +670,20 @@ public class CrystalPolyhedron extends Crystal {
     
     // Initialise beam-independent crystal photoelectron escape properties
     //Get fl bins  
-    
-   flRes = (int) mergedProperties.get(Crystal.CRYSTAL_FLUORESCENT_RESOLUTION);
+    flRes = 0;
+    peRes = 0; 
+    if (fluorescentEscape) {
+      flRes = (int) mergedProperties.get(Crystal.CRYSTAL_FLUORESCENT_RESOLUTION);
+      if (flRes >= 2) { //if user defined and sensible
+        flDistBins = flRes;
+      }
+      else { //default
+        flDistBins = 4;
+      }
+    }
+   if (photoElectronEscape) {
     peRes = (int) mergedProperties.get(Crystal.CRYSTAL_PHOTOELECTRON_RESOLUTION);
-    if (flRes >= 2) { //if user defined and sensible
-      flDistBins = flRes;
-    }
-    else { //default
-      flDistBins = 4;
-    }
+    
       //Get PE bins
     if (peRes >= 2) { //if user defined and sensible
       peDistBins = peRes;
@@ -699,16 +704,18 @@ public class CrystalPolyhedron extends Crystal {
         //erring on side of caution
         peDistBins += 1;
       }
-    }
-// Get PE distances
+     }
+ // Get PE distances
     PE_DISTANCES_TRAVELLED = new double[peDistBins];
     double binInterval = (double) 8 / (peDistBins - 1);
     for (int i = 0; i < peDistBins; i++) {
       PE_DISTANCES_TRAVELLED[i] = i * binInterval;
     } 
 
-    propnDoseDepositedAtDist = new double[peDistBins];
-    relativeVoxXYZ = new double[peDistBins][PE_ANGLE_RESOLUTION * PE_ANGLE_RESOLUTION][3]; 
+
+    }
+   propnDoseDepositedAtDist = new double[peDistBins];
+   relativeVoxXYZ = new double[peDistBins][PE_ANGLE_RESOLUTION * PE_ANGLE_RESOLUTION][3];
   }
 
   /**
