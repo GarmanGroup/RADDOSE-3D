@@ -563,4 +563,22 @@ public class Element {
   public Double getL3ShellIonisationProb() {
     return this.probL3ShellIonisation;
   }
+  
+  /**
+   * 
+   * @return
+   *        the weighted average energy of fluorescence produced from K
+   */
+  public Double getKFluorescenceAverage() {
+    return elementData.get(DatabaseFields.K_FL_AVERAGE);
+  }
+  
+  /**
+   * 
+   * @return
+   *        the weighted average energy of fluorescence produced from LI, LII and LIII
+   */
+  public Double getLFluorescenceAverage() {
+    return elementData.get(DatabaseFields.L_FL_AVERAGE);
+  }
 }

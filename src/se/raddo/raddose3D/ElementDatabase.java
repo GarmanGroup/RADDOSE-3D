@@ -73,8 +73,12 @@ public class ElementDatabase {
     
     /** Edge Ratios */
     K_EDGE_RATIO(43), L1_EDGE_RATIO(44), L2_EDGE_RATIO(45),
-    L3_EDGE_RATIO(46);
+    L3_EDGE_RATIO(46),    
+    
+    /** K and L shell weighted fluoresence energy */
+    K_FL_AVERAGE(47), L_FL_AVERAGE(48);
 
+    
     /**
      * The position of each element in the database line. Index starting at 0.
      */
