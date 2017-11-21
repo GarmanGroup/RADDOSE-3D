@@ -164,11 +164,11 @@ public abstract class Crystal {
     }
 // Get whether to calculate the escapes
     String pEE = (String) properties.get(CRYSTAL_ELECTRON_ESCAPE);
-    pEE = pEE.toUpperCase();
+   // pEE = pEE.toUpperCase();
     photoElectronEscape = ("TRUE".equals(pEE));
     
     String fE = (String) properties.get(CRYSTAL_FLUORESCENT_ESCAPE);
-    fE = fE.toUpperCase();
+   // fE = fE.toUpperCase();
     fluorescentEscape = ("TRUE".equals(fE));
 
   }
