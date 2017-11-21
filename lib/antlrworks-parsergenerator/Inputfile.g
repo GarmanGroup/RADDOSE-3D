@@ -228,8 +228,6 @@ crystalLine
 	| aa=sequenceFile 		{ $crystal::seqFile 		= $aa.value; }
 	
 	| bb=calculateFLEscape		{ $crystal::crystalProperties.put(Crystal.CRYSTAL_FLUORESCENT_ESCAPE, $bb.value); }
-	| cc=flResolution 		{ $crystal::crystalProperties.put(Crystal.CRYSTAL_FLUORESCENT_RESOLUTION, $cc.value);}
-	| dd=peResolution 		{ $crystal::crystalProperties.put(Crystal.CRYSTAL_PHOTOELECTRON_RESOLUTION, $dd.value);}
 	;
 
 	
@@ -423,13 +421,6 @@ calculateFLEscape returns [String value]
 CALCULATEFLESCAPE  
 	:	 ('C'|'c')('A'|'a')('L'|'l')('C'|'c')('U'|'u')('L'|'l')('A'|'a')('T'|'t')('E'|'e')('F'|'f')('L'|'l')('E'|'e')('S'|'s')('C'|'c')('A'|'a')('P'|'p')('E'|'e') ;
 	
-flResolution returns [int value]
-	: FLRESOLUTION a=FLOAT {$value = Integer.parseInt($a.text);};
-FLRESOLUTION : ('F'|'f')('L'|'l')('R'|'r')('E'|'e')('S'|'s')('O'|'o')('L'|'l')('U'|'u')('T'|'t')('I'|'i')('O'|'o')('N'|'n') ;
-
-peResolution returns [int value]
-	: PERESOLUTION a=FLOAT {$value = Integer.parseInt($a.text);};
-PERESOLUTION : ('P'|'p')('E'|'e')('R'|'r')('E'|'e')('S'|'s')('O'|'o')('L'|'l')('U'|'u')('T'|'t')('I'|'i')('O'|'o')('N'|'n') ;
 // ------------------------------------------------------------------
 beam returns [Beam bObj]
 scope {

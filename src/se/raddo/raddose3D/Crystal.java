@@ -34,10 +34,13 @@ public abstract class Crystal {
   public static final String     CRYSTAL_ELECTRON_ESCAPE       = "PHESCAPE";
   /** Constant for data fields in Map constructors: Fluorescent escape. */
   public static final String     CRYSTAL_FLUORESCENT_ESCAPE       = "FLESCAPE";
+
   /** Constant for data fields in Map constructors: Photoelectron resolution. */
-  public static final String     CRYSTAL_PHOTOELECTRON_RESOLUTION       = "PERES";
+  
+ // public static final String     CRYSTAL_PHOTOELECTRON_RESOLUTION       = "PERES";
   /** Constant for data fields in Map constructors: Fluorescent resolution. */
-  public static final String     CRYSTAL_FLUORESCENT_RESOLUTION       = "FLRES";
+ // public static final String     CRYSTAL_FLUORESCENT_RESOLUTION       = "FLRES";
+  
   /** Constant for data fields in Map constructors: Container Type. */
   public static final String     CRYSTAL_CONTAINER             = "CONTAINER";
 
