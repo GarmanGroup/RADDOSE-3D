@@ -531,7 +531,7 @@ public class CrystalCuboidOld extends Crystal {
   }
 
   @Override
-  public void setPEparamsForCurrentBeam(double beamEnergy, double feFactors[][]) {    
+  public void setPEparamsForCurrentBeam(double beamEnergy) {    
   }
   
   @Override

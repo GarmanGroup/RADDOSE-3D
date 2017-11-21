@@ -221,11 +221,14 @@ crystalLine
 	| u=pdb					{ $crystal::pdb						= $u.pdb; }
 	| v=wireframeType			{ $crystal::crystalProperties.put(Crystal.CRYSTAL_WIREFRAME_TYPE, $v.value); }
 	| w=modelFile				{ $crystal::crystalProperties.put(Crystal.CRYSTAL_WIREFRAME_FILE, $w.value); }
-	| x=calculateEscape		{ $crystal::crystalProperties.put(Crystal.CRYSTAL_ELECTRON_ESCAPE, $x.value); }
+	| x=calculatePEEscape		{ $crystal::crystalProperties.put(Crystal.CRYSTAL_ELECTRON_ESCAPE, $x.value); }
 	| y=proteinConcentration	{ $crystal::proteinConc					= $y.proteinConc;}
 	| z=containerMaterialElements	{ $crystal::containerElementNames	= $z.names;
 							  $crystal::containerElementNums	= $z.num;	}
 	| aa=sequenceFile 		{ $crystal::seqFile 		= $aa.value; }
+	
+	| bb=calculateFLEscape		{ $crystal::crystalProperties.put(Crystal.CRYSTAL_FLUORESCENT_ESCAPE, $bb.value); }
+
 	  
 	;
 
@@ -370,10 +373,10 @@ modelFile returns [String value]
 	: MODELFILE a=STRING {$value = $a.text;};
 MODELFILE : ('M'|'m')('O'|'o')('D'|'d')('E'|'e')('L'|'l')('F'|'f')('I'|'i')('L'|'l')('E'|'e') ;
 
-calculateEscape returns [String value]
-	: CALCULATEESCAPE a=STRING {$value = $a.text;};
-CALCULATEESCAPE  
-	:	 ('C'|'c')('A'|'a')('L'|'l')('C'|'c')('U'|'u')('L'|'l')('A'|'a')('T'|'t')('E'|'e')('E'|'e')('S'|'s')('C'|'c')('A'|'a')('P'|'p')('E'|'e') ;
+calculatePEEscape returns [String value]
+	: CALCULATEPEESCAPE a=STRING {$value = $a.text;};
+CALCULATEPEESCAPE  
+	:	 ('C'|'c')('A'|'a')('L'|'l')('C'|'c')('U'|'u')('L'|'l')('A'|'a')('T'|'t')('E'|'e')('P'|'p')('E'|'e')('E'|'e')('S'|'s')('C'|'c')('A'|'a')('P'|'p')('E'|'e') ;
 	
 crystalContainerMaterial returns [int value]
 	: ( CONTAINERMATERIALTYPE | MATERIALTYPE ) e=crystalContainerKeyword { $value = $e.value; };
@@ -415,6 +418,10 @@ sequenceFile returns[String value]
 SEQUENCEFILE : 	('S'|'s')('E'|'e')('Q'|'q')('U'|'u')('E'|'e')('N'|'n')('C'|'c')('E'|'e')('F'|'f')('I'|'i')('L'|'l')('E'|'e');
 SEQFILE :	('S'|'s')('E'|'e')('Q'|'q')('F'|'f')('I'|'i')('L'|'l')('E'|'e');
 
+calculateFLEscape returns [String value]
+	: CALCULATEFLESCAPE a=STRING {$value = $a.text;};
+CALCULATEFLESCAPE  
+	:	 ('C'|'c')('A'|'a')('L'|'l')('C'|'c')('U'|'u')('L'|'l')('A'|'a')('T'|'t')('E'|'e')('F'|'f')('L'|'l')('E'|'e')('S'|'s')('C'|'c')('A'|'a')('P'|'p')('E'|'e') ;
 
 // ------------------------------------------------------------------
 beam returns [Beam bObj]
