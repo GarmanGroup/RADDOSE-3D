@@ -161,7 +161,7 @@ public class CoefCalcCompute extends CoefCalc {
   private static final String        TOTAL                        = "Total";
   private static final String        COMPTON                      = "Compton Attenuation";
   private static final double        MIN_ATOMIC_NUM_FOR_K_SHELL_IONISATION = 11;
-  private static final double        MIN_ATOMIC_NUM_FOR_L_SHELL_IONISATION = 16;
+//  private static final double        MIN_ATOMIC_NUM_FOR_L_SHELL_IONISATION = 16;
 
   /**
    * Number of atoms (only those that are not part of the protein), per
@@ -329,18 +329,20 @@ public class CoefCalcCompute extends CoefCalc {
   public double[][] getFluorescentEscapeFactors(Beam beam) {
     double[][] fluorEscapeFactors = new double[presentElements.size()][NUM_FLUOR_ESCAPE_FACTORS];
     int element_counter = 0;
-    double kShellEnergy,kFactorA,kFactorB,escapeMuAbsK,l1ShellEnergy,l1FactorA,l1FactorB,escapeMuAbsL1,l2ShellEnergy,l2FactorA,
-    l2FactorB,escapeMuAbsL2,l3ShellEnergy,l3FactorA,l3FactorB,escapeMuAbsL3;
+    double kShellEnergy,kFactorA,kFactorB,escapeMuAbsK = 0; //,l1ShellEnergy,l1FactorA,l1FactorB,escapeMuAbsL1,l2ShellEnergy,l2FactorA,
+  //  l2FactorB,escapeMuAbsL2,l3ShellEnergy,l3FactorA,l3FactorB,escapeMuAbsL3;
     Map<String, Double> photonMuAbsK;
+    /*
     Map<String, Double> photonMuAbsL1;
     Map<String, Double> photonMuAbsL2;
     Map<String, Double> photonMuAbsL3;
+    */
     Map<String, Double> elAbsCoeffs;
     
     for (Element e : this.presentElements) {
       elAbsCoeffs = calculateCoefficientsElement(beam.getPhotonEnergy(), e);
       e.EdgeRatio();
-      if (beam.getPhotonEnergy() > e.getKEdge() &&
+      if (beam.getPhotonEnergy() > e.getKEdge() &&   //if beam energy below 1.072keV then this is never true and the program messes up when flcalc is true
           e.getAtomicNumber() >= MIN_ATOMIC_NUM_FOR_K_SHELL_IONISATION) {
         //K shell energy : checked from element database class
         kShellEnergy = e.getKEdge();
@@ -365,6 +367,7 @@ public class CoefCalcCompute extends CoefCalc {
         escapeMuAbsK = 0.0;
       }
       
+      /*
       if (beam.getPhotonEnergy() > e.getL1Edge() &&
           e.getAtomicNumber() >= MIN_ATOMIC_NUM_FOR_L_SHELL_IONISATION) {
         l1ShellEnergy = e.getL1Edge();
@@ -376,6 +379,10 @@ public class CoefCalcCompute extends CoefCalc {
         photonMuAbsL1 = calculateCoefficientsAll(e.getLFluorescenceAverage());
         
         escapeMuAbsL1 = photonMuAbsL1.get(PHOTOELECTRIC);
+        
+        //TO TEST
+    //    escapeMuAbsL1 = 0;
+        
       } 
       else {
         l1ShellEnergy = 0.0;
@@ -395,6 +402,9 @@ public class CoefCalcCompute extends CoefCalc {
         photonMuAbsL2 = calculateCoefficientsAll(e.getLFluorescenceAverage());
         
         escapeMuAbsL2 = photonMuAbsL2.get(PHOTOELECTRIC);
+        
+        //TO TEST
+     //   escapeMuAbsL2 = 0;
       } 
       else {
         l2ShellEnergy = 0.0;
@@ -414,6 +424,9 @@ public class CoefCalcCompute extends CoefCalc {
         photonMuAbsL3 = calculateCoefficientsAll(e.getLFluorescenceAverage());
         
         escapeMuAbsL3 = photonMuAbsL3.get(PHOTOELECTRIC);
+        
+        //TO TEST
+     //   escapeMuAbsL3 = 0;
       } 
       else {
         l3ShellEnergy = 0.0;
@@ -421,6 +434,7 @@ public class CoefCalcCompute extends CoefCalc {
         l3FactorB = 0.0;
         escapeMuAbsL3 = 0.0;
       }
+      */
       
       double muAbsFrac = elAbsCoeffs.get(PHOTOELECTRIC) / absCoeffphoto;
       
@@ -430,6 +444,7 @@ public class CoefCalcCompute extends CoefCalc {
       fluorEscapeFactors[element_counter][2] = kFactorA;
       fluorEscapeFactors[element_counter][3] = kFactorB;
       fluorEscapeFactors[element_counter][4] = escapeMuAbsK;
+      /*
       fluorEscapeFactors[element_counter][5] = l1ShellEnergy;
       fluorEscapeFactors[element_counter][6] = l1FactorA;
       fluorEscapeFactors[element_counter][7] = l1FactorB;
@@ -442,6 +457,7 @@ public class CoefCalcCompute extends CoefCalc {
       fluorEscapeFactors[element_counter][14] = l3FactorA;
       fluorEscapeFactors[element_counter][15] = l3FactorB;
       fluorEscapeFactors[element_counter][16] = escapeMuAbsL3;
+      */
       
       
       element_counter += 1;

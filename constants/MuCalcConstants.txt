@@ -2,7 +2,7 @@
 #	Converted from hard-coded Fortran library by Helen Ginn Apr 2014																																													
 #	Fortran code can be found at: https://github.com/GarmanGroup/RADDOSE-3D-internal/tree/master/legacy-raddose																																													
 #	Note: that the code is in a pricate repository which is only accessible to members of the Garman Group Github organisation 																																													
-#																																														
+#	The K alpha beta weighted average and L weighted average were taken from table V in Storm and Israel 1970																																													
 #	Coefficients are expressed as a natural logarithm																																													
 #	Problem: can't read units of some of the values																																													
 #																																														

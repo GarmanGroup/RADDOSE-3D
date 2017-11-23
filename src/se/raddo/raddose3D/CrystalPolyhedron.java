@@ -78,8 +78,8 @@ public class CrystalPolyhedron extends Crystal {
   /**
    * Distance bins travelled by fluorescence.
    */
-  private double[][][] flDistancesTravelled;
-
+ // private double[][][] flDistancesTravelled;
+  private double[][] flDistancesTravelled;
   
   /**
    * length of distance bins travelled by photoelectron.
@@ -109,26 +109,27 @@ public class CrystalPolyhedron extends Crystal {
   /**
    * 3d array for voxels where photoelectrons can reach
    */
-  private final double[][][] relativeVoxXYZ;
+  private  double[][][] relativeVoxXYZ;
 
   /**
    * 5d array for voxels where fluorescence can reach
-   * the first twwo dimensions ar element and shell
+   * the first two dimensions ar element and shell
    */
-  private double[][][][][] flRelativeVoxXYZ;
+ // private double[][][][][] flRelativeVoxXYZ;
+  private double[][][][] flRelativeVoxXYZ;
   /**
    * Proportion of voxel dose deposited at each distance
    * from voxel due to photoelectron escape
    */
-  private final double[]   propnDoseDepositedAtDist;
+  private  double[]   propnDoseDepositedAtDist;
   
   
   /**
    * Proportion of voxel dose deposited at each distance
    * from voxel for each shell energy of each element
    */
-  private double[][][] flDistanceDistribution; 
-  
+//  private double[][][] flDistanceDistribution; 
+  private double[][] flDistanceDistribution;
   /**
    * A boolean (int for extensibility to deeper segmentation) array.
    * Fourth dimension is a two element array, first element
@@ -683,6 +684,12 @@ public class CrystalPolyhedron extends Crystal {
     }
    if (photoElectronEscape) {
     peRes = (int) mergedProperties.get(Crystal.CRYSTAL_PHOTOELECTRON_RESOLUTION);
+   }
+    /*
+    // Adjusting PE max distance based on beam energy
+    int maxPEDistance = 8;
+ //   double meanPEDistance = 
+    
     
       //Get PE bins
     if (peRes >= 2) { //if user defined and sensible
@@ -691,15 +698,15 @@ public class CrystalPolyhedron extends Crystal {
     else { //default
       //set the pixel size in um
       double pixelSize = 1/crystalPixPerUM;
-      if (pixelSize >= 8) {
+      if (pixelSize >= maxPEDistance) {
         peDistBins = 2;  // 0 and 8
       }
       else {
         //number of bins = 1 + roundup(8/pixelSize).
-        peDistBins = 1 + (int) Math.ceil(8/pixelSize);
+        peDistBins = 1 + (int) Math.ceil(maxPEDistance/pixelSize);
         //So I need to improve it a bit at the lower range
-        if (peDistBins < 8){
-          peDistBins = 8;
+        if (peDistBins < maxPEDistance){
+          peDistBins = maxPEDistance;
         }
         //erring on side of caution
         peDistBins += 1;
@@ -707,15 +714,14 @@ public class CrystalPolyhedron extends Crystal {
      }
  // Get PE distances
     PE_DISTANCES_TRAVELLED = new double[peDistBins];
-    double binInterval = (double) 8 / (peDistBins - 1);
+    double binInterval = (double) maxPEDistance / (peDistBins - 1);
     for (int i = 0; i < peDistBins; i++) {
       PE_DISTANCES_TRAVELLED[i] = i * binInterval;
     } 
-
-
     }
    propnDoseDepositedAtDist = new double[peDistBins];
    relativeVoxXYZ = new double[peDistBins][PE_ANGLE_RESOLUTION * PE_ANGLE_RESOLUTION][3];
+   */
   }
 
   /**
@@ -986,7 +992,7 @@ public class CrystalPolyhedron extends Crystal {
     
     double[] gumbParams = new double[2];
     gumbParams[0] = GUMBEL_DISTN_CALC_PARAMS[0]*Math.pow(beamEnergy,2) 
-        + GUMBEL_DISTN_CALC_PARAMS[1]*beamEnergy; //mu
+        + GUMBEL_DISTN_CALC_PARAMS[1]*beamEnergy; //mu = mean path length of a PE
     gumbParams[1] = GUMBEL_DISTN_CALC_PARAMS[2]*Math.pow(beamEnergy,2) 
         + GUMBEL_DISTN_CALC_PARAMS[3]*beamEnergy; //beta
     
@@ -1005,15 +1011,18 @@ public class CrystalPolyhedron extends Crystal {
     //may be doing for every voxel so check
     
     int distanceResolution = flDistBins -1;
-    flDistanceDistribution = new double[feFactors.length][4][flDistBins];
-    flDistancesTravelled = new double[feFactors.length][4][flDistBins];
+  //  flDistanceDistribution = new double[feFactors.length][4][flDistBins];
+    flDistanceDistribution = new double[feFactors.length][flDistBins];
+  //  flDistancesTravelled = new double[feFactors.length][4][flDistBins];
+    flDistancesTravelled = new double[feFactors.length][flDistBins];
     double runningEscapeTotal;
     for (int i = 0; i < feFactors.length; i++) { //for every element
-      for (int j = 0; j < 4; j++) { //for each shell
+ //     for (int j = 0; j < 4; j++) { //for each shell
         runningEscapeTotal = 0;
-      if (fluorescenceProportionEvent[i][j] > 0) { //If j shell fluorescence possible
-        int muabsIndex = (4* j) + 4;
-        
+   //   if (fluorescenceProportionEvent[i][j] > 0) { //If j shell fluorescence possible
+        if (fluorescenceProportionEvent[i] > 0) {
+     //   int muabsIndex = (4* j) + 4;
+          int muabsIndex = 4;
         //Calculate distance at which escape probability = 5%
         double maxDistanceFl = -1 * (Math.log(0.05)/feFactors[i][muabsIndex]);
         double crystalMaxDistance = Math.pow(Math.pow(crystSizeUM[0], 2) + 
@@ -1029,10 +1038,9 @@ public class CrystalPolyhedron extends Crystal {
         
           //populate fldistances with crystalMaxDistance as the last
         for (int q = 0; q <= distanceResolution; q++) {
-          flDistancesTravelled[i][j][q] = (maxDistanceFl/distanceResolution) * q;
-          
-          //to test
-       //   flDistancesTravelled[i][j][q] = FL_DISTANCES_TRAVELLED[q];
+       //   flDistancesTravelled[i][j][q] = (maxDistanceFl/distanceResolution) * q;
+          flDistancesTravelled[i][q] = (maxDistanceFl/distanceResolution) * q;
+
         }
 
           
@@ -1045,20 +1053,62 @@ public class CrystalPolyhedron extends Crystal {
           //Might be better to land it halfway between the points instead of at the end of each point
           
           if(l == flDistBins-1) { //prob of escape
-            flDistanceDistribution[i][j][l] = Math.exp(-feFactors[i][muabsIndex] * flDistancesTravelled[i][j][l]);
+        //    flDistanceDistribution[i][j][l] = Math.exp(-feFactors[i][muabsIndex] * flDistancesTravelled[i][j][l]);
+            flDistanceDistribution[i][l] = Math.exp(-feFactors[i][muabsIndex] * flDistancesTravelled[i][l]);
           }
             else { //prob it stops at this distance
-              flDistanceDistribution[i][j][l] = Math.exp(-feFactors[i][muabsIndex] * flDistancesTravelled[i][j][l]) - runningEscapeTotal;
+         //     flDistanceDistribution[i][j][l] = Math.exp(-feFactors[i][muabsIndex] * flDistancesTravelled[i][j][l]) - runningEscapeTotal;
+              flDistanceDistribution[i][l] = Math.exp(-feFactors[i][muabsIndex] * flDistancesTravelled[i][l]) - runningEscapeTotal;
             }
-          runningEscapeTotal += flDistanceDistribution[i][j][l];
+      //    runningEscapeTotal += flDistanceDistribution[i][j][l];
+          runningEscapeTotal += flDistanceDistribution[i][l];
         }
 
       }
-      }
+     // }
 
     }
   }
-
+  private  void setMaxPEDistance(final double beamEnergy) { //needs to be dynamic as it depends on beam energy
+    double averagePEDistance = GUMBEL_DISTN_CALC_PARAMS[0]*Math.pow(beamEnergy,2) 
+        + GUMBEL_DISTN_CALC_PARAMS[1]*beamEnergy;
+    int maxPEDistance = (int) Math.ceil(averagePEDistance + 6);
+    
+    //TO TEST against old
+   // maxPEDistance = 8;
+    
+      //Get PE bins
+    if (peRes >= 2) { //if user defined and sensible
+      peDistBins = peRes;
+    }
+    else { //default
+      //set the pixel size in um
+      double pixelSize = 1/crystalPixPerUM;
+      if (pixelSize >= maxPEDistance) {
+        peDistBins = 2;  // 0 and 8
+      }
+      else {
+        //number of bins = 1 + roundup(8/pixelSize).
+        peDistBins = 1 + (int) Math.ceil(maxPEDistance/pixelSize);
+        //So I need to improve it a bit at the lower range
+        if (peDistBins < maxPEDistance){
+          peDistBins = maxPEDistance;
+        }
+        //erring on side of caution
+        peDistBins += 1;
+      }
+     }
+ // Get PE distances
+    PE_DISTANCES_TRAVELLED = new double[peDistBins];
+    double binInterval = (double) maxPEDistance / (peDistBins - 1);
+    for (int i = 0; i < peDistBins; i++) {
+      PE_DISTANCES_TRAVELLED[i] = i * binInterval;
+    } 
+    
+   propnDoseDepositedAtDist = new double[peDistBins];
+   relativeVoxXYZ = new double[peDistBins][PE_ANGLE_RESOLUTION * PE_ANGLE_RESOLUTION][3];
+  }
+  
   /*
    * (non-Javadoc)
    *
@@ -1067,6 +1117,9 @@ public class CrystalPolyhedron extends Crystal {
   @Override
   public void setPEparamsForCurrentBeam(final double beamEnergy) {
     // Initialise crystal photolectron escape properties here for current beam
+    
+    //first of all need to get PE distances 
+    setMaxPEDistance(beamEnergy);
     findVoxelsReachedByPE();
     calcProportionVoxDoseDepositedByDist(beamEnergy);  
   }
@@ -1122,6 +1175,7 @@ public class CrystalPolyhedron extends Crystal {
       }
   
     }
+    System.out.println("TEST");
   }
   
   /**
@@ -1158,7 +1212,8 @@ public class CrystalPolyhedron extends Crystal {
    */
   private void findVoxelsReachedByFL(final double feFactors[][]) {
 double step = PE_ANGLE_LIMIT / PE_ANGLE_RESOLUTION;  
-flRelativeVoxXYZ = new double[feFactors.length][4][flDistBins][PE_ANGLE_RESOLUTION * PE_ANGLE_RESOLUTION][3];
+//flRelativeVoxXYZ = new double[feFactors.length][4][flDistBins][PE_ANGLE_RESOLUTION * PE_ANGLE_RESOLUTION][3];
+flRelativeVoxXYZ = new double[feFactors.length][flDistBins][PE_ANGLE_RESOLUTION * PE_ANGLE_RESOLUTION][3];
     int counter = -1;
     for (double theta = 0; theta < PE_ANGLE_LIMIT; theta += step) {
       for (double phi = 0; phi < PE_ANGLE_LIMIT; phi += step) {
@@ -1171,15 +1226,21 @@ flRelativeVoxXYZ = new double[feFactors.length][4][flDistBins][PE_ANGLE_RESOLUTI
         
        
         for (int i = 0; i < feFactors.length; i++) { //for every element
-          for (int j = 0; j < 4; j++) { //for each shell
+        //  for (int j = 0; j < 4; j++) { //for each shell
             for (int m = 0; m < flDistBins; m++) { 
           // calculate r in voxel coordinates rather than pixels
+              /*
           double r = flDistancesTravelled[i][j][m] * this.crystalPixPerUM; 
           flRelativeVoxXYZ[i][j][m][counter][0] = r * xNorm;
           flRelativeVoxXYZ[i][j][m][counter][1] = r * yNorm;
           flRelativeVoxXYZ[i][j][m][counter][2] = r * zNorm;
+          */
+              double r = flDistancesTravelled[i][m] * this.crystalPixPerUM; 
+              flRelativeVoxXYZ[i][m][counter][0] = r * xNorm;
+              flRelativeVoxXYZ[i][m][counter][1] = r * yNorm;
+              flRelativeVoxXYZ[i][m][counter][2] = r * zNorm;
             }
-          }
+        //  }
         }
       }
     } 
@@ -1208,8 +1269,21 @@ flRelativeVoxXYZ = new double[feFactors.length][4][flDistBins][PE_ANGLE_RESOLUTI
      * the reported dose). 
      * TODO: find a rigorous way to assign voxels close to surface
     */ 
-    boolean findCloseToSurface = false;
-    boolean closeToSurface = false;      
+    
+    boolean findCloseToSurface = false; // this works if the pixel size is smaller than 8 
+    boolean closeToSurface = false;    
+    double pixelSize = 1/crystalPixPerUM;
+    // This will ensure that close to surface is only used when valid
+    if (pixelSize > PE_DISTANCES_TRAVELLED[peDistBins - 1]) { //if pixel size more than max distance of a PE
+      findCloseToSurface = false;
+    }
+      else {
+        findCloseToSurface = true;
+    }
+    
+    //TO TEST
+//    findCloseToSurface = false;
+    
     if (findCloseToSurface) {
       // calculate whether this voxel classified as close to surface and  
       // PE escape should be considered
@@ -1269,7 +1343,7 @@ flRelativeVoxXYZ = new double[feFactors.length][4][flDistBins][PE_ANGLE_RESOLUTI
    double doseLostFromCrystalFL = 0;
    //for every energy distribution
     for (int n = 0; n < fluorescenceProportionEvent.length; n++) { 
-      for (int l = 0; l < 4; l++) { // 0 = K, 1 = L1, 2 = L2, 3 = L3
+  //    for (int l = 0; l < 4; l++) { // 0 = K, 1 = L1, 2 = L2, 3 = L3
     for (int m = 0; m < flDistBins; m++) {   
       for (int q = 0; q < PE_ANGLE_RESOLUTION*PE_ANGLE_RESOLUTION; q++) { 
 
@@ -1277,16 +1351,23 @@ flRelativeVoxXYZ = new double[feFactors.length][4][flDistBins][PE_ANGLE_RESOLUTI
         // get dose transferred to these located voxels 
         // at the distance r away (due to PE movement)
         
-          if(fluorescenceProportionEvent[n][l] != 0) {
-        flPartialDose = doseIncreaseFL  * fluorescenceProportionEvent[n][l] * flDistanceDistribution[n][l][m] 
-            / Math.pow(PE_ANGLE_RESOLUTION,2);
-        
+        //  if(fluorescenceProportionEvent[n][l] != 0) {
+            if(fluorescenceProportionEvent[n] != 0) {
+    //    flPartialDose = doseIncreaseFL  * fluorescenceProportionEvent[n][l] * flDistanceDistribution[n][l][m] 
+    //        / Math.pow(PE_ANGLE_RESOLUTION,2);
+          flPartialDose = doseIncreaseFL  * fluorescenceProportionEvent[n] * flDistanceDistribution[n][m] 
+              / Math.pow(PE_ANGLE_RESOLUTION,2);
+              
         //TO TEST
          fldose += flPartialDose;
-        
+        /*
         double x = flRelativeVoxXYZ[n][l][m][q][0];
         double y = flRelativeVoxXYZ[n][l][m][q][1];
         double z = flRelativeVoxXYZ[n][l][m][q][2];
+        */
+         double x = flRelativeVoxXYZ[n][m][q][0];
+         double y = flRelativeVoxXYZ[n][m][q][1];
+         double z = flRelativeVoxXYZ[n][m][q][2];
         // add counts to total & total within crystal in order to
         // calculate the proportion for a given r.     
         if (isCrystalAt((int) (i + x), (int) (j + y),
@@ -1301,7 +1382,7 @@ flRelativeVoxXYZ = new double[feFactors.length][4][flDistBins][PE_ANGLE_RESOLUTI
           }
         }
       }
-    }
+   // }
     }
     return doseLostFromCrystalFL;
   }  

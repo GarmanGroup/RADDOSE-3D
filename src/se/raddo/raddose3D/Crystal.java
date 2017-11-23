@@ -112,13 +112,13 @@ public abstract class Crystal {
   /**
    * The energy of each fluorescent event
    */
-  public double[][] fluorescenceEnergyPerEvent;
-  
+ // public double[][] fluorescenceEnergyPerEvent;
+  public double[] fluorescenceEnergyPerEvent;
   /**
    * The proportion that each fluorescent wavelength contributes to the total fluorescent energy
    */
-  public double[][] fluorescenceProportionEvent;
-  
+ // public double[][] fluorescenceProportionEvent;
+  public double[] fluorescenceProportionEvent;
   /**
    * List of registered exposureObservers. Registered objects will be notified
    * of individual voxel exposure events and can also inspect the Crystal object
@@ -384,10 +384,13 @@ public abstract class Crystal {
     for (int i = 0; i < fluorescentEscapeFactors.length; i++){   //loops over each atom type
      double muratio = fluorescentEscapeFactors[i][0]; // uj/upe
      double K1 = fluorescentEscapeFactors[i][1] * fluorescentEscapeFactors[i][2] * (1-fluorescentEscapeFactors[i][3]); 
+     /*
      double L1 = fluorescentEscapeFactors[i][5] * fluorescentEscapeFactors[i][6] * (1-fluorescentEscapeFactors[i][7]);
      double L2 = fluorescentEscapeFactors[i][9] * fluorescentEscapeFactors[i][10] * (1-fluorescentEscapeFactors[i][11]);
      double L3 = fluorescentEscapeFactors[i][13] * fluorescentEscapeFactors[i][14] * (1-fluorescentEscapeFactors[i][15]);
-     augerEnergy += (K1 + L1 + L2 + L3) * muratio;
+     */
+   //  augerEnergy += (K1 + L1 + L2 + L3) * muratio;
+     augerEnergy += K1 * muratio;
     }
     augerEnergy = augerEnergy * Beam.KEVTOJOULES;
     return augerEnergy;
@@ -400,19 +403,25 @@ public abstract class Crystal {
    */
   public void getFluorescenceEnergyPerEvent(double[][] fluorescentEscapeFactors) {
     int length = fluorescentEscapeFactors.length;
-   fluorescenceEnergyPerEvent = new double[length][4];
+ //  fluorescenceEnergyPerEvent = new double[length][4];
+   fluorescenceEnergyPerEvent = new double[length];
   for (int i = 0; i < length; i++){    //loops over each atom type
     double muratio = fluorescentEscapeFactors[i][0]; // uj/upe
   //j-shell ionization x j-shell fluorescence yield x j-edge energy
-   double K1 = fluorescentEscapeFactors[i][1] * fluorescentEscapeFactors[i][2]*fluorescentEscapeFactors[i][3];  
+   double K1 = fluorescentEscapeFactors[i][1] * fluorescentEscapeFactors[i][2]*fluorescentEscapeFactors[i][3]; 
+   /*
    double L1 = fluorescentEscapeFactors[i][5] * fluorescentEscapeFactors[i][6]*fluorescentEscapeFactors[i][7];
    double L2 = fluorescentEscapeFactors[i][9] * fluorescentEscapeFactors[i][10]*fluorescentEscapeFactors[i][11];
    double L3 = fluorescentEscapeFactors[i][13] * fluorescentEscapeFactors[i][14]*fluorescentEscapeFactors[i][15];
+   */
     //calculate energy per event
+   /*
     fluorescenceEnergyPerEvent[i][0] = K1 * muratio * Beam.KEVTOJOULES;
     fluorescenceEnergyPerEvent[i][1] = L1 * muratio * Beam.KEVTOJOULES;
     fluorescenceEnergyPerEvent[i][2] = L2 * muratio * Beam.KEVTOJOULES;
     fluorescenceEnergyPerEvent[i][3] = L3 * muratio * Beam.KEVTOJOULES;
+    */
+   fluorescenceEnergyPerEvent[i] = K1 * muratio * Beam.KEVTOJOULES;
   }
   
   }
@@ -434,10 +443,15 @@ public abstract class Crystal {
     double muratio = fluorescentEscapeFactors[i][0]; // uj/upe
     //j-shell ionization x j-shell fluorescence yield x j-edge energy
     double K1 = fluorescentEscapeFactors[i][1]*fluorescentEscapeFactors[i][2]*fluorescentEscapeFactors[i][3]; 
+    /*
     double L1 = fluorescentEscapeFactors[i][5]*fluorescentEscapeFactors[i][6]*fluorescentEscapeFactors[i][7];
     double L2 = fluorescentEscapeFactors[i][9]*fluorescentEscapeFactors[i][10]*fluorescentEscapeFactors[i][11];
     double L3 = fluorescentEscapeFactors[i][13]*fluorescentEscapeFactors[i][14]*fluorescentEscapeFactors[i][15];
-    fluorescentEnergyToRelease = fluorescentEnergyToRelease + ((K1 + L1 + L2 + L3) * muratio);     //the units are kEV
+    */
+    
+   // fluorescentEnergyToRelease = fluorescentEnergyToRelease + ((K1 + L1 + L2 + L3) * muratio);     //the units are kEV
+    fluorescentEnergyToRelease = fluorescentEnergyToRelease + (K1 * muratio);     //the units are kEV
+    
     }
   //Convert keV to Joules
   fluorescentEnergyToRelease = fluorescentEnergyToRelease * Beam.KEVTOJOULES; 
@@ -471,12 +485,16 @@ public abstract class Crystal {
     //Calc % energy contribution of each event
     getFluorescenceEnergyPerEvent(feFactors);
     fluorescenceEnergyRelease = calcFluorescence(beam, feFactors);
-    fluorescenceProportionEvent = new double[feFactors.length][4];
+   // fluorescenceProportionEvent = new double[feFactors.length][4];
+    fluorescenceProportionEvent = new double[feFactors.length];
     for (int m = 0; m < feFactors.length; m++) {
+      /*
       fluorescenceProportionEvent[m][0] = fluorescenceEnergyPerEvent[m][0] / fluorescenceEnergyRelease; //K
       fluorescenceProportionEvent[m][1] = fluorescenceEnergyPerEvent[m][1] / fluorescenceEnergyRelease; //L1
       fluorescenceProportionEvent[m][2] = fluorescenceEnergyPerEvent[m][2] / fluorescenceEnergyRelease; //L2
       fluorescenceProportionEvent[m][3] = fluorescenceEnergyPerEvent[m][3] / fluorescenceEnergyRelease; //L3
+      */
+      fluorescenceProportionEvent[m] = fluorescenceEnergyPerEvent[m] / fluorescenceEnergyRelease; //K
     }
     setFLparamsForCurrentBeam(feFactors);
     }
@@ -532,7 +550,7 @@ public abstract class Crystal {
     } // end of looping over angles
 
     double fractionEscapedDose = totalEscapedDose/totalCrystalDose; //Just to test escaped dose
-    
+    System.out.println(fractionEscapedDose);
     
     for (int i = 0; i < getCrystSizeVoxels()[0]; i++) {
       for (int j = 0; j < getCrystSizeVoxels()[1]; j++) {
@@ -708,8 +726,10 @@ public abstract class Crystal {
                   // voxImageFlDoseRelease = 0;
                    
                   double doseLostFromCrystalPE = addDoseAfterPE(i, j, k, dosePE); //to run with new photoelectron escape
-                  double doseLostFromCrytsalFL = addDoseAfterFL(i, j, k, voxImageFlDoseRelease);
-                  
+                  double doseLostFromCrytsalFL = 0;
+                  if (voxImageFlDoseRelease > 0) { //necessary to prevent error when 0
+                  doseLostFromCrytsalFL = addDoseAfterFL(i, j, k, voxImageFlDoseRelease);
+                  }
                   totalEscapedDosePE +=  doseLostFromCrystalPE;
                   totalEscapedDoseFL += doseLostFromCrytsalFL;
                   totalEscapedDose += doseLostFromCrystalPE + doseLostFromCrytsalFL;
@@ -721,8 +741,9 @@ public abstract class Crystal {
                   totalAugerEnergyToRelease += totAugerDose;
                   
                   //add Auger to Voxel
+                  if(totAugerDose > 0) {
                   addDose(i, j, k, totAugerDose);
-                  
+                  }
                   //addFluorescence - this is old code used to test
               //    addDose(i, j, k, voxImageFlDoseRelease); //comment out as now sending along tracks
                   // add PE To test
@@ -738,7 +759,9 @@ public abstract class Crystal {
                   totalEscapedDosePE +=  doseLostFromCrystalPE;
                   totalEscapedDose += doseLostFromCrystalPE;
                   //add Auger to Voxel
+                  if(totAugerDose > 0) {
                   addDose(i, j, k, totAugerDose);
+                  }
                 }
                 else if (photoElectronEscape == false && fluorescentEscape == true) { //only do Fluorescent escape
                   //Energy to be released by voxel
@@ -746,7 +769,10 @@ public abstract class Crystal {
                 //convert this to a dose to be released
                   double voxImageFlDoseRelease = fluenceToDoseFactor * totFluorescenceEnergyRelease;
                   double doseLeft = voxImageDose - voxImageFlDoseRelease;
-                  double doseLostFromCrytsalFL = addDoseAfterFL(i, j, k, voxImageFlDoseRelease);
+                  double doseLostFromCrytsalFL = 0;
+                  if (voxImageFlDoseRelease > 0) {
+                  doseLostFromCrytsalFL = addDoseAfterFL(i, j, k, voxImageFlDoseRelease);
+                  }
                   addDose(i, j, k, doseLeft);
                   totalEscapedDoseFL += doseLostFromCrytsalFL;
                   totalEscapedDose +=  doseLostFromCrytsalFL;
