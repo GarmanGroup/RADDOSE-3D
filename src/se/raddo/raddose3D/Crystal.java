@@ -107,7 +107,7 @@ public abstract class Crystal {
    */
   public final boolean fluorescentEscape; 
   
-
+  public double EnergyToSubtractFromPE; 
   
   /**
    * The energy of each fluorescent event
@@ -389,7 +389,7 @@ public abstract class Crystal {
      double L2 = fluorescentEscapeFactors[i][9] * fluorescentEscapeFactors[i][10] * (1-fluorescentEscapeFactors[i][11]);
      double L3 = fluorescentEscapeFactors[i][13] * fluorescentEscapeFactors[i][14] * (1-fluorescentEscapeFactors[i][15]);
      */
-   //  augerEnergy += (K1 + L1 + L2 + L3) * muratio;
+  //   augerEnergy += (K1 + L1 + L2 + L3) * muratio;
      augerEnergy += K1 * muratio;
     }
     augerEnergy = augerEnergy * Beam.KEVTOJOULES;
@@ -403,7 +403,7 @@ public abstract class Crystal {
    */
   public void getFluorescenceEnergyPerEvent(double[][] fluorescentEscapeFactors) {
     int length = fluorescentEscapeFactors.length;
- //  fluorescenceEnergyPerEvent = new double[length][4];
+  // fluorescenceEnergyPerEvent = new double[length][4];
    fluorescenceEnergyPerEvent = new double[length];
   for (int i = 0; i < length; i++){    //loops over each atom type
     double muratio = fluorescentEscapeFactors[i][0]; // uj/upe
@@ -443,7 +443,7 @@ public abstract class Crystal {
     double muratio = fluorescentEscapeFactors[i][0]; // uj/upe
     //j-shell ionization x j-shell fluorescence yield x j-edge energy
     double K1 = fluorescentEscapeFactors[i][1]*fluorescentEscapeFactors[i][2]*fluorescentEscapeFactors[i][3]; 
-    /*
+  /*  
     double L1 = fluorescentEscapeFactors[i][5]*fluorescentEscapeFactors[i][6]*fluorescentEscapeFactors[i][7];
     double L2 = fluorescentEscapeFactors[i][9]*fluorescentEscapeFactors[i][10]*fluorescentEscapeFactors[i][11];
     double L3 = fluorescentEscapeFactors[i][13]*fluorescentEscapeFactors[i][14]*fluorescentEscapeFactors[i][15];
@@ -476,6 +476,28 @@ public abstract class Crystal {
     double augerEnergy = 0;
     //Set up PE and FE - no need to do this is PE false
     double[][] feFactors = coefCalc.getFluorescentEscapeFactors(beam); 
+    
+    double totK = 0, totL1 = 0, totL2 = 0, totL3 = 0;
+    
+    for (int i = 0; i < feFactors.length; i++) {
+      totK += feFactors[i][0] * feFactors[i][1] * feFactors[i][2];
+      totL1 += feFactors[i][0] * feFactors[i][5] * feFactors[i][6];
+      totL2 += feFactors[i][0] * feFactors[i][9] * feFactors[i][10];
+      totL3 += feFactors[i][0] * feFactors[i][13] * feFactors[i][14];
+    }
+    /*
+  //  totK = 0; //to test
+  //  totL1 = 0;
+  //  totL2 = 0;
+  //  totL3 = 0;
+    System.out.println(totK); // to test
+    System.out.println(totL1); // to test
+    System.out.println(totL2); // to test
+    System.out.println(totL3); // to test
+    */
+    EnergyToSubtractFromPE = totK + totL1 + totL2 + totL3;
+    
+    
     if (photoElectronEscape) {
     setPEparamsForCurrentBeam(beam.getPhotonEnergy()); 
     //Calc Auger
@@ -488,7 +510,7 @@ public abstract class Crystal {
    // fluorescenceProportionEvent = new double[feFactors.length][4];
     fluorescenceProportionEvent = new double[feFactors.length];
     for (int m = 0; m < feFactors.length; m++) {
-      /*
+    /* 
       fluorescenceProportionEvent[m][0] = fluorescenceEnergyPerEvent[m][0] / fluorescenceEnergyRelease; //K
       fluorescenceProportionEvent[m][1] = fluorescenceEnergyPerEvent[m][1] / fluorescenceEnergyRelease; //L1
       fluorescenceProportionEvent[m][2] = fluorescenceEnergyPerEvent[m][2] / fluorescenceEnergyRelease; //L2
@@ -550,7 +572,6 @@ public abstract class Crystal {
     } // end of looping over angles
 
     double fractionEscapedDose = totalEscapedDose/totalCrystalDose; //Just to test escaped dose
-    System.out.println(fractionEscapedDose);
     
     for (int i = 0; i < getCrystSizeVoxels()[0]; i++) {
       for (int j = 0; j < getCrystSizeVoxels()[1]; j++) {
