@@ -63,4 +63,16 @@ public abstract class CoefCalc {
    *         absorbed energy.
    */
   public abstract double[][] getFluorescentEscapeFactors(Beam beam);
+  
+  public abstract boolean getIsEM();
+  
+ // public abstract double getSA();
+  
+  public abstract double getElectronElastic(Beam beam);
+  
+  public abstract double getElectronInelastic(Beam beam);
+  
+  public abstract double getEMConc();
+  
 }
+

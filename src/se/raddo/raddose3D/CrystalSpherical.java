@@ -268,4 +268,8 @@ public class CrystalSpherical extends Crystal {
   public double addDoseAfterFL(int i, int j, int k, double doseIncreaseFL) {
     return 0;
   }
+  
+  @Override
+  public void CalculateEM(Beam beam, Wedge wedge, CoefCalc coefCalc) {
+  }
 }

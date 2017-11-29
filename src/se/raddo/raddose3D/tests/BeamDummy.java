@@ -46,4 +46,14 @@ public class BeamDummy implements Beam {
   @Override
   public void generateBeamArray() {    
   }
+  
+  @Override
+  public double getBeamX() {
+    return 0;
+  }
+  
+  @Override
+  public double getBeamY() {
+    return 0;
+  }
 }

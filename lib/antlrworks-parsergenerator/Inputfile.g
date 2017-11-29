@@ -81,10 +81,11 @@ scope {
 	List<String>	heavySolutionConcNames;
 	List<Double>	heavySolutionConcNums; 
 	Double 			solFrac;
+	Double 		   molecularWeight;
     HashMap<Object, Object> crystalProperties;
 	}
 @init { 
-$crystal::crystalCoefCalc = 2; // 0 = error, 1 = Simple, 2 = DEFAULT, 3 = RDV2, 4 = PDB, 5 = SAXS
+$crystal::crystalCoefCalc = 2; // 0 = error, 1 = Simple, 2 = DEFAULT, 3 = RDV2, 4 = PDB, 5 = SAXS, 8 = EM
 		$crystal::crystalProperties = new HashMap<Object, Object>();
 }
 @after { 
@@ -142,6 +143,17 @@ if ($crystal::crystalCoefCalc == 7)
   													$crystal::heavySolutionConcNames, $crystal::heavySolutionConcNums,
   													$crystal::solFrac, $crystal::proteinConc, $crystal::seqFile);
 }
+
+if ($crystal::crystalCoefCalc == 8)
+{
+  $crystal::crystalCoefCalcClass = new CoefCalcEM($crystal::numMon, $crystal::numRes, $crystal::heavyProteinAtomNames, $crystal::heavyProteinAtomNums, $crystal::proteinConc, 
+  													$crystal::molecularWeight,
+  													$crystal::cellA, $crystal::cellB, $crystal::cellC);
+  													
+  													  													
+}
+
+
 
 $crystal::crystalProperties.put(Crystal.CRYSTAL_COEFCALC, $crystal::crystalCoefCalcClass);
 
@@ -230,6 +242,7 @@ crystalLine
 	| bb=calculateFLEscape		{ $crystal::crystalProperties.put(Crystal.CRYSTAL_FLUORESCENT_ESCAPE, $bb.value); }
 	| cc=flResolution 		{ $crystal::crystalProperties.put(Crystal.CRYSTAL_FLUORESCENT_RESOLUTION, $cc.value);}
 	| dd=peResolution 		{ $crystal::crystalProperties.put(Crystal.CRYSTAL_PHOTOELECTRON_RESOLUTION, $dd.value);}
+	| ee=molecularWeight 		{ $crystal::molecularWeight					= $ee.value;	}
 
 	;
 
@@ -268,6 +281,7 @@ crystalCoefcalcKeyword returns [int value]
 	| SAXS		{ $value = 5;}
 	| SEQUENCE	{ $value = 6;}
 	| SAXSSEQ	{ $value = 7;}
+	| EM            { $value = 8;}
 	;
 DUMMY : ('D'|'d')('U'|'u')('M'|'m')('M'|'m')('Y'|'y') ;
 DEFAULT	: ('D'|'d')('E'|'e')('F'|'f')('A'|'a')('U'|'u')('L'|'l')('T'|'t');
@@ -278,6 +292,7 @@ PDB : ('E'|'e')('X'|'x')('P'|'p');
 SAXS : ('S'|'s')('A'|'a')('X'|'x')('S'|'s');
 SEQUENCE : ('S'|'s')('E'|'e')('Q'|'q')('U'|'u')('E'|'e')('N'|'n')('C'|'c')('E'|'e');
 SAXSSEQ : ('S'|'s')('A'|'a')('X'|'x')('S'|'s')('S'|'s')('E'|'e')('Q'|'q');
+EM : ('E'|'e')('M'|'m');
 
 crystalDim returns [Map<Object, Object> properties]
 @init { 
@@ -431,6 +446,10 @@ FLRESOLUTION : ('F'|'f')('L'|'l')('R'|'r')('E'|'e')('S'|'s')('O'|'o')('L'|'l')('
 peResolution returns [int value]
 	: PERESOLUTION a=FLOAT {$value = Integer.parseInt($a.text);};
 PERESOLUTION : ('P'|'p')('E'|'e')('R'|'r')('E'|'e')('S'|'s')('O'|'o')('L'|'l')('U'|'u')('T'|'t')('I'|'i')('O'|'o')('N'|'n') ;
+
+molecularWeight returns [double value]
+	: MOLECULARWEIGHT a=FLOAT {$value = Double.parseDouble($a.text);};
+MOLECULARWEIGHT :('M'|'m')('O'|'o')('L'|'l')('E'|'e')('C'|'c')('U'|'u')('L'|'l')('A'|'a')('R'|'r')('W'|'w')('E'|'e')('I'|'i')('G'|'g')('H'|'h')('T'|'t') ;
 
 	
 // ------------------------------------------------------------------

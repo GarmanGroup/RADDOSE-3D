@@ -133,6 +133,7 @@ public class OutputSummaryText implements ExposeObserver, Output,
   public void publishWedge(final Wedge wdg) {
     // Wedge info
     wedgeNum++;
+ if (expSummary.getAvgDiffractedDose() != null) {
     w.write("Wedge " + wedgeNum + ":\n");
     w.write(wdg.wedgeProperties() + crystalCoefCalc.toString() + "\n");
 
@@ -194,6 +195,7 @@ public class OutputSummaryText implements ExposeObserver, Output,
         doseHistogram[bins - 1] * PERCENT));
     w.write(b);
     h.reset();
+ } 
   }
 
   @Override

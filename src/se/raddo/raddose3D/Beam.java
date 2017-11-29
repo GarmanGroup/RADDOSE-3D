@@ -76,4 +76,8 @@ public interface Beam {
    * Applies flux attenuation due to the sample container.
    */
   public void applyContainerAttenuation(Container sampleContainer);
+  
+  public double getBeamX();
+  
+  public double getBeamY();
 }

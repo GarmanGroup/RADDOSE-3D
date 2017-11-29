@@ -83,6 +83,16 @@ public class ExperimentDummy extends Experiment {
       @Override
       public void generateBeamArray() {        
       }
+      
+      @Override
+      public double getBeamX() {
+        return 0;
+      }
+      
+      @Override
+      public double getBeamY() {
+        return 0;
+      }
     }
   }
 
@@ -251,6 +261,10 @@ public class ExperimentDummy extends Experiment {
       public double addDoseAfterFL(int i, int j, int k, double doseIncreaseFL) {
         // TODO Auto-generated method stub
         return 0;
+      }
+      
+      @Override
+      public void CalculateEM(Beam beam, Wedge wedge, CoefCalc coefCalc) {
       }
     }
   }

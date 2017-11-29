@@ -60,7 +60,7 @@ public class OutputFinalDoseStateCSV implements Output {
       w.close();
       return;
     }
-
+if (crystal.getCrystSizeVoxels() != null) { //for EM
     for (int i = 0; i < crystal.getCrystSizeVoxels()[0]; i++) {
       for (int j = 0; j < crystal.getCrystSizeVoxels()[1]; j++) {
         for (int k = 0; k < crystal.getCrystSizeVoxels()[2]; k++) {
@@ -92,7 +92,7 @@ public class OutputFinalDoseStateCSV implements Output {
         }
       }
     }
-
+}
     crystal = null;
     w.close();
   }

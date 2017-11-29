@@ -179,5 +179,16 @@ public class BeamExperimental implements Beam {
       System.out.println(s);
     }
   }
+  
+  //For EM
+  @Override
+  public double getBeamX() {
+    return beamXSize;
+  }
+  
+  @Override
+  public double getBeamY() {
+    return beamYSize;
+  }
 
 }

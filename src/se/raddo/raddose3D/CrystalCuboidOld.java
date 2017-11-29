@@ -543,4 +543,8 @@ public class CrystalCuboidOld extends Crystal {
     // 
     return 0;
   }
+  
+  @Override
+  public void CalculateEM(Beam beam, Wedge wedge, CoefCalc coefCalc) {
+  }
 }

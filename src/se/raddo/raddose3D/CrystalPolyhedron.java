@@ -1582,4 +1582,8 @@ flRelativeVoxXYZ = new double[feFactors.length][flDistBins][PE_ANGLE_RESOLUTION 
       System.arraycopy(tempIndices[i], 0, indices[i], 0, 3);
     }
   }
+  
+  @Override
+  public void CalculateEM(Beam beam, Wedge wedge, CoefCalc coefCalc) {
+  }
 }

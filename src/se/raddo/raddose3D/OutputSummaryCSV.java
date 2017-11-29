@@ -72,7 +72,7 @@ public class OutputSummaryCSV implements Output {
   @Override
   public void publishWedge(final Wedge wdg) {
     wedgeCounter++;
-
+if (expSummary.getAvgDiffractedDose() != null) {
     w.write(String.format(
         "%d, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f%n",
         wedgeCounter,
@@ -90,7 +90,7 @@ public class OutputSummaryCSV implements Output {
         expSummary.getAbsEnergyTotal(),
         expSummary.getDoseInefficiency()));
   }
-
+  }
   @Override
   public void close() {
     expSummary = null;

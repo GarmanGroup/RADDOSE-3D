@@ -12,7 +12,7 @@ public class CoefCalcCompute extends CoefCalc {
   /**
    * Identified coefficients and density from last program run. Final variables.
    */
-  private double                     absCoeffcomp, absCoeffphoto, attCoeff, elasCoeff, density, cellVolume;
+  private double                     absCoeffcomp, absCoeffphoto, attCoeff, elasCoeff, density, cellVolume; // cellSA;
   
   /**
    * Set of the unique elements present in the crystal (including solvent
@@ -162,6 +162,11 @@ public class CoefCalcCompute extends CoefCalc {
   private static final String        COMPTON                      = "Compton Attenuation";
   private static final double        MIN_ATOMIC_NUM_FOR_K_SHELL_IONISATION = 11;
   private static final double        MIN_ATOMIC_NUM_FOR_L_SHELL_IONISATION = 16;
+  
+//  public double EMThickness;
+  public double EMConc;
+ // public double EMMass;
+  public boolean isEM;
 
   /**
    * Number of atoms (only those that are not part of the protein), per
@@ -482,10 +487,90 @@ public class CoefCalcCompute extends CoefCalc {
   }
   */
   
+  /*
+  protected void calculateSA(double cellA, double cellB) {
+    cellSA = cellA * cellB;
+  }
+  */
+
   
+  @Override 
+  public double getElectronElastic(Beam beam) {
+    //Individual atom cross sections
+    double[] elasticElement = new double[presentElements.size()];
+    double elasticMolecule = 0;
+    double m = 9.10938356E-31; // in Kg
+    double csquared = 3E8*3E8;  // (m/s)^2
+    double Vo = beam.getPhotonEnergy() * Beam.KEVTOJOULES;
+    double betaSquared = 1- Math.pow(m*csquared/(Vo + m*csquared), 2);
+   
+    double molWeight = 0;
+    int counter = 0;
+    for (Element e : this.presentElements) {
+      elasticElement[counter] =  ((1.4E-6 * Math.pow(e.getAtomicNumber(), 1.5))/betaSquared)*
+                       ((1-(0.26*e.getAtomicNumber())/(137*Math.pow(betaSquared, 0.5))));
+                   //    *1E06; // convert nm^2 to pm^2
+      double numEl = getMacromolecularOccurrence(e);
+      elasticMolecule += elasticElement[counter] * numEl;
+      molWeight += numEl * e.getAtomicWeight();
+      counter += 1;
+    }
+
+    double massScatteringCoefficient = elasticMolecule / molWeight;
+    double PoverT = 602 * massScatteringCoefficient  * (EMConc/1000); //* (EMThickness/10);
+    
+    return PoverT;
+  }
   
+  @Override
+  public  double getElectronInelastic(Beam beam) {
+    //Individual atom cross sections
+    double[] inelasticElement = new double[presentElements.size()];
+    double inelasticMolecule = 0;
+    double m = 9.10938356E-31; // in Kg
+    double csquared = 3E8*3E8;  // (m/s)^2
+    double Vo = beam.getPhotonEnergy() * Beam.KEVTOJOULES;
+    double betaSquared = 1- Math.pow(m*csquared/(Vo + m*csquared), 2);
+    double weirdLetter = (0.02*Beam.KEVTOJOULES)/(betaSquared*(Vo + m*csquared));
+    double molWeight = 0;
+    int counter = 0;
+    for (Element e : this.presentElements) {
+      if (e.getAtomicNumber() == 1) { //Correct as formula doesn't work for hydrogen
+        inelasticElement[counter] = 6.4E-5;
+      }
+      else {
+      inelasticElement[counter] =  ((1.5E-6 * Math.pow(e.getAtomicNumber(), 0.5))/betaSquared)*
+                       (Math.log(2/weirdLetter));
+                     //  1E06; // convert nm^2 to pm^2
+      }
+      double numEl = getMacromolecularOccurrence(e);
+      inelasticMolecule += inelasticElement[counter] * numEl;
+      
+      molWeight += numEl * e.getAtomicWeight();
+      counter += 1;
+    }
+
+    double massScatteringCoefficient = inelasticMolecule / molWeight;
+    double PoverT = 602 * massScatteringCoefficient  * (EMConc/1000); //* (EMThickness/10);
+    
+    return PoverT;
+
+  }
+  /*
+  @Override 
+  public double getSA() {
+    return cellSA;
+  }
+  */
+  @Override 
+  public double getEMConc() {
+    return EMConc;
+  }
   
-  
+  @Override 
+  public boolean getIsEM() {
+    return isEM;
+  }
   
   
   @Override

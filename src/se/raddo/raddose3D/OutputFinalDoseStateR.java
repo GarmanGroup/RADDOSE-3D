@@ -65,6 +65,7 @@ public class OutputFinalDoseStateR implements Output {
     }
 
     int[] csize = crystal.getCrystSizeVoxels();
+ if (csize != null) {
     w.write("# Crystal dose state visualization using R\n");
     w.write("# http://www.r-project.org/\n#\n");
     w.write("# Code generated "
@@ -111,7 +112,7 @@ public class OutputFinalDoseStateR implements Output {
             csize[0], csize[1], csize[2])
         + String.format("%d/2,%d/2,%d/2),", csize[0], csize[1], csize[2])
         + "col = 'grey')");
-
+ }
     crystal = null;
     w.close();
   }

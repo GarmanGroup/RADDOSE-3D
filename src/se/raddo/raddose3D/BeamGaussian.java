@@ -216,4 +216,15 @@ public class BeamGaussian implements Beam {
       System.out.println(s);
     }
   }
+  
+  //For EM - change later for now jsut to remove error
+  @Override
+  public double getBeamX() {
+    return fwhmX;
+  }
+  
+  @Override
+  public double getBeamY() {
+    return fwhmY;
+  }
 }

@@ -104,4 +104,14 @@ public class BeamTophat implements Beam {
       System.out.println(s);
     }
   }
+  //for EM
+  @Override
+  public double getBeamX() {
+    return beamXum;
+  }
+  
+  @Override
+  public double getBeamY() {
+    return beamYum;
+  }
 }

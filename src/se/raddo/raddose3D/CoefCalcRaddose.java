@@ -365,4 +365,27 @@ public class CoefCalcRaddose extends CoefCalc {
     // Added to prevent error
     return 0;
   }
+  
+  
+  @Override
+  public  double getElectronElastic(Beam beam) {
+    //Added to prevent error
+    return 0;
+  }
+  
+  @Override
+  public  double getElectronInelastic(Beam beam) {
+    //Added to prevent error
+    return 0;
+  }
+  
+  @Override 
+  public double getEMConc() {
+    return 0;
+  }
+  
+  @Override 
+  public boolean getIsEM() {
+    return false;
+  }
 }

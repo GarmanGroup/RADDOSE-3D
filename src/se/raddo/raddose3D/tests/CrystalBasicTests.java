@@ -39,7 +39,7 @@ public class CrystalBasicTests {
     properties.put(Crystal.CRYSTAL_DIM_Z, dim3);
     properties.put(Crystal.CRYSTAL_RESOLUTION, res);
     properties.put(Crystal.CRYSTAL_COEFCALC, coef);
-
+//Need to add polyhedron in here???
     crystArrayList.add(new CrystalSpherical(properties));
     crystArrayList.add(new CrystalCuboid(properties));
     return crystArrayList;

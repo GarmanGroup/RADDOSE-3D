@@ -107,6 +107,8 @@ public abstract class Crystal {
    */
   public final boolean fluorescentEscape; 
   
+ // public final boolean EMExp;
+  
   public double EnergyToSubtractFromPE; 
   
   /**
@@ -132,6 +134,7 @@ public abstract class Crystal {
    * obtained via getExposureSummary().
    */
   private ExposureSummary        exposureSummaryObserver;
+  
 
   /**
    * Generic property constructor for crystal classes.
@@ -151,12 +154,14 @@ public abstract class Crystal {
       ddm = (DDM) properties.get(Crystal.CRYSTAL_DDM);
     }
 
+    
     if (properties.get(Crystal.CRYSTAL_COEFCALC) == null) {
       coefCalc = new CoefCalcAverage();
     } else {
       coefCalc = (CoefCalc) properties.get(Crystal.CRYSTAL_COEFCALC);
     }
 
+    
     if (properties.get(Crystal.CRYSTAL_CONTAINER) == null) {
       sampleContainer = new ContainerTransparent();
     } else {
@@ -175,6 +180,7 @@ public abstract class Crystal {
     }
     fluorescentEscape = ("TRUE".equals(fE));
 
+    
   }
 
   public abstract void setupDepthFinding(double angrad, Wedge wedge);
@@ -355,6 +361,8 @@ public abstract class Crystal {
   public final DDM getDDM() {
     return ddm;
   }
+  
+  public abstract void CalculateEM(Beam beam, Wedge wedge, CoefCalc coefCalc);
 
   /**
    * Register an observer for crystal exposures.
@@ -457,7 +465,65 @@ public abstract class Crystal {
   fluorescentEnergyToRelease = fluorescentEnergyToRelease * Beam.KEVTOJOULES; 
   return fluorescentEnergyToRelease;
   }
-
+  
+  
+  //
+  //
+//
+  //
+  //This will go in crystal EM
+  //
+  //
+  //
+  /*
+  public void doEM(Beam beam, Wedge wedge) {
+    double dose1 = EMLETWay(beam, wedge);
+    System.out.print(String.format("\nThe Dose: %.2e", dose1));
+    System.out.println(" MGy\n");
+ 
+  
+    double dose2 = EMEquationWay(beam, wedge);
+    System.out.print(String.format("\nThe Dose: %.2e", dose2));
+    System.out.println(" MGy\n");
+  }
+  
+  public double EMLETWay(Beam beam, Wedge wedge) {
+    double surfaceArea = coefCalc.getSA(); //Change to crystal coord when move 
+    double electronNumber = beam.getPhotonsPerSec() * wedge.getTotSec();
+    double exposure = electronNumber/surfaceArea;  //exposure in e/A^2
+    double beamEnergy = beam.getPhotonEnergy();
+    double baseDose = 0;
+    double theDose = 0;
+    //set case exposure = 1
+  if (beamEnergy == 100) {
+    baseDose = 6.6;
+  }
+  else if (beamEnergy == 200) {
+    baseDose = 4.5;
+  }
+  else if (beamEnergy == 300) {
+    baseDose = 3.7;
+  }
+  theDose = baseDose * exposure;
+  return theDose;
+  }
+  
+  public double EMEquationWay(Beam beam, Wedge wedge) {
+    double energyPerEvent = 0.02; //in keV
+    double electronNumber = beam.getPhotonsPerSec() * wedge.getTotSec();
+    
+    //Testing
+    double elasticProb = coefCalc.getElectronElastic(beam);
+    
+    double inelasticProb = coefCalc.getElectronInelastic(beam);
+    double numberInelasticEvents = inelasticProb * electronNumber;
+    double energyDeposited = (energyPerEvent * numberInelasticEvents) * Beam.KEVTOJOULES; //in J
+    double dose = (energyDeposited/coefCalc.getEMMass()) / 1E06; //dose in MGy
+    return dose;
+  }
+  
+  */
+  
   
   /**
    * Expose this crystal to a given beam according to a strategy.
@@ -469,7 +535,14 @@ public abstract class Crystal {
    *          translational and rotational information.
    */
   public void expose(final Beam beam, final Wedge wedge) {
-
+//EM sample exposure
+    if (coefCalc.getIsEM()) {
+  //  doEM(beam, wedge);
+    CalculateEM(beam, wedge, coefCalc);
+    }
+    else {
+   
+    
     // Update coefficients in case the beam energy has changed.
     coefCalc.updateCoefficients(beam);
     double fluorescenceEnergyRelease = 0;
@@ -496,6 +569,7 @@ public abstract class Crystal {
     System.out.println(totL3); // to test
     */
     EnergyToSubtractFromPE = totK + totL1 + totL2 + totL3;
+    
     
     
     if (photoElectronEscape) {
@@ -598,7 +672,8 @@ public abstract class Crystal {
       System.out.print(String.format("Total energy that may escape by Fluorescent Escape: %.2e", totalEscapedDoseFL));
       System.out.println(" J.\n");
     }
-
+    }
+    
     ///////////////////////////////////////////////////////
     // END OF EXPOSE METHOD
     ///////////////////////////////////////////////////////
@@ -704,8 +779,8 @@ public abstract class Crystal {
                       * Math.exp(depth * beamAttenuationExpFactor);              
 
               
-              double electronweight = 9.10938356E-31;
-              double csquared = 3E8*3E8;
+              double electronweight = 9.10938356E-31; // in Kg
+              double csquared = 3E8*3E8;  // (m/s)^2
               double beamenergy = (beam.getPhotonEnergy() * Beam.KEVTOJOULES);
               double mcsquared = electronweight * csquared;
               double voxImageElectronEnergyDose = mcsquared / (2*beamenergy + mcsquared);
