@@ -44,21 +44,9 @@ public class CrystalEM extends Crystal {
     double electronNumber = beam.getPhotonsPerSec() * wedge.getTotSec();
     
     //check if the beam is bigger or smaller than the sample - need to check in x and in y (x = horizontal, y = vertical)
-    double exposedAreaX, exposedAreaY, totExposedArea;
-    double beamX = beam.getBeamX();
-    double beamY = beam.getBeamY();
-    if (XDim > beamX) {
-      exposedAreaX = beamX;
-    }
-    else {
-      exposedAreaX = XDim;
-    }
-    if (YDim > beamY) {
-      exposedAreaY = beamY;
-    }
-    else {
-      exposedAreaY = YDim;
-    }
+    double exposedAreaY = getExposedY(beam);
+    double exposedAreaX = getExposedX(beam);
+    double totExposedArea;
     totExposedArea = (exposedAreaX * exposedAreaY) * 1E08; //convert  um^2 to A^2
     
     double exposure = electronNumber/totExposedArea;  //exposure in e/A^2
@@ -82,7 +70,7 @@ public class CrystalEM extends Crystal {
   private double EMEquationWay(Beam beam, Wedge wedge, CoefCalc coefCalc) {
     double energyPerEvent = 0.02; //in keV
     double electronNumber = beam.getPhotonsPerSec() * wedge.getTotSec();
-    
+    double exposedVolume = (getExposedX(beam) * getExposedY(beam))  * (sampleThickness/1000) * 1E-15; //exposed volume in dm^3
     //Testing
     double elasticProbOverT = coefCalc.getElectronElastic(beam);
     double elasticProb = elasticProbOverT * sampleThickness;
@@ -92,9 +80,46 @@ public class CrystalEM extends Crystal {
     double inelasticProb = inelasticProbOverT * sampleThickness;
     double numberInelasticEvents = inelasticProb * electronNumber;
     double energyDeposited = (energyPerEvent * numberInelasticEvents) * Beam.KEVTOJOULES; //in J
-    double totMass = (coefCalc.getEMConc() * crystalVolume) / 1000;  //in Kg 
-    double dose = (energyDeposited/totMass) / 1E06; //dose in MGy
+    double exposedMass = (coefCalc.getEMConc() * exposedVolume) / 1000;  //in Kg 
+    double dose = (energyDeposited/exposedMass) / 1E06; //dose in MGy
     return dose;
+  }
+  
+  /**
+   * Returns the exposed area in the x dimensions of the sample in um
+   * 
+   * @param beam
+   * @return exposedAreaX
+   */
+  private double getExposedX(Beam beam) {
+    double exposedAreaX;
+    double beamX = beam.getBeamX();
+    if (XDim > beamX) {
+      exposedAreaX = beamX;
+    }
+    else {
+      exposedAreaX = XDim;
+    }
+    return exposedAreaX;
+  }
+  
+  /**
+   * Returns the exposed area in the y dimensions of the sample in um
+   * 
+   * @param beam
+   * @return exposedAreaY
+   */
+  private double getExposedY(Beam beam) {
+    double exposedAreaY;
+    double beamY = beam.getBeamY();
+
+    if (YDim > beamY) {
+      exposedAreaY = beamY;
+    }
+    else {
+      exposedAreaY = YDim;
+    }
+    return exposedAreaY;
   }
   
   
@@ -106,7 +131,7 @@ public class CrystalEM extends Crystal {
  
   
     double dose2 = EMEquationWay(beam, wedge, coefCalc);
-    System.out.print(String.format("\nThe Dose: %.2e", dose2));
+    System.out.print(String.format("\nThe Dose in the exposed area: %.2e", dose2));
     System.out.println(" MGy\n");
   }
   
