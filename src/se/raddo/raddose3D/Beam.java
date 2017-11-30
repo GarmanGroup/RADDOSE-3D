@@ -26,12 +26,15 @@ public interface Beam {
   /** Constant for data fields in Map constructors: Pixel size Y. */
   public static final String BEAM_PIXSIZE_Y   = "PIXSIZE_Y";
 
+  public static final String BEAM_CIRCULAR   = "CIRCULAR";
+  
   /** The elementary charge, 1.6*10^-19 coulombs. */
   public static final Double ELEMENTARYCHARGE = 1.602176565e-19;
 
   /** Conversion factor from keV to Joules. */
   public static final Double KEVTOJOULES      = 1000 * ELEMENTARYCHARGE;
 
+  
   /**
    * Returns the mean intensity at position X, Y in joules/um^2/s.
    *

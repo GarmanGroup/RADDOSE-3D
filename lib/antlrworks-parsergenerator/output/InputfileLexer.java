@@ -1,4 +1,4 @@
-// $ANTLR 3.4 /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g 2017-10-16 17:02:02
+// $ANTLR 3.4 H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g 2017-11-30 16:21:23
 
 package se.raddo.raddose3D.parser;
 
@@ -100,15 +100,15 @@ public class InputfileLexer extends Lexer {
     public InputfileLexer(CharStream input, RecognizerSharedState state) {
         super(input,state);
     }
-    public String getGrammarFileName() { return "/Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g"; }
+    public String getGrammarFileName() { return "H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g"; }
 
     // $ANTLR start "CRYSTAL"
     public final void mCRYSTAL() throws RecognitionException {
         try {
             int _type = CRYSTAL;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:200:9: ( ( 'C' | 'c' ) ( 'R' | 'r' ) ( 'Y' | 'y' ) ( 'S' | 's' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'L' | 'l' ) )
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:200:11: ( 'C' | 'c' ) ( 'R' | 'r' ) ( 'Y' | 'y' ) ( 'S' | 's' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'L' | 'l' )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:200:9: ( ( 'C' | 'c' ) ( 'R' | 'r' ) ( 'Y' | 'y' ) ( 'S' | 's' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'L' | 'l' ) )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:200:11: ( 'C' | 'c' ) ( 'R' | 'r' ) ( 'Y' | 'y' ) ( 'S' | 's' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'L' | 'l' )
             {
             if ( input.LA(1)=='C'||input.LA(1)=='c' ) {
                 input.consume();
@@ -186,7 +186,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "CRYSTAL"
@@ -196,8 +196,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = TYPE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:250:6: ( ( 'T' | 't' ) ( 'Y' | 'y' ) ( 'P' | 'p' ) ( 'E' | 'e' ) )
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:250:8: ( 'T' | 't' ) ( 'Y' | 'y' ) ( 'P' | 'p' ) ( 'E' | 'e' )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:250:6: ( ( 'T' | 't' ) ( 'Y' | 'y' ) ( 'P' | 'p' ) ( 'E' | 'e' ) )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:250:8: ( 'T' | 't' ) ( 'Y' | 'y' ) ( 'P' | 'p' ) ( 'E' | 'e' )
             {
             if ( input.LA(1)=='T'||input.LA(1)=='t' ) {
                 input.consume();
@@ -245,7 +245,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "TYPE"
@@ -255,8 +255,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = DIFFRACTIONDECAYMODEL;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:254:23: ( ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'F' | 'f' ) ( 'F' | 'f' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'C' | 'c' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'Y' | 'y' ) ( 'M' | 'm' ) ( 'O' | 'o' ) ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'L' | 'l' ) )
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:254:25: ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'F' | 'f' ) ( 'F' | 'f' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'C' | 'c' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'Y' | 'y' ) ( 'M' | 'm' ) ( 'O' | 'o' ) ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'L' | 'l' )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:254:23: ( ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'F' | 'f' ) ( 'F' | 'f' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'C' | 'c' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'Y' | 'y' ) ( 'M' | 'm' ) ( 'O' | 'o' ) ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'L' | 'l' ) )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:254:25: ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'F' | 'f' ) ( 'F' | 'f' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'C' | 'c' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'Y' | 'y' ) ( 'M' | 'm' ) ( 'O' | 'o' ) ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'L' | 'l' )
             {
             if ( input.LA(1)=='D'||input.LA(1)=='d' ) {
                 input.consume();
@@ -474,7 +474,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "DIFFRACTIONDECAYMODEL"
@@ -484,8 +484,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = DDM;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:255:5: ( ( 'D' | 'd' ) ( 'D' | 'd' ) ( 'M' | 'm' ) )
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:255:7: ( 'D' | 'd' ) ( 'D' | 'd' ) ( 'M' | 'm' )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:255:5: ( ( 'D' | 'd' ) ( 'D' | 'd' ) ( 'M' | 'm' ) )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:255:7: ( 'D' | 'd' ) ( 'D' | 'd' ) ( 'M' | 'm' )
             {
             if ( input.LA(1)=='D'||input.LA(1)=='d' ) {
                 input.consume();
@@ -523,7 +523,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "DDM"
@@ -533,8 +533,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = SIMPLE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:261:8: ( ( 'S' | 's' ) ( 'I' | 'i' ) ( 'M' | 'm' ) ( 'P' | 'p' ) ( 'L' | 'l' ) ( 'E' | 'e' ) )
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:261:10: ( 'S' | 's' ) ( 'I' | 'i' ) ( 'M' | 'm' ) ( 'P' | 'p' ) ( 'L' | 'l' ) ( 'E' | 'e' )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:261:8: ( ( 'S' | 's' ) ( 'I' | 'i' ) ( 'M' | 'm' ) ( 'P' | 'p' ) ( 'L' | 'l' ) ( 'E' | 'e' ) )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:261:10: ( 'S' | 's' ) ( 'I' | 'i' ) ( 'M' | 'm' ) ( 'P' | 'p' ) ( 'L' | 'l' ) ( 'E' | 'e' )
             {
             if ( input.LA(1)=='S'||input.LA(1)=='s' ) {
                 input.consume();
@@ -602,7 +602,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "SIMPLE"
@@ -612,8 +612,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = LINEAR;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:262:8: ( ( 'L' | 'l' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'R' | 'r' ) )
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:262:10: ( 'L' | 'l' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'R' | 'r' )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:262:8: ( ( 'L' | 'l' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'R' | 'r' ) )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:262:10: ( 'L' | 'l' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'R' | 'r' )
             {
             if ( input.LA(1)=='L'||input.LA(1)=='l' ) {
                 input.consume();
@@ -681,7 +681,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "LINEAR"
@@ -691,8 +691,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = LEAL;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:263:6: ( ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'L' | 'l' ) )
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:263:8: ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'L' | 'l' )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:263:6: ( ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'L' | 'l' ) )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:263:8: ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'L' | 'l' )
             {
             if ( input.LA(1)=='L'||input.LA(1)=='l' ) {
                 input.consume();
@@ -740,7 +740,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "LEAL"
@@ -750,8 +750,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = DECAYPARAM;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:267:13: ( ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'Y' | 'y' ) ( 'P' | 'p' ) ( 'A' | 'a' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'M' | 'm' ) )
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:267:15: ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'Y' | 'y' ) ( 'P' | 'p' ) ( 'A' | 'a' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'M' | 'm' )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:267:13: ( ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'Y' | 'y' ) ( 'P' | 'p' ) ( 'A' | 'a' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'M' | 'm' ) )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:267:15: ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'Y' | 'y' ) ( 'P' | 'p' ) ( 'A' | 'a' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'M' | 'm' )
             {
             if ( input.LA(1)=='D'||input.LA(1)=='d' ) {
                 input.consume();
@@ -859,7 +859,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "DECAYPARAM"
@@ -869,10 +869,10 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = ABSCOEFCALC;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:271:13: ( ( ( 'A' | 'a' ) ( 'B' | 'b' ) ( 'S' | 's' ) )? ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'E' | 'e' ) ( 'F' | 'f' ) ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'C' | 'c' ) )
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:271:15: ( ( 'A' | 'a' ) ( 'B' | 'b' ) ( 'S' | 's' ) )? ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'E' | 'e' ) ( 'F' | 'f' ) ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'C' | 'c' )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:271:13: ( ( ( 'A' | 'a' ) ( 'B' | 'b' ) ( 'S' | 's' ) )? ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'E' | 'e' ) ( 'F' | 'f' ) ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'C' | 'c' ) )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:271:15: ( ( 'A' | 'a' ) ( 'B' | 'b' ) ( 'S' | 's' ) )? ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'E' | 'e' ) ( 'F' | 'f' ) ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'C' | 'c' )
             {
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:271:15: ( ( 'A' | 'a' ) ( 'B' | 'b' ) ( 'S' | 's' ) )?
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:271:15: ( ( 'A' | 'a' ) ( 'B' | 'b' ) ( 'S' | 's' ) )?
             int alt1=2;
             int LA1_0 = input.LA(1);
 
@@ -881,7 +881,7 @@ public class InputfileLexer extends Lexer {
             }
             switch (alt1) {
                 case 1 :
-                    // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:271:16: ( 'A' | 'a' ) ( 'B' | 'b' ) ( 'S' | 's' )
+                    // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:271:16: ( 'A' | 'a' ) ( 'B' | 'b' ) ( 'S' | 's' )
                     {
                     if ( input.LA(1)=='A'||input.LA(1)=='a' ) {
                         input.consume();
@@ -1005,7 +1005,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "ABSCOEFCALC"
@@ -1015,8 +1015,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = DUMMY;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:284:7: ( ( 'D' | 'd' ) ( 'U' | 'u' ) ( 'M' | 'm' ) ( 'M' | 'm' ) ( 'Y' | 'y' ) )
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:284:9: ( 'D' | 'd' ) ( 'U' | 'u' ) ( 'M' | 'm' ) ( 'M' | 'm' ) ( 'Y' | 'y' )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:284:7: ( ( 'D' | 'd' ) ( 'U' | 'u' ) ( 'M' | 'm' ) ( 'M' | 'm' ) ( 'Y' | 'y' ) )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:284:9: ( 'D' | 'd' ) ( 'U' | 'u' ) ( 'M' | 'm' ) ( 'M' | 'm' ) ( 'Y' | 'y' )
             {
             if ( input.LA(1)=='D'||input.LA(1)=='d' ) {
                 input.consume();
@@ -1074,7 +1074,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "DUMMY"
@@ -1084,8 +1084,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = DEFAULT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:285:9: ( ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'F' | 'f' ) ( 'A' | 'a' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'T' | 't' ) )
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:285:11: ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'F' | 'f' ) ( 'A' | 'a' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'T' | 't' )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:285:9: ( ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'F' | 'f' ) ( 'A' | 'a' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'T' | 't' ) )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:285:11: ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'F' | 'f' ) ( 'A' | 'a' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'T' | 't' )
             {
             if ( input.LA(1)=='D'||input.LA(1)=='d' ) {
                 input.consume();
@@ -1163,7 +1163,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "DEFAULT"
@@ -1173,8 +1173,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = AVERAGE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:286:9: ( ( 'A' | 'a' ) ( 'V' | 'v' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'G' | 'g' ) ( 'E' | 'e' ) )
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:286:11: ( 'A' | 'a' ) ( 'V' | 'v' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'G' | 'g' ) ( 'E' | 'e' )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:286:9: ( ( 'A' | 'a' ) ( 'V' | 'v' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'G' | 'g' ) ( 'E' | 'e' ) )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:286:11: ( 'A' | 'a' ) ( 'V' | 'v' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'G' | 'g' ) ( 'E' | 'e' )
             {
             if ( input.LA(1)=='A'||input.LA(1)=='a' ) {
                 input.consume();
@@ -1252,7 +1252,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "AVERAGE"
@@ -1262,8 +1262,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = RDFORTAN;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:287:10: ( ( 'R' | 'r' ) ( 'D' | 'd' ) ( 'V' | 'v' ) ( '2' | '3' )? )
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:287:12: ( 'R' | 'r' ) ( 'D' | 'd' ) ( 'V' | 'v' ) ( '2' | '3' )?
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:287:10: ( ( 'R' | 'r' ) ( 'D' | 'd' ) ( 'V' | 'v' ) ( '2' | '3' )? )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:287:12: ( 'R' | 'r' ) ( 'D' | 'd' ) ( 'V' | 'v' ) ( '2' | '3' )?
             {
             if ( input.LA(1)=='R'||input.LA(1)=='r' ) {
                 input.consume();
@@ -1295,7 +1295,7 @@ public class InputfileLexer extends Lexer {
             }
 
 
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:287:39: ( '2' | '3' )?
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:287:39: ( '2' | '3' )?
             int alt2=2;
             int LA2_0 = input.LA(1);
 
@@ -1304,7 +1304,7 @@ public class InputfileLexer extends Lexer {
             }
             switch (alt2) {
                 case 1 :
-                    // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:
+                    // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:
                     {
                     if ( (input.LA(1) >= '2' && input.LA(1) <= '3') ) {
                         input.consume();
@@ -1328,7 +1328,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "RDFORTAN"
@@ -1338,8 +1338,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = RDJAVA;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:288:8: ( ( 'R' | 'r' ) ( 'D' | 'd' ) ( '3' ) ( 'D' | 'd' )? )
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:288:10: ( 'R' | 'r' ) ( 'D' | 'd' ) ( '3' ) ( 'D' | 'd' )?
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:288:8: ( ( 'R' | 'r' ) ( 'D' | 'd' ) ( '3' ) ( 'D' | 'd' )? )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:288:10: ( 'R' | 'r' ) ( 'D' | 'd' ) ( '3' ) ( 'D' | 'd' )?
             {
             if ( input.LA(1)=='R'||input.LA(1)=='r' ) {
                 input.consume();
@@ -1361,15 +1361,15 @@ public class InputfileLexer extends Lexer {
             }
 
 
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:288:28: ( '3' )
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:288:29: '3'
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:288:28: ( '3' )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:288:29: '3'
             {
             match('3'); 
 
             }
 
 
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:288:33: ( 'D' | 'd' )?
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:288:33: ( 'D' | 'd' )?
             int alt3=2;
             int LA3_0 = input.LA(1);
 
@@ -1378,7 +1378,7 @@ public class InputfileLexer extends Lexer {
             }
             switch (alt3) {
                 case 1 :
-                    // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:
+                    // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:
                     {
                     if ( input.LA(1)=='D'||input.LA(1)=='d' ) {
                         input.consume();
@@ -1402,7 +1402,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "RDJAVA"
@@ -1412,8 +1412,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = PDB;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:289:5: ( ( 'E' | 'e' ) ( 'X' | 'x' ) ( 'P' | 'p' ) )
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:289:7: ( 'E' | 'e' ) ( 'X' | 'x' ) ( 'P' | 'p' )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:289:5: ( ( 'E' | 'e' ) ( 'X' | 'x' ) ( 'P' | 'p' ) )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:289:7: ( 'E' | 'e' ) ( 'X' | 'x' ) ( 'P' | 'p' )
             {
             if ( input.LA(1)=='E'||input.LA(1)=='e' ) {
                 input.consume();
@@ -1451,7 +1451,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "PDB"
@@ -1461,8 +1461,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = SAXS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:290:6: ( ( 'S' | 's' ) ( 'A' | 'a' ) ( 'X' | 'x' ) ( 'S' | 's' ) )
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:290:8: ( 'S' | 's' ) ( 'A' | 'a' ) ( 'X' | 'x' ) ( 'S' | 's' )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:290:6: ( ( 'S' | 's' ) ( 'A' | 'a' ) ( 'X' | 'x' ) ( 'S' | 's' ) )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:290:8: ( 'S' | 's' ) ( 'A' | 'a' ) ( 'X' | 'x' ) ( 'S' | 's' )
             {
             if ( input.LA(1)=='S'||input.LA(1)=='s' ) {
                 input.consume();
@@ -1510,7 +1510,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "SAXS"
@@ -1520,8 +1520,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = SEQUENCE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:291:10: ( ( 'S' | 's' ) ( 'E' | 'e' ) ( 'Q' | 'q' ) ( 'U' | 'u' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'C' | 'c' ) ( 'E' | 'e' ) )
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:291:12: ( 'S' | 's' ) ( 'E' | 'e' ) ( 'Q' | 'q' ) ( 'U' | 'u' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'C' | 'c' ) ( 'E' | 'e' )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:291:10: ( ( 'S' | 's' ) ( 'E' | 'e' ) ( 'Q' | 'q' ) ( 'U' | 'u' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'C' | 'c' ) ( 'E' | 'e' ) )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:291:12: ( 'S' | 's' ) ( 'E' | 'e' ) ( 'Q' | 'q' ) ( 'U' | 'u' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'C' | 'c' ) ( 'E' | 'e' )
             {
             if ( input.LA(1)=='S'||input.LA(1)=='s' ) {
                 input.consume();
@@ -1609,7 +1609,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "SEQUENCE"
@@ -1619,8 +1619,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = SAXSSEQ;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:292:9: ( ( 'S' | 's' ) ( 'A' | 'a' ) ( 'X' | 'x' ) ( 'S' | 's' ) ( 'S' | 's' ) ( 'E' | 'e' ) ( 'Q' | 'q' ) )
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:292:11: ( 'S' | 's' ) ( 'A' | 'a' ) ( 'X' | 'x' ) ( 'S' | 's' ) ( 'S' | 's' ) ( 'E' | 'e' ) ( 'Q' | 'q' )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:292:9: ( ( 'S' | 's' ) ( 'A' | 'a' ) ( 'X' | 'x' ) ( 'S' | 's' ) ( 'S' | 's' ) ( 'E' | 'e' ) ( 'Q' | 'q' ) )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:292:11: ( 'S' | 's' ) ( 'A' | 'a' ) ( 'X' | 'x' ) ( 'S' | 's' ) ( 'S' | 's' ) ( 'E' | 'e' ) ( 'Q' | 'q' )
             {
             if ( input.LA(1)=='S'||input.LA(1)=='s' ) {
                 input.consume();
@@ -1698,7 +1698,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "SAXSSEQ"
@@ -1708,8 +1708,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = SMALLMOLE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:293:11: ( ( 'S' | 's' ) ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'L' | 'l' ) ( 'M' | 'm' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'E' | 'e' ) )
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:293:13: ( 'S' | 's' ) ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'L' | 'l' ) ( 'M' | 'm' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'E' | 'e' )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:293:11: ( ( 'S' | 's' ) ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'L' | 'l' ) ( 'M' | 'm' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'E' | 'e' ) )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:293:13: ( 'S' | 's' ) ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'L' | 'l' ) ( 'M' | 'm' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'E' | 'e' )
             {
             if ( input.LA(1)=='S'||input.LA(1)=='s' ) {
                 input.consume();
@@ -1807,7 +1807,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "SMALLMOLE"
@@ -1817,8 +1817,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = DIMENSION;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:307:11: ( ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'S' | 's' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'S' | 's' )? )
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:307:13: ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'S' | 's' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'S' | 's' )?
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:307:11: ( ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'S' | 's' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'S' | 's' )? )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:307:13: ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'S' | 's' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'S' | 's' )?
             {
             if ( input.LA(1)=='D'||input.LA(1)=='d' ) {
                 input.consume();
@@ -1910,7 +1910,7 @@ public class InputfileLexer extends Lexer {
             }
 
 
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:307:94: ( 'S' | 's' )?
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:307:94: ( 'S' | 's' )?
             int alt4=2;
             int LA4_0 = input.LA(1);
 
@@ -1919,7 +1919,7 @@ public class InputfileLexer extends Lexer {
             }
             switch (alt4) {
                 case 1 :
-                    // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:
+                    // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:
                     {
                     if ( input.LA(1)=='S'||input.LA(1)=='s' ) {
                         input.consume();
@@ -1943,7 +1943,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "DIMENSION"
@@ -1953,8 +1953,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = ANGLEP;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:312:8: ( ( 'A' | 'a' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'P' | 'p' ) )
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:312:10: ( 'A' | 'a' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'P' | 'p' )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:312:8: ( ( 'A' | 'a' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'P' | 'p' ) )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:312:10: ( 'A' | 'a' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'P' | 'p' )
             {
             if ( input.LA(1)=='A'||input.LA(1)=='a' ) {
                 input.consume();
@@ -2022,7 +2022,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "ANGLEP"
@@ -2032,8 +2032,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = ANGLEL;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:317:8: ( ( 'A' | 'a' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'L' | 'l' ) )
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:317:10: ( 'A' | 'a' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'L' | 'l' )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:317:8: ( ( 'A' | 'a' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'L' | 'l' ) )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:317:10: ( 'A' | 'a' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'L' | 'l' )
             {
             if ( input.LA(1)=='A'||input.LA(1)=='a' ) {
                 input.consume();
@@ -2101,7 +2101,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "ANGLEL"
@@ -2111,8 +2111,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = PIXELSPERMICRON;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:321:17: ( ( 'P' | 'p' ) ( 'I' | 'i' ) ( 'X' | 'x' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'S' | 's' ) ( 'P' | 'p' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'M' | 'm' ) ( 'I' | 'i' ) ( 'C' | 'c' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'N' | 'n' ) )
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:321:19: ( 'P' | 'p' ) ( 'I' | 'i' ) ( 'X' | 'x' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'S' | 's' ) ( 'P' | 'p' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'M' | 'm' ) ( 'I' | 'i' ) ( 'C' | 'c' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'N' | 'n' )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:321:17: ( ( 'P' | 'p' ) ( 'I' | 'i' ) ( 'X' | 'x' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'S' | 's' ) ( 'P' | 'p' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'M' | 'm' ) ( 'I' | 'i' ) ( 'C' | 'c' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'N' | 'n' ) )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:321:19: ( 'P' | 'p' ) ( 'I' | 'i' ) ( 'X' | 'x' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'S' | 's' ) ( 'P' | 'p' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'M' | 'm' ) ( 'I' | 'i' ) ( 'C' | 'c' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'N' | 'n' )
             {
             if ( input.LA(1)=='P'||input.LA(1)=='p' ) {
                 input.consume();
@@ -2270,7 +2270,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "PIXELSPERMICRON"
@@ -2280,8 +2280,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = UNITCELL;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:334:10: ( ( 'U' | 'u' ) ( 'N' | 'n' ) ( 'I' | 'i' ) ( 'T' | 't' ) ( 'C' | 'c' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'L' | 'l' ) )
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:334:12: ( 'U' | 'u' ) ( 'N' | 'n' ) ( 'I' | 'i' ) ( 'T' | 't' ) ( 'C' | 'c' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'L' | 'l' )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:334:10: ( ( 'U' | 'u' ) ( 'N' | 'n' ) ( 'I' | 'i' ) ( 'T' | 't' ) ( 'C' | 'c' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'L' | 'l' ) )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:334:12: ( 'U' | 'u' ) ( 'N' | 'n' ) ( 'I' | 'i' ) ( 'T' | 't' ) ( 'C' | 'c' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'L' | 'l' )
             {
             if ( input.LA(1)=='U'||input.LA(1)=='u' ) {
                 input.consume();
@@ -2369,7 +2369,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "UNITCELL"
@@ -2379,8 +2379,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = PROTEINCONC;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:338:12: ( ( 'P' | 'p' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'C' | 'c' ) )
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:338:14: ( 'P' | 'p' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'C' | 'c' )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:338:12: ( ( 'P' | 'p' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'C' | 'c' ) )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:338:14: ( 'P' | 'p' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'C' | 'c' )
             {
             if ( input.LA(1)=='P'||input.LA(1)=='p' ) {
                 input.consume();
@@ -2498,7 +2498,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "PROTEINCONC"
@@ -2508,8 +2508,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = PROTEINCONCENTRATION;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:339:21: ( ( 'P' | 'p' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'C' | 'c' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' ) )
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:339:23: ( 'P' | 'p' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'C' | 'c' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:339:21: ( ( 'P' | 'p' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'C' | 'c' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' ) )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:339:23: ( 'P' | 'p' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'C' | 'c' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' )
             {
             if ( input.LA(1)=='P'||input.LA(1)=='p' ) {
                 input.consume();
@@ -2717,7 +2717,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "PROTEINCONCENTRATION"
@@ -2727,8 +2727,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = NUMMONOMERS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:343:12: ( ( 'N' | 'n' ) ( 'U' | 'u' ) ( 'M' | 'm' ) ( 'M' | 'm' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'O' | 'o' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'S' | 's' ) )
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:343:14: ( 'N' | 'n' ) ( 'U' | 'u' ) ( 'M' | 'm' ) ( 'M' | 'm' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'O' | 'o' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'S' | 's' )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:343:12: ( ( 'N' | 'n' ) ( 'U' | 'u' ) ( 'M' | 'm' ) ( 'M' | 'm' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'O' | 'o' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'S' | 's' ) )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:343:14: ( 'N' | 'n' ) ( 'U' | 'u' ) ( 'M' | 'm' ) ( 'M' | 'm' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'O' | 'o' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'S' | 's' )
             {
             if ( input.LA(1)=='N'||input.LA(1)=='n' ) {
                 input.consume();
@@ -2846,7 +2846,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "NUMMONOMERS"
@@ -2856,8 +2856,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = NUMRESIDUES;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:347:13: ( ( 'N' | 'n' ) ( 'U' | 'u' ) ( 'M' | 'm' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'I' | 'i' ) ( 'D' | 'd' ) ( 'U' | 'u' ) ( 'E' | 'e' ) ( 'S' | 's' ) )
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:347:15: ( 'N' | 'n' ) ( 'U' | 'u' ) ( 'M' | 'm' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'I' | 'i' ) ( 'D' | 'd' ) ( 'U' | 'u' ) ( 'E' | 'e' ) ( 'S' | 's' )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:347:13: ( ( 'N' | 'n' ) ( 'U' | 'u' ) ( 'M' | 'm' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'I' | 'i' ) ( 'D' | 'd' ) ( 'U' | 'u' ) ( 'E' | 'e' ) ( 'S' | 's' ) )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:347:15: ( 'N' | 'n' ) ( 'U' | 'u' ) ( 'M' | 'm' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'I' | 'i' ) ( 'D' | 'd' ) ( 'U' | 'u' ) ( 'E' | 'e' ) ( 'S' | 's' )
             {
             if ( input.LA(1)=='N'||input.LA(1)=='n' ) {
                 input.consume();
@@ -2975,7 +2975,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "NUMRESIDUES"
@@ -2985,8 +2985,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = NUMRNA;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:351:8: ( ( 'N' | 'n' ) ( 'U' | 'u' ) ( 'M' | 'm' ) ( 'R' | 'r' ) ( 'N' | 'n' ) ( 'A' | 'a' ) )
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:351:10: ( 'N' | 'n' ) ( 'U' | 'u' ) ( 'M' | 'm' ) ( 'R' | 'r' ) ( 'N' | 'n' ) ( 'A' | 'a' )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:351:8: ( ( 'N' | 'n' ) ( 'U' | 'u' ) ( 'M' | 'm' ) ( 'R' | 'r' ) ( 'N' | 'n' ) ( 'A' | 'a' ) )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:351:10: ( 'N' | 'n' ) ( 'U' | 'u' ) ( 'M' | 'm' ) ( 'R' | 'r' ) ( 'N' | 'n' ) ( 'A' | 'a' )
             {
             if ( input.LA(1)=='N'||input.LA(1)=='n' ) {
                 input.consume();
@@ -3054,7 +3054,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "NUMRNA"
@@ -3064,8 +3064,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = NUMDNA;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:355:8: ( ( 'N' | 'n' ) ( 'U' | 'u' ) ( 'M' | 'm' ) ( 'D' | 'd' ) ( 'N' | 'n' ) ( 'A' | 'a' ) )
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:355:10: ( 'N' | 'n' ) ( 'U' | 'u' ) ( 'M' | 'm' ) ( 'D' | 'd' ) ( 'N' | 'n' ) ( 'A' | 'a' )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:355:8: ( ( 'N' | 'n' ) ( 'U' | 'u' ) ( 'M' | 'm' ) ( 'D' | 'd' ) ( 'N' | 'n' ) ( 'A' | 'a' ) )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:355:10: ( 'N' | 'n' ) ( 'U' | 'u' ) ( 'M' | 'm' ) ( 'D' | 'd' ) ( 'N' | 'n' ) ( 'A' | 'a' )
             {
             if ( input.LA(1)=='N'||input.LA(1)=='n' ) {
                 input.consume();
@@ -3133,7 +3133,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "NUMDNA"
@@ -3143,8 +3143,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = PROTEINHEAVYATOMS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:363:19: ( ( 'P' | 'p' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'H' | 'h' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'V' | 'v' ) ( 'Y' | 'y' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'O' | 'o' ) ( 'M' | 'm' ) ( 'S' | 's' ) )
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:363:21: ( 'P' | 'p' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'H' | 'h' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'V' | 'v' ) ( 'Y' | 'y' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'O' | 'o' ) ( 'M' | 'm' ) ( 'S' | 's' )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:363:19: ( ( 'P' | 'p' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'H' | 'h' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'V' | 'v' ) ( 'Y' | 'y' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'O' | 'o' ) ( 'M' | 'm' ) ( 'S' | 's' ) )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:363:21: ( 'P' | 'p' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'H' | 'h' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'V' | 'v' ) ( 'Y' | 'y' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'O' | 'o' ) ( 'M' | 'm' ) ( 'S' | 's' )
             {
             if ( input.LA(1)=='P'||input.LA(1)=='p' ) {
                 input.consume();
@@ -3322,7 +3322,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "PROTEINHEAVYATOMS"
@@ -3332,8 +3332,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = ELEMENT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:364:9: ( ( 'A' .. 'Z' | 'a' .. 'z' ) ( 'A' .. 'Z' | 'a' .. 'z' )? )
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:364:11: ( 'A' .. 'Z' | 'a' .. 'z' ) ( 'A' .. 'Z' | 'a' .. 'z' )?
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:364:9: ( ( 'A' .. 'Z' | 'a' .. 'z' ) ( 'A' .. 'Z' | 'a' .. 'z' )? )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:364:11: ( 'A' .. 'Z' | 'a' .. 'z' ) ( 'A' .. 'Z' | 'a' .. 'z' )?
             {
             if ( (input.LA(1) >= 'A' && input.LA(1) <= 'Z')||(input.LA(1) >= 'a' && input.LA(1) <= 'z') ) {
                 input.consume();
@@ -3345,7 +3345,7 @@ public class InputfileLexer extends Lexer {
             }
 
 
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:364:32: ( 'A' .. 'Z' | 'a' .. 'z' )?
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:364:32: ( 'A' .. 'Z' | 'a' .. 'z' )?
             int alt5=2;
             int LA5_0 = input.LA(1);
 
@@ -3354,7 +3354,7 @@ public class InputfileLexer extends Lexer {
             }
             switch (alt5) {
                 case 1 :
-                    // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:
+                    // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:
                     {
                     if ( (input.LA(1) >= 'A' && input.LA(1) <= 'Z')||(input.LA(1) >= 'a' && input.LA(1) <= 'z') ) {
                         input.consume();
@@ -3378,7 +3378,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "ELEMENT"
@@ -3388,8 +3388,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = SMALLMOLEATOMS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:372:16: ( ( 'S' | 's' ) ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'L' | 'l' ) ( 'M' | 'm' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'O' | 'o' ) ( 'M' | 'm' ) ( 'S' | 's' ) )
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:372:18: ( 'S' | 's' ) ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'L' | 'l' ) ( 'M' | 'm' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'O' | 'o' ) ( 'M' | 'm' ) ( 'S' | 's' )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:372:16: ( ( 'S' | 's' ) ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'L' | 'l' ) ( 'M' | 'm' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'O' | 'o' ) ( 'M' | 'm' ) ( 'S' | 's' ) )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:372:18: ( 'S' | 's' ) ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'L' | 'l' ) ( 'M' | 'm' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'O' | 'o' ) ( 'M' | 'm' ) ( 'S' | 's' )
             {
             if ( input.LA(1)=='S'||input.LA(1)=='s' ) {
                 input.consume();
@@ -3537,7 +3537,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "SMALLMOLEATOMS"
@@ -3547,8 +3547,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = SOLVENTHEAVYCONC;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:380:18: ( ( 'S' | 's' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'V' | 'v' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'H' | 'h' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'V' | 'v' ) ( 'Y' | 'y' ) ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'C' | 'c' ) )
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:380:20: ( 'S' | 's' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'V' | 'v' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'H' | 'h' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'V' | 'v' ) ( 'Y' | 'y' ) ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'C' | 'c' )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:380:18: ( ( 'S' | 's' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'V' | 'v' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'H' | 'h' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'V' | 'v' ) ( 'Y' | 'y' ) ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'C' | 'c' ) )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:380:20: ( 'S' | 's' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'V' | 'v' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'H' | 'h' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'V' | 'v' ) ( 'Y' | 'y' ) ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'C' | 'c' )
             {
             if ( input.LA(1)=='S'||input.LA(1)=='s' ) {
                 input.consume();
@@ -3716,7 +3716,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "SOLVENTHEAVYCONC"
@@ -3726,8 +3726,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = SOLVENTFRACTION;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:384:17: ( ( 'S' | 's' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'V' | 'v' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'F' | 'f' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'C' | 'c' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' ) )
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:384:19: ( 'S' | 's' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'V' | 'v' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'F' | 'f' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'C' | 'c' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:384:17: ( ( 'S' | 's' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'V' | 'v' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'F' | 'f' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'C' | 'c' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' ) )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:384:19: ( 'S' | 's' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'V' | 'v' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'F' | 'f' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'C' | 'c' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' )
             {
             if ( input.LA(1)=='S'||input.LA(1)=='s' ) {
                 input.consume();
@@ -3885,7 +3885,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "SOLVENTFRACTION"
@@ -3895,8 +3895,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = PDBNAME;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:388:9: ( ( 'P' | 'p' ) ( 'D' | 'd' ) ( 'B' | 'b' ) )
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:388:11: ( 'P' | 'p' ) ( 'D' | 'd' ) ( 'B' | 'b' )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:388:9: ( ( 'P' | 'p' ) ( 'D' | 'd' ) ( 'B' | 'b' ) )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:388:11: ( 'P' | 'p' ) ( 'D' | 'd' ) ( 'B' | 'b' )
             {
             if ( input.LA(1)=='P'||input.LA(1)=='p' ) {
                 input.consume();
@@ -3934,7 +3934,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "PDBNAME"
@@ -3944,8 +3944,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = WIREFRAMETYPE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:392:15: ( ( 'W' | 'w' ) ( 'I' | 'i' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'F' | 'f' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'T' | 't' ) ( 'Y' | 'y' |) ( 'P' | 'p' ) ( 'E' | 'e' ) )
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:392:17: ( 'W' | 'w' ) ( 'I' | 'i' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'F' | 'f' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'T' | 't' ) ( 'Y' | 'y' |) ( 'P' | 'p' ) ( 'E' | 'e' )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:392:15: ( ( 'W' | 'w' ) ( 'I' | 'i' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'F' | 'f' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'T' | 't' ) ( 'Y' | 'y' |) ( 'P' | 'p' ) ( 'E' | 'e' ) )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:392:17: ( 'W' | 'w' ) ( 'I' | 'i' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'F' | 'f' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'T' | 't' ) ( 'Y' | 'y' |) ( 'P' | 'p' ) ( 'E' | 'e' )
             {
             if ( input.LA(1)=='W'||input.LA(1)=='w' ) {
                 input.consume();
@@ -4047,7 +4047,7 @@ public class InputfileLexer extends Lexer {
             }
 
 
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:392:107: ( 'Y' | 'y' |)
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:392:107: ( 'Y' | 'y' |)
             int alt6=3;
             switch ( input.LA(1) ) {
             case 'Y':
@@ -4076,21 +4076,21 @@ public class InputfileLexer extends Lexer {
 
             switch (alt6) {
                 case 1 :
-                    // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:392:108: 'Y'
+                    // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:392:108: 'Y'
                     {
                     match('Y'); 
 
                     }
                     break;
                 case 2 :
-                    // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:392:112: 'y'
+                    // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:392:112: 'y'
                     {
                     match('y'); 
 
                     }
                     break;
                 case 3 :
-                    // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:392:116: 
+                    // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:392:116: 
                     {
                     }
                     break;
@@ -4124,7 +4124,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "WIREFRAMETYPE"
@@ -4134,8 +4134,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = MODELFILE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:396:11: ( ( 'M' | 'm' ) ( 'O' | 'o' ) ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'F' | 'f' ) ( 'I' | 'i' ) ( 'L' | 'l' ) ( 'E' | 'e' ) )
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:396:13: ( 'M' | 'm' ) ( 'O' | 'o' ) ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'F' | 'f' ) ( 'I' | 'i' ) ( 'L' | 'l' ) ( 'E' | 'e' )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:396:11: ( ( 'M' | 'm' ) ( 'O' | 'o' ) ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'F' | 'f' ) ( 'I' | 'i' ) ( 'L' | 'l' ) ( 'E' | 'e' ) )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:396:13: ( 'M' | 'm' ) ( 'O' | 'o' ) ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'F' | 'f' ) ( 'I' | 'i' ) ( 'L' | 'l' ) ( 'E' | 'e' )
             {
             if ( input.LA(1)=='M'||input.LA(1)=='m' ) {
                 input.consume();
@@ -4233,7 +4233,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "MODELFILE"
@@ -4243,8 +4243,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = CALCULATEESCAPE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:401:2: ( ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'C' | 'c' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'P' | 'p' ) ( 'E' | 'e' ) )
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:401:5: ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'C' | 'c' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'P' | 'p' ) ( 'E' | 'e' )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:401:2: ( ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'C' | 'c' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'P' | 'p' ) ( 'E' | 'e' ) )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:401:5: ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'C' | 'c' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'P' | 'p' ) ( 'E' | 'e' )
             {
             if ( input.LA(1)=='C'||input.LA(1)=='c' ) {
                 input.consume();
@@ -4402,7 +4402,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "CALCULATEESCAPE"
@@ -4412,8 +4412,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = CONTAINERMATERIALTYPE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:405:23: ( ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'T' | 't' ) ( 'Y' | 'y' ) ( 'P' | 'p' ) ( 'E' | 'e' ) )
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:405:25: ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'T' | 't' ) ( 'Y' | 'y' ) ( 'P' | 'p' ) ( 'E' | 'e' )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:405:23: ( ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'T' | 't' ) ( 'Y' | 'y' ) ( 'P' | 'p' ) ( 'E' | 'e' ) )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:405:25: ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'T' | 't' ) ( 'Y' | 'y' ) ( 'P' | 'p' ) ( 'E' | 'e' )
             {
             if ( input.LA(1)=='C'||input.LA(1)=='c' ) {
                 input.consume();
@@ -4631,7 +4631,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "CONTAINERMATERIALTYPE"
@@ -4641,8 +4641,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = MATERIALTYPE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:406:14: ( ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'T' | 't' ) ( 'Y' | 'y' ) ( 'P' | 'p' ) ( 'E' | 'e' ) )
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:406:16: ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'T' | 't' ) ( 'Y' | 'y' ) ( 'P' | 'p' ) ( 'E' | 'e' )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:406:14: ( ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'T' | 't' ) ( 'Y' | 'y' ) ( 'P' | 'p' ) ( 'E' | 'e' ) )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:406:16: ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'T' | 't' ) ( 'Y' | 'y' ) ( 'P' | 'p' ) ( 'E' | 'e' )
             {
             if ( input.LA(1)=='M'||input.LA(1)=='m' ) {
                 input.consume();
@@ -4770,7 +4770,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "MATERIALTYPE"
@@ -4780,8 +4780,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = NONE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:412:7: ( ( 'N' | 'n' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'E' | 'e' ) )
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:412:9: ( 'N' | 'n' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'E' | 'e' )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:412:7: ( ( 'N' | 'n' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'E' | 'e' ) )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:412:9: ( 'N' | 'n' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'E' | 'e' )
             {
             if ( input.LA(1)=='N'||input.LA(1)=='n' ) {
                 input.consume();
@@ -4829,7 +4829,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "NONE"
@@ -4839,8 +4839,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = MIXTURE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:413:9: ( ( 'M' | 'm' ) ( 'I' | 'i' ) ( 'X' | 'x' ) ( 'T' | 't' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'E' | 'e' ) )
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:413:11: ( 'M' | 'm' ) ( 'I' | 'i' ) ( 'X' | 'x' ) ( 'T' | 't' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'E' | 'e' )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:413:9: ( ( 'M' | 'm' ) ( 'I' | 'i' ) ( 'X' | 'x' ) ( 'T' | 't' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'E' | 'e' ) )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:413:11: ( 'M' | 'm' ) ( 'I' | 'i' ) ( 'X' | 'x' ) ( 'T' | 't' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'E' | 'e' )
             {
             if ( input.LA(1)=='M'||input.LA(1)=='m' ) {
                 input.consume();
@@ -4918,7 +4918,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "MIXTURE"
@@ -4928,8 +4928,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = ELEMENTAL;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:414:11: ( ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'L' | 'l' ) )
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:414:13: ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'L' | 'l' )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:414:11: ( ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'L' | 'l' ) )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:414:13: ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'L' | 'l' )
             {
             if ( input.LA(1)=='E'||input.LA(1)=='e' ) {
                 input.consume();
@@ -5027,7 +5027,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "ELEMENTAL"
@@ -5037,8 +5037,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = CONTAINERTHICKNESS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:418:19: ( ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'T' | 't' ) ( 'H' | 'h' ) ( 'I' | 'i' ) ( 'C' | 'c' ) ( 'K' | 'k' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'S' | 's' ) )
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:418:21: ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'T' | 't' ) ( 'H' | 'h' ) ( 'I' | 'i' ) ( 'C' | 'c' ) ( 'K' | 'k' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'S' | 's' )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:418:19: ( ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'T' | 't' ) ( 'H' | 'h' ) ( 'I' | 'i' ) ( 'C' | 'c' ) ( 'K' | 'k' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'S' | 's' ) )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:418:21: ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'T' | 't' ) ( 'H' | 'h' ) ( 'I' | 'i' ) ( 'C' | 'c' ) ( 'K' | 'k' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'S' | 's' )
             {
             if ( input.LA(1)=='C'||input.LA(1)=='c' ) {
                 input.consume();
@@ -5226,7 +5226,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "CONTAINERTHICKNESS"
@@ -5236,8 +5236,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = CONTAINERMATERIALMIXTURE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:422:25: ( ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'M' | 'm' ) ( 'I' | 'i' ) ( 'X' | 'x' ) ( 'T' | 't' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'E' | 'e' ) )
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:422:27: ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'M' | 'm' ) ( 'I' | 'i' ) ( 'X' | 'x' ) ( 'T' | 't' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'E' | 'e' )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:422:25: ( ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'M' | 'm' ) ( 'I' | 'i' ) ( 'X' | 'x' ) ( 'T' | 't' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'E' | 'e' ) )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:422:27: ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'M' | 'm' ) ( 'I' | 'i' ) ( 'X' | 'x' ) ( 'T' | 't' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'E' | 'e' )
             {
             if ( input.LA(1)=='C'||input.LA(1)=='c' ) {
                 input.consume();
@@ -5485,7 +5485,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "CONTAINERMATERIALMIXTURE"
@@ -5495,8 +5495,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = MATERIALMIXTURE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:423:16: ( ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'M' | 'm' ) ( 'I' | 'i' ) ( 'X' | 'x' ) ( 'T' | 't' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'E' | 'e' ) )
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:423:18: ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'M' | 'm' ) ( 'I' | 'i' ) ( 'X' | 'x' ) ( 'T' | 't' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'E' | 'e' )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:423:16: ( ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'M' | 'm' ) ( 'I' | 'i' ) ( 'X' | 'x' ) ( 'T' | 't' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'E' | 'e' ) )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:423:18: ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'M' | 'm' ) ( 'I' | 'i' ) ( 'X' | 'x' ) ( 'T' | 't' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'E' | 'e' )
             {
             if ( input.LA(1)=='M'||input.LA(1)=='m' ) {
                 input.consume();
@@ -5654,7 +5654,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "MATERIALMIXTURE"
@@ -5664,8 +5664,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = CONTAINERMATERIALELEMENTS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:431:26: ( ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'S' | 's' ) )
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:431:28: ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'S' | 's' )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:431:26: ( ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'S' | 's' ) )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:431:28: ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'S' | 's' )
             {
             if ( input.LA(1)=='C'||input.LA(1)=='c' ) {
                 input.consume();
@@ -5923,7 +5923,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "CONTAINERMATERIALELEMENTS"
@@ -5933,8 +5933,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = MATERIALELEMENTS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:432:17: ( ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'S' | 's' ) )
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:432:19: ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'S' | 's' )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:432:17: ( ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'S' | 's' ) )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:432:19: ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'S' | 's' )
             {
             if ( input.LA(1)=='M'||input.LA(1)=='m' ) {
                 input.consume();
@@ -6102,7 +6102,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "MATERIALELEMENTS"
@@ -6112,8 +6112,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = CONTAINERDENSITY;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:436:17: ( ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'S' | 's' ) ( 'I' | 'i' ) ( 'T' | 't' ) ( 'Y' | 'y' ) )
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:436:19: ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'S' | 's' ) ( 'I' | 'i' ) ( 'T' | 't' ) ( 'Y' | 'y' )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:436:17: ( ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'S' | 's' ) ( 'I' | 'i' ) ( 'T' | 't' ) ( 'Y' | 'y' ) )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:436:19: ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'S' | 's' ) ( 'I' | 'i' ) ( 'T' | 't' ) ( 'Y' | 'y' )
             {
             if ( input.LA(1)=='C'||input.LA(1)=='c' ) {
                 input.consume();
@@ -6281,7 +6281,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "CONTAINERDENSITY"
@@ -6291,8 +6291,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = SEQUENCEFILE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:440:14: ( ( 'S' | 's' ) ( 'E' | 'e' ) ( 'Q' | 'q' ) ( 'U' | 'u' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'C' | 'c' ) ( 'E' | 'e' ) ( 'F' | 'f' ) ( 'I' | 'i' ) ( 'L' | 'l' ) ( 'E' | 'e' ) )
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:440:17: ( 'S' | 's' ) ( 'E' | 'e' ) ( 'Q' | 'q' ) ( 'U' | 'u' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'C' | 'c' ) ( 'E' | 'e' ) ( 'F' | 'f' ) ( 'I' | 'i' ) ( 'L' | 'l' ) ( 'E' | 'e' )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:440:14: ( ( 'S' | 's' ) ( 'E' | 'e' ) ( 'Q' | 'q' ) ( 'U' | 'u' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'C' | 'c' ) ( 'E' | 'e' ) ( 'F' | 'f' ) ( 'I' | 'i' ) ( 'L' | 'l' ) ( 'E' | 'e' ) )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:440:17: ( 'S' | 's' ) ( 'E' | 'e' ) ( 'Q' | 'q' ) ( 'U' | 'u' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'C' | 'c' ) ( 'E' | 'e' ) ( 'F' | 'f' ) ( 'I' | 'i' ) ( 'L' | 'l' ) ( 'E' | 'e' )
             {
             if ( input.LA(1)=='S'||input.LA(1)=='s' ) {
                 input.consume();
@@ -6420,7 +6420,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "SEQUENCEFILE"
@@ -6430,8 +6430,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = SEQFILE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:441:9: ( ( 'S' | 's' ) ( 'E' | 'e' ) ( 'Q' | 'q' ) ( 'F' | 'f' ) ( 'I' | 'i' ) ( 'L' | 'l' ) ( 'E' | 'e' ) )
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:441:11: ( 'S' | 's' ) ( 'E' | 'e' ) ( 'Q' | 'q' ) ( 'F' | 'f' ) ( 'I' | 'i' ) ( 'L' | 'l' ) ( 'E' | 'e' )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:441:9: ( ( 'S' | 's' ) ( 'E' | 'e' ) ( 'Q' | 'q' ) ( 'F' | 'f' ) ( 'I' | 'i' ) ( 'L' | 'l' ) ( 'E' | 'e' ) )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:441:11: ( 'S' | 's' ) ( 'E' | 'e' ) ( 'Q' | 'q' ) ( 'F' | 'f' ) ( 'I' | 'i' ) ( 'L' | 'l' ) ( 'E' | 'e' )
             {
             if ( input.LA(1)=='S'||input.LA(1)=='s' ) {
                 input.consume();
@@ -6509,7 +6509,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "SEQFILE"
@@ -6519,8 +6519,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = BEAM;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:457:6: ( ( 'B' | 'b' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'M' | 'm' ) )
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:457:8: ( 'B' | 'b' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'M' | 'm' )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:457:6: ( ( 'B' | 'b' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'M' | 'm' ) )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:457:8: ( 'B' | 'b' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'M' | 'm' )
             {
             if ( input.LA(1)=='B'||input.LA(1)=='b' ) {
                 input.consume();
@@ -6568,7 +6568,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "BEAM"
@@ -6578,8 +6578,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = FLUX;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:474:6: ( ( 'F' | 'f' ) ( 'L' | 'l' ) ( 'U' | 'u' ) ( 'X' | 'x' ) )
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:474:8: ( 'F' | 'f' ) ( 'L' | 'l' ) ( 'U' | 'u' ) ( 'X' | 'x' )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:475:6: ( ( 'F' | 'f' ) ( 'L' | 'l' ) ( 'U' | 'u' ) ( 'X' | 'x' ) )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:475:8: ( 'F' | 'f' ) ( 'L' | 'l' ) ( 'U' | 'u' ) ( 'X' | 'x' )
             {
             if ( input.LA(1)=='F'||input.LA(1)=='f' ) {
                 input.consume();
@@ -6627,7 +6627,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "FLUX"
@@ -6637,8 +6637,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = FWHM;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:478:6: ( ( 'F' | 'f' ) ( 'W' | 'w' ) ( 'H' | 'h' ) ( 'M' | 'm' ) )
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:478:8: ( 'F' | 'f' ) ( 'W' | 'w' ) ( 'H' | 'h' ) ( 'M' | 'm' )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:479:6: ( ( 'F' | 'f' ) ( 'W' | 'w' ) ( 'H' | 'h' ) ( 'M' | 'm' ) )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:479:8: ( 'F' | 'f' ) ( 'W' | 'w' ) ( 'H' | 'h' ) ( 'M' | 'm' )
             {
             if ( input.LA(1)=='F'||input.LA(1)=='f' ) {
                 input.consume();
@@ -6686,7 +6686,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "FWHM"
@@ -6696,8 +6696,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = ENERGY;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:484:8: ( ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'G' | 'g' ) ( 'Y' | 'y' ) )
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:484:10: ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'G' | 'g' ) ( 'Y' | 'y' )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:485:8: ( ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'G' | 'g' ) ( 'Y' | 'y' ) )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:485:10: ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'G' | 'g' ) ( 'Y' | 'y' )
             {
             if ( input.LA(1)=='E'||input.LA(1)=='e' ) {
                 input.consume();
@@ -6765,7 +6765,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "ENERGY"
@@ -6775,8 +6775,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = KEV;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:485:5: ( ( 'K' | 'k' ) ( 'E' | 'e' ) ( 'V' | 'v' ) )
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:485:7: ( 'K' | 'k' ) ( 'E' | 'e' ) ( 'V' | 'v' )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:486:5: ( ( 'K' | 'k' ) ( 'E' | 'e' ) ( 'V' | 'v' ) )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:486:7: ( 'K' | 'k' ) ( 'E' | 'e' ) ( 'V' | 'v' )
             {
             if ( input.LA(1)=='K'||input.LA(1)=='k' ) {
                 input.consume();
@@ -6814,7 +6814,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "KEV"
@@ -6824,8 +6824,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = FILE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:490:6: ( ( 'F' | 'f' ) ( 'I' | 'i' ) ( 'L' | 'l' ) ( 'E' | 'e' ) )
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:490:8: ( 'F' | 'f' ) ( 'I' | 'i' ) ( 'L' | 'l' ) ( 'E' | 'e' )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:491:6: ( ( 'F' | 'f' ) ( 'I' | 'i' ) ( 'L' | 'l' ) ( 'E' | 'e' ) )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:491:8: ( 'F' | 'f' ) ( 'I' | 'i' ) ( 'L' | 'l' ) ( 'E' | 'e' )
             {
             if ( input.LA(1)=='F'||input.LA(1)=='f' ) {
                 input.consume();
@@ -6873,7 +6873,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "FILE"
@@ -6883,8 +6883,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = PIXELSIZE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:498:2: ( ( 'P' | 'p' ) ( 'I' | 'i' ) ( 'X' | 'x' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'S' | 's' ) ( 'I' | 'i' ) ( 'Z' | 'z' ) ( 'E' | 'e' ) )
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:498:5: ( 'P' | 'p' ) ( 'I' | 'i' ) ( 'X' | 'x' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'S' | 's' ) ( 'I' | 'i' ) ( 'Z' | 'z' ) ( 'E' | 'e' )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:499:2: ( ( 'P' | 'p' ) ( 'I' | 'i' ) ( 'X' | 'x' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'S' | 's' ) ( 'I' | 'i' ) ( 'Z' | 'z' ) ( 'E' | 'e' ) )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:499:5: ( 'P' | 'p' ) ( 'I' | 'i' ) ( 'X' | 'x' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'S' | 's' ) ( 'I' | 'i' ) ( 'Z' | 'z' ) ( 'E' | 'e' )
             {
             if ( input.LA(1)=='P'||input.LA(1)=='p' ) {
                 input.consume();
@@ -6982,7 +6982,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "PIXELSIZE"
@@ -6992,8 +6992,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = COLLIMATION;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:511:13: ( ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'L' | 'l' ) ( 'I' | 'i' ) ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' ) )
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:511:15: ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'L' | 'l' ) ( 'I' | 'i' ) ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:514:13: ( ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'L' | 'l' ) ( 'I' | 'i' ) ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' ) )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:514:15: ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'L' | 'l' ) ( 'I' | 'i' ) ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' )
             {
             if ( input.LA(1)=='C'||input.LA(1)=='c' ) {
                 input.consume();
@@ -7111,7 +7111,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "COLLIMATION"
@@ -7121,8 +7121,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = RECTANGULAR;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:512:13: ( ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'C' | 'c' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'A' | 'a' ) ( 'R' | 'r' ) )
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:512:15: ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'C' | 'c' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'A' | 'a' ) ( 'R' | 'r' )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:515:13: ( ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'C' | 'c' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'A' | 'a' ) ( 'R' | 'r' ) )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:515:15: ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'C' | 'c' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'A' | 'a' ) ( 'R' | 'r' )
             {
             if ( input.LA(1)=='R'||input.LA(1)=='r' ) {
                 input.consume();
@@ -7240,7 +7240,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "RECTANGULAR"
@@ -7250,8 +7250,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = CIRCULAR;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:513:11: ( ( 'C' | 'c' ) ( 'I' | 'i' ) ( 'R' | 'r' ) ( 'C' | 'c' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'A' | 'a' ) ( 'R' | 'r' ) )
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:513:13: ( 'C' | 'c' ) ( 'I' | 'i' ) ( 'R' | 'r' ) ( 'C' | 'c' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'A' | 'a' ) ( 'R' | 'r' )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:516:11: ( ( 'C' | 'c' ) ( 'I' | 'i' ) ( 'R' | 'r' ) ( 'C' | 'c' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'A' | 'a' ) ( 'R' | 'r' ) )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:516:13: ( 'C' | 'c' ) ( 'I' | 'i' ) ( 'R' | 'r' ) ( 'C' | 'c' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'A' | 'a' ) ( 'R' | 'r' )
             {
             if ( input.LA(1)=='C'||input.LA(1)=='c' ) {
                 input.consume();
@@ -7339,7 +7339,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "CIRCULAR"
@@ -7349,8 +7349,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = HORIZONTAL;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:514:13: ( ( 'H' | 'h' ) ( 'O' | 'o' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'Z' | 'z' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'L' | 'l' ) )
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:514:15: ( 'H' | 'h' ) ( 'O' | 'o' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'Z' | 'z' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'L' | 'l' )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:517:13: ( ( 'H' | 'h' ) ( 'O' | 'o' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'Z' | 'z' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'L' | 'l' ) )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:517:15: ( 'H' | 'h' ) ( 'O' | 'o' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'Z' | 'z' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'L' | 'l' )
             {
             if ( input.LA(1)=='H'||input.LA(1)=='h' ) {
                 input.consume();
@@ -7458,7 +7458,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "HORIZONTAL"
@@ -7468,8 +7468,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = VERTICAL;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:515:11: ( ( 'V' | 'v' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'L' | 'l' ) )
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:515:13: ( 'V' | 'v' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'L' | 'l' )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:518:11: ( ( 'V' | 'v' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'L' | 'l' ) )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:518:13: ( 'V' | 'v' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'L' | 'l' )
             {
             if ( input.LA(1)=='V'||input.LA(1)=='v' ) {
                 input.consume();
@@ -7557,7 +7557,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "VERTICAL"
@@ -7567,8 +7567,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = WEDGE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:541:7: ( ( 'W' | 'w' ) ( 'E' | 'e' ) ( 'D' | 'd' ) ( 'G' | 'g' ) ( 'E' | 'e' ) )
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:541:9: ( 'W' | 'w' ) ( 'E' | 'e' ) ( 'D' | 'd' ) ( 'G' | 'g' ) ( 'E' | 'e' )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:544:7: ( ( 'W' | 'w' ) ( 'E' | 'e' ) ( 'D' | 'd' ) ( 'G' | 'g' ) ( 'E' | 'e' ) )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:544:9: ( 'W' | 'w' ) ( 'E' | 'e' ) ( 'D' | 'd' ) ( 'G' | 'g' ) ( 'E' | 'e' )
             {
             if ( input.LA(1)=='W'||input.LA(1)=='w' ) {
                 input.consume();
@@ -7626,7 +7626,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "WEDGE"
@@ -7636,8 +7636,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = EXPOSURETIME;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:557:14: ( ( 'E' | 'e' ) ( 'X' | 'x' ) ( 'P' | 'p' ) ( 'O' | 'o' ) ( 'S' | 's' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'M' | 'm' ) ( 'E' | 'e' ) )
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:557:16: ( 'E' | 'e' ) ( 'X' | 'x' ) ( 'P' | 'p' ) ( 'O' | 'o' ) ( 'S' | 's' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'M' | 'm' ) ( 'E' | 'e' )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:560:14: ( ( 'E' | 'e' ) ( 'X' | 'x' ) ( 'P' | 'p' ) ( 'O' | 'o' ) ( 'S' | 's' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'M' | 'm' ) ( 'E' | 'e' ) )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:560:16: ( 'E' | 'e' ) ( 'X' | 'x' ) ( 'P' | 'p' ) ( 'O' | 'o' ) ( 'S' | 's' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'M' | 'm' ) ( 'E' | 'e' )
             {
             if ( input.LA(1)=='E'||input.LA(1)=='e' ) {
                 input.consume();
@@ -7765,7 +7765,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "EXPOSURETIME"
@@ -7775,8 +7775,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = ANGULARRESOLUTION;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:561:19: ( ( 'A' | 'a' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'A' | 'a' ) ( 'R' | 'r' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'U' | 'u' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' ) )
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:561:21: ( 'A' | 'a' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'A' | 'a' ) ( 'R' | 'r' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'U' | 'u' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:564:19: ( ( 'A' | 'a' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'A' | 'a' ) ( 'R' | 'r' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'U' | 'u' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' ) )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:564:21: ( 'A' | 'a' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'A' | 'a' ) ( 'R' | 'r' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'U' | 'u' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' )
             {
             if ( input.LA(1)=='A'||input.LA(1)=='a' ) {
                 input.consume();
@@ -7954,7 +7954,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "ANGULARRESOLUTION"
@@ -7964,8 +7964,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = STARTOFFSET;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:567:13: ( ( 'S' | 's' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'R' | 'r' ) ( 'T' | 't' ) ( 'O' | 'o' ) ( 'F' | 'f' ) ( 'F' | 'f' ) ( 'S' | 's' ) ( 'E' | 'e' ) ( 'T' | 't' ) )
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:567:15: ( 'S' | 's' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'R' | 'r' ) ( 'T' | 't' ) ( 'O' | 'o' ) ( 'F' | 'f' ) ( 'F' | 'f' ) ( 'S' | 's' ) ( 'E' | 'e' ) ( 'T' | 't' )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:570:13: ( ( 'S' | 's' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'R' | 'r' ) ( 'T' | 't' ) ( 'O' | 'o' ) ( 'F' | 'f' ) ( 'F' | 'f' ) ( 'S' | 's' ) ( 'E' | 'e' ) ( 'T' | 't' ) )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:570:15: ( 'S' | 's' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'R' | 'r' ) ( 'T' | 't' ) ( 'O' | 'o' ) ( 'F' | 'f' ) ( 'F' | 'f' ) ( 'S' | 's' ) ( 'E' | 'e' ) ( 'T' | 't' )
             {
             if ( input.LA(1)=='S'||input.LA(1)=='s' ) {
                 input.consume();
@@ -8083,7 +8083,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "STARTOFFSET"
@@ -8093,8 +8093,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = TRANSLATEPERDEGREE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:573:20: ( ( 'T' | 't' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'N' | 'n' ) ( 'S' | 's' ) ( 'L' | 'l' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'P' | 'p' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'G' | 'g' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'E' | 'e' ) )
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:573:22: ( 'T' | 't' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'N' | 'n' ) ( 'S' | 's' ) ( 'L' | 'l' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'P' | 'p' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'G' | 'g' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'E' | 'e' )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:576:20: ( ( 'T' | 't' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'N' | 'n' ) ( 'S' | 's' ) ( 'L' | 'l' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'P' | 'p' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'G' | 'g' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'E' | 'e' ) )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:576:22: ( 'T' | 't' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'N' | 'n' ) ( 'S' | 's' ) ( 'L' | 'l' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'P' | 'p' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'G' | 'g' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'E' | 'e' )
             {
             if ( input.LA(1)=='T'||input.LA(1)=='t' ) {
                 input.consume();
@@ -8282,7 +8282,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "TRANSLATEPERDEGREE"
@@ -8292,8 +8292,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = ROTAXBEAMOFFSET;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:577:17: ( ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'X' | 'x' ) ( 'B' | 'b' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'M' | 'm' ) ( 'O' | 'o' ) ( 'F' | 'f' ) ( 'F' | 'f' ) ( 'S' | 's' ) ( 'E' | 'e' ) ( 'T' | 't' ) )
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:577:19: ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'X' | 'x' ) ( 'B' | 'b' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'M' | 'm' ) ( 'O' | 'o' ) ( 'F' | 'f' ) ( 'F' | 'f' ) ( 'S' | 's' ) ( 'E' | 'e' ) ( 'T' | 't' )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:580:17: ( ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'X' | 'x' ) ( 'B' | 'b' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'M' | 'm' ) ( 'O' | 'o' ) ( 'F' | 'f' ) ( 'F' | 'f' ) ( 'S' | 's' ) ( 'E' | 'e' ) ( 'T' | 't' ) )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:580:19: ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'X' | 'x' ) ( 'B' | 'b' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'M' | 'm' ) ( 'O' | 'o' ) ( 'F' | 'f' ) ( 'F' | 'f' ) ( 'S' | 's' ) ( 'E' | 'e' ) ( 'T' | 't' )
             {
             if ( input.LA(1)=='R'||input.LA(1)=='r' ) {
                 input.consume();
@@ -8451,7 +8451,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "ROTAXBEAMOFFSET"
@@ -8461,10 +8461,10 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = FLOAT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:582:5: ( ( '+' | '-' )? ( ( '0' .. '9' )+ | ( '0' .. '9' )+ '.' ( '0' .. '9' )* | '.' ( '0' .. '9' )+ ) ( EXPONENT )? )
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:582:7: ( '+' | '-' )? ( ( '0' .. '9' )+ | ( '0' .. '9' )+ '.' ( '0' .. '9' )* | '.' ( '0' .. '9' )+ ) ( EXPONENT )?
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:585:5: ( ( '+' | '-' )? ( ( '0' .. '9' )+ | ( '0' .. '9' )+ '.' ( '0' .. '9' )* | '.' ( '0' .. '9' )+ ) ( EXPONENT )? )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:585:7: ( '+' | '-' )? ( ( '0' .. '9' )+ | ( '0' .. '9' )+ '.' ( '0' .. '9' )* | '.' ( '0' .. '9' )+ ) ( EXPONENT )?
             {
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:582:7: ( '+' | '-' )?
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:585:7: ( '+' | '-' )?
             int alt7=2;
             int LA7_0 = input.LA(1);
 
@@ -8473,7 +8473,7 @@ public class InputfileLexer extends Lexer {
             }
             switch (alt7) {
                 case 1 :
-                    // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:
+                    // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:
                     {
                     if ( input.LA(1)=='+'||input.LA(1)=='-' ) {
                         input.consume();
@@ -8491,14 +8491,14 @@ public class InputfileLexer extends Lexer {
             }
 
 
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:583:5: ( ( '0' .. '9' )+ | ( '0' .. '9' )+ '.' ( '0' .. '9' )* | '.' ( '0' .. '9' )+ )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:586:5: ( ( '0' .. '9' )+ | ( '0' .. '9' )+ '.' ( '0' .. '9' )* | '.' ( '0' .. '9' )+ )
             int alt12=3;
             alt12 = dfa12.predict(input);
             switch (alt12) {
                 case 1 :
-                    // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:583:7: ( '0' .. '9' )+
+                    // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:586:7: ( '0' .. '9' )+
                     {
-                    // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:583:7: ( '0' .. '9' )+
+                    // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:586:7: ( '0' .. '9' )+
                     int cnt8=0;
                     loop8:
                     do {
@@ -8511,24 +8511,24 @@ public class InputfileLexer extends Lexer {
 
 
                         switch (alt8) {
-                        case 1 :
-                            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:
-                            {
-                            if ( (input.LA(1) >= '0' && input.LA(1) <= '9') ) {
-                                input.consume();
-                            }
-                            else {
-                                MismatchedSetException mse = new MismatchedSetException(null,input);
-                                recover(mse);
-                                throw mse;
-                            }
+                    	case 1 :
+                    	    // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:
+                    	    {
+                    	    if ( (input.LA(1) >= '0' && input.LA(1) <= '9') ) {
+                    	        input.consume();
+                    	    }
+                    	    else {
+                    	        MismatchedSetException mse = new MismatchedSetException(null,input);
+                    	        recover(mse);
+                    	        throw mse;
+                    	    }
 
 
-                            }
-                            break;
+                    	    }
+                    	    break;
 
-                        default :
-                            if ( cnt8 >= 1 ) break loop8;
+                    	default :
+                    	    if ( cnt8 >= 1 ) break loop8;
                                 EarlyExitException eee =
                                     new EarlyExitException(8, input);
                                 throw eee;
@@ -8540,9 +8540,9 @@ public class InputfileLexer extends Lexer {
                     }
                     break;
                 case 2 :
-                    // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:584:7: ( '0' .. '9' )+ '.' ( '0' .. '9' )*
+                    // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:587:7: ( '0' .. '9' )+ '.' ( '0' .. '9' )*
                     {
-                    // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:584:7: ( '0' .. '9' )+
+                    // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:587:7: ( '0' .. '9' )+
                     int cnt9=0;
                     loop9:
                     do {
@@ -8555,24 +8555,24 @@ public class InputfileLexer extends Lexer {
 
 
                         switch (alt9) {
-                        case 1 :
-                            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:
-                            {
-                            if ( (input.LA(1) >= '0' && input.LA(1) <= '9') ) {
-                                input.consume();
-                            }
-                            else {
-                                MismatchedSetException mse = new MismatchedSetException(null,input);
-                                recover(mse);
-                                throw mse;
-                            }
+                    	case 1 :
+                    	    // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:
+                    	    {
+                    	    if ( (input.LA(1) >= '0' && input.LA(1) <= '9') ) {
+                    	        input.consume();
+                    	    }
+                    	    else {
+                    	        MismatchedSetException mse = new MismatchedSetException(null,input);
+                    	        recover(mse);
+                    	        throw mse;
+                    	    }
 
 
-                            }
-                            break;
+                    	    }
+                    	    break;
 
-                        default :
-                            if ( cnt9 >= 1 ) break loop9;
+                    	default :
+                    	    if ( cnt9 >= 1 ) break loop9;
                                 EarlyExitException eee =
                                     new EarlyExitException(9, input);
                                 throw eee;
@@ -8583,7 +8583,7 @@ public class InputfileLexer extends Lexer {
 
                     match('.'); 
 
-                    // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:584:23: ( '0' .. '9' )*
+                    // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:587:23: ( '0' .. '9' )*
                     loop10:
                     do {
                         int alt10=2;
@@ -8595,24 +8595,24 @@ public class InputfileLexer extends Lexer {
 
 
                         switch (alt10) {
-                        case 1 :
-                            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:
-                            {
-                            if ( (input.LA(1) >= '0' && input.LA(1) <= '9') ) {
-                                input.consume();
-                            }
-                            else {
-                                MismatchedSetException mse = new MismatchedSetException(null,input);
-                                recover(mse);
-                                throw mse;
-                            }
+                    	case 1 :
+                    	    // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:
+                    	    {
+                    	    if ( (input.LA(1) >= '0' && input.LA(1) <= '9') ) {
+                    	        input.consume();
+                    	    }
+                    	    else {
+                    	        MismatchedSetException mse = new MismatchedSetException(null,input);
+                    	        recover(mse);
+                    	        throw mse;
+                    	    }
 
 
-                            }
-                            break;
+                    	    }
+                    	    break;
 
-                        default :
-                            break loop10;
+                    	default :
+                    	    break loop10;
                         }
                     } while (true);
 
@@ -8620,11 +8620,11 @@ public class InputfileLexer extends Lexer {
                     }
                     break;
                 case 3 :
-                    // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:585:19: '.' ( '0' .. '9' )+
+                    // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:588:19: '.' ( '0' .. '9' )+
                     {
                     match('.'); 
 
-                    // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:585:23: ( '0' .. '9' )+
+                    // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:588:23: ( '0' .. '9' )+
                     int cnt11=0;
                     loop11:
                     do {
@@ -8637,24 +8637,24 @@ public class InputfileLexer extends Lexer {
 
 
                         switch (alt11) {
-                        case 1 :
-                            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:
-                            {
-                            if ( (input.LA(1) >= '0' && input.LA(1) <= '9') ) {
-                                input.consume();
-                            }
-                            else {
-                                MismatchedSetException mse = new MismatchedSetException(null,input);
-                                recover(mse);
-                                throw mse;
-                            }
+                    	case 1 :
+                    	    // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:
+                    	    {
+                    	    if ( (input.LA(1) >= '0' && input.LA(1) <= '9') ) {
+                    	        input.consume();
+                    	    }
+                    	    else {
+                    	        MismatchedSetException mse = new MismatchedSetException(null,input);
+                    	        recover(mse);
+                    	        throw mse;
+                    	    }
 
 
-                            }
-                            break;
+                    	    }
+                    	    break;
 
-                        default :
-                            if ( cnt11 >= 1 ) break loop11;
+                    	default :
+                    	    if ( cnt11 >= 1 ) break loop11;
                                 EarlyExitException eee =
                                     new EarlyExitException(11, input);
                                 throw eee;
@@ -8669,7 +8669,7 @@ public class InputfileLexer extends Lexer {
             }
 
 
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:586:7: ( EXPONENT )?
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:589:7: ( EXPONENT )?
             int alt13=2;
             int LA13_0 = input.LA(1);
 
@@ -8678,7 +8678,7 @@ public class InputfileLexer extends Lexer {
             }
             switch (alt13) {
                 case 1 :
-                    // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:586:7: EXPONENT
+                    // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:589:7: EXPONENT
                     {
                     mEXPONENT(); 
 
@@ -8695,7 +8695,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "FLOAT"
@@ -8703,8 +8703,8 @@ public class InputfileLexer extends Lexer {
     // $ANTLR start "EXPONENT"
     public final void mEXPONENT() throws RecognitionException {
         try {
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:590:10: ( ( 'e' | 'E' ) ( '+' | '-' )? ( '0' .. '9' )+ )
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:590:12: ( 'e' | 'E' ) ( '+' | '-' )? ( '0' .. '9' )+
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:593:10: ( ( 'e' | 'E' ) ( '+' | '-' )? ( '0' .. '9' )+ )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:593:12: ( 'e' | 'E' ) ( '+' | '-' )? ( '0' .. '9' )+
             {
             if ( input.LA(1)=='E'||input.LA(1)=='e' ) {
                 input.consume();
@@ -8716,7 +8716,7 @@ public class InputfileLexer extends Lexer {
             }
 
 
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:590:22: ( '+' | '-' )?
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:593:22: ( '+' | '-' )?
             int alt14=2;
             int LA14_0 = input.LA(1);
 
@@ -8725,7 +8725,7 @@ public class InputfileLexer extends Lexer {
             }
             switch (alt14) {
                 case 1 :
-                    // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:
+                    // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:
                     {
                     if ( input.LA(1)=='+'||input.LA(1)=='-' ) {
                         input.consume();
@@ -8743,7 +8743,7 @@ public class InputfileLexer extends Lexer {
             }
 
 
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:590:33: ( '0' .. '9' )+
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:593:33: ( '0' .. '9' )+
             int cnt15=0;
             loop15:
             do {
@@ -8756,24 +8756,24 @@ public class InputfileLexer extends Lexer {
 
 
                 switch (alt15) {
-                case 1 :
-                    // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:
-                    {
-                    if ( (input.LA(1) >= '0' && input.LA(1) <= '9') ) {
-                        input.consume();
-                    }
-                    else {
-                        MismatchedSetException mse = new MismatchedSetException(null,input);
-                        recover(mse);
-                        throw mse;
-                    }
+            	case 1 :
+            	    // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:
+            	    {
+            	    if ( (input.LA(1) >= '0' && input.LA(1) <= '9') ) {
+            	        input.consume();
+            	    }
+            	    else {
+            	        MismatchedSetException mse = new MismatchedSetException(null,input);
+            	        recover(mse);
+            	        throw mse;
+            	    }
 
 
-                    }
-                    break;
+            	    }
+            	    break;
 
-                default :
-                    if ( cnt15 >= 1 ) break loop15;
+            	default :
+            	    if ( cnt15 >= 1 ) break loop15;
                         EarlyExitException eee =
                             new EarlyExitException(15, input);
                         throw eee;
@@ -8787,7 +8787,7 @@ public class InputfileLexer extends Lexer {
 
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "EXPONENT"
@@ -8797,10 +8797,10 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = COMMENT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:592:5: ( ( '#' | '//' | '!' ) (~ ( '\\n' | '\\r' ) )* ( '\\r' )? '\\n' )
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:592:9: ( '#' | '//' | '!' ) (~ ( '\\n' | '\\r' ) )* ( '\\r' )? '\\n'
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:595:5: ( ( '#' | '//' | '!' ) (~ ( '\\n' | '\\r' ) )* ( '\\r' )? '\\n' )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:595:9: ( '#' | '//' | '!' ) (~ ( '\\n' | '\\r' ) )* ( '\\r' )? '\\n'
             {
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:592:9: ( '#' | '//' | '!' )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:595:9: ( '#' | '//' | '!' )
             int alt16=3;
             switch ( input.LA(1) ) {
             case '#':
@@ -8828,14 +8828,14 @@ public class InputfileLexer extends Lexer {
 
             switch (alt16) {
                 case 1 :
-                    // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:592:10: '#'
+                    // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:595:10: '#'
                     {
                     match('#'); 
 
                     }
                     break;
                 case 2 :
-                    // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:592:16: '//'
+                    // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:595:16: '//'
                     {
                     match("//"); 
 
@@ -8844,7 +8844,7 @@ public class InputfileLexer extends Lexer {
                     }
                     break;
                 case 3 :
-                    // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:592:23: '!'
+                    // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:595:23: '!'
                     {
                     match('!'); 
 
@@ -8854,7 +8854,7 @@ public class InputfileLexer extends Lexer {
             }
 
 
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:592:28: (~ ( '\\n' | '\\r' ) )*
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:595:28: (~ ( '\\n' | '\\r' ) )*
             loop17:
             do {
                 int alt17=2;
@@ -8866,29 +8866,29 @@ public class InputfileLexer extends Lexer {
 
 
                 switch (alt17) {
-                case 1 :
-                    // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:
-                    {
-                    if ( (input.LA(1) >= '\u0000' && input.LA(1) <= '\t')||(input.LA(1) >= '\u000B' && input.LA(1) <= '\f')||(input.LA(1) >= '\u000E' && input.LA(1) <= '\uFFFF') ) {
-                        input.consume();
-                    }
-                    else {
-                        MismatchedSetException mse = new MismatchedSetException(null,input);
-                        recover(mse);
-                        throw mse;
-                    }
+            	case 1 :
+            	    // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:
+            	    {
+            	    if ( (input.LA(1) >= '\u0000' && input.LA(1) <= '\t')||(input.LA(1) >= '\u000B' && input.LA(1) <= '\f')||(input.LA(1) >= '\u000E' && input.LA(1) <= '\uFFFF') ) {
+            	        input.consume();
+            	    }
+            	    else {
+            	        MismatchedSetException mse = new MismatchedSetException(null,input);
+            	        recover(mse);
+            	        throw mse;
+            	    }
 
 
-                    }
-                    break;
+            	    }
+            	    break;
 
-                default :
-                    break loop17;
+            	default :
+            	    break loop17;
                 }
             } while (true);
 
 
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:592:42: ( '\\r' )?
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:595:42: ( '\\r' )?
             int alt18=2;
             int LA18_0 = input.LA(1);
 
@@ -8897,7 +8897,7 @@ public class InputfileLexer extends Lexer {
             }
             switch (alt18) {
                 case 1 :
-                    // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:592:42: '\\r'
+                    // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:595:42: '\\r'
                     {
                     match('\r'); 
 
@@ -8917,7 +8917,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "COMMENT"
@@ -8927,8 +8927,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = WS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:595:5: ( ( ' ' | '\\t' | '\\r' | '\\n' ) )
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:595:9: ( ' ' | '\\t' | '\\r' | '\\n' )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:598:5: ( ( ' ' | '\\t' | '\\r' | '\\n' ) )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:598:9: ( ' ' | '\\t' | '\\r' | '\\n' )
             {
             if ( (input.LA(1) >= '\t' && input.LA(1) <= '\n')||input.LA(1)=='\r'||input.LA(1)==' ' ) {
                 input.consume();
@@ -8948,7 +8948,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "WS"
@@ -8958,10 +8958,10 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = STRING;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:610:2: ( ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '.' | '$' | '-' | '_' )+ )
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:610:4: ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '.' | '$' | '-' | '_' )+
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:613:2: ( ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '.' | '$' | '-' | '_' )+ )
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:613:4: ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '.' | '$' | '-' | '_' )+
             {
-            // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:610:4: ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '.' | '$' | '-' | '_' )+
+            // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:613:4: ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '.' | '$' | '-' | '_' )+
             int cnt19=0;
             loop19:
             do {
@@ -8974,24 +8974,24 @@ public class InputfileLexer extends Lexer {
 
 
                 switch (alt19) {
-                case 1 :
-                    // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:
-                    {
-                    if ( input.LA(1)=='$'||(input.LA(1) >= '-' && input.LA(1) <= '.')||(input.LA(1) >= '0' && input.LA(1) <= '9')||(input.LA(1) >= 'A' && input.LA(1) <= 'Z')||input.LA(1)=='_'||(input.LA(1) >= 'a' && input.LA(1) <= 'z') ) {
-                        input.consume();
-                    }
-                    else {
-                        MismatchedSetException mse = new MismatchedSetException(null,input);
-                        recover(mse);
-                        throw mse;
-                    }
+            	case 1 :
+            	    // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:
+            	    {
+            	    if ( input.LA(1)=='$'||(input.LA(1) >= '-' && input.LA(1) <= '.')||(input.LA(1) >= '0' && input.LA(1) <= '9')||(input.LA(1) >= 'A' && input.LA(1) <= 'Z')||input.LA(1)=='_'||(input.LA(1) >= 'a' && input.LA(1) <= 'z') ) {
+            	        input.consume();
+            	    }
+            	    else {
+            	        MismatchedSetException mse = new MismatchedSetException(null,input);
+            	        recover(mse);
+            	        throw mse;
+            	    }
 
 
-                    }
-                    break;
+            	    }
+            	    break;
 
-                default :
-                    if ( cnt19 >= 1 ) break loop19;
+            	default :
+            	    if ( cnt19 >= 1 ) break loop19;
                         EarlyExitException eee =
                             new EarlyExitException(19, input);
                         throw eee;
@@ -9006,18 +9006,18 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "STRING"
 
     public void mTokens() throws RecognitionException {
-        // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:1:8: ( CRYSTAL | TYPE | DIFFRACTIONDECAYMODEL | DDM | SIMPLE | LINEAR | LEAL | DECAYPARAM | ABSCOEFCALC | DUMMY | DEFAULT | AVERAGE | RDFORTAN | RDJAVA | PDB | SAXS | SEQUENCE | SAXSSEQ | SMALLMOLE | DIMENSION | ANGLEP | ANGLEL | PIXELSPERMICRON | UNITCELL | PROTEINCONC | PROTEINCONCENTRATION | NUMMONOMERS | NUMRESIDUES | NUMRNA | NUMDNA | PROTEINHEAVYATOMS | ELEMENT | SMALLMOLEATOMS | SOLVENTHEAVYCONC | SOLVENTFRACTION | PDBNAME | WIREFRAMETYPE | MODELFILE | CALCULATEESCAPE | CONTAINERMATERIALTYPE | MATERIALTYPE | NONE | MIXTURE | ELEMENTAL | CONTAINERTHICKNESS | CONTAINERMATERIALMIXTURE | MATERIALMIXTURE | CONTAINERMATERIALELEMENTS | MATERIALELEMENTS | CONTAINERDENSITY | SEQUENCEFILE | SEQFILE | BEAM | FLUX | FWHM | ENERGY | KEV | FILE | PIXELSIZE | COLLIMATION | RECTANGULAR | CIRCULAR | HORIZONTAL | VERTICAL | WEDGE | EXPOSURETIME | ANGULARRESOLUTION | STARTOFFSET | TRANSLATEPERDEGREE | ROTAXBEAMOFFSET | FLOAT | COMMENT | WS | STRING )
+        // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:1:8: ( CRYSTAL | TYPE | DIFFRACTIONDECAYMODEL | DDM | SIMPLE | LINEAR | LEAL | DECAYPARAM | ABSCOEFCALC | DUMMY | DEFAULT | AVERAGE | RDFORTAN | RDJAVA | PDB | SAXS | SEQUENCE | SAXSSEQ | SMALLMOLE | DIMENSION | ANGLEP | ANGLEL | PIXELSPERMICRON | UNITCELL | PROTEINCONC | PROTEINCONCENTRATION | NUMMONOMERS | NUMRESIDUES | NUMRNA | NUMDNA | PROTEINHEAVYATOMS | ELEMENT | SMALLMOLEATOMS | SOLVENTHEAVYCONC | SOLVENTFRACTION | PDBNAME | WIREFRAMETYPE | MODELFILE | CALCULATEESCAPE | CONTAINERMATERIALTYPE | MATERIALTYPE | NONE | MIXTURE | ELEMENTAL | CONTAINERTHICKNESS | CONTAINERMATERIALMIXTURE | MATERIALMIXTURE | CONTAINERMATERIALELEMENTS | MATERIALELEMENTS | CONTAINERDENSITY | SEQUENCEFILE | SEQFILE | BEAM | FLUX | FWHM | ENERGY | KEV | FILE | PIXELSIZE | COLLIMATION | RECTANGULAR | CIRCULAR | HORIZONTAL | VERTICAL | WEDGE | EXPOSURETIME | ANGULARRESOLUTION | STARTOFFSET | TRANSLATEPERDEGREE | ROTAXBEAMOFFSET | FLOAT | COMMENT | WS | STRING )
         int alt20=74;
         alt20 = dfa20.predict(input);
         switch (alt20) {
             case 1 :
-                // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:1:10: CRYSTAL
+                // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:1:10: CRYSTAL
                 {
                 mCRYSTAL(); 
 
@@ -9025,7 +9025,7 @@ public class InputfileLexer extends Lexer {
                 }
                 break;
             case 2 :
-                // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:1:18: TYPE
+                // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:1:18: TYPE
                 {
                 mTYPE(); 
 
@@ -9033,7 +9033,7 @@ public class InputfileLexer extends Lexer {
                 }
                 break;
             case 3 :
-                // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:1:23: DIFFRACTIONDECAYMODEL
+                // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:1:23: DIFFRACTIONDECAYMODEL
                 {
                 mDIFFRACTIONDECAYMODEL(); 
 
@@ -9041,7 +9041,7 @@ public class InputfileLexer extends Lexer {
                 }
                 break;
             case 4 :
-                // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:1:45: DDM
+                // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:1:45: DDM
                 {
                 mDDM(); 
 
@@ -9049,7 +9049,7 @@ public class InputfileLexer extends Lexer {
                 }
                 break;
             case 5 :
-                // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:1:49: SIMPLE
+                // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:1:49: SIMPLE
                 {
                 mSIMPLE(); 
 
@@ -9057,7 +9057,7 @@ public class InputfileLexer extends Lexer {
                 }
                 break;
             case 6 :
-                // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:1:56: LINEAR
+                // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:1:56: LINEAR
                 {
                 mLINEAR(); 
 
@@ -9065,7 +9065,7 @@ public class InputfileLexer extends Lexer {
                 }
                 break;
             case 7 :
-                // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:1:63: LEAL
+                // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:1:63: LEAL
                 {
                 mLEAL(); 
 
@@ -9073,7 +9073,7 @@ public class InputfileLexer extends Lexer {
                 }
                 break;
             case 8 :
-                // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:1:68: DECAYPARAM
+                // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:1:68: DECAYPARAM
                 {
                 mDECAYPARAM(); 
 
@@ -9081,7 +9081,7 @@ public class InputfileLexer extends Lexer {
                 }
                 break;
             case 9 :
-                // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:1:79: ABSCOEFCALC
+                // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:1:79: ABSCOEFCALC
                 {
                 mABSCOEFCALC(); 
 
@@ -9089,7 +9089,7 @@ public class InputfileLexer extends Lexer {
                 }
                 break;
             case 10 :
-                // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:1:91: DUMMY
+                // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:1:91: DUMMY
                 {
                 mDUMMY(); 
 
@@ -9097,7 +9097,7 @@ public class InputfileLexer extends Lexer {
                 }
                 break;
             case 11 :
-                // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:1:97: DEFAULT
+                // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:1:97: DEFAULT
                 {
                 mDEFAULT(); 
 
@@ -9105,7 +9105,7 @@ public class InputfileLexer extends Lexer {
                 }
                 break;
             case 12 :
-                // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:1:105: AVERAGE
+                // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:1:105: AVERAGE
                 {
                 mAVERAGE(); 
 
@@ -9113,7 +9113,7 @@ public class InputfileLexer extends Lexer {
                 }
                 break;
             case 13 :
-                // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:1:113: RDFORTAN
+                // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:1:113: RDFORTAN
                 {
                 mRDFORTAN(); 
 
@@ -9121,7 +9121,7 @@ public class InputfileLexer extends Lexer {
                 }
                 break;
             case 14 :
-                // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:1:122: RDJAVA
+                // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:1:122: RDJAVA
                 {
                 mRDJAVA(); 
 
@@ -9129,7 +9129,7 @@ public class InputfileLexer extends Lexer {
                 }
                 break;
             case 15 :
-                // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:1:129: PDB
+                // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:1:129: PDB
                 {
                 mPDB(); 
 
@@ -9137,7 +9137,7 @@ public class InputfileLexer extends Lexer {
                 }
                 break;
             case 16 :
-                // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:1:133: SAXS
+                // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:1:133: SAXS
                 {
                 mSAXS(); 
 
@@ -9145,7 +9145,7 @@ public class InputfileLexer extends Lexer {
                 }
                 break;
             case 17 :
-                // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:1:138: SEQUENCE
+                // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:1:138: SEQUENCE
                 {
                 mSEQUENCE(); 
 
@@ -9153,7 +9153,7 @@ public class InputfileLexer extends Lexer {
                 }
                 break;
             case 18 :
-                // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:1:147: SAXSSEQ
+                // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:1:147: SAXSSEQ
                 {
                 mSAXSSEQ(); 
 
@@ -9161,7 +9161,7 @@ public class InputfileLexer extends Lexer {
                 }
                 break;
             case 19 :
-                // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:1:155: SMALLMOLE
+                // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:1:155: SMALLMOLE
                 {
                 mSMALLMOLE(); 
 
@@ -9169,7 +9169,7 @@ public class InputfileLexer extends Lexer {
                 }
                 break;
             case 20 :
-                // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:1:165: DIMENSION
+                // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:1:165: DIMENSION
                 {
                 mDIMENSION(); 
 
@@ -9177,7 +9177,7 @@ public class InputfileLexer extends Lexer {
                 }
                 break;
             case 21 :
-                // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:1:175: ANGLEP
+                // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:1:175: ANGLEP
                 {
                 mANGLEP(); 
 
@@ -9185,7 +9185,7 @@ public class InputfileLexer extends Lexer {
                 }
                 break;
             case 22 :
-                // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:1:182: ANGLEL
+                // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:1:182: ANGLEL
                 {
                 mANGLEL(); 
 
@@ -9193,7 +9193,7 @@ public class InputfileLexer extends Lexer {
                 }
                 break;
             case 23 :
-                // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:1:189: PIXELSPERMICRON
+                // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:1:189: PIXELSPERMICRON
                 {
                 mPIXELSPERMICRON(); 
 
@@ -9201,7 +9201,7 @@ public class InputfileLexer extends Lexer {
                 }
                 break;
             case 24 :
-                // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:1:205: UNITCELL
+                // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:1:205: UNITCELL
                 {
                 mUNITCELL(); 
 
@@ -9209,7 +9209,7 @@ public class InputfileLexer extends Lexer {
                 }
                 break;
             case 25 :
-                // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:1:214: PROTEINCONC
+                // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:1:214: PROTEINCONC
                 {
                 mPROTEINCONC(); 
 
@@ -9217,7 +9217,7 @@ public class InputfileLexer extends Lexer {
                 }
                 break;
             case 26 :
-                // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:1:226: PROTEINCONCENTRATION
+                // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:1:226: PROTEINCONCENTRATION
                 {
                 mPROTEINCONCENTRATION(); 
 
@@ -9225,7 +9225,7 @@ public class InputfileLexer extends Lexer {
                 }
                 break;
             case 27 :
-                // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:1:247: NUMMONOMERS
+                // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:1:247: NUMMONOMERS
                 {
                 mNUMMONOMERS(); 
 
@@ -9233,7 +9233,7 @@ public class InputfileLexer extends Lexer {
                 }
                 break;
             case 28 :
-                // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:1:259: NUMRESIDUES
+                // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:1:259: NUMRESIDUES
                 {
                 mNUMRESIDUES(); 
 
@@ -9241,7 +9241,7 @@ public class InputfileLexer extends Lexer {
                 }
                 break;
             case 29 :
-                // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:1:271: NUMRNA
+                // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:1:271: NUMRNA
                 {
                 mNUMRNA(); 
 
@@ -9249,7 +9249,7 @@ public class InputfileLexer extends Lexer {
                 }
                 break;
             case 30 :
-                // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:1:278: NUMDNA
+                // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:1:278: NUMDNA
                 {
                 mNUMDNA(); 
 
@@ -9257,7 +9257,7 @@ public class InputfileLexer extends Lexer {
                 }
                 break;
             case 31 :
-                // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:1:285: PROTEINHEAVYATOMS
+                // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:1:285: PROTEINHEAVYATOMS
                 {
                 mPROTEINHEAVYATOMS(); 
 
@@ -9265,7 +9265,7 @@ public class InputfileLexer extends Lexer {
                 }
                 break;
             case 32 :
-                // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:1:303: ELEMENT
+                // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:1:303: ELEMENT
                 {
                 mELEMENT(); 
 
@@ -9273,7 +9273,7 @@ public class InputfileLexer extends Lexer {
                 }
                 break;
             case 33 :
-                // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:1:311: SMALLMOLEATOMS
+                // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:1:311: SMALLMOLEATOMS
                 {
                 mSMALLMOLEATOMS(); 
 
@@ -9281,7 +9281,7 @@ public class InputfileLexer extends Lexer {
                 }
                 break;
             case 34 :
-                // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:1:326: SOLVENTHEAVYCONC
+                // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:1:326: SOLVENTHEAVYCONC
                 {
                 mSOLVENTHEAVYCONC(); 
 
@@ -9289,7 +9289,7 @@ public class InputfileLexer extends Lexer {
                 }
                 break;
             case 35 :
-                // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:1:343: SOLVENTFRACTION
+                // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:1:343: SOLVENTFRACTION
                 {
                 mSOLVENTFRACTION(); 
 
@@ -9297,7 +9297,7 @@ public class InputfileLexer extends Lexer {
                 }
                 break;
             case 36 :
-                // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:1:359: PDBNAME
+                // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:1:359: PDBNAME
                 {
                 mPDBNAME(); 
 
@@ -9305,7 +9305,7 @@ public class InputfileLexer extends Lexer {
                 }
                 break;
             case 37 :
-                // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:1:367: WIREFRAMETYPE
+                // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:1:367: WIREFRAMETYPE
                 {
                 mWIREFRAMETYPE(); 
 
@@ -9313,7 +9313,7 @@ public class InputfileLexer extends Lexer {
                 }
                 break;
             case 38 :
-                // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:1:381: MODELFILE
+                // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:1:381: MODELFILE
                 {
                 mMODELFILE(); 
 
@@ -9321,7 +9321,7 @@ public class InputfileLexer extends Lexer {
                 }
                 break;
             case 39 :
-                // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:1:391: CALCULATEESCAPE
+                // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:1:391: CALCULATEESCAPE
                 {
                 mCALCULATEESCAPE(); 
 
@@ -9329,7 +9329,7 @@ public class InputfileLexer extends Lexer {
                 }
                 break;
             case 40 :
-                // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:1:407: CONTAINERMATERIALTYPE
+                // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:1:407: CONTAINERMATERIALTYPE
                 {
                 mCONTAINERMATERIALTYPE(); 
 
@@ -9337,7 +9337,7 @@ public class InputfileLexer extends Lexer {
                 }
                 break;
             case 41 :
-                // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:1:429: MATERIALTYPE
+                // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:1:429: MATERIALTYPE
                 {
                 mMATERIALTYPE(); 
 
@@ -9345,7 +9345,7 @@ public class InputfileLexer extends Lexer {
                 }
                 break;
             case 42 :
-                // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:1:442: NONE
+                // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:1:442: NONE
                 {
                 mNONE(); 
 
@@ -9353,7 +9353,7 @@ public class InputfileLexer extends Lexer {
                 }
                 break;
             case 43 :
-                // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:1:447: MIXTURE
+                // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:1:447: MIXTURE
                 {
                 mMIXTURE(); 
 
@@ -9361,7 +9361,7 @@ public class InputfileLexer extends Lexer {
                 }
                 break;
             case 44 :
-                // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:1:455: ELEMENTAL
+                // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:1:455: ELEMENTAL
                 {
                 mELEMENTAL(); 
 
@@ -9369,7 +9369,7 @@ public class InputfileLexer extends Lexer {
                 }
                 break;
             case 45 :
-                // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:1:465: CONTAINERTHICKNESS
+                // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:1:465: CONTAINERTHICKNESS
                 {
                 mCONTAINERTHICKNESS(); 
 
@@ -9377,7 +9377,7 @@ public class InputfileLexer extends Lexer {
                 }
                 break;
             case 46 :
-                // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:1:484: CONTAINERMATERIALMIXTURE
+                // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:1:484: CONTAINERMATERIALMIXTURE
                 {
                 mCONTAINERMATERIALMIXTURE(); 
 
@@ -9385,7 +9385,7 @@ public class InputfileLexer extends Lexer {
                 }
                 break;
             case 47 :
-                // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:1:509: MATERIALMIXTURE
+                // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:1:509: MATERIALMIXTURE
                 {
                 mMATERIALMIXTURE(); 
 
@@ -9393,7 +9393,7 @@ public class InputfileLexer extends Lexer {
                 }
                 break;
             case 48 :
-                // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:1:525: CONTAINERMATERIALELEMENTS
+                // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:1:525: CONTAINERMATERIALELEMENTS
                 {
                 mCONTAINERMATERIALELEMENTS(); 
 
@@ -9401,7 +9401,7 @@ public class InputfileLexer extends Lexer {
                 }
                 break;
             case 49 :
-                // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:1:551: MATERIALELEMENTS
+                // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:1:551: MATERIALELEMENTS
                 {
                 mMATERIALELEMENTS(); 
 
@@ -9409,7 +9409,7 @@ public class InputfileLexer extends Lexer {
                 }
                 break;
             case 50 :
-                // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:1:568: CONTAINERDENSITY
+                // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:1:568: CONTAINERDENSITY
                 {
                 mCONTAINERDENSITY(); 
 
@@ -9417,7 +9417,7 @@ public class InputfileLexer extends Lexer {
                 }
                 break;
             case 51 :
-                // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:1:585: SEQUENCEFILE
+                // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:1:585: SEQUENCEFILE
                 {
                 mSEQUENCEFILE(); 
 
@@ -9425,7 +9425,7 @@ public class InputfileLexer extends Lexer {
                 }
                 break;
             case 52 :
-                // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:1:598: SEQFILE
+                // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:1:598: SEQFILE
                 {
                 mSEQFILE(); 
 
@@ -9433,7 +9433,7 @@ public class InputfileLexer extends Lexer {
                 }
                 break;
             case 53 :
-                // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:1:606: BEAM
+                // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:1:606: BEAM
                 {
                 mBEAM(); 
 
@@ -9441,7 +9441,7 @@ public class InputfileLexer extends Lexer {
                 }
                 break;
             case 54 :
-                // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:1:611: FLUX
+                // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:1:611: FLUX
                 {
                 mFLUX(); 
 
@@ -9449,7 +9449,7 @@ public class InputfileLexer extends Lexer {
                 }
                 break;
             case 55 :
-                // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:1:616: FWHM
+                // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:1:616: FWHM
                 {
                 mFWHM(); 
 
@@ -9457,7 +9457,7 @@ public class InputfileLexer extends Lexer {
                 }
                 break;
             case 56 :
-                // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:1:621: ENERGY
+                // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:1:621: ENERGY
                 {
                 mENERGY(); 
 
@@ -9465,7 +9465,7 @@ public class InputfileLexer extends Lexer {
                 }
                 break;
             case 57 :
-                // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:1:628: KEV
+                // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:1:628: KEV
                 {
                 mKEV(); 
 
@@ -9473,7 +9473,7 @@ public class InputfileLexer extends Lexer {
                 }
                 break;
             case 58 :
-                // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:1:632: FILE
+                // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:1:632: FILE
                 {
                 mFILE(); 
 
@@ -9481,7 +9481,7 @@ public class InputfileLexer extends Lexer {
                 }
                 break;
             case 59 :
-                // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:1:637: PIXELSIZE
+                // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:1:637: PIXELSIZE
                 {
                 mPIXELSIZE(); 
 
@@ -9489,7 +9489,7 @@ public class InputfileLexer extends Lexer {
                 }
                 break;
             case 60 :
-                // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:1:647: COLLIMATION
+                // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:1:647: COLLIMATION
                 {
                 mCOLLIMATION(); 
 
@@ -9497,7 +9497,7 @@ public class InputfileLexer extends Lexer {
                 }
                 break;
             case 61 :
-                // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:1:659: RECTANGULAR
+                // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:1:659: RECTANGULAR
                 {
                 mRECTANGULAR(); 
 
@@ -9505,7 +9505,7 @@ public class InputfileLexer extends Lexer {
                 }
                 break;
             case 62 :
-                // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:1:671: CIRCULAR
+                // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:1:671: CIRCULAR
                 {
                 mCIRCULAR(); 
 
@@ -9513,7 +9513,7 @@ public class InputfileLexer extends Lexer {
                 }
                 break;
             case 63 :
-                // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:1:680: HORIZONTAL
+                // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:1:680: HORIZONTAL
                 {
                 mHORIZONTAL(); 
 
@@ -9521,7 +9521,7 @@ public class InputfileLexer extends Lexer {
                 }
                 break;
             case 64 :
-                // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:1:691: VERTICAL
+                // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:1:691: VERTICAL
                 {
                 mVERTICAL(); 
 
@@ -9529,7 +9529,7 @@ public class InputfileLexer extends Lexer {
                 }
                 break;
             case 65 :
-                // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:1:700: WEDGE
+                // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:1:700: WEDGE
                 {
                 mWEDGE(); 
 
@@ -9537,7 +9537,7 @@ public class InputfileLexer extends Lexer {
                 }
                 break;
             case 66 :
-                // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:1:706: EXPOSURETIME
+                // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:1:706: EXPOSURETIME
                 {
                 mEXPOSURETIME(); 
 
@@ -9545,7 +9545,7 @@ public class InputfileLexer extends Lexer {
                 }
                 break;
             case 67 :
-                // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:1:719: ANGULARRESOLUTION
+                // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:1:719: ANGULARRESOLUTION
                 {
                 mANGULARRESOLUTION(); 
 
@@ -9553,7 +9553,7 @@ public class InputfileLexer extends Lexer {
                 }
                 break;
             case 68 :
-                // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:1:737: STARTOFFSET
+                // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:1:737: STARTOFFSET
                 {
                 mSTARTOFFSET(); 
 
@@ -9561,7 +9561,7 @@ public class InputfileLexer extends Lexer {
                 }
                 break;
             case 69 :
-                // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:1:749: TRANSLATEPERDEGREE
+                // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:1:749: TRANSLATEPERDEGREE
                 {
                 mTRANSLATEPERDEGREE(); 
 
@@ -9569,7 +9569,7 @@ public class InputfileLexer extends Lexer {
                 }
                 break;
             case 70 :
-                // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:1:768: ROTAXBEAMOFFSET
+                // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:1:768: ROTAXBEAMOFFSET
                 {
                 mROTAXBEAMOFFSET(); 
 
@@ -9577,7 +9577,7 @@ public class InputfileLexer extends Lexer {
                 }
                 break;
             case 71 :
-                // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:1:784: FLOAT
+                // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:1:784: FLOAT
                 {
                 mFLOAT(); 
 
@@ -9585,7 +9585,7 @@ public class InputfileLexer extends Lexer {
                 }
                 break;
             case 72 :
-                // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:1:790: COMMENT
+                // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:1:790: COMMENT
                 {
                 mCOMMENT(); 
 
@@ -9593,7 +9593,7 @@ public class InputfileLexer extends Lexer {
                 }
                 break;
             case 73 :
-                // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:1:798: WS
+                // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:1:798: WS
                 {
                 mWS(); 
 
@@ -9601,7 +9601,7 @@ public class InputfileLexer extends Lexer {
                 }
                 break;
             case 74 :
-                // /Users/charlesbury/Documents/DPhil/RADDOSE-3D/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:1:801: STRING
+                // H:\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:1:801: STRING
                 {
                 mSTRING(); 
 
@@ -9666,7 +9666,7 @@ public class InputfileLexer extends Lexer {
             this.transition = DFA12_transition;
         }
         public String getDescription() {
-            return "583:5: ( ( '0' .. '9' )+ | ( '0' .. '9' )+ '.' ( '0' .. '9' )* | '.' ( '0' .. '9' )+ )";
+            return "586:5: ( ( '0' .. '9' )+ | ( '0' .. '9' )+ '.' ( '0' .. '9' )* | '.' ( '0' .. '9' )+ )";
         }
     }
     static final String DFA20_eotS =

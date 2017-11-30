@@ -147,7 +147,7 @@ if ($crystal::crystalCoefCalc == 7)
 
 if ($crystal::crystalCoefCalc == 8)
 {
-  $crystal::crystalCoefCalcClass = new CoefCalcSmallMolecule($crystal::cellA, $crystal::cellB, $crystal::cellC, $crystal::cellAl, $crystal::cellBe, $crystal::cellGa,
+  $crystal::crystalCoefCalcClass = new CoefCalcSmallMolecules($crystal::cellA, $crystal::cellB, $crystal::cellC, $crystal::cellAl, $crystal::cellBe, $crystal::cellGa,
    													$crystal::numMon,
   													$crystal::smallMoleAtomNames, $crystal::smallMoleAtomNums,
   													$crystal::heavySolutionConcNames, $crystal::heavySolutionConcNums,
@@ -467,6 +467,7 @@ beamLine
 							   } }
 	| f=beamFile             { $beam::beamProperties.put(Beam.BEAM_EXTFILE, $f.filename); }
 	| g=beamPixelSize        { $beam::beamProperties.putAll($g.properties); }
+	
 	;
 
 beamFlux returns [Double flux]
@@ -504,7 +505,9 @@ beamCollimation returns [Map<Object, Object> properties]
 	: COLLIMATION 
 	| RECTANGULAR a=FLOAT b=FLOAT { $properties.put(Beam.BEAM_COLL_H, Double.parseDouble($a.text));
 	                                $properties.put(Beam.BEAM_COLL_V, Double.parseDouble($b.text)); }
-	| CIRCULAR FLOAT 
+	| CIRCULAR c=FLOAT f=FLOAT { $properties.put(Beam.BEAM_COLL_H, Double.parseDouble($c.text));
+	                                $properties.put(Beam.BEAM_COLL_V, Double.parseDouble($f.text)); 
+	                                $properties.put(Beam.BEAM_CIRCULAR, "TRUE"); }
 	| HORIZONTAL d=FLOAT { $properties.put(Beam.BEAM_COLL_H, Double.parseDouble($d.text)); }
 	| VERTICAL e=FLOAT   { $properties.put(Beam.BEAM_COLL_V, Double.parseDouble($e.text)); }
 	;
