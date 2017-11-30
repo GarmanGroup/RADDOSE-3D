@@ -618,57 +618,8 @@ public class CrystalPolyhedron extends Crystal {
 
     crystCoord = tempCrystCoords; // Final value
 
-    /*
-     * Set the value of the boolean for whether photoelectron escape should be
-     * calculated.
-     * Currently commented out because I haven't done the grammar yet.
-     */
-    /*
-     String pEE = (String) mergedProperties.get(CRYSTAL_ELECTRON_ESCAPE);
-     photoElectronEscape = ("ON".equals(pEE));
-     */
-
-    /////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////
-    //UNCOMMENT THIS SECTION OF CODE TO USE PHOTOELECTRON ESCAPE MODEL///
-    /*
-     * String escapeString = (String) mergedProperties
-     * .get(Crystal.CRYSTAL_PHOTOELECTRON_ESCAPE);
-     *
-     * if ("ON".equals(escapeString)) {
-     * photoElectronEscape = true;
-     * } else {
-     * photoElectronEscape = false;
-     * }
-     */
-    /////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////
-
-//    photoElectronEscape = false;
-//
     escapeFactor = new double[nx][ny][nz];
-
-//    /*
-//     * If photoElectronEscape is false then all the escapeFactor values
-//     * should be set to 1.
-//     */
-//
-//    if (!photoElectronEscape) {
-//      for (int i = 0; i < nx; i++) {
-//        for (int j = 0; j < ny; j++) {
-//          for (int k = 0; k < nz; k++) {
-//            escapeFactor[i][j][k] = 1;
-//          }
-//        }
-//      }
-//
-//      calculatedEscapeFactors = true;
-//    }
-//
-//    if (!calculatedEscapeFactors) {
-//      calculateEscapeFactors();
-//    }    
-    
+  
     // Initialise beam-independent crystal photoelectron escape properties
     //Get fl bins  
     flRes = 0;
