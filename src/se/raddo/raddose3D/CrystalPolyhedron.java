@@ -1182,7 +1182,6 @@ public class CrystalPolyhedron extends Crystal {
       }
   
     }
-    System.out.println("TEST");
   }
   
   /**
