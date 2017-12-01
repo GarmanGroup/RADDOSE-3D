@@ -176,7 +176,7 @@ public abstract class Crystal {
     fluorescentEscape = ("TRUE".equals(fE));
 
     //Check that ppm is sensible
-    if (properties.get(CRYSTAL_RESOLUTION) != null) {
+    if ((properties.get(CRYSTAL_RESOLUTION) != null) && (properties.get(CRYSTAL_DIM_X) != null)) {
       isPPMSensible(properties); 
     }
     else { //set default resolution
