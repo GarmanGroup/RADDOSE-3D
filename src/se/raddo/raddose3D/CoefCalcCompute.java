@@ -350,7 +350,7 @@ public class CoefCalcCompute extends CoefCalc {
         //K shell energy : checked from element database class
         kShellEnergy = e.getKEdge();
         //Probability of K shell ionization: checked worked out in element class
-        kFactorA = e.getKShellIonisationProb(); // photoelectric cross section of this element at incident beam energy              
+        kFactorA = e.getKShellIonisationProb();               
         //K shell fluorescent yield: checked from element database class
         kFactorB = e.getKShellFluorescenceYield();
         //This gives difference between the edge energies needed for fluorescent escape probability.

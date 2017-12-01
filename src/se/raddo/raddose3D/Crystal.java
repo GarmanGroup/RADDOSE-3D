@@ -530,10 +530,10 @@ public abstract class Crystal {
     double augerEnergy = 0;
     //Set up PE and FE - no need to do this is PE false
     double[][] feFactors = coefCalc.getFluorescentEscapeFactors(beam); 
-    //Calculate PE electron binding energy subtraction
-    calculatePEEnergySubtraction(feFactors); 
-    
+
     if (photoElectronEscape) {
+      //Calculate PE electron binding energy subtraction
+    calculatePEEnergySubtraction(feFactors); 
     setPEparamsForCurrentBeam(beam.getPhotonEnergy()); 
     //Calc Auger
     augerEnergy = getAugerEnergy(feFactors);
