@@ -68,20 +68,44 @@ public class CrystalEM extends Crystal {
   }
   
   private double EMEquationWay(Beam beam, Wedge wedge, CoefCalc coefCalc) {
+
+    
+    
     double energyPerEvent = 0.02; //in keV
     double electronNumber = beam.getPhotonsPerSec() * wedge.getTotSec();
     double exposedVolume = (getExposedX(beam) * getExposedY(beam))  * (sampleThickness/1000) * 1E-15; //exposed volume in dm^3
+    
+    double solventFraction = coefCalc.getEMSolventFraction();
+    
+    //now I need to calcWaters here I think 
+   
+    //way 1 - density
+    double waters = coefCalc.numberOfWaters(exposedVolume);
+    //way 2 = their way
+    coefCalc.calculateSolventWaterEM(solventFraction, exposedVolume);
+    
+    //density way is right so use that way and combine 
+    
     //Testing
     double elasticProbOverT = coefCalc.getElectronElastic(beam);
     double elasticProb = elasticProbOverT * sampleThickness;
     
     
-    double inelasticProbOverT = coefCalc.getElectronInelastic(beam);
+    double inelasticProbOverT = coefCalc.getElectronInelastic(beam, exposedVolume);
     double inelasticProb = inelasticProbOverT * sampleThickness;
-    double numberInelasticEvents = inelasticProb * electronNumber;
+    //same for solvent
+    double solventInelasticProbOverT = coefCalc.getElectronInelasticSolvent(beam);
+    double solventInelasticProb = solventInelasticProbOverT * sampleThickness;
+    
+    //TO TEST
+  //  solventInelasticProb = 0;
+    
+
+    double numberInelasticEvents = (inelasticProb * electronNumber) + (solventInelasticProb * electronNumber);
     double energyDeposited = (energyPerEvent * numberInelasticEvents) * Beam.KEVTOJOULES; //in J
-    double exposedMass = (coefCalc.getEMConc() * exposedVolume) / 1000;  //in Kg 
-    double dose = (energyDeposited/exposedMass) / 1E06; //dose in MGy
+    double exposedMass = ((coefCalc.getEMConc() * exposedVolume) / 1000) + (((930 * solventFraction) * exposedVolume) / 1000);  //in Kg 
+    double dose = (energyDeposited/exposedMass) / 1E06; //dose in MGy //thickness isn't making a difference on dose as mass increases with it
+    
     return dose;
   }
   
@@ -126,12 +150,12 @@ public class CrystalEM extends Crystal {
   @Override
   public void CalculateEM(Beam beam, Wedge wedge, CoefCalc coefCalc) {
     double dose1 = EMLETWay(beam, wedge, coefCalc);
-    System.out.print(String.format("\nThe Dose in the exposed area: %.2e", dose1));
+    System.out.print(String.format("\nThe Dose in the exposed area: %.8e", dose1));
     System.out.println(" MGy\n");
  
   
     double dose2 = EMEquationWay(beam, wedge, coefCalc);
-    System.out.print(String.format("\nThe Dose in the exposed area: %.2e", dose2));
+    System.out.print(String.format("\nThe Dose in the exposed area: %.8e", dose2));
     System.out.println(" MGy\n");
   }
   

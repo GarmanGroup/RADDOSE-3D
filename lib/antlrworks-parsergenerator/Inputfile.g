@@ -148,7 +148,8 @@ if ($crystal::crystalCoefCalc == 8)
 {
   $crystal::crystalCoefCalcClass = new CoefCalcEM($crystal::numMon, $crystal::numRes, $crystal::heavyProteinAtomNames, $crystal::heavyProteinAtomNums, $crystal::proteinConc, 
   													$crystal::molecularWeight,
-  													$crystal::cellA, $crystal::cellB, $crystal::cellC);
+  													$crystal::cellA, $crystal::cellB, $crystal::cellC,
+  													$crystal::heavySolutionConcNames, $crystal::heavySolutionConcNums);
   													
   													  													
 }

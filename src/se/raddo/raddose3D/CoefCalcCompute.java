@@ -168,6 +168,7 @@ public class CoefCalcCompute extends CoefCalc {
  // public double EMMass;
   public boolean isEM;
 
+
   /**
    * Number of atoms (only those that are not part of the protein), per
    * monomer.
@@ -523,7 +524,7 @@ public class CoefCalcCompute extends CoefCalc {
   }
   
   @Override
-  public  double getElectronInelastic(Beam beam) {
+  public  double getElectronInelastic(Beam beam, double exposedVolume) {
     //Individual atom cross sections
     double[] inelasticElement = new double[presentElements.size()];
     double inelasticMolecule = 0;
@@ -533,8 +534,10 @@ public class CoefCalcCompute extends CoefCalc {
     double betaSquared = 1- Math.pow(m*csquared/(Vo + m*csquared), 2);
     double weirdLetter = (0.02*Beam.KEVTOJOULES)/(betaSquared*(Vo + m*csquared));
     double molWeight = 0;
+    double inelasticAll = 0;
+
     int counter = 0;
-    for (Element e : this.presentElements) {
+    for (Element e : this.presentElements) { //Mayeb change to macromolecularoccurence.keyset
       if (e.getAtomicNumber() == 1) { //Correct as formula doesn't work for hydrogen
         inelasticElement[counter] = 6.4E-5;
       }
@@ -543,19 +546,67 @@ public class CoefCalcCompute extends CoefCalc {
                        (Math.log(2/weirdLetter));
                      //  1E06; // convert nm^2 to pm^2
       }
-      double numEl = getMacromolecularOccurrence(e);
+      double numEl = getMacromolecularOccurrence(e); //+ get solvent occurrence
+      
+      
+      // just in now for ice
+      /*
+      if (e.getAtomicNumber() == 1) {
+        numEl +=  2 * numberOfWaters(exposedVolume);
+      }
+      else if (e.getAtomicNumber() == 8) {
+        numEl += numberOfWaters(exposedVolume);
+      }
+       */
+      
       inelasticMolecule += inelasticElement[counter] * numEl;
+
       
       molWeight += numEl * e.getAtomicWeight();
       counter += 1;
     }
-
+    //TEST
+    double numMolecules = ((exposedVolume * EMConc)/molWeight)*AVOGADRO_NUM;
+    inelasticAll = numMolecules * inelasticMolecule;
+    
+    
     double massScatteringCoefficient = inelasticMolecule / molWeight;
-    double PoverT = 602 * massScatteringCoefficient  * (EMConc/1000); //* (EMThickness/10);
+    double PoverT = 602 * massScatteringCoefficient  * (EMConc/1000); //0.93 is ice density        //* (EMThickness/10);
     
     return PoverT;
-
   }
+  
+  @Override
+  public double numberOfWaters(double exposedVolume) {
+    double iceDensity = 930;  // g/dm^3
+    double waterMass = iceDensity * exposedVolume;
+    double waterNumbers = (waterMass/18) * AVOGADRO_NUM;
+    return waterNumbers;
+  }
+  
+  
+  @Override
+  public double getElectronInelasticSolvent(Beam beam) {
+    double inelasticOxygen = 0;
+    double inelasticMolecule = 0;
+    double m = 9.10938356E-31; // in Kg
+    double csquared = 3E8*3E8;  // (m/s)^2
+    double Vo = beam.getPhotonEnergy() * Beam.KEVTOJOULES;
+    double betaSquared = 1- Math.pow(m*csquared/(Vo + m*csquared), 2);
+    double weirdLetter = (0.02*Beam.KEVTOJOULES)/(betaSquared*(Vo + m*csquared));
+    double molWeight = 18;
+    
+    inelasticMolecule = (2*6.4E-5) + ((1.5E-6 * Math.pow(8, 0.5))/betaSquared)*
+        (Math.log(2/weirdLetter));
+    
+    double massScatteringCoefficient = inelasticMolecule / molWeight;
+    double concentrationWater = 0.93 * calculateSolventFractionEM();
+    double PoverT = 602 * massScatteringCoefficient  * (concentrationWater);
+    
+    return PoverT;
+  }
+  
+  
   /*
   @Override 
   public double getSA() {
@@ -701,6 +752,29 @@ public class CoefCalcCompute extends CoefCalc {
         absCoeffphoto, absCoeffcomp, elasCoeff, attCoeff, density);
   }
     
+  public double calculateSolventFractionEM() {
+    double solventFraction = 1;
+       solventFraction = 1 - (EMConc / 1000) / PROTEIN_DENSITY;
+ 
+       // sanity check
+       // TODO: Print to STDERR and/or crash out.
+       if (solventFraction < 0) {
+         solventFraction = 0; 
+         System.out
+             .println("Warning: Solvent mass calculated as a negative number...");
+       }
+
+       System.out.println(String.format("Solvent fraction determined as %.2f%%.",
+           solventFraction * PERCENTAGE_CONVERSION));
+
+    return solventFraction;
+  }
+  
+  @Override
+  public double getEMSolventFraction() {
+    double solventFraction = calculateSolventFractionEM();
+    return solventFraction;
+  }
   /**
    * Calculating solvent fraction from numbers of amino acids, RNA residues and
    * DNA residues in the unit cell.
@@ -777,7 +851,6 @@ public class CoefCalcCompute extends CoefCalc {
   public void calculateSolventWater(final double solventFraction) {
 
     double nonWaterAtoms = 0;
-
     for (Element e : solventConcentration.keySet()) {
       double conc = solventConcentration.get(e);
       double atomCount = conc * AVOGADRO_NUM * cellVolume * solventFraction
@@ -786,14 +859,18 @@ public class CoefCalcCompute extends CoefCalc {
       nonWaterAtoms += atomCount;
     }
 
+
     // Calculating number of water molecules.
     // NOTE: using updated value for concentration of water,
     // 55.555M instead of the 55M in Fortran.
+    double waterMolecules = 0;
 
-    double waterMolecules = WATER_CONCENTRATION * AVOGADRO_NUM
+
+      waterMolecules = WATER_CONCENTRATION * AVOGADRO_NUM
         / UNITSPERMILLIUNIT
         * cellVolume * (1 / MASS_TO_CELL_VOLUME) * solventFraction
         - nonWaterAtoms;
+
 
     // Add water molecules to hydrogen and oxygen.
 
@@ -805,6 +882,40 @@ public class CoefCalcCompute extends CoefCalc {
     setSolventOccurrence(oxygen, getSolventOccurrence(oxygen) + waterMolecules);
 
   }
+  
+  @Override
+  public void calculateSolventWaterEM(final double solventFraction, final double exposedVolume) {
+    double nonWaterAtoms = 0;
+    for (Element e : solventConcentration.keySet()) {
+      double conc = solventConcentration.get(e);
+      double atomCount = conc * AVOGADRO_NUM * exposedVolume * solventFraction //needs to be exposed volume
+          * 1E-3;
+      incrementSolventOccurrence(e, atomCount);
+      nonWaterAtoms += atomCount;
+    }
+
+
+    // Calculating number of water molecules.
+    // NOTE: using updated value for concentration of water,
+    // 55.555M instead of the 55M in Fortran.
+    double waterMolecules = 0;
+
+
+      waterMolecules = ((0.93/18) * 1000) * AVOGADRO_NUM  //0.93/18 not 1/18 as density is 0.93 not 1
+        * exposedVolume  * solventFraction // needs to be exposed volume
+        - nonWaterAtoms;
+//check that it matches the density calculation of number of waters....
+
+    // Add water molecules to hydrogen and oxygen.
+
+    Element hydrogen = elementDB.getElement("H");
+    setSolventOccurrence(hydrogen, getSolventOccurrence(hydrogen)
+        + waterMolecules * 2);
+
+    Element oxygen = elementDB.getElement("O");
+    setSolventOccurrence(oxygen, getSolventOccurrence(oxygen) + waterMolecules);
+  }
+  
 
   /**
    * Combine concentrations of heavy atoms in the solvent and add these to the

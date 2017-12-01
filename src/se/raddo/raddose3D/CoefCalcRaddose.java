@@ -374,8 +374,13 @@ public class CoefCalcRaddose extends CoefCalc {
   }
   
   @Override
-  public  double getElectronInelastic(Beam beam) {
+  public  double getElectronInelastic(Beam beam, double exposedVolume) {
     //Added to prevent error
+    return 0;
+  }
+  
+  @Override
+  public double getElectronInelasticSolvent(Beam beam) {
     return 0;
   }
   
@@ -387,5 +392,10 @@ public class CoefCalcRaddose extends CoefCalc {
   @Override 
   public boolean getIsEM() {
     return false;
+  }
+  
+  @Override
+  public double getEMSolventFraction() {
+    return 0;
   }
 }
