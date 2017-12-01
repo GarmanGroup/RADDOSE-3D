@@ -175,6 +175,17 @@ public abstract class Crystal {
     }
     fluorescentEscape = ("TRUE".equals(fE));
 
+    //Check that ppm is sensible
+    isPPMSensible(properties);
+  }
+  
+  public void isPPMSensible(final Map<Object, Object> properties) {
+    double pixelSize = 1 / ((double) properties.get(CRYSTAL_RESOLUTION)); 
+    double numberOfPixels = (((double) properties.get(CRYSTAL_DIM_X)) / pixelSize) * (((double) properties.get(CRYSTAL_DIM_Y)) / pixelSize) 
+                            * (((double) properties.get(CRYSTAL_DIM_Z)) / pixelSize);
+    if (numberOfPixels < 500) {  //test this number properly it is just arnitrary for now
+      System.out.println("WARNING: The pixels per micron is set too low so the output dose my not be accurate");
+    }
   }
 
   public abstract void setupDepthFinding(double angrad, Wedge wedge);
