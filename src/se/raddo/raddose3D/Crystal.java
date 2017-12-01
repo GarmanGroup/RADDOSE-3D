@@ -45,7 +45,7 @@ public abstract class Crystal {
   public static final String     CRYSTAL_CONTAINER             = "CONTAINER";
 
   /** Default recommended voxel resolution in voxels/micrometre. */
-  protected static final Double  CRYSTAL_RESOLUTION_DEF        = 0.5d;
+  protected static  Double  CRYSTAL_RESOLUTION_DEF        = 0.5d;
 
   /** Number of exposure-steps when crystal is exposed without rotation. */
   public static final int        STATICEXPOSURE                = 100;
@@ -176,14 +176,18 @@ public abstract class Crystal {
     fluorescentEscape = ("TRUE".equals(fE));
 
     //Check that ppm is sensible
-    isPPMSensible(properties);
+    if (properties.get(CRYSTAL_RESOLUTION) != null) {
+      isPPMSensible(properties); 
+    }
+    else { //set default resolution
+      CRYSTAL_RESOLUTION_DEF = 10 / ((double) properties.get(CRYSTAL_DIM_X));
+    }
   }
   
   public void isPPMSensible(final Map<Object, Object> properties) {
     double pixelSize = 1 / ((double) properties.get(CRYSTAL_RESOLUTION)); 
-    double numberOfPixels = (((double) properties.get(CRYSTAL_DIM_X)) / pixelSize) * (((double) properties.get(CRYSTAL_DIM_Y)) / pixelSize) 
-                            * (((double) properties.get(CRYSTAL_DIM_Z)) / pixelSize);
-    if (numberOfPixels < 500) {  //test this number properly it is just arnitrary for now
+    double numberOfPixels = (((double) properties.get(CRYSTAL_DIM_X)) / pixelSize); 
+    if (numberOfPixels < 8) {  //test this number properly it is just arbitrary for now
       System.out.println("WARNING: The pixels per micron is set too low so the output dose my not be accurate");
     }
   }
