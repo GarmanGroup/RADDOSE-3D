@@ -180,7 +180,10 @@ public abstract class Crystal {
       isPPMSensible(properties); 
     }
     else { //set default resolution
-      CRYSTAL_RESOLUTION_DEF = 10 / ((double) properties.get(CRYSTAL_DIM_X));
+      if ((properties.get(CRYSTAL_RESOLUTION) == null) && (properties.get(CRYSTAL_DIM_X) != null)) {
+        CRYSTAL_RESOLUTION_DEF = 10 / ((double) properties.get(CRYSTAL_DIM_X));
+        }
+        System.out.println("TEST");   
     }
   }
   
