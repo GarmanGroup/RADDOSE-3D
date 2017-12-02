@@ -129,7 +129,7 @@ public class CoefCalcCompute extends CoefCalc {
   /**
    * Number of X-ray Fluorescent escape factors
    */
-  private static final int NUM_FLUOR_ESCAPE_FACTORS  = 27;
+  private static final int NUM_FLUOR_ESCAPE_FACTORS  = 18;
 
   /**
    * Number of amino acids.
@@ -333,8 +333,8 @@ public class CoefCalcCompute extends CoefCalc {
     l2FactorB,escapeMuAbsL2,l3ShellEnergy,l3FactorA,l3FactorB,escapeMuAbsL3;
     Map<String, Double> photonMuAbsK;
     
-    double m1ShellEnergy, m2ShellEnergy, m3ShellEnergy, m4ShellEnergy, m5ShellEnergy,
-           m1FactorA, m2FactorA, m3FactorA, m4FactorA, m5FactorA;
+  //  double m1ShellEnergy, m2ShellEnergy, m3ShellEnergy, m4ShellEnergy, m5ShellEnergy,
+  //         m1FactorA, m2FactorA, m3FactorA, m4FactorA, m5FactorA;
     
     Map<String, Double> photonMuAbsL1;
     Map<String, Double> photonMuAbsL2;
@@ -437,7 +437,7 @@ public class CoefCalcCompute extends CoefCalc {
         l3FactorB = 0.0;
         escapeMuAbsL3 = 0.0;
       }
-      
+      /*
       //All the M shells
       
       if (beam.getPhotonEnergy() > e.getM1Edge() && e.getAtomicNumber() >= 73) { 
@@ -484,7 +484,7 @@ public class CoefCalcCompute extends CoefCalc {
         m5ShellEnergy = 0.0;
         m5FactorA = 0.0;
       }
-      
+      */
       
       double muAbsFrac = elAbsCoeffs.get(PHOTOELECTRIC) / absCoeffphoto;
       
@@ -507,7 +507,7 @@ public class CoefCalcCompute extends CoefCalc {
       fluorEscapeFactors[element_counter][14] = l3FactorA;
     //  fluorEscapeFactors[element_counter][15] = l3FactorB;
     //  fluorEscapeFactors[element_counter][16] = escapeMuAbsL3;
-      
+      /*
       fluorEscapeFactors[element_counter][17] = m1ShellEnergy;
       fluorEscapeFactors[element_counter][18] = m1FactorA;
       fluorEscapeFactors[element_counter][19] = m2ShellEnergy;
@@ -518,7 +518,7 @@ public class CoefCalcCompute extends CoefCalc {
       fluorEscapeFactors[element_counter][24] = m4FactorA;
       fluorEscapeFactors[element_counter][25] = m5ShellEnergy;
       fluorEscapeFactors[element_counter][26] = m5FactorA;
-      
+      */
       
       element_counter += 1;
     }

@@ -474,7 +474,7 @@ public abstract class Crystal {
   fluorescentEnergyToRelease = fluorescentEnergyToRelease * Beam.KEVTOJOULES; 
   return fluorescentEnergyToRelease;
   }
-
+/*
   public void calculatePEEnergySubtraction(double[][] feFactors) {
     double totK = 0, totL1 = 0, totL2 = 0, totL3 = 0;
     double totM1 = 0, totM2 = 0, totM3 = 0, totM4 = 0, totM5 = 0;
@@ -493,7 +493,7 @@ public abstract class Crystal {
       totM5 += feFactors[i][0] * feFactors[i][25] * feFactors[i][26];
       
     }
-    
+  */  
   //  totK = 0; //to test
   //  totL1 = 0;
   //  totL2 = 0;
@@ -510,9 +510,10 @@ public abstract class Crystal {
     System.out.println(totM4); // to test
     System.out.println(totM5); // to test
     */
+  /*
     EnergyToSubtractFromPE = totK + totL1 + totL2 + totL3 + totM1 + totM2 + totM3 + totM4 + totM5;
   }
-  
+  */
   /**
    * Expose this crystal to a given beam according to a strategy.
    *
@@ -534,7 +535,7 @@ public abstract class Crystal {
     
     if (photoElectronEscape) {
       //Calculate PE electron binding energy subtraction
-    calculatePEEnergySubtraction(feFactors); 
+  //  calculatePEEnergySubtraction(feFactors); 
     setPEparamsForCurrentBeam(beam.getPhotonEnergy()); 
     //Calc Auger
     augerEnergy = getAugerEnergy(feFactors);
