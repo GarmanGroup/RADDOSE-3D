@@ -121,13 +121,13 @@ public class Element {
     probL1ShellIonisation = 1 - 1 / getL1EdgeRatio();
     probL2ShellIonisation = 1 - 1 / getL2EdgeRatio();
     probL3ShellIonisation = 1 - 1 / getL3EdgeRatio();
-    
+    /*
     probM1ShellIonisation = 1 - 1 / getM1EdgeRatio();
     probM2ShellIonisation = 1 - 1 / getM2EdgeRatio();
     probM3ShellIonisation = 1 - 1 / getM3EdgeRatio();
     probM4ShellIonisation = 1 - 1 / getM4EdgeRatio();
     probM5ShellIonisation = 1 - 1 / getM5EdgeRatio();
-    
+    */
     if (probKShellIonisation == Double.NEGATIVE_INFINITY){   //If statements added as some ratios were equalling -Infinity becuase some Edge ratios were 0
       probKShellIonisation = 0;
     }
@@ -140,7 +140,7 @@ public class Element {
     if (probL3ShellIonisation == Double.NEGATIVE_INFINITY){
       probL3ShellIonisation = 0;
     }
-    
+    /*
     if (probM1ShellIonisation == Double.NEGATIVE_INFINITY){
       probM1ShellIonisation = 0;
     }
@@ -156,7 +156,7 @@ public class Element {
     if (probM5ShellIonisation == Double.NEGATIVE_INFINITY){
       probM5ShellIonisation = 0;
     }
-    
+    */
   }
 
   /**
