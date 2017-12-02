@@ -129,7 +129,7 @@ public class CoefCalcCompute extends CoefCalc {
   /**
    * Number of X-ray Fluorescent escape factors
    */
-  private static final int NUM_FLUOR_ESCAPE_FACTORS  = 28;
+  private static final int NUM_FLUOR_ESCAPE_FACTORS  = 27;
 
   /**
    * Number of amino acids.
@@ -439,7 +439,7 @@ public class CoefCalcCompute extends CoefCalc {
       }
       
       //All the M shells
-      /*
+      
       if (beam.getPhotonEnergy() > e.getM1Edge() && e.getAtomicNumber() >= 73) { 
         m1ShellEnergy = e.getM1Edge();
         m1FactorA = e.getM1ShellIonisationProb() * (1-kFactorA - l1FactorA - l2FactorA - l3FactorA);
@@ -484,7 +484,7 @@ public class CoefCalcCompute extends CoefCalc {
         m5ShellEnergy = 0.0;
         m5FactorA = 0.0;
       }
-      */
+      
       
       double muAbsFrac = elAbsCoeffs.get(PHOTOELECTRIC) / absCoeffphoto;
       
@@ -507,7 +507,7 @@ public class CoefCalcCompute extends CoefCalc {
       fluorEscapeFactors[element_counter][14] = l3FactorA;
     //  fluorEscapeFactors[element_counter][15] = l3FactorB;
     //  fluorEscapeFactors[element_counter][16] = escapeMuAbsL3;
-      /*
+      
       fluorEscapeFactors[element_counter][17] = m1ShellEnergy;
       fluorEscapeFactors[element_counter][18] = m1FactorA;
       fluorEscapeFactors[element_counter][19] = m2ShellEnergy;
@@ -518,7 +518,7 @@ public class CoefCalcCompute extends CoefCalc {
       fluorEscapeFactors[element_counter][24] = m4FactorA;
       fluorEscapeFactors[element_counter][25] = m5ShellEnergy;
       fluorEscapeFactors[element_counter][26] = m5FactorA;
-      */
+      
       
       element_counter += 1;
     }

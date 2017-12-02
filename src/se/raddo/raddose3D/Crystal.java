@@ -485,13 +485,13 @@ public abstract class Crystal {
       totL2 += feFactors[i][0] * feFactors[i][9] * feFactors[i][10];
       totL3 += feFactors[i][0] * feFactors[i][13] * feFactors[i][14];
       //Add the Ms here for uranium
-      /*
+      
       totM1 += feFactors[i][0] * feFactors[i][17] * feFactors[i][18];
       totM2 += feFactors[i][0] * feFactors[i][19] * feFactors[i][20];
       totM3 += feFactors[i][0] * feFactors[i][21] * feFactors[i][22];
       totM4 += feFactors[i][0] * feFactors[i][23] * feFactors[i][24];
       totM5 += feFactors[i][0] * feFactors[i][25] * feFactors[i][26];
-      */
+      
     }
     
   //  totK = 0; //to test
