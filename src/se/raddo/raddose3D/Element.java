@@ -460,7 +460,12 @@ public class Element {
    *         the M1 edge energy in keV
    */
   public Double getM1Edge() {
+    if (elementData.get(DatabaseFields.EDGE_M) != null) {
     return elementData.get(DatabaseFields.EDGE_M);
+    }
+    else {
+      return 0.0;
+    }
   }
   public Double getM2Edge() {
     return elementData.get(DatabaseFields.EDGE_M2);
