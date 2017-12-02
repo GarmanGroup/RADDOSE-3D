@@ -36,8 +36,8 @@ public class Element {
   private double         probKShellIonisation, probL1ShellIonisation, 
                                probL2ShellIonisation, probL3ShellIonisation;
   
-//  private double   probM1ShellIonisation, probM2ShellIonisation, probM3ShellIonisation, 
-//                   probM4ShellIonisation, probM5ShellIonisation;
+  private double   probM1ShellIonisation, probM2ShellIonisation, probM3ShellIonisation, 
+                   probM4ShellIonisation, probM5ShellIonisation;
 
   /**
    * List of absorption edges.
@@ -121,13 +121,13 @@ public class Element {
     probL1ShellIonisation = 1 - 1 / getL1EdgeRatio();
     probL2ShellIonisation = 1 - 1 / getL2EdgeRatio();
     probL3ShellIonisation = 1 - 1 / getL3EdgeRatio();
-    /*
+    
     probM1ShellIonisation = 1 - 1 / getM1EdgeRatio();
     probM2ShellIonisation = 1 - 1 / getM2EdgeRatio();
     probM3ShellIonisation = 1 - 1 / getM3EdgeRatio();
     probM4ShellIonisation = 1 - 1 / getM4EdgeRatio();
     probM5ShellIonisation = 1 - 1 / getM5EdgeRatio();
-    */
+    
     if (probKShellIonisation == Double.NEGATIVE_INFINITY){   //If statements added as some ratios were equalling -Infinity becuase some Edge ratios were 0
       probKShellIonisation = 0;
     }
@@ -140,7 +140,7 @@ public class Element {
     if (probL3ShellIonisation == Double.NEGATIVE_INFINITY){
       probL3ShellIonisation = 0;
     }
-    /*
+    
     if (probM1ShellIonisation == Double.NEGATIVE_INFINITY){
       probM1ShellIonisation = 0;
     }
@@ -156,7 +156,7 @@ public class Element {
     if (probM5ShellIonisation == Double.NEGATIVE_INFINITY){
       probM5ShellIonisation = 0;
     }
-    */
+    
   }
 
   /**
@@ -459,11 +459,9 @@ public class Element {
    * @return
    *         the M1 edge energy in keV
    */
-  
   public Double getM1Edge() {
     return elementData.get(DatabaseFields.EDGE_M);
   }
-  /*
   public Double getM2Edge() {
     return elementData.get(DatabaseFields.EDGE_M2);
   }
@@ -476,7 +474,7 @@ public class Element {
   public Double getM5Edge() {
     return elementData.get(DatabaseFields.EDGE_M5);
   }
-  */
+  
   /**
    * Return the K edge ratio which is defined as the ratio
    * of the K shell to L1 shell photoelectric cross sections.
@@ -524,7 +522,7 @@ public class Element {
   private Double getL3EdgeRatio() {
     return elementData.get(DatabaseFields.L3_EDGE_RATIO);
   }
-  /*
+  
   private Double getM1EdgeRatio() {
     return elementData.get(DatabaseFields.M1_EDGE_RATIO);
   }
@@ -540,7 +538,7 @@ public class Element {
   private Double getM5EdgeRatio() {
     return elementData.get(DatabaseFields.M5_EDGE_RATIO);
   }
-  */
+  
   
   /**
    * Return the K shell fluorescence yield of the atom
@@ -621,7 +619,7 @@ public class Element {
   public Double getL3ShellIonisationProb() {
     return this.probL3ShellIonisation;
   }
-  /*
+  
   public Double getM1ShellIonisationProb() {
     return this.probM1ShellIonisation;
   }
@@ -637,7 +635,7 @@ public class Element {
   public Double getM5ShellIonisationProb() {
     return this.probM5ShellIonisation;
   }
-  */
+  
   
   /**
    * 
