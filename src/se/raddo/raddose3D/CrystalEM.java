@@ -77,14 +77,15 @@ public class CrystalEM extends Crystal {
     
     double solventFraction = coefCalc.getEMSolventFraction();
     
-    //now I need to calcWaters here I think 
+    //now I need to calcWaters here as don't have access to crystal properties in coefCalcEM 
    
     //way 1 - density
-    double waters = coefCalc.numberOfWaters(exposedVolume);
+
     //way 2 = their way
     coefCalc.calculateSolventWaterEM(solventFraction, exposedVolume);
-    
-    //density way is right so use that way and combine 
+    //density
+    coefCalc.calculateDensityEM(exposedVolume);
+    System.out.println(String.format("\nDensity: %.2e", coefCalc.getDensity()));
     
     //Testing
     double elasticProbOverT = coefCalc.getElectronElastic(beam);

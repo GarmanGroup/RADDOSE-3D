@@ -167,7 +167,7 @@ public class CoefCalcCompute extends CoefCalc {
   public double EMConc;
  // public double EMMass;
   public boolean isEM;
-
+public double molWeightEM;
 
   /**
    * Number of atoms (only those that are not part of the protein), per
@@ -185,6 +185,8 @@ public class CoefCalcCompute extends CoefCalc {
    */
   private final Map<Element, Double> solventOccurrence;
 
+  
+  private  Map<Element, Double> macromolecularOccurrenceEM;
   /**
    * Simple constructor.
    */
@@ -194,6 +196,8 @@ public class CoefCalcCompute extends CoefCalc {
     heteroAtomOccurrence = new HashMap<Element, Double>();
     solventOccurrence = new HashMap<Element, Double>();
     solventConcentration = new HashMap<Element, Double>();
+    
+    macromolecularOccurrenceEM = new HashMap<Element, Double>();
   }
   
   /**
@@ -213,6 +217,40 @@ public class CoefCalcCompute extends CoefCalc {
     }
     
     density = mass * MASS_TO_CELL_VOLUME / (cellVolume * UNITSPERMILLIUNIT);
+  }
+  
+  @Override
+  public void calculateDensityEM(double exposedVolume) {
+    // density is easy. Loop through all atoms and calculate total mass.
+    // then express as g / cm-3.
+
+    double mass = 0;
+
+    presentElements = new HashSet<Element>();
+    presentElements.addAll(solventOccurrence.keySet());
+    presentElements.addAll(macromolecularOccurrence.keySet()); // macromolecular occurrence is set as in the oligomer
+    
+    //work out the actual macromolecular occurrence across the whole exposed volume
+    //Work out mol weight
+    double numEl;
+    for (Element e : this.macromolecularOccurrence.keySet()) {
+      numEl = getMacromolecularOccurrence(e); //macromolecular occurence in oligomer
+      molWeightEM += numEl * e.getAtomicWeight();
+     // macromolecularOccurrenceEM.put(e, num)
+    }
+    double numMolecules = ((exposedVolume * EMConc)/molWeightEM)*AVOGADRO_NUM;
+    
+    for (Element e : this.macromolecularOccurrence.keySet()) {
+      numEl = getMacromolecularOccurrence(e);
+      macromolecularOccurrenceEM.put(e, numEl * numMolecules);
+    }
+    
+    
+    for (Element e : presentElements) {
+      mass += totalAtomsEM(e) * e.getAtomicWeightInGrams();
+    }
+    
+    density = mass / (exposedVolume*1000);
   }
   
   /**
@@ -537,7 +575,7 @@ public class CoefCalcCompute extends CoefCalc {
     double inelasticAll = 0;
 
     int counter = 0;
-    for (Element e : this.presentElements) { //Mayeb change to macromolecularoccurence.keyset
+    for (Element e : macromolecularOccurrence.keySet()) { 
       if (e.getAtomicNumber() == 1) { //Correct as formula doesn't work for hydrogen
         inelasticElement[counter] = 6.4E-5;
       }
@@ -546,7 +584,7 @@ public class CoefCalcCompute extends CoefCalc {
                        (Math.log(2/weirdLetter));
                      //  1E06; // convert nm^2 to pm^2
       }
-      double numEl = getMacromolecularOccurrence(e); //+ get solvent occurrence
+      double numEl = getMacromolecularOccurrence(e); //macromolecular occurence in oligomer
       
       
       // just in now for ice
@@ -562,20 +600,22 @@ public class CoefCalcCompute extends CoefCalc {
       inelasticMolecule += inelasticElement[counter] * numEl;
 
       
-      molWeight += numEl * e.getAtomicWeight();
+ 
       counter += 1;
     }
     //TEST
-    double numMolecules = ((exposedVolume * EMConc)/molWeight)*AVOGADRO_NUM;
+    /*
+    
     inelasticAll = numMolecules * inelasticMolecule;
+    */
     
-    
-    double massScatteringCoefficient = inelasticMolecule / molWeight;
+    double massScatteringCoefficient = inelasticMolecule / molWeightEM;
     double PoverT = 602 * massScatteringCoefficient  * (EMConc/1000); //0.93 is ice density        //* (EMThickness/10);
     
     return PoverT;
   }
   
+  /*
   @Override
   public double numberOfWaters(double exposedVolume) {
     double iceDensity = 930;  // g/dm^3
@@ -583,7 +623,7 @@ public class CoefCalcCompute extends CoefCalc {
     double waterNumbers = (waterMass/18) * AVOGADRO_NUM;
     return waterNumbers;
   }
-  
+  */
   
   @Override
   public double getElectronInelasticSolvent(Beam beam) {
@@ -1045,6 +1085,14 @@ public class CoefCalcCompute extends CoefCalc {
       return 0.;
     }
   }
+  
+  public Double getMacromolecularOccurrenceEM(final Element element) {
+    if (macromolecularOccurrenceEM.containsKey(element)) {
+      return macromolecularOccurrenceEM.get(element);
+    } else {
+      return 0.;
+    }
+  }
 
   public void incrementMacromolecularOccurrence(final Element element,
       final Double increment) {
@@ -1083,5 +1131,9 @@ public class CoefCalcCompute extends CoefCalc {
 
   public double totalAtoms(final Element element) {
     return getSolventOccurrence(element) + getMacromolecularOccurrence(element);
+  }
+  
+  public double totalAtomsEM(final Element element) {
+    return getSolventOccurrence(element) + getMacromolecularOccurrenceEM(element);
   }
 }

@@ -30,7 +30,7 @@ public class CoefCalcEM extends CoefCalcCompute{
                              heavySolutionConcNames, heavySolutionConcNums);
 
     ///change
-    super.calculateDensity(); //going to need a calculate density EM for exposed volume but keep now as adds to present elements
+  //  super.calculateDensity(); //going to need a calculate density EM for exposed volume but keep now as adds to present elements
   }
   
   public void calculateAtomOccurrences(final int numMon, final int numRes, final List<String> heavyProteinAtomNames,

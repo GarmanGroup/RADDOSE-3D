@@ -132,4 +132,12 @@ public class CoefCalcAverage extends CoefCalc {
   public double getEMSolventFraction() {
     return 0;
   }
+  
+  @Override
+  public  void calculateSolventWaterEM(double solventFraction, double exposedVolume) {
+  }
+  
+  @Override
+  public  void calculateDensityEM(double exposedVolume) {
+  }
 }

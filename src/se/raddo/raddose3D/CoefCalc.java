@@ -78,11 +78,11 @@ public abstract class CoefCalc {
   
   public abstract double getElectronInelasticSolvent(Beam beam);
   
-   public abstract double numberOfWaters(double exposedVolume);
+ //  public abstract double numberOfWaters(double exposedVolume);
   
   public abstract void calculateSolventWaterEM(double solventFraction, double exposedVolume);
   
-  
+  public abstract void calculateDensityEM(double exposedVolume);
   
 }
 
