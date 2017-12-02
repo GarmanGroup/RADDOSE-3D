@@ -374,7 +374,7 @@ public class CoefCalcCompute extends CoefCalc {
       if (beam.getPhotonEnergy() > e.getL1Edge() &&
           e.getAtomicNumber() >= MIN_ATOMIC_NUM_FOR_L_SHELL_IONISATION) {
         l1ShellEnergy = e.getL1Edge();
-        l1FactorA = (e.getL1ShellIonisationProb()) * (1-kFactorA);
+        l1FactorA = (e.getL1ShellIonisationProb()); // * (1-kFactorA);
       //  l1FactorB = e.getL1ShellFluorescenceYield();
         
         
@@ -397,7 +397,7 @@ public class CoefCalcCompute extends CoefCalc {
       if (beam.getPhotonEnergy() > e.getL2Edge() &&
           e.getAtomicNumber() >= MIN_ATOMIC_NUM_FOR_L_SHELL_IONISATION) {
         l2ShellEnergy = e.getL2Edge();
-        l2FactorA = e.getL2ShellIonisationProb() * (1-kFactorA - l1FactorA);
+        l2FactorA = e.getL2ShellIonisationProb(); // * (1-kFactorA - l1FactorA);
       //  l2FactorB = e.getL2ShellFluorescenceYield();
         
         
@@ -419,7 +419,7 @@ public class CoefCalcCompute extends CoefCalc {
       if (beam.getPhotonEnergy() > e.getL3Edge() &&
           e.getAtomicNumber() >= MIN_ATOMIC_NUM_FOR_L_SHELL_IONISATION) {
         l3ShellEnergy = e.getL3Edge();
-        l3FactorA = e.getL3ShellIonisationProb() * (1-kFactorA - l1FactorA - l2FactorA);
+        l3FactorA = e.getL3ShellIonisationProb(); // * (1-kFactorA - l1FactorA - l2FactorA);
       //  l3FactorB = e.getL3ShellFluorescenceYield();
         
         
@@ -442,7 +442,7 @@ public class CoefCalcCompute extends CoefCalc {
       
       if (beam.getPhotonEnergy() > e.getM1Edge() && e.getAtomicNumber() >= 73) { 
         m1ShellEnergy = e.getM1Edge();
-        m1FactorA = e.getM1ShellIonisationProb() * (1-kFactorA - l1FactorA - l2FactorA - l3FactorA);
+        m1FactorA = e.getM1ShellIonisationProb(); // * (1-kFactorA - l1FactorA - l2FactorA - l3FactorA);
       }
       else {
         m1ShellEnergy = 0.0;
@@ -451,7 +451,7 @@ public class CoefCalcCompute extends CoefCalc {
       
       if (beam.getPhotonEnergy() > e.getM2Edge() && e.getAtomicNumber() >= 73) { // if it equals uranium for now, set a cut off later
         m2ShellEnergy = e.getM2Edge();
-        m2FactorA = e.getM2ShellIonisationProb() * (1-kFactorA - l1FactorA - l2FactorA - l3FactorA - m1FactorA);
+        m2FactorA = e.getM2ShellIonisationProb(); // * (1-kFactorA - l1FactorA - l2FactorA - l3FactorA - m1FactorA);
       }
       else {
         m2ShellEnergy = 0.0;
@@ -460,7 +460,7 @@ public class CoefCalcCompute extends CoefCalc {
       
       if (beam.getPhotonEnergy() > e.getM3Edge() && e.getAtomicNumber() >= 73) { // if it equals uranium for now, set a cut off later
         m3ShellEnergy = e.getM3Edge();
-        m3FactorA = e.getM3ShellIonisationProb() * (1-kFactorA - l1FactorA - l2FactorA - l3FactorA - m1FactorA - m2FactorA);
+        m3FactorA = e.getM3ShellIonisationProb(); //* (1-kFactorA - l1FactorA - l2FactorA - l3FactorA - m1FactorA - m2FactorA);
       }
       else {
         m3ShellEnergy = 0.0;
@@ -469,7 +469,7 @@ public class CoefCalcCompute extends CoefCalc {
       
       if (beam.getPhotonEnergy() > e.getM4Edge() && e.getAtomicNumber() >= 73) { // if it equals uranium for now, set a cut off later
         m4ShellEnergy = e.getM4Edge();
-        m4FactorA = e.getM4ShellIonisationProb() * (1-kFactorA - l1FactorA - l2FactorA - l3FactorA - m1FactorA - m2FactorA - m3FactorA);
+        m4FactorA = e.getM4ShellIonisationProb(); // * (1-kFactorA - l1FactorA - l2FactorA - l3FactorA - m1FactorA - m2FactorA - m3FactorA);
       }
       else {
         m4ShellEnergy = 0.0;
@@ -478,7 +478,7 @@ public class CoefCalcCompute extends CoefCalc {
       
       if (beam.getPhotonEnergy() > e.getM5Edge() && e.getAtomicNumber() >= 73) { // if it equals uranium for now, set a cut off later
         m5ShellEnergy = e.getM5Edge();
-        m5FactorA = e.getM5ShellIonisationProb() * (1-kFactorA - l1FactorA - l2FactorA - l3FactorA - m1FactorA - m2FactorA - m3FactorA - m4FactorA);
+        m5FactorA = e.getM5ShellIonisationProb(); // * (1-kFactorA - l1FactorA - l2FactorA - l3FactorA - m1FactorA - m2FactorA - m3FactorA - m4FactorA);
       }
       else {
         m5ShellEnergy = 0.0;
