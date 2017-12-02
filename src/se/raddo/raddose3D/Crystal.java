@@ -182,8 +182,7 @@ public abstract class Crystal {
     else { //set default resolution
       if ((properties.get(CRYSTAL_RESOLUTION) == null) && (properties.get(CRYSTAL_DIM_X) != null)) {
         CRYSTAL_RESOLUTION_DEF = 10 / ((double) properties.get(CRYSTAL_DIM_X));
-        }
-        System.out.println("TEST");   
+        }  
     }
   }
   
@@ -476,6 +475,43 @@ public abstract class Crystal {
   return fluorescentEnergyToRelease;
   }
 
+  public void calculatePEEnergySubtraction(double[][] feFactors) {
+    double totK = 0, totL1 = 0, totL2 = 0, totL3 = 0;
+    double totM1 = 0, totM2 = 0, totM3 = 0, totM4 = 0, totM5 = 0;
+    
+    for (int i = 0; i < feFactors.length; i++) {
+      totK += feFactors[i][0] * feFactors[i][1] * feFactors[i][2];
+      totL1 += feFactors[i][0] * feFactors[i][5] * feFactors[i][6];
+      totL2 += feFactors[i][0] * feFactors[i][9] * feFactors[i][10];
+      totL3 += feFactors[i][0] * feFactors[i][13] * feFactors[i][14];
+      //Add the Ms here for uranium
+      
+      totM1 += feFactors[i][0] * feFactors[i][17] * feFactors[i][18];
+      totM2 += feFactors[i][0] * feFactors[i][19] * feFactors[i][20];
+      totM3 += feFactors[i][0] * feFactors[i][21] * feFactors[i][22];
+      totM4 += feFactors[i][0] * feFactors[i][23] * feFactors[i][24];
+      totM5 += feFactors[i][0] * feFactors[i][25] * feFactors[i][26];
+      
+    }
+    
+  //  totK = 0; //to test
+  //  totL1 = 0;
+  //  totL2 = 0;
+  //  totL3 = 0;
+    /*
+    System.out.println(totK); // to test
+    System.out.println(totL1); // to test
+    System.out.println(totL2); // to test
+    System.out.println(totL3); // to test
+    
+    System.out.println(totM1); // to test
+    System.out.println(totM2); // to test
+    System.out.println(totM3); // to test
+    System.out.println(totM4); // to test
+    System.out.println(totM5); // to test
+    */
+    EnergyToSubtractFromPE = totK + totL1 + totL2 + totL3 + totM1 + totM2 + totM3 + totM4 + totM5;
+  }
   
   /**
    * Expose this crystal to a given beam according to a strategy.
@@ -494,29 +530,11 @@ public abstract class Crystal {
     double augerEnergy = 0;
     //Set up PE and FE - no need to do this is PE false
     double[][] feFactors = coefCalc.getFluorescentEscapeFactors(beam); 
-    
-    double totK = 0, totL1 = 0, totL2 = 0, totL3 = 0;
-    
-    for (int i = 0; i < feFactors.length; i++) {
-      totK += feFactors[i][0] * feFactors[i][1] * feFactors[i][2];
-      totL1 += feFactors[i][0] * feFactors[i][5] * feFactors[i][6];
-      totL2 += feFactors[i][0] * feFactors[i][9] * feFactors[i][10];
-      totL3 += feFactors[i][0] * feFactors[i][13] * feFactors[i][14];
-    }
-    /*
-  //  totK = 0; //to test
-  //  totL1 = 0;
-  //  totL2 = 0;
-  //  totL3 = 0;
-    System.out.println(totK); // to test
-    System.out.println(totL1); // to test
-    System.out.println(totL2); // to test
-    System.out.println(totL3); // to test
-    */
-    EnergyToSubtractFromPE = totK + totL1 + totL2 + totL3;
-    
+
     
     if (photoElectronEscape) {
+      //Calculate PE electron binding energy subtraction
+    calculatePEEnergySubtraction(feFactors); 
     setPEparamsForCurrentBeam(beam.getPhotonEnergy()); 
     //Calc Auger
     augerEnergy = getAugerEnergy(feFactors);

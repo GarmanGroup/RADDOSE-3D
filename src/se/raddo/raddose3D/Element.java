@@ -35,6 +35,9 @@ public class Element {
    */
   private double         probKShellIonisation, probL1ShellIonisation, 
                                probL2ShellIonisation, probL3ShellIonisation;
+  
+  private double   probM1ShellIonisation, probM2ShellIonisation, probM3ShellIonisation, 
+                   probM4ShellIonisation, probM5ShellIonisation;
 
   /**
    * List of absorption edges.
@@ -118,6 +121,13 @@ public class Element {
     probL1ShellIonisation = 1 - 1 / getL1EdgeRatio();
     probL2ShellIonisation = 1 - 1 / getL2EdgeRatio();
     probL3ShellIonisation = 1 - 1 / getL3EdgeRatio();
+    
+    probM1ShellIonisation = 1 - 1 / getM1EdgeRatio();
+    probM2ShellIonisation = 1 - 1 / getM2EdgeRatio();
+    probM3ShellIonisation = 1 - 1 / getM3EdgeRatio();
+    probM4ShellIonisation = 1 - 1 / getM4EdgeRatio();
+    probM5ShellIonisation = 1 - 1 / getM5EdgeRatio();
+    
     if (probKShellIonisation == Double.NEGATIVE_INFINITY){   //If statements added as some ratios were equalling -Infinity becuase some Edge ratios were 0
       probKShellIonisation = 0;
     }
@@ -130,6 +140,23 @@ public class Element {
     if (probL3ShellIonisation == Double.NEGATIVE_INFINITY){
       probL3ShellIonisation = 0;
     }
+    
+    if (probM1ShellIonisation == Double.NEGATIVE_INFINITY){
+      probM1ShellIonisation = 0;
+    }
+    if (probM2ShellIonisation == Double.NEGATIVE_INFINITY){
+      probM2ShellIonisation = 0;
+    }
+    if (probM3ShellIonisation == Double.NEGATIVE_INFINITY){
+      probM3ShellIonisation = 0;
+    }
+    if (probM4ShellIonisation == Double.NEGATIVE_INFINITY){
+      probM4ShellIonisation = 0;
+    }
+    if (probM5ShellIonisation == Double.NEGATIVE_INFINITY){
+      probM5ShellIonisation = 0;
+    }
+    
   }
 
   /**
@@ -435,6 +462,18 @@ public class Element {
   public Double getM1Edge() {
     return elementData.get(DatabaseFields.EDGE_M);
   }
+  public Double getM2Edge() {
+    return elementData.get(DatabaseFields.EDGE_M2);
+  }
+  public Double getM3Edge() {
+    return elementData.get(DatabaseFields.EDGE_M3);
+  }
+  public Double getM4Edge() {
+    return elementData.get(DatabaseFields.EDGE_M4);
+  }
+  public Double getM5Edge() {
+    return elementData.get(DatabaseFields.EDGE_M5);
+  }
   
   /**
    * Return the K edge ratio which is defined as the ratio
@@ -483,6 +522,23 @@ public class Element {
   private Double getL3EdgeRatio() {
     return elementData.get(DatabaseFields.L3_EDGE_RATIO);
   }
+  
+  private Double getM1EdgeRatio() {
+    return elementData.get(DatabaseFields.M1_EDGE_RATIO);
+  }
+  private Double getM2EdgeRatio() {
+    return elementData.get(DatabaseFields.M2_EDGE_RATIO);
+  }
+  private Double getM3EdgeRatio() {
+    return elementData.get(DatabaseFields.M3_EDGE_RATIO);
+  }
+  private Double getM4EdgeRatio() {
+    return elementData.get(DatabaseFields.M4_EDGE_RATIO);
+  }
+  private Double getM5EdgeRatio() {
+    return elementData.get(DatabaseFields.M5_EDGE_RATIO);
+  }
+  
   
   /**
    * Return the K shell fluorescence yield of the atom
@@ -563,6 +619,23 @@ public class Element {
   public Double getL3ShellIonisationProb() {
     return this.probL3ShellIonisation;
   }
+  
+  public Double getM1ShellIonisationProb() {
+    return this.probM1ShellIonisation;
+  }
+  public Double getM2ShellIonisationProb() {
+    return this.probM2ShellIonisation;
+  }
+  public Double getM3ShellIonisationProb() {
+    return this.probM3ShellIonisation;
+  }
+  public Double getM4ShellIonisationProb() {
+    return this.probM4ShellIonisation;
+  }
+  public Double getM5ShellIonisationProb() {
+    return this.probM5ShellIonisation;
+  }
+  
   
   /**
    * 
