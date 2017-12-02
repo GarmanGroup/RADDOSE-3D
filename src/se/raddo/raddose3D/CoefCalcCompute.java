@@ -396,7 +396,7 @@ public class CoefCalcCompute extends CoefCalc {
       
       if (beam.getPhotonEnergy() > e.getL2Edge() &&
           e.getAtomicNumber() >= MIN_ATOMIC_NUM_FOR_L_SHELL_IONISATION) {
-        l2ShellEnergy = e.getL2Edge() ;
+        l2ShellEnergy = e.getL2Edge();
         l2FactorA = e.getL2ShellIonisationProb() * (1-kFactorA - l1FactorA);
       //  l2FactorB = e.getL2ShellFluorescenceYield();
         
@@ -438,9 +438,9 @@ public class CoefCalcCompute extends CoefCalc {
         escapeMuAbsL3 = 0.0;
       }
       
-      //All the M shells, just for uranium for now
+      //All the M shells
       
-      if (beam.getPhotonEnergy() > e.getM1Edge() && e.getAtomicNumber() >= 73) { // if it equals uranium for now, set a cut off later
+      if (beam.getPhotonEnergy() > e.getM1Edge() && e.getAtomicNumber() >= 73) { 
         m1ShellEnergy = e.getM1Edge();
         m1FactorA = e.getM1ShellIonisationProb() * (1-kFactorA - l1FactorA - l2FactorA - l3FactorA);
       }
