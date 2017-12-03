@@ -134,7 +134,9 @@ Contributors:
 * Helen Ginn
 * Charlie Bury
 * Steve Walsh
+* Josh Dickerson
 
 **Please cite**
 Zeldin, Gerstel, Garman. (2013). J. Appl. Cryst. 46, 1225-1230.
 http://dx.doi.org/10.1107/S0021889813011461
+
