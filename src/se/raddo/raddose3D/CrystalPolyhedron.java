@@ -949,8 +949,7 @@ public class CrystalPolyhedron extends Crystal {
         + GUMBEL_DISTN_CALC_PARAMS[3]*(beamEnergy - energyCorrection); //beta - breaks down after 20keV
     
     //Try and better approximate beta for 22-30keV
-    
-    if (beamEnergy >= 22 && beamEnergy <= 30) {
+    if (beamEnergy - energyCorrection >= 22 && beamEnergy - energyCorrection <= 30) {
       gumbParams[1] = 1.4; // beta = 1.4keV
     }
     
