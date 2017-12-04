@@ -130,6 +130,10 @@ public class CrystalEM extends Crystal {
     return dose;
   }
   
+  private double EMStoppingPowerWay(Beam beam, Wedge wedge, CoefCalc coefCalc) {
+    double dose = 0;
+    return dose;
+  }
   /**
    * Returns the exposed area in the x dimensions of the sample in um
    * 
@@ -171,12 +175,16 @@ public class CrystalEM extends Crystal {
   @Override
   public void CalculateEM(Beam beam, Wedge wedge, CoefCalc coefCalc) {
     double dose1 = EMLETWay(beam, wedge, coefCalc);
-    System.out.print(String.format("\nThe Dose in the exposed area: %.8e", dose1));
+    System.out.print(String.format("\nThe Dose in the exposed area by LET: %.8e", dose1));
     System.out.println(" MGy\n");
  
   
     double dose2 = EMEquationWay(beam, wedge, coefCalc);
-    System.out.print(String.format("\nThe Dose in the exposed area: %.8e", dose2));
+    System.out.print(String.format("\nThe Dose in the exposed area by equation: %.8e", dose2));
+    System.out.println(" MGy\n");
+    
+    double dose3 = EMStoppingPowerWay(beam, wedge, coefCalc);
+    System.out.print(String.format("\nThe Dose in the exposed area by stopping power: %.8e", dose2));
     System.out.println(" MGy\n");
   }
   

@@ -155,6 +155,7 @@ public class CoefCalcCompute extends CoefCalc {
    * Element database keeping the coefficients of all elements.
    */
   private final ElementDatabase      elementDB;
+//  private final Element         element;
   
   private static final String        PHOTOELECTRIC                = "Photoelectric";
   private static final String        ELASTIC                      = "Elastic";
@@ -246,10 +247,18 @@ public double waterFractionEM;
     }
     
     //Make sure this works with RNA and DNA once they're added in
-    
+    double atomSum = 0;
     for (Element e : presentElements) {
-      mass += totalAtomsEM(e) * e.getAtomicWeightInGrams(); // check works for heavy solvent
+      double atomNum = totalAtomsEM(e);
+      mass += atomNum * e.getAtomicWeightInGrams(); // check works for heavy solvent
+      atomSum += atomNum;
     }
+    for (Element e : presentElements) {
+      double fractionElement = totalAtomsEM(e) / atomSum;
+      System.out.print("The fraction of "  + e.getElementName() + " atoms is: " );
+      System.out.format("%f.%n", fractionElement);
+    }
+    
     
     density = mass / (exposedVolume*1000);
   }
