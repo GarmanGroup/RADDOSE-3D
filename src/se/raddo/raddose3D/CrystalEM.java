@@ -49,6 +49,14 @@ public class CrystalEM extends Crystal {
     double totExposedArea;
     totExposedArea = (exposedAreaX * exposedAreaY) * 1E08; //convert  um^2 to A^2
     
+    //Reduce electron number if beam bigger than the sample
+    
+    if (totExposedArea < (beam.getBeamX()*beam.getBeamY() * 1E08)) {
+      double fractionFlux = totExposedArea / (beam.getBeamX()*beam.getBeamY() * 1E08);
+      electronNumber = electronNumber * fractionFlux;
+    }
+    
+    
     double exposure = electronNumber/totExposedArea;  //exposure in e/A^2
     double beamEnergy = beam.getPhotonEnergy();
     double baseDose = 0;
@@ -72,8 +80,20 @@ public class CrystalEM extends Crystal {
     
     
     double energyPerEvent = 0.02; //in keV
-    double electronNumber = beam.getPhotonsPerSec() * wedge.getTotSec();
-    double exposedVolume = (getExposedX(beam) * getExposedY(beam))  * (sampleThickness/1000) * 1E-15; //exposed volume in dm^3
+  
+    double electronNumber = beam.getPhotonsPerSec() * wedge.getTotSec(); 
+    
+    //will need to edit when I add in circular
+    double exposedArea = getExposedX(beam) * getExposedY(beam);
+    double exposedVolume = exposedArea  * (sampleThickness/1000) * 1E-15; //exposed volume in dm^3
+    
+    //Reduce electron number if beam bigger than the sample
+    
+    if (exposedArea < (beam.getBeamX()*beam.getBeamY())) {
+      double fractionFlux = exposedArea / (beam.getBeamX()*beam.getBeamY());
+      electronNumber = electronNumber * fractionFlux;
+    }
+    
     
     double solventFraction = coefCalc.getEMSolventFraction();
     
