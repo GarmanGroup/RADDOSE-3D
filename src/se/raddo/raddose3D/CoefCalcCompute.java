@@ -168,7 +168,7 @@ public class CoefCalcCompute extends CoefCalc {
  // public double EMMass;
   public boolean isEM;
 public double molWeightEM;
-
+public double waterFractionEM;
   /**
    * Number of atoms (only those that are not part of the protein), per
    * monomer.
@@ -245,9 +245,10 @@ public double molWeightEM;
       macromolecularOccurrenceEM.put(e, numEl * numMolecules);
     }
     
+    //Make sure this works with RNA and DNA once they're added in
     
     for (Element e : presentElements) {
-      mass += totalAtomsEM(e) * e.getAtomicWeightInGrams();
+      mass += totalAtomsEM(e) * e.getAtomicWeightInGrams(); // check works for heavy solvent
     }
     
     density = mass / (exposedVolume*1000);
@@ -627,7 +628,6 @@ public double molWeightEM;
   
   @Override
   public double getElectronInelasticSolvent(Beam beam) {
-    double inelasticOxygen = 0;
     double inelasticMolecule = 0;
     double m = 9.10938356E-31; // in Kg
     double csquared = 3E8*3E8;  // (m/s)^2
@@ -636,12 +636,22 @@ public double molWeightEM;
     double weirdLetter = (0.02*Beam.KEVTOJOULES)/(betaSquared*(Vo + m*csquared));
     double molWeight = 18;
     
-    inelasticMolecule = (2*6.4E-5) + ((1.5E-6 * Math.pow(8, 0.5))/betaSquared)*
+    inelasticMolecule = (2*6.4E-5) + ((1.5E-6 * Math.pow(8, 0.5))/betaSquared)*    //for water only
         (Math.log(2/weirdLetter));
-    
+     
     double massScatteringCoefficient = inelasticMolecule / molWeight;
-    double concentrationWater = 0.93 * calculateSolventFractionEM();
-    double PoverT = 602 * massScatteringCoefficient  * (concentrationWater);
+    double concentrationWater = waterFractionEM * 0.93 * calculateSolventFractionEM();
+    double PoverT = 602 * massScatteringCoefficient  * concentrationWater; // probability of scattering from water
+    
+    for (Element e : solventConcentration.keySet()) { 
+      //So solvent heavy atoms here
+      molWeight = e.getAtomicWeight();
+      double concentrationHeavySolvent = ((solventConcentration.get(e) / 1000) * molWeight)/1000; //g/cm^3
+      inelasticMolecule = ((1.5E-6 * Math.pow(e.getAtomicNumber(), 0.5))/betaSquared)*    //for solvent heavy
+          (Math.log(2/weirdLetter));
+      massScatteringCoefficient = inelasticMolecule / molWeight;
+      PoverT += 602 * massScatteringCoefficient  * concentrationHeavySolvent;
+    }
     
     return PoverT;
   }
@@ -796,6 +806,8 @@ public double molWeightEM;
     double solventFraction = 1;
        solventFraction = 1 - (EMConc / 1000) / PROTEIN_DENSITY;
  
+       //put in rna and dna and het atoms here
+       
        // sanity check
        // TODO: Print to STDERR and/or crash out.
        if (solventFraction < 0) {
@@ -911,6 +923,9 @@ public double molWeightEM;
         * cellVolume * (1 / MASS_TO_CELL_VOLUME) * solventFraction
         - nonWaterAtoms;
 
+      if (waterMolecules < 0) {
+        System.out.println("Warning: The heavy solvent concentration is set too high");
+      }
 
     // Add water molecules to hydrogen and oxygen.
 
@@ -927,7 +942,7 @@ public double molWeightEM;
   public void calculateSolventWaterEM(final double solventFraction, final double exposedVolume) {
     double nonWaterAtoms = 0;
     for (Element e : solventConcentration.keySet()) {
-      double conc = solventConcentration.get(e);
+      double conc = solventConcentration.get(e); //test that it is reducing water properly
       double atomCount = conc * AVOGADRO_NUM * exposedVolume * solventFraction //needs to be exposed volume
           * 1E-3;
       incrementSolventOccurrence(e, atomCount);
@@ -944,7 +959,12 @@ public double molWeightEM;
       waterMolecules = ((0.93/18) * 1000) * AVOGADRO_NUM  //0.93/18 not 1/18 as density is 0.93 not 1
         * exposedVolume  * solventFraction // needs to be exposed volume
         - nonWaterAtoms;
-//check that it matches the density calculation of number of waters....
+      
+      if (waterMolecules < 0) {
+        System.out.println("Warning: The heavy solvent concentration is set too high");
+      }
+
+      waterFractionEM = waterMolecules/(waterMolecules + nonWaterAtoms);
 
     // Add water molecules to hydrogen and oxygen.
 
