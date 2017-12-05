@@ -224,9 +224,11 @@ public class CrystalEM extends Crystal {
     Map<String, Double> fractionElementEM = new HashMap<String, Double>();
     fractionElementEM = coefCalc.getFractionElementEM();
     WebElement fractions = driver.findElement(By.name("Formulae"));
+    NumberFormat formatNoSF = new DecimalFormat();
+    formatNoSF = new DecimalFormat("0.000000"); //will break if in standard form
     
     for (String elementName : fractionElementEM.keySet()) {
-      String fractionElement = Double.toString(fractionElementEM.get(elementName));
+      String fractionElement = formatNoSF.format(fractionElementEM.get(elementName));
       String toSend = (elementName + " " + fractionElement); 
       //Write this in the textbox
       fractions.sendKeys(toSend);
