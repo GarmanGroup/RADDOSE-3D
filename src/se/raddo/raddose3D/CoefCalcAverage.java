@@ -1,5 +1,7 @@
 package se.raddo.raddose3D;
 
+import java.util.Map;
+
 /**
  * Uses average values, assuming 50% solvent content.
  * Absorption and Attenuation coefficients are based on Holton 2010 (Absorption
@@ -139,5 +141,10 @@ public class CoefCalcAverage extends CoefCalc {
   
   @Override
   public  void calculateDensityEM(double exposedVolume) {
+  }
+  
+  @Override
+  public Map<String, Double> getFractionElementEM(){
+    return null;
   }
 }

@@ -9,6 +9,7 @@ import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Scanner;
 
 /**
@@ -405,5 +406,10 @@ public class CoefCalcRaddose extends CoefCalc {
   
   @Override
   public  void calculateDensityEM(double exposedVolume) {
+  }
+  
+  @Override
+  public Map<String, Double> getFractionElementEM(){
+    return null;
   }
 }

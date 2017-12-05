@@ -1,5 +1,7 @@
 package se.raddo.raddose3D;
 
+import java.util.Map;
+
 public abstract class CoefCalc {
   /**
    * Calculate cross-sections for the new Beam.
@@ -83,6 +85,8 @@ public abstract class CoefCalc {
   public abstract void calculateSolventWaterEM(double solventFraction, double exposedVolume);
   
   public abstract void calculateDensityEM(double exposedVolume);
+  
+  public abstract Map<String, Double> getFractionElementEM();
   
 }
 

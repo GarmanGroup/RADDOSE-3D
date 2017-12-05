@@ -188,6 +188,8 @@ public double waterFractionEM;
 
   
   private  Map<Element, Double> macromolecularOccurrenceEM;
+  public  Map<String, Double> fractionElementEM;
+  
   /**
    * Simple constructor.
    */
@@ -199,6 +201,7 @@ public double waterFractionEM;
     solventConcentration = new HashMap<Element, Double>();
     
     macromolecularOccurrenceEM = new HashMap<Element, Double>();
+    fractionElementEM = new HashMap<String, Double>();
   }
   
   /**
@@ -257,10 +260,26 @@ public double waterFractionEM;
       double fractionElement = totalAtomsEM(e) / atomSum;
       System.out.print("The fraction of "  + e.getElementName() + " atoms is: " );
       System.out.format("%f.%n", fractionElement);
+      
+      fractionElementEM.put(ElementNameLower(e.getElementName()), fractionElement);
     }
     
     
     density = mass / (exposedVolume*1000);
+  }
+  
+  private String ElementNameLower(String elementName) { //Elements currently in caps, ESTAR needs the second letter lower case
+    String lowerCaseName = null;
+    if (elementName.length() == 1) {
+      lowerCaseName = elementName;
+    }
+    else {
+      char firstLetter = elementName.charAt(0);
+      char secondLetter = elementName.charAt(1);
+      secondLetter = Character.toLowerCase(secondLetter);
+      lowerCaseName = Character.toString(firstLetter) + Character.toString(secondLetter);
+    }
+    return lowerCaseName;
   }
   
   /**
@@ -1164,5 +1183,10 @@ public double waterFractionEM;
   
   public double totalAtomsEM(final Element element) {
     return getSolventOccurrence(element) + getMacromolecularOccurrenceEM(element);
+  }
+  
+  @Override
+  public Map<String, Double> getFractionElementEM(){
+    return fractionElementEM;
   }
 }

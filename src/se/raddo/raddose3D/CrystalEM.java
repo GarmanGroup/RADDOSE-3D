@@ -1,7 +1,22 @@
 package se.raddo.raddose3D;
 
+import java.awt.Toolkit;
+import java.awt.datatransfer.*;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.Keys;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import java.text.*;
+import java.math.*;
 
 public class CrystalEM extends Crystal {
 
@@ -15,6 +30,8 @@ public class CrystalEM extends Crystal {
   public double sampleThickness;
   
   public double crystalVolume;
+  
+  public double stoppingPower;
   
   /**
    * Dose and fluence arrays holding the scalar fields for these values at voxel
@@ -78,21 +95,13 @@ public class CrystalEM extends Crystal {
   private double EMEquationWay(Beam beam, Wedge wedge, CoefCalc coefCalc) {
 
     
-    
     double energyPerEvent = 0.02; //in keV
-  
-    double electronNumber = beam.getPhotonsPerSec() * wedge.getTotSec(); 
-    
+ 
     //will need to edit when I add in circular
     double exposedArea = getExposedX(beam) * getExposedY(beam);
     double exposedVolume = exposedArea  * (sampleThickness/1000) * 1E-15; //exposed volume in dm^3
     
-    //Reduce electron number if beam bigger than the sample
-    
-    if (exposedArea < (beam.getBeamX()*beam.getBeamY())) {
-      double fractionFlux = exposedArea / (beam.getBeamX()*beam.getBeamY());
-      electronNumber = electronNumber * fractionFlux;
-    }
+    double electronNumber = getElectronNumber(beam, wedge, exposedArea);
     
     
     double solventFraction = coefCalc.getEMSolventFraction();
@@ -131,8 +140,30 @@ public class CrystalEM extends Crystal {
   }
   
   private double EMStoppingPowerWay(Beam beam, Wedge wedge, CoefCalc coefCalc) {
-    double dose = 0;
+    double exposedArea = getExposedX(beam) * getExposedY(beam);
+    double exposedVolume = exposedArea  * (sampleThickness/1000) * 1E-15; //exposed volume in dm^3
+    double solventFraction = coefCalc.getEMSolventFraction();
+    
+    // stopping power = MeV cm2/g
+    double mevPerCm = stoppingPower * coefCalc.getDensity();
+    double kevPerElectron = (mevPerCm * (sampleThickness / 1E07)) *1000;
+    double electronNumber = getElectronNumber(beam, wedge, exposedArea);
+    double energyDeposited = (kevPerElectron * electronNumber) * Beam.KEVTOJOULES; //in J
+    double exposedMass = ((coefCalc.getEMConc() * exposedVolume) / 1000) + (((930 * solventFraction) * exposedVolume) / 1000);  //in Kg 
+    double dose = (energyDeposited/exposedMass) / 1E06; //dose in MGy
+    
     return dose;
+  }
+  
+  private double getElectronNumber(Beam beam, Wedge wedge, double exposedArea) {
+    double electronNumber = beam.getPhotonsPerSec() * wedge.getTotSec();
+ //   double exposedArea = getExposedX(beam) * getExposedY(beam);
+    //Remove electrons that go around edge of sample if beam bigger than sample
+    if (exposedArea < (beam.getBeamX()*beam.getBeamY())) {
+      double fractionFlux = exposedArea / (beam.getBeamX()*beam.getBeamY());
+      electronNumber = electronNumber * fractionFlux;
+    }
+    return electronNumber;
   }
   /**
    * Returns the exposed area in the x dimensions of the sample in um
@@ -171,6 +202,112 @@ public class CrystalEM extends Crystal {
     return exposedAreaY;
   }
   
+  public void accessESTAR(CoefCalc coefCalc, Beam beam) {
+    String exePath = "lib\\selenium\\chromedriver.exe";
+    System.setProperty("webdriver.chrome.driver", exePath);
+ // Create a new instance of the Firefox driver
+    WebDriver driver = new ChromeDriver();
+    //Launch the Website
+    driver.get("https://physics.nist.gov/PhysRefData/Star/Text/ESTAR-u.html");
+    
+    //Enter material name
+    WebElement name = driver.findElement(By.name("Name"));
+    name.sendKeys("Protein");
+    
+    //Enter density
+    double densityNum = coefCalc.getDensity();
+    String densityString = Double.toString(densityNum);
+    WebElement density = driver.findElement(By.name("Density"));
+    density.sendKeys(densityString);
+    
+    //Enter element fractions
+    Map<String, Double> fractionElementEM = new HashMap<String, Double>();
+    fractionElementEM = coefCalc.getFractionElementEM();
+    WebElement fractions = driver.findElement(By.name("Formulae"));
+    
+    for (String elementName : fractionElementEM.keySet()) {
+      String fractionElement = Double.toString(fractionElementEM.get(elementName));
+      String toSend = (elementName + " " + fractionElement); 
+      //Write this in the textbox
+      fractions.sendKeys(toSend);
+      fractions.sendKeys(Keys.RETURN);
+    }
+    
+    //submit this information
+    WebElement submit = driver.findElement(By.cssSelector("input[value='Submit']"));
+    submit.click();
+    
+    
+    //enter the beam energy
+    String beamMeV = Double.toString((beam.getPhotonEnergy() / 1000));
+    WebElement energy = driver.findElement(By.name("Energies"));
+    energy.sendKeys(beamMeV);
+    //uncheck default energies
+    WebElement checkBox = driver.findElement(By.cssSelector("input[value='on']"));
+    checkBox.click();
+    //remove the graph as unnecessary
+    WebElement radioButton = driver.findElement(By.cssSelector("input[value='None']"));
+    radioButton.click();
+    //submit this page
+    submit = driver.findElement(By.cssSelector("input[value='Submit']"));
+    submit.click();
+    
+    //select to output total stopping power
+    checkBox = driver.findElement(By.name("total"));
+    checkBox.click();
+    //Download data
+    submit = driver.findElement(By.cssSelector("input[value='Download data']"));
+    submit.click();
+    
+    //copy and paste whole page
+    Actions action = new Actions(driver); 
+    action.keyDown(Keys.CONTROL).sendKeys(String.valueOf('\u0061')).perform();
+    action.keyUp(Keys.CONTROL).perform();
+    action.keyDown(Keys.CONTROL).sendKeys(String.valueOf('\u0063')).perform();
+    String wholeTable = getSysClipboardText();
+
+    //get beam energy in a string
+    double MeV = beam.getPhotonEnergy()/1000;
+    NumberFormat formatter = new DecimalFormat();
+    formatter = new DecimalFormat("0.000E00");
+    String beamEnergy = formatter.format(MeV); 
+    // search using beam energy
+    int beamEnergyIndex = wholeTable.indexOf(beamEnergy);
+    String numbers = wholeTable.substring(beamEnergyIndex);
+    //find stopping power by the space
+    int spaceIndex = numbers.indexOf(" ");
+    String stoppingPowerString = numbers.substring(spaceIndex + 1);
+    stoppingPowerString = stoppingPowerString.trim();
+    
+    stoppingPower = Double.parseDouble(stoppingPowerString);
+    driver.quit(); // close all windows opened by selenium
+     
+  }
+  
+  /**
+  * get string from Clipboard
+  */
+ public static String getSysClipboardText() {
+     String ret = "";
+     Clipboard sysClip = Toolkit.getDefaultToolkit().getSystemClipboard();
+
+     Transferable clipTf = sysClip.getContents(null);
+
+     if (clipTf != null) {
+
+         if (clipTf.isDataFlavorSupported(DataFlavor.stringFlavor)) {
+             try {
+                 ret = (String) clipTf
+                         .getTransferData(DataFlavor.stringFlavor);
+             } catch (Exception e) {
+                 e.printStackTrace();
+             }
+         }
+     }
+
+     return ret;
+ }
+
   
   @Override
   public void CalculateEM(Beam beam, Wedge wedge, CoefCalc coefCalc) {
@@ -183,8 +320,9 @@ public class CrystalEM extends Crystal {
     System.out.print(String.format("\nThe Dose in the exposed area by equation: %.8e", dose2));
     System.out.println(" MGy\n");
     
+    accessESTAR(coefCalc, beam);
     double dose3 = EMStoppingPowerWay(beam, wedge, coefCalc);
-    System.out.print(String.format("\nThe Dose in the exposed area by stopping power: %.8e", dose2));
+    System.out.print(String.format("\nThe Dose in the exposed area by stopping power: %.8e", dose3));
     System.out.println(" MGy\n");
   }
   
