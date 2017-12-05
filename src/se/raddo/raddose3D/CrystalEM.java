@@ -140,18 +140,24 @@ public class CrystalEM extends Crystal {
   }
   
   private double EMStoppingPowerWay(Beam beam, Wedge wedge, CoefCalc coefCalc) {
+    int numSlices = 1;
+    double avgElectronEnergy = beam.getPhotonEnergy();
+    double dose = 0; 
     double exposedArea = getExposedX(beam) * getExposedY(beam);
     double exposedVolume = exposedArea  * (sampleThickness/1000) * 1E-15; //exposed volume in dm^3
     double solventFraction = coefCalc.getEMSolventFraction();
     
-    // stopping power = MeV cm2/g
-    double mevPerCm = stoppingPower * coefCalc.getDensity();
-    double kevPerElectron = (mevPerCm * (sampleThickness / 1E07)) *1000;
-    double electronNumber = getElectronNumber(beam, wedge, exposedArea);
-    double energyDeposited = (kevPerElectron * electronNumber) * Beam.KEVTOJOULES; //in J
-    double exposedMass = ((coefCalc.getEMConc() * exposedVolume) / 1000) + (((930 * solventFraction) * exposedVolume) / 1000);  //in Kg 
-    double dose = (energyDeposited/exposedMass) / 1E06; //dose in MGy
-    
+    for (int i = 0; i < numSlices; i++) {
+      accessESTAR(coefCalc, avgElectronEnergy);
+      // stopping power = MeV cm2/g
+      double mevPerCm = stoppingPower * coefCalc.getDensity();
+      double kevPerElectron = (mevPerCm * ((sampleThickness / 1E07)/numSlices)) *1000;
+      avgElectronEnergy -= kevPerElectron;
+      double electronNumber = getElectronNumber(beam, wedge, exposedArea);
+      double energyDeposited = (kevPerElectron * electronNumber) * Beam.KEVTOJOULES; //in J
+      double exposedMass = ((coefCalc.getEMConc() * exposedVolume) / 1000) + (((930 * solventFraction) * exposedVolume) / 1000);  //in Kg 
+      dose += (energyDeposited/exposedMass) / 1E06; //dose in MGy
+    }
     return dose;
   }
   
@@ -202,7 +208,7 @@ public class CrystalEM extends Crystal {
     return exposedAreaY;
   }
   
-  public void accessESTAR(CoefCalc coefCalc, Beam beam) {
+  public void accessESTAR(CoefCalc coefCalc, double avgElectronEnergy) {
     String exePath = "lib\\selenium\\chromedriver.exe";
     System.setProperty("webdriver.chrome.driver", exePath);
  // Create a new instance of the Firefox driver
@@ -241,7 +247,7 @@ public class CrystalEM extends Crystal {
     
     
     //enter the beam energy
-    String beamMeV = Double.toString((beam.getPhotonEnergy() / 1000));
+    String beamMeV = Double.toString((avgElectronEnergy / 1000));
     WebElement energy = driver.findElement(By.name("Energies"));
     energy.sendKeys(beamMeV);
     //uncheck default energies
@@ -269,7 +275,7 @@ public class CrystalEM extends Crystal {
     String wholeTable = getSysClipboardText();
 
     //get beam energy in a string
-    double MeV = beam.getPhotonEnergy()/1000;
+    double MeV = avgElectronEnergy/1000;
     NumberFormat formatter = new DecimalFormat();
     formatter = new DecimalFormat("0.000E00");
     String beamEnergy = formatter.format(MeV); 
@@ -322,7 +328,7 @@ public class CrystalEM extends Crystal {
     System.out.print(String.format("\nThe Dose in the exposed area by equation: %.8e", dose2));
     System.out.println(" MGy\n");
     
-    accessESTAR(coefCalc, beam);
+    
     double dose3 = EMStoppingPowerWay(beam, wedge, coefCalc);
     System.out.print(String.format("\nThe Dose in the exposed area by stopping power: %.8e", dose3));
     System.out.println(" MGy\n");
