@@ -140,23 +140,37 @@ public class CrystalEM extends Crystal {
   }
   
   private double EMStoppingPowerWay(Beam beam, Wedge wedge, CoefCalc coefCalc) {
-    int numSlices = 1;
+    int numSlices = 5;
     double avgElectronEnergy = beam.getPhotonEnergy();
     double dose = 0; 
     double exposedArea = getExposedX(beam) * getExposedY(beam);
     double exposedVolume = exposedArea  * (sampleThickness/1000) * 1E-15; //exposed volume in dm^3
     double solventFraction = coefCalc.getEMSolventFraction();
+    double electronNumber = getElectronNumber(beam, wedge, exposedArea);
     
     for (int i = 0; i < numSlices; i++) {
       accessESTAR(coefCalc, avgElectronEnergy);
       // stopping power = MeV cm2/g
       double mevPerCm = stoppingPower * coefCalc.getDensity();
-      double kevPerElectron = (mevPerCm * ((sampleThickness / 1E07)/numSlices)) *1000;
-      avgElectronEnergy -= kevPerElectron;
-      double electronNumber = getElectronNumber(beam, wedge, exposedArea);
+      double kevPerElectron = (mevPerCm * ((sampleThickness / 1E07)/numSlices)) *1000;   //this dunt look right
+ //     avgElectronEnergy -= kevPerElectron;  //either reduce energy or..
+    //  double fractionElectronsLeft = 1;
+  //    double fractionElectronsLeft = 1 - kevPerElectron/avgElectronEnergy; //reduce number of electrons
+     
       double energyDeposited = (kevPerElectron * electronNumber) * Beam.KEVTOJOULES; //in J
       double exposedMass = ((coefCalc.getEMConc() * exposedVolume) / 1000) + (((930 * solventFraction) * exposedVolume) / 1000);  //in Kg 
       dose += (energyDeposited/exposedMass) / 1E06; //dose in MGy
+      
+      //reduce for next iteration
+      if (i < numSlices - 1) {
+    //       avgElectronEnergy -= kevPerElectron;  //either reduce energy or..
+        
+        double fractionElectrons = kevPerElectron/avgElectronEnergy; //reduce number of electrons
+        electronNumber = electronNumber - (electronNumber * fractionElectrons);
+
+        // System.out.println(String.format("\nThe avgEnergy is: %.8e", avgElectronEnergy);
+      // System.out.println(String.format("\nThe electronNumber is: %.8e", electronNumber);
+      }
     }
     return dose;
   }
