@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * @author magd3052
@@ -104,7 +105,11 @@ public class CrystalPolyhedron extends Crystal {
   /**
    * Number of divisions to split the photoelectron direction vectors.
    */
-  private static final int   PE_ANGLE_RESOLUTION = 6;
+  private static final int   PE_ANGLE_RESOLUTION = 1;
+  private static final int   PE_ANGLE_RES_LIMIT = 10;
+  
+  private static final int   FL_ANGLE_RESOLUTION = 1;
+  private static final int   FL_ANGLE_RES_LIMIT = 10;
   
   /**
    * 3d array for voxels where photoelectrons can reach
@@ -671,7 +676,7 @@ public class CrystalPolyhedron extends Crystal {
     } 
     }
    propnDoseDepositedAtDist = new double[peDistBins];
-   relativeVoxXYZ = new double[peDistBins][PE_ANGLE_RESOLUTION * PE_ANGLE_RESOLUTION][3];
+   relativeVoxXYZ = new double[peDistBins][PE_ANGLE_RES_LIMIT * PE_ANGLE_RES_LIMIT][3];
    */
   }
 
@@ -1063,7 +1068,7 @@ public class CrystalPolyhedron extends Crystal {
     } 
     
    propnDoseDepositedAtDist = new double[peDistBins];
-   relativeVoxXYZ = new double[peDistBins][PE_ANGLE_RESOLUTION * PE_ANGLE_RESOLUTION][3];
+   relativeVoxXYZ = new double[peDistBins][PE_ANGLE_RES_LIMIT * PE_ANGLE_RES_LIMIT][3];
   }
   
   /*
@@ -1138,7 +1143,7 @@ public class CrystalPolyhedron extends Crystal {
    * finds voxels that lie along the PE tracks
    */
   private void findVoxelsReachedByPE() {
-    double step = PE_ANGLE_LIMIT / PE_ANGLE_RESOLUTION;  
+    double step = PE_ANGLE_LIMIT / PE_ANGLE_RES_LIMIT;  
     
     int counter = -1;
     for (double theta = 0; theta < PE_ANGLE_LIMIT; theta += step) {
@@ -1167,9 +1172,9 @@ public class CrystalPolyhedron extends Crystal {
    * @param feFactors
    */
   private void findVoxelsReachedByFL(final double feFactors[][]) {
-double step = PE_ANGLE_LIMIT / PE_ANGLE_RESOLUTION;  
-//flRelativeVoxXYZ = new double[feFactors.length][4][flDistBins][PE_ANGLE_RESOLUTION * PE_ANGLE_RESOLUTION][3];
-flRelativeVoxXYZ = new double[feFactors.length][flDistBins][PE_ANGLE_RESOLUTION * PE_ANGLE_RESOLUTION][3];
+double step = PE_ANGLE_LIMIT / FL_ANGLE_RES_LIMIT;  
+//flRelativeVoxXYZ = new double[feFactors.length][4][flDistBins][FL_ANGLE_RESOLUTION * FL_ANGLE_RESOLUTION][3];
+flRelativeVoxXYZ = new double[feFactors.length][flDistBins][FL_ANGLE_RES_LIMIT * FL_ANGLE_RES_LIMIT][3];
     int counter = -1;
     for (double theta = 0; theta < PE_ANGLE_LIMIT; theta += step) {
       for (double phi = 0; phi < PE_ANGLE_LIMIT; phi += step) {
@@ -1266,12 +1271,19 @@ flRelativeVoxXYZ = new double[feFactors.length][flDistBins][PE_ANGLE_RESOLUTION 
       // if voxel is within the specified min distance to surface, take a grid 
       // of r, theta and phi and calculate for every r within 0.5 um and 
       // 5 um, what proportion exit the crystal.
-               
-      for (int m = 0; m < peDistBins; m++) {   
-        for (int q = 0; q < PE_ANGLE_RESOLUTION*PE_ANGLE_RESOLUTION; q++) { 
-          double x = relativeVoxXYZ[m][q][0];
-          double y = relativeVoxXYZ[m][q][1];
-          double z = relativeVoxXYZ[m][q][2];
+            
+   
+      
+      for (int q = 0; q < PE_ANGLE_RESOLUTION*PE_ANGLE_RESOLUTION; q++) { //for every tracks i'm choosing
+        int randomTrack = ThreadLocalRandom.current().nextInt(0, PE_ANGLE_RES_LIMIT*PE_ANGLE_RES_LIMIT); //choose one at random
+        
+        //TO TEST
+      //  randomTrack = q;
+        
+        for (int m = 0; m < peDistBins; m++) {   
+          double x = relativeVoxXYZ[m][randomTrack][0];
+          double y = relativeVoxXYZ[m][randomTrack][1];
+          double z = relativeVoxXYZ[m][randomTrack][2];
 
           // get dose transferred to these located voxels 
           // at the distance r away (due to PE movement)
@@ -1296,14 +1308,17 @@ flRelativeVoxXYZ = new double[feFactors.length][flDistBins][PE_ANGLE_RESOLUTION 
   } 
   
   @Override
-  public double addDoseAfterFL(final int i, final int j, final int k, //!!!!!!!!!Needs lots of changing!!
+  public double addDoseAfterFL(final int i, final int j, final int k, 
       final double doseIncreaseFL) {
    double doseLostFromCrystalFL = 0;
+   //choose a random track
+   int randomTrack = ThreadLocalRandom.current().nextInt(0, FL_ANGLE_RES_LIMIT*FL_ANGLE_RES_LIMIT);
+   
    //for every energy distribution
     for (int n = 0; n < fluorescenceProportionEvent.length; n++) { 
    //   for (int l = 0; l < 4; l++) { // 0 = K, 1 = L1, 2 = L2, 3 = L3
     for (int m = 0; m < flDistBins; m++) {   
-      for (int q = 0; q < PE_ANGLE_RESOLUTION*PE_ANGLE_RESOLUTION; q++) { 
+      for (int q = 0; q < FL_ANGLE_RESOLUTION*FL_ANGLE_RESOLUTION; q++) { //One loop for now
 
         double flPartialDose = 0;
         // get dose transferred to these located voxels 
@@ -1312,9 +1327,9 @@ flRelativeVoxXYZ = new double[feFactors.length][flDistBins][PE_ANGLE_RESOLUTION 
      //     if(fluorescenceProportionEvent[n][l] != 0) {
             if(fluorescenceProportionEvent[n] != 0) {
    //     flPartialDose = doseIncreaseFL  * fluorescenceProportionEvent[n][l] * flDistanceDistribution[n][l][m] 
-   //         / Math.pow(PE_ANGLE_RESOLUTION,2);
+   //         / Math.pow(FL_ANGLE_RESOLUTION,2);
           flPartialDose = doseIncreaseFL  * fluorescenceProportionEvent[n] * flDistanceDistribution[n][m] 
-              / Math.pow(PE_ANGLE_RESOLUTION,2);
+              / Math.pow(FL_ANGLE_RESOLUTION,2);
               
         //TO TEST
          fldose += flPartialDose;
@@ -1324,9 +1339,10 @@ flRelativeVoxXYZ = new double[feFactors.length][flDistBins][PE_ANGLE_RESOLUTION 
         double z = flRelativeVoxXYZ[n][l][m][q][2];
         */
          
-         double x = flRelativeVoxXYZ[n][m][q][0];
-         double y = flRelativeVoxXYZ[n][m][q][1];
-         double z = flRelativeVoxXYZ[n][m][q][2];
+         //change q for a random number between 0 and 35. 
+         double x = flRelativeVoxXYZ[n][m][randomTrack][0];
+         double y = flRelativeVoxXYZ[n][m][randomTrack][1];  
+         double z = flRelativeVoxXYZ[n][m][randomTrack][2];
          
         // add counts to total & total within crystal in order to
         // calculate the proportion for a given r.     
