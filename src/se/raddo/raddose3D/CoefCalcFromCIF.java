@@ -47,7 +47,7 @@ public class CoefCalcFromCIF extends CoefCalcCompute{
           counter += 1;
         }
         
-        if (counter > 1) {
+        if (counter > 3) {
           break;
         }
       }
