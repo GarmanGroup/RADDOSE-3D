@@ -132,7 +132,7 @@ public class BeamGaussian implements Beam {
    * @return 2d Gaussian function value.
    */
   private double gaussianIntensity(final double x, final double y) {
-    return gX.value(x) * gY.value(y);
+    return gX.value(x) * gY.value(y); 
   }
 
   /**
@@ -174,6 +174,7 @@ public class BeamGaussian implements Beam {
     }
     else {
       cdf = ((Px - (1-Px))/2) * ((Py - (1-Py))/2) * Math.PI;
+   
     }
     return cdf;
   }
@@ -219,7 +220,8 @@ public class BeamGaussian implements Beam {
       }
     }
     else {
-      if (Math.pow((Math.pow(coordX - offAxisUM, 2) + Math.pow(coordY, 2)), 0.5) > collXum / 2) {
+      if (((Math.pow(coordX - offAxisUM, 2)/Math.pow(collXum/2, 2)) + 
+          (Math.pow(coordY, 2)/Math.pow(collYum/2, 2))) > 1) {
         return 0;
       }
     }

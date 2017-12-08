@@ -82,13 +82,15 @@ public class BeamTophat implements Beam {
       }
     }
     else {
-      if (Math.pow((Math.pow(coordX - offAxisUM, 2) + Math.pow(coordY, 2)), 0.5) <= beamXum / 2) {
+      if (((Math.pow(coordX - offAxisUM, 2)/Math.pow(beamXum/2, 2)) + 
+          (Math.pow(coordY, 2)/Math.pow(beamYum/2, 2))) <= 1) {  //check if inside the ellipse
         return KEVTOJOULES * attenuatedPhotonsPerSec * photonEnergy
             / (Math.PI * (beamXum/2) * (beamYum/2));
       }
       else {
       return 0d;
       }
+     
     }
   }
 
