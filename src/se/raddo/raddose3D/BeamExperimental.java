@@ -18,6 +18,9 @@ public class BeamExperimental implements Beam {
   private double[][] beamArray;
   double[][] beamArrayWithBorders;
   private final Double[][] dataStructure;
+  
+  public boolean isCircular;
+  
 
   /**
    * This takes the arguments, and generates the beamArray double[][] which
@@ -50,6 +53,7 @@ public class BeamExperimental implements Beam {
     this.pixYSize = pixelSizeY;
     this.totalFlux = totalFlux;
     this.beamEnergy = beamEnergy;
+    
   }
 
   /**
@@ -95,36 +99,52 @@ public class BeamExperimental implements Beam {
   public double beamIntensity(final double coordX, final double coordY,
       final double offAxisUM) {
     beamArray = beamArrayWithBorders;
+   if (isCircular == false) {
     if (Math.abs(coordX - offAxisUM) <= beamXSize / 2 - pixXSize
         && Math.abs(coordY) <= beamYSize / 2 - pixYSize) {
-      /* First find the four nearest voxels */
-      double realX = (coordX - offAxisUM + beamXSize / 2);
-      double realY = (coordY + beamYSize / 2);
-      int voxelHorizontal = (int) Math.floor(realX / pixXSize - 0.5);
-      int voxelVertical = (int) Math.floor(realY / pixYSize - 0.5);
-      if (voxelHorizontal < beamArray[0].length     //null pointer exception here
-          && voxelVertical < beamArray.length) {
-        float fracX = (float) (realX / pixXSize - (voxelHorizontal + 0.5));
-        float fracY = (float) (realY / pixYSize - (voxelVertical + 0.5));
-
-        return bilinearInterpolate(beamArray[voxelVertical][voxelHorizontal],
-            beamArray[voxelVertical][voxelHorizontal + 1],
-            beamArray[voxelVertical + 1][voxelHorizontal],
-            beamArray[voxelVertical + 1][voxelHorizontal + 1], fracX,
-            fracY);
-
-      } else if (voxelHorizontal == beamArray[0].length
-          || voxelVertical == beamArray.length) {
-        return beamArray[voxelVertical][voxelHorizontal];
-
-      } else {
-        throw new IllegalArgumentException(
-            "Image voxel request out of experimental profile");
-      }
+      return bilinearInterpolation(coordX, coordY, offAxisUM);
     } else {
       return 0d;
     }
+   }
+   else { // circular collimation
+     if (((Math.pow(coordX - offAxisUM, 2)/Math.pow(beamXSize / 2 - pixXSize, 2)) + 
+         (Math.pow(coordY, 2)/Math.pow(beamYSize / 2 - pixYSize, 2))) <= 1) {  // if in the ellipse
+       return bilinearInterpolation(coordX, coordY, offAxisUM);
+     }
+     else {
+       return 0d;
+     }
+   }
   }
+  
+  private double bilinearInterpolation(final double coordX, final double coordY,
+      final double offAxisUM) {
+    double realX = (coordX - offAxisUM + beamXSize / 2);
+    double realY = (coordY + beamYSize / 2);
+    int voxelHorizontal = (int) Math.floor(realX / pixXSize - 0.5);
+    int voxelVertical = (int) Math.floor(realY / pixYSize - 0.5);
+    if (voxelHorizontal < beamArray[0].length     //null pointer exception here
+        && voxelVertical < beamArray.length) {
+      float fracX = (float) (realX / pixXSize - (voxelHorizontal + 0.5));
+      float fracY = (float) (realY / pixYSize - (voxelVertical + 0.5));
+
+      return bilinearInterpolate(beamArray[voxelVertical][voxelHorizontal],
+          beamArray[voxelVertical][voxelHorizontal + 1],
+          beamArray[voxelVertical + 1][voxelHorizontal],
+          beamArray[voxelVertical + 1][voxelHorizontal + 1], fracX,
+          fracY);
+
+    } else if (voxelHorizontal == beamArray[0].length
+        || voxelVertical == beamArray.length) {
+      return beamArray[voxelVertical][voxelHorizontal];
+
+    } else {
+      throw new IllegalArgumentException(
+          "Image voxel request out of experimental profile");
+    }
+  }
+  
 
   /**
    * Bilinear interpolation routine.

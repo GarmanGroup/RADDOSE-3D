@@ -161,7 +161,7 @@ public class BeamGaussian implements Beam {
     NormalDistribution gy = new NormalDistribution(0, sy);
 // this needs to change for circular
     double cdf;
-    double test;
+//    double test;
     double Px = gx.cumulativeProbability(x2);
     double Py = gy.cumulativeProbability(y2);
     if (isCircular == false) {
@@ -170,11 +170,33 @@ public class BeamGaussian implements Beam {
       cdf -= gx.cumulativeProbability(x2) * gy.cumulativeProbability(y1);
       cdf += gx.cumulativeProbability(x1) * gy.cumulativeProbability(y1);
 
-      test = (Px - (1-Px)) * (Py - (1 - Py));   // This makes so much more sense to me than what is above!!!
+//      test = (Px - (1-Px)) * (Py - (1 - Py));   // This makes so much more sense to me than what is above!!!
     }
     else {
-      cdf = ((Px - (1-Px))/2) * ((Py - (1-Py))/2) * Math.PI;
-   
+      //try and integrate it properly
+      double stepTheta = (2* Math.PI) / 100;
+      double A = 1 / (2* Math.PI * sx * sy);
+      double lastHeldHeight = 0, lastHeldTheta = 0;
+      double overallSum = 0;
+      for (double theta = 0; theta <= 2*Math.PI; theta += stepTheta) {
+        double r = (x2 * y2) / (Math.pow(Math.pow(y2 * Math.cos(theta), 2) + Math.pow(x2 * Math.sin(theta), 2), 0.5));
+        double cosSquared = Math.pow(Math.cos(theta), 2);
+        double sinSquared = Math.pow(Math.sin(theta), 2);
+        double cosSPlusSinSTerm = (cosSquared / (2*Math.pow(sx, 2))) + (sinSquared / (2*Math.pow(sy, 2)));
+        double oneOver = A / (2*cosSPlusSinSTerm);
+        double otherTerm = 1 - Math.exp(-Math.pow(r, 2) * cosSPlusSinSTerm);
+        double overallTerm = oneOver * otherTerm; 
+        
+        if (theta != 0) {
+          double area = (theta - lastHeldTheta) * ((lastHeldHeight + overallTerm) / 2);
+          overallSum += area;
+        }
+        lastHeldTheta = theta;
+        lastHeldHeight = overallTerm;
+
+      }
+      cdf = overallSum;
+      
     }
     return cdf;
   }

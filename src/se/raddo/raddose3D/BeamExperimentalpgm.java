@@ -40,6 +40,13 @@ public class BeamExperimentalpgm extends BeamExperimental {
         (Double) properties.get(Beam.BEAM_PIXSIZE_X),
         (Double) properties.get(Beam.BEAM_PIXSIZE_Y));
     file = (String) properties.get(Beam.BEAM_EXTFILE);
+    
+    if (properties.get(Beam.BEAM_CIRCULAR) == "TRUE") {
+      isCircular = true;
+    }
+    else {
+      isCircular = false;
+    }
   }
 
   @Override
