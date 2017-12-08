@@ -22,9 +22,7 @@ public class ElementTest {
     Assertion.equals(s.getAtomicNumber(), 16, "atomic number");
     Assertion.equals(s.getAtomicWeight(), 3.20660e+01, "atomic weight");
     Assertion.equals(s.getAtomicWeightInGrams(), 5.3246841e-23,
-        "atomic weight (g)");
-    Assertion.equals(s.getElementName(), "S", "element name");
-
+        "atomic weight (g)");   
     sulphurTests(s);
   }
 

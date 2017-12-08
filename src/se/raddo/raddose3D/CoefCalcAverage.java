@@ -37,6 +37,11 @@ public class CoefCalcAverage extends CoefCalc {
    * proteins) and 50% solvent (~1g/ml).
    */
   private static final double DENSITY                 = 1.2;
+  
+  /**
+   * Number of X-ray Fluorescent escape factors
+   */
+  private static final int NUM_FLUOR_ESCAPE_FACTORS  = 17;
 
   @Override
   public double getAbsorptionCoefficient() {
@@ -76,8 +81,22 @@ public class CoefCalcAverage extends CoefCalc {
   }
 
   @Override
+  public double[][] getFluorescentEscapeFactors(Beam beam) {
+    System.out.println("********** WARNING **********");
+    System.out.println("No X-ray Fluorescent escape correction is implemented " +
+    "for the 'Average/Dummy' calculated crystal composition.");
+    System.out.println("No X-ray Fluorescent escape correction is being applied.");
+    double[][] fluorEscapeFactors = new double[1][NUM_FLUOR_ESCAPE_FACTORS];
+    for (int i = 0; i < NUM_FLUOR_ESCAPE_FACTORS; i++){
+      fluorEscapeFactors[0][i] = 0.0;
+    }
+    return fluorEscapeFactors;
+  }
+
+  @Override
   public double getInelasticCoefficient() {
-    // Added to prevent error
+/*    Does nothing, needed to prevent error in this class when Compton was added, 
+       Compton is already included in ABSORPTION_COEFFICIENT in this class;*/
     return 0;
   }
 }

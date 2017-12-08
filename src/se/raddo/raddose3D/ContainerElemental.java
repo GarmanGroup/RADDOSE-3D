@@ -95,7 +95,7 @@ public class ContainerElemental extends ContainerSemiTransparent{
    *         coefficients.
    */
   private String getNISTURL(int atomicNumber) {
-    return String.format("http://physics.nist.gov/PhysRefData/XrayMassCoef"
+    return String.format("https://physics.nist.gov/PhysRefData/XrayMassCoef"
         + "/ElemTab/z%s.html", String.format("%02d", atomicNumber));
   }
 

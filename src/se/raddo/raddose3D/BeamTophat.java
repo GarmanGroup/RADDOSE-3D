@@ -75,7 +75,8 @@ public class BeamTophat implements Beam {
     if (isCircular == false) {
       if (Math.abs(coordX - offAxisUM) <= beamXum / 2
         && Math.abs(coordY) <= beamYum / 2) {
-        return KEVTOJOULES * attenuatedPhotonsPerSec * photonEnergy
+        
+      return KEVTOJOULES * attenuatedPhotonsPerSec * photonEnergy
           / (beamXum * beamYum);
       } else {
         return 0d;

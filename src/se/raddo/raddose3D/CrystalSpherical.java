@@ -237,4 +237,35 @@ public class CrystalSpherical extends Crystal {
     System.arraycopy(crystSizeUM, 0, cs, 0, crystSizeUM.length);
     return cs;
   }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see se.raddo.raddose3D.Crystal#getEscapeFactor(int, int, int)
+   * 
+   * This class does has no photoelectron escape implementation
+   * so this method has only been added to prevent error warnings. 
+   */
+  @Override
+  public double getEscapeFactor(final int i, final int j, final int k) {
+    return 1.0;
+  }
+
+  @Override
+  public double addDoseAfterPE(int i, int j, int k, double doseIncreasePEL) {
+    return 0;
+  }
+
+  @Override
+  public void setPEparamsForCurrentBeam(double beamEnergy) {    
+  }
+  
+  @Override
+  public void setFLparamsForCurrentBeam(final double[][] feFactors) {
+  }
+
+  @Override
+  public double addDoseAfterFL(int i, int j, int k, double doseIncreaseFL) {
+    return 0;
+  }
 }

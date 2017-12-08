@@ -73,6 +73,8 @@ public class CoefCalcSmallMolecules extends CoefCalcCompute {
     calculateAtomOccurrences(numMonomers,
         sf, smallMoleAtomNames, smallMoleAtomNums,
         heavySolutionConcNames, heavySolutionConcNums);
+    
+    super.calculateDensity();  //Calculate density if where presentElements is filled in coefCalcCompute so this must be called
   }
 
   /**
@@ -115,6 +117,7 @@ public class CoefCalcSmallMolecules extends CoefCalcCompute {
     }
     
     this.setNumMonomers(monomers);
+    
 
     boolean fillRestWithWater = false;
     

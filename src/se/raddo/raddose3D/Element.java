@@ -29,6 +29,15 @@ public class Element {
    * Stored absorption edge coefficients.
    */
   private final Map<AbsorptionEdge, Double[]>               coefficients;
+  
+  /**
+   * Probability of K, L1, L2, L3 shell ionisation
+   */
+  private double         probKShellIonisation, probL1ShellIonisation, 
+                               probL2ShellIonisation, probL3ShellIonisation;
+  
+  private double   probM1ShellIonisation, probM2ShellIonisation, probM3ShellIonisation, 
+                   probM4ShellIonisation, probM5ShellIonisation;
 
   /**
    * List of absorption edges.
@@ -79,9 +88,9 @@ public class Element {
      */
     COHERENT,
     /**
-     * Attenuation cross-section.
+     * Incoherent (inelastic) Compton scattering.
      */
-    COMPTON_ATTENUATION,      //************This added for COMPTON**************
+    COMPTON,
     /**
      * Cross-section for coherent (elastic) scattering.
      */
@@ -105,6 +114,49 @@ public class Element {
     elementData = new HashMap<ElementDatabase.DatabaseFields, Double>(
         elementInformation);
     coefficients = edgeCoefficients(elementInformation);
+  }
+  
+  public void EdgeRatio (){
+    probKShellIonisation = 1 - 1 / getKEdgeRatio();
+    probL1ShellIonisation = 1 - 1 / getL1EdgeRatio();
+    probL2ShellIonisation = 1 - 1 / getL2EdgeRatio();
+    probL3ShellIonisation = 1 - 1 / getL3EdgeRatio();
+    
+    probM1ShellIonisation = 1 - 1 / getM1EdgeRatio();
+    probM2ShellIonisation = 1 - 1 / getM2EdgeRatio();
+    probM3ShellIonisation = 1 - 1 / getM3EdgeRatio();
+    probM4ShellIonisation = 1 - 1 / getM4EdgeRatio();
+    probM5ShellIonisation = 1 - 1 / getM5EdgeRatio();
+    
+    if (probKShellIonisation == Double.NEGATIVE_INFINITY){   //If statements added as some ratios were equalling -Infinity becuase some Edge ratios were 0
+      probKShellIonisation = 0;
+    }
+    if (probL1ShellIonisation == Double.NEGATIVE_INFINITY){
+      probL1ShellIonisation = 0;
+    }
+    if (probL2ShellIonisation == Double.NEGATIVE_INFINITY){
+      probL2ShellIonisation = 0;
+    }
+    if (probL3ShellIonisation == Double.NEGATIVE_INFINITY){
+      probL3ShellIonisation = 0;
+    }
+    
+    if (probM1ShellIonisation == Double.NEGATIVE_INFINITY){
+      probM1ShellIonisation = 0;
+    }
+    if (probM2ShellIonisation == Double.NEGATIVE_INFINITY){
+      probM2ShellIonisation = 0;
+    }
+    if (probM3ShellIonisation == Double.NEGATIVE_INFINITY){
+      probM3ShellIonisation = 0;
+    }
+    if (probM4ShellIonisation == Double.NEGATIVE_INFINITY){
+      probM4ShellIonisation = 0;
+    }
+    if (probM5ShellIonisation == Double.NEGATIVE_INFINITY){
+      probM5ShellIonisation = 0;
+    }
+    
   }
 
   /**
@@ -241,7 +293,11 @@ public class Element {
       elastic = baxForEdge(energy, AbsorptionEdge.C);
     }
 
-    double comptonAttenuation = 0;   //   Calculates Compton attenuation, ie all energy that can interact with the crystal by Compton inelastic scattering
+    /*
+     *   Calculates Compton attenuation, ie all energy that can interact 
+     *   with the crystal by Compton inelastic scattering
+     */
+    double comptonAttenuation = 0;   
     if (elementData.get(ElementDatabase.DatabaseFields.INCOHERENT_COEFF_0) != 0)
     {
       comptonAttenuation = baxForEdge(energy, AbsorptionEdge.I);
@@ -251,9 +307,10 @@ public class Element {
 
     Map<CrossSection, Double> results = new HashMap<CrossSection, Double>();
     results.put(CrossSection.COHERENT, elastic);
-    results.put(CrossSection.PHOTOELECTRIC, photoelectric); // mu, abs coeff.    
-    results.put(CrossSection.COMPTON_ATTENUATION,comptonAttenuation); // Added for COMPTON
+    results.put(CrossSection.PHOTOELECTRIC, photoelectric);   
+     results.put(CrossSection.COMPTON,comptonAttenuation);
     results.put(CrossSection.TOTAL, attenuation);
+    
     return results;
   }
 
@@ -356,4 +413,250 @@ public class Element {
     return getAtomicWeight() * ATOMIC_MASS_UNIT;
   }
   
+  /**
+   * Return the K edge energy in keV of the element
+   * 
+   * @return
+   *         the K edge energy in keV
+   */
+  public Double getKEdge() {
+    return elementData.get(DatabaseFields.EDGE_K);
+  }
+  
+  /**
+   * Return the L1 edge energy in keV of the element
+   * 
+   * @return
+   *         the L1 edge energy in keV
+   */
+  public Double getL1Edge() {
+    return elementData.get(DatabaseFields.EDGE_L);
+  }
+  
+  /**
+   * Return the L2 edge energy in keV of the element
+   * 
+   * @return
+   *         the L2 edge energy in keV
+   */
+  public Double getL2Edge() {
+    return elementData.get(DatabaseFields.L2);
+  }
+  
+  /**
+   * Return the L3 edge energy in keV of the element
+   * 
+   * @return
+   *         the L3 edge energy in keV
+   */
+  public Double getL3Edge() {
+    return elementData.get(DatabaseFields.L3);
+  }
+  
+  /**
+   * Return the M1 edge energy in keV of the element
+   * 
+   * @return
+   *         the M1 edge energy in keV
+   */
+  public Double getM1Edge() {
+    if (elementData.get(DatabaseFields.EDGE_M) != null) {
+    return elementData.get(DatabaseFields.EDGE_M);
+    }
+    else {
+      return 0.0;
+    }
+  }
+  public Double getM2Edge() {
+    return elementData.get(DatabaseFields.EDGE_M2);
+  }
+  public Double getM3Edge() {
+    return elementData.get(DatabaseFields.EDGE_M3);
+  }
+  public Double getM4Edge() {
+    return elementData.get(DatabaseFields.EDGE_M4);
+  }
+  public Double getM5Edge() {
+    return elementData.get(DatabaseFields.EDGE_M5);
+  }
+  
+  /**
+   * Return the K edge ratio which is defined as the ratio
+   * of the K shell to L1 shell photoelectric cross sections.
+   * i.e. muK / muL1
+   * 
+   * @return
+   *         the K edge ratio
+   */
+  private Double getKEdgeRatio() {
+    return elementData.get(DatabaseFields.K_EDGE_RATIO);
+  }
+  
+  /**
+   * Return the L1 edge ratio which is defined as the ratio
+   * of the L1 shell to M shell photoelectric cross sections.
+   * i.e. muL1 / muM
+   * 
+   * @return
+   *         the L1 edge ratio
+   */
+  private Double getL1EdgeRatio() {
+    return elementData.get(DatabaseFields.L1_EDGE_RATIO);
+  }
+  
+  /**
+   * Return the L2 edge ratio which is defined as the ratio
+   * of the L2 shell to M shell photoelectric cross sections.
+   * i.e. muL2 / muM
+   * 
+   * @return
+   *         the L2 edge ratio
+   */
+  private Double getL2EdgeRatio() {
+    return elementData.get(DatabaseFields.L2_EDGE_RATIO);
+  }
+  
+  /**
+   * Return the L3 edge ratio which is defined as the ratio
+   * of the L3 shell to M shell photoelectric cross sections.
+   * i.e. muL3 / muM
+   * 
+   * @return
+   *         the L3 edge ratio
+   */
+  private Double getL3EdgeRatio() {
+    return elementData.get(DatabaseFields.L3_EDGE_RATIO);
+  }
+  
+  private Double getM1EdgeRatio() {
+    return elementData.get(DatabaseFields.M1_EDGE_RATIO);
+  }
+  private Double getM2EdgeRatio() {
+    return elementData.get(DatabaseFields.M2_EDGE_RATIO);
+  }
+  private Double getM3EdgeRatio() {
+    return elementData.get(DatabaseFields.M3_EDGE_RATIO);
+  }
+  private Double getM4EdgeRatio() {
+    return elementData.get(DatabaseFields.M4_EDGE_RATIO);
+  }
+  private Double getM5EdgeRatio() {
+    return elementData.get(DatabaseFields.M5_EDGE_RATIO);
+  }
+  
+  
+  /**
+   * Return the K shell fluorescence yield of the atom
+   * 
+   * @return
+   *         the K shell fluorescence yield
+   */
+  public Double getKShellFluorescenceYield() {
+    return elementData.get(DatabaseFields.FLUORESCENCE_YIELD_K);
+  }
+  
+  /**
+   * Return the L1 shell fluorescence yield of the atom
+   * 
+   * @return
+   *         the L1 shell fluorescence yield
+   */
+  public Double getL1ShellFluorescenceYield() {
+    return elementData.get(DatabaseFields.FLUORESCENCE_YIELD_L1);
+  }
+  
+  /**
+   * Return the L2 shell fluorescence yield of the atom
+   * 
+   * @return
+   *         the L2 shell fluorescence yield
+   */
+  public Double getL2ShellFluorescenceYield() {
+    return elementData.get(DatabaseFields.FLUORESCENCE_YIELD_L2);
+  }
+  
+  /**
+   * Return the L3 shell fluorescence yield of the atom
+   * 
+   * @return
+   *         the L3 shell fluorescence yield
+   */
+  public Double getL3ShellFluorescenceYield() {
+    return elementData.get(DatabaseFields.FLUORESCENCE_YIELD_L3);
+  }
+  
+  /**
+   * Return the probability of K shell ionisation
+   * 
+   * @return
+   *        the probability of K shell ionisation.
+   */
+  public Double getKShellIonisationProb() {
+    return this.probKShellIonisation; //worked out at top of this class around line 115
+  }
+  
+  /**
+   * Return the probability of L1 shell ionisation
+   * 
+   * @return
+   *        the probability of L1 shell ionisation.
+   */
+  public Double getL1ShellIonisationProb() {
+    return this.probL1ShellIonisation;
+  }
+  
+  /**
+   * Return the probability of L2 shell ionisation
+   * 
+   * @return
+   *        the probability of L2 shell ionisation.
+   */
+  public Double getL2ShellIonisationProb() {
+    return this.probL2ShellIonisation;
+  }
+  
+  /**
+   * Return the probability of L3 shell ionisation
+   * 
+   * @return
+   *        the probability of L3 shell ionisation.
+   */
+  public Double getL3ShellIonisationProb() {
+    return this.probL3ShellIonisation;
+  }
+  
+  public Double getM1ShellIonisationProb() {
+    return this.probM1ShellIonisation;
+  }
+  public Double getM2ShellIonisationProb() {
+    return this.probM2ShellIonisation;
+  }
+  public Double getM3ShellIonisationProb() {
+    return this.probM3ShellIonisation;
+  }
+  public Double getM4ShellIonisationProb() {
+    return this.probM4ShellIonisation;
+  }
+  public Double getM5ShellIonisationProb() {
+    return this.probM5ShellIonisation;
+  }
+  
+  
+  /**
+   * 
+   * @return
+   *        the weighted average energy of fluorescence produced from K
+   */
+  public Double getKFluorescenceAverage() {
+    return elementData.get(DatabaseFields.K_FL_AVERAGE);
+  }
+  
+  /**
+   * 
+   * @return
+   *        the weighted average energy of fluorescence produced from LI, LII and LIII
+   */
+  public Double getLFluorescenceAverage() {
+    return elementData.get(DatabaseFields.L_FL_AVERAGE);
+  }
 }

@@ -65,8 +65,27 @@ public class ElementDatabase {
     L2(36),
 
     /** L3. */
-    L3(37);
+    L3(37),
+    
+    /** Fluorescent yields */
+    FLUORESCENCE_YIELD_K(39), FLUORESCENCE_YIELD_L1(40),
+    FLUORESCENCE_YIELD_L2(41), FLUORESCENCE_YIELD_L3(42),
+    
+    /** Edge Ratios */
+    K_EDGE_RATIO(43), L1_EDGE_RATIO(44), L2_EDGE_RATIO(45),
+    L3_EDGE_RATIO(46),    
+    
+    /** K and L shell weighted fluoresence energy */
+    K_FL_AVERAGE(47), L_FL_AVERAGE(48),
+    
+    /** M edge energies */
+    EDGE_M2(49), EDGE_M3(50), EDGE_M4(51), EDGE_M5(52),
+    
+    /** M edge ratios */
+    M1_EDGE_RATIO(53), M2_EDGE_RATIO(54), M3_EDGE_RATIO(55), M4_EDGE_RATIO(56), M5_EDGE_RATIO(57);
+    
 
+    
     /**
      * The position of each element in the database line. Index starting at 0.
      */
