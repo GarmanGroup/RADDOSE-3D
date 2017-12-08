@@ -12,8 +12,9 @@ public class CoefCalcCompute extends CoefCalc {
   /**
    * Identified coefficients and density from last program run. Final variables.
    */
-  private double                     absCoeffcomp, absCoeffphoto, attCoeff, elasCoeff, density, cellVolume;
+  private double                     absCoeffcomp, absCoeffphoto, attCoeff, elasCoeff, density;
   
+  public double cellVolume;
   /**
    * Set of the unique elements present in the crystal (including solvent
    * and macromolecular)

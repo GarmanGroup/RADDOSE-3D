@@ -64,6 +64,7 @@ scope {
 	List<String>	containerElementNames;
 	List<Double>	containerElementNums;		
 	String			pdb;
+	String                  cif;
 	String			seqFile;
 	Double			proteinConc;
 	Double			cellA;
@@ -154,6 +155,11 @@ if ($crystal::crystalCoefCalc == 8)
   													$crystal::solFrac);
 }
 
+if ($crystal::crystalCoefCalc == 9)
+{
+   $crystal::crystalCoefCalcClass = new CoefCalcFromCIF($crystal::cif);												  													
+}
+
 
 
 $crystal::crystalProperties.put(Crystal.CRYSTAL_COEFCALC, $crystal::crystalCoefCalcClass);
@@ -241,6 +247,7 @@ crystalLine
 	| aa=sequenceFile 		{ $crystal::seqFile 		= $aa.value; }
 	| ab=smallMoleAtoms             {$crystal::smallMoleAtomNames   = $ab.names;
 							$crystal::smallMoleAtomNums		= $ab.num;	}
+	| ac=cif					{ $crystal::cif						= $ac.cif; }
 
 	| bb=calculateFLEscape		{ $crystal::crystalProperties.put(Crystal.CRYSTAL_FLUORESCENT_ESCAPE, $bb.value); }
 	| cc=flResolution 		{ $crystal::crystalProperties.put(Crystal.CRYSTAL_FLUORESCENT_RESOLUTION, $cc.value);}
@@ -283,6 +290,7 @@ crystalCoefcalcKeyword returns [int value]
 	| SEQUENCE	{ $value = 6;}
 	| SAXSSEQ	{ $value = 7;}
 	| SMALLMOLE     { $value = 8;}
+	| CIF	  	{ $value = 9;}
 	;
 DUMMY : ('D'|'d')('U'|'u')('M'|'m')('M'|'m')('Y'|'y') ;
 DEFAULT	: ('D'|'d')('E'|'e')('F'|'f')('A'|'a')('U'|'u')('L'|'l')('T'|'t');
@@ -294,6 +302,7 @@ SAXS : ('S'|'s')('A'|'a')('X'|'x')('S'|'s');
 SEQUENCE : ('S'|'s')('E'|'e')('Q'|'q')('U'|'u')('E'|'e')('N'|'n')('C'|'c')('E'|'e');
 SAXSSEQ : ('S'|'s')('A'|'a')('X'|'x')('S'|'s')('S'|'s')('E'|'e')('Q'|'q');
 SMALLMOLE : ('S'|'s')('M'|'m')('A'|'a')('L'|'l')('L'|'l')('M'|'m')('O'|'o')('L'|'l')('E'|'e');
+CIF : ('E'|'e')('X'|'x')('P'|'p')('S'|'s')('M'|'m');
 
 crystalDim returns [Map<Object, Object> properties]
 @init { 
@@ -389,6 +398,10 @@ SOLVENTFRACTION : ('S'|'s')('O'|'o')('L'|'l')('V'|'v')('E'|'e')('N'|'n')('T'|'t'
 pdb returns [String pdb]
 	: PDBNAME a=STRING {$pdb = $a.text;};
 PDBNAME : ('P'|'p')('D'|'d')('B'|'b') ;
+
+cif returns [String cif]
+	: CIFNAME a=STRING {$cif = $a.text;};
+CIFNAME : ('C'|'c')('I'|'i')('F'|'f') ;
 
 wireframeType returns [String value]
 	: WIREFRAMETYPE a=STRING {$value = $a.text;};
