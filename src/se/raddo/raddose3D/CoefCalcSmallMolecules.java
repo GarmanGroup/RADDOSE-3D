@@ -37,7 +37,7 @@ public class CoefCalcSmallMolecules extends CoefCalcCompute {
   public CoefCalcSmallMolecules(final Double cellA, final Double cellB,
       final Double cellC,
       final Double cellAlpha, final Double cellBeta, final Double cellGamma,
-      final int numMonomers,
+       int numMonomers,
       final List<String> smallMoleAtomNames,
       final List<Double> smallMoleAtomNums,
       final List<String> heavySolutionConcNames,
@@ -66,6 +66,10 @@ public class CoefCalcSmallMolecules extends CoefCalcCompute {
 
     cellVolume(cellA, cellB, cellC, alpha, beta, gamma);
 
+    if (numMonomers == 0) {
+      numMonomers = 1;
+    }
+    
     calculateAtomOccurrences(numMonomers,
         sf, smallMoleAtomNames, smallMoleAtomNums,
         heavySolutionConcNames, heavySolutionConcNums);
