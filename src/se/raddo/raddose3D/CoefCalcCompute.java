@@ -83,7 +83,9 @@ public class CoefCalcCompute extends CoefCalc {
   /**
    * Water concentration in mM.
    */
-  protected static final double      WATER_CONCENTRATION          = 55555;
+  protected static final double      WATER_CONCENTRATION          = 55555;    // Density of 1 g/cm^3
+ //  protected static final double      WATER_CONCENTRATION          = 52222; // LDA = 0.94 g/cm^3
+ //  protected static final double      WATER_CONCENTRATION          = 65000; // HDA = 1.17 g/cm^3 
 
   /**
    * Units per milli-unit.
@@ -525,28 +527,7 @@ public class CoefCalcCompute extends CoefCalc {
     
     return fluorEscapeFactors;
   }
-/*
-  public double calculateAverageKEnergy() {
-   double averageKEnergy = 0;
-   double runningTotalAtoms = 0;
-   double kShellEnergyTot = 0;
-    for (Element e : this.presentElements) {
-      double kShellEnergyPerAtom = e.getKEdge();
-      double atomNum = totalAtoms(e);
-      kShellEnergyTot = atomNum * kShellEnergyPerAtom;
-      runningTotalAtoms += atomNum;
-    }
 
-    averageKEnergy = kShellEnergyTot/runningTotalAtoms;
-    return averageKEnergy;
-  }
-  */
-  
-  
-  
-  
-  
-  
   
   @Override
   public double getAbsorptionCoefficient() {
@@ -690,9 +671,14 @@ public class CoefCalcCompute extends CoefCalc {
     // Protein, RNA, DNA masses are calculated and
     // then weighted to fit the unit cell.
 
+    //change protein density to that calculated by Fischer et al 2004
+    double proteinDensity = 1.35;
+ //   double mW = (AMINO_ACID_AVE_MASS * numAminoAcids)/1000;
+ //   proteinDensity = 1.410 + 0.145 * Math.exp(-mW/13);
+  
     double proteinMass = ATOMIC_MASS_UNIT * AMINO_ACID_AVE_MASS
         * numAminoAcids * numMonomers;
-    proteinMass /= cellVolume * PROTEIN_DENSITY * ANGSTROMS_TO_ML;
+    proteinMass /= cellVolume * proteinDensity * ANGSTROMS_TO_ML;
 
     double rnaMass = ATOMIC_MASS_UNIT * RNA_NUCLEOTIDE_MASS * numRNA
         * numMonomers;

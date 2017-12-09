@@ -186,6 +186,11 @@ public abstract class Crystal {
     }
   }
   
+  /**
+   * Warns the user if the number of pixels is too small
+   * 
+   * @param properties
+   */
   public void isPPMSensible(final Map<Object, Object> properties) {
     double pixelSize = 1 / ((double) properties.get(CRYSTAL_RESOLUTION)); 
     double numberOfPixels = (((double) properties.get(CRYSTAL_DIM_X)) / pixelSize); 
@@ -475,6 +480,11 @@ public abstract class Crystal {
   return fluorescentEnergyToRelease;
   }
 
+  /**
+   * Calculates the average electron binding energy to remove from a photoelectron 
+   * 
+   * @param feFactors
+   */
   public void calculatePEEnergySubtraction(double[][] feFactors) {
     double totK = 0, totL1 = 0, totL2 = 0, totL3 = 0;
     double totM1 = 0, totM2 = 0, totM3 = 0, totM4 = 0, totM5 = 0;
@@ -493,23 +503,7 @@ public abstract class Crystal {
       totM5 += feFactors[i][0] * feFactors[i][25] * feFactors[i][26];
       
     }
-    
-  //  totK = 0; //to test
-  //  totL1 = 0;
-  //  totL2 = 0;
-  //  totL3 = 0;
-    /*
-    System.out.println(totK); // to test
-    System.out.println(totL1); // to test
-    System.out.println(totL2); // to test
-    System.out.println(totL3); // to test
-    
-    System.out.println(totM1); // to test
-    System.out.println(totM2); // to test
-    System.out.println(totM3); // to test
-    System.out.println(totM4); // to test
-    System.out.println(totM5); // to test
-    */
+
     EnergyToSubtractFromPE = totK + totL1 + totL2 + totL3 + totM1 + totM2 + totM3 + totM4 + totM5;
   }
   
@@ -734,12 +728,10 @@ public abstract class Crystal {
                * to the voxel.
                */
 
-
               double voxImageFluence =     // Attenuates the beam for absorption in joules 
                   unattenuatedBeamIntensity * beamAttenuationFactor
                       * Math.exp(depth * beamAttenuationExpFactor);              
 
-              
               double electronweight = 9.10938356E-31;
               double csquared = 3E8*3E8;
               double beamenergy = (beam.getPhotonEnergy() * Beam.KEVTOJOULES);

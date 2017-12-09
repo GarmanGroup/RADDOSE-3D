@@ -28,6 +28,9 @@ public class CrystalPolyhedron extends Crystal {
 
   protected final double        l;
   
+  /**
+   * Number of bins used along the fluorescence escape tracks and photoelectron escape tracks
+   */
   protected  int flRes;
   
   protected  int peRes;
@@ -103,7 +106,10 @@ public class CrystalPolyhedron extends Crystal {
   private static final double   PE_ANGLE_LIMIT = 0.99*2*Math.PI;
   
   /**
-   * Number of divisions to split the photoelectron direction vectors.
+   * The resolution limit is the number of divisions to split the photoelectron direction vectors. 
+   * This limit will be 10*10 so 100 tracks
+   * The angle resolution is the number of tracks to send out the dose along per voxel.
+   * This is 1*1 and is randomly chosen for each voxel
    */
   private static final int   PE_ANGLE_RESOLUTION = 1;
   private static final int   PE_ANGLE_RES_LIMIT = 10;
@@ -641,43 +647,7 @@ public class CrystalPolyhedron extends Crystal {
    if (photoElectronEscape) {
     peRes = (int) mergedProperties.get(Crystal.CRYSTAL_PHOTOELECTRON_RESOLUTION);
    }
-    /*
-    // Adjusting PE max distance based on beam energy
-    int maxPEDistance = 8;
- //   double meanPEDistance = 
-    
-    
-      //Get PE bins
-    if (peRes >= 2) { //if user defined and sensible
-      peDistBins = peRes;
-    }
-    else { //default
-      //set the pixel size in um
-      double pixelSize = 1/crystalPixPerUM;
-      if (pixelSize >= maxPEDistance) {
-        peDistBins = 2;  // 0 and 8
-      }
-      else {
-        //number of bins = 1 + roundup(8/pixelSize).
-        peDistBins = 1 + (int) Math.ceil(maxPEDistance/pixelSize);
-        //So I need to improve it a bit at the lower range
-        if (peDistBins < maxPEDistance){
-          peDistBins = maxPEDistance;
-        }
-        //erring on side of caution
-        peDistBins += 1;
-      }
-     }
- // Get PE distances
-    PE_DISTANCES_TRAVELLED = new double[peDistBins];
-    double binInterval = (double) maxPEDistance / (peDistBins - 1);
-    for (int i = 0; i < peDistBins; i++) {
-      PE_DISTANCES_TRAVELLED[i] = i * binInterval;
-    } 
-    }
-   propnDoseDepositedAtDist = new double[peDistBins];
-   relativeVoxXYZ = new double[peDistBins][PE_ANGLE_RES_LIMIT * PE_ANGLE_RES_LIMIT][3];
-   */
+
   }
 
   /**
@@ -941,7 +911,7 @@ public class CrystalPolyhedron extends Crystal {
    * 
    * @param beamEnergy
    * @return
-   */ //Should beam energy be used??? In Sanishvili 2011 they took off 0.7keV as the average energy of K shell electron binding. Is this better?
+   */ 
   private double[] getGumbelParamsForBeamEnergy(final double beamEnergy) {
     // Gumbel distribution for mean photoelectron path lengths depend on 
     // beam energy. Derived from Ben Gayther's 2016 summer project work
@@ -996,8 +966,7 @@ public class CrystalPolyhedron extends Crystal {
         
         //To test
       //   maxDistanceFl = 40;
-        
-        
+ 
           //populate fldistances with crystalMaxDistance as the last
         for (int q = 0; q <= distanceResolution; q++) {
        //   flDistancesTravelled[i][j][q] = (maxDistanceFl/distanceResolution) * q;
@@ -1005,8 +974,6 @@ public class CrystalPolyhedron extends Crystal {
 
         }
 
-          
-        
         for (int l = flDistBins-1; l >= 0; l--) { 
           //the likelihood of escape at this distance is exp(-muabs*x/2)
           //so starting from the edge, calculate what is released past this. 
@@ -1031,6 +998,12 @@ public class CrystalPolyhedron extends Crystal {
 
     }
   }
+  
+  /**
+   * Sets the maximum distance of a photoelectron for the given photoelectron energy
+   * 
+   * @param beamEnergy
+   */
   private  void setMaxPEDistance(final double beamEnergy) { //needs to be dynamic as it depends on beam energy
     double averagePEDistance = GUMBEL_DISTN_CALC_PARAMS[0]*Math.pow(beamEnergy - EnergyToSubtractFromPE,2) 
         + GUMBEL_DISTN_CALC_PARAMS[1]*(beamEnergy - EnergyToSubtractFromPE);
@@ -1220,18 +1193,6 @@ flRelativeVoxXYZ = new double[feFactors.length][flDistBins][FL_ANGLE_RES_LIMIT *
       final double doseIncreasePE) {
        
     double doseLostFromCrystalPE = 0;
- 
-    /* 
-     * NOTE: currently the code will run the PE escape code for every voxel
-     * in the crystal. For large crystals or when the pixels per micron value
-     * is large, this will take a very large time to run. The boolean below
-     * instead allows the PE escape code to run only for voxels determined
-     * to be close to the voxel boundaries. This is not set by default, since
-     * it appears that the pixels per micron value can significantly change
-     * which voxels are assigned as close to surface (thus significantly changing
-     * the reported dose). 
-     * TODO: find a rigorous way to assign voxels close to surface
-    */ 
     
     boolean findCloseToSurface = false; // this works if the pixel size is smaller than 8 
     boolean closeToSurface = false;    
@@ -1271,9 +1232,7 @@ flRelativeVoxXYZ = new double[feFactors.length][flDistBins][FL_ANGLE_RES_LIMIT *
       // if voxel is within the specified min distance to surface, take a grid 
       // of r, theta and phi and calculate for every r within 0.5 um and 
       // 5 um, what proportion exit the crystal.
-            
-   
-      
+              
       for (int q = 0; q < PE_ANGLE_RESOLUTION*PE_ANGLE_RESOLUTION; q++) { //for every tracks i'm choosing
         int randomTrack = ThreadLocalRandom.current().nextInt(0, PE_ANGLE_RES_LIMIT*PE_ANGLE_RES_LIMIT); //choose one at random
         
