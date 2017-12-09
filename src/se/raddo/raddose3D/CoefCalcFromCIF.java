@@ -12,6 +12,9 @@ import java.util.List;
 import java.util.Objects;
 
 public class CoefCalcFromCIF extends CoefCalcCompute{
+  
+  public boolean chemicalSum;
+  
   public CoefCalcFromCIF(final String cifFilePath) {
     getCIFFile(cifFilePath);
     super.calculateDensity(); //again, to fill the present elements
@@ -53,12 +56,18 @@ public class CoefCalcFromCIF extends CoefCalcCompute{
       }
     } catch (IOException e) {
       // TODO Auto-generated catch block
-      System.out.println("Cannot read from URL.");
+      System.out.println("Cannot read from file.");
       e.printStackTrace();
     } catch (IndexOutOfBoundsException e) {
       System.out.println("Line length error encounted in URL line");
       e.printStackTrace();
     }
+    
+    if (chemicalSum == false) {
+      System.out.println("The CIF file must contain the chemical sum");
+      System.exit(0); //exit the program
+    }
+    
   }
   
   public void parseCIFLine(final String inputLine) {
@@ -69,21 +78,27 @@ public class CoefCalcFromCIF extends CoefCalcCompute{
     }
     if (Objects.equals(directive, "_chemical_formula_sum")) { //remember to use the moiety if the sum never exists
       parseChemicalFormula(inputLine);
+      chemicalSum = true;
     }
     
     if (Objects.equals(directive, "_cell_volume")) {
       //function to get index of first digit
       String theValue = inputLine.substring(firstDigitIndex(inputLine));
-      double theNumber;
+      double theNumber = 0;
+      try {
       if (theValue.contains("(")){
         theNumber = Double.parseDouble(theValue.substring(0, theValue.indexOf("(")));
       }
       else {
         theNumber = Double.parseDouble(theValue.trim());
       }
+      } catch (NumberFormatException e) {
+        System.out.println("Not a valid unit cell");
+      }
       cellVolume = theNumber; //currently in A^2
     }
     
+
   }
   
   public void parseChemicalFormula(final String inputLine) {
@@ -95,7 +110,7 @@ public class CoefCalcFromCIF extends CoefCalcCompute{
     
     for (int i = 0; i < countElements; i++) {
       String elementName;
-      double elementOccurence;
+      double elementOccurence = 0;
       
       int firstSpace = 0;
       if (i == countElements -1) {
@@ -116,7 +131,11 @@ public class CoefCalcFromCIF extends CoefCalcCompute{
         elementName = elements.substring(0, elementLetterLength);
       
         if (firstSpace != elementLetterLength) {
+          try {
         elementOccurence = Double.parseDouble(elements.substring(elementLetterLength, firstSpace));
+          } catch (NumberFormatException e) {
+            System.out.println("Not a valid element number");
+          }
         }
         else {
           elementOccurence = 1;
