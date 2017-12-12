@@ -76,6 +76,9 @@ public class CrystalEM extends Crystal {
     
     double exposure = electronNumber/totExposedArea;  //exposure in e/A^2
     double beamEnergy = beam.getPhotonEnergy();
+    
+    
+    
     double baseDose = 0;
     double theDose = 0;
     //set case exposure = 1
@@ -152,6 +155,7 @@ public class CrystalEM extends Crystal {
       accessESTAR(coefCalc, avgElectronEnergy);
       // stopping power = MeV cm2/g
       double mevPerCm = stoppingPower * coefCalc.getDensity();
+      double CSDA = getCSDA(mevPerCm, avgElectronEnergy);
       double kevPerElectron = (mevPerCm * ((sampleThickness / 1E07)/numSlices)) *1000;   
  //     avgElectronEnergy -= kevPerElectron;  //either reduce energy or..
     //  double fractionElectronsLeft = 1;
@@ -176,9 +180,42 @@ public class CrystalEM extends Crystal {
         // System.out.println(String.format("\nThe avgEnergy is: %.8e", avgElectronEnergy);
       // System.out.println(String.format("\nThe electronNumber is: %.8e", electronNumber);
       }
+      
+    //  doseHenederson(CSDA, electronNumber, exposedArea, avgElectronEnergy, coefCalc);
     }
     return dose;
   }
+  
+  private double getCSDA(double LET, double avgElectronEnergy) { //return CSDA in um
+    double CSDA = 0;
+    avgElectronEnergy = avgElectronEnergy /1000; //convert to MeV
+    LET = LET / 10000; //convert to meV/um
+
+  //find area under straight line
+    CSDA = (avgElectronEnergy * (avgElectronEnergy / LET))/2;
+    
+    return CSDA;
+  }
+  /*
+  //Do the Henderson way and should get the same answer - doesn't work... only works if come to a stop
+  private void doseHenederson(double CSDA, double electronNumber, double exposedArea, double avgElectronEnergy
+                              , CoefCalc coefCalc) {
+    double exposure = electronNumber / exposedArea; // electrons/um^2
+    double meanLength;
+    if (CSDA > (sampleThickness / 1000)) {
+      meanLength = (sampleThickness / 1000);
+    }
+    else {
+      meanLength = CSDA;
+    }
+    double joulesPercmCubed = ((exposure / meanLength) * (avgElectronEnergy) * Beam.KEVTOJOULES) * 1E12;
+    double density = coefCalc.getDensity() / 1000; //density in Kg/cm^3
+    double dose = (joulesPercmCubed / density) / 1E06;
+    
+    System.out.print(String.format("\nThe Dose in the exposed area by Henderson: %.8e", dose));
+    System.out.println(" MGy\n");
+  }
+  */
   
   private double getElectronNumber(Beam beam, Wedge wedge, double exposedArea) {
     double electronNumber = beam.getPhotonsPerSec() * wedge.getTotSec();
