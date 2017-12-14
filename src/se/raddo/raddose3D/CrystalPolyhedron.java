@@ -641,7 +641,7 @@ public class CrystalPolyhedron extends Crystal {
         flDistBins = flRes;
       }
       else { //default
-        flDistBins = 4;
+        flDistBins = 8;
       }
     }
    if (photoElectronEscape) {
@@ -1031,6 +1031,8 @@ public class CrystalPolyhedron extends Crystal {
         }
         //erring on side of caution
         peDistBins += 1;
+        // ramping it up now it is quicker
+        peDistBins += 20;
       }
      }
  // Get PE distances
