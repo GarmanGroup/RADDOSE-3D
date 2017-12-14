@@ -580,11 +580,11 @@ public double waterFractionEM;
                    //    *1E06; // convert nm^2 to pm^2
       double numEl = getMacromolecularOccurrence(e);
       elasticMolecule += elasticElement[counter] * numEl;
-      molWeight += numEl * e.getAtomicWeight();
+ //     molWeight += numEl * e.getAtomicWeight();
       counter += 1;
     }
 
-    double massScatteringCoefficient = elasticMolecule / molWeight;
+    double massScatteringCoefficient = elasticMolecule / molWeightEM;
     double PoverT = 602 * massScatteringCoefficient  * (EMConc/1000); //* (EMThickness/10);
     
     return PoverT;
@@ -639,7 +639,7 @@ public double waterFractionEM;
     */
     
     double massScatteringCoefficient = inelasticMolecule / molWeightEM;
-    double PoverT = 602 * massScatteringCoefficient  * (EMConc/1000); //0.93 is ice density        //* (EMThickness/10);
+    double PoverT = 602 * massScatteringCoefficient  * (EMConc/1000);        //* (EMThickness/10);
     
     return PoverT;
   }
