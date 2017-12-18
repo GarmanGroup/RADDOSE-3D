@@ -43,6 +43,7 @@ public class CrystalPolyhedron extends Crystal {
 
   /** 3 element array defining dimensions of bounding box in voxels. */
   private final int[]           crystSizeVoxels;
+  private int[]           cryoCrystSizeVoxels;
 
   /**
    * Dose and fluence arrays holding the scalar
@@ -154,6 +155,7 @@ public class CrystalPolyhedron extends Crystal {
    * of the voxel i,j,k in the starting position.
    */
   private final double[][][][]  crystCoord;
+  private double[][][][]  cryoCrystCoord;
 
   /**
    * Vertex array containing a variable number of 3-dimension vertices.
@@ -630,6 +632,8 @@ public class CrystalPolyhedron extends Crystal {
     crystCoord = tempCrystCoords; // Final value
 
     escapeFactor = new double[nx][ny][nz];
+    
+    
   
     // Initialise beam-independent crystal photoelectron escape properties
     //Get fl bins  
@@ -647,8 +651,72 @@ public class CrystalPolyhedron extends Crystal {
    if (photoElectronEscape) {
     peRes = (int) mergedProperties.get(Crystal.CRYSTAL_PHOTOELECTRON_RESOLUTION);
    }
-
   }
+  
+  public void produceCryoSolutionCrystal(int maxPEDistance) {
+    
+    double[] xMinMax = this.minMaxVertices(0, vertices);
+    double[] yMinMax = this.minMaxVertices(1, vertices);
+    double[] zMinMax = this.minMaxVertices(2, vertices);
+    
+
+    //Correct dims for bigger size
+    Double xdim = xMinMax[1] - xMinMax[0]; // + maxPEDistance * 2;
+    Double ydim = yMinMax[1] - yMinMax[0]; // + maxPEDistance * 2;
+    Double zdim = zMinMax[1] - zMinMax[0]; // + maxPEDistance * 2;
+    int nx = (int) StrictMath.round(xdim * crystalPixPerUM) + 1;
+    int ny = (int) StrictMath.round(ydim * crystalPixPerUM) + 1;
+    int nz = (int) StrictMath.round(zdim * crystalPixPerUM) + 1;
+    
+    int extraVoxels = getExtraVoxels(maxPEDistance); // the extra voxels to add on each end
+
+    int[] tempCrystSize = { nx + extraVoxels*2, ny + extraVoxels*2, nz + extraVoxels*2};
+    cryoCrystSizeVoxels = tempCrystSize; // Final Value
+    
+    Double xshift = -xMinMax[0] + (extraVoxels/crystalPixPerUM);
+    Double yshift = -yMinMax[0] + (extraVoxels/crystalPixPerUM);
+    Double zshift = -zMinMax[0] + (extraVoxels/crystalPixPerUM);
+    
+    double[][][][] tempCrystCoords = new double[nx + extraVoxels*2][ny + extraVoxels*2][nz + extraVoxels*2][3];
+    
+    for (int i = 0; i < nx + extraVoxels*2; i++) {
+      for (int j = 0; j < ny + extraVoxels*2; j++) { 
+        for (int k = 0; k < nz + extraVoxels*2; k++) { //loop through voxels for this crystal
+          /*
+           * Set original coordinate. Temporary variables needed since we use
+           * all of the previous xyz's to set each of the new ones.
+           */
+          double x = -xshift + (i / crystalPixPerUM);
+          double y = -yshift + (j / crystalPixPerUM);
+          double z = -zshift + (k / crystalPixPerUM);
+
+          /*
+           * rotation in plane about [0 0 1] (P) Temporary variables needed
+           * since we use all of the previous xyz's to set each of the new ones.
+           */
+          double x2 = x * Math.cos(p) + y * Math.sin(p);
+          double y2 = -1 * x * Math.sin(p) + y * Math.cos(p);
+          double z2 = z;
+
+          /*
+           * rotation loop about [1 0 0] (L)
+           */
+          tempCrystCoords[i][j][k][0] = x2;
+          tempCrystCoords[i][j][k][1] = y2 * Math.cos(l) + z2 * Math.sin(l);
+          tempCrystCoords[i][j][k][2] = -1 * y2 * Math.sin(l) + z2
+              * Math.cos(l); 
+        }
+      }
+    }  
+    cryoCrystCoord = tempCrystCoords;
+  }
+  
+  @Override
+  public int getExtraVoxels(int maxPEDistance) {
+    int extraVoxels = (int) (maxPEDistance/ (1/crystalPixPerUM));
+    return extraVoxels;
+  }
+  
 
   /**
    * Calculates normal array from index and vertex arrays.
@@ -1009,6 +1077,9 @@ public class CrystalPolyhedron extends Crystal {
         + GUMBEL_DISTN_CALC_PARAMS[1]*(beamEnergy - EnergyToSubtractFromPE);
     int maxPEDistance = (int) Math.ceil(averagePEDistance + 6);
     
+    //set up the surrounding environment
+    produceCryoSolutionCrystal(maxPEDistance);
+    
     //TO TEST against old
    // maxPEDistance = 8;
     
@@ -1059,6 +1130,7 @@ public class CrystalPolyhedron extends Crystal {
     setMaxPEDistance(beamEnergy);
     findVoxelsReachedByPE();
     calcProportionVoxDoseDepositedByDist(beamEnergy);  
+  
   }
   
   @Override
@@ -1208,7 +1280,7 @@ flRelativeVoxXYZ = new double[feFactors.length][flDistBins][FL_ANGLE_RES_LIMIT *
     }
     
     //TO TEST
-//    findCloseToSurface = false;
+    findCloseToSurface = false;
     
     if (findCloseToSurface) {
       // calculate whether this voxel classified as close to surface and  
@@ -1333,6 +1405,11 @@ flRelativeVoxXYZ = new double[feFactors.length][flDistBins][FL_ANGLE_RES_LIMIT *
   public double[] getCrystCoord(final int i, final int j, final int k) {
     return crystCoord[i][j][k];
   }
+  
+  @Override
+  public double[] getCryoCrystCoord(final int i, final int j, final int k) {
+    return cryoCrystCoord[i][j][k];
+  }
 
   /*
    * (non-Javadoc)
@@ -1432,6 +1509,13 @@ flRelativeVoxXYZ = new double[feFactors.length][flDistBins][FL_ANGLE_RES_LIMIT *
   public int[] getCrystSizeVoxels() {
     int[] csv = new int[crystSizeVoxels.length];
     System.arraycopy(crystSizeVoxels, 0, csv, 0, crystSizeVoxels.length);
+    return csv;
+  }
+  
+  @Override
+  public int[] getCryoCrystSizeVoxels() {
+    int[] csv = new int[cryoCrystSizeVoxels.length];
+    System.arraycopy(cryoCrystSizeVoxels, 0, csv, 0, cryoCrystSizeVoxels.length);
     return csv;
   }
 

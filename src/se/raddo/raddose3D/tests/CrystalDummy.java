@@ -111,4 +111,22 @@ public class CrystalDummy extends Crystal {
   public double addDoseAfterFL(int i, int j, int k, double doseIncreaseFL) {
     return 0;
   }
+
+  @Override
+  public double[] getCryoCrystCoord(int i, int j, int k) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public int[] getCryoCrystSizeVoxels() {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public int getExtraVoxels(int maxPEDistance) {
+    // TODO Auto-generated method stub
+    return 0;
+  }
 }
