@@ -655,9 +655,9 @@ public class CoefCalcCompute extends CoefCalc {
 
 @Override
   public double[][] getCryoFluorescentEscapeFactors(Beam beam) {
-    double[][] fluorEscapeFactors = new double[presentElements.size()][NUM_FLUOR_ESCAPE_FACTORS];
+    double[][] fluorEscapeFactors = new double[cryoElements.size()][NUM_FLUOR_ESCAPE_FACTORS];
     int element_counter = 0;
-    double kShellEnergy,kFactorA,kFactorB,escapeMuAbsK,l1ShellEnergy,l1FactorA,l1FactorB,escapeMuAbsL1,l2ShellEnergy,l2FactorA,
+    double kShellEnergy,kFactorA,kFactorB,escapeMuAbsK,l1ShellEnergy,l1FactorA,l2ShellEnergy,l2FactorA,
     l3ShellEnergy,l3FactorA;
     Map<String, Double> photonMuAbsK;
     
@@ -714,8 +714,7 @@ public class CoefCalcCompute extends CoefCalc {
       else {
         l1ShellEnergy = 0.0;
         l1FactorA = 0.0;
-        l1FactorB = 0.0;
-        escapeMuAbsL1 = 0.0;
+
       }
       
       if (beam.getPhotonEnergy() > e.getL2Edge() &&

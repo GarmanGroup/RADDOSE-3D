@@ -523,31 +523,9 @@ public abstract class Crystal {
     }
   }
   
-  public void calculateCryoSolutionParameters(final Beam beam) {
-    coefCalc.updateCryoCoefficients(beam);
-    double[][] cryoFeFactors = coefCalc.getCryoFluorescentEscapeFactors(beam);
+  public void calculateCryoSolutionParameters(final Beam beam, double[][] cryoFeFactors) {
     calculatePEEnergySubtraction(cryoFeFactors, true);
     setCryoPEparamsForCurrentBeam(beam.getPhotonEnergy()); 
-  }
-  
- // public void calculateCryoPEEnergySubtraction(double[][] cryoFeFactors) {
- //   double totK = 0, totL1 = 0, totL2 = 0, totL3 = 0;
- //   double totM1 = 0, totM2 = 0, totM3 = 0, totM4 = 0, totM5 = 0;
-    /*
-    for (int i = 0; i < cryoFeFactors.length; i++) {
-      totK += cryoFeFactors[i][0] * cryoFeFactors[i][1] * cryoFeFactors[i][2];
-      totL1 += cryoFeFactors[i][0] * cryoFeFactors[i][5] * cryoFeFactors[i][6];
-      totL2 += cryoFeFactors[i][0] * cryoFeFactors[i][9] * cryoFeFactors[i][10];
-      totL3 += cryoFeFactors[i][0] * cryoFeFactors[i][13] * cryoFeFactors[i][14];
-      //Add the Ms here for uranium
-      
-      totM1 += cryoFeFactors[i][0] * cryoFeFactors[i][17] * feFactors[i][18];
-      totM2 += cryoFeFactors[i][0] * cryoFeFactors[i][19] * feFactors[i][20];
-      totM3 += cryoFeFactors[i][0] * cryoFeFactors[i][21] * feFactors[i][22];
-      totM4 += cryoFeFactors[i][0] * cryoFeFactors[i][23] * feFactors[i][24];
-      totM5 += cryoFeFactors[i][0] * cryoFeFactors[i][25] * feFactors[i][26];
-      /*
-    }
   }
   
   /**
@@ -562,7 +540,8 @@ public abstract class Crystal {
   public void expose(final Beam beam, final Wedge wedge) {
     double fluorescenceEnergyRelease = 0;
     double augerEnergy = 0;   
-    
+    double cryoAugerEnergy = 0;
+    double cryoFluorescenceEnergyRelease = 0;
     
     // Update coefficients in case the beam energy has changed.
     coefCalc.updateCoefficients(beam);
@@ -599,7 +578,13 @@ public abstract class Crystal {
     }
 
    if (coefCalc.isCryo() == true && photoElectronEscape == true){
-     calculateCryoSolutionParameters(beam);
+     coefCalc.updateCryoCoefficients(beam);
+     double[][] cryoFeFactors = coefCalc.getCryoFluorescentEscapeFactors(beam);
+     calculateCryoSolutionParameters(beam, cryoFeFactors);
+     cryoAugerEnergy = getAugerEnergy(cryoFeFactors);
+       if (fluorescentEscape) {
+         cryoFluorescenceEnergyRelease = calcFluorescence(beam, cryoFeFactors);
+       }
    }
    
     //Calculate the attenuation due to the sample container
@@ -643,7 +628,8 @@ public abstract class Crystal {
     // The main meat of it:
     for (int n = 0; n < angles.length; n++) {
       // Expose one angle
-      exposeAngle(angles[n], beam, wedge, n, angles.length, fluorescenceEnergyRelease, augerEnergy);
+      exposeAngle(angles[n], beam, wedge, n, angles.length, fluorescenceEnergyRelease, 
+                  augerEnergy, cryoAugerEnergy, cryoFluorescenceEnergyRelease);
 
       for (ExposeObserver eo : exposureObservers) {
         eo.imageComplete(n, angles[n]);
@@ -685,7 +671,9 @@ public abstract class Crystal {
   }
 
   private void exposeAngle(final double angle, final Beam beam,
-      final Wedge wedge, final int anglenum, final int anglecount,  double fluorescenceEnergyRelease, double augerEnergy) {
+      final Wedge wedge, final int anglenum, final int anglecount,  
+      double fluorescenceEnergyRelease, double augerEnergy, double cryoAugerEnergy,
+      double cryoFluorescenceEnergyRelease) {
 
     final int[] crystalSize = getCrystSizeVoxels();
 
@@ -961,21 +949,34 @@ public abstract class Crystal {
                 double voxImageFluence =     // Attenuates the beam for absorption in joules 
                     unattenuatedBeamIntensity * beamAttenuationFactor
                         * Math.exp(depth * beamAttenuationExpFactor); 
-
+                //For Auger
+                double beamEnergy = (beam.getPhotonEnergy() * Beam.KEVTOJOULES);
+                double numberOfPhotons = voxImageFluence / beamEnergy;
+                
                 double voxImageDose = fluenceToDoseFactor * voxImageFluence; 
                                                                              
                 if (voxImageDose > 0) {
-                  double doseAddedBack = addDoseAfterPECryo(i, j, k, voxImageDose); //no Auger or fluorescence for now add that in later
+                  double dosePE = 0;
+                  double totCryoAugerDose = cryoAugerEnergy * numberOfPhotons * fluenceToDoseFactor;
+                  if (fluorescentEscape == false) {
+                    dosePE = voxImageDose - totCryoAugerDose;
+                  }
+                  else {
+                    double totCryoFluorescenceEnergyRelease = cryoFluorescenceEnergyRelease * numberOfPhotons;
+                    //convert this to a dose to be released
+                    double voxImageFlDoseRelease = fluenceToDoseFactor * totCryoFluorescenceEnergyRelease;
+                    dosePE = voxImageDose - totCryoAugerDose - voxImageFlDoseRelease;
+                  }
+                  double doseAddedBack = addDoseAfterPECryo(i, j, k, dosePE); //no Auger or fluorescence for now add that in later
                   totalDoseFromSurrounding += doseAddedBack;
                 } // end if voximage dose > 0
-      
               } // end if unattenuated beam intensity > 0
             } // end if crystal not at
           } //end k
         } // end j
       }  //end i
     } // end if pe true
-  }
+  }//end if there is a surface
   }
   
  
