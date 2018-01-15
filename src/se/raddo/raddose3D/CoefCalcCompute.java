@@ -413,6 +413,45 @@ public class CoefCalcCompute extends CoefCalc {
     return absCoeffs;
   }
   
+  private Map<String, Double> calculateCoefficientsCryoElement(final double energy, 
+      final Element element) {
+    
+    Map<String, Double> absCoeffs = new HashMap<String, Double>();
+    double crossSectionPhotoElectric = 0;
+    double crossSectionCoherent = 0;
+    double crossSectionTotal = 0;
+    double crossSectionComptonAttenuation = 0;
+
+    // take cross section contributions from each individual atom
+    // weighted by the cell volume
+    Map<Element.CrossSection, Double> cs;
+    cs = element.getAbsCoefficients(energy);
+    crossSectionPhotoElectric += getCryoOccurrence(element)
+        * cs.get(CrossSection.PHOTOELECTRIC) / cellVolume
+        / UNITSPERDECIUNIT;
+    crossSectionCoherent += getCryoOccurrence(element)
+        * cs.get(CrossSection.COHERENT) / cellVolume
+        / UNITSPERDECIUNIT;
+    crossSectionTotal += getCryoOccurrence(element)
+        * cs.get(CrossSection.TOTAL) / cellVolume
+        / UNITSPERDECIUNIT;
+    crossSectionComptonAttenuation += getCryoOccurrence(element)  
+        * cs.get(CrossSection.COMPTON) / cellVolume
+        / UNITSPERDECIUNIT;    
+    
+    crossSectionPhotoElectric = crossSectionPhotoElectric / UNITSPERMILLIUNIT;
+    crossSectionTotal = crossSectionTotal / UNITSPERMILLIUNIT;
+    crossSectionCoherent = crossSectionCoherent / UNITSPERMILLIUNIT;
+    crossSectionComptonAttenuation = crossSectionComptonAttenuation/ UNITSPERMILLIUNIT;
+    
+    absCoeffs.put(PHOTOELECTRIC, crossSectionPhotoElectric);
+    absCoeffs.put(ELASTIC, crossSectionCoherent);
+    absCoeffs.put(COMPTON, crossSectionComptonAttenuation);
+    absCoeffs.put(TOTAL, crossSectionTotal);
+
+    return absCoeffs;
+  }
+  
   @Override
   public double[][] getFluorescentEscapeFactors(Beam beam) {
     double[][] fluorEscapeFactors = new double[presentElements.size()][NUM_FLUOR_ESCAPE_FACTORS];
@@ -614,7 +653,199 @@ public class CoefCalcCompute extends CoefCalc {
     return fluorEscapeFactors;
   }
 
-  
+@Override
+  public double[][] getCryoFluorescentEscapeFactors(Beam beam) {
+    double[][] fluorEscapeFactors = new double[presentElements.size()][NUM_FLUOR_ESCAPE_FACTORS];
+    int element_counter = 0;
+    double kShellEnergy,kFactorA,kFactorB,escapeMuAbsK,l1ShellEnergy,l1FactorA,l1FactorB,escapeMuAbsL1,l2ShellEnergy,l2FactorA,
+    l3ShellEnergy,l3FactorA;
+    Map<String, Double> photonMuAbsK;
+    
+    double m1ShellEnergy, m2ShellEnergy, m3ShellEnergy, m4ShellEnergy, m5ShellEnergy,
+           m1FactorA, m2FactorA, m3FactorA, m4FactorA, m5FactorA;
+    
+    Map<String, Double> elAbsCoeffs;
+    
+    for (Element e : this.cryoElements) {
+      elAbsCoeffs = calculateCoefficientsCryoElement(beam.getPhotonEnergy(), e);
+      e.EdgeRatio();
+      if (beam.getPhotonEnergy() > e.getKEdge() &&   //if beam energy below 1.072keV then this is never true and the program messes up when flcalc is true
+          e.getAtomicNumber() >= MIN_ATOMIC_NUM_FOR_K_SHELL_IONISATION)  {
+        //K shell energy : checked from element database class
+        kShellEnergy = e.getKEdge();
+        //Probability of K shell ionization: checked worked out in element class
+        kFactorA = e.getKShellIonisationProb();               
+        //K shell fluorescent yield: checked from element database class
+        kFactorB = e.getKShellFluorescenceYield();
+        //This gives difference between the edge energies needed for fluorescent escape probability.
+        
+        
+     //   photonMuAbsK = calculateCoefficientsAll(e.getKEdge() - e.getL1Edge());
+        photonMuAbsK = calculateCoefficientsAll(e.getKFluorescenceAverage());
+        
+        //Fluorescent escape probability. This takes muabs as mupe. 
+        //Fluorescence too low energy to consider compton in muabs
+        escapeMuAbsK = photonMuAbsK.get(PHOTOELECTRIC);
+      } 
+      else {
+        kShellEnergy = 0.0;
+        kFactorA = 0.0;
+        kFactorB = 0.0;
+        escapeMuAbsK = 0.0;
+      }
+      
+      
+      if (beam.getPhotonEnergy() > e.getL1Edge() &&
+          e.getAtomicNumber() >= MIN_ATOMIC_NUM_FOR_L_SHELL_IONISATION) {
+        l1ShellEnergy = e.getL1Edge();
+        l1FactorA = (e.getL1ShellIonisationProb()) * (1-kFactorA);
+      //  l1FactorB = e.getL1ShellFluorescenceYield();
+        
+        
+      //  photonMuAbsL1 = calculateCoefficientsAll(e.getL1Edge() - e.getM1Edge());
+      //  photonMuAbsL1 = calculateCoefficientsAll(e.getLFluorescenceAverage());
+        
+      //  escapeMuAbsL1 = photonMuAbsL1.get(PHOTOELECTRIC);
+        
+        //TO TEST
+    //    escapeMuAbsL1 = 0;
+        
+      } 
+      else {
+        l1ShellEnergy = 0.0;
+        l1FactorA = 0.0;
+        l1FactorB = 0.0;
+        escapeMuAbsL1 = 0.0;
+      }
+      
+      if (beam.getPhotonEnergy() > e.getL2Edge() &&
+          e.getAtomicNumber() >= MIN_ATOMIC_NUM_FOR_L_SHELL_IONISATION) {
+        l2ShellEnergy = e.getL2Edge();
+        l2FactorA = e.getL2ShellIonisationProb() * (1-kFactorA - l1FactorA);
+      //  l2FactorB = e.getL2ShellFluorescenceYield();
+        
+        
+      //  photonMuAbsL2 = calculateCoefficientsAll(e.getL2Edge() - e.getM1Edge());
+      //  photonMuAbsL2 = calculateCoefficientsAll(e.getLFluorescenceAverage());
+        
+      //  escapeMuAbsL2 = photonMuAbsL2.get(PHOTOELECTRIC);
+        
+        //TO TEST
+    //    escapeMuAbsL2 = 0;
+      } 
+      else {
+        l2ShellEnergy = 0.0;
+        l2FactorA = 0.0;
+      }
+      
+      if (beam.getPhotonEnergy() > e.getL3Edge() &&
+          e.getAtomicNumber() >= MIN_ATOMIC_NUM_FOR_L_SHELL_IONISATION) {
+        l3ShellEnergy = e.getL3Edge();
+        l3FactorA = e.getL3ShellIonisationProb() * (1-kFactorA - l1FactorA - l2FactorA);
+      //  l3FactorB = e.getL3ShellFluorescenceYield();
+        
+        
+       // photonMuAbsL3 = calculateCoefficientsAll(e.getL3Edge() - e.getM1Edge());
+      //  photonMuAbsL3 = calculateCoefficientsAll(e.getLFluorescenceAverage());
+        
+      //  escapeMuAbsL3 = photonMuAbsL3.get(PHOTOELECTRIC);
+        
+        //TO TEST
+   //     escapeMuAbsL3 = 0;
+      } 
+      else {
+        l3ShellEnergy = 0.0;
+        l3FactorA = 0.0;
+      }
+      
+      //All the M shells
+      
+      if (beam.getPhotonEnergy() > e.getM1Edge() && e.getAtomicNumber() >= 73) { 
+        m1ShellEnergy = e.getM1Edge();
+        m1FactorA = e.getM1ShellIonisationProb() * (1-kFactorA - l1FactorA - l2FactorA - l3FactorA);
+      }
+      else {
+        m1ShellEnergy = 0.0;
+        m1FactorA = 0.0;
+      }
+      
+      if (beam.getPhotonEnergy() > e.getM2Edge() && e.getAtomicNumber() >= 73) { // if it equals uranium for now, set a cut off later
+        m2ShellEnergy = e.getM2Edge();
+        m2FactorA = e.getM2ShellIonisationProb() * (1-kFactorA - l1FactorA - l2FactorA - l3FactorA - m1FactorA);
+      }
+      else {
+        m2ShellEnergy = 0.0;
+        m2FactorA = 0.0;
+      }
+      
+      if (beam.getPhotonEnergy() > e.getM3Edge() && e.getAtomicNumber() >= 73) { // if it equals uranium for now, set a cut off later
+        m3ShellEnergy = e.getM3Edge();
+        m3FactorA = e.getM3ShellIonisationProb() * (1-kFactorA - l1FactorA - l2FactorA - l3FactorA - m1FactorA - m2FactorA);
+      }
+      else {
+        m3ShellEnergy = 0.0;
+        m3FactorA = 0.0;
+      }
+      
+      if (beam.getPhotonEnergy() > e.getM4Edge() && e.getAtomicNumber() >= 73) { // if it equals uranium for now, set a cut off later
+        m4ShellEnergy = e.getM4Edge();
+        m4FactorA = e.getM4ShellIonisationProb() * (1-kFactorA - l1FactorA - l2FactorA - l3FactorA - m1FactorA - m2FactorA - m3FactorA);
+      }
+      else {
+        m4ShellEnergy = 0.0;
+        m4FactorA = 0.0;
+      }
+      
+      if (beam.getPhotonEnergy() > e.getM5Edge() && e.getAtomicNumber() >= 73) { // if it equals uranium for now, set a cut off later
+        m5ShellEnergy = e.getM5Edge();
+        m5FactorA = e.getM5ShellIonisationProb() * (1-kFactorA - l1FactorA - l2FactorA - l3FactorA - m1FactorA - m2FactorA - m3FactorA - m4FactorA);
+      }
+      else {
+        m5ShellEnergy = 0.0;
+        m5FactorA = 0.0;
+      }
+      
+      
+      double muAbsFrac = elAbsCoeffs.get(PHOTOELECTRIC) / cryoAbsCoeffPhoto;
+      
+      //TODO change these to be something more readable, like a map structure
+      fluorEscapeFactors[element_counter][0] = muAbsFrac;
+      fluorEscapeFactors[element_counter][1] = kShellEnergy;
+      fluorEscapeFactors[element_counter][2] = kFactorA;
+      fluorEscapeFactors[element_counter][3] = kFactorB;
+      fluorEscapeFactors[element_counter][4] = escapeMuAbsK;
+      
+      fluorEscapeFactors[element_counter][5] = l1ShellEnergy;
+      fluorEscapeFactors[element_counter][6] = l1FactorA;
+     // fluorEscapeFactors[element_counter][7] = l1FactorB;
+     // fluorEscapeFactors[element_counter][8] = escapeMuAbsL1;
+      fluorEscapeFactors[element_counter][9] = l2ShellEnergy;
+      fluorEscapeFactors[element_counter][10] = l2FactorA;
+    //  fluorEscapeFactors[element_counter][11] = l2FactorB;
+    //  fluorEscapeFactors[element_counter][12] = escapeMuAbsL2;
+      fluorEscapeFactors[element_counter][13] = l3ShellEnergy;
+      fluorEscapeFactors[element_counter][14] = l3FactorA;
+    //  fluorEscapeFactors[element_counter][15] = l3FactorB;
+    //  fluorEscapeFactors[element_counter][16] = escapeMuAbsL3;
+      
+      fluorEscapeFactors[element_counter][17] = m1ShellEnergy;
+      fluorEscapeFactors[element_counter][18] = m1FactorA;
+      fluorEscapeFactors[element_counter][19] = m2ShellEnergy;
+      fluorEscapeFactors[element_counter][20] = m2FactorA;
+      fluorEscapeFactors[element_counter][21] = m3ShellEnergy;
+      fluorEscapeFactors[element_counter][22] = m3FactorA;
+      fluorEscapeFactors[element_counter][23] = m4ShellEnergy;
+      fluorEscapeFactors[element_counter][24] = m4FactorA;
+      fluorEscapeFactors[element_counter][25] = m5ShellEnergy;
+      fluorEscapeFactors[element_counter][26] = m5FactorA;
+      
+      
+      element_counter += 1;
+    }
+    
+    return fluorEscapeFactors;
+  } 
+
   @Override
   public double getAbsorptionCoefficient() {
     return absCoeffphoto;

@@ -286,4 +286,14 @@ public class CrystalSpherical extends Crystal {
     // TODO Auto-generated method stub
     return 0;
   }
+  
+  
+  @Override
+  public void setCryoPEparamsForCurrentBeam(double beamEnergy) {    
+  }
+  
+  @Override
+  public double addDoseAfterPECryo(int i, int j, int k, double doseIncreasePE) {
+    return 0;
+  }
 }

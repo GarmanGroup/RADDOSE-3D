@@ -79,6 +79,7 @@ public class CrystalPolyhedron extends Crystal {
 //      3., 3.5, 4., 5., 6., 7., 8. };
  
   private double[]     PE_DISTANCES_TRAVELLED;
+  private double[] CRYO_PE_DISTANCES_TRAVELLED;
   
   /**
    * Distance bins travelled by fluorescence.
@@ -122,7 +123,8 @@ public class CrystalPolyhedron extends Crystal {
    * 3d array for voxels where photoelectrons can reach
    */
   private  double[][][] relativeVoxXYZ;
-
+  private  double[][][] relativeVoxXYZCryo;
+  
   /**
    * 5d array for voxels where fluorescence can reach
    * the first two dimensions ar element and shell
@@ -134,7 +136,7 @@ public class CrystalPolyhedron extends Crystal {
    * from voxel due to photoelectron escape
    */
   private  double[]   propnDoseDepositedAtDist;
-  
+  private  double[]   propnDoseDepositedAtDistCryo;
   
   /**
    * Proportion of voxel dose deposited at each distance
@@ -1079,10 +1081,7 @@ public class CrystalPolyhedron extends Crystal {
     int maxPEDistance = (int) Math.ceil(averagePEDistance + 6);
     
     //set up the surrounding environment
-    produceCryoSolutionCrystal(maxPEDistance);
-    
-    //TO TEST against old
-   // maxPEDistance = 8;
+  //  produceCryoSolutionCrystal(maxPEDistance);
     
       //Get PE bins
     if (peRes >= 2) { //if user defined and sensible
@@ -1118,6 +1117,23 @@ public class CrystalPolyhedron extends Crystal {
    relativeVoxXYZ = new double[peDistBins][PE_ANGLE_RES_LIMIT * PE_ANGLE_RES_LIMIT][3];
   }
   
+  private  void setMaxPEDistanceCryo(final double beamEnergy) { //needs to be dynamic as it depends on beam energy
+    double averagePEDistance = GUMBEL_DISTN_CALC_PARAMS[0]*Math.pow(beamEnergy - cryoEnergyToSubtractFromPE,2) 
+        + GUMBEL_DISTN_CALC_PARAMS[1]*(beamEnergy - cryoEnergyToSubtractFromPE);
+    int maxPEDistance = (int) Math.ceil(averagePEDistance + 6);
+    
+    //set up the surrounding environment
+    produceCryoSolutionCrystal(maxPEDistance);
+    
+    CRYO_PE_DISTANCES_TRAVELLED = new double[peDistBins];
+    double binInterval = (double) maxPEDistance / (peDistBins - 1);
+    for (int i = 0; i < peDistBins; i++) {
+      CRYO_PE_DISTANCES_TRAVELLED[i] = i * binInterval;
+    } 
+    
+    propnDoseDepositedAtDistCryo = new double[peDistBins];
+    relativeVoxXYZCryo = new double[peDistBins][PE_ANGLE_RES_LIMIT * PE_ANGLE_RES_LIMIT][3];
+  }
   /*
    * (non-Javadoc)
    *
@@ -1126,13 +1142,21 @@ public class CrystalPolyhedron extends Crystal {
   @Override
   public void setPEparamsForCurrentBeam(final double beamEnergy) {
     // Initialise crystal photolectron escape properties here for current beam
-    
     //first of all need to get PE distances 
     setMaxPEDistance(beamEnergy);
-    findVoxelsReachedByPE();
+    findVoxelsReachedByPE(false);
     calcProportionVoxDoseDepositedByDist(beamEnergy);  
-  
   }
+  
+  @Override
+  public void setCryoPEparamsForCurrentBeam(final double beamEnergy) {
+    // Initialise crystal photolectron escape properties here for current beam
+    //first of all need to get PE distances 
+    setMaxPEDistanceCryo(beamEnergy);
+    findVoxelsReachedByPE(true);
+    calcProportionVoxDoseDepositedByDistCryo(beamEnergy);  
+  }
+  
   
   @Override
   public void setFLparamsForCurrentBeam(final double[][] feFactors) {
@@ -1187,10 +1211,55 @@ public class CrystalPolyhedron extends Crystal {
     }
   }
   
+  private void calcProportionVoxDoseDepositedByDistCryo(final double beamEnergy) {
+    // calculate the fraction of energy deposited by PE up to each 
+    // distance, assuming PE distances follow a given distribution
+
+    // Set up a mean path length distribution
+    double[] pathLengthDistn = new double[peDistBins];
+        
+    double[] distnParams = getGumbelParamsForBeamEnergy(beamEnergy);
+    calculateGumbelDistribution(CRYO_PE_DISTANCES_TRAVELLED, pathLengthDistn, distnParams[0],
+        distnParams[1], peDistBins);
+    
+    // find total area under specified distribution
+    double distnIntegral = 0;
+    for (int l = 0; l < peDistBins-1; l++) {
+      double width = CRYO_PE_DISTANCES_TRAVELLED[l + 1] - CRYO_PE_DISTANCES_TRAVELLED[l];
+      double height = (pathLengthDistn[l + 1] + pathLengthDistn[l]) / 2;
+      distnIntegral += width * height;
+    }  
+    
+    /*
+     * The following code calculates the proportion of dose deposited along
+     * each track by the travelling PE
+     */  
+    for (int l = peDistBins-1; l > 0; l--) {
+      double width = CRYO_PE_DISTANCES_TRAVELLED[l] - CRYO_PE_DISTANCES_TRAVELLED[l-1];
+      double height = (pathLengthDistn[l] + pathLengthDistn[l-1]) / 2;
+
+      if (l == peDistBins-1) 
+      {
+        // the proportion of energy deposited at the end of the PE track. The division
+        // by l is since the energy carried by PEs is deposited linearly at
+        // l divisions along the track up to this point
+        propnDoseDepositedAtDistCryo[l] = width * height / (l * distnIntegral);
+      } else {
+        // the amount of energy deposited by PEs stopping at this distance (divided
+        // by l to account for energy being deposited linearly up to this point),
+        // plus the energy deposited by PEs travelling further than this stopping 
+        // distance that also deposit a fraction of their energy at this distance
+        propnDoseDepositedAtDistCryo[l] = propnDoseDepositedAtDistCryo[l+1] 
+            + width * height / (l * distnIntegral);
+      }
+  
+    }
+  }
+  
   /**
    * finds voxels that lie along the PE tracks
    */
-  private void findVoxelsReachedByPE() {
+  private void findVoxelsReachedByPE(boolean cryo) {
     double step = PE_ANGLE_LIMIT / PE_ANGLE_RES_LIMIT;  
     
     int counter = -1;
@@ -1205,10 +1274,20 @@ public class CrystalPolyhedron extends Crystal {
         
         for (int m = 0; m < peDistBins; m++) {
           // calculate r in voxel coordinates rather than pixels
-          double r = PE_DISTANCES_TRAVELLED[m] * this.crystalPixPerUM; 
-          relativeVoxXYZ[m][counter][0] = r * xNorm;
-          relativeVoxXYZ[m][counter][1] = r * yNorm;
-          relativeVoxXYZ[m][counter][2] = r * zNorm;
+          double r = 0;
+          if (cryo == false)  {  
+            r = PE_DISTANCES_TRAVELLED[m] * this.crystalPixPerUM; 
+            relativeVoxXYZ[m][counter][0] = r * xNorm;
+            relativeVoxXYZ[m][counter][1] = r * yNorm;
+            relativeVoxXYZ[m][counter][2] = r * zNorm;
+          }
+          else {
+            r = CRYO_PE_DISTANCES_TRAVELLED[m] * this.crystalPixPerUM;
+            relativeVoxXYZCryo[m][counter][0] = r * xNorm;
+            relativeVoxXYZCryo[m][counter][1] = r * yNorm;
+            relativeVoxXYZCryo[m][counter][2] = r * zNorm;
+          }
+
         }
 
       }
@@ -1396,6 +1475,41 @@ flRelativeVoxXYZ = new double[feFactors.length][flDistBins][FL_ANGLE_RES_LIMIT *
     }
     return doseLostFromCrystalFL;
   }  
+  
+  @Override
+  public double addDoseAfterPECryo(final int i, final int j, final int k,
+      final double doseIncreasePE) {
+    double doseBackInCrystalPE = 0;
+    
+    for (int q = 0; q < PE_ANGLE_RESOLUTION*PE_ANGLE_RESOLUTION; q++) { //for every tracks i'm choosing
+      int randomTrack = ThreadLocalRandom.current().nextInt(0, PE_ANGLE_RES_LIMIT*PE_ANGLE_RES_LIMIT); //choose one at random
+      
+      //TO TEST
+    //  randomTrack = q;
+      
+      for (int m = 0; m < peDistBins; m++) {   
+        double x = relativeVoxXYZCryo[m][randomTrack][0];
+        double y = relativeVoxXYZCryo[m][randomTrack][1];
+        double z = relativeVoxXYZCryo[m][randomTrack][2];
+
+        // get dose transferred to these located voxels 
+        // at the distance r away (due to PE movement)
+        double partialDose = doseIncreasePE * propnDoseDepositedAtDistCryo[m]
+            / Math.pow(PE_ANGLE_RESOLUTION,2);
+        
+        // add counts to total & total within crystal in order to
+        // calculate the proportion for a given r.       
+        if (isCrystalAt((int) (i + x), (int) (j + y),
+            (int) (k + z))) {              
+          // get dose transferred to this new voxel (due to PE movement)
+          addDose((int) (i + x), (int) (j + y),
+          (int) (k + z), partialDose);
+          doseBackInCrystalPE += partialDose;
+        } 
+      }    
+    }
+    return doseBackInCrystalPE;
+  }
   
   /*
    * (non-Javadoc)

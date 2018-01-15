@@ -41,7 +41,7 @@ public class CoefCalcAverage extends CoefCalc {
   /**
    * Number of X-ray Fluorescent escape factors
    */
-  private static final int NUM_FLUOR_ESCAPE_FACTORS  = 17;
+  private static final int NUM_FLUOR_ESCAPE_FACTORS  = 27;
 
   @Override
   public double getAbsorptionCoefficient() {
@@ -118,5 +118,14 @@ public class CoefCalcAverage extends CoefCalc {
   @Override
   public boolean isCryo() {
     return false;
+  }
+  
+  @Override
+  public double[][] getCryoFluorescentEscapeFactors(Beam beam) {
+    double[][] fluorEscapeFactors = new double[1][NUM_FLUOR_ESCAPE_FACTORS];
+    for (int i = 0; i < NUM_FLUOR_ESCAPE_FACTORS; i++){
+      fluorEscapeFactors[0][i] = 0.0;
+    }
+    return fluorEscapeFactors;
   }
 }

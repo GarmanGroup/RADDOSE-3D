@@ -54,13 +54,12 @@ public abstract class CoefCalc {
   public abstract double getDensity();
   
   /**
-   * Calculates the absorbed energy within the crystal corrected for
-   * X-ray Fluorescence.
+   * Calculates factors used to calculate fluorescence energy for the crystal
    * 
    * @param beam
    *          Beam object
    * @return
-   *         absorbed energy.
+   *         fluorescence factors.
    */
   public abstract double[][] getFluorescentEscapeFactors(Beam beam);
   
@@ -94,4 +93,14 @@ public abstract class CoefCalc {
    *        if cryo solution has been entered or not
    */
   public abstract boolean isCryo();
+  
+  /**
+   * Calculates factors used to calculate fluorescence energy for cryo solution
+   * 
+   * @param beam
+   *          Beam object
+   * @return
+   *         fluorescence factors.
+   */
+  public abstract double[][] getCryoFluorescentEscapeFactors(Beam beam);
 }
