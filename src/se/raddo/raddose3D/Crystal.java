@@ -90,6 +90,15 @@ public abstract class Crystal {
   private double totalFlEnergyToRelease   = 0;
   
   /**
+   * crystal minimum and maximum dimensions
+   */
+  public double[] xMinAndMax;
+  public double[] yMinAndMax;
+  public double[] zMinAndMax;
+  public double[] minimumDimensions;
+  public double[] maximumDimensions;
+  
+  /**
    * Cumulative dose both remaining in crystal and lost through photoelectron escape
    */
   private double totalCrystalDose                               = 0;
@@ -703,6 +712,7 @@ public abstract class Crystal {
     final double beamAttenuationExpFactor = -coefCalc     
         .getAttenuationCoefficient();
 
+    
     double[] crystCoords;
     double[] translateRotateCoords = new double[3];
     for (int i = 0; i < crystalSize[0]; i++) {
@@ -744,9 +754,9 @@ public abstract class Crystal {
 
 
               double voxImageFluence =     // Attenuates the beam for absorption in joules 
-                  unattenuatedBeamIntensity * beamAttenuationFactor
-                      * Math.exp(depth * beamAttenuationExpFactor);              
-
+                  unattenuatedBeamIntensity * beamAttenuationFactor // beam attenuation factor includes voxel size
+                      * Math.exp(depth * beamAttenuationExpFactor);   
+              
               
               double electronweight = 9.10938356E-31;
               double csquared = 3E8*3E8;
@@ -903,11 +913,12 @@ public abstract class Crystal {
       final int[] cryoCrystalSize = getCryoCrystSizeVoxels();
  //     final int extraVoxels = getExtraVoxels(int maxPEDistance);
       double[] cryoCrystCoord;
+      double[] depthCoords = new double[3];
       for (int i = 0; i < cryoCrystalSize[0]; i++) {
         for (int j = 0; j < cryoCrystalSize[1]; j++) {
           for (int k = 0; k < cryoCrystalSize[2]; k++) {
             //if this is an extra voxel
-            if (isCrystalAt(i, j, k) == false) { // if this voxel is not in the originall crystal
+            if (isCrystalAt(i, j, k) == false) { // if this voxel is not in the original crystal
               cryoCrystCoord = getCryoCrystCoord(i, j, k);
               
               //This translate stuff is all repeated code so put it into a method
@@ -934,8 +945,24 @@ public abstract class Crystal {
                   wedge.getOffAxisUm());
               
               if (unattenuatedBeamIntensity > 0d) {
+                //Set the depth coordinates based on crystal depth
+                for(int m = 0; m < 3; m++) {
+                  if (translateRotateCoords[m] < minimumDimensions[m]) {
+                    depthCoords[m] = minimumDimensions[m];
+                  }
+                  else if (translateRotateCoords[m] > maximumDimensions[m]) {
+                    depthCoords[m] = maximumDimensions[m];
+                  }
+                  else {
+                    depthCoords[m] = translateRotateCoords[m];
+                  }
+                }
+                
+                double depth = findDepth(depthCoords, angle, wedge);
+                
                 double voxImageFluence =     // Attenuates the beam for absorption in joules 
-                    unattenuatedBeamIntensity; //so no attenuation yet
+                    unattenuatedBeamIntensity * beamAttenuationFactor
+                        * Math.exp(depth * beamAttenuationExpFactor); 
 
                 double voxImageDose = fluenceToDoseFactor * voxImageFluence; // fluence to dose factor needs to change
                                                                              // to reflect cryo-solution composition
@@ -1012,6 +1039,18 @@ public abstract class Crystal {
     reductionFactor = Math.pow(reductionFactor, 1d / 3d);
     return reductionFactor;
   }
-
-
+  
+  public void setMinMaxCrystalDimensions(double[] xMinMax, double[] yMinMax, double[] zMinMax) {
+    xMinAndMax = xMinMax;
+    yMinAndMax = yMinMax;
+    zMinAndMax = zMinMax;
+    minimumDimensions = new double[3];
+    maximumDimensions = new double[3];
+    minimumDimensions[0] = xMinMax[0];
+    minimumDimensions[1] = yMinMax[0];
+    minimumDimensions[2]=  zMinMax[0];
+    maximumDimensions[0] = xMinMax[1];
+    maximumDimensions[1] = yMinMax[1];
+    maximumDimensions[2]=  zMinMax[1];
+  }
 }

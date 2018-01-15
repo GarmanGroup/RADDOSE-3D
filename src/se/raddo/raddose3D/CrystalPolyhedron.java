@@ -532,7 +532,8 @@ public class CrystalPolyhedron extends Crystal {
     double[] xMinMax = this.minMaxVertices(0, vertices);
     double[] yMinMax = this.minMaxVertices(1, vertices);
     double[] zMinMax = this.minMaxVertices(2, vertices);
-
+    super.setMinMaxCrystalDimensions(xMinMax, yMinMax, zMinMax);
+    
     for (int i = 0; i < vertices.length; i++) {
 
       double x = vertices[i][0];
