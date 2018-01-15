@@ -74,16 +74,10 @@ public class CoefCalcFromParams extends CoefCalcCompute {
 
     calculateAtomOccurrences(numMonomers, numResidues, numRNA, numDNA,
         sf, heavyProteinAtomNames, heavyProteinAtomNums,
-        heavySolutionConcNames, heavySolutionConcNums);
+        heavySolutionConcNames, heavySolutionConcNums, cryoSolutionMolecule, cryoSolutionConc);
     
     super.calculateDensity();
-    
-    if (cryoSolutionMolecule.isEmpty() == false) {
-      //work out the number of atoms of each type per unit cell volume
-      //to do this first work out the number of molecules in this volume then multiply by each element
-      //think I'm going to do this in coefCalcCompute 
-      
-    }
+
   }
 
   /**
@@ -107,7 +101,9 @@ public class CoefCalcFromParams extends CoefCalcCompute {
       final List<String> heavyProteinAtomNames,
       final List<Double> heavyProteinAtomNums,
       final List<String> heavySolvConcNames,
-      final List<Double> heavySolvConcNums) {
+      final List<Double> heavySolvConcNums,
+      final List<String> cryoSolutionAtoms,
+      final List<Double> cryoSolutionConcs) {
 
     // Start by dealing with heavy atom in the
     // protein and adding these to the unit cell.
@@ -129,6 +125,12 @@ public class CoefCalcFromParams extends CoefCalcCompute {
     // solvent and add these to the unit cell.
     if (heavySolvConcNames != null) {
       addSolventConcentrations(heavySolvConcNames, heavySolvConcNums);
+    }
+    
+    if (cryoSolutionAtoms != null) {
+      //populate the 'cryo unit cell' with these atoms 
+      addCryoConcentrations(cryoSolutionAtoms, cryoSolutionConcs);
+      super.calculateCryoDensity();
     }
     
     this.setNumMonomers(monomers);

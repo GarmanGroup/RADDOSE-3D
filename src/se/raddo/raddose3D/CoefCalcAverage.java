@@ -79,6 +79,11 @@ public class CoefCalcAverage extends CoefCalc {
   public void updateCoefficients(final Beam b) {
     // Does nothing
   }
+  
+  @Override
+  public void updateCryoCoefficients(final Beam b) {
+    // Does nothing
+  }
 
   @Override
   public double[][] getFluorescentEscapeFactors(Beam beam) {
@@ -98,5 +103,20 @@ public class CoefCalcAverage extends CoefCalc {
 /*    Does nothing, needed to prevent error in this class when Compton was added, 
        Compton is already included in ABSORPTION_COEFFICIENT in this class;*/
     return 0;
+  }
+  
+  @Override
+  public double getCryoAbsorptionCoefficient() {
+    return 0;
+  }
+  
+  @Override
+  public double getCryoDensity() {
+    return 0;
+  }
+  
+  @Override
+  public boolean isCryo() {
+    return false;
   }
 }

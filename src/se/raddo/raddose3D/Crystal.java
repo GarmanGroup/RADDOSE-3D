@@ -530,6 +530,10 @@ public abstract class Crystal {
 
     // Update coefficients in case the beam energy has changed.
     coefCalc.updateCoefficients(beam);
+    if (coefCalc.isCryo()){
+      coefCalc.updateCryoCoefficients(beam);
+    }
+    
     double fluorescenceEnergyRelease = 0;
     double augerEnergy = 0;
     //Set up PE and FE - no need to do this is PE false
@@ -673,7 +677,7 @@ public abstract class Crystal {
             * 1e-6; // MGy
             //
 
-    final double fluenceToDoseFactor = -1
+     double fluenceToDoseFactor = -1
         * Math.expm1(-1 * coefCalc.getAbsorptionCoefficient()
             / getCrystalPixPerUM())
         // exposure for the Voxel (J) * fraction absorbed by voxel
@@ -877,13 +881,25 @@ public abstract class Crystal {
         } //i
       } // j
     } // k : end of looping over crystal voxels
-  boolean aSurface = false;
+  boolean aSurface = coefCalc.isCryo();
   if (aSurface) {
     if (photoElectronEscape) {
       //loop through all the bigger crystal voxels
       //if it is close to surface in this big crystal (i.e outside the normal crystal) then expose it
       //for now expose with full beam, attenuate later
       //also just use the crystal absorption coefficients and not those for the cryoprotectant yet. 
+      
+      fluenceToDoseFactor = -1
+          * Math.expm1(-1 * coefCalc.getCryoAbsorptionCoefficient()
+              / getCrystalPixPerUM())
+          // exposure for the Voxel (J) * fraction absorbed by voxel
+          / (1e-15 * (Math.pow(getCrystalPixPerUM(), -3) * coefCalc
+              .getCryoDensity()))
+          // Voxel mass: 1um^3/1m/ml
+          // (= 1e-18/1e3) / [volume (um^-3) *density (g/ml)]
+          * 1e-6; // MGy
+      
+      
       final int[] cryoCrystalSize = getCryoCrystSizeVoxels();
  //     final int extraVoxels = getExtraVoxels(int maxPEDistance);
       double[] cryoCrystCoord;

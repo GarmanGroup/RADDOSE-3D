@@ -63,4 +63,35 @@ public abstract class CoefCalc {
    *         absorbed energy.
    */
   public abstract double[][] getFluorescentEscapeFactors(Beam beam);
+  
+  /**
+   * Calculate cryo-cross-sections for the new Beam.
+   * 
+   * @param b
+   *          Beam object
+   */
+  public abstract void updateCryoCoefficients(Beam b);
+  
+  /**
+   * Returns the current cryo absorption coefficient. (Photoelectric and Compton)
+   * 
+   * @return
+   *         absorption coefficient in units m^-1 (tbc)
+   */
+  public abstract double getCryoAbsorptionCoefficient();
+  
+  /**
+   * Returns the density of the cryo-solution.
+   * 
+   * @return
+   *         cryo-solution density in g/ml.
+   */ 
+  
+  public abstract double getCryoDensity();
+  
+  /**
+   * @return
+   *        if cryo solution has been entered or not
+   */
+  public abstract boolean isCryo();
 }

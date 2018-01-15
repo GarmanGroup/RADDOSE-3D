@@ -14,12 +14,19 @@ public class CoefCalcCompute extends CoefCalc {
    */
   private double                     absCoeffcomp, absCoeffphoto, attCoeff, elasCoeff, density, cellVolume;
   
+  private double cryoAbsCoeffComp, cryoAbsCoeffPhoto, cryoAttCoeff, cryoElasCoeff, cryoDensity;
+  
   /**
    * Set of the unique elements present in the crystal (including solvent
    * and macromolecular)
    */
   private Set<Element>               presentElements;
 
+  /**
+   * Set of the unique elements present in the cryo-solution
+   */
+  private Set<Element>               cryoElements;
+  
   /**
    * Percentage conversion.
    */
@@ -183,6 +190,8 @@ public class CoefCalcCompute extends CoefCalc {
   
   /** Number of atoms (all) in cryoSolution per unit cell volume. */
   private final Map<Element, Double> cryoOccurrence;
+  
+  private final Map<Element, Double> cryoConcentration;
 
   /**
    * Simple constructor.
@@ -194,6 +203,7 @@ public class CoefCalcCompute extends CoefCalc {
     solventOccurrence = new HashMap<Element, Double>();
     solventConcentration = new HashMap<Element, Double>();
     cryoOccurrence = new HashMap<Element, Double>();
+    cryoConcentration = new HashMap<Element, Double>();
   }
   
   /**
@@ -216,6 +226,21 @@ public class CoefCalcCompute extends CoefCalc {
   }
   
   /**
+   * Calculate the density of the cryo-solution from its composition.
+   */
+  protected void calculateCryoDensity() {
+    // density is easy. Loop through all atoms and calculate total mass.
+    // then express as g / cm-3.
+    double mass = 0;
+
+    for (Element e : cryoElements) {
+      mass += getCryoOccurrence(e) * e.getAtomicWeightInGrams();
+    }
+    
+    cryoDensity = mass * MASS_TO_CELL_VOLUME / (cellVolume * UNITSPERMILLIUNIT);
+  }
+  
+  /**
    * Calculates the absorption, attenuation and elastic coefficients for the 
    * crystal and updates the corresponding instance properties
    * 
@@ -229,6 +254,15 @@ public class CoefCalcCompute extends CoefCalc {
     elasCoeff = absCoefficients.get(ELASTIC);
     absCoeffcomp = absCoefficients.get(COMPTON);
     absCoeffphoto = absCoefficients.get(PHOTOELECTRIC);
+  }
+  
+  @Override
+  public void updateCryoCoefficients(final Beam b) { 
+    Map<String, Double> absCoefficients = calculateCryoCoefficientsAll(b.getPhotonEnergy());
+    cryoAttCoeff = absCoefficients.get(TOTAL);
+    cryoElasCoeff = absCoefficients.get(ELASTIC);
+    cryoAbsCoeffComp = absCoefficients.get(COMPTON);
+    cryoAbsCoeffPhoto = absCoefficients.get(PHOTOELECTRIC);
   }
   
   /**
@@ -331,6 +365,54 @@ public class CoefCalcCompute extends CoefCalc {
     return absCoeffs;
   }
 
+  /**
+   * Calculates the absorption, attenuation and elastic coefficients for
+   * the entire cryo solution.
+   * 
+   * @param energy
+   *          The energy in KeV of the incident photons.
+   * @return
+   *         Map containing the calculated coefficient values.
+   */
+  private Map<String, Double> calculateCryoCoefficientsAll(final double energy) {
+    
+    Map<String, Double> absCoeffs = new HashMap<String, Double>();
+    double crossSectionPhotoElectric = 0;
+    double crossSectionCoherent = 0;
+    double crossSectionTotal = 0;
+    double crossSectionComptonAttenuation = 0;
+
+    // take cross section contributions from each individual atom
+    // weighted by the cell volume
+    Map<Element.CrossSection, Double> cs;
+    for (Element e : this.cryoElements) {
+      cs = e.getAbsCoefficients(energy);
+      crossSectionPhotoElectric += getCryoOccurrence(e)
+          * cs.get(CrossSection.PHOTOELECTRIC) / cellVolume
+          / UNITSPERDECIUNIT;
+      crossSectionCoherent += getCryoOccurrence(e)
+          * cs.get(CrossSection.COHERENT) / cellVolume
+          / UNITSPERDECIUNIT;
+      crossSectionTotal += getCryoOccurrence(e)
+          * cs.get(CrossSection.TOTAL) / cellVolume
+          / UNITSPERDECIUNIT;
+      crossSectionComptonAttenuation += getCryoOccurrence(e) 
+          * cs.get(CrossSection.COMPTON) / cellVolume
+          / UNITSPERDECIUNIT;  
+    }
+    crossSectionPhotoElectric = crossSectionPhotoElectric / UNITSPERMILLIUNIT;
+    crossSectionTotal = crossSectionTotal / UNITSPERMILLIUNIT;
+    crossSectionCoherent = crossSectionCoherent / UNITSPERMILLIUNIT;
+    crossSectionComptonAttenuation = crossSectionComptonAttenuation/ UNITSPERMILLIUNIT;
+    
+    absCoeffs.put(PHOTOELECTRIC, crossSectionPhotoElectric);
+    absCoeffs.put(ELASTIC, crossSectionCoherent);
+    absCoeffs.put(COMPTON, crossSectionComptonAttenuation);
+    absCoeffs.put(TOTAL, crossSectionTotal);
+
+    return absCoeffs;
+  }
+  
   @Override
   public double[][] getFluorescentEscapeFactors(Beam beam) {
     double[][] fluorEscapeFactors = new double[presentElements.size()][NUM_FLUOR_ESCAPE_FACTORS];
@@ -556,6 +638,16 @@ public class CoefCalcCompute extends CoefCalc {
   @Override
   public double getDensity() {
     return density;
+  }
+  
+  @Override
+  public double getCryoAbsorptionCoefficient() {
+    return cryoAbsCoeffPhoto;
+  }
+  
+  @Override
+  public double getCryoDensity() {
+    return cryoDensity;
   }
   
   /**
@@ -788,6 +880,25 @@ public class CoefCalcCompute extends CoefCalc {
           + getSolventConcentration(heavyAtom));
     }
   }
+  
+  public void addCryoConcentrations(final List<String> cryoSolutionAtoms,
+      final List<Double> cryoSolutionConcs) {
+    // add in the concentrations of the cryo-solution atoms
+    for (int i = 0; i < cryoSolutionAtoms.size(); i++) {
+      Element cryoAtom = elementDB.getElement(cryoSolutionAtoms.get(i));
+      setCryoConcentration(cryoAtom, cryoSolutionConcs.get(i)
+          + getCryoConcentration(cryoAtom));
+    }
+       
+    for (Element e : cryoConcentration.keySet()) {
+      double conc = cryoConcentration.get(e);
+      double atomCount = conc * AVOGADRO_NUM * cellVolume * 1E-3 * 1E-27;
+      incrementCryoOccurrence(e, atomCount);
+    }
+    
+    cryoElements = new HashSet<Element>();
+    cryoElements.addAll(cryoOccurrence.keySet());
+  }
 
   /**
    * Calculate cell volume from cell dimensions and unit cell angles.
@@ -846,6 +957,19 @@ public class CoefCalcCompute extends CoefCalc {
       return 0.;
     }
   }
+  
+  public void setCryoConcentration(final Element element,
+      final Double newsolventConcentration) {
+    cryoConcentration.put(element, newsolventConcentration);
+  }
+  
+  public double getCryoConcentration(final Element element) {
+    if (cryoConcentration.containsKey(element)) {
+      return cryoConcentration.get(element);
+    } else {
+      return 0.;
+    }
+  }
 
   public Double getSolventOccurrence(final Element element) {
     if (solventOccurrence.containsKey(element)) {
@@ -868,6 +992,29 @@ public class CoefCalcCompute extends CoefCalc {
   public void setSolventOccurrence(final Element element,
       final Double newsolventOccurrence) {
     solventOccurrence.put(element, newsolventOccurrence);
+  }
+  
+  public Double getCryoOccurrence(final Element element) {
+    if (cryoOccurrence.containsKey(element)) {
+      return cryoOccurrence.get(element);
+    } else {
+      return 0.;
+    }
+  }
+
+  public void incrementCryoOccurrence(final Element element,
+      final Double increment) {
+    if (cryoOccurrence.containsKey(element)) {
+      cryoOccurrence.put(element,
+          increment + cryoOccurrence.get(element));
+    } else {
+      cryoOccurrence.put(element, increment);
+    }
+  }
+
+  public void setCryoOccurrence(final Element element,
+      final Double newsolventOccurrence) {
+    cryoOccurrence.put(element, newsolventOccurrence);
   }
 
   public Double getHetatmOccurrence(final Element element) {
@@ -939,5 +1086,14 @@ public class CoefCalcCompute extends CoefCalc {
     return getSolventOccurrence(element) + getMacromolecularOccurrence(element);
   }
   
+  @Override
+  public boolean isCryo() {
+    if (cryoElements != null) {
+      return true;
+    }
+    else {
+      return false;
+    }
+  }
   
 }

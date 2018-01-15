@@ -304,6 +304,11 @@ public class CoefCalcRaddose extends CoefCalc {
       t.printStackTrace();
     }
   }
+  
+  @Override
+  public void updateCryoCoefficients(final Beam b) {
+    // Does nothing
+  }
 
   @Override
   public double getAbsorptionCoefficient() {
@@ -364,5 +369,20 @@ public class CoefCalcRaddose extends CoefCalc {
   public double getInelasticCoefficient() {
     // Added to prevent error
     return 0;
+  }
+  
+  @Override
+  public double getCryoAbsorptionCoefficient() {
+    return 0;
+  }
+  
+  @Override
+  public double getCryoDensity() {
+    return 0;
+  }
+  
+  @Override
+  public boolean isCryo() {
+    return false;
   }
 }
