@@ -80,6 +80,8 @@ scope {
 	List<Double>	heavyProteinAtomNums;
 	List<String>	heavySolutionConcNames;
 	List<Double>	heavySolutionConcNums; 
+	List<String>	cryoSolutionMolecule;
+	List<Double>	cryoSolutionConc;
 	Double 			solFrac;
     HashMap<Object, Object> crystalProperties;
 	}
@@ -97,6 +99,7 @@ if ($crystal::crystalCoefCalc == 2)
   													$crystal::numMon, $crystal::numRes, $crystal::numRNA, $crystal::numDNA,
   													$crystal::heavyProteinAtomNames, $crystal::heavyProteinAtomNums,
   													$crystal::heavySolutionConcNames, $crystal::heavySolutionConcNums,
+  													$crystal::cryoSolutionMolecule, $crystal::cryoSolutionConc,
   													$crystal::solFrac);
 }
 
@@ -230,6 +233,8 @@ crystalLine
 	| bb=calculateFLEscape		{ $crystal::crystalProperties.put(Crystal.CRYSTAL_FLUORESCENT_ESCAPE, $bb.value); }
 	| cc=flResolution 		{ $crystal::crystalProperties.put(Crystal.CRYSTAL_FLUORESCENT_RESOLUTION, $cc.value);}
 	| dd=peResolution 		{ $crystal::crystalProperties.put(Crystal.CRYSTAL_PHOTOELECTRON_RESOLUTION, $dd.value);}
+	| ee=cryoSolution	{ $crystal::cryoSolutionMolecule	= $ee.names;
+							  $crystal::cryoSolutionConc	= $ee.num;	}
 
 	;
 
@@ -432,6 +437,13 @@ peResolution returns [int value]
 	: PERESOLUTION a=FLOAT {$value = Integer.parseInt($a.text);};
 PERESOLUTION : ('P'|'p')('E'|'e')('R'|'r')('E'|'e')('S'|'s')('O'|'o')('L'|'l')('U'|'u')('T'|'t')('I'|'i')('O'|'o')('N'|'n') ;
 
+cryoSolution returns [List<String> names, List<Double> num;]
+@init{
+$names 	= new ArrayList<String>();
+$num	= new ArrayList<Double>();
+}
+	: CRYOSOLUTION (a=ELEMENT b=FLOAT {$names.add($a.text); $num.add(Double.parseDouble($b.text)); } )+ ; 	
+CRYOSOLUTION : ('C'|'c')('R'|'r')('Y'|'y')('O'|'o')('S'|'s')('O'|'o')('L'|'l')('U'|'u')('T'|'t')('I'|'i')('O'|'o')('N'|'n') ;
 	
 // ------------------------------------------------------------------
 beam returns [Beam bObj]

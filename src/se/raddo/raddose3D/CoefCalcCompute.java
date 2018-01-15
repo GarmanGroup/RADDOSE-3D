@@ -180,6 +180,9 @@ public class CoefCalcCompute extends CoefCalc {
    * solventContentration.
    */
   private final Map<Element, Double> solventOccurrence;
+  
+  /** Number of atoms (all) in cryoSolution per unit cell volume. */
+  private final Map<Element, Double> cryoOccurrence;
 
   /**
    * Simple constructor.
@@ -190,6 +193,7 @@ public class CoefCalcCompute extends CoefCalc {
     heteroAtomOccurrence = new HashMap<Element, Double>();
     solventOccurrence = new HashMap<Element, Double>();
     solventConcentration = new HashMap<Element, Double>();
+    cryoOccurrence = new HashMap<Element, Double>();
   }
   
   /**
@@ -934,4 +938,6 @@ public class CoefCalcCompute extends CoefCalc {
   public double totalAtoms(final Element element) {
     return getSolventOccurrence(element) + getMacromolecularOccurrence(element);
   }
+  
+  
 }

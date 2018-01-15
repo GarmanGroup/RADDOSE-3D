@@ -46,6 +46,8 @@ public class CoefCalcFromParams extends CoefCalcCompute {
       final List<Double> heavyProteinAtomNums,
       final List<String> heavySolutionConcNames,
       final List<Double> heavySolutionConcNums,
+      final List<String> cryoSolutionMolecule,
+      final List<Double> cryoSolutionConc,
       final Double solventFraction) {
 
     Double alpha = cellAlpha;
@@ -75,6 +77,13 @@ public class CoefCalcFromParams extends CoefCalcCompute {
         heavySolutionConcNames, heavySolutionConcNums);
     
     super.calculateDensity();
+    
+    if (cryoSolutionMolecule.isEmpty() == false) {
+      //work out the number of atoms of each type per unit cell volume
+      //to do this first work out the number of molecules in this volume then multiply by each element
+      //think I'm going to do this in coefCalcCompute 
+      
+    }
   }
 
   /**
