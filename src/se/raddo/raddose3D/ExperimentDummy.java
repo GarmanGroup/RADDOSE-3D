@@ -266,7 +266,7 @@ public class ExperimentDummy extends Experiment {
       }
 
       @Override
-      public int getExtraVoxels(int maxPEDistance) {
+      public int getExtraVoxels(int maxPEDistance, double pixelsPerMicron) {
         // TODO Auto-generated method stub
         return 0;
       }

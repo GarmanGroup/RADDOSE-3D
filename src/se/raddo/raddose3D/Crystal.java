@@ -368,7 +368,7 @@ public abstract class Crystal {
    */
   public abstract double getCrystalPixPerUM();
   
-  public abstract int getExtraVoxels(int maxPEDistance);
+  public abstract int getExtraVoxels(int maxPEDistance, double pixelsPerMicron);
 
   /**
    * Return the coefCalc object that is being used to calculate coefficients.

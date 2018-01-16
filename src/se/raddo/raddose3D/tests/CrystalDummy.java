@@ -125,7 +125,7 @@ public class CrystalDummy extends Crystal {
   }
 
   @Override
-  public int getExtraVoxels(int maxPEDistance) {
+  public int getExtraVoxels(int maxPEDistance, double pixelsPerMicron) {
     // TODO Auto-generated method stub
     return 0;
   }

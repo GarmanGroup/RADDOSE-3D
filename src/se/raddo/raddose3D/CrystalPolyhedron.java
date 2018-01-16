@@ -671,14 +671,15 @@ public class CrystalPolyhedron extends Crystal {
     int ny = (int) StrictMath.round(ydim * crystalPixPerUM) + 1;
     int nz = (int) StrictMath.round(zdim * crystalPixPerUM) + 1;
     
-    int extraVoxels = getExtraVoxels(maxPEDistance); // the extra voxels to add on each end
+    double pixelsPerMicron =  (1/((double)maxPEDistance)) * 10;
+    int extraVoxels = getExtraVoxels(maxPEDistance, pixelsPerMicron); // the extra voxels to add on each end
 
     int[] tempCrystSize = { nx + extraVoxels*2, ny + extraVoxels*2, nz + extraVoxels*2};
     cryoCrystSizeVoxels = tempCrystSize; // Final Value
     
-    Double xshift = -xMinMax[0] + (extraVoxels/crystalPixPerUM);
-    Double yshift = -yMinMax[0] + (extraVoxels/crystalPixPerUM);
-    Double zshift = -zMinMax[0] + (extraVoxels/crystalPixPerUM);
+    Double xshift = -xMinMax[0] + (extraVoxels/pixelsPerMicron);
+    Double yshift = -yMinMax[0] + (extraVoxels/pixelsPerMicron);
+    Double zshift = -zMinMax[0] + (extraVoxels/pixelsPerMicron);
     
     double[][][][] tempCrystCoords = new double[nx + extraVoxels*2][ny + extraVoxels*2][nz + extraVoxels*2][3];
     
@@ -689,9 +690,47 @@ public class CrystalPolyhedron extends Crystal {
            * Set original coordinate. Temporary variables needed since we use
            * all of the previous xyz's to set each of the new ones.
            */
-          double x = -xshift + (i / crystalPixPerUM);
-          double y = -yshift + (j / crystalPixPerUM);
-          double z = -zshift + (k / crystalPixPerUM);
+          double x = 0, y = 0, z = 0;
+          
+          //I am trying to set a pixel size in the outside region based on the maximum PE travel distance 
+          //but still have the centre crystal superimposed to all the original pixels match up
+          
+          //for x
+          if (i <= extraVoxels) {
+            x = -xshift + (i / pixelsPerMicron);
+          }
+          else if (i >= nx + extraVoxels) {
+            x = -xshift + (extraVoxels / pixelsPerMicron) + ((nx - 1) / crystalPixPerUM) +  ((i + 1 - nx - extraVoxels) / pixelsPerMicron);
+          }
+          else {
+            x = -xshift + (extraVoxels / pixelsPerMicron) + ((i - extraVoxels) / crystalPixPerUM);
+          }
+          //for y
+          if (i <= extraVoxels) {
+            y = -yshift + (i / pixelsPerMicron);
+          }
+          else if (i >= nx + extraVoxels) {
+            y = -yshift + (extraVoxels / pixelsPerMicron) + ((ny - 1) / crystalPixPerUM) +  ((i + 1 - ny - extraVoxels) / pixelsPerMicron);
+          }
+          else {
+            y = -yshift + (extraVoxels / pixelsPerMicron) + ((i - extraVoxels) / crystalPixPerUM);
+          }
+          //for z
+          if (i <= extraVoxels) {
+            z = -zshift + (i / pixelsPerMicron);
+          }
+          else if (i >= nz + extraVoxels) {
+            z = -zshift + (extraVoxels / pixelsPerMicron) + ((nz -1) / crystalPixPerUM) +  ((i + 1 - nz - extraVoxels) / pixelsPerMicron);
+          }
+          else {
+            z = -zshift + (extraVoxels / pixelsPerMicron) + ((i - extraVoxels) / crystalPixPerUM);
+          }
+          
+          
+          
+  //          double x = -xshift + (i / crystalPixPerUM);
+  //          double y = -yshift + (j / crystalPixPerUM);
+  //          double z = -zshift + (k / crystalPixPerUM);
 
           /*
            * rotation in plane about [0 0 1] (P) Temporary variables needed
@@ -715,8 +754,9 @@ public class CrystalPolyhedron extends Crystal {
   }
   
   @Override
-  public int getExtraVoxels(int maxPEDistance) {
-    int extraVoxels = (int) (maxPEDistance/ (1/crystalPixPerUM));
+  public int getExtraVoxels(int maxPEDistance, double pixelsPerMicron) {
+    //New pixels per micron to be sensible for the maxPEDistance
+    int extraVoxels = (int) (maxPEDistance/ (1/pixelsPerMicron));
     return extraVoxels;
   }
   
