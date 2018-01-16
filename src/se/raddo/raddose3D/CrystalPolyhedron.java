@@ -1360,7 +1360,7 @@ flRelativeVoxXYZ = new double[feFactors.length][flDistBins][FL_ANGLE_RES_LIMIT *
     }
     
     //TO TEST
-    findCloseToSurface = false;
+    findCloseToSurface = false; //as it affects the DWD of small beam and large crystals needs to stay false
     
     if (findCloseToSurface) {
       // calculate whether this voxel classified as close to surface and  

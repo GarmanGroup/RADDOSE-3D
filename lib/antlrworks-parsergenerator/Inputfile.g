@@ -368,7 +368,7 @@ solventFraction returns [double solFrac]
 SOLVENTFRACTION : ('S'|'s')('O'|'o')('L'|'l')('V'|'v')('E'|'e')('N'|'n')('T'|'t')('F'|'f')('R'|'r')('A'|'a')('C'|'c')('T'|'t')('I'|'i')('O'|'o')('N'|'n') ;
 
 pdb returns [String pdb]
-	: PDBNAME a=STRING {$pdb = $a.text;};
+	: PDBNAME (a=STRING|a=FLOAT) {$pdb = $a.text;};
 PDBNAME : ('P'|'p')('D'|'d')('B'|'b') ;
 
 wireframeType returns [String value]
@@ -611,7 +611,7 @@ WS  :   ( ' '
 */
     
 STRING
-	: ('a'..'z' | 'A'..'Z' | '0'..'9' | '.' | '$' | '-' | '_')+
+	: ('a'..'z' | 'A'..'Z' | '0'..'9' | '.' | '$' | '-' | '_' | ':' | '\\' )+
 	;
 
 /*CHAR:  '\'' ( ESC_SEQ | ~('\''|'\\') ) '\''
