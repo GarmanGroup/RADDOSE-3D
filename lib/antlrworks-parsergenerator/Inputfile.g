@@ -114,9 +114,9 @@ if ($crystal::crystalCoefCalc == 3) {
 if ($crystal::crystalCoefCalc == 4)
 {
   if ($crystal::heavySolutionConcNames != null)
-  	$crystal::crystalCoefCalcClass = new CoefCalcFromPDB($crystal::pdb, $crystal::heavySolutionConcNames, $crystal::heavySolutionConcNums);
+  	$crystal::crystalCoefCalcClass = new CoefCalcFromPDB($crystal::pdb, $crystal::heavySolutionConcNames, $crystal::heavySolutionConcNums, $crystal::cryoSolutionMolecule, $crystal::cryoSolutionConc);
   else
-	$crystal::crystalCoefCalcClass = new CoefCalcFromPDB($crystal::pdb);
+	$crystal::crystalCoefCalcClass = new CoefCalcFromPDB($crystal::pdb, $crystal::cryoSolutionMolecule, $crystal::cryoSolutionConc);
   													  													
 }
 

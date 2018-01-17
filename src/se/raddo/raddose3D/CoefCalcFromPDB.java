@@ -535,7 +535,12 @@ public class CoefCalcFromPDB extends CoefCalcCompute {
    * 
    * @param pdbCode four letter PDB code
    */
-  public CoefCalcFromPDB(final String pdbCode) {
+  public CoefCalcFromPDB(final String pdbCode,
+      final List<String> cryoSolutionMolecule,
+      final List<Double> cryoSolutionConc) {
+    
+
+    
     if(isFile(pdbCode)) {
       // Get info form PDB file
       getPDBFile(pdbCode);
@@ -547,6 +552,12 @@ public class CoefCalcFromPDB extends CoefCalcCompute {
     }
     
     super.calculateDensity();
+    
+    if (cryoSolutionMolecule != null) {
+      //populate the 'cryo unit cell' with these atoms 
+      addCryoConcentrations(cryoSolutionMolecule, cryoSolutionConc);
+      super.calculateCryoDensity();
+    }
   }
 
   /**
@@ -559,7 +570,9 @@ public class CoefCalcFromPDB extends CoefCalcCompute {
    */
   public CoefCalcFromPDB(final String pdbName,
       final List<String> heavySolvConcNames,
-      final List<Double> heavySolvConcNums) {
+      final List<Double> heavySolvConcNums,
+      final List<String> cryoSolutionMolecule,
+      final List<Double> cryoSolutionConc) {
 
     this.addSolventConcentrations(heavySolvConcNames, heavySolvConcNums);
 
@@ -583,6 +596,12 @@ public class CoefCalcFromPDB extends CoefCalcCompute {
       }
     }
     super.calculateDensity();
+    
+    if (cryoSolutionMolecule != null) {
+      //populate the 'cryo unit cell' with these atoms 
+      addCryoConcentrations(cryoSolutionMolecule, cryoSolutionConc);
+      super.calculateCryoDensity();
+    }
   }
 
   /**
