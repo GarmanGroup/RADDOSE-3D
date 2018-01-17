@@ -90,6 +90,8 @@ public class CoefCalcFromSequenceSAXS extends CoefCalcFromSequence {
         heavyProteinAtomNums, heavySolutionConcNames, heavySolutionConcNums);
     
     multiplyAtoms(this.getNumMonomers());
+    
+    super.calculateDensity(); 
   }
 
   public void calculateHeavyAtomOccurrences(int monomers, Double solventFraction,

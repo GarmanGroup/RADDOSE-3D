@@ -86,7 +86,11 @@ public class CoefCalcFromSequence extends CoefCalcCompute{
         heavyProteinAtomNums, heavySolutionConcNames, heavySolutionConcNums,
         sequenceFile);
     
+    
     multiplyAtoms(this.getNumMonomers());
+    
+    super.calculateDensity(); //Density never being calculated
+    
   }
   
   /**
