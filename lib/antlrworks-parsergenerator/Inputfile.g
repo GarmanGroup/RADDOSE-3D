@@ -135,7 +135,8 @@ if ($crystal::crystalCoefCalc == 6)
   													$crystal::numMon,
   													$crystal::heavyProteinAtomNames, $crystal::heavyProteinAtomNums,
   													$crystal::heavySolutionConcNames, $crystal::heavySolutionConcNums,
-  													$crystal::solFrac, $crystal::seqFile);
+  													$crystal::solFrac, $crystal::seqFile,
+  													$crystal::cryoSolutionMolecule, $crystal::cryoSolutionConc);
 }
 
 if ($crystal::crystalCoefCalc == 7)
