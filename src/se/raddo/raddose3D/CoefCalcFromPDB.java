@@ -537,7 +537,7 @@ public class CoefCalcFromPDB extends CoefCalcCompute {
    */
   public CoefCalcFromPDB(final String pdbCode,
       final List<String> cryoSolutionMolecule,
-      final List<Double> cryoSolutionConc) {
+      final List<Double> cryoSolutionConc, final String oilBased) {
     
 
     
@@ -555,7 +555,7 @@ public class CoefCalcFromPDB extends CoefCalcCompute {
     
     if (cryoSolutionMolecule != null) {
       //populate the 'cryo unit cell' with these atoms 
-      addCryoConcentrations(cryoSolutionMolecule, cryoSolutionConc);
+      addCryoConcentrations(cryoSolutionMolecule, cryoSolutionConc, oilBased);
       super.calculateCryoDensity();
     }
   }
@@ -572,7 +572,7 @@ public class CoefCalcFromPDB extends CoefCalcCompute {
       final List<String> heavySolvConcNames,
       final List<Double> heavySolvConcNums,
       final List<String> cryoSolutionMolecule,
-      final List<Double> cryoSolutionConc) {
+      final List<Double> cryoSolutionConc, final String oilBased) {
 
     this.addSolventConcentrations(heavySolvConcNames, heavySolvConcNums);
 
@@ -599,7 +599,7 @@ public class CoefCalcFromPDB extends CoefCalcCompute {
     
     if (cryoSolutionMolecule != null) {
       //populate the 'cryo unit cell' with these atoms 
-      addCryoConcentrations(cryoSolutionMolecule, cryoSolutionConc);
+      addCryoConcentrations(cryoSolutionMolecule, cryoSolutionConc, oilBased);
       super.calculateCryoDensity();
     }
   }

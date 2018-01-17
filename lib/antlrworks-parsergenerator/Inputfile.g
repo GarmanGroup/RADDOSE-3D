@@ -83,6 +83,7 @@ scope {
 	List<String>	cryoSolutionMolecule;
 	List<Double>	cryoSolutionConc;
 	Double 			solFrac;
+	String                 oilBased;
     HashMap<Object, Object> crystalProperties;
 	}
 @init { 
@@ -100,7 +101,7 @@ if ($crystal::crystalCoefCalc == 2)
   													$crystal::heavyProteinAtomNames, $crystal::heavyProteinAtomNums,
   													$crystal::heavySolutionConcNames, $crystal::heavySolutionConcNums,
   													$crystal::cryoSolutionMolecule, $crystal::cryoSolutionConc,
-  													$crystal::solFrac);
+  													$crystal::solFrac, $crystal::oilBased	);
 }
 
 if ($crystal::crystalCoefCalc == 3) {
@@ -114,9 +115,9 @@ if ($crystal::crystalCoefCalc == 3) {
 if ($crystal::crystalCoefCalc == 4)
 {
   if ($crystal::heavySolutionConcNames != null)
-  	$crystal::crystalCoefCalcClass = new CoefCalcFromPDB($crystal::pdb, $crystal::heavySolutionConcNames, $crystal::heavySolutionConcNums, $crystal::cryoSolutionMolecule, $crystal::cryoSolutionConc);
+  	$crystal::crystalCoefCalcClass = new CoefCalcFromPDB($crystal::pdb, $crystal::heavySolutionConcNames, $crystal::heavySolutionConcNums, $crystal::cryoSolutionMolecule, $crystal::cryoSolutionConc, $crystal::oilBased	);
   else
-	$crystal::crystalCoefCalcClass = new CoefCalcFromPDB($crystal::pdb, $crystal::cryoSolutionMolecule, $crystal::cryoSolutionConc);
+	$crystal::crystalCoefCalcClass = new CoefCalcFromPDB($crystal::pdb, $crystal::cryoSolutionMolecule, $crystal::cryoSolutionConc, $crystal::oilBased	);
   													  													
 }
 
@@ -136,7 +137,8 @@ if ($crystal::crystalCoefCalc == 6)
   													$crystal::heavyProteinAtomNames, $crystal::heavyProteinAtomNums,
   													$crystal::heavySolutionConcNames, $crystal::heavySolutionConcNums,
   													$crystal::solFrac, $crystal::seqFile,
-  													$crystal::cryoSolutionMolecule, $crystal::cryoSolutionConc);
+  													$crystal::cryoSolutionMolecule, $crystal::cryoSolutionConc,
+  													$crystal::oilBased	);
 }
 
 if ($crystal::crystalCoefCalc == 7)
@@ -234,8 +236,10 @@ crystalLine
 	| bb=calculateFLEscape		{ $crystal::crystalProperties.put(Crystal.CRYSTAL_FLUORESCENT_ESCAPE, $bb.value); }
 	| cc=flResolution 		{ $crystal::crystalProperties.put(Crystal.CRYSTAL_FLUORESCENT_RESOLUTION, $cc.value);}
 	| dd=peResolution 		{ $crystal::crystalProperties.put(Crystal.CRYSTAL_PHOTOELECTRON_RESOLUTION, $dd.value);}
-	| ee=cryoSolution	{ $crystal::cryoSolutionMolecule	= $ee.names;
+	| ee=cryoSolution	        { $crystal::cryoSolutionMolecule	= $ee.names;
 							  $crystal::cryoSolutionConc	= $ee.num;	}
+	| ff=oilBased	                { $crystal::oilBased	= $ff.value;  }
+							
 
 	;
 
@@ -445,6 +449,11 @@ $num	= new ArrayList<Double>();
 }
 	: CRYOSOLUTION (a=ELEMENT b=FLOAT {$names.add($a.text); $num.add(Double.parseDouble($b.text)); } )+ ; 	
 CRYOSOLUTION : ('C'|'c')('R'|'r')('Y'|'y')('O'|'o')('S'|'s')('O'|'o')('L'|'l')('U'|'u')('T'|'t')('I'|'i')('O'|'o')('N'|'n') ;
+
+oilBased returns [String value]
+	: OILBASED a=STRING {$value = $a.text;};
+OILBASED : ('O'|'o')('I'|'i')('L'|'l')('B'|'b')('A'|'a')('S'|'s')('E'|'e')('D'|'d') ;
+	
 	
 // ------------------------------------------------------------------
 beam returns [Beam bObj]

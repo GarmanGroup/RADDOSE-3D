@@ -1112,7 +1112,8 @@ public class CoefCalcCompute extends CoefCalc {
   }
   
   public void addCryoConcentrations(final List<String> cryoSolutionAtoms,
-      final List<Double> cryoSolutionConcs) {
+      final List<Double> cryoSolutionConcs, final String oilBased) {
+    double nonWaterAtoms = 0;
     // add in the concentrations of the cryo-solution atoms
     for (int i = 0; i < cryoSolutionAtoms.size(); i++) {
       Element cryoAtom = elementDB.getElement(cryoSolutionAtoms.get(i));
@@ -1124,6 +1125,32 @@ public class CoefCalcCompute extends CoefCalc {
       double conc = cryoConcentration.get(e);
       double atomCount = conc * AVOGADRO_NUM * cellVolume * 1E-3 * 1E-27;
       incrementCryoOccurrence(e, atomCount);
+      nonWaterAtoms += atomCount;
+    }
+    
+    //check if oil based
+    boolean calcWater = true;
+    if (oilBased != null) {
+      String oilBase = oilBased.toUpperCase().trim();
+      if ("TRUE".equals(oilBase)) {
+        calcWater = false;
+      }
+    }
+    
+    if (calcWater == true){
+      //Add in water
+      double waterMolecules = WATER_CONCENTRATION * AVOGADRO_NUM
+          / UNITSPERMILLIUNIT
+          * cellVolume * (1 / MASS_TO_CELL_VOLUME) - nonWaterAtoms;
+    
+      // Add water molecules to hydrogen and oxygen.
+
+      Element hydrogen = elementDB.getElement("H");
+      setCryoOccurrence(hydrogen, getSolventOccurrence(hydrogen)
+          + waterMolecules * 2);
+
+      Element oxygen = elementDB.getElement("O");
+      setCryoOccurrence(oxygen, getSolventOccurrence(oxygen) + waterMolecules);
     }
     
     cryoElements = new HashSet<Element>();

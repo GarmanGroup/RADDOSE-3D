@@ -48,7 +48,7 @@ public class CoefCalcFromParams extends CoefCalcCompute {
       final List<Double> heavySolutionConcNums,
       final List<String> cryoSolutionMolecule,
       final List<Double> cryoSolutionConc,
-      final Double solventFraction) {
+      final Double solventFraction, final String oilBased) {
 
     Double alpha = cellAlpha;
     Double beta = cellBeta;
@@ -74,7 +74,7 @@ public class CoefCalcFromParams extends CoefCalcCompute {
 
     calculateAtomOccurrences(numMonomers, numResidues, numRNA, numDNA,
         sf, heavyProteinAtomNames, heavyProteinAtomNums,
-        heavySolutionConcNames, heavySolutionConcNums, cryoSolutionMolecule, cryoSolutionConc);
+        heavySolutionConcNames, heavySolutionConcNums, cryoSolutionMolecule, cryoSolutionConc, oilBased);
     
     super.calculateDensity();
 
@@ -103,7 +103,7 @@ public class CoefCalcFromParams extends CoefCalcCompute {
       final List<String> heavySolvConcNames,
       final List<Double> heavySolvConcNums,
       final List<String> cryoSolutionAtoms,
-      final List<Double> cryoSolutionConcs) {
+      final List<Double> cryoSolutionConcs, final String oilBased) {
 
     // Start by dealing with heavy atom in the
     // protein and adding these to the unit cell.
@@ -129,7 +129,7 @@ public class CoefCalcFromParams extends CoefCalcCompute {
     
     if (cryoSolutionAtoms != null) {
       //populate the 'cryo unit cell' with these atoms 
-      addCryoConcentrations(cryoSolutionAtoms, cryoSolutionConcs);
+      addCryoConcentrations(cryoSolutionAtoms, cryoSolutionConcs, oilBased);
       super.calculateCryoDensity();
     }
     
