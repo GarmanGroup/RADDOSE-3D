@@ -472,8 +472,8 @@ public class CoefCalcCompute extends CoefCalc {
     for (Element e : this.presentElements) {
       elAbsCoeffs = calculateCoefficientsElement(beam.getPhotonEnergy(), e);
       e.EdgeRatio();
-      if (beam.getPhotonEnergy() > e.getKEdge() &&   //if beam energy below 1.072keV then this is never true and the program messes up when flcalc is true
-          e.getAtomicNumber() >= MIN_ATOMIC_NUM_FOR_K_SHELL_IONISATION)  {
+      if (beam.getPhotonEnergy() > e.getKEdge() ) {// &&   //if beam energy below 1.072keV then this is never true and the program messes up when flcalc is true
+        //   e.getAtomicNumber() >= MIN_ATOMIC_NUM_FOR_K_SHELL_IONISATION)  {
         //K shell energy : checked from element database class
         kShellEnergy = e.getKEdge();
         //Probability of K shell ionization: checked worked out in element class
@@ -499,7 +499,8 @@ public class CoefCalcCompute extends CoefCalc {
       
       
       if (beam.getPhotonEnergy() > e.getL1Edge() &&
-          e.getAtomicNumber() >= MIN_ATOMIC_NUM_FOR_L_SHELL_IONISATION) {
+          //   e.getAtomicNumber() >= MIN_ATOMIC_NUM_FOR_L_SHELL_IONISATION) {
+          e.getAtomicNumber() >= 12) {
         l1ShellEnergy = e.getL1Edge();
         l1FactorA = (e.getL1ShellIonisationProb()) * (1-kFactorA);
       //  l1FactorB = e.getL1ShellFluorescenceYield();
@@ -522,7 +523,8 @@ public class CoefCalcCompute extends CoefCalc {
       }
       
       if (beam.getPhotonEnergy() > e.getL2Edge() &&
-          e.getAtomicNumber() >= MIN_ATOMIC_NUM_FOR_L_SHELL_IONISATION) {
+          //   e.getAtomicNumber() >= MIN_ATOMIC_NUM_FOR_L_SHELL_IONISATION) {
+          e.getAtomicNumber() >= 12) {
         l2ShellEnergy = e.getL2Edge();
         l2FactorA = e.getL2ShellIonisationProb() * (1-kFactorA - l1FactorA);
       //  l2FactorB = e.getL2ShellFluorescenceYield();
@@ -544,7 +546,8 @@ public class CoefCalcCompute extends CoefCalc {
       }
       
       if (beam.getPhotonEnergy() > e.getL3Edge() &&
-          e.getAtomicNumber() >= MIN_ATOMIC_NUM_FOR_L_SHELL_IONISATION) {
+          //   e.getAtomicNumber() >= MIN_ATOMIC_NUM_FOR_L_SHELL_IONISATION) {
+          e.getAtomicNumber() >= 12) {
         l3ShellEnergy = e.getL3Edge();
         l3FactorA = e.getL3ShellIonisationProb() * (1-kFactorA - l1FactorA - l2FactorA);
       //  l3FactorB = e.getL3ShellFluorescenceYield();
@@ -669,8 +672,8 @@ public class CoefCalcCompute extends CoefCalc {
     for (Element e : this.cryoElements) {
       elAbsCoeffs = calculateCoefficientsCryoElement(beam.getPhotonEnergy(), e);
       e.EdgeRatio();
-      if (beam.getPhotonEnergy() > e.getKEdge() &&   //if beam energy below 1.072keV then this is never true and the program messes up when flcalc is true
-          e.getAtomicNumber() >= MIN_ATOMIC_NUM_FOR_K_SHELL_IONISATION)  {
+      if (beam.getPhotonEnergy() > e.getKEdge() ) {// &&   //if beam energy below 1.072keV then this is never true and the program messes up when flcalc is true
+       //   e.getAtomicNumber() >= MIN_ATOMIC_NUM_FOR_K_SHELL_IONISATION)  {
         //K shell energy : checked from element database class
         kShellEnergy = e.getKEdge();
         //Probability of K shell ionization: checked worked out in element class
@@ -696,7 +699,8 @@ public class CoefCalcCompute extends CoefCalc {
       
       
       if (beam.getPhotonEnergy() > e.getL1Edge() &&
-          e.getAtomicNumber() >= MIN_ATOMIC_NUM_FOR_L_SHELL_IONISATION) {
+       //   e.getAtomicNumber() >= MIN_ATOMIC_NUM_FOR_L_SHELL_IONISATION) {
+          e.getAtomicNumber() >= 12) {
         l1ShellEnergy = e.getL1Edge();
         l1FactorA = (e.getL1ShellIonisationProb()) * (1-kFactorA);
       //  l1FactorB = e.getL1ShellFluorescenceYield();
@@ -718,7 +722,8 @@ public class CoefCalcCompute extends CoefCalc {
       }
       
       if (beam.getPhotonEnergy() > e.getL2Edge() &&
-          e.getAtomicNumber() >= MIN_ATOMIC_NUM_FOR_L_SHELL_IONISATION) {
+//        e.getAtomicNumber() >= MIN_ATOMIC_NUM_FOR_L_SHELL_IONISATION) {
+          e.getAtomicNumber() >= 12) {
         l2ShellEnergy = e.getL2Edge();
         l2FactorA = e.getL2ShellIonisationProb() * (1-kFactorA - l1FactorA);
       //  l2FactorB = e.getL2ShellFluorescenceYield();
@@ -738,7 +743,8 @@ public class CoefCalcCompute extends CoefCalc {
       }
       
       if (beam.getPhotonEnergy() > e.getL3Edge() &&
-          e.getAtomicNumber() >= MIN_ATOMIC_NUM_FOR_L_SHELL_IONISATION) {
+//        e.getAtomicNumber() >= MIN_ATOMIC_NUM_FOR_L_SHELL_IONISATION) {
+          e.getAtomicNumber() >= 12) {
         l3ShellEnergy = e.getL3Edge();
         l3FactorA = e.getL3ShellIonisationProb() * (1-kFactorA - l1FactorA - l2FactorA);
       //  l3FactorB = e.getL3ShellFluorescenceYield();
