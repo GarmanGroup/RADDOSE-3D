@@ -105,7 +105,7 @@ public class CrystalPolyhedron extends Crystal {
   /**
    * Max angle for photoelectron direction vectors.
    */
-  private static final double   PE_ANGLE_LIMIT = 0.99*2*Math.PI;
+  private static final double   PE_ANGLE_LIMIT = 1*2*Math.PI;
   
   /**
    * The resolution limit is the number of divisions to split the photoelectron direction vectors. 
@@ -114,10 +114,13 @@ public class CrystalPolyhedron extends Crystal {
    * This is 1*1 and is randomly chosen for each voxel
    */
   private static final int   PE_ANGLE_RESOLUTION = 1;
-  private static final int   PE_ANGLE_RES_LIMIT = 10;
+  private static final int   PE_ANGLE_RES_LIMIT = 16;
   
   private static final int   FL_ANGLE_RESOLUTION = 1;
-  private static final int   FL_ANGLE_RES_LIMIT = 10;
+  private static final int   FL_ANGLE_RES_LIMIT = 16;
+  
+  private int numberOfTracksPE; 
+  private int numberOfTracksFL;
   
   /**
    * 3d array for voxels where photoelectrons can reach
@@ -1303,35 +1306,49 @@ public class CrystalPolyhedron extends Crystal {
     double step = PE_ANGLE_LIMIT / PE_ANGLE_RES_LIMIT;  
     
     int counter = -1;
-    for (double theta = 0; theta < PE_ANGLE_LIMIT; theta += step) {
-      for (double phi = 0; phi < PE_ANGLE_LIMIT; phi += step) {
+    for (double phi = 0; phi < PE_ANGLE_LIMIT; phi += step) {
+      for (double theta = 0; theta <= PE_ANGLE_LIMIT / 2; theta += step) {
         // calculate x, y, z coordinates of voxel[i][j][k]
         // plus the polar coordinates for r, theta, phi
-        counter += 1;
-        double xNorm = Math.sin(theta) * Math.cos(phi);
-        double yNorm = Math.sin(theta) * Math.sin(phi);
-        double zNorm = Math.cos(theta);
         
-        for (int m = 0; m < peDistBins; m++) {
-          // calculate r in voxel coordinates rather than pixels
-          double r = 0;
-          if (cryo == false)  {  
-            r = PE_DISTANCES_TRAVELLED[m] * this.crystalPixPerUM; 
-            relativeVoxXYZ[m][counter][0] = r * xNorm;
-            relativeVoxXYZ[m][counter][1] = r * yNorm;
-            relativeVoxXYZ[m][counter][2] = r * zNorm;
+        //Check if this track has already been assigned
+        boolean replicateTrack = false;
+        if (theta == 0 || theta == (PE_ANGLE_LIMIT / 2)) {
+          if (phi == 0) {
+            replicateTrack = false;
           }
           else {
-            r = CRYO_PE_DISTANCES_TRAVELLED[m] * this.crystalPixPerUM;
-            relativeVoxXYZCryo[m][counter][0] = r * xNorm;
-            relativeVoxXYZCryo[m][counter][1] = r * yNorm;
-            relativeVoxXYZCryo[m][counter][2] = r * zNorm;
+            replicateTrack = true;
+          }
+        }
+        if (replicateTrack == false) {
+          counter += 1;
+          double xNorm = Math.sin(theta) * Math.cos(phi);
+          double yNorm = Math.sin(theta) * Math.sin(phi);
+          double zNorm = Math.cos(theta);
+
+          for (int m = 0; m < peDistBins; m++) {
+            // calculate r in voxel coordinates rather than pixels
+            double r = 0;
+            if (cryo == false)  {  
+              r = PE_DISTANCES_TRAVELLED[m] * this.crystalPixPerUM; 
+              relativeVoxXYZ[m][counter][0] = r * xNorm;
+              relativeVoxXYZ[m][counter][1] = r * yNorm;
+              relativeVoxXYZ[m][counter][2] = r * zNorm;
+            }
+            else {
+              r = CRYO_PE_DISTANCES_TRAVELLED[m] * this.crystalPixPerUM;
+              relativeVoxXYZCryo[m][counter][0] = r * xNorm;
+              relativeVoxXYZCryo[m][counter][1] = r * yNorm;
+              relativeVoxXYZCryo[m][counter][2] = r * zNorm;
+            }
+
           }
 
         }
-
       }
     }
+    numberOfTracksPE = counter + 1;
   }
   /**
    * Finds voxels that lie along fluorescence tracks
@@ -1343,10 +1360,21 @@ double step = PE_ANGLE_LIMIT / FL_ANGLE_RES_LIMIT;
 //flRelativeVoxXYZ = new double[feFactors.length][4][flDistBins][FL_ANGLE_RESOLUTION * FL_ANGLE_RESOLUTION][3];
 flRelativeVoxXYZ = new double[feFactors.length][flDistBins][FL_ANGLE_RES_LIMIT * FL_ANGLE_RES_LIMIT][3];
     int counter = -1;
-    for (double theta = 0; theta < PE_ANGLE_LIMIT; theta += step) {
-      for (double phi = 0; phi < PE_ANGLE_LIMIT; phi += step) {
+    for (double phi = 0; phi < PE_ANGLE_LIMIT; phi += step) {
+      for (double theta = 0; theta <= PE_ANGLE_LIMIT / 2; theta += step) {
         // calculate x, y, z coordinates of voxel[i][j][k]
         // plus the polar coordinates for r, theta, phi
+        
+        boolean replicateTrack = false;
+        if (theta == 0 || theta == (PE_ANGLE_LIMIT / 2)) {
+          if (phi == 0) {
+            replicateTrack = false;
+          }
+          else {
+            replicateTrack = true;
+          }
+        }
+        if (replicateTrack == false) {
         counter += 1;
         double xNorm = Math.sin(theta) * Math.cos(phi);
         double yNorm = Math.sin(theta) * Math.sin(phi);
@@ -1373,7 +1401,9 @@ flRelativeVoxXYZ = new double[feFactors.length][flDistBins][FL_ANGLE_RES_LIMIT *
           }
         }
    //   }
+      }
     } 
+    numberOfTracksFL = counter + 1;
   }
   
 
@@ -1428,7 +1458,7 @@ flRelativeVoxXYZ = new double[feFactors.length][flDistBins][FL_ANGLE_RES_LIMIT *
       // 5 um, what proportion exit the crystal.
               
       for (int q = 0; q < PE_ANGLE_RESOLUTION*PE_ANGLE_RESOLUTION; q++) { //for every tracks i'm choosing
-        int randomTrack = ThreadLocalRandom.current().nextInt(0, PE_ANGLE_RES_LIMIT*PE_ANGLE_RES_LIMIT); //choose one at random
+        int randomTrack = ThreadLocalRandom.current().nextInt(0, numberOfTracksPE); //choose one at random
         
         //TO TEST
       //  randomTrack = q;
@@ -1465,7 +1495,7 @@ flRelativeVoxXYZ = new double[feFactors.length][flDistBins][FL_ANGLE_RES_LIMIT *
       final double doseIncreaseFL) {
    double doseLostFromCrystalFL = 0;
    //choose a random track
-   int randomTrack = ThreadLocalRandom.current().nextInt(0, FL_ANGLE_RES_LIMIT*FL_ANGLE_RES_LIMIT);
+   int randomTrack = ThreadLocalRandom.current().nextInt(0, numberOfTracksFL);
    
    //for every energy distribution
     for (int n = 0; n < fluorescenceProportionEvent.length; n++) { 
@@ -1522,7 +1552,7 @@ flRelativeVoxXYZ = new double[feFactors.length][flDistBins][FL_ANGLE_RES_LIMIT *
     double doseBackInCrystalPE = 0;
     
     for (int q = 0; q < PE_ANGLE_RESOLUTION*PE_ANGLE_RESOLUTION; q++) { //for every tracks i'm choosing
-      int randomTrack = ThreadLocalRandom.current().nextInt(0, PE_ANGLE_RES_LIMIT*PE_ANGLE_RES_LIMIT); //choose one at random
+      int randomTrack = ThreadLocalRandom.current().nextInt(0, numberOfTracksPE); //choose one at random
       
       //TO TEST
     //  randomTrack = q;
