@@ -10,6 +10,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import se.raddo.raddose3D.Element.CrossSection;
+
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -114,10 +117,13 @@ public class CrystalPolyhedron extends Crystal {
    * This is 1*1 and is randomly chosen for each voxel
    */
   private static final int   PE_ANGLE_RESOLUTION = 1;
-  private static final int   PE_ANGLE_RES_LIMIT = 16;
+  private static final int   PE_ANGLE_RES_LIMIT = 128;
   
   private static final int   FL_ANGLE_RESOLUTION = 1;
   private static final int   FL_ANGLE_RES_LIMIT = 16;
+  
+  private static final int POLARISATION_RES = 16;
+  private int POLARISATION_RES_LIMIT = 128;
   
   private int numberOfTracksPE; 
   private int numberOfTracksFL;
@@ -128,9 +134,12 @@ public class CrystalPolyhedron extends Crystal {
   private  double[][][] relativeVoxXYZ;
   private  double[][][] relativeVoxXYZCryo;
   
+  private double[] angularDistribution;
+  private double[] cryoAngularDistribution;
+  
   /**
    * 5d array for voxels where fluorescence can reach
-   * the first two dimensions ar element and shell
+   * the first two dimensions are element and shell
    */
   //private double[][][][][] flRelativeVoxXYZ;
   private double[][][][] flRelativeVoxXYZ;
@@ -1183,20 +1192,23 @@ public class CrystalPolyhedron extends Crystal {
    * @see se.raddo.raddose3D.Crystal#setPEparamsForCurrentBeam(double)
    */
   @Override
-  public void setPEparamsForCurrentBeam(final double beamEnergy) {
+  public void setPEparamsForCurrentBeam(final double beamEnergy, CoefCalc coefCalc, double[][] feFactors) {
     // Initialise crystal photolectron escape properties here for current beam
     //first of all need to get PE distances 
     setMaxPEDistance(beamEnergy);
-    findVoxelsReachedByPE(false);
+  //  findVoxelsReachedByPE(false, coefCalc, beamEnergy, feFactors);
+    angularDistribution = setUpPEPolarisation(coefCalc, beamEnergy, feFactors, false);
     calcProportionVoxDoseDepositedByDist(beamEnergy);  
+    
   }
   
   @Override
-  public void setCryoPEparamsForCurrentBeam(final double beamEnergy) {
+  public void setCryoPEparamsForCurrentBeam(final double beamEnergy, CoefCalc coefCalc, double[][] feFactors) {
     // Initialise crystal photolectron escape properties here for current beam
     //first of all need to get PE distances 
     setMaxPEDistanceCryo(beamEnergy);
-    findVoxelsReachedByPE(true);
+  //  findVoxelsReachedByPE(true, coefCalc, beamEnergy, feFactors);
+    cryoAngularDistribution = setUpPEPolarisation(coefCalc, beamEnergy, feFactors, true);
     calcProportionVoxDoseDepositedByDistCryo(beamEnergy);  
   }
   
@@ -1302,14 +1314,47 @@ public class CrystalPolyhedron extends Crystal {
   /**
    * finds voxels that lie along the PE tracks
    */
-  private void findVoxelsReachedByPE(boolean cryo) {
-    double step = PE_ANGLE_LIMIT / PE_ANGLE_RES_LIMIT;  
+  @Override
+  public void findVoxelsReachedByPE(boolean cryo, CoefCalc coefCalc, final double energy, double[][] feFactors, final double angle) {
     
+    //Work out the angular distribution so tracks can be biased
+  //  double[] angularDistribution = setUpPEPolarisation(coefCalc, energy, feFactors, cryo);
+    double[] distribution = null;
+    if (cryo == false) {
+      distribution = angularDistribution;
+    }
+    else {
+      distribution = cryoAngularDistribution;
+    }
+    int tracks[] = numberOfTracksPerRegion(distribution);
+   
+    double step = PE_ANGLE_LIMIT / PE_ANGLE_RES_LIMIT;  
+ //   double thetaStep = PE_ANGLE_LIMIT / POLARISATION_RES_LIMIT;
+    double thetaAngle = 0;
+    int trackCounter = 0;
+    double thetaStep = (PE_ANGLE_LIMIT/2)/POLARISATION_RES / tracks[trackCounter];
+   
     int counter = -1;
     for (double phi = 0; phi < PE_ANGLE_LIMIT; phi += step) {
-      for (double theta = 0; theta <= PE_ANGLE_LIMIT / 2; theta += step) {
+    //Set track counter based on where angle is - i.e need to polarise along beam direction
+      trackCounter = (int) ((angle/(PE_ANGLE_LIMIT/2)) * POLARISATION_RES);
+      if (trackCounter >= POLARISATION_RES) { //if angle more than or = to pi restart distribution 
+        trackCounter -= POLARISATION_RES;
+      }
+      for (double theta = 0; theta <= PE_ANGLE_LIMIT / 2; theta += thetaStep) {
+  //    for (double theta = 0; theta <= PE_ANGLE_LIMIT / 2; theta += step) {  //This is to compare to even distribution
         // calculate x, y, z coordinates of voxel[i][j][k]
         // plus the polar coordinates for r, theta, phi
+        
+        //set the step size of theta based on the angular photoelectron distribution
+        thetaAngle = theta + angle;
+        if (thetaAngle >= ((PE_ANGLE_LIMIT/2)/POLARISATION_RES) * (trackCounter + 1)) {
+          trackCounter += 1;
+          if (trackCounter >= POLARISATION_RES) { //reset tracks once angle gets back round to 0 
+            trackCounter = 0;
+          }
+          thetaStep = (PE_ANGLE_LIMIT/2)/POLARISATION_RES / tracks[trackCounter];
+        }
         
         //Check if this track has already been assigned
         boolean replicateTrack = false;
@@ -1349,6 +1394,63 @@ public class CrystalPolyhedron extends Crystal {
       }
     }
     numberOfTracksPE = counter + 1;
+  }
+  
+  
+  private double[] setUpPEPolarisation(CoefCalc coefCalc, final double energy, double[][] feFactors, boolean cryo) {
+    double beta = 2; //this is only true for s shells but so far I haven't calculated it for other shells
+    int counter = -1;
+    //set up my double for storing stuff 
+    double[] area = new double[POLARISATION_RES];
+    
+    double width = Math.PI/POLARISATION_RES;
+    double proportionAtAngleElement[][] = new double[feFactors.length][POLARISATION_RES];
+    Map<Element.CrossSection, Double> cs;
+    for (Element e : coefCalc.getPresentElements(cryo)) {
+      counter += 1;
+      cs = e.getAbsCoefficients(energy);
+      double photoElectric = cs.get(CrossSection.PHOTOELECTRIC);
+      //get the total area under the distribution
+      double sumArea = 0;
+      for (int i = 1; i <= POLARISATION_RES; i ++) {
+        // the equation is (sigma/4pi)*(1+beta*0.5(3cos^2(theta) - 1))
+        double height = (solvePolarisationEquationForAngle(i, photoElectric, beta) + 
+                        solvePolarisationEquationForAngle(i-1, photoElectric, beta)) / 2;
+        area[i-1] = width * height;
+        sumArea += area[i-1];
+      }
+      //get the proportion at each angle sampled
+      for (int i = 0; i <= POLARISATION_RES-1; i ++) {
+        proportionAtAngleElement[counter][i] = area[i] / sumArea;
+      }
+    }
+    //Get the average proportion at each angle sampled based on all elements weighted by their
+    //absorption cross section relative to total cross section
+    double proportionAtAngleTotal[] = new double[POLARISATION_RES];
+    for (int i = 0; i <= POLARISATION_RES-1; i ++) { //for every angle sampled
+      double proportion = 0;
+      for (int j = 0; j < feFactors.length; j++) { //for every element
+        proportion += proportionAtAngleElement[j][i] * feFactors[j][0];
+      }
+      proportionAtAngleTotal[i] = proportion;
+    }
+    return proportionAtAngleTotal;
+  }
+  
+  private double solvePolarisationEquationForAngle(int i, double photoElectric, double beta) {
+    double theta = i * (Math.PI/POLARISATION_RES);
+    double height = (photoElectric / (4*Math.PI)) * (1+(beta*0.5*(3*Math.pow(Math.cos(theta), 2) - 1)));
+    return height;
+  }
+  
+  private int[] numberOfTracksPerRegion(double[] angularDistribution) {
+    int[] tracks = new int[angularDistribution.length];
+    POLARISATION_RES_LIMIT = 0; 
+      for (int i = 0; i < angularDistribution.length; i++) {
+        tracks[i] = (int) (PE_ANGLE_RES_LIMIT * angularDistribution[i]);
+        POLARISATION_RES_LIMIT += tracks[i];
+      }
+    return tracks;
   }
   /**
    * Finds voxels that lie along fluorescence tracks

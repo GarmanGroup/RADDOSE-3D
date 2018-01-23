@@ -257,7 +257,7 @@ public class CrystalSpherical extends Crystal {
   }
 
   @Override
-  public void setPEparamsForCurrentBeam(double beamEnergy) {    
+  public void setPEparamsForCurrentBeam(double beamEnergy, CoefCalc coefCalc, double[][] feFactors) {    
   }
   
   @Override
@@ -289,11 +289,16 @@ public class CrystalSpherical extends Crystal {
   
   
   @Override
-  public void setCryoPEparamsForCurrentBeam(double beamEnergy) {    
+  public void setCryoPEparamsForCurrentBeam(double beamEnergy, CoefCalc coefCalc, double[][] feFactors) {    
   }
   
   @Override
   public double addDoseAfterPECryo(int i, int j, int k, double doseIncreasePE) {
     return 0;
+  }
+  
+  @Override
+  public void findVoxelsReachedByPE(boolean cryo, CoefCalc coefCalc, final double energy, double[][] feFactors, final double angle) {
+    
   }
 }

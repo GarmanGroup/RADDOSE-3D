@@ -1,5 +1,7 @@
 package se.raddo.raddose3D;
 
+import java.util.Set;
+
 /**
  * Uses average values, assuming 50% solvent content.
  * Absorption and Attenuation coefficients are based on Holton 2010 (Absorption
@@ -128,4 +130,10 @@ public class CoefCalcAverage extends CoefCalc {
     }
     return fluorEscapeFactors;
   }
+  
+  @Override
+  public Set<Element> getPresentElements(boolean cryo){
+    return null;
+  }
+  
 }

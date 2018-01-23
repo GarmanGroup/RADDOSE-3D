@@ -1359,4 +1359,14 @@ public class CoefCalcCompute extends CoefCalc {
     }
   }
   
+  @Override
+  public Set<Element> getPresentElements(boolean cryo){
+    if (cryo == false) {
+      return presentElements;
+    }
+    else {
+      return cryoElements;
+    }
+  }
+  
 }

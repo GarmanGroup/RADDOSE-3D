@@ -295,9 +295,11 @@ public abstract class Crystal {
    *
    * @param beamEnergy
    */
-  public abstract void setPEparamsForCurrentBeam(double beamEnergy);
+  public abstract void setPEparamsForCurrentBeam(double beamEnergy, CoefCalc coefCalc, double[][] feFactors);
   public abstract void setFLparamsForCurrentBeam(final double[][] feFactors);
-  public abstract void setCryoPEparamsForCurrentBeam(double beamEnergy);
+  public abstract void setCryoPEparamsForCurrentBeam(double beamEnergy, CoefCalc coefCalc, double[][] feFactors);
+  
+  public abstract void findVoxelsReachedByPE(boolean cryo, CoefCalc coefCalc, final double energy, double[][] feFactors, final double angle);
   /**
    * Should increment the fluence array element ijk by fluenceVox.
    *
@@ -525,7 +527,7 @@ public abstract class Crystal {
   
   public void calculateCryoSolutionParameters(final Beam beam, double[][] cryoFeFactors) {
     calculatePEEnergySubtraction(cryoFeFactors, true);
-    setCryoPEparamsForCurrentBeam(beam.getPhotonEnergy()); 
+    setCryoPEparamsForCurrentBeam(beam.getPhotonEnergy(), coefCalc, cryoFeFactors); 
   }
   
   /**
@@ -542,7 +544,7 @@ public abstract class Crystal {
     double augerEnergy = 0;   
     double cryoAugerEnergy = 0;
     double cryoFluorescenceEnergyRelease = 0;
-    
+    double[][] cryoFeFactors = null;
     // Update coefficients in case the beam energy has changed.
     coefCalc.updateCoefficients(beam);
 
@@ -555,7 +557,7 @@ public abstract class Crystal {
     if (photoElectronEscape) {
       //Calculate PE electron binding energy subtraction
     calculatePEEnergySubtraction(feFactors, false); 
-    setPEparamsForCurrentBeam(beam.getPhotonEnergy()); 
+    setPEparamsForCurrentBeam(beam.getPhotonEnergy(), coefCalc, feFactors); 
     //Calc Auger
     augerEnergy = getAugerEnergy(feFactors);
     }
@@ -579,7 +581,7 @@ public abstract class Crystal {
 
    if (coefCalc.isCryo() == true && photoElectronEscape == true){
      coefCalc.updateCryoCoefficients(beam);
-     double[][] cryoFeFactors = coefCalc.getCryoFluorescentEscapeFactors(beam);
+     cryoFeFactors = coefCalc.getCryoFluorescentEscapeFactors(beam);
      calculateCryoSolutionParameters(beam, cryoFeFactors);
      cryoAugerEnergy = getAugerEnergy(cryoFeFactors);
        if (fluorescentEscape) {
@@ -629,7 +631,7 @@ public abstract class Crystal {
     for (int n = 0; n < angles.length; n++) {
       // Expose one angle
       exposeAngle(angles[n], beam, wedge, n, angles.length, fluorescenceEnergyRelease, 
-                  augerEnergy, cryoAugerEnergy, cryoFluorescenceEnergyRelease);
+                  augerEnergy, cryoAugerEnergy, cryoFluorescenceEnergyRelease, feFactors, cryoFeFactors);
 
       for (ExposeObserver eo : exposureObservers) {
         eo.imageComplete(n, angles[n]);
@@ -673,7 +675,7 @@ public abstract class Crystal {
   private void exposeAngle(final double angle, final Beam beam,
       final Wedge wedge, final int anglenum, final int anglecount,  
       double fluorescenceEnergyRelease, double augerEnergy, double cryoAugerEnergy,
-      double cryoFluorescenceEnergyRelease) {
+      double cryoFluorescenceEnergyRelease, double[][] feFactors, double[][] cryoFeFactors) {
 
     final int[] crystalSize = getCrystSizeVoxels();
 
@@ -683,8 +685,17 @@ public abstract class Crystal {
     final double anglecos = Math.cos(angle);
     final double anglesin = Math.sin(angle);
     setupDepthFinding(angle, wedge);
+    
+    
+    //Set up tracks in polarised direction for photoelectrons
+    if (photoElectronEscape) {
+      findVoxelsReachedByPE(false, coefCalc, beam.getPhotonEnergy(), feFactors, angle);
+      if (coefCalc.isCryo() == true) {
+        findVoxelsReachedByPE(true, coefCalc, beam.getPhotonEnergy(), cryoFeFactors, angle);
+      }
+    }
 
-
+    
     final double energyPerFluence =
         1 - Math.exp(-1 * coefCalc.getAbsorptionCoefficient()
             / getCrystalPixPerUM());

@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Scanner;
+import java.util.Set;
 
 /**
  * Calculate absorption and attenuation coefficients using a previous version of
@@ -393,5 +394,10 @@ public class CoefCalcRaddose extends CoefCalc {
       fluorEscapeFactors[0][i] = 0.0;
     }
     return fluorEscapeFactors;
+  }
+  
+  @Override
+  public Set<Element> getPresentElements(boolean cryo){
+    return null;
   }
 }

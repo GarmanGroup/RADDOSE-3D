@@ -1,5 +1,7 @@
 package se.raddo.raddose3D;
 
+import java.util.Set;
+
 public abstract class CoefCalc {
   /**
    * Calculate cross-sections for the new Beam.
@@ -103,4 +105,6 @@ public abstract class CoefCalc {
    *         fluorescence factors.
    */
   public abstract double[][] getCryoFluorescentEscapeFactors(Beam beam);
+  
+  public abstract Set<Element> getPresentElements(boolean cryo);
 }
