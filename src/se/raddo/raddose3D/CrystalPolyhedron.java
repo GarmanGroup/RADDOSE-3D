@@ -1342,7 +1342,7 @@ public class CrystalPolyhedron extends Crystal {
         trackCounter -= POLARISATION_RES;
       }
       for (double theta = 0; theta <= PE_ANGLE_LIMIT / 2; theta += thetaStep) {
-  //    for (double theta = 0; theta <= PE_ANGLE_LIMIT / 2; theta += step) {  //This is to compare to even distribution
+   //  for (double theta = 0; theta <= PE_ANGLE_LIMIT / 2; theta += step) {  //This is to compare to even distribution
         // calculate x, y, z coordinates of voxel[i][j][k]
         // plus the polar coordinates for r, theta, phi
         
@@ -1353,7 +1353,20 @@ public class CrystalPolyhedron extends Crystal {
           if (trackCounter >= POLARISATION_RES) { //reset tracks once angle gets back round to 0 
             trackCounter = 0;
           }
-          thetaStep = (PE_ANGLE_LIMIT/2)/POLARISATION_RES / tracks[trackCounter];
+          if (tracks[trackCounter] != 0) {
+            thetaStep = ((PE_ANGLE_LIMIT/2)/POLARISATION_RES) / (tracks[trackCounter]);
+          }
+          else {
+            int skipCount = 0;
+            while (tracks[trackCounter] == 0) {
+              skipCount += 1;
+              trackCounter += 1;
+              if (trackCounter >= POLARISATION_RES) { //reset tracks once angle gets back round to 0 
+                trackCounter = 0;
+              }
+            }
+            thetaStep = ((PE_ANGLE_LIMIT/2)/POLARISATION_RES) * skipCount; //skip the zero tracks in this region
+          }
         }
         
         //Check if this track has already been assigned
@@ -1399,6 +1412,8 @@ public class CrystalPolyhedron extends Crystal {
   
   private double[] setUpPEPolarisation(CoefCalc coefCalc, final double energy, double[][] feFactors, boolean cryo) {
     double beta = 2; //this is only true for s shells but so far I haven't calculated it for other shells
+    // at the moment every photoelectron is polarised. I will change it o it is just for s shells, 
+    // the rest will have an even distribution to contribute, flattening the amount of polarisation. 
     int counter = -1;
     //set up my double for storing stuff 
     double[] area = new double[POLARISATION_RES];
@@ -1434,6 +1449,18 @@ public class CrystalPolyhedron extends Crystal {
       }
       proportionAtAngleTotal[i] = proportion;
     }
+    
+    //TEST by forcing an extreme distribution
+    /*
+    for (int i = 0; i <= POLARISATION_RES-1; i ++) {
+      if (i == 0) {
+        proportionAtAngleTotal[i] = 1;
+      }
+      else {
+        proportionAtAngleTotal[i] = 0;
+      }
+    }
+    */
     return proportionAtAngleTotal;
   }
   
@@ -1448,8 +1475,16 @@ public class CrystalPolyhedron extends Crystal {
     POLARISATION_RES_LIMIT = 0; 
       for (int i = 0; i < angularDistribution.length; i++) {
         tracks[i] = (int) (PE_ANGLE_RES_LIMIT * angularDistribution[i]);
+        
+        //Test by forcing really high at 0
+    //    if (i == 0) {
+    //      tracks[i] = 100;
+    //    }
+        
+        
         POLARISATION_RES_LIMIT += tracks[i];
       }
+      
     return tracks;
   }
   /**
