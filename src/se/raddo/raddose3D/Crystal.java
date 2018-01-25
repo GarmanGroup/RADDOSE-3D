@@ -741,6 +741,13 @@ public abstract class Crystal {
     
     double[] crystCoords;
     double[] translateRotateCoords = new double[3];
+    
+    double[][][] voxImageFluence = new double[crystalSize[0]][crystalSize[1]][crystalSize[2]];
+    double[][][] voxImageDose = new double[crystalSize[0]][crystalSize[1]][crystalSize[2]];
+    double[][][] absorbedEnergy = new double[crystalSize[0]][crystalSize[1]][crystalSize[2]];
+    double[][][] voxElasticYield = new double[crystalSize[0]][crystalSize[1]][crystalSize[2]];
+    double[][][] voxImageComptonFluence = new double[crystalSize[0]][crystalSize[1]][crystalSize[2]];
+    
     for (int i = 0; i < crystalSize[0]; i++) {
       for (int j = 0; j < crystalSize[1]; j++) {
         for (int k = 0; k < crystalSize[2]; k++) {
@@ -763,8 +770,8 @@ public abstract class Crystal {
                * to the voxel.
                */
 
-
-              double voxImageFluence =     // Attenuates the beam for absorption in joules 
+              
+              voxImageFluence[i][j][k] =     // Attenuates the beam for absorption in joules 
                   unattenuatedBeamIntensity * beamAttenuationFactor // beam attenuation factor includes voxel size
                       * Math.exp(depth * beamAttenuationExpFactor);   
               
@@ -776,20 +783,21 @@ public abstract class Crystal {
               double voxImageElectronEnergyDose = mcsquared / (2*beamenergy + mcsquared);
 
               voxImageElectronEnergyDose = (beamenergy * (1 - (Math.pow(voxImageElectronEnergyDose, 0.5)))); //Compton electron energy in joules
-              double numberofphotons = voxImageFluence / beamenergy; //This gives I0 in equation 9 in Karthik 2010, dividing by beam energy leaves photons per um^2/s
-              double voxImageComptonFluence = numberofphotons * voxImageElectronEnergyDose; //Re-calculate voxImageFluence using Compton electron energy
-              double voxImageDoseCompton = fluenceToDoseFactorCompton * voxImageComptonFluence;
+              double numberofphotons = voxImageFluence[i][j][k] / beamenergy; //This gives I0 in equation 9 in Karthik 2010, dividing by beam energy leaves photons per um^2/s
+              voxImageComptonFluence[i][j][k] = numberofphotons * voxImageElectronEnergyDose; //Re-calculate voxImageFluence using Compton electron energy
+              double voxImageDoseCompton = fluenceToDoseFactorCompton * voxImageComptonFluence[i][j][k];
               
               // MGy
-              double voxElasticYield = fluenceToElasticFactor *
-                  voxImageFluence; //* beamEnergy;
+              
+              voxElasticYield[i][j][k] = fluenceToElasticFactor *
+                  voxImageFluence[i][j][k]; //* beamEnergy;
 
-              double voxImageDose = fluenceToDoseFactor * voxImageFluence;
+              voxImageDose[i][j][k] = fluenceToDoseFactor * voxImageFluence[i][j][k];
 
-              if (voxImageDose > 0) {
-                totalCrystalDose += voxImageDose;
+              if (voxImageDose[i][j][k] > 0) {
+                totalCrystalDose += voxImageDose[i][j][k];
 
-                addFluence(i, j, k, voxImageFluence);
+                addFluence(i, j, k, voxImageFluence[i][j][k]);
                 
                 if (photoElectronEscape == true && fluorescentEscape == true) {
                  //Fl part
@@ -806,7 +814,7 @@ public abstract class Crystal {
                   double totAugerDose = augerEnergy * numberofphotons * fluenceToDoseFactor;
                   
                   //Do PE
-                  double dosePE = voxImageDose - voxImageFlDoseRelease - totAugerDose;
+                  double dosePE = voxImageDose[i][j][k] - voxImageFlDoseRelease - totAugerDose;
                 //  dosePE = 0;
                 //TOTEST - Fl escape prob = 1
                   // voxImageFlDoseRelease = 0;
@@ -840,7 +848,7 @@ public abstract class Crystal {
                   //Dose in voxel
                   double totAugerDose = augerEnergy * numberofphotons * fluenceToDoseFactor;
                   //Do PE
-                  double dosePE = voxImageDose - totAugerDose;
+                  double dosePE = voxImageDose[i][j][k] - totAugerDose;
                   double doseLostFromCrystalPE = addDoseAfterPE(i, j, k, dosePE);
                   totalEscapedDosePE +=  doseLostFromCrystalPE;
                   totalEscapedDose += doseLostFromCrystalPE;
@@ -854,7 +862,7 @@ public abstract class Crystal {
                   double totFluorescenceEnergyRelease = fluorescenceEnergyRelease * numberofphotons;
                 //convert this to a dose to be released
                   double voxImageFlDoseRelease = fluenceToDoseFactor * totFluorescenceEnergyRelease;
-                  double doseLeft = voxImageDose - voxImageFlDoseRelease;
+                  double doseLeft = voxImageDose[i][j][k] - voxImageFlDoseRelease;
                   double doseLostFromCrytsalFL = 0;
                   if (voxImageFlDoseRelease > 0) {
                   doseLostFromCrytsalFL = addDoseAfterFL(i, j, k, voxImageFlDoseRelease);
@@ -865,16 +873,17 @@ public abstract class Crystal {
                   
                 }
                 else { // no escape
-                  addDose(i, j, k, voxImageDose);
+                  addDose(i, j, k, voxImageDose[i][j][k]);
                 }
 
                 addDose(i, j, k, voxImageDoseCompton);
-                addElastic(i, j, k, voxElasticYield);
+                addElastic(i, j, k, voxElasticYield[i][j][k]);
 
-              } else if (voxImageDose < 0) {
+              } else if (voxImageDose[i][j][k] < 0) {
                 throw new ArithmeticException(
                     "negative dose encountered - this should never happen");
               }
+              /*
 //I MAY HAVE TO CHANGE SUMMIN HERE AS WELL????????? - WON'T SOLVE ISSUE BUT MAY NEED TO HAPPEN
               double totalVoxelDose = getDose(i, j, k); //how can this be done before the whole crystal???
               //This may need to change - ask what this is
@@ -896,12 +905,72 @@ public abstract class Crystal {
                     totalVoxelDose, voxImageFluence,
                     relativeDiffractionEfficiency, absorbedEnergy,
                     voxElasticYield);
+                    
               }
+              */
+              /*
+              double totalVoxelDose = getDose(i, j, k); //how can this be done before the whole crystal???
+              //This may need to change - ask what this is
+              double interpolatedVoxelDose = totalVoxelDose + voxImageDose[i][j][k] / 2;
+              double relativeDiffractionEfficiency =
+                  getDDM().calcDecay(interpolatedVoxelDose);
+
+              // Fluence times the fraction of the beam absorbed by the voxel
+
+//may need to pass in different things or pass in more and change in observer
+
+              absorbedEnergy[i][j][k] = voxImageFluence[i][j][k] * energyPerFluence;
+              double comptonabsorbedEnergy = voxImageComptonFluence[i][j][k] * energyPerFluence;
+              
+              absorbedEnergy[i][j][k] = absorbedEnergy[i][j][k] + comptonabsorbedEnergy;
+
+              for (ExposeObserver eo : exposureObservers) {
+                eo.exposureObservation(anglenum, i, j, k, voxImageDose[i][j][k],
+                    totalVoxelDose, voxImageFluence[i][j][k],
+                    relativeDiffractionEfficiency, absorbedEnergy[i][j][k],
+                    voxElasticYield[i][j][k]);
+              }
+              */
             } // IF inbeam
           } // IF crystOcc
         } //i
       } // j
     } // k : end of looping over crystal voxels
+    
+    //loop through all again for DWD
+    for (int i = 0; i < crystalSize[0]; i++) {
+      for (int j = 0; j < crystalSize[1]; j++) {
+        for (int k = 0; k < crystalSize[2]; k++) {
+          if (isCrystalAt(i, j, k)) {
+            if (voxImageDose[i][j][k] > 0) {
+              double totalVoxelDose = getDose(i, j, k); //how can this be done before the whole crystal???
+              //This may need to change - ask what this is
+              double interpolatedVoxelDose = totalVoxelDose + voxImageDose[i][j][k] / 2;
+              double relativeDiffractionEfficiency =
+                  getDDM().calcDecay(interpolatedVoxelDose);
+
+              // Fluence times the fraction of the beam absorbed by the voxel
+
+//may need to pass in different things or pass in more and change in observer
+
+              absorbedEnergy[i][j][k] = voxImageFluence[i][j][k] * energyPerFluence;
+              double comptonabsorbedEnergy = voxImageComptonFluence[i][j][k] * energyPerFluence;
+              
+              absorbedEnergy[i][j][k] = absorbedEnergy[i][j][k] + comptonabsorbedEnergy;
+
+              for (ExposeObserver eo : exposureObservers) {
+                eo.exposureObservation(anglenum, i, j, k, voxImageDose[i][j][k],
+                    totalVoxelDose, voxImageFluence[i][j][k],
+                    relativeDiffractionEfficiency, absorbedEnergy[i][j][k],
+                    voxElasticYield[i][j][k]);
+              }
+            }
+          }
+        }
+      }
+    }
+    
+    
   boolean aSurface = coefCalc.isCryo();
   if (aSurface) {
     if (photoElectronEscape) {
@@ -936,7 +1005,7 @@ public abstract class Crystal {
               translateRotateCoords = translateCrystalToPosition(cryoCrystCoord, wedgeStart, wedgeTranslation,
                   anglecos, anglesin) ;
 
-              /* Unattenuated beam intensity (J/um^2/s) */
+              // Unattenuated beam intensity (J/um^2/s) 
               double unattenuatedBeamIntensity = beam.beamIntensity(
                   translateRotateCoords[0], translateRotateCoords[1],
                   wedge.getOffAxisUm());
@@ -957,26 +1026,26 @@ public abstract class Crystal {
                 
                 double depth = findDepth(depthCoords, angle, wedge);
                 
-                double voxImageFluence =     // Attenuates the beam for absorption in joules 
+                double cryoVoxImageFluence =     // Attenuates the beam for absorption in joules 
                     unattenuatedBeamIntensity * beamAttenuationFactor
                         * Math.exp(depth * beamAttenuationExpFactor); 
                 //For Auger
                 double beamEnergy = (beam.getPhotonEnergy() * Beam.KEVTOJOULES);
-                double numberOfPhotons = voxImageFluence / beamEnergy;
+                double numberOfPhotons = cryoVoxImageFluence / beamEnergy;
                 
-                double voxImageDose = fluenceToDoseFactor * voxImageFluence; 
+                double cryoVoxImageDose = fluenceToDoseFactor * cryoVoxImageFluence; 
                                                                              
-                if (voxImageDose > 0) {
+                if (cryoVoxImageDose > 0) {
                   double dosePE = 0;
                   double totCryoAugerDose = cryoAugerEnergy * numberOfPhotons * fluenceToDoseFactor;
                   if (fluorescentEscape == false) {
-                    dosePE = voxImageDose - totCryoAugerDose;
+                    dosePE = cryoVoxImageDose - totCryoAugerDose;
                   }
                   else {
                     double totCryoFluorescenceEnergyRelease = cryoFluorescenceEnergyRelease * numberOfPhotons;
                     //convert this to a dose to be released
                     double voxImageFlDoseRelease = fluenceToDoseFactor * totCryoFluorescenceEnergyRelease;
-                    dosePE = voxImageDose - totCryoAugerDose - voxImageFlDoseRelease;
+                    dosePE = cryoVoxImageDose - totCryoAugerDose - voxImageFlDoseRelease;
                   }
                   double doseAddedBack = addDoseAfterPECryo(i, j, k, dosePE); //no Auger or fluorescence for now add that in later
                   totalDoseFromSurrounding += doseAddedBack;
@@ -988,6 +1057,7 @@ public abstract class Crystal {
       }  //end i
     } // end if pe true
   }//end if there is a surface
+  
   }
   
  

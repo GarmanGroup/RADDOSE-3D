@@ -1328,27 +1328,37 @@ public class CrystalPolyhedron extends Crystal {
     }
     int tracks[] = numberOfTracksPerRegion(distribution);
    
-    double step = PE_ANGLE_LIMIT / PE_ANGLE_RES_LIMIT;  
+//    double step = PE_ANGLE_LIMIT / PE_ANGLE_RES_LIMIT;  
+    double step = 2*Math.PI / PE_ANGLE_RES_LIMIT;  
  //   double thetaStep = PE_ANGLE_LIMIT / POLARISATION_RES_LIMIT;
     double thetaAngle = 0;
     int trackCounter = 0;
-    double thetaStep = (PE_ANGLE_LIMIT/2)/POLARISATION_RES / tracks[trackCounter];
-   
+    double thetaStep = 0;
+   // thetaStep = (PE_ANGLE_LIMIT/2)/POLARISATION_RES / tracks[trackCounter];
     int counter = -1;
-    for (double phi = 0; phi < PE_ANGLE_LIMIT; phi += step) {
+  //  for (double phi = 0; phi < PE_ANGLE_LIMIT; phi += step) {
+      for (double phi = 0*Math.PI; phi < 2*Math.PI; phi += step) {
     //Set track counter based on where angle is - i.e need to polarise along beam direction
       trackCounter = (int) ((angle/(PE_ANGLE_LIMIT/2)) * POLARISATION_RES);
       if (trackCounter >= POLARISATION_RES) { //if angle more than or = to pi restart distribution 
         trackCounter -= POLARISATION_RES;
       }
-      for (double theta = 0; theta <= PE_ANGLE_LIMIT / 2; theta += thetaStep) {
+      
+      if (tracks[trackCounter] != 0) {
+      thetaStep = (PE_ANGLE_LIMIT/2)/POLARISATION_RES / tracks[trackCounter];
+      }
+      else {
+        thetaStep = (PE_ANGLE_LIMIT/2)/POLARISATION_RES;
+      }
+      
+     for (double theta = 0; theta <= PE_ANGLE_LIMIT / 2; theta += thetaStep) {
    //  for (double theta = 0; theta <= PE_ANGLE_LIMIT / 2; theta += step) {  //This is to compare to even distribution
         // calculate x, y, z coordinates of voxel[i][j][k]
         // plus the polar coordinates for r, theta, phi
         
         //set the step size of theta based on the angular photoelectron distribution
         thetaAngle = theta + angle;
-        if (thetaAngle >= ((PE_ANGLE_LIMIT/2)/POLARISATION_RES) * (trackCounter + 1)) {
+        if (thetaAngle >= (((PE_ANGLE_LIMIT/2)/POLARISATION_RES) * (trackCounter + 1))- theta)  { //relook at this, spacing not quite right
           trackCounter += 1;
           if (trackCounter >= POLARISATION_RES) { //reset tracks once angle gets back round to 0 
             trackCounter = 0;
