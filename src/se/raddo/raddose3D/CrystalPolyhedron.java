@@ -74,6 +74,9 @@ public class CrystalPolyhedron extends Crystal {
    * Constants for calculation of Gumbel distribution mu and beta parameters.
    */
   private static final double[] GUMBEL_DISTN_CALC_PARAMS = {0.0094,0.0575,0.002,0.0096};
+  private static final double[] GUMBEL_DISTN_CALC_LOC = {0.0121, 0.0405, 0.0098, 0.0943, 0.008, 0.1922};
+  private static final double[] GUMBEL_DISTN_CALC_SCALE = {0.002, 0.0076, 0.0013, 0.0253, 0.001, 0.0372};
+ // private static final double[] GUMBEL_DISTN_CALC_PARAMS = {0.0074,0.0391,0.002,0.0096}; //The CSDA at 1.35
   
   /**
    * Distance bins travelled by a photoelectron.
@@ -117,7 +120,7 @@ public class CrystalPolyhedron extends Crystal {
    * This is 1*1 and is randomly chosen for each voxel
    */
   private static final int   PE_ANGLE_RESOLUTION = 1;
-  private static final int   PE_ANGLE_RES_LIMIT = 128;
+  private static final int   PE_ANGLE_RES_LIMIT = 100;
   
   private static final int   FL_ANGLE_RESOLUTION = 1;
   private static final int   FL_ANGLE_RES_LIMIT = 16;
@@ -1025,9 +1028,17 @@ public class CrystalPolyhedron extends Crystal {
       double x = distancesTravelled[i];
       double z = (x - mu)/beta;
       
-      gumbelDistribution[i] = Math.exp(-(z + Math.exp(-z))) / beta;
+    //  gumbelDistribution[i] = Math.exp(-(z + Math.exp(-z))) / beta; //this is incorrect as this is gumbel_r
+        gumbelDistribution[i] = Math.exp(z - Math.exp(z)) / beta;  //this is gumbel_l as it should be
     }
   }
+  
+  private double calculateGumbelPDF(final double x, final double mu, final double beta) {
+    double z = (x-mu)/beta;
+    double PDF = Math.exp(z - Math.exp(z)) / beta;
+    return PDF;
+  }
+  
   
   /**
    * Gets the distance distribution for a photoelectron
@@ -1037,10 +1048,32 @@ public class CrystalPolyhedron extends Crystal {
    */ 
   private double[] getGumbelParamsForBeamEnergy(final double beamEnergy) {
     // Gumbel distribution for mean photoelectron path lengths depend on 
-    // beam energy. Derived from Ben Gayther's 2016 summer project work
+    // beam energy. Derived from Josh Dickerson's project
     double energyCorrection = EnergyToSubtractFromPE;
     
-    double[] gumbParams = new double[2];
+    double[] gumbParams = new double[2]; //0 = location parameter, 1 = scale parameter
+    
+    double peEnergy = beamEnergy - energyCorrection;
+    if (peEnergy <= 20) {
+      gumbParams[0] = GUMBEL_DISTN_CALC_LOC[0]*Math.pow(peEnergy,2) 
+          + GUMBEL_DISTN_CALC_LOC[1]*(peEnergy);
+      gumbParams[1] = GUMBEL_DISTN_CALC_SCALE[0]*Math.pow(peEnergy,2) 
+          + GUMBEL_DISTN_CALC_SCALE[1]*(peEnergy); 
+    }
+    else if (peEnergy > 20 && peEnergy <= 50) {
+      gumbParams[0] = GUMBEL_DISTN_CALC_LOC[2]*Math.pow(peEnergy,2) 
+          + GUMBEL_DISTN_CALC_LOC[3]*(peEnergy);
+      gumbParams[1] = GUMBEL_DISTN_CALC_SCALE[2]*Math.pow(peEnergy,2) 
+          + GUMBEL_DISTN_CALC_SCALE[3]*(peEnergy); 
+    }
+    else {
+      gumbParams[0] = GUMBEL_DISTN_CALC_LOC[4]*Math.pow(peEnergy,2) 
+          + GUMBEL_DISTN_CALC_LOC[5]*(peEnergy);
+      gumbParams[1] = GUMBEL_DISTN_CALC_SCALE[4]*Math.pow(peEnergy,2) 
+          + GUMBEL_DISTN_CALC_SCALE[5]*(peEnergy); 
+    }
+    
+    /*
     gumbParams[0] = GUMBEL_DISTN_CALC_PARAMS[0]*Math.pow(beamEnergy - energyCorrection,2) 
         + GUMBEL_DISTN_CALC_PARAMS[1]*(beamEnergy - energyCorrection); //mu = mean path length of a PE
     gumbParams[1] = GUMBEL_DISTN_CALC_PARAMS[2]*Math.pow(beamEnergy - energyCorrection,2) 
@@ -1050,7 +1083,7 @@ public class CrystalPolyhedron extends Crystal {
     if (beamEnergy - energyCorrection >= 22 && beamEnergy - energyCorrection <= 30) {
       gumbParams[1] = 1.4; // beta = 1.4keV
     }
-    
+    */
     return gumbParams;
   }
   
@@ -1128,9 +1161,15 @@ public class CrystalPolyhedron extends Crystal {
    * @param beamEnergy
    */
   private  void setMaxPEDistance(final double beamEnergy) { //needs to be dynamic as it depends on beam energy
+    double peEnergy = beamEnergy - EnergyToSubtractFromPE;
+    /*
     double averagePEDistance = GUMBEL_DISTN_CALC_PARAMS[0]*Math.pow(beamEnergy - EnergyToSubtractFromPE,2) 
         + GUMBEL_DISTN_CALC_PARAMS[1]*(beamEnergy - EnergyToSubtractFromPE);
+      
     int maxPEDistance = (int) Math.ceil(averagePEDistance + 6);
+    */
+    int maxPEDistance = (int) Math.ceil(getMaxPEDistance(peEnergy));
+    
     
     //set up the surrounding environment
   //  produceCryoSolutionCrystal(maxPEDistance);
@@ -1170,9 +1209,19 @@ public class CrystalPolyhedron extends Crystal {
   }
   
   private  void setMaxPEDistanceCryo(final double beamEnergy) { //needs to be dynamic as it depends on beam energy
+    double peEnergy = beamEnergy - cryoEnergyToSubtractFromPE;
+
+    /*
     double averagePEDistance = GUMBEL_DISTN_CALC_PARAMS[0]*Math.pow(beamEnergy - cryoEnergyToSubtractFromPE,2) 
         + GUMBEL_DISTN_CALC_PARAMS[1]*(beamEnergy - cryoEnergyToSubtractFromPE);
-    int maxPEDistance = (int) Math.ceil(averagePEDistance + 6);
+    */
+    
+    //Need to redo max
+  //  double averagePEDistance = GUMBEL_DISTN_CALC_LOC[energyRange]*Math.pow(peEnergy,2) 
+ //       + GUMBEL_DISTN_CALC_LOC[energyRange+1]*(peEnergy);
+  //  int maxPEDistance = (int) Math.ceil(averagePEDistance + 6);
+    
+    int maxPEDistance = (int) Math.ceil(getMaxPEDistance(peEnergy));
     
     //set up the surrounding environment
     produceCryoSolutionCrystal(maxPEDistance);
@@ -1191,13 +1240,56 @@ public class CrystalPolyhedron extends Crystal {
    *
    * @see se.raddo.raddose3D.Crystal#setPEparamsForCurrentBeam(double)
    */
+  
+  /**
+   * Takes the averaage photoelectron energy and calculates the maximum distance one can travel
+   * 
+   * @param peEnergy
+   * @return
+   */
+  private double getMaxPEDistance(final double peEnergy) {
+    int energyRange = 0;
+
+    if (peEnergy <= 20) {
+      energyRange = 0;
+    }
+    else if (peEnergy > 20 && peEnergy <= 50) {
+      energyRange = 2;
+    }
+    else {
+      energyRange = 4;
+    }
+    double locationParam = GUMBEL_DISTN_CALC_LOC[energyRange]*Math.pow(peEnergy,2) 
+        + GUMBEL_DISTN_CALC_LOC[energyRange+1]*(peEnergy); 
+    double scaleParam = GUMBEL_DISTN_CALC_SCALE[energyRange]*Math.pow(peEnergy,2) 
+         + GUMBEL_DISTN_CALC_SCALE[energyRange+1]*(peEnergy);
+
+    double modalHeight = calculateGumbelPDF(locationParam, locationParam, scaleParam);
+    double targetHeight = modalHeight * 0.001;
+    double calcHeight = modalHeight;
+    double step = peEnergy/100;
+    if (peEnergy < 10) {
+    step /= 10;
+    }
+    double maxDistance = locationParam;
+    while (calcHeight >= targetHeight) {
+      maxDistance += step;
+      calcHeight = calculateGumbelPDF(maxDistance, locationParam, scaleParam);
+      //escape clause in case there is an issue
+      if (maxDistance >= locationParam * 2) {
+        break;
+      }
+    }
+    return maxDistance;
+  }
+  
   @Override
   public void setPEparamsForCurrentBeam(final double beamEnergy, CoefCalc coefCalc, double[][] feFactors) {
     // Initialise crystal photolectron escape properties here for current beam
     //first of all need to get PE distances 
     setMaxPEDistance(beamEnergy);
-  //  findVoxelsReachedByPE(false, coefCalc, beamEnergy, feFactors);
     angularDistribution = setUpPEPolarisation(coefCalc, beamEnergy, feFactors, false);
+ //   findVoxelsReachedByPE(false, coefCalc, beamEnergy, feFactors, 0);
     calcProportionVoxDoseDepositedByDist(beamEnergy);  
     
   }
@@ -1316,7 +1408,7 @@ public class CrystalPolyhedron extends Crystal {
    */
   @Override
   public void findVoxelsReachedByPE(boolean cryo, CoefCalc coefCalc, final double energy, double[][] feFactors, final double angle) {
-    
+
     //Work out the angular distribution so tracks can be biased
   //  double[] angularDistribution = setUpPEPolarisation(coefCalc, energy, feFactors, cryo);
     double[] distribution = null;
@@ -1331,6 +1423,7 @@ public class CrystalPolyhedron extends Crystal {
 //    double step = PE_ANGLE_LIMIT / PE_ANGLE_RES_LIMIT;  
     double step = 2*Math.PI / PE_ANGLE_RES_LIMIT;  
  //   double thetaStep = PE_ANGLE_LIMIT / POLARISATION_RES_LIMIT;
+    double stepTest = PE_ANGLE_LIMIT / PE_ANGLE_RES_LIMIT;
     double thetaAngle = 0;
     int trackCounter = 0;
     double thetaStep = 0;
@@ -1351,8 +1444,8 @@ public class CrystalPolyhedron extends Crystal {
         thetaStep = (PE_ANGLE_LIMIT/2)/POLARISATION_RES;
       }
       
-     for (double theta = 0; theta <= PE_ANGLE_LIMIT / 2; theta += thetaStep) {
-   //  for (double theta = 0; theta <= PE_ANGLE_LIMIT / 2; theta += step) {  //This is to compare to even distribution
+   //  for (double theta = 0; theta <= PE_ANGLE_LIMIT / 2; theta += thetaStep) {
+     for (double theta = 0; theta <= PE_ANGLE_LIMIT/2 ; theta += stepTest) {  //This is to compare to even distribution
         // calculate x, y, z coordinates of voxel[i][j][k]
         // plus the polar coordinates for r, theta, phi
         
@@ -1381,6 +1474,7 @@ public class CrystalPolyhedron extends Crystal {
         
         //Check if this track has already been assigned
         boolean replicateTrack = false;
+        
         if (theta == 0 || theta == (PE_ANGLE_LIMIT / 2)) {
           if (phi == 0) {
             replicateTrack = false;
@@ -1389,6 +1483,7 @@ public class CrystalPolyhedron extends Crystal {
             replicateTrack = true;
           }
         }
+        
         if (replicateTrack == false) {
           counter += 1;
           double xNorm = Math.sin(theta) * Math.cos(phi);
