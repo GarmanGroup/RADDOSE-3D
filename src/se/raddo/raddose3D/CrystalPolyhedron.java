@@ -74,8 +74,13 @@ public class CrystalPolyhedron extends Crystal {
    * Constants for calculation of Gumbel distribution mu and beta parameters.
    */
   private static final double[] GUMBEL_DISTN_CALC_PARAMS = {0.0094,0.0575,0.002,0.0096};
-  private static final double[] GUMBEL_DISTN_CALC_LOC = {0.0121, 0.0405, 0.0098, 0.0943, 0.008, 0.1922};
-  private static final double[] GUMBEL_DISTN_CALC_SCALE = {0.002, 0.0076, 0.0013, 0.0253, 0.001, 0.0372};
+ // private static  double[] GUMBEL_DISTN_CALC_LOC = {0.0121, 0.0405, 0.0098, 0.0943, 0.008, 0.1922}; //initially set as 1.17, <20keV
+//  private static  double[] GUMBEL_DISTN_CALC_SCALE = {0.002, 0.0076, 0.0013, 0.0253, 0.001, 0.0372}; //initially set as 1.17, <20keV
+  private static  double[] GUMBEL_DISTN_CALC_LOC = {0.0121, 0.0405}; //initially set as 1.17, <20keV
+  private static  double[] GUMBEL_DISTN_CALC_SCALE = {0.002, 0.0076}; //initially set as 1.17, <20keV
+  private static  double[] CRYO_GUMBEL_DISTN_CALC_LOC = {0.0121, 0.0405}; //initially set as 1.17, <20keV
+  private static  double[] CRYO_GUMBEL_DISTN_CALC_SCALE = {0.002, 0.0076}; //initially set as 1.17, <20keV
+  
  // private static final double[] GUMBEL_DISTN_CALC_PARAMS = {0.0074,0.0391,0.002,0.0096}; //The CSDA at 1.35
   
   /**
@@ -1046,14 +1051,15 @@ public class CrystalPolyhedron extends Crystal {
    * @param beamEnergy
    * @return
    */ 
-  private double[] getGumbelParamsForBeamEnergy(final double beamEnergy) {
+  private double[] getGumbelParamsForBeamEnergy(final double beamEnergy, final boolean cryo) {
     // Gumbel distribution for mean photoelectron path lengths depend on 
     // beam energy. Derived from Josh Dickerson's project
     double energyCorrection = EnergyToSubtractFromPE;
     
     double[] gumbParams = new double[2]; //0 = location parameter, 1 = scale parameter
-    
+     
     double peEnergy = beamEnergy - energyCorrection;
+    /* Change now I'm doing it slightly differently
     if (peEnergy <= 20) {
       gumbParams[0] = GUMBEL_DISTN_CALC_LOC[0]*Math.pow(peEnergy,2) 
           + GUMBEL_DISTN_CALC_LOC[1]*(peEnergy);
@@ -1071,6 +1077,19 @@ public class CrystalPolyhedron extends Crystal {
           + GUMBEL_DISTN_CALC_LOC[5]*(peEnergy);
       gumbParams[1] = GUMBEL_DISTN_CALC_SCALE[4]*Math.pow(peEnergy,2) 
           + GUMBEL_DISTN_CALC_SCALE[5]*(peEnergy); 
+    }
+    */
+    if (cryo == false) {
+      gumbParams[0] = GUMBEL_DISTN_CALC_LOC[0]*Math.pow(peEnergy,2) 
+          + GUMBEL_DISTN_CALC_LOC[1]*(peEnergy);
+      gumbParams[1] = GUMBEL_DISTN_CALC_SCALE[0]*Math.pow(peEnergy,2) 
+          + GUMBEL_DISTN_CALC_SCALE[1]*(peEnergy);
+    }
+    else {
+      gumbParams[0] = CRYO_GUMBEL_DISTN_CALC_LOC[0]*Math.pow(peEnergy,2) 
+          + CRYO_GUMBEL_DISTN_CALC_LOC[1]*(peEnergy);
+      gumbParams[1] = GUMBEL_DISTN_CALC_SCALE[0]*Math.pow(peEnergy,2) 
+          + CRYO_GUMBEL_DISTN_CALC_SCALE[1]*(peEnergy);
     }
     
     /*
@@ -1249,7 +1268,7 @@ public class CrystalPolyhedron extends Crystal {
    */
   private double getMaxPEDistance(final double peEnergy) {
     int energyRange = 0;
-
+/*  //
     if (peEnergy <= 20) {
       energyRange = 0;
     }
@@ -1259,6 +1278,7 @@ public class CrystalPolyhedron extends Crystal {
     else {
       energyRange = 4;
     }
+    */
     double locationParam = GUMBEL_DISTN_CALC_LOC[energyRange]*Math.pow(peEnergy,2) 
         + GUMBEL_DISTN_CALC_LOC[energyRange+1]*(peEnergy); 
     double scaleParam = GUMBEL_DISTN_CALC_SCALE[energyRange]*Math.pow(peEnergy,2) 
@@ -1286,6 +1306,11 @@ public class CrystalPolyhedron extends Crystal {
   @Override
   public void setPEparamsForCurrentBeam(final double beamEnergy, CoefCalc coefCalc, double[][] feFactors) {
     // Initialise crystal photolectron escape properties here for current beam
+    //set Gumbel values based on density
+    double density = coefCalc.getDensity();
+    double peEnergy = beamEnergy - EnergyToSubtractFromPE;
+    GUMBEL_DISTN_CALC_LOC = setGumbelLoc(density, peEnergy);
+    GUMBEL_DISTN_CALC_SCALE = setGumbelScale(density, peEnergy);
     //first of all need to get PE distances 
     setMaxPEDistance(beamEnergy);
     angularDistribution = setUpPEPolarisation(coefCalc, beamEnergy, feFactors, false);
@@ -1297,6 +1322,11 @@ public class CrystalPolyhedron extends Crystal {
   @Override
   public void setCryoPEparamsForCurrentBeam(final double beamEnergy, CoefCalc coefCalc, double[][] feFactors) {
     // Initialise crystal photolectron escape properties here for current beam
+    //set Gumbel values based on density
+    double density = coefCalc.getCryoDensity();
+    double peEnergy = beamEnergy - cryoEnergyToSubtractFromPE;
+    CRYO_GUMBEL_DISTN_CALC_LOC = setGumbelLoc(density, peEnergy);
+    CRYO_GUMBEL_DISTN_CALC_SCALE = setGumbelScale(density, peEnergy);
     //first of all need to get PE distances 
     setMaxPEDistanceCryo(beamEnergy);
   //  findVoxelsReachedByPE(true, coefCalc, beamEnergy, feFactors);
@@ -1313,6 +1343,54 @@ public class CrystalPolyhedron extends Crystal {
     findVoxelsReachedByFL(feFactors);
   }
   
+  /**Sets the Location parameters for the Gumbel distribution based on density
+   * 
+   * 
+   * @param density
+   * @param peEnergy
+   * @return
+   */
+  private double[] setGumbelLoc(final double density, final double peEnergy) {
+    double[] gumbelParams = new double[2];
+    if (peEnergy <= 20) {
+      gumbelParams[0] = 0.0105*Math.pow(density, 2) - 0.0351*density + 0.0387;
+      gumbelParams[1] = 0.0245*Math.pow(density, 2) - 0.0943*density + 0.1171;  
+    }
+    else if (peEnergy > 20 && peEnergy <= 50) {
+      gumbelParams[0] = 0.009*Math.pow(density, 2) - 0.0293*density + 0.0318;
+      gumbelParams[1] = 0.0459*Math.pow(density, 2) - 0.1942*density + 0.2582;  
+    }
+    else {
+      gumbelParams[0] = 0.0072*Math.pow(density, 2) - 0.024*density + 0.0262;
+      gumbelParams[1] = 0.16925*Math.pow(density, 2) - 0.05562*density + 0.6075;  
+    }
+    return gumbelParams;
+  }
+  
+  /**
+   * Sets the scale parameters for the Gumbel distribution based on density
+   * 
+   * @param density
+   * @param peEnergy
+   * @return
+   */
+  private double[] setGumbelScale(final double density, final double peEnergy) {
+    double[] gumbelParams = new double[6];
+    if (peEnergy <= 20) {
+      gumbelParams[0] = 0.0029*Math.pow(density, 2) - 0.0081*density + 0.0076;
+      gumbelParams[1] = 0*Math.pow(density, 2) - 0.0085*density + 0.01751;  
+    }
+    else if (peEnergy > 20 && peEnergy <= 50) {
+      gumbelParams[0] = 0.0018*Math.pow(density, 2) - 0.0053*density + 0.0051;
+      gumbelParams[1] = 0*Math.pow(density, 2) - 0.0238*density + 0.0536;  
+    }
+    else {
+      gumbelParams[0] = 0*Math.pow(density, 2) - 0.0006*density + 0.0017;
+      gumbelParams[1] = 0*Math.pow(density, 2) - 0.0569*density + 0.1068;  
+    }
+    return gumbelParams;
+  }
+  
   private void calcProportionVoxDoseDepositedByDist(final double beamEnergy) {
     // calculate the fraction of energy deposited by PE up to each 
     // distance, assuming PE distances follow a given distribution
@@ -1320,7 +1398,7 @@ public class CrystalPolyhedron extends Crystal {
     // Set up a mean path length distribution
     double[] pathLengthDistn = new double[peDistBins];
         
-    double[] distnParams = getGumbelParamsForBeamEnergy(beamEnergy);
+    double[] distnParams = getGumbelParamsForBeamEnergy(beamEnergy, false);
     calculateGumbelDistribution(PE_DISTANCES_TRAVELLED, pathLengthDistn, distnParams[0],
         distnParams[1], peDistBins);
     
@@ -1365,7 +1443,7 @@ public class CrystalPolyhedron extends Crystal {
     // Set up a mean path length distribution
     double[] pathLengthDistn = new double[peDistBins];
         
-    double[] distnParams = getGumbelParamsForBeamEnergy(beamEnergy);
+    double[] distnParams = getGumbelParamsForBeamEnergy(beamEnergy, true);
     calculateGumbelDistribution(CRYO_PE_DISTANCES_TRAVELLED, pathLengthDistn, distnParams[0],
         distnParams[1], peDistBins);
     
