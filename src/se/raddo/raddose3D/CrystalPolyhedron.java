@@ -1054,9 +1054,18 @@ public class CrystalPolyhedron extends Crystal {
    */
   private double[] calculateEnergyDistn(final double[] distancesTravelled, final int bins, final double peEnergy) {
     //Coefficients - these are currently just set to 10keV, will change with energy when I have the data
+    //Need to get these coefficeints properly...
+    /*
     double[] lowCoefficients = {-0.00327, 7.032861, -190.401, 2756.785, -21505.5, 84807.1492, -132172.31};
-    double[] mediumCoefficients = {0.2405, -1.972, 12.504, -38.282, 62.846, -52.696, 17.928};
+ //   double[] mediumCoefficients = {0.2405, -1.972, 12.504, -38.282, 62.846, -52.696, 17.928};
+    double[] mediumCoefficients = {0.085545007, 0.282066269, -0.553070091, 0.545626478, 0, 0, 0};
     double[] highCoefficients = {445479.2, -3029051, 8575448, -12938647.4, 10973069, -4959668, 933372.4};
+    */
+    
+    ReadEnergyCSV rdCSV = new ReadEnergyCSV();
+    double[] lowCoefficients = rdCSV.openCSV("constants/energy-coefs-low.csv", peEnergy);
+    double[] mediumCoefficients = rdCSV.openCSV("constants/energy-coefs-med.csv", peEnergy);
+    double[] highCoefficients = rdCSV.openCSV("constants/energy-coefs-high.csv", peEnergy);
     
     double[] energyDeposited = new double[bins];
     
@@ -1484,11 +1493,8 @@ public class CrystalPolyhedron extends Crystal {
    }
    
    
-   /*
     for (int l = peDistBins-1; l > 0; l--) { //for every bin 
       for (int i = 0; i < peDistBins; i++) { //for every subset of electrons that stop at this path length
-      //  double width = PE_DISTANCES_TRAVELLED[l] - PE_DISTANCES_TRAVELLED[l-1];
-      //  double height = (pathLengthDistn[l] + pathLengthDistn[l-1]) / 2;
         double energyHeight = 0.;
         if (totalEnergyDistn[i][l] != 0) {
           energyHeight = (totalEnergyDistn[i][l] + totalEnergyDistn[i][l-1]) / 2;
@@ -1500,9 +1506,9 @@ public class CrystalPolyhedron extends Crystal {
         }
       }
     }
-      */
       
       
+      /*
       //Below is how it was done when the energy was deposited linearly along the photoelectron track
 for (int l = peDistBins-1; l > 0; l--) {
         double width = PE_DISTANCES_TRAVELLED[l] - PE_DISTANCES_TRAVELLED[l-1];
@@ -1524,14 +1530,14 @@ for (int l = peDistBins-1; l > 0; l--) {
      
       
     }
-    
-    System.out.println("TEST");
+    */
   }
+  
   //Will also need to change the cryo PE energy distribution once the first one is in properly
   private void calcProportionVoxDoseDepositedByDistCryo(final double beamEnergy) {
     // calculate the fraction of energy deposited by PE up to each 
     // distance, assuming PE distances follow a given distribution
-
+    double peEnergy = beamEnergy - cryoEnergyToSubtractFromPE;
     // Set up a mean path length distribution
     double[] pathLengthDistn = new double[peDistBins];
         
@@ -1539,18 +1545,65 @@ for (int l = peDistBins-1; l > 0; l--) {
     calculateGumbelDistribution(CRYO_PE_DISTANCES_TRAVELLED, pathLengthDistn, distnParams[0],
         distnParams[1], peDistBins);
     
+    //I'm applying the energy distribution to each PE distance travelled so it can be combined with the distance distribution 
+    double[][] totalEnergyDistn = new double[peDistBins][peDistBins];
+    for (int i = 0; i < peDistBins; i++) {
+      double[] energyDistn = calculateEnergyDistn(CRYO_PE_DISTANCES_TRAVELLED, peDistBins - i, peEnergy);
+      int length = energyDistn.length;
+      for (int j = (length - 1); j > 0  ; j--) {
+      totalEnergyDistn[i][j] = energyDistn[j];  //i = 0 is longest distance, a high j is top energy
+      }
+    }
+    
     // find total area under specified distribution
     double distnIntegral = 0;
+    double[] totEnergyIntegral = new double[peDistBins]; 
     for (int l = 0; l < peDistBins-1; l++) {
       double width = CRYO_PE_DISTANCES_TRAVELLED[l + 1] - CRYO_PE_DISTANCES_TRAVELLED[l];
       double height = (pathLengthDistn[l + 1] + pathLengthDistn[l]) / 2;
       distnIntegral += width * height;
+      
+      //do the same for the energy distribution 
+      for (int i = 0; i < peDistBins; i++) { //for every PE Distance travelled
+        if (totalEnergyDistn[i][l + 1] != 0) { //prevent values off edge of distribution changing it
+          double energyHeight = (totalEnergyDistn[i][l + 1] + totalEnergyDistn[i][l]) / 2;
+          totEnergyIntegral[i] += width * energyHeight; 
+        }
+      }
     }  
+    
+    
     
     /*
      * The following code calculates the proportion of dose deposited along
      * each track by the travelling PE
      */  
+    
+    double[] distanceWidths = new double[peDistBins];
+    double[] distanceHeights = new double[peDistBins];
+    int pathCount = -1;
+    for (int l = peDistBins-1; l > 0; l--) {  
+      pathCount += 1;
+      distanceWidths[pathCount] = CRYO_PE_DISTANCES_TRAVELLED[l] - CRYO_PE_DISTANCES_TRAVELLED[l-1]; //width of this electron length subset
+      distanceHeights[pathCount] = (pathLengthDistn[l] + pathLengthDistn[l-1]) / 2;
+    }
+    
+    
+     for (int l = peDistBins-1; l > 0; l--) { //for every bin 
+       for (int i = 0; i < peDistBins; i++) { //for every subset of electrons that stop at this path length
+         double energyHeight = 0.;
+         if (totalEnergyDistn[i][l] != 0) {
+           energyHeight = (totalEnergyDistn[i][l] + totalEnergyDistn[i][l-1]) / 2;
+         }
+         
+         //replace l with the proportion in the energy distribution
+         if (totEnergyIntegral[i] != 0) {
+           propnDoseDepositedAtDistCryo[l] += (distanceWidths[i] * distanceHeights[i] / (distnIntegral)) * (distanceWidths[i] * energyHeight / (totEnergyIntegral[i])); 
+         }
+       }
+     }
+     
+     /*
     for (int l = peDistBins-1; l > 0; l--) {
       double width = CRYO_PE_DISTANCES_TRAVELLED[l] - CRYO_PE_DISTANCES_TRAVELLED[l-1];
       double height = (pathLengthDistn[l] + pathLengthDistn[l-1]) / 2;
@@ -1571,6 +1624,7 @@ for (int l = peDistBins-1; l > 0; l--) {
       }
   
     }
+    */
   }
   
   /**
