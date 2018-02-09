@@ -205,6 +205,11 @@ public class Element {
         .get(ElementDatabase.DatabaseFields.M_COEFF_2);
     coeff[3] = elementInformation
         .get(ElementDatabase.DatabaseFields.M_COEFF_3);
+    for (int i = 0; i < POLYNOMIAL_EXPANSION; i++) {
+      if (coeff[i] == null) {
+        coeff[i] = 0.; //added to stop it breaking 
+      }
+    }
     coeffMap.put(AbsorptionEdge.M, coeff);
 
     coeff = new Double[POLYNOMIAL_EXPANSION];
@@ -216,6 +221,11 @@ public class Element {
         .get(ElementDatabase.DatabaseFields.N_COEFF_2);
     coeff[3] = elementInformation
         .get(ElementDatabase.DatabaseFields.N_COEFF_3);
+    for (int i = 0; i < POLYNOMIAL_EXPANSION; i++) {
+      if (coeff[i] == null) {
+        coeff[i] = 0.; //added to stop it breaking 
+      }
+    }
     coeffMap.put(AbsorptionEdge.N, coeff);
 
     coeff = new Double[POLYNOMIAL_EXPANSION];
