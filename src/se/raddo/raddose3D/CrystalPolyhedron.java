@@ -1630,6 +1630,7 @@ for (int l = peDistBins-1; l > 0; l--) {
   /**
    * finds voxels that lie along the PE tracks
    */
+  /*//this one is wrong as polarised in wrong direction
   @Override
   public void findVoxelsReachedByPE(boolean cryo, CoefCalc coefCalc, final double energy, double[][] feFactors, final double angle) {
 
@@ -1737,10 +1738,130 @@ for (int l = peDistBins-1; l > 0; l--) {
     }
     numberOfTracksPE = counter + 1;
   }
+  */
+  /**
+   * finds voxels that lie along the PE tracks
+   */
   
+  @Override
+  public void findVoxelsReachedByPE(boolean cryo, CoefCalc coefCalc, final double energy, double[][] feFactors, final double angle) {
+
+    //Work out the angular distribution so tracks can be biased
+  //  double[] angularDistribution = setUpPEPolarisation(coefCalc, energy, feFactors, cryo);
+    double[] distribution = null;
+    if (cryo == false) {
+      distribution = angularDistribution;
+    }
+    else {
+      distribution = cryoAngularDistribution;
+    }
+    int tracks[] = numberOfTracksPerRegion(distribution);
+   
+//    double step = PE_ANGLE_LIMIT / PE_ANGLE_RES_LIMIT;  
+    double step = 2*Math.PI / PE_ANGLE_RES_LIMIT;  
+ //   double thetaStep = PE_ANGLE_LIMIT / POLARISATION_RES_LIMIT;
+    double stepTest = PE_ANGLE_LIMIT / PE_ANGLE_RES_LIMIT;
+    double phiAngle = 0;
+    int trackCounter = 0;
+    double phiStep = 0;
+   // thetaStep = (PE_ANGLE_LIMIT/2)/POLARISATION_RES / tracks[trackCounter];
+    int counter = -1;
+  //  for (double phi = 0; phi < PE_ANGLE_LIMIT; phi += step) {
+      for (double theta = 0*Math.PI; theta < 2*Math.PI; theta += step) {
+    //Set track counter based on where angle is - i.e need to polarise along beam direction
+      trackCounter = (int) ((angle/(PE_ANGLE_LIMIT/2)) * POLARISATION_RES);
+      if (trackCounter >= POLARISATION_RES) { //if angle more than or = to pi restart distribution 
+        trackCounter -= POLARISATION_RES;
+      }
+      
+      if (tracks[trackCounter] != 0) {
+        phiStep = (PE_ANGLE_LIMIT/2)/POLARISATION_RES / tracks[trackCounter];
+      }
+      else {
+        phiStep = (PE_ANGLE_LIMIT/2)/POLARISATION_RES;
+      }
+      
+ //    for (double phi = 0; phi <= PE_ANGLE_LIMIT / 2; phi += phiStep) {
+     for (double phi = 0; phi <= PE_ANGLE_LIMIT/2 ; phi += stepTest) {  //This is to compare to even distribution
+        // calculate x, y, z coordinates of voxel[i][j][k]
+        // plus the polar coordinates for r, theta, phi
+        
+        //set the step size of theta based on the angular photoelectron distribution
+       phiAngle = phi + angle;
+        if (phiAngle >= (((PE_ANGLE_LIMIT/2)/POLARISATION_RES) * (trackCounter + 1))- phi)  { //relook at this, spacing not quite right
+          if (phi == 0) { //if this is first iteration rotate to the angle 
+            while (phiAngle >= (((PE_ANGLE_LIMIT/2)/POLARISATION_RES) * (trackCounter + 1))- phi){
+              trackCounter += 1;     
+            }
+          }
+          else {
+            trackCounter += 1;
+          }
+          
+          if (trackCounter >= POLARISATION_RES) { //reset tracks once angle gets back round to 0 
+            trackCounter = 0;
+          }
+          if (tracks[trackCounter] != 0) {
+            phiStep = ((PE_ANGLE_LIMIT/2)/POLARISATION_RES) / (tracks[trackCounter]);
+          }
+          else {
+            int skipCount = 0;
+            while (tracks[trackCounter] == 0) {
+              skipCount += 1;
+              trackCounter += 1;
+              if (trackCounter >= POLARISATION_RES) { //reset tracks once angle gets back round to 0 
+                trackCounter = 0;
+              }
+            }
+            phiStep = ((PE_ANGLE_LIMIT/2)/POLARISATION_RES) * skipCount; //skip the zero tracks in this region
+          }
+        }
+        
+        //Check if this track has already been assigned
+        boolean replicateTrack = false;
+        
+        if (phi == 0 || phi == (PE_ANGLE_LIMIT / 2)) {
+          if (theta == 0) {
+            replicateTrack = false;
+          }
+          else {
+            replicateTrack = true;
+          }
+        }
+        
+        if (replicateTrack == false) {
+          counter += 1;
+          double xNorm = Math.sin(theta) * Math.cos(phi);
+          double yNorm = Math.sin(theta) * Math.sin(phi);
+          double zNorm = Math.cos(theta);
+
+          for (int m = 0; m < peDistBins; m++) {
+            // calculate r in voxel coordinates rather than pixels
+            double r = 0;
+            if (cryo == false)  {  
+              r = PE_DISTANCES_TRAVELLED[m] * this.crystalPixPerUM; 
+              relativeVoxXYZ[m][counter][0] = r * xNorm;
+              relativeVoxXYZ[m][counter][1] = r * yNorm;
+              relativeVoxXYZ[m][counter][2] = r * zNorm;
+            }
+            else {
+              r = CRYO_PE_DISTANCES_TRAVELLED[m] * this.crystalPixPerUM;
+              relativeVoxXYZCryo[m][counter][0] = r * xNorm;
+              relativeVoxXYZCryo[m][counter][1] = r * yNorm;
+              relativeVoxXYZCryo[m][counter][2] = r * zNorm;
+            }
+
+          }
+
+        }
+      }
+    }
+    numberOfTracksPE = counter + 1;
+  }
   
   private double[] setUpPEPolarisation(CoefCalc coefCalc, final double energy, double[][] feFactors, boolean cryo) {
-    double beta = 2; //this is only true for s shells but so far I haven't calculated it for other shells
+ //  double beta = 2; //this is only true for s shells but so far I haven't calculated it for other shells
+    double beta = 0;
     // at the moment every photoelectron is polarised. I will change it o it is just for s shells, 
     // the rest will have an even distribution to contribute, flattening the amount of polarisation. 
     int counter = -1;
@@ -1794,7 +1915,7 @@ for (int l = peDistBins-1; l > 0; l--) {
   }
   
   private double solvePolarisationEquationForAngle(int i, double photoElectric, double beta) {
-    double theta = i * (Math.PI/POLARISATION_RES);
+    double theta = (i * (Math.PI/POLARISATION_RES));  // + Math.PI/2;
     double height = (photoElectric / (4*Math.PI)) * (1+(beta*0.5*(3*Math.pow(Math.cos(theta), 2) - 1)));
     return height;
   }
