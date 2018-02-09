@@ -37,7 +37,7 @@ public class CoefCalcTests {
 
     CoefCalcFromParams coefCalc = new CoefCalcFromParams(100.0,
         100.0, 100.0, 90.0, 90.0, 90.0, 0, 0, 0, 0, atoms, numbers,
-        atoms, numbers, 100.0);
+        atoms, numbers, atoms, numbers, 100.0, null);
 
     Double oxygenOccurrence = coefCalc.getSolventOccurrence(
         coefCalc.getParser().getElement("O"));
@@ -64,7 +64,7 @@ public class CoefCalcTests {
 
     CoefCalcFromParams coefCalc = new CoefCalcFromParams(100.0,
         100.0, 100.0, 90.0, 90.0, 90.0, 24, 10, 0, 0, atoms,
-        numbers, emptyAtoms, emptyNumbers, 100.0);
+        numbers, emptyAtoms, emptyNumbers, emptyAtoms, emptyNumbers, 100.0, null);
 
     Double zincOccurrence = coefCalc.getMacromolecularOccurrence(
         coefCalc.getParser().getElement("ZN"));
@@ -82,6 +82,10 @@ public class CoefCalcTests {
 
     List<String> heavySolutionConcNames = new ArrayList<String>();
     List<Double> heavySolutionConcNums = new ArrayList<Double>();
+    
+    //These are cryo can test later
+    List<String> emptyAtoms = new ArrayList<String>();
+    List<Double> emptyNumbers = new ArrayList<Double>();
 
     heavyProtAtomNames.add("S");
     heavyProtAtomNums.add(10.0);
@@ -94,7 +98,7 @@ public class CoefCalcTests {
     CoefCalcFromParams coefCalc = new CoefCalcFromParams(
         79.2, 79.2, 38.1, 90.0, 90.0, 90.0, 8, 129, 0, 0,
         heavyProtAtomNames, heavyProtAtomNums,
-        heavySolutionConcNames, heavySolutionConcNums, 0.);
+        heavySolutionConcNames, heavySolutionConcNums, emptyAtoms, emptyNumbers, 0., null);
 
     Map<Object, Object> beamProperties = new HashMap<Object, Object>();
     beamProperties.put(Beam.BEAM_COLL_H, 80.);
@@ -124,6 +128,10 @@ public class CoefCalcTests {
 
     List<String> heavySolutionConcNames = new ArrayList<String>();
     List<Double> heavySolutionConcNums = new ArrayList<Double>();
+    
+    //These are cryo can test later
+    List<String> emptyAtoms = new ArrayList<String>();
+    List<Double> emptyNumbers = new ArrayList<Double>();
 
     heavyProtAtomNames.add("S");
     heavyProtAtomNames.add("Se");
@@ -142,7 +150,7 @@ public class CoefCalcTests {
     CoefCalcFromParams coefCalc = new CoefCalcFromParams(
         79.2, 79.2, 38.1, 70.0, 70.0, 50.0, 4, 200, 0, 0,
         heavyProtAtomNames, heavyProtAtomNums,
-        heavySolutionConcNames, heavySolutionConcNums, 0.);
+        heavySolutionConcNames, heavySolutionConcNums, emptyAtoms, emptyNumbers, 0., null);
 
     Map<Object, Object> beamProperties = new HashMap<Object, Object>();
     beamProperties.put(Beam.BEAM_COLL_H, 80.);
@@ -173,6 +181,10 @@ public class CoefCalcTests {
 
     List<String> heavySolutionConcNames = new ArrayList<String>();
     List<Double> heavySolutionConcNums = new ArrayList<Double>();
+    
+    //These are cryo can test later
+    List<String> emptyAtoms = new ArrayList<String>();
+    List<Double> emptyNumbers = new ArrayList<Double>();
 
     heavyProtAtomNames.add("S");
     heavyProtAtomNames.add("Zn");
@@ -185,7 +197,7 @@ public class CoefCalcTests {
     CoefCalcFromParams coefCalc = new CoefCalcFromParams(
         78.27, 78.27, 78.27, 90.0, 90.0, 90.0, 24, 51, 0, 0,
         heavyProtAtomNames, heavyProtAtomNums,
-        heavySolutionConcNames, heavySolutionConcNums, 0.);
+        heavySolutionConcNames, heavySolutionConcNums, emptyAtoms, emptyNumbers, 0., null);
 
     Map<Object, Object> beamProperties = new HashMap<Object, Object>();
     beamProperties.put(Beam.BEAM_COLL_H, 20.);
@@ -267,6 +279,10 @@ public class CoefCalcTests {
 
       List<String> heavySolutionConcNames = new ArrayList<String>();
       List<Double> heavySolutionConcNums = new ArrayList<Double>();
+      
+      //These are cryo can test later
+      List<String> emptyAtoms = new ArrayList<String>();
+      List<Double> emptyNumbers = new ArrayList<Double>();
 
       heavyProtAtomNames.add("S");
 
@@ -288,7 +304,7 @@ public class CoefCalcTests {
           unit_cell_length, unit_cell_length, unit_cell_length, 90.0, 90.0,
           90.0, 24, protein_residues, rna_residues, 0,
           heavyProtAtomNames, heavyProtAtomNums,
-          heavySolutionConcNames, heavySolutionConcNums, 0.);
+          heavySolutionConcNames, heavySolutionConcNums, emptyAtoms, emptyNumbers, 0., null);
 
       CoefCalcRaddose coefCalcRDV2 = new CoefCalcRaddose(
           unit_cell_length, unit_cell_length, unit_cell_length, 90.0, 90.0,

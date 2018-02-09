@@ -1,5 +1,7 @@
 package se.raddo.raddose3D;
 
+import java.util.Set;
+
 public abstract class CoefCalc {
   /**
    * Calculate cross-sections for the new Beam.
@@ -54,13 +56,55 @@ public abstract class CoefCalc {
   public abstract double getDensity();
   
   /**
-   * Calculates the absorbed energy within the crystal corrected for
-   * X-ray Fluorescence.
+   * Calculates factors used to calculate fluorescence energy for the crystal
    * 
    * @param beam
    *          Beam object
    * @return
-   *         absorbed energy.
+   *         fluorescence factors.
    */
   public abstract double[][] getFluorescentEscapeFactors(Beam beam);
+  
+  /**
+   * Calculate cryo-cross-sections for the new Beam.
+   * 
+   * @param b
+   *          Beam object
+   */
+  public abstract void updateCryoCoefficients(Beam b);
+  
+  /**
+   * Returns the current cryo absorption coefficient. (Photoelectric and Compton)
+   * 
+   * @return
+   *         absorption coefficient in units m^-1 (tbc)
+   */
+  public abstract double getCryoAbsorptionCoefficient();
+  
+  /**
+   * Returns the density of the cryo-solution.
+   * 
+   * @return
+   *         cryo-solution density in g/ml.
+   */ 
+  
+  public abstract double getCryoDensity();
+  
+  /**
+   * @return
+   *        if cryo solution has been entered or not
+   */
+  public abstract boolean isCryo();
+  
+  /**
+   * Calculates factors used to calculate fluorescence energy for cryo solution
+   * 
+   * @param beam
+   *          Beam object
+   * @return
+   *         fluorescence factors.
+   */
+  public abstract double[][] getCryoFluorescentEscapeFactors(Beam beam);
+  
+  public abstract Set<Element> getPresentElements(boolean cryo);
 }

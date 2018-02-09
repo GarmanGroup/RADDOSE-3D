@@ -1,5 +1,7 @@
 package se.raddo.raddose3D;
 
+import java.util.Set;
+
 /**
  * Uses average values, assuming 50% solvent content.
  * Absorption and Attenuation coefficients are based on Holton 2010 (Absorption
@@ -41,7 +43,7 @@ public class CoefCalcAverage extends CoefCalc {
   /**
    * Number of X-ray Fluorescent escape factors
    */
-  private static final int NUM_FLUOR_ESCAPE_FACTORS  = 17;
+  private static final int NUM_FLUOR_ESCAPE_FACTORS  = 27;
 
   @Override
   public double getAbsorptionCoefficient() {
@@ -79,6 +81,11 @@ public class CoefCalcAverage extends CoefCalc {
   public void updateCoefficients(final Beam b) {
     // Does nothing
   }
+  
+  @Override
+  public void updateCryoCoefficients(final Beam b) {
+    // Does nothing
+  }
 
   @Override
   public double[][] getFluorescentEscapeFactors(Beam beam) {
@@ -99,4 +106,34 @@ public class CoefCalcAverage extends CoefCalc {
        Compton is already included in ABSORPTION_COEFFICIENT in this class;*/
     return 0;
   }
+  
+  @Override
+  public double getCryoAbsorptionCoefficient() {
+    return 0;
+  }
+  
+  @Override
+  public double getCryoDensity() {
+    return 0;
+  }
+  
+  @Override
+  public boolean isCryo() {
+    return false;
+  }
+  
+  @Override
+  public double[][] getCryoFluorescentEscapeFactors(Beam beam) {
+    double[][] fluorEscapeFactors = new double[1][NUM_FLUOR_ESCAPE_FACTORS];
+    for (int i = 0; i < NUM_FLUOR_ESCAPE_FACTORS; i++){
+      fluorEscapeFactors[0][i] = 0.0;
+    }
+    return fluorEscapeFactors;
+  }
+  
+  @Override
+  public Set<Element> getPresentElements(boolean cryo){
+    return null;
+  }
+  
 }

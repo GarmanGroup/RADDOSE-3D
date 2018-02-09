@@ -1,5 +1,6 @@
 package se.raddo.raddose3D;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class CoefCalcSAXS extends CoefCalcFromParams {
@@ -109,10 +110,14 @@ public class CoefCalcSAXS extends CoefCalcFromParams {
     //Calculate the number of monomers
     int numMonomers = calculateNumMonomers(numResidues, numRNA, numDNA,
         proteinConc, unitCellVolume);
+    
+    //Add these here as not passing in the surrounding cryo-solution into SAXS
+    List<String> emptyAtoms = new ArrayList<String>();
+    List<Double> emptyNumbers = new ArrayList<Double>();
 
     calculateAtomOccurrences(numMonomers, numResidues, numRNA, numDNA,
         sf, heavyProteinAtomNames, heavyProteinAtomNums,
-        heavySolutionConcNames, heavySolutionConcNums);
+        heavySolutionConcNames, heavySolutionConcNums, emptyAtoms, emptyNumbers, null);
     
     super.calculateDensity();
   }

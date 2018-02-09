@@ -83,7 +83,10 @@ scope {
 	List<Double>	heavyProteinAtomNums;
 	List<String>	heavySolutionConcNames;
 	List<Double>	heavySolutionConcNums; 
+	List<String>	cryoSolutionMolecule;
+	List<Double>	cryoSolutionConc;
 	Double 			solFrac;
+	String                 oilBased;
     HashMap<Object, Object> crystalProperties;
 	}
 @init { 
@@ -100,7 +103,8 @@ if ($crystal::crystalCoefCalc == 2)
   													$crystal::numMon, $crystal::numRes, $crystal::numRNA, $crystal::numDNA,
   													$crystal::heavyProteinAtomNames, $crystal::heavyProteinAtomNums,
   													$crystal::heavySolutionConcNames, $crystal::heavySolutionConcNums,
-  													$crystal::solFrac);
+  													$crystal::cryoSolutionMolecule, $crystal::cryoSolutionConc,
+  													$crystal::solFrac, $crystal::oilBased	);
 }
 
 if ($crystal::crystalCoefCalc == 3) {
@@ -114,9 +118,9 @@ if ($crystal::crystalCoefCalc == 3) {
 if ($crystal::crystalCoefCalc == 4)
 {
   if ($crystal::heavySolutionConcNames != null)
-  	$crystal::crystalCoefCalcClass = new CoefCalcFromPDB($crystal::pdb, $crystal::heavySolutionConcNames, $crystal::heavySolutionConcNums);
+  	$crystal::crystalCoefCalcClass = new CoefCalcFromPDB($crystal::pdb, $crystal::heavySolutionConcNames, $crystal::heavySolutionConcNums, $crystal::cryoSolutionMolecule, $crystal::cryoSolutionConc, $crystal::oilBased	);
   else
-	$crystal::crystalCoefCalcClass = new CoefCalcFromPDB($crystal::pdb);
+	$crystal::crystalCoefCalcClass = new CoefCalcFromPDB($crystal::pdb, $crystal::cryoSolutionMolecule, $crystal::cryoSolutionConc, $crystal::oilBased	);
   													  													
 }
 
@@ -135,7 +139,9 @@ if ($crystal::crystalCoefCalc == 6)
   													$crystal::numMon,
   													$crystal::heavyProteinAtomNames, $crystal::heavyProteinAtomNums,
   													$crystal::heavySolutionConcNames, $crystal::heavySolutionConcNums,
-  													$crystal::solFrac, $crystal::seqFile);
+  													$crystal::solFrac, $crystal::seqFile,
+  													$crystal::cryoSolutionMolecule, $crystal::cryoSolutionConc,
+  													$crystal::oilBased	);
 }
 
 if ($crystal::crystalCoefCalc == 7)
@@ -252,6 +258,11 @@ crystalLine
 	| bb=calculateFLEscape		{ $crystal::crystalProperties.put(Crystal.CRYSTAL_FLUORESCENT_ESCAPE, $bb.value); }
 	| cc=flResolution 		{ $crystal::crystalProperties.put(Crystal.CRYSTAL_FLUORESCENT_RESOLUTION, $cc.value);}
 	| dd=peResolution 		{ $crystal::crystalProperties.put(Crystal.CRYSTAL_PHOTOELECTRON_RESOLUTION, $dd.value);}
+
+	| ee=cryoSolution	        { $crystal::cryoSolutionMolecule	= $ee.names;
+							  $crystal::cryoSolutionConc	= $ee.num;	}
+	| ff=oilBased	                { $crystal::oilBased	= $ff.value;  }
+							
 	;
 
 	
@@ -396,7 +407,7 @@ solventFraction returns [double solFrac]
 SOLVENTFRACTION : ('S'|'s')('O'|'o')('L'|'l')('V'|'v')('E'|'e')('N'|'n')('T'|'t')('F'|'f')('R'|'r')('A'|'a')('C'|'c')('T'|'t')('I'|'i')('O'|'o')('N'|'n') ;
 
 pdb returns [String pdb]
-	: PDBNAME a=STRING {$pdb = $a.text;};
+	: PDBNAME (a=STRING|a=FLOAT) {$pdb = $a.text;};
 PDBNAME : ('P'|'p')('D'|'d')('B'|'b') ;
 
 cif returns [String cif]
@@ -469,6 +480,18 @@ peResolution returns [int value]
 	: PERESOLUTION a=FLOAT {$value = Integer.parseInt($a.text);};
 PERESOLUTION : ('P'|'p')('E'|'e')('R'|'r')('E'|'e')('S'|'s')('O'|'o')('L'|'l')('U'|'u')('T'|'t')('I'|'i')('O'|'o')('N'|'n') ;
 
+cryoSolution returns [List<String> names, List<Double> num;]
+@init{
+$names 	= new ArrayList<String>();
+$num	= new ArrayList<Double>();
+}
+	: CRYOSOLUTION (a=ELEMENT b=FLOAT {$names.add($a.text); $num.add(Double.parseDouble($b.text)); } )+ ; 	
+CRYOSOLUTION : ('C'|'c')('R'|'r')('Y'|'y')('O'|'o')('S'|'s')('O'|'o')('L'|'l')('U'|'u')('T'|'t')('I'|'i')('O'|'o')('N'|'n') ;
+
+oilBased returns [String value]
+	: OILBASED a=STRING {$value = $a.text;};
+OILBASED : ('O'|'o')('I'|'i')('L'|'l')('B'|'b')('A'|'a')('S'|'s')('E'|'e')('D'|'d') ;
+	
 	
 // ------------------------------------------------------------------
 beam returns [Beam bObj]
@@ -639,7 +662,7 @@ WS  :   ( ' '
 */
     
 STRING
-	: ('a'..'z' | 'A'..'Z' | '0'..'9' | '.' | '$' | '-' | '_')+
+	: ('a'..'z' | 'A'..'Z' | '0'..'9' | '.' | '$' | '-' | '_' | ':' | '\\' )+
 	;
 
 /*CHAR:  '\'' ( ESC_SEQ | ~('\''|'\\') ) '\''

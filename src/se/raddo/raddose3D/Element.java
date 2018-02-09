@@ -129,32 +129,32 @@ public class Element {
     probM5ShellIonisation = 1 - 1 / getM5EdgeRatio();
     
     if (probKShellIonisation == Double.NEGATIVE_INFINITY){   //If statements added as some ratios were equalling -Infinity becuase some Edge ratios were 0
-      probKShellIonisation = 0;
+      probKShellIonisation = 1;
     }
     if (probL1ShellIonisation == Double.NEGATIVE_INFINITY){
-      probL1ShellIonisation = 0;
+      probL1ShellIonisation = 1;
     }
     if (probL2ShellIonisation == Double.NEGATIVE_INFINITY){
-      probL2ShellIonisation = 0;
+      probL2ShellIonisation = 1;
     }
     if (probL3ShellIonisation == Double.NEGATIVE_INFINITY){
-      probL3ShellIonisation = 0;
+      probL3ShellIonisation = 1;
     }
     
     if (probM1ShellIonisation == Double.NEGATIVE_INFINITY){
-      probM1ShellIonisation = 0;
+      probM1ShellIonisation = 1;
     }
     if (probM2ShellIonisation == Double.NEGATIVE_INFINITY){
-      probM2ShellIonisation = 0;
+      probM2ShellIonisation = 1;
     }
     if (probM3ShellIonisation == Double.NEGATIVE_INFINITY){
-      probM3ShellIonisation = 0;
+      probM3ShellIonisation = 1;
     }
     if (probM4ShellIonisation == Double.NEGATIVE_INFINITY){
-      probM4ShellIonisation = 0;
+      probM4ShellIonisation = 1;
     }
     if (probM5ShellIonisation == Double.NEGATIVE_INFINITY){
-      probM5ShellIonisation = 0;
+      probM5ShellIonisation = 1;
     }
     
   }
@@ -205,6 +205,11 @@ public class Element {
         .get(ElementDatabase.DatabaseFields.M_COEFF_2);
     coeff[3] = elementInformation
         .get(ElementDatabase.DatabaseFields.M_COEFF_3);
+    for (int i = 0; i < POLYNOMIAL_EXPANSION; i++) {
+      if (coeff[i] == null) {
+        coeff[i] = 0.; //added to stop it breaking 
+      }
+    }
     coeffMap.put(AbsorptionEdge.M, coeff);
 
     coeff = new Double[POLYNOMIAL_EXPANSION];
@@ -216,6 +221,11 @@ public class Element {
         .get(ElementDatabase.DatabaseFields.N_COEFF_2);
     coeff[3] = elementInformation
         .get(ElementDatabase.DatabaseFields.N_COEFF_3);
+    for (int i = 0; i < POLYNOMIAL_EXPANSION; i++) {
+      if (coeff[i] == null) {
+        coeff[i] = 0.; //added to stop it breaking 
+      }
+    }
     coeffMap.put(AbsorptionEdge.N, coeff);
 
     coeff = new Double[POLYNOMIAL_EXPANSION];

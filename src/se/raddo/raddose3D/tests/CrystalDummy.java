@@ -3,6 +3,7 @@ package se.raddo.raddose3D.tests;
 import java.util.HashMap;
 import java.util.Map;
 
+import se.raddo.raddose3D.CoefCalc;
 import se.raddo.raddose3D.Crystal;
 import se.raddo.raddose3D.Wedge;
 
@@ -100,7 +101,7 @@ public class CrystalDummy extends Crystal {
   }
 
   @Override
-  public void setPEparamsForCurrentBeam(double beamEnergy) {    
+  public void setPEparamsForCurrentBeam(double beamEnergy, CoefCalc coefCalc, double[][] feFactors) {    
   }
   
   @Override
@@ -110,5 +111,37 @@ public class CrystalDummy extends Crystal {
   @Override
   public double addDoseAfterFL(int i, int j, int k, double doseIncreaseFL) {
     return 0;
+  }
+
+  @Override
+  public double[] getCryoCrystCoord(int i, int j, int k) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public int[] getCryoCrystSizeVoxels() {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public int getExtraVoxels(int maxPEDistance, double pixelsPerMicron) {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+  
+  @Override
+  public void setCryoPEparamsForCurrentBeam(double beamEnergy, CoefCalc coefCalc, double[][] feFactors) {    
+  }
+  
+  @Override
+  public double addDoseAfterPECryo(int i, int j, int k, double doseIncreasePE) {
+    return 0;
+  }
+  
+  @Override
+  public void findVoxelsReachedByPE(boolean cryo, CoefCalc coefCalc, final double energy, double[][] feFactors, final double angle) {
+    
   }
 }

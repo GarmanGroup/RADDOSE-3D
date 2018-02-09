@@ -52,7 +52,9 @@ public class CoefCalcFromSequence extends CoefCalcCompute{
       Double cellAlpha, Double cellBeta, Double cellGamma, int numMonomers,
       List<String> heavyProteinAtomNames, List<Double> heavyProteinAtomNums,
       List<String> heavySolutionConcNames, List<Double> heavySolutionConcNums,
-      Double solventFraction, String sequenceFile) {
+      Double solventFraction, String sequenceFile,
+      final List<String> cryoSolutionMolecule,
+      final List<Double> cryoSolutionConc, final String oilBased) {
     
     Double alpha = cellAlpha;
     Double beta = cellBeta;
@@ -84,9 +86,13 @@ public class CoefCalcFromSequence extends CoefCalcCompute{
 
     calculateAtomOccurrences(numMonomers, sf, heavyProteinAtomNames, 
         heavyProteinAtomNums, heavySolutionConcNames, heavySolutionConcNums,
-        sequenceFile);
+        sequenceFile, cryoSolutionMolecule, cryoSolutionConc, oilBased);
+    
     
     multiplyAtoms(this.getNumMonomers());
+    
+    super.calculateDensity(); //Density was never being calculated
+    
   }
   
   /**
@@ -104,7 +110,9 @@ public class CoefCalcFromSequence extends CoefCalcCompute{
   public void calculateAtomOccurrences(int monomers, Double solventFraction,
       List<String> heavyProteinAtomNames, List<Double> heavyProteinAtomNums,
       List<String> heavySolvConcNames, List<Double> heavySolvConcNums,
-      String seqFile) {
+      String seqFile,
+      final List<String> cryoSolutionMolecule,
+      final List<Double> cryoSolutionConc, final String oilBased) {
 
     // Start by dealing with heavy atom in the
     // protein and adding these to the unit cell.
@@ -125,6 +133,12 @@ public class CoefCalcFromSequence extends CoefCalcCompute{
     // solvent and add these to the unit cell.
     if (heavySolvConcNames != null) {
       addSolventConcentrations(heavySolvConcNames, heavySolvConcNums);
+    }
+    
+    if (cryoSolutionMolecule != null) {
+      //populate the 'cryo unit cell' with these atoms 
+      addCryoConcentrations(cryoSolutionMolecule, cryoSolutionConc, oilBased);
+      super.calculateCryoDensity();
     }
     
     //Parse the given sequence file
