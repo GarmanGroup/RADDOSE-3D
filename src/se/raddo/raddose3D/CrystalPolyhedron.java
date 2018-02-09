@@ -1781,7 +1781,7 @@ for (int l = peDistBins-1; l > 0; l--) {
         phiStep = (PE_ANGLE_LIMIT/2)/POLARISATION_RES;
       }
       
- //    for (double phi = 0; phi <= PE_ANGLE_LIMIT / 2; phi += phiStep) {
+  //   for (double phi = 0; phi <= PE_ANGLE_LIMIT / 2; phi += phiStep) {
      for (double phi = 0; phi <= PE_ANGLE_LIMIT/2 ; phi += stepTest) {  //This is to compare to even distribution
         // calculate x, y, z coordinates of voxel[i][j][k]
         // plus the polar coordinates for r, theta, phi
