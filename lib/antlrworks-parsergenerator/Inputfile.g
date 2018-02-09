@@ -64,6 +64,7 @@ scope {
 	List<String>	containerElementNames;
 	List<Double>	containerElementNums;		
 	String			pdb;
+	String                  cif;
 	String			seqFile;
 	Double			proteinConc;
 	Double			cellA;
@@ -75,7 +76,9 @@ scope {
 	int 			numMon;
 	int 			numRes; 
 	int 			numRNA;
-	int 			numDNA; 
+	int 			numDNA;
+	List<String>    smallMoleAtomNames;
+	List<Double>    smallMoleAtomNums; 
 	List<String>	heavyProteinAtomNames;
 	List<Double>	heavyProteinAtomNums;
 	List<String>	heavySolutionConcNames;
@@ -148,6 +151,22 @@ if ($crystal::crystalCoefCalc == 7)
   													$crystal::heavySolutionConcNames, $crystal::heavySolutionConcNums,
   													$crystal::solFrac, $crystal::proteinConc, $crystal::seqFile);
 }
+
+if ($crystal::crystalCoefCalc == 8)
+{
+  $crystal::crystalCoefCalcClass = new CoefCalcSmallMolecules($crystal::cellA, $crystal::cellB, $crystal::cellC, $crystal::cellAl, $crystal::cellBe, $crystal::cellGa,
+   													$crystal::numMon,
+  													$crystal::smallMoleAtomNames, $crystal::smallMoleAtomNums,
+  													$crystal::heavySolutionConcNames, $crystal::heavySolutionConcNums,
+  													$crystal::solFrac);
+}
+
+if ($crystal::crystalCoefCalc == 9)
+{
+   $crystal::crystalCoefCalcClass = new CoefCalcFromCIF($crystal::cif);												  													
+}
+
+
 
 $crystal::crystalProperties.put(Crystal.CRYSTAL_COEFCALC, $crystal::crystalCoefCalcClass);
 
@@ -232,15 +251,18 @@ crystalLine
 	| z=containerMaterialElements	{ $crystal::containerElementNames	= $z.names;
 							  $crystal::containerElementNums	= $z.num;	}
 	| aa=sequenceFile 		{ $crystal::seqFile 		= $aa.value; }
-	
+	| ab=smallMoleAtoms             {$crystal::smallMoleAtomNames   = $ab.names;
+							$crystal::smallMoleAtomNums		= $ab.num;	}
+	| ac=cif					{ $crystal::cif						= $ac.cif; }
+
 	| bb=calculateFLEscape		{ $crystal::crystalProperties.put(Crystal.CRYSTAL_FLUORESCENT_ESCAPE, $bb.value); }
 	| cc=flResolution 		{ $crystal::crystalProperties.put(Crystal.CRYSTAL_FLUORESCENT_RESOLUTION, $cc.value);}
 	| dd=peResolution 		{ $crystal::crystalProperties.put(Crystal.CRYSTAL_PHOTOELECTRON_RESOLUTION, $dd.value);}
+
 	| ee=cryoSolution	        { $crystal::cryoSolutionMolecule	= $ee.names;
 							  $crystal::cryoSolutionConc	= $ee.num;	}
 	| ff=oilBased	                { $crystal::oilBased	= $ff.value;  }
 							
-
 	;
 
 	
@@ -278,6 +300,8 @@ crystalCoefcalcKeyword returns [int value]
 	| SAXS		{ $value = 5;}
 	| SEQUENCE	{ $value = 6;}
 	| SAXSSEQ	{ $value = 7;}
+	| SMALLMOLE     { $value = 8;}
+	| CIF	  	{ $value = 9;}
 	;
 DUMMY : ('D'|'d')('U'|'u')('M'|'m')('M'|'m')('Y'|'y') ;
 DEFAULT	: ('D'|'d')('E'|'e')('F'|'f')('A'|'a')('U'|'u')('L'|'l')('T'|'t');
@@ -288,6 +312,8 @@ PDB : ('E'|'e')('X'|'x')('P'|'p');
 SAXS : ('S'|'s')('A'|'a')('X'|'x')('S'|'s');
 SEQUENCE : ('S'|'s')('E'|'e')('Q'|'q')('U'|'u')('E'|'e')('N'|'n')('C'|'c')('E'|'e');
 SAXSSEQ : ('S'|'s')('A'|'a')('X'|'x')('S'|'s')('S'|'s')('E'|'e')('Q'|'q');
+SMALLMOLE : ('S'|'s')('M'|'m')('A'|'a')('L'|'l')('L'|'l')('M'|'m')('O'|'o')('L'|'l')('E'|'e');
+CIF : ('E'|'e')('X'|'x')('P'|'p')('S'|'s')('M'|'m');
 
 crystalDim returns [Map<Object, Object> properties]
 @init { 
@@ -360,6 +386,14 @@ $num	= new ArrayList<Double>();
 PROTEINHEAVYATOMS : ('P'|'p')('R'|'r')('O'|'o')('T'|'t')('E'|'e')('I'|'i')('N'|'n')('H'|'h')('E'|'e')('A'|'a')('V'|'v')('Y'|'y')('A'|'a')('T'|'t')('O'|'o')('M'|'m')('S'|'s') ;
 ELEMENT : ('A'..'Z' | 'a'..'z')('A'..'Z' | 'a'..'z')? ;
 
+smallMoleAtoms returns [List<String> names, List<Double> num;]
+@init{
+$names 	= new ArrayList<String>();
+$num	= new ArrayList<Double>();
+}
+	: SMALLMOLEATOMS (a=ELEMENT b=FLOAT {$names.add($a.text); $num.add(Double.parseDouble($b.text)); } )+ ; 	
+SMALLMOLEATOMS : ('S'|'s')('M'|'m')('A'|'a')('L'|'l')('L'|'l')('M'|'m')('O'|'o')('L'|'l')('E'|'e')('A'|'a')('T'|'t')('O'|'o')('M'|'m')('S'|'s') ;
+
 heavySolutionConc returns [List<String> names, List<Double> num;]
 @init{
 $names 	= new ArrayList<String>();
@@ -375,6 +409,10 @@ SOLVENTFRACTION : ('S'|'s')('O'|'o')('L'|'l')('V'|'v')('E'|'e')('N'|'n')('T'|'t'
 pdb returns [String pdb]
 	: PDBNAME (a=STRING|a=FLOAT) {$pdb = $a.text;};
 PDBNAME : ('P'|'p')('D'|'d')('B'|'b') ;
+
+cif returns [String cif]
+	: CIFNAME a=STRING {$cif = $a.text;};
+CIFNAME : ('C'|'c')('I'|'i')('F'|'f') ;
 
 wireframeType returns [String value]
 	: WIREFRAMETYPE a=STRING {$value = $a.text;};
@@ -481,6 +519,7 @@ beamLine
 							   } }
 	| f=beamFile             { $beam::beamProperties.put(Beam.BEAM_EXTFILE, $f.filename); }
 	| g=beamPixelSize        { $beam::beamProperties.putAll($g.properties); }
+	
 	;
 
 beamFlux returns [Double flux]
@@ -518,7 +557,9 @@ beamCollimation returns [Map<Object, Object> properties]
 	: COLLIMATION 
 	| RECTANGULAR a=FLOAT b=FLOAT { $properties.put(Beam.BEAM_COLL_H, Double.parseDouble($a.text));
 	                                $properties.put(Beam.BEAM_COLL_V, Double.parseDouble($b.text)); }
-	| CIRCULAR FLOAT 
+	| CIRCULAR c=FLOAT f=FLOAT { $properties.put(Beam.BEAM_COLL_H, Double.parseDouble($c.text));
+	                                $properties.put(Beam.BEAM_COLL_V, Double.parseDouble($f.text)); 
+	                                $properties.put(Beam.BEAM_CIRCULAR, "TRUE"); }
 	| HORIZONTAL d=FLOAT { $properties.put(Beam.BEAM_COLL_H, Double.parseDouble($d.text)); }
 	| VERTICAL e=FLOAT   { $properties.put(Beam.BEAM_COLL_V, Double.parseDouble($e.text)); }
 	;

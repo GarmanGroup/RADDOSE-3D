@@ -42,6 +42,8 @@ public class BeamGaussian implements Beam {
 
   /** Attenuated beam flux  */
   private double attenuatedPhotonsPerSec;
+  
+  private boolean isCircular;
 
   /**
    * Generic property constructor for Gaussian beams. Extracts all required
@@ -98,12 +100,21 @@ public class BeamGaussian implements Beam {
        * normfactor is the integral of a normalised Gaussian within the
        * collimated region. It is needed to calculate fluxes.
        */
+      if (properties.get(Beam.BEAM_CIRCULAR) == "TRUE") {
+        isCircular = true;
+      }
+      else {
+        isCircular = false;
+      }
+         
       normFactor = bivariateGaussianVolume(-collXum / 2, collXum / 2,
           -collYum / 2, collYum / 2, sigmaX, sigmaY);
     }
 
     gX = new Gaussian(0, sigmaX);
     gY = new Gaussian(0, sigmaY);
+    
+
 
   }
   /**
@@ -121,7 +132,7 @@ public class BeamGaussian implements Beam {
    * @return 2d Gaussian function value.
    */
   private double gaussianIntensity(final double x, final double y) {
-    return gX.value(x) * gY.value(y);
+    return gX.value(x) * gY.value(y); 
   }
 
   /**
@@ -148,13 +159,45 @@ public class BeamGaussian implements Beam {
 
     NormalDistribution gx = new NormalDistribution(0, sx);
     NormalDistribution gy = new NormalDistribution(0, sy);
-
+// this needs to change for circular
     double cdf;
-    cdf = gx.cumulativeProbability(x2) * gy.cumulativeProbability(y2);
-    cdf -= gx.cumulativeProbability(x1) * gy.cumulativeProbability(y2);
-    cdf -= gx.cumulativeProbability(x2) * gy.cumulativeProbability(y1);
-    cdf += gx.cumulativeProbability(x1) * gy.cumulativeProbability(y1);
+//    double test;
+    double Px = gx.cumulativeProbability(x2);
+    double Py = gy.cumulativeProbability(y2);
+    if (isCircular == false) {
+      cdf = gx.cumulativeProbability(x2) * gy.cumulativeProbability(y2);
+      cdf -= gx.cumulativeProbability(x1) * gy.cumulativeProbability(y2);  
+      cdf -= gx.cumulativeProbability(x2) * gy.cumulativeProbability(y1);
+      cdf += gx.cumulativeProbability(x1) * gy.cumulativeProbability(y1);
 
+//      test = (Px - (1-Px)) * (Py - (1 - Py));   // This makes so much more sense to me than what is above!!!
+    }
+    else {
+      //try and integrate it properly
+      double stepTheta = (2* Math.PI) / 100;
+      double A = 1 / (2* Math.PI * sx * sy);
+      double lastHeldHeight = 0, lastHeldTheta = 0;
+      double overallSum = 0;
+      for (double theta = 0; theta <= 2*Math.PI; theta += stepTheta) {
+        double r = (x2 * y2) / (Math.pow(Math.pow(y2 * Math.cos(theta), 2) + Math.pow(x2 * Math.sin(theta), 2), 0.5));
+        double cosSquared = Math.pow(Math.cos(theta), 2);
+        double sinSquared = Math.pow(Math.sin(theta), 2);
+        double cosSPlusSinSTerm = (cosSquared / (2*Math.pow(sx, 2))) + (sinSquared / (2*Math.pow(sy, 2)));
+        double oneOver = A / (2*cosSPlusSinSTerm);
+        double otherTerm = 1 - Math.exp(-Math.pow(r, 2) * cosSPlusSinSTerm);
+        double overallTerm = oneOver * otherTerm; 
+        
+        if (theta != 0) {
+          double area = (theta - lastHeldTheta) * ((lastHeldHeight + overallTerm) / 2);
+          overallSum += area;
+        }
+        lastHeldTheta = theta;
+        lastHeldHeight = overallTerm;
+
+      }
+      cdf = overallSum;
+      
+    }
     return cdf;
   }
 
@@ -190,13 +233,21 @@ public class BeamGaussian implements Beam {
     calculateScaleFactor();
 
     // Test if beam coordinate is outside collimated area,
-    if ((collXum != null) && (Math.abs(coordX - offAxisUM) > collXum / 2)) {
-      return 0;
+    if (isCircular == false) {
+      if ((collXum != null) && (Math.abs(coordX - offAxisUM) > collXum / 2)) {
+        return 0;
+      }
+      if ((collYum != null) && (Math.abs(coordY) > collYum / 2)) {
+        return 0;
+      }
     }
-    if ((collYum != null) && (Math.abs(coordY) > collYum / 2)) {
-      return 0;
+    else {
+      if (((Math.pow(coordX - offAxisUM, 2)/Math.pow(collXum/2, 2)) + 
+          (Math.pow(coordY, 2)/Math.pow(collYum/2, 2))) > 1) {
+        return 0;
+      }
     }
-
+    
     // Return normalisedGaussian * scale factor
     return gaussianIntensity((coordX - offAxisUM), coordY) * scaleFactor;
   }

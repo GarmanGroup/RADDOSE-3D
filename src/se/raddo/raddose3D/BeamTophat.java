@@ -20,6 +20,8 @@ public class BeamTophat implements Beam {
 
   /** Attenuated beam flux.  */
   private double attenuatedPhotonsPerSec;
+  
+  private boolean isCircular;
 
   /**
    * Generic property constructor for Top Hat beams. Extracts all required
@@ -53,6 +55,14 @@ public class BeamTophat implements Beam {
     beamYum = (Double) properties.get(Beam.BEAM_COLL_V);
     photonsPerSec = (Double) properties.get(Beam.BEAM_FLUX);
     photonEnergy = (Double) properties.get(Beam.BEAM_ENERGY);
+    
+    if (properties.get(Beam.BEAM_CIRCULAR) == "TRUE") {
+      isCircular = true;
+    }
+    else {
+      isCircular = false;
+    }
+   
   }
 
   @Override
@@ -62,13 +72,26 @@ public class BeamTophat implements Beam {
 
     // Test to see if it's in the beam, if so assign even fluence, if not, no
     // fluence.
-    if (Math.abs(coordX - offAxisUM) <= beamXum / 2
+    if (isCircular == false) {
+      if (Math.abs(coordX - offAxisUM) <= beamXum / 2
         && Math.abs(coordY) <= beamYum / 2) {
-
+        
       return KEVTOJOULES * attenuatedPhotonsPerSec * photonEnergy
           / (beamXum * beamYum);
-    } else {
+      } else {
+        return 0d;
+      }
+    }
+    else {
+      if (((Math.pow(coordX - offAxisUM, 2)/Math.pow(beamXum/2, 2)) + 
+          (Math.pow(coordY, 2)/Math.pow(beamYum/2, 2))) <= 1) {  //check if inside the ellipse
+        return KEVTOJOULES * attenuatedPhotonsPerSec * photonEnergy
+            / (Math.PI * (beamXum/2) * (beamYum/2));
+      }
+      else {
       return 0d;
+      }
+     
     }
   }
 
