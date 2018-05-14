@@ -143,7 +143,7 @@ The original RADDOSE-3D publication is:
 - Zeldin, O. B., Gerstel, M., & Garman, E. F. (2013). RADDOSE-3D : time- and space-resolved modelling of dose in macromolecular crystallography. Journal of Applied Crystallography, 46, 1225–1230. https://doi.org/10.1107/S0021889813011461
 
 We now have a new publication on updates to RADDOSE-3D in the period 2014 - 2017:
-- Bury, C. S., Brooks‐Bartlett, J. C., Walsh, S. P. and Garman, E. F. (2018), Estimate your dose: RADDOSE‐3D. Protein Science, 27, 217-228. doi:10.1002/pro.3302
+- Bury, C. S., Brooks‐Bartlett, J. C., Walsh, S. P. and Garman, E. F. (2018), Estimate your dose: RADDOSE‐3D. Protein Science, 27, 217-228. https://doi.org/10.1002/pro.3302
 
 For the application to SAXS, also check out:
 - Brooks-Bartlett, J. C., Batters, R. A., Bury, C. S., Lowe, E. D., Ginn, H. M., Round, A., & Garman, E. F. (2017). Development of tools to automate quantitative analysis of radiation damage in SAXS experiments. Journal of Synchrotron Radiation, 24, 1–10. https://doi.org/10.1107/S1600577516015083
