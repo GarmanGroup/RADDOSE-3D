@@ -339,7 +339,7 @@ This command will use the current RADDOSE-3D code to calculate the absorption an
 
 \noindent \Keyword{ABSCOEFCALC SMALLMOLE}
 
-This command will use the current RADDOSE-3D code to calculate the absorption and attenuation coefficients using the crystal composition specified by the user, similarly to the keyword \Keyword{RD3D} above. However, this indicates that a small molecule experiment is present, and as such the user must instead specify the composition of the crystal using the keywords \Keyword{SmallMoleAtoms} and \Keyword{UnitCell} to explicitly define the entire contents of the small molecule unit cell (including solvent atoms).\SB
+This command will use the current RADDOSE-3D code to calculate the absorption and attenuation coefficients using the crystal composition specified by the user, similarly to the keyword \Keyword{RD3D} above. However, this indicates that a small molecule experiment is present, and as such the user must instead specify the composition of the crystal using the keywords \Keyword{SMALLMOLEATOMS}, \Keyword{UNITCELL} and \Keyword{NUMMONOMERS} to explicitly define the entire contents of the small molecule unit cell (including solvent atoms). Note that in this current version, no additional solvent atoms can be specified with \Keyword{SOLVENTHEAVYCONC} keyword provided below. \SB
 
 
 \noindent \Keyword{ABSCOEFCALC CIF}
@@ -477,9 +477,9 @@ The protein concentration used in the SAXS experiment in grams per litre.
 This keyword only has an effect when the absorption and attenuation coefficients are estimated using the keyword \Keyword{SMALLMOLE} \hyperref[abscoefcalc]{section \ref*{abscoefcalc}\SB} and is only to be used for small molecule experiments
 
 \noindent \Keyword{SMALLMOLEATOMS \textit{El I} (\textit{El I} (\textit{El I} ..))}
-defines a list of atoms to explicitly define the full contents of the unit cell. Each species is defined by a two character string \Keyword{\textit{El}} for the elemental symbol, and an integer number \Keyword{\textit{I}} of atoms of that species per unit cell.
+defines a list of atoms to explicitly define the full contents of the unit cell. Each species is defined by a two character string \Keyword{\textit{El}} for the elemental symbol, and an integer number \Keyword{\textit{I}} of atoms of that species per `monomer' in the unit cell (note that if the  \Keyword{NUMMONOMERS} keyword is omitted from the input file, then 1 monomer is assumed per unit cell).
 
-The command \Keyword{SMALLMOLEATOMS C 18 H 15 Bi 8} would add 18 carbon 15 hydrogen and 8 bismuth atoms per unit cell.
+The command \Keyword{SMALLMOLEATOMS C 18 H 15 Bi 8} would add 18 carbon 15 hydrogen and 8 bismuth atoms per `monomer' in the unit cell.
 
 \subsection{\Keyword{CALCULATEPEESCAPE}}
 \label{calculatepeescape}
