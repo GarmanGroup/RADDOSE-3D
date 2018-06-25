@@ -480,7 +480,7 @@ public class CoefCalcCompute extends CoefCalc {
         //K shell energy : checked from element database class
         kShellEnergy = e.getKEdge();
         //Probability of K shell ionization: checked worked out in element class
-        kFactorA = e.getKShellIonisationProb();               
+        kFactorA = e.getKShellIonisationProb(); //this is probability of K relative to other shells              
         //K shell fluorescent yield: checked from element database class
         kFactorB = e.getKShellFluorescenceYield();
         //This gives difference between the edge energies needed for fluorescent escape probability.
@@ -818,9 +818,9 @@ public class CoefCalcCompute extends CoefCalc {
       
       //TODO change these to be something more readable, like a map structure
       fluorEscapeFactors[element_counter][0] = muAbsFrac;
-      fluorEscapeFactors[element_counter][1] = kShellEnergy;
-      fluorEscapeFactors[element_counter][2] = kFactorA;
-      fluorEscapeFactors[element_counter][3] = kFactorB;
+      fluorEscapeFactors[element_counter][1] = kShellEnergy; 
+      fluorEscapeFactors[element_counter][2] = kFactorA; // ionisation
+      fluorEscapeFactors[element_counter][3] = kFactorB; //yield
       fluorEscapeFactors[element_counter][4] = escapeMuAbsK;
       
       fluorEscapeFactors[element_counter][5] = l1ShellEnergy;

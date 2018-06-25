@@ -1746,8 +1746,15 @@ for (int l = peDistBins-1; l > 0; l--) {
   @Override
   public void findVoxelsReachedByPE(boolean cryo, CoefCalc coefCalc, final double energy, double[][] feFactors, final double angle) {
 
+    
+    
     //Work out the angular distribution so tracks can be biased
   //  double[] angularDistribution = setUpPEPolarisation(coefCalc, energy, feFactors, cryo);
+    
+    //Convert angle to less than 360 if it is more
+    int timesOver = (int) (angle/(2*Math.PI));
+    double thisAngle = angle - (timesOver * 2 *Math.PI);
+    
     double[] distribution = null;
     if (cryo == false) {
       distribution = angularDistribution;
@@ -1768,8 +1775,8 @@ for (int l = peDistBins-1; l > 0; l--) {
     int counter = -1;
   //  for (double phi = 0; phi < PE_ANGLE_LIMIT; phi += step) {
       for (double theta = 0*Math.PI; theta < 2*Math.PI; theta += step) {
-    //Set track counter based on where angle is - i.e need to polarise along beam direction
-      trackCounter = (int) ((angle/(PE_ANGLE_LIMIT/2)) * POLARISATION_RES);
+    //Set track counter based on where angle is - i.e need to polarise along beam POLARISATION direction
+      trackCounter = (int) ((thisAngle/(PE_ANGLE_LIMIT/2)) * POLARISATION_RES);
       if (trackCounter >= POLARISATION_RES) { //if angle more than or = to pi restart distribution 
         trackCounter -= POLARISATION_RES;
       }
@@ -1787,7 +1794,7 @@ for (int l = peDistBins-1; l > 0; l--) {
         // plus the polar coordinates for r, theta, phi
         
         //set the step size of theta based on the angular photoelectron distribution
-       phiAngle = phi + angle;
+       phiAngle = phi + thisAngle;
         if (phiAngle >= (((PE_ANGLE_LIMIT/2)/POLARISATION_RES) * (trackCounter + 1))- phi)  { //relook at this, spacing not quite right
           if (phi == 0) { //if this is first iteration rotate to the angle 
             while (phiAngle >= (((PE_ANGLE_LIMIT/2)/POLARISATION_RES) * (trackCounter + 1))- phi){
@@ -1862,7 +1869,7 @@ for (int l = peDistBins-1; l > 0; l--) {
   private double[] setUpPEPolarisation(CoefCalc coefCalc, final double energy, double[][] feFactors, boolean cryo) {
  //  double beta = 2; //this is only true for s shells but so far I haven't calculated it for other shells
     double beta = 0;
-    // at the moment every photoelectron is polarised. I will change it o it is just for s shells, 
+    // at the moment every photoelectron is polarised. I will change it so it is just for s shells, 
     // the rest will have an even distribution to contribute, flattening the amount of polarisation. 
     int counter = -1;
     //set up my double for storing stuff 

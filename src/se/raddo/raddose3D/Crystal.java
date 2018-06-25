@@ -408,7 +408,7 @@ public abstract class Crystal {
   }
   
   /**
-   * Calculates the general Auger energy at eahc angle that is later applied to each voxel using number of photons
+   * Calculates the general Auger energy at each angle that is later applied to each voxel using number of photons
    * 
    * @param fluorescentEscapeFactors
    * @return auger energy
@@ -444,7 +444,7 @@ public abstract class Crystal {
   for (int i = 0; i < length; i++){    //loops over each atom type
     double muratio = fluorescentEscapeFactors[i][0]; // uj/upe
   //j-shell ionization x j-shell fluorescence yield x j-edge energy
-   double K1 = fluorescentEscapeFactors[i][1] * fluorescentEscapeFactors[i][2]*fluorescentEscapeFactors[i][3]; 
+   double K1 = fluorescentEscapeFactors[i][1] * fluorescentEscapeFactors[i][2]*fluorescentEscapeFactors[i][3];
    /*
    double L1 = fluorescentEscapeFactors[i][5] * fluorescentEscapeFactors[i][6]*fluorescentEscapeFactors[i][7];
    double L2 = fluorescentEscapeFactors[i][9] * fluorescentEscapeFactors[i][10]*fluorescentEscapeFactors[i][11];
@@ -502,7 +502,7 @@ public abstract class Crystal {
     double totK = 0, totL1 = 0, totL2 = 0, totL3 = 0;
     double totM1 = 0, totM2 = 0, totM3 = 0, totM4 = 0, totM5 = 0;
     
-    for (int i = 0; i < feFactors.length; i++) {
+    for (int i = 0; i < feFactors.length; i++) { // for every element 
       totK += feFactors[i][0] * feFactors[i][1] * feFactors[i][2];
       totL1 += feFactors[i][0] * feFactors[i][5] * feFactors[i][6];
       totL2 += feFactors[i][0] * feFactors[i][9] * feFactors[i][10];
@@ -518,7 +518,7 @@ public abstract class Crystal {
     }
 
     if (cryo == false) { //is this being called for the crystal or the cryo-solution
-      EnergyToSubtractFromPE = totK + totL1 + totL2 + totL3 + totM1 + totM2 + totM3 + totM4 + totM5;
+      EnergyToSubtractFromPE = totK + totL1 + totL2 + totL3 + totM1 + totM2 + totM3 + totM4 + totM5; //this is fl + auger!!!
     }
     else {
       cryoEnergyToSubtractFromPE = totK + totL1 + totL2 + totL3 + totM1 + totM2 + totM3 + totM4 + totM5;
@@ -563,20 +563,41 @@ public abstract class Crystal {
     }
    if (fluorescentEscape) {
     //Calc % energy contribution of each event
+ 
     getFluorescenceEnergyPerEvent(feFactors);
     fluorescenceEnergyRelease = calcFluorescence(beam, feFactors);
    // fluorescenceProportionEvent = new double[feFactors.length][4];
     fluorescenceProportionEvent = new double[feFactors.length];
     for (int m = 0; m < feFactors.length; m++) {
-    /* 
-      fluorescenceProportionEvent[m][0] = fluorescenceEnergyPerEvent[m][0] / fluorescenceEnergyRelease; //K
-      fluorescenceProportionEvent[m][1] = fluorescenceEnergyPerEvent[m][1] / fluorescenceEnergyRelease; //L1
-      fluorescenceProportionEvent[m][2] = fluorescenceEnergyPerEvent[m][2] / fluorescenceEnergyRelease; //L2
-      fluorescenceProportionEvent[m][3] = fluorescenceEnergyPerEvent[m][3] / fluorescenceEnergyRelease; //L3
-      */
+     
+    //  fluorescenceProportionEvent[m][0] = fluorescenceEnergyPerEvent[m][0] / fluorescenceEnergyRelease; //K
+    //  fluorescenceProportionEvent[m][1] = fluorescenceEnergyPerEvent[m][1] / fluorescenceEnergyRelease; //L1
+    //  fluorescenceProportionEvent[m][2] = fluorescenceEnergyPerEvent[m][2] / fluorescenceEnergyRelease; //L2
+    //  fluorescenceProportionEvent[m][3] = fluorescenceEnergyPerEvent[m][3] / fluorescenceEnergyRelease; //L3
+      
       fluorescenceProportionEvent[m] = fluorescenceEnergyPerEvent[m] / fluorescenceEnergyRelease; //K
     }
+    
+     /*
+    // way 2 - Using PE energy instead of K edge!!!! - this is not as accurate bby a mile, will underestimate
+      calculatePEEnergySubtraction(feFactors, false);
+      fluorescenceProportionEvent = new double[feFactors.length];
+      fluorescenceEnergyPerEvent = new double[feFactors.length];
+      fluorescenceEnergyRelease = 0;
+      for (int m = 0; m < feFactors.length; m++) {
+        fluorescenceEnergyPerEvent[m] = EnergyToSubtractFromPE * feFactors[m][0] * feFactors[m][2] * feFactors[m][3] * Beam.KEVTOJOULES;
+        fluorescenceEnergyRelease += fluorescenceEnergyPerEvent[m];
+      } 
+      for (int m = 0; m < feFactors.length; m++) {
+        fluorescenceProportionEvent[m] = fluorescenceEnergyPerEvent[m] / fluorescenceEnergyRelease; //K
+      }
+      */
+     
+    
     setFLparamsForCurrentBeam(feFactors);
+    
+    
+    
     }
 
    if (coefCalc.isCryo() == true && photoElectronEscape == true){
@@ -812,6 +833,7 @@ public abstract class Crystal {
                   //auger part
                   //Dose in voxel
                   double totAugerDose = augerEnergy * numberofphotons * fluenceToDoseFactor;
+                  
                   
                   //Do PE
                   double dosePE = voxImageDose[i][j][k] - voxImageFlDoseRelease - totAugerDose;
