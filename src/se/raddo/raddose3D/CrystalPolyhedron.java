@@ -135,6 +135,7 @@ public class CrystalPolyhedron extends Crystal {
   
   private int numberOfTracksPE; 
   private int numberOfTracksFL;
+  private int [] trackNumberBias;
   
   /**
    * 3d array for voxels where photoelectrons can reach
@@ -1746,8 +1747,117 @@ for (int l = peDistBins-1; l > 0; l--) {
   @Override
   public void findVoxelsReachedByPE(boolean cryo, CoefCalc coefCalc, final double energy, double[][] feFactors, final double angle) {
 
+    //way 2
+    
+    //Convert angle to less than 360 if it is more
+    int timesOver = (int) (angle/(2*Math.PI));
+    double thisAngle = angle - (timesOver * 2 *Math.PI);
+    
+    double[] distribution = null;
+    if (cryo == false) {
+      distribution = angularDistribution;
+    }
+    else {
+      distribution = cryoAngularDistribution;
+    }
+    
+    //sum
+    int numbersInArray = 0;
+    for (int i = 0; i < distribution.length; i++){
+      numbersInArray += distribution[i];
+    }
+    numbersInArray *= PE_ANGLE_RES_LIMIT;
+    
+    double step = 2*Math.PI / PE_ANGLE_RES_LIMIT;
+    double phiAngle = 0;
+    int counter = -1;
+    int bigArrayIndex = 0;
+    int[] theBigArray = new int[numbersInArray];
+    
+    for (double theta = 0*Math.PI; theta < 2*Math.PI; theta += step) {
+      int phiCount = -1;
+      for (double phi = 0; phi <= PE_ANGLE_LIMIT/2 ; phi += step) {
+        phiAngle = phi + thisAngle;
+        phiCount += 1;
+
+        //Check if this track has already been assigned
+        
+        boolean replicateTrack = false;
+        
+        if (phi == 0 || phi == (PE_ANGLE_LIMIT / 2)) {
+          if (theta == 0) {
+            replicateTrack = false;
+          }
+          else {
+            replicateTrack = true;
+          }
+        }
+        
+        if (replicateTrack == false) {
+          counter += 1;
+
+          double xNorm = Math.sin(theta) * Math.cos(phiAngle);
+          double yNorm = Math.sin(theta) * Math.sin(phiAngle);
+          double zNorm = Math.cos(theta);
+          
+          //weight track in bigarray
+          int runningCheck = 0;
+          if (distribution[phiCount] > 0) {
+            while (runningCheck < distribution[phiCount]) {
+              theBigArray[bigArrayIndex] = counter;
+              runningCheck += 1;
+              bigArrayIndex += 1;
+            }
+          }
+          
+          for (int m = 0; m < peDistBins; m++) {
+            // calculate r in voxel coordinates rather than pixels
+            double r = 0;
+            if (cryo == false)  {  
+              r = PE_DISTANCES_TRAVELLED[m] * this.crystalPixPerUM; 
+              relativeVoxXYZ[m][counter][0] = r * xNorm;
+              relativeVoxXYZ[m][counter][1] = r * yNorm;
+              relativeVoxXYZ[m][counter][2] = r * zNorm;
+            }
+            else {
+              r = CRYO_PE_DISTANCES_TRAVELLED[m] * this.crystalPixPerUM;
+              relativeVoxXYZCryo[m][counter][0] = r * xNorm;
+              relativeVoxXYZCryo[m][counter][1] = r * yNorm;
+              relativeVoxXYZCryo[m][counter][2] = r * zNorm;
+            }
+
+          }
+
+        }
+      }
+    }
+    numberOfTracksPE = counter + 1;
+    
+    //count numbers in array, not zeroes at the end - a stupid way of doing it so clean up later
+    boolean pastFirst = false;
+    int actualNumber = 0;
+    for (int j = 0; j < theBigArray.length; j++) {
+        if (pastFirst == true) {
+          if (theBigArray[j] == 0) { //if it goes back to nought this is junk at the end
+            actualNumber = j;
+            break;
+          }
+        }
+        
+        if (theBigArray[j] > 0) {
+          pastFirst = true;
+        }
+
+    }
+    int[] actualTrackBias = new int[actualNumber];
+    for (int i = 0; i < actualNumber; i++) {
+      actualTrackBias[i] = theBigArray[i];
+    }
+    
+    trackNumberBias = actualTrackBias;
     
     
+    /*// way 1
     //Work out the angular distribution so tracks can be biased
   //  double[] angularDistribution = setUpPEPolarisation(coefCalc, energy, feFactors, cryo);
     
@@ -1864,11 +1974,16 @@ for (int l = peDistBins-1; l > 0; l--) {
       }
     }
     numberOfTracksPE = counter + 1;
+    */
   }
   
+  
+  
+  
+  /* way 1
   private double[] setUpPEPolarisation(CoefCalc coefCalc, final double energy, double[][] feFactors, boolean cryo) {
- //  double beta = 2; //this is only true for s shells but so far I haven't calculated it for other shells
-    double beta = 0;
+   double beta = 2; //this is only true for s shells but so far I haven't calculated it for other shells
+  //  double beta = 0;
     // at the moment every photoelectron is polarised. I will change it so it is just for s shells, 
     // the rest will have an even distribution to contribute, flattening the amount of polarisation. 
     int counter = -1;
@@ -1908,22 +2023,57 @@ for (int l = peDistBins-1; l > 0; l--) {
     }
     
     //TEST by forcing an extreme distribution
-    /*
-    for (int i = 0; i <= POLARISATION_RES-1; i ++) {
-      if (i == 0) {
-        proportionAtAngleTotal[i] = 1;
-      }
-      else {
-        proportionAtAngleTotal[i] = 0;
-      }
-    }
-    */
+    
+ //   for (int i = 0; i <= POLARISATION_RES-1; i ++) {
+ //     if (i == 0) {
+ //       proportionAtAngleTotal[i] = 1;
+ //     }
+  //    else {
+   //     proportionAtAngleTotal[i] = 0;
+   //   }
+ //  }
+    
     return proportionAtAngleTotal;
   }
+  */
   
+  //way 2 - biasing choice
+  private double[] setUpPEPolarisation(CoefCalc coefCalc, final double energy, double[][] feFactors, boolean cryo) {
+    double beta = 2; //this is only true for s shells but so far I haven't calculated it for other shells
+    
+    double angle = 0;
+    int elementCounter = 0;
+    double[] weightedAveragePoint = new double[(PE_ANGLE_RES_LIMIT/2)+1];
+    double sumPoint = 0;
+    for (int i = 0; i <= PE_ANGLE_RES_LIMIT/2; i++) { //for each track to be polarised
+      elementCounter = -1;
+      sumPoint = 0;
+      angle = i * (PE_ANGLE_LIMIT/PE_ANGLE_RES_LIMIT);
+      Map<Element.CrossSection, Double> cs;
+      for (Element e : coefCalc.getPresentElements(cryo)) {
+        elementCounter += 1;
+        cs = e.getAbsCoefficients(energy);
+        double photoElectric = cs.get(CrossSection.PHOTOELECTRIC);
+        //below divides by max to get a proportion to max - prevents higher x-section dominating
+        double point = solvePolarisationEquationForAngle(angle, photoElectric, beta) / solvePolarisationEquationForAngle(0, photoElectric, beta);
+        sumPoint += point * feFactors[elementCounter][0]; // weights by absorption 
+      }
+      weightedAveragePoint[i] = Math.round((1000* (sumPoint/elementCounter)));
+    }
+     return weightedAveragePoint;
+   }
+  
+  /*// way 1
   private double solvePolarisationEquationForAngle(int i, double photoElectric, double beta) {
     double theta = (i * (Math.PI/POLARISATION_RES));  // + Math.PI/2;
     double height = (photoElectric / (4*Math.PI)) * (1+(beta*0.5*(3*Math.pow(Math.cos(theta), 2) - 1)));
+    return height;
+  }
+  */ 
+  
+  //way 2
+  private double solvePolarisationEquationForAngle(double phi, double photoElectric, double beta) {
+    double height = (photoElectric / (4*Math.PI)) * (1+(beta*0.5*(3*Math.pow(Math.cos(phi), 2) - 1)));
     return height;
   }
   
@@ -2052,10 +2202,13 @@ flRelativeVoxXYZ = new double[feFactors.length][flDistBins][FL_ANGLE_RES_LIMIT *
       // 5 um, what proportion exit the crystal.
               
       for (int q = 0; q < PE_ANGLE_RESOLUTION*PE_ANGLE_RESOLUTION; q++) { //for every tracks i'm choosing
-        int randomTrack = ThreadLocalRandom.current().nextInt(0, numberOfTracksPE); //choose one at random
+       // int randomTrack = ThreadLocalRandom.current().nextInt(0, numberOfTracksPE); //choose one at random
+        int randomIndex = ThreadLocalRandom.current().nextInt(0, trackNumberBias.length);
+        int randomTrack = trackNumberBias[randomIndex];
+        
         
         //TO TEST
-      //  randomTrack = q;
+    //    randomTrack = 0;
         
         for (int m = 0; m < peDistBins; m++) {   
           double x = relativeVoxXYZ[m][randomTrack][0];
@@ -2146,7 +2299,9 @@ flRelativeVoxXYZ = new double[feFactors.length][flDistBins][FL_ANGLE_RES_LIMIT *
     double doseBackInCrystalPE = 0;
     
     for (int q = 0; q < PE_ANGLE_RESOLUTION*PE_ANGLE_RESOLUTION; q++) { //for every tracks i'm choosing
-      int randomTrack = ThreadLocalRandom.current().nextInt(0, numberOfTracksPE); //choose one at random
+      //   int randomTrack = ThreadLocalRandom.current().nextInt(0, numberOfTracksPE); //choose one at random
+      int randomIndex = ThreadLocalRandom.current().nextInt(0, trackNumberBias.length);
+      int randomTrack = trackNumberBias[randomIndex];
       
       //TO TEST
     //  randomTrack = q;
