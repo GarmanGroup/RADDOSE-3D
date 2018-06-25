@@ -1856,8 +1856,8 @@ for (int l = peDistBins-1; l > 0; l--) {
     
     trackNumberBias = actualTrackBias;
     
-    
-    /*// way 1
+    /*
+    // way 1
     //Work out the angular distribution so tracks can be biased
   //  double[] angularDistribution = setUpPEPolarisation(coefCalc, energy, feFactors, cryo);
     
@@ -1898,8 +1898,8 @@ for (int l = peDistBins-1; l > 0; l--) {
         phiStep = (PE_ANGLE_LIMIT/2)/POLARISATION_RES;
       }
       
-  //   for (double phi = 0; phi <= PE_ANGLE_LIMIT / 2; phi += phiStep) {
-     for (double phi = 0; phi <= PE_ANGLE_LIMIT/2 ; phi += stepTest) {  //This is to compare to even distribution
+     for (double phi = 0; phi <= PE_ANGLE_LIMIT / 2; phi += phiStep) {
+ //    for (double phi = 0; phi <= PE_ANGLE_LIMIT/2 ; phi += stepTest) {  //This is to compare to even distribution
         // calculate x, y, z coordinates of voxel[i][j][k]
         // plus the polar coordinates for r, theta, phi
         
@@ -1979,8 +1979,8 @@ for (int l = peDistBins-1; l > 0; l--) {
   
   
   
-  
-  /* way 1
+  /*
+  // way 1
   private double[] setUpPEPolarisation(CoefCalc coefCalc, final double energy, double[][] feFactors, boolean cryo) {
    double beta = 2; //this is only true for s shells but so far I haven't calculated it for other shells
   //  double beta = 0;
@@ -2037,45 +2037,49 @@ for (int l = peDistBins-1; l > 0; l--) {
   }
   */
   
+  
   //way 2 - biasing choice
   private double[] setUpPEPolarisation(CoefCalc coefCalc, final double energy, double[][] feFactors, boolean cryo) {
     double beta = 2; //this is only true for s shells but so far I haven't calculated it for other shells
     
     double angle = 0;
     int elementCounter = 0;
+    double weight = 0;
+    double point = 0;
     double[] weightedAveragePoint = new double[(PE_ANGLE_RES_LIMIT/2)+1];
-    double sumPoint = 0;
+    double sumPoint, testPoint = 0;
+    
+    Map<Element.CrossSection, Double> cs;
+    elementCounter = -1;
+    for (Element e : coefCalc.getPresentElements(cryo)) {
+      elementCounter += 1;
+      weight += feFactors[elementCounter][0] * feFactors[elementCounter][2];
+    }
+    
     for (int i = 0; i <= PE_ANGLE_RES_LIMIT/2; i++) { //for each track to be polarised
-      elementCounter = -1;
-      sumPoint = 0;
       angle = i * (PE_ANGLE_LIMIT/PE_ANGLE_RES_LIMIT);
-      Map<Element.CrossSection, Double> cs;
-      for (Element e : coefCalc.getPresentElements(cryo)) {
-        elementCounter += 1;
-        cs = e.getAbsCoefficients(energy);
-        double photoElectric = cs.get(CrossSection.PHOTOELECTRIC);
-        //below divides by max to get a proportion to max - prevents higher x-section dominating
-        double point = solvePolarisationEquationForAngle(angle, photoElectric, beta) / solvePolarisationEquationForAngle(0, photoElectric, beta);
-        sumPoint += point * feFactors[elementCounter][0]; // weights by absorption 
-      }
-      weightedAveragePoint[i] = Math.round((1000* (sumPoint/elementCounter)));
+      point = solvePolarisationEquationForAngle(angle, 1, beta) / solvePolarisationEquationForAngle(0, 1, beta);
+      sumPoint = point * weight;
+      weightedAveragePoint[i] = Math.round((1000 * sumPoint));
     }
      return weightedAveragePoint;
    }
   
-  /*// way 1
+  /*
+  // way 1
   private double solvePolarisationEquationForAngle(int i, double photoElectric, double beta) {
     double theta = (i * (Math.PI/POLARISATION_RES));  // + Math.PI/2;
     double height = (photoElectric / (4*Math.PI)) * (1+(beta*0.5*(3*Math.pow(Math.cos(theta), 2) - 1)));
     return height;
   }
-  */ 
+  */
   
   //way 2
   private double solvePolarisationEquationForAngle(double phi, double photoElectric, double beta) {
     double height = (photoElectric / (4*Math.PI)) * (1+(beta*0.5*(3*Math.pow(Math.cos(phi), 2) - 1)));
     return height;
   }
+  
   
   private int[] numberOfTracksPerRegion(double[] angularDistribution) {
     int[] tracks = new int[angularDistribution.length];
@@ -2100,9 +2104,9 @@ for (int l = peDistBins-1; l > 0; l--) {
    * @param feFactors
    */
   private void findVoxelsReachedByFL(final double feFactors[][]) {
-double step = PE_ANGLE_LIMIT / FL_ANGLE_RES_LIMIT;  
-//flRelativeVoxXYZ = new double[feFactors.length][4][flDistBins][FL_ANGLE_RESOLUTION * FL_ANGLE_RESOLUTION][3];
-flRelativeVoxXYZ = new double[feFactors.length][flDistBins][FL_ANGLE_RES_LIMIT * FL_ANGLE_RES_LIMIT][3];
+    double step = PE_ANGLE_LIMIT / FL_ANGLE_RES_LIMIT;  
+    //flRelativeVoxXYZ = new double[feFactors.length][4][flDistBins][FL_ANGLE_RESOLUTION * FL_ANGLE_RESOLUTION][3];
+    flRelativeVoxXYZ = new double[feFactors.length][flDistBins][FL_ANGLE_RES_LIMIT * FL_ANGLE_RES_LIMIT][3];
     int counter = -1;
     for (double phi = 0; phi < PE_ANGLE_LIMIT; phi += step) {
       for (double theta = 0; theta <= PE_ANGLE_LIMIT / 2; theta += step) {
@@ -2202,7 +2206,7 @@ flRelativeVoxXYZ = new double[feFactors.length][flDistBins][FL_ANGLE_RES_LIMIT *
       // 5 um, what proportion exit the crystal.
               
       for (int q = 0; q < PE_ANGLE_RESOLUTION*PE_ANGLE_RESOLUTION; q++) { //for every tracks i'm choosing
-       // int randomTrack = ThreadLocalRandom.current().nextInt(0, numberOfTracksPE); //choose one at random
+     //   int randomTrack = ThreadLocalRandom.current().nextInt(0, numberOfTracksPE); //choose one at random
         int randomIndex = ThreadLocalRandom.current().nextInt(0, trackNumberBias.length);
         int randomTrack = trackNumberBias[randomIndex];
         
@@ -2299,7 +2303,7 @@ flRelativeVoxXYZ = new double[feFactors.length][flDistBins][FL_ANGLE_RES_LIMIT *
     double doseBackInCrystalPE = 0;
     
     for (int q = 0; q < PE_ANGLE_RESOLUTION*PE_ANGLE_RESOLUTION; q++) { //for every tracks i'm choosing
-      //   int randomTrack = ThreadLocalRandom.current().nextInt(0, numberOfTracksPE); //choose one at random
+    //     int randomTrack = ThreadLocalRandom.current().nextInt(0, numberOfTracksPE); //choose one at random
       int randomIndex = ThreadLocalRandom.current().nextInt(0, trackNumberBias.length);
       int randomTrack = trackNumberBias[randomIndex];
       
