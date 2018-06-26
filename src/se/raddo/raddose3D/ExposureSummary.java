@@ -32,6 +32,8 @@ public class ExposureSummary implements ExposeObserver {
   private Double                              totalDose;
   /** Total number of exposed voxels in the crystal (voxel dose > 0). */
   private int                                 exposedVoxels;
+  /** Total number of exposed voxels in a particular image */
+  private int                                 imageExposedVoxels;
   /** Total number of occupied (= non-empty) voxels in the crystal. */
   private int                                 occupiedVoxels;
 
@@ -71,6 +73,31 @@ public class ExposureSummary implements ExposeObserver {
    * For caching of dose quantile dependent summary statistics.
    */
   private Double                              cachedDoseContrast;
+  
+  /**
+   * Stores the average Relative diffraction efficiency of a particular image
+   */
+  private Double                              averageRDE;
+  
+  private Double                              fluenceWeightedAvgRDE;
+  
+  private Double                              runningSumRDE;
+  
+  private Double                              fluenceWeightedRunningSumRDE;
+  
+  private Double                              fluenceSum;
+  /**
+   * Stores the worst/minimum voxel RDE in an image
+   */
+  private Double                              minRDE;
+  
+  private double[][] fluenceWeightedRDEArray;
+  
+  /**
+   * A boolean to say whether the RDE drops below 0.5 for any image 
+   */
+  private boolean lowAvgRDE;
+  private boolean lowFluxWeightedRDE;
 
   /**
    * Create an observer object for a crystal that records simple summary
@@ -94,11 +121,25 @@ public class ExposureSummary implements ExposeObserver {
     diffNum = 0d;
     diffDenom = 0d;
     wedgeElastic = 0d;
-
+    imageExposedVoxels = 0;
+    
+    runningSumRDE = 0d;
+    fluenceWeightedRunningSumRDE = 0d;
+    fluenceSum = 0d;
+    minRDE = 1d;
+    
     // per image exposure variables imageComplete()
     runningSumDiffDose = 0d;
     images = 0;
+    fluenceWeightedRDEArray = new double[imageCount][2];
+    
+    averageRDE = 0d;
+    fluenceWeightedAvgRDE = 0d;
+    lowAvgRDE = false;
+    lowFluxWeightedRDE = false;
+    
 
+    
     // exposure summary per voxel variables summaryObservation()
     totalDose = 0d;
     exposedVoxels = 0;
@@ -125,9 +166,23 @@ public class ExposureSummary implements ExposeObserver {
       final double elastic) {
 
     // updating the diffracted intensity for this image/iteration equation
-    diffNum += (totalVoxDose + addedDose / 2) * fluence * doseDecay;
-    diffDenom += fluence * doseDecay;
-
+ //   diffNum += (totalVoxDose + addedDose / 2) * fluence * doseDecay;
+ //   diffDenom += fluence * doseDecay;
+    diffNum += (totalVoxDose + addedDose / 2) * fluence * 1;
+    diffDenom += fluence * 1;
+    
+    //for RDE
+    if (fluence > 0) {
+      imageExposedVoxels += 1;
+      runningSumRDE += doseDecay;
+      fluenceSum += fluence;
+      fluenceWeightedRunningSumRDE += fluence * doseDecay;
+      //find min
+      if (doseDecay < minRDE) {
+        minRDE = doseDecay;
+      }
+    }
+    
     totalAbsorbedEnergy += absorbedEnergy;
     wedgeElastic += elastic;
 
@@ -138,6 +193,26 @@ public class ExposureSummary implements ExposeObserver {
     if (diffDenom != 0) {
       runningSumDiffDose += diffNum / diffDenom;
     }
+    if (fluenceSum > 0) {
+      averageRDE = runningSumRDE / imageExposedVoxels;
+      fluenceWeightedAvgRDE = fluenceWeightedRunningSumRDE / fluenceSum;
+      fluenceWeightedRDEArray[image][0] = angle;
+      fluenceWeightedRDEArray[image][1] = fluenceWeightedAvgRDE;
+      if (averageRDE < 0.5) {
+        lowAvgRDE = true;
+      }
+      if (fluenceWeightedAvgRDE < 0.5) {
+        lowFluxWeightedRDE = true;
+      }
+    }
+    //reset
+    runningSumRDE = 0d;
+    fluenceWeightedRunningSumRDE = 0d;
+    imageExposedVoxels = 0;
+    fluenceSum = 0d;
+    fluenceWeightedAvgRDE = 0d;
+    averageRDE = 0d;
+    
     diffNum = 0d;
     diffDenom = 0d;
     images++;
@@ -294,5 +369,17 @@ public class ExposureSummary implements ExposeObserver {
 
   public Double getDoseInefficiency() {
     return doseInefficiency;
+  }
+  
+  public Boolean getAvgRDE() {
+    return lowAvgRDE;
+  }
+  
+  public Boolean getWeightedRDE() {
+    return lowFluxWeightedRDE;
+  }
+  
+  public double[][] getWeightedRDEArray(){
+    return fluenceWeightedRDEArray;
   }
 }

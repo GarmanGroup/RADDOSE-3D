@@ -157,7 +157,8 @@ public abstract class Crystal {
    */
   public Crystal(final Map<Object, Object> properties) {
     if (properties.get(Crystal.CRYSTAL_DDM) == null) {
-      ddm = new DDMSimple();
+ //     ddm = new DDMSimple();
+      ddm = new DDMLinear();
     } else {
       ddm = (DDM) properties.get(Crystal.CRYSTAL_DDM);
     }
@@ -970,16 +971,17 @@ public abstract class Crystal {
               double interpolatedVoxelDose = totalVoxelDose + voxImageDose[i][j][k] / 2;
               double relativeDiffractionEfficiency =
                   getDDM().calcDecay(interpolatedVoxelDose);
-
+              
               // Fluence times the fraction of the beam absorbed by the voxel
-
+              
 //may need to pass in different things or pass in more and change in observer
 
               absorbedEnergy[i][j][k] = voxImageFluence[i][j][k] * energyPerFluence;
               double comptonabsorbedEnergy = voxImageComptonFluence[i][j][k] * energyPerFluence;
               
               absorbedEnergy[i][j][k] = absorbedEnergy[i][j][k] + comptonabsorbedEnergy;
-
+   
+           //   relativeDiffractionEfficiency = 1;
               for (ExposeObserver eo : exposureObservers) {
                 eo.exposureObservation(anglenum, i, j, k, voxImageDose[i][j][k],
                     totalVoxelDose, voxImageFluence[i][j][k],

@@ -2047,9 +2047,9 @@ for (int l = peDistBins-1; l > 0; l--) {
     double weight = 0;
     double point = 0;
     double[] weightedAveragePoint = new double[(PE_ANGLE_RES_LIMIT/2)+1];
-    double sumPoint, testPoint = 0;
+    double sumPoint = 0;
     
-    Map<Element.CrossSection, Double> cs;
+    
     elementCounter = -1;
     for (Element e : coefCalc.getPresentElements(cryo)) {
       elementCounter += 1;

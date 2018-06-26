@@ -291,6 +291,13 @@ public final class RD3D {
       e.printStackTrace();
       System.err.println("Could not initialize OutputDoseStateR");
     }
+    try {
+      Writer w = new WriterFile(prefix + "RDE.csv");
+      outputs.add(of.createOutputSimple("RDECSV", w));
+    } catch (IOException e) {
+      e.printStackTrace();
+      System.err.println("Could not initialize RDECSV");
+    }
 
     Writer w = new WriterConsole();
     outputs.add(of.createOutputSimple("ProgressIndicator", w));

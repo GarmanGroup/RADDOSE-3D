@@ -52,7 +52,9 @@ public class OutputFactory extends ClassFactory {
       revisedOutputName = "se.raddo.raddose3D.OutputSummaryCSV";
     } else if ("summarytext".equalsIgnoreCase(outputName)) {
       revisedOutputName = "se.raddo.raddose3D.OutputSummaryText";
-    } else {
+    } else if ("rdecsv".equalsIgnoreCase(outputName)) {
+      revisedOutputName = "se.raddo.raddose3D.OutputRDECSV";
+    }else {
       revisedOutputName = outputName;
     }
 

@@ -175,6 +175,13 @@ public class OutputSummaryText implements ExposeObserver, Output,
     w.write(String.format("%-42s: %.1f 1/g%n",
         "Dose Inefficiency (Max Dose/mJ Absorbed)",
         expSummary.getDoseInefficiency()));
+    //RDE warning
+    if (expSummary.getAvgRDE() == true) {
+      w.write(String.format("%-42s%n", "WARNING - THE AVG RELATIVE DIFFRACTION EFFICIENCY DROPS BELOW 0.5"));
+    }
+    if (expSummary.getWeightedRDE() == true) {
+      w.write(String.format("%-42s%n", "WARNING - THE WEIGHTED RELATIVE DIFFRACTION EFFICIENCY DROPS BELOW 0.5"));
+    }
 
     StringBuffer b = new StringBuffer("Final Dose Histogram:\n");
 
