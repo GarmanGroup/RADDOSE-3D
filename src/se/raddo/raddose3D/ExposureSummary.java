@@ -90,6 +90,7 @@ public class ExposureSummary implements ExposeObserver {
    * Stores the worst/minimum voxel RDE in an image
    */
   private Double                              minRDE;
+  private double[][]  minRDEArray;
   
   private double[][] fluenceWeightedRDEArray;
   
@@ -132,6 +133,7 @@ public class ExposureSummary implements ExposeObserver {
     runningSumDiffDose = 0d;
     images = 0;
     fluenceWeightedRDEArray = new double[imageCount][2];
+    minRDEArray = new double[imageCount][2];
     
     averageRDE = 0d;
     fluenceWeightedAvgRDE = 0d;
@@ -198,6 +200,8 @@ public class ExposureSummary implements ExposeObserver {
       fluenceWeightedAvgRDE = fluenceWeightedRunningSumRDE / fluenceSum;
       fluenceWeightedRDEArray[image][0] = angle;
       fluenceWeightedRDEArray[image][1] = fluenceWeightedAvgRDE;
+      minRDEArray[image][0] = angle;
+      minRDEArray[image][1] = minRDE;
       if (averageRDE < 0.5) {
         lowAvgRDE = true;
       }
@@ -382,4 +386,9 @@ public class ExposureSummary implements ExposeObserver {
   public double[][] getWeightedRDEArray(){
     return fluenceWeightedRDEArray;
   }
+  
+  public double[][] getMinRDEArray(){
+    return minRDEArray;
+  }
+  
 }
