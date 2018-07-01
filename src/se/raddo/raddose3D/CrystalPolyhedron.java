@@ -1768,6 +1768,8 @@ for (int l = peDistBins-1; l > 0; l--) {
     }
     numbersInArray *= PE_ANGLE_RES_LIMIT;
     
+    numbersInArray *= 1.5;  // This is a messy fix to index out of bounds change properly later
+    
     double step = 2*Math.PI / PE_ANGLE_RES_LIMIT;
     double phiAngle = 0;
     int counter = -1;
@@ -1777,15 +1779,16 @@ for (int l = peDistBins-1; l > 0; l--) {
     for (double theta = 0*Math.PI; theta < 2*Math.PI; theta += step) {
       int phiCount = -1;
       for (double phi = 0; phi <= PE_ANGLE_LIMIT/2 ; phi += step) {
-        phiAngle = phi + thisAngle;
-        phiCount += 1;
+   //     phiAngle = phi + thisAngle;
+   //     phiCount += 1;
+        
 
         //Check if this track has already been assigned
         
         boolean replicateTrack = false;
         
-        if (phi == 0 || phi == (PE_ANGLE_LIMIT / 2)) {
-          if (theta == 0) {
+        if (theta == 0 || theta == (PE_ANGLE_LIMIT / 2)) {
+          if (phi == 0) {
             replicateTrack = false;
           }
           else {
@@ -1796,19 +1799,35 @@ for (int l = peDistBins-1; l > 0; l--) {
         if (replicateTrack == false) {
           counter += 1;
 
-          double xNorm = Math.sin(theta) * Math.cos(phiAngle);
-          double yNorm = Math.sin(theta) * Math.sin(phiAngle);
+          double xNorm = Math.sin(theta) * Math.cos(phi);
+          double yNorm = Math.sin(theta) * Math.sin(phi);
           double zNorm = Math.cos(theta);
+          
           
           //weight track in bigarray
           int runningCheck = 0;
-          if (distribution[phiCount] > 0) {
-            while (runningCheck < distribution[phiCount]) {
+          
+          //calculate the angle to the x axis
+          //using catesian vectors, cos(theta) = dot product / multiple of magnitudes
+          //x axis vector = (1, 0, 0) so dot product is just xnorm
+          double magnitude = Math.sqrt(Math.pow(xNorm, 2) + Math.pow(yNorm, 2) + Math.pow(zNorm, 2));
+          double cosAngleToX = xNorm / magnitude;
+          double angleToX = Math.acos(cosAngleToX);
+          //find where angle is in distribution
+          int place = (int) Math.rint((angleToX * PE_ANGLE_RES_LIMIT)/PE_ANGLE_LIMIT);
+          
+          
+          if (distribution[place] > 0) {
+            while (runningCheck < distribution[place]) {
               theBigArray[bigArrayIndex] = counter;
               runningCheck += 1;
               bigArrayIndex += 1;
             }
           }
+          
+          //Need to apply the rotation matrix here so I shift the x and z axes
+          xNorm = xNorm * Math.cos(thisAngle) + zNorm * Math.sin(thisAngle);
+          zNorm = -1 * xNorm * Math.sin(thisAngle) + zNorm * Math.cos(thisAngle);
           
           for (int m = 0; m < peDistBins; m++) {
             // calculate r in voxel coordinates rather than pixels
@@ -2206,7 +2225,7 @@ for (int l = peDistBins-1; l > 0; l--) {
       // 5 um, what proportion exit the crystal.
               
       for (int q = 0; q < PE_ANGLE_RESOLUTION*PE_ANGLE_RESOLUTION; q++) { //for every tracks i'm choosing
-     //   int randomTrack = ThreadLocalRandom.current().nextInt(0, numberOfTracksPE); //choose one at random
+    //    int randomTrack = ThreadLocalRandom.current().nextInt(0, numberOfTracksPE); //choose one at random
         int randomIndex = ThreadLocalRandom.current().nextInt(0, trackNumberBias.length);
         int randomTrack = trackNumberBias[randomIndex];
         
