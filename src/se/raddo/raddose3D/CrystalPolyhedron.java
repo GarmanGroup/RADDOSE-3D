@@ -1807,11 +1807,17 @@ for (int l = peDistBins-1; l > 0; l--) {
           //weight track in bigarray
           int runningCheck = 0;
           
-          //calculate the angle to the x axis
-          //using catesian vectors, cos(theta) = dot product / multiple of magnitudes
-          //x axis vector = (1, 0, 0) so dot product is just xnorm
+          //calculate the angle to the x axis (or y axis if horizontal)
+          //using cartesian vectors, cos(theta) = dot product / multiple of magnitudes
+          //x axis vector = (1, 0, 0) so dot product is just xnorm, just yNorm if horizontal
+          double dotProduct = 0;
+          if (verticalGoniometer == true) {
+            dotProduct = xNorm;
+          }else {
+            dotProduct = yNorm;
+          } 
           double magnitude = Math.sqrt(Math.pow(xNorm, 2) + Math.pow(yNorm, 2) + Math.pow(zNorm, 2));
-          double cosAngleToX = xNorm / magnitude;
+          double cosAngleToX = dotProduct / magnitude;
           double angleToX = Math.acos(cosAngleToX);
           //find where angle is in distribution
           int place = (int) Math.rint((angleToX * PE_ANGLE_RES_LIMIT)/PE_ANGLE_LIMIT);

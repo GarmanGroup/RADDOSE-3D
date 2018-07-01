@@ -34,6 +34,8 @@ public abstract class Crystal {
   public static final String     CRYSTAL_ELECTRON_ESCAPE       = "PHESCAPE";
   /** Constant for data fields in Map constructors: Fluorescent escape. */
   public static final String     CRYSTAL_FLUORESCENT_ESCAPE       = "FLESCAPE";
+  /** Constant for data fields in Map constructors: Goniometer Axis. */
+  public static final String     CRYSTAL_GONIOMETER_AXIS       = "GONIOMETER";
 
   /** Constant for data fields in Map constructors: Photoelectron resolution. */
   
@@ -115,7 +117,12 @@ public abstract class Crystal {
   /**
    * whether fluorescent escape should be included
    */
-  public final boolean fluorescentEscape; 
+  public final boolean fluorescentEscape;
+  
+  /**
+   * Goniometer Orientation
+   */
+  public final boolean verticalGoniometer; 
   
   public double EnergyToSubtractFromPE; 
   public double cryoEnergyToSubtractFromPE;
@@ -187,6 +194,10 @@ public abstract class Crystal {
       fE = fE.toUpperCase();
     }
     fluorescentEscape = ("TRUE".equals(fE));
+    
+    //Get the goniometer axis
+    String goniometer =  String.valueOf(properties.get(CRYSTAL_GONIOMETER_AXIS));
+    verticalGoniometer = ("90.0".equals(goniometer)); //so horizontal is default 
 
     //Check that ppm is sensible
     if ((properties.get(CRYSTAL_RESOLUTION) != null) && (properties.get(CRYSTAL_DIM_X) != null)) {

@@ -262,6 +262,7 @@ crystalLine
 	| ee=cryoSolution	        { $crystal::cryoSolutionMolecule	= $ee.names;
 							  $crystal::cryoSolutionConc	= $ee.num;	}
 	| ff=oilBased	                { $crystal::oilBased	= $ff.value;  }
+	| gg=goniometerAxis		{ $crystal::crystalProperties.put(Crystal.CRYSTAL_GONIOMETER_AXIS, $gg.value); }
 							
 	;
 
@@ -427,6 +428,11 @@ calculatePEEscape returns [String value]
 CALCULATEPEESCAPE  
 	:	 ('C'|'c')('A'|'a')('L'|'l')('C'|'c')('U'|'u')('L'|'l')('A'|'a')('T'|'t')('E'|'e')('P'|'p')('E'|'e')('E'|'e')('S'|'s')('C'|'c')('A'|'a')('P'|'p')('E'|'e') ;
 	
+goniometerAxis returns [double value]
+	: GONIOMETERAXIS a=FLOAT {$value = Double.parseDouble($a.text);};
+GONIOMETERAXIS  
+	:	 ('G'|'g')('O'|'o')('N'|'n')('I'|'i')('O'|'o')('M'|'m')('E'|'e')('T'|'t')('E'|'e')('R'|'r')('A'|'a')('X'|'x')('I'|'i')('S'|'s') ;
+	
 crystalContainerMaterial returns [int value]
 	: ( CONTAINERMATERIALTYPE | MATERIALTYPE ) e=crystalContainerKeyword { $value = $e.value; };
 CONTAINERMATERIALTYPE : ('C'|'c')('O'|'o')('N'|'n')('T'|'t')('A'|'a')('I'|'i')('N'|'n')('E'|'e')('R'|'r')('M'|'m')('A'|'a')('T'|'t')('E'|'e')('R'|'r')('I'|'i')('A'|'a')('L'|'l')('T'|'t')('Y'|'y')('P'|'p')('E'|'e') ;
@@ -471,8 +477,8 @@ calculateFLEscape returns [String value]
 	: CALCULATEFLESCAPE a=STRING {$value = $a.text;};
 CALCULATEFLESCAPE  
 	:	 ('C'|'c')('A'|'a')('L'|'l')('C'|'c')('U'|'u')('L'|'l')('A'|'a')('T'|'t')('E'|'e')('F'|'f')('L'|'l')('E'|'e')('S'|'s')('C'|'c')('A'|'a')('P'|'p')('E'|'e') ;
-	
-	flResolution returns [int value]
+
+flResolution returns [int value]
 	: FLRESOLUTION a=FLOAT {$value = Integer.parseInt($a.text);};
 FLRESOLUTION : ('F'|'f')('L'|'l')('R'|'r')('E'|'e')('S'|'s')('O'|'o')('L'|'l')('U'|'u')('T'|'t')('I'|'i')('O'|'o')('N'|'n') ;
 
@@ -668,4 +674,5 @@ STRING
 /*CHAR:  '\'' ( ESC_SEQ | ~('\''|'\\') ) '\''
 //    ;
 */
+
 
