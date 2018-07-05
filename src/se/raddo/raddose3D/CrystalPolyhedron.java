@@ -2065,11 +2065,12 @@ for (int l = peDistBins-1; l > 0; l--) {
   
   //way 2 - biasing choice
   private double[] setUpPEPolarisation(CoefCalc coefCalc, final double energy, double[][] feFactors, boolean cryo) {
-    double beta = 2; //this is only true for s shells but so far I haven't calculated it for other shells
-    
+   // double beta = 2; //this is only true for s shells but so far I haven't calculated it for other shells
+    double beta = 0;
     double angle = 0;
     int elementCounter = 0;
     double weight = 0;
+    double degreeOfPolarisation = 0.75; // also need to weight as only 75% polarised 
     double point = 0;
     double[] weightedAveragePoint = new double[(PE_ANGLE_RES_LIMIT/2)+1];
     double sumPoint = 0;
@@ -2084,8 +2085,9 @@ for (int l = peDistBins-1; l > 0; l--) {
     for (int i = 0; i <= PE_ANGLE_RES_LIMIT/2; i++) { //for each track to be polarised
       angle = i * (PE_ANGLE_LIMIT/PE_ANGLE_RES_LIMIT);
       point = solvePolarisationEquationForAngle(angle, 1, beta) / solvePolarisationEquationForAngle(0, 1, beta);
-      sumPoint = point * weight;
-      weightedAveragePoint[i] = Math.round((1000 * sumPoint));
+      sumPoint = point * weight * degreeOfPolarisation;
+      weightedAveragePoint[i] = Math.round((1000 * sumPoint)) + (1000 * (1-(weight*degreeOfPolarisation))); //second part is the non-polarised parts
+      
     }
      return weightedAveragePoint;
    }

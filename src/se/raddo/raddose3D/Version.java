@@ -14,10 +14,10 @@ public final class Version {
   private static final String REVISION       = "?---?";
 
   /** The major version number. */
-  public static final long    VERSION_MAJOR  = 1;
+  public static final long    VERSION_MAJOR  = 3;
 
   /** The minor version number. */
-  public static final long    VERSION_MINOR  = 2;
+  public static final long    VERSION_MINOR  = 0;
 
   /** The true build number (depending on REVISION). */
   @SuppressWarnings("unused")

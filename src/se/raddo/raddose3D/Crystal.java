@@ -972,39 +972,7 @@ public abstract class Crystal {
       } // j
     } // k : end of looping over crystal voxels
     
-    //loop through all again for DWD
-    for (int i = 0; i < crystalSize[0]; i++) {
-      for (int j = 0; j < crystalSize[1]; j++) {
-        for (int k = 0; k < crystalSize[2]; k++) {
-          if (isCrystalAt(i, j, k)) {
-            if (voxImageDose[i][j][k] > 0) {
-              double totalVoxelDose = getDose(i, j, k); //how can this be done before the whole crystal???
-              //This may need to change - ask what this is
-              double interpolatedVoxelDose = totalVoxelDose + voxImageDose[i][j][k] / 2;
-              double relativeDiffractionEfficiency =
-                  getDDM().calcDecay(interpolatedVoxelDose);
-              
-              // Fluence times the fraction of the beam absorbed by the voxel
-              
-//may need to pass in different things or pass in more and change in observer
 
-              absorbedEnergy[i][j][k] = voxImageFluence[i][j][k] * energyPerFluence;
-              double comptonabsorbedEnergy = voxImageComptonFluence[i][j][k] * energyPerFluence;
-              
-              absorbedEnergy[i][j][k] = absorbedEnergy[i][j][k] + comptonabsorbedEnergy;
-   
-           //   relativeDiffractionEfficiency = 1;
-              for (ExposeObserver eo : exposureObservers) {
-                eo.exposureObservation(anglenum, i, j, k, voxImageDose[i][j][k],
-                    totalVoxelDose, voxImageFluence[i][j][k],
-                    relativeDiffractionEfficiency, absorbedEnergy[i][j][k],
-                    voxElasticYield[i][j][k]);
-              }
-            }
-          }
-        }
-      }
-    }
     
     
   boolean aSurface = coefCalc.isCryo();
@@ -1094,6 +1062,39 @@ public abstract class Crystal {
     } // end if pe true
   }//end if there is a surface
   
+  //loop through all again for DWD - needs to go after cryo as well!!!
+  for (int i = 0; i < crystalSize[0]; i++) {
+    for (int j = 0; j < crystalSize[1]; j++) {
+      for (int k = 0; k < crystalSize[2]; k++) {
+        if (isCrystalAt(i, j, k)) {
+          if (voxImageDose[i][j][k] > 0) {
+            double totalVoxelDose = getDose(i, j, k); //how can this be done before the whole crystal???
+            //This may need to change - ask what this is
+            double interpolatedVoxelDose = totalVoxelDose + voxImageDose[i][j][k] / 2;
+            double relativeDiffractionEfficiency =
+                getDDM().calcDecay(interpolatedVoxelDose);
+            
+            // Fluence times the fraction of the beam absorbed by the voxel
+            
+//may need to pass in different things or pass in more and change in observer
+
+            absorbedEnergy[i][j][k] = voxImageFluence[i][j][k] * energyPerFluence;
+            double comptonabsorbedEnergy = voxImageComptonFluence[i][j][k] * energyPerFluence;
+            
+            absorbedEnergy[i][j][k] = absorbedEnergy[i][j][k] + comptonabsorbedEnergy;
+ 
+         //   relativeDiffractionEfficiency = 1;
+            for (ExposeObserver eo : exposureObservers) {
+              eo.exposureObservation(anglenum, i, j, k, voxImageDose[i][j][k],
+                  totalVoxelDose, voxImageFluence[i][j][k],
+                  relativeDiffractionEfficiency, absorbedEnergy[i][j][k],
+                  voxElasticYield[i][j][k]);
+            }
+          }
+        }
+      }
+    }
+  }
   }
   
  
