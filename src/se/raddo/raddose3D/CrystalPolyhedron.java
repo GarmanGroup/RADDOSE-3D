@@ -141,10 +141,13 @@ public class CrystalPolyhedron extends Crystal {
    * 3d array for voxels where photoelectrons can reach
    */
   private  double[][][] relativeVoxXYZ;
-  private  double[][][] relativeVoxXYZCryo;
+  private  double[][][] relativeVoxXYZCryoCrystal;
+  private  double[][][] relativeVoxXYZCryoSolution;
   
   private double[] angularDistribution;
   private double[] cryoAngularDistribution;
+  
+  private double cryoPPM;
   
   /**
    * 5d array for voxels where fluorescence can reach
@@ -694,6 +697,7 @@ public class CrystalPolyhedron extends Crystal {
     
     double pixelsPerMicron =  (1/((double)maxPEDistance)) * 10;
     int extraVoxels = getExtraVoxels(maxPEDistance, pixelsPerMicron); // the extra voxels to add on each end
+    cryoPPM = pixelsPerMicron;
 
     int[] tempCrystSize = { nx + extraVoxels*2, ny + extraVoxels*2, nz + extraVoxels*2};
     cryoCrystSizeVoxels = tempCrystSize; // Final Value
@@ -727,24 +731,24 @@ public class CrystalPolyhedron extends Crystal {
             x = -xshift + (extraVoxels / pixelsPerMicron) + ((i - extraVoxels) / crystalPixPerUM);
           }
           //for y
-          if (i <= extraVoxels) {
-            y = -yshift + (i / pixelsPerMicron);
+          if (j <= extraVoxels) {
+            y = -yshift + (j / pixelsPerMicron);
           }
-          else if (i >= nx + extraVoxels) {
-            y = -yshift + (extraVoxels / pixelsPerMicron) + ((ny - 1) / crystalPixPerUM) +  ((i + 1 - ny - extraVoxels) / pixelsPerMicron);
+          else if (j >= nx + extraVoxels) {
+            y = -yshift + (extraVoxels / pixelsPerMicron) + ((ny - 1) / crystalPixPerUM) +  ((j + 1 - ny - extraVoxels) / pixelsPerMicron);
           }
           else {
-            y = -yshift + (extraVoxels / pixelsPerMicron) + ((i - extraVoxels) / crystalPixPerUM);
+            y = -yshift + (extraVoxels / pixelsPerMicron) + ((j - extraVoxels) / crystalPixPerUM);
           }
           //for z
-          if (i <= extraVoxels) {
-            z = -zshift + (i / pixelsPerMicron);
+          if (k <= extraVoxels) {
+            z = -zshift + (k / pixelsPerMicron);
           }
-          else if (i >= nz + extraVoxels) {
-            z = -zshift + (extraVoxels / pixelsPerMicron) + ((nz -1) / crystalPixPerUM) +  ((i + 1 - nz - extraVoxels) / pixelsPerMicron);
+          else if (k >= nz + extraVoxels) {
+            z = -zshift + (extraVoxels / pixelsPerMicron) + ((nz -1) / crystalPixPerUM) +  ((k + 1 - nz - extraVoxels) / pixelsPerMicron);
           }
           else {
-            z = -zshift + (extraVoxels / pixelsPerMicron) + ((i - extraVoxels) / crystalPixPerUM);
+            z = -zshift + (extraVoxels / pixelsPerMicron) + ((k - extraVoxels) / crystalPixPerUM);
           }
           
           
@@ -1303,7 +1307,8 @@ public class CrystalPolyhedron extends Crystal {
     } 
     
     propnDoseDepositedAtDistCryo = new double[peDistBins];
-    relativeVoxXYZCryo = new double[peDistBins][PE_ANGLE_RES_LIMIT * PE_ANGLE_RES_LIMIT][3];
+    relativeVoxXYZCryoCrystal = new double[peDistBins][PE_ANGLE_RES_LIMIT * PE_ANGLE_RES_LIMIT][3];
+    relativeVoxXYZCryoSolution = new double[peDistBins][PE_ANGLE_RES_LIMIT * PE_ANGLE_RES_LIMIT][3];
   }
   /*
    * (non-Javadoc)
@@ -1753,6 +1758,9 @@ for (int l = peDistBins-1; l > 0; l--) {
     int timesOver = (int) (angle/(2*Math.PI));
     double thisAngle = angle - (timesOver * 2 *Math.PI);
     
+    //flip the angle to be opposite direction
+    thisAngle = 2*Math.PI - thisAngle;
+    
     double[] distribution = null;
     if (cryo == false) {
       distribution = angularDistribution;
@@ -1831,7 +1839,7 @@ for (int l = peDistBins-1; l > 0; l--) {
             }
           }
           
-          //Need to apply the rotation matrix here so I shift the x and z axes
+          //Need to apply the rotation matrix here so I shift the x and z axes - shift opposite way to rotation 
           xNorm = xNorm * Math.cos(thisAngle) + zNorm * Math.sin(thisAngle);
           zNorm = -1 * xNorm * Math.sin(thisAngle) + zNorm * Math.cos(thisAngle);
           
@@ -1845,10 +1853,16 @@ for (int l = peDistBins-1; l > 0; l--) {
               relativeVoxXYZ[m][counter][2] = r * zNorm;
             }
             else {
+              //the r here is for crystal ppm, this is old way
               r = CRYO_PE_DISTANCES_TRAVELLED[m] * this.crystalPixPerUM;
-              relativeVoxXYZCryo[m][counter][0] = r * xNorm;
-              relativeVoxXYZCryo[m][counter][1] = r * yNorm;
-              relativeVoxXYZCryo[m][counter][2] = r * zNorm;
+              relativeVoxXYZCryoCrystal[m][counter][0] = r * xNorm;
+              relativeVoxXYZCryoCrystal[m][counter][1] = r * yNorm;
+              relativeVoxXYZCryoCrystal[m][counter][2] = r * zNorm;
+              //the r below is new way, for the cryo pixels
+              r = CRYO_PE_DISTANCES_TRAVELLED[m] * cryoPPM;
+              relativeVoxXYZCryoSolution[m][counter][0] = r * xNorm;
+              relativeVoxXYZCryoSolution[m][counter][1] = r * yNorm;
+              relativeVoxXYZCryoSolution[m][counter][2] = r * zNorm;
             }
 
           }
@@ -2065,8 +2079,8 @@ for (int l = peDistBins-1; l > 0; l--) {
   
   //way 2 - biasing choice
   private double[] setUpPEPolarisation(CoefCalc coefCalc, final double energy, double[][] feFactors, boolean cryo) {
-   // double beta = 2; //this is only true for s shells but so far I haven't calculated it for other shells
-    double beta = 0;
+    double beta = 2; //this is only true for s shells but so far I haven't calculated it for other shells
+  //  double beta = 0;
     double angle = 0;
     int elementCounter = 0;
     double weight = 0;
@@ -2337,10 +2351,39 @@ for (int l = peDistBins-1; l > 0; l--) {
       //TO TEST
     //  randomTrack = q;
       
-      for (int m = 0; m < peDistBins; m++) {   
-        double x = relativeVoxXYZCryo[m][randomTrack][0];
-        double y = relativeVoxXYZCryo[m][randomTrack][1];
-        double z = relativeVoxXYZCryo[m][randomTrack][2];
+      boolean outToIn = false;
+      double entryX = 0, entryY = 0, entryZ = 0;
+      for (int m = 0; m < peDistBins; m++) { 
+  
+        /*
+        double x = relativeVoxXYZCryoCrystal[m][randomTrack][0];
+        double y = relativeVoxXYZCryoCrystal[m][randomTrack][1];
+        double z = relativeVoxXYZCryoCrystal[m][randomTrack][2];
+        */
+        double x = relativeVoxXYZCryoSolution[m][randomTrack][0];
+        double y = relativeVoxXYZCryoSolution[m][randomTrack][1];
+        double z = relativeVoxXYZCryoSolution[m][randomTrack][2];
+        
+        //check if we have entered the crystal
+        if (outToIn == false) { // ensures only triggers this code on the switch
+          if (isCrystalAt((int) (i + x), (int) (j + y),
+              (int) (k + z))) {   
+            outToIn = true;
+            entryX = x;
+            entryY = y;
+            entryZ = z;
+          }
+        }
+        // change the relative voxel ppm now in the crystal
+        if (outToIn == true) {
+          x = entryX + (((x - entryX)/ cryoPPM) * this.crystalPixPerUM);
+          y = entryY + (((y - entryY)/ cryoPPM) * this.crystalPixPerUM);
+          z = entryZ + (((z - entryZ)/ cryoPPM) * this.crystalPixPerUM);
+          if (isCrystalAt((int) (i + x), (int) (j + y),
+              (int) (k + z)) == false) { // if it exits the crystal again
+            break;
+          }
+        } 
 
         // get dose transferred to these located voxels 
         // at the distance r away (due to PE movement)
