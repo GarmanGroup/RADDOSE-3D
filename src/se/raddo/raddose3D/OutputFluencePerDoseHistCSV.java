@@ -168,7 +168,7 @@ public class OutputFluencePerDoseHistCSV implements Output, ExposeObserver {
 
   @Override
   public void summaryObservation(final int i, final int j, final int k,
-      final double totalDose) {
+      final double totalDose, final double voxelMassKg) {
     // Implementation not required.
   }
 

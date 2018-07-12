@@ -561,7 +561,7 @@ public abstract class Crystal {
     // Update coefficients in case the beam energy has changed.
     coefCalc.updateCoefficients(beam);
 
-    
+
 
     //Set up PE and FE - no need to do this is PE false
     double[][] feFactors = coefCalc.getFluorescentEscapeFactors(beam); 
@@ -675,12 +675,15 @@ public abstract class Crystal {
 
     double fractionEscapedDose = (totalEscapedDose - totalDoseFromSurrounding)/totalCrystalDose; //Just to test escaped dose
     
+    final double voxelMassKg =  (1e-15 * (Math.pow(getCrystalPixPerUM(), -3) * coefCalc
+        .getDensity()));
+    
     for (int i = 0; i < getCrystSizeVoxels()[0]; i++) {
       for (int j = 0; j < getCrystSizeVoxels()[1]; j++) {
         for (int k = 0; k < getCrystSizeVoxels()[2]; k++) {
           if (isCrystalAt(i, j, k)) {
             for (ExposeObserver eo : exposureObservers) {
-              eo.summaryObservation(i, j, k, getDose(i, j, k));
+              eo.summaryObservation(i, j, k, getDose(i, j, k), voxelMassKg);
             }
           }
         }
@@ -771,6 +774,8 @@ public abstract class Crystal {
 
     final double beamAttenuationExpFactor = -coefCalc     
         .getAttenuationCoefficient();
+    
+
 
     
     double[] crystCoords;
@@ -1070,7 +1075,7 @@ public abstract class Crystal {
           if (voxImageDose[i][j][k] > 0) {
             double totalVoxelDose = getDose(i, j, k); //how can this be done before the whole crystal???
             //This may need to change - ask what this is
-            double interpolatedVoxelDose = totalVoxelDose + voxImageDose[i][j][k] / 2;
+            double interpolatedVoxelDose = totalVoxelDose + voxImageDose[i][j][k] / 2; // this needs to change for PE escape
             double relativeDiffractionEfficiency =
                 getDDM().calcDecay(interpolatedVoxelDose);
             
@@ -1085,7 +1090,7 @@ public abstract class Crystal {
  
          //   relativeDiffractionEfficiency = 1;
             for (ExposeObserver eo : exposureObservers) {
-              eo.exposureObservation(anglenum, i, j, k, voxImageDose[i][j][k],
+              eo.exposureObservation(anglenum, i, j, k, voxImageDose[i][j][k],   //voxImageDose should be added dose (doesn't do Compton or escape)
                   totalVoxelDose, voxImageFluence[i][j][k],
                   relativeDiffractionEfficiency, absorbedEnergy[i][j][k],
                   voxElasticYield[i][j][k]);

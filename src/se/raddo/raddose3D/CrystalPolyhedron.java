@@ -108,6 +108,8 @@ public class CrystalPolyhedron extends Crystal {
   private double flRelease = 0;
   private double peRelease = 0;
   
+  public double cryoAndCrystalDensity;
+  
   /**
    * length of distance bins travelled by fluorescence.
    */
@@ -1297,6 +1299,16 @@ public class CrystalPolyhedron extends Crystal {
     
     int maxPEDistance = (int) Math.ceil(getMaxPEDistance(peEnergy));
     
+    //find max side
+    double averageSide = (crystSizeUM[0] + crystSizeUM[1] + crystSizeUM[2])/3;
+
+    if (averageSide >= maxPEDistance) {
+      cryoAndCrystalDensity = 0.5;
+    }else {
+      cryoAndCrystalDensity = maxPEDistance / (maxPEDistance + averageSide);
+    }
+    
+    
     //set up the surrounding environment
     produceCryoSolutionCrystal(maxPEDistance);
     
@@ -1380,11 +1392,18 @@ public class CrystalPolyhedron extends Crystal {
     // Initialise crystal photolectron escape properties here for current beam
     //set Gumbel values based on density
     double density = coefCalc.getCryoDensity();
+  //  double density = coefCalc.getDensity();
     double peEnergy = beamEnergy - cryoEnergyToSubtractFromPE;
     CRYO_GUMBEL_DISTN_CALC_LOC = setGumbelLoc(density, peEnergy);
     CRYO_GUMBEL_DISTN_CALC_SCALE = setGumbelScale(density, peEnergy);
     //first of all need to get PE distances 
     setMaxPEDistanceCryo(beamEnergy);
+    
+    //could recalculate cryo gumbel based on new density
+    density = (coefCalc.getCryoDensity() * cryoAndCrystalDensity) + (coefCalc.getDensity() * (1-cryoAndCrystalDensity));
+    CRYO_GUMBEL_DISTN_CALC_LOC = setGumbelLoc(density, peEnergy);
+    CRYO_GUMBEL_DISTN_CALC_SCALE = setGumbelScale(density, peEnergy);
+    
   //  findVoxelsReachedByPE(true, coefCalc, beamEnergy, feFactors);
     cryoAngularDistribution = setUpPEPolarisation(coefCalc, beamEnergy, feFactors, true);
     calcProportionVoxDoseDepositedByDistCryo(beamEnergy);  
@@ -2080,7 +2099,7 @@ for (int l = peDistBins-1; l > 0; l--) {
   //way 2 - biasing choice
   private double[] setUpPEPolarisation(CoefCalc coefCalc, final double energy, double[][] feFactors, boolean cryo) {
     double beta = 2; //this is only true for s shells but so far I haven't calculated it for other shells
-  //  double beta = 0;
+ //   double beta = 0;
     double angle = 0;
     int elementCounter = 0;
     double weight = 0;

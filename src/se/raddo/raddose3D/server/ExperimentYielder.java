@@ -61,7 +61,7 @@ public class ExperimentYielder implements Output {
 
     @Override
     public void summaryObservation(final int i, final int j, final int k,
-        final double totalDose) {
+        final double totalDose, final double voxelMassKg) {
       // Nothing to summarize.
     }
 

@@ -79,7 +79,7 @@ public interface ExposeObserver {
    * @param totalDose
    *          total dose in voxel after wedge exposure
    */
-  public void summaryObservation(int i, int j, int k, double totalDose);
+  public void summaryObservation(int i, int j, int k, double totalDose, double voxelMassKg);
 
   /**
    * Called once at the end of each completed Wedge exposure.

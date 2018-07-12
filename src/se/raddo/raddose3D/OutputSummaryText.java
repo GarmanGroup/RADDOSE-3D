@@ -123,7 +123,7 @@ public class OutputSummaryText implements ExposeObserver, Output,
 
   @Override
   public void summaryObservation(final int i, final int j, final int k,
-      final double totalDose) {
+      final double totalDose, final double voxelMassKg) {
     if (totalDose > 0) {
       h.addObservation(totalDose);
     }
@@ -175,6 +175,10 @@ public class OutputSummaryText implements ExposeObserver, Output,
     w.write(String.format("%-42s: %.1f 1/g%n",
         "Dose Inefficiency (Max Dose/mJ Absorbed)",
         expSummary.getDoseInefficiency()));
+    w.write(String.format("%-42s: %.1f 1/g%n",
+        "Dose Inefficiency PE (Max Dose/mJ Deposited)",
+        expSummary.getDoseInefficiencyPE()));
+    
     //RDE warning
     if (expSummary.getAvgRDE() == true) {
       w.write(String.format("%-42s%n", "WARNING - THE AVG RELATIVE DIFFRACTION EFFICIENCY DROPS BELOW 0.5"));

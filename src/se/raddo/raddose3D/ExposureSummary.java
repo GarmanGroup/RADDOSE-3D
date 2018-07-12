@@ -30,6 +30,9 @@ public class ExposureSummary implements ExposeObserver {
 
   /** Total absorbed dose over all crystal voxels in MGy. */
   private Double                              totalDose;
+  /** Total deposited energy over all crystal voxels in J. */
+  private Double                              totalEnergy;
+  
   /** Total number of exposed voxels in the crystal (voxel dose > 0). */
   private int                                 exposedVoxels;
   /** Total number of exposed voxels in a particular image */
@@ -47,6 +50,7 @@ public class ExposureSummary implements ExposeObserver {
   /** Fraction of the crystal volume that has been illuminated. */
   private Double                              usedVolumeFraction;
   private Double                              doseInefficiency;
+  private Double                              doseInefficiencyPE;
 
   /**
    * Last requested dose quantile.
@@ -144,6 +148,7 @@ public class ExposureSummary implements ExposeObserver {
     
     // exposure summary per voxel variables summaryObservation()
     totalDose = 0d;
+    totalEnergy = 0d;
     exposedVoxels = 0;
     occupiedVoxels = 0;
 
@@ -170,8 +175,9 @@ public class ExposureSummary implements ExposeObserver {
     // updating the diffracted intensity for this image/iteration equation
  //   diffNum += (totalVoxDose + addedDose / 2) * fluence * doseDecay;
  //   diffDenom += fluence * doseDecay;
-    diffNum += (totalVoxDose + addedDose / 2) * fluence * 1;
+    diffNum += (totalVoxDose + addedDose / 2) * fluence * 1;  //Why addedDose/2? Need to understand before changing
     diffDenom += fluence * 1;
+      
     
     //for RDE
     if (fluence > 0) {
@@ -224,7 +230,7 @@ public class ExposureSummary implements ExposeObserver {
 
   @Override
   public void summaryObservation(final int i, final int j, final int k,
-      final double voxelDose) {
+      final double voxelDose, double voxelMassKg) {
     occupiedVoxels++;
 
     if (voxelDose > 0) {
@@ -239,6 +245,7 @@ public class ExposureSummary implements ExposeObserver {
 
       // Data for avDose
       totalDose += voxelDose;
+      totalEnergy += (voxelDose * 1E06) * voxelMassKg; 
       exposedVoxels++;
     }
   }
@@ -254,6 +261,8 @@ public class ExposureSummary implements ExposeObserver {
     usedVolumeFraction = PERCENT * (double) exposedVoxels / occupiedVoxels;
 
     doseInefficiency = getMaxDose() / (1000 * totalAbsorbedEnergy);
+    
+    doseInefficiencyPE = getMaxDose() / (1000 * totalEnergy);
 
     avgDoseWholeCrystal = totalDose / occupiedVoxels;
   }
@@ -373,6 +382,10 @@ public class ExposureSummary implements ExposeObserver {
 
   public Double getDoseInefficiency() {
     return doseInefficiency;
+  }
+  
+  public Double getDoseInefficiencyPE() {
+    return doseInefficiencyPE;
   }
   
   public Boolean getAvgRDE() {
