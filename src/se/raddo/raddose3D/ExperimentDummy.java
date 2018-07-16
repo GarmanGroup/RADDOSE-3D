@@ -276,7 +276,7 @@ public class ExperimentDummy extends Experiment {
       }
       
       @Override
-      public double addDoseAfterPECryo(int i, int j, int k, double doseIncreasePE) {
+      public double addDoseAfterPECryo(int i, int j, int k, double doseIncreasePE, double energyToDoseFactor) {
         return 0;
       }
       

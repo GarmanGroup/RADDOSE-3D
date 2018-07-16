@@ -290,7 +290,7 @@ public abstract class Crystal {
    * @return voxel dose lost from crystal by PE escape
    */
   public abstract double addDoseAfterPE(int i, int j, int k, double doseIncreasePE);
-  public abstract double addDoseAfterPECryo(int i, int j, int k, double doseIncreasePE);
+  public abstract double addDoseAfterPECryo(int i, int j, int k, double doseIncreasePE, double energyToDoseFactor);
   
   /**
    * This accounts for FE energy transfer to nearby voxels and caluclates release
@@ -737,7 +737,7 @@ public abstract class Crystal {
     }
 
     
-    final double energyPerFluence =
+    double energyPerFluence =
         1 - Math.exp(-1 * coefCalc.getAbsorptionCoefficient()
             / getCrystalPixPerUM());
     // absorption of the beam by a voxel
@@ -995,15 +995,24 @@ public abstract class Crystal {
       double crystPPM = getCrystalPixPerUM();
       double cryoDensity = coefCalc.getCryoDensity();
       //change to reflect cryo solution
+      /*
       fluenceToDoseFactor = -1
           * Math.expm1(-1 * coefCalc.getCryoAbsorptionCoefficient()
               / getCryoCrystalPixPerUM())
           // exposure for the Voxel (J) * fraction absorbed by voxel
-          / (1e-15 * (Math.pow(getCryoCrystalPixPerUM(), -3) * coefCalc
-              .getCryoDensity()))
+          / (1e-15 * (Math.pow(getCryoCrystalPixPerUM(), -3) * coefCalc     //energy absorbed by cryo voxel converted to the dose of a crystal voxel
+              .getDensity()))
           // Voxel mass: 1um^3/1m/ml
           // (= 1e-18/1e3) / [volume (um^-3) *density (g/ml)]
           * 1e-6; // MGy
+*/
+      energyPerFluence =
+          1 - Math.exp(-1 * coefCalc.getCryoAbsorptionCoefficient()
+              / getCryoCrystalPixPerUM());
+      // absorption of the beam by a voxel
+      
+      double energyToDoseFactor = (1e-15 * (Math.pow(getCrystalPixPerUM(), -3) * coefCalc     //energy absorbed by cryo voxel to dose in crystal voxel
+          .getDensity()));
       
       beamAttenuationFactor = Math.pow(getCryoCrystalPixPerUM(), -2)
           * wedge.getTotSec() / anglecount;
@@ -1052,21 +1061,21 @@ public abstract class Crystal {
                 double beamEnergy = (beam.getPhotonEnergy() * Beam.KEVTOJOULES);
                 double numberOfPhotons = cryoVoxImageFluence / beamEnergy;
                 
-                double cryoVoxImageDose = fluenceToDoseFactor * cryoVoxImageFluence; 
+                double cryoVoxImageEnergy = energyPerFluence * cryoVoxImageFluence; 
                                                                              
-                if (cryoVoxImageDose > 0) {
-                  double dosePE = 0;
-                  double totCryoAugerDose = cryoAugerEnergy * numberOfPhotons * fluenceToDoseFactor;
+                if (cryoVoxImageEnergy > 0) {
+                  double energyPE = 0;
+                  double totCryoAugerEnergy = cryoAugerEnergy * numberOfPhotons * energyPerFluence;
                   if (fluorescentEscape == false) {
-                    dosePE = cryoVoxImageDose - totCryoAugerDose;
+                    energyPE = cryoVoxImageEnergy - totCryoAugerEnergy;
                   }
                   else {
                     double totCryoFluorescenceEnergyRelease = cryoFluorescenceEnergyRelease * numberOfPhotons;
                     //convert this to a dose to be released
-                    double voxImageFlDoseRelease = fluenceToDoseFactor * totCryoFluorescenceEnergyRelease;
-                    dosePE = cryoVoxImageDose - totCryoAugerDose - voxImageFlDoseRelease;
+                    double voxImageFlEnergyRelease = energyPerFluence * totCryoFluorescenceEnergyRelease;
+                    energyPE = cryoVoxImageEnergy - totCryoAugerEnergy - voxImageFlEnergyRelease;
                   }
-                  double doseAddedBack = addDoseAfterPECryo(i- extraVoxels, j- extraVoxels, k- extraVoxels, dosePE); //no Auger or fluorescence for now add that in later
+                  double doseAddedBack = addDoseAfterPECryo(i- extraVoxels, j- extraVoxels, k- extraVoxels, energyPE, energyToDoseFactor); //no Auger or fluorescence for now add that in later
                   totalDoseFromSurrounding += doseAddedBack;
                 } // end if voximage dose > 0
               } // end if unattenuated beam intensity > 0

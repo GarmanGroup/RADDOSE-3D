@@ -699,8 +699,8 @@ public class CrystalPolyhedron extends Crystal {
     int nz = (int) StrictMath.round(zdim * crystalPixPerUM) + 1;
     
  //   double pixelsPerMicron =  (1/((double)maxPEDistance)) * 10;
- //   double pixelsPerMicron =  (1/((double)maxPEDistance)) * 20;
-    double pixelsPerMicron =  5;
+    double pixelsPerMicron =  (1/((double)maxPEDistance)) * 20;
+ //   double pixelsPerMicron =  4;
     int extraVoxels = getExtraVoxels(maxPEDistance, pixelsPerMicron); // the extra voxels to add on each end
     cryoPPM = pixelsPerMicron;
     cryoCoordinateShift = extraVoxels;
@@ -2364,7 +2364,7 @@ for (int l = peDistBins-1; l > 0; l--) {
   
   @Override
   public double addDoseAfterPECryo(final int i, final int j, final int k,
-      final double doseIncreasePE) {
+      final double energyIncreasePE, final double energyToDoseFactor) {
     double doseBackInCrystalPE = 0;
     
     for (int q = 0; q < PE_ANGLE_RESOLUTION*PE_ANGLE_RESOLUTION; q++) { //for every tracks i'm choosing
@@ -2411,14 +2411,16 @@ for (int l = peDistBins-1; l > 0; l--) {
 
         // get dose transferred to these located voxels 
         // at the distance r away (due to PE movement)
-        double partialDose = doseIncreasePE * propnDoseDepositedAtDistCryo[m]
+        double partialDose = energyIncreasePE * propnDoseDepositedAtDistCryo[m]
             / Math.pow(PE_ANGLE_RESOLUTION,2);
+        partialDose = (partialDose / energyToDoseFactor) * 1E-06;
         
         // add counts to total & total within crystal in order to
         // calculate the proportion for a given r.       
         if (isCrystalAt((int) (i + x), (int) (j + y),
             (int) (k + z))) {              
           // get dose transferred to this new voxel (due to PE movement)
+          
           addDose((int) (i + x), (int) (j + y),
           (int) (k + z), partialDose);
           doseBackInCrystalPE += partialDose;
