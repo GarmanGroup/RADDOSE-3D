@@ -699,8 +699,8 @@ public class CrystalPolyhedron extends Crystal {
     int nz = (int) StrictMath.round(zdim * crystalPixPerUM) + 1;
     
  //   double pixelsPerMicron =  (1/((double)maxPEDistance)) * 10;
-    double pixelsPerMicron =  (1/((double)maxPEDistance)) * 20;
- //   double pixelsPerMicron =  10.0;
+ //   double pixelsPerMicron =  (1/((double)maxPEDistance)) * 20;
+    double pixelsPerMicron =  5;
     int extraVoxels = getExtraVoxels(maxPEDistance, pixelsPerMicron); // the extra voxels to add on each end
     cryoPPM = pixelsPerMicron;
     cryoCoordinateShift = extraVoxels;
@@ -2602,6 +2602,12 @@ for (int l = peDistBins-1; l > 0; l--) {
   public double getCrystalPixPerUM() {
     return crystalPixPerUM;
   }
+  
+  @Override
+  public double getCryoCrystalPixPerUM() {
+    return cryoPPM;
+  }
+  
 
   /*
    * (non-Javadoc)

@@ -150,4 +150,10 @@ public class CrystalDummy extends Crystal {
    
     return 0;
   }
+  
+  @Override
+  public double getCryoCrystalPixPerUM() {
+    
+    return 0;
+  }
 }

@@ -290,6 +290,12 @@ public class ExperimentDummy extends Experiment {
        
         return 0;
       }
+      
+      @Override
+      public double getCryoCrystalPixPerUM() {
+        
+        return 0;
+      }
     }
   }
 }

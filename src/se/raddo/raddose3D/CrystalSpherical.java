@@ -307,4 +307,10 @@ public class CrystalSpherical extends Crystal {
    
     return 0;
   }
+  
+  @Override
+  public double getCryoCrystalPixPerUM() {
+    
+    return 0;
+  }
 }

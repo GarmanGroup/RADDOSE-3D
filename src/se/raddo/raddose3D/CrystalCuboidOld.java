@@ -581,4 +581,10 @@ public class CrystalCuboidOld extends Crystal {
    
     return 0;
   }
+
+  @Override
+  public double getCryoCrystalPixPerUM() {
+    
+    return 0;
+  }
 }

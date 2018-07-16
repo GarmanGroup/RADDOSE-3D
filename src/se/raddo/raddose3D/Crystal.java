@@ -385,6 +385,8 @@ public abstract class Crystal {
    */
   public abstract double getCrystalPixPerUM();
   
+  public abstract double getCryoCrystalPixPerUM();
+  
   public abstract int getExtraVoxels(int maxPEDistance, double pixelsPerMicron);
 
   /**
@@ -770,7 +772,7 @@ public abstract class Crystal {
         / (beam.getPhotonEnergy() * Beam.KEVTOJOULES);
         // J scattered / [(keV/photon) / (J/keV)] = photons scattered
 
-    final double beamAttenuationFactor = Math.pow(getCrystalPixPerUM(), -2)
+    double beamAttenuationFactor = Math.pow(getCrystalPixPerUM(), -2)
         * wedge.getTotSec() / anglecount;
     // Area in um^2 of a voxel * time per angular step
 
@@ -989,17 +991,22 @@ public abstract class Crystal {
       //if it is close to surface in this big crystal (i.e outside the normal crystal) then expose it
       //for now expose with full beam, attenuate later
       //also just use the crystal absorption coefficients and not those for the cryoprotectant yet. 
-      
+      double cryoPPM = getCryoCrystalPixPerUM();
+      double crystPPM = getCrystalPixPerUM();
+      double cryoDensity = coefCalc.getCryoDensity();
       //change to reflect cryo solution
       fluenceToDoseFactor = -1
           * Math.expm1(-1 * coefCalc.getCryoAbsorptionCoefficient()
-              / getCrystalPixPerUM())
+              / getCryoCrystalPixPerUM())
           // exposure for the Voxel (J) * fraction absorbed by voxel
-          / (1e-15 * (Math.pow(getCrystalPixPerUM(), -3) * coefCalc
+          / (1e-15 * (Math.pow(getCryoCrystalPixPerUM(), -3) * coefCalc
               .getCryoDensity()))
           // Voxel mass: 1um^3/1m/ml
           // (= 1e-18/1e3) / [volume (um^-3) *density (g/ml)]
           * 1e-6; // MGy
+      
+      beamAttenuationFactor = Math.pow(getCryoCrystalPixPerUM(), -2)
+          * wedge.getTotSec() / anglecount;
       
       
       final int[] cryoCrystalSize = getCryoCrystSizeVoxels();
