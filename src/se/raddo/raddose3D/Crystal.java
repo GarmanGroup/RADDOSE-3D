@@ -349,6 +349,8 @@ public abstract class Crystal {
    * Return the size of the bounding box of the crystal in um.
    */
   public abstract double[] getCrystSizeUM();
+  
+  public abstract int getCryoExtraVoxels();
 
   /**
    * Return the dose at voxel ijk in MGy.
@@ -1008,7 +1010,8 @@ public abstract class Crystal {
         for (int j = 0; j < cryoCrystalSize[1]; j++) {
           for (int k = 0; k < cryoCrystalSize[2]; k++) {
             //if this is an extra voxel
-            if (isCrystalAt(i, j, k) == false) { // if this voxel is not in the original crystal
+            int extraVoxels = getCryoExtraVoxels();
+            if (isCrystalAt(i - extraVoxels, j - extraVoxels, k - extraVoxels) == false) { // if this voxel is not in the original crystal
               cryoCrystCoord = getCryoCrystCoord(i, j, k);
               
               translateRotateCoords = translateCrystalToPosition(cryoCrystCoord, wedgeStart, wedgeTranslation,
@@ -1056,7 +1059,7 @@ public abstract class Crystal {
                     double voxImageFlDoseRelease = fluenceToDoseFactor * totCryoFluorescenceEnergyRelease;
                     dosePE = cryoVoxImageDose - totCryoAugerDose - voxImageFlDoseRelease;
                   }
-                  double doseAddedBack = addDoseAfterPECryo(i, j, k, dosePE); //no Auger or fluorescence for now add that in later
+                  double doseAddedBack = addDoseAfterPECryo(i- extraVoxels, j- extraVoxels, k- extraVoxels, dosePE); //no Auger or fluorescence for now add that in later
                   totalDoseFromSurrounding += doseAddedBack;
                 } // end if voximage dose > 0
               } // end if unattenuated beam intensity > 0

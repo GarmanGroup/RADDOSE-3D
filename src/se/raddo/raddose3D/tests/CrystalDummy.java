@@ -144,4 +144,10 @@ public class CrystalDummy extends Crystal {
   public void findVoxelsReachedByPE(boolean cryo, CoefCalc coefCalc, final double energy, double[][] feFactors, final double angle) {
     
   }
+  
+  @Override
+  public int getCryoExtraVoxels() {
+   
+    return 0;
+  }
 }

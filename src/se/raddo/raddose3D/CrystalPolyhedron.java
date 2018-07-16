@@ -150,6 +150,7 @@ public class CrystalPolyhedron extends Crystal {
   private double[] cryoAngularDistribution;
   
   private double cryoPPM;
+  public int cryoCoordinateShift;
   
   /**
    * 5d array for voxels where fluorescence can reach
@@ -697,9 +698,12 @@ public class CrystalPolyhedron extends Crystal {
     int ny = (int) StrictMath.round(ydim * crystalPixPerUM) + 1;
     int nz = (int) StrictMath.round(zdim * crystalPixPerUM) + 1;
     
-    double pixelsPerMicron =  (1/((double)maxPEDistance)) * 10;
+ //   double pixelsPerMicron =  (1/((double)maxPEDistance)) * 10;
+    double pixelsPerMicron =  (1/((double)maxPEDistance)) * 20;
+ //   double pixelsPerMicron =  10.0;
     int extraVoxels = getExtraVoxels(maxPEDistance, pixelsPerMicron); // the extra voxels to add on each end
     cryoPPM = pixelsPerMicron;
+    cryoCoordinateShift = extraVoxels;
 
     int[] tempCrystSize = { nx + extraVoxels*2, ny + extraVoxels*2, nz + extraVoxels*2};
     cryoCrystSizeVoxels = tempCrystSize; // Final Value
@@ -1403,6 +1407,7 @@ public class CrystalPolyhedron extends Crystal {
     density = (coefCalc.getCryoDensity() * cryoAndCrystalDensity) + (coefCalc.getDensity() * (1-cryoAndCrystalDensity));
     CRYO_GUMBEL_DISTN_CALC_LOC = setGumbelLoc(density, peEnergy);
     CRYO_GUMBEL_DISTN_CALC_SCALE = setGumbelScale(density, peEnergy);
+    //I'm not recalculating the max distance though :/ 
     
   //  findVoxelsReachedByPE(true, coefCalc, beamEnergy, feFactors);
     cryoAngularDistribution = setUpPEPolarisation(coefCalc, beamEnergy, feFactors, true);
@@ -2618,5 +2623,10 @@ for (int l = peDistBins-1; l > 0; l--) {
     for (int i = 0; i < tempIndices.length; i++) {
       System.arraycopy(tempIndices[i], 0, indices[i], 0, 3);
     }
+  }
+  
+  @Override
+  public int getCryoExtraVoxels() {
+    return cryoCoordinateShift;
   }
 }
