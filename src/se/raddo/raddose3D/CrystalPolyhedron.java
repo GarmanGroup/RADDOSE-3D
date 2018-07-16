@@ -690,43 +690,58 @@ public class CrystalPolyhedron extends Crystal {
     double[] zMinMax = this.minMaxVertices(2, vertices);
     
 
-    //Correct dims for bigger size
-    Double xdim = xMinMax[1] - xMinMax[0]; // + maxPEDistance * 2;
-    Double ydim = yMinMax[1] - yMinMax[0]; // + maxPEDistance * 2;
-    Double zdim = zMinMax[1] - zMinMax[0]; // + maxPEDistance * 2;
-    int nx = (int) StrictMath.round(xdim * crystalPixPerUM) + 1;
-    int ny = (int) StrictMath.round(ydim * crystalPixPerUM) + 1;
-    int nz = (int) StrictMath.round(zdim * crystalPixPerUM) + 1;
     
  //   double pixelsPerMicron =  (1/((double)maxPEDistance)) * 10;
     double pixelsPerMicron =  (1/((double)maxPEDistance)) * 20;
  //   double pixelsPerMicron =  4;
+    double idealPPM = (1/((double)maxPEDistance)) * 8;
+//    double idealPPM = 4;
+    
+    if (idealPPM >= crystalPixPerUM) { // set up a ppm so the crstals can superimpose 
+      pixelsPerMicron = Math.ceil(idealPPM / crystalPixPerUM) * crystalPixPerUM;
+    } 
+    else {
+      pixelsPerMicron = crystalPixPerUM / ((int) (crystalPixPerUM / idealPPM));
+    }
+    
     int extraVoxels = getExtraVoxels(maxPEDistance, pixelsPerMicron); // the extra voxels to add on each end
+    
+    
+    //Correct dims for bigger size
+    Double xdim = xMinMax[1] - xMinMax[0] + ((extraVoxels / pixelsPerMicron) * 2); // + maxPEDistance * 2;
+    Double ydim = yMinMax[1] - yMinMax[0] + ((extraVoxels / pixelsPerMicron) * 2); // + maxPEDistance * 2;
+    Double zdim = zMinMax[1] - zMinMax[0] + ((extraVoxels / pixelsPerMicron) * 2); // + maxPEDistance * 2;
+    int nx = (int) StrictMath.round(xdim * pixelsPerMicron) + 1;
+    int ny = (int) StrictMath.round(ydim * pixelsPerMicron) + 1;
+    int nz = (int) StrictMath.round(zdim * pixelsPerMicron) + 1;
+    
     cryoPPM = pixelsPerMicron;
     cryoCoordinateShift = extraVoxels;
+    
 
-    int[] tempCrystSize = { nx + extraVoxels*2, ny + extraVoxels*2, nz + extraVoxels*2};
+    int[] tempCrystSize = {nx, ny, nz};
     cryoCrystSizeVoxels = tempCrystSize; // Final Value
     
     Double xshift = -xMinMax[0] + (extraVoxels/pixelsPerMicron);
     Double yshift = -yMinMax[0] + (extraVoxels/pixelsPerMicron);
     Double zshift = -zMinMax[0] + (extraVoxels/pixelsPerMicron);
     
-    double[][][][] tempCrystCoords = new double[nx + extraVoxels*2][ny + extraVoxels*2][nz + extraVoxels*2][3];
+    double[][][][] tempCrystCoords = new double[nx][ny][nz][3];
     
-    for (int i = 0; i < nx + extraVoxels*2; i++) {
-      for (int j = 0; j < ny + extraVoxels*2; j++) { 
-        for (int k = 0; k < nz + extraVoxels*2; k++) { //loop through voxels for this crystal
+    for (int i = 0; i < nx ; i++) {
+      for (int j = 0; j < ny ; j++) { 
+        for (int k = 0; k < nz ; k++) { //loop through voxels for this crystal
           /*
            * Set original coordinate. Temporary variables needed since we use
            * all of the previous xyz's to set each of the new ones.
            */
-          double x = 0, y = 0, z = 0;
+   //       double x = 0, y = 0, z = 0;
           
           //I am trying to set a pixel size in the outside region based on the maximum PE travel distance 
-          //but still have the centre crystal superimposed to all the original pixels match up
+          //but still have the centre crystal superimposed so all the original pixels match up
           
           //for x
+          /*
           if (i <= extraVoxels) {
             x = -xshift + (i / pixelsPerMicron);
           }
@@ -756,12 +771,11 @@ public class CrystalPolyhedron extends Crystal {
           else {
             z = -zshift + (extraVoxels / pixelsPerMicron) + ((k - extraVoxels) / crystalPixPerUM);
           }
+          */
           
-          
-          
-  //          double x = -xshift + (i / crystalPixPerUM);
-  //          double y = -yshift + (j / crystalPixPerUM);
-  //          double z = -zshift + (k / crystalPixPerUM);
+            double x = -xshift + (i / pixelsPerMicron);
+            double y = -yshift + (j / pixelsPerMicron);
+            double z = -zshift + (k / pixelsPerMicron);
 
           /*
            * rotation in plane about [0 0 1] (P) Temporary variables needed
@@ -2379,15 +2393,17 @@ for (int l = peDistBins-1; l > 0; l--) {
       double entryX = 0, entryY = 0, entryZ = 0;
       for (int m = 0; m < peDistBins; m++) { 
   
-        /*
+        
         double x = relativeVoxXYZCryoCrystal[m][randomTrack][0];
         double y = relativeVoxXYZCryoCrystal[m][randomTrack][1];
         double z = relativeVoxXYZCryoCrystal[m][randomTrack][2];
-        */
+        
+        /*
         double x = relativeVoxXYZCryoSolution[m][randomTrack][0];
         double y = relativeVoxXYZCryoSolution[m][randomTrack][1];
         double z = relativeVoxXYZCryoSolution[m][randomTrack][2];
-        
+        */
+        /*
         //check if we have entered the crystal
         if (outToIn == false) { // ensures only triggers this code on the switch
           if (isCrystalAt((int) (i + x), (int) (j + y),
@@ -2408,7 +2424,7 @@ for (int l = peDistBins-1; l > 0; l--) {
             break;
           }
         } 
-
+*/
         // get dose transferred to these located voxels 
         // at the distance r away (due to PE movement)
         double partialDose = energyIncreasePE * propnDoseDepositedAtDistCryo[m]
