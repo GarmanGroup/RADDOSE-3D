@@ -290,7 +290,7 @@ public abstract class Crystal {
    * @return voxel dose lost from crystal by PE escape
    */
   public abstract double addDoseAfterPE(int i, int j, int k, double doseIncreasePE);
-  public abstract double addDoseAfterPECryo(int i, int j, int k, double doseIncreasePE, double energyToDoseFactor);
+  public abstract double addDoseAfterPECryo(double i, double j, double k, double doseIncreasePE, double energyToDoseFactor);
   
   /**
    * This accounts for FE energy transfer to nearby voxels and caluclates release
@@ -1029,9 +1029,15 @@ public abstract class Crystal {
           for (int k = 0; k < cryoCrystalSize[2]; k++) {
             //if this is an extra voxel
             
-            int iconverted = (int) StrictMath.round((i - extraVoxels) * (ppmRatio)); 
-            int jconverted = (int) StrictMath.round((j - extraVoxels) * (ppmRatio));
-            int kconverted = (int) StrictMath.round((k - extraVoxels) * (ppmRatio));
+            double iCryst = (i - extraVoxels) * ppmRatio;
+            double jCryst = (j - extraVoxels) * ppmRatio;
+            double kCryst = (k - extraVoxels) * ppmRatio;
+            
+            int iconverted = (int) StrictMath.round(iCryst); 
+            int jconverted = (int) StrictMath.round(jCryst);
+            int kconverted = (int) StrictMath.round(kCryst);
+            
+            
             if (isCrystalAt(iconverted, jconverted, kconverted) == false) { // if this voxel is not in the original crystal
               cryoCrystCoord = getCryoCrystCoord(i, j, k);
               
@@ -1070,7 +1076,7 @@ public abstract class Crystal {
                 double cryoVoxImageDose= fluenceToDoseFactor * cryoVoxImageFluence;
                                                                              
                 if (cryoVoxImageEnergy > 0) {
-             //   if (cryoVoxImageDose > 0) { 
+            //    if (cryoVoxImageDose > 0) { 
                   double energyPE = 0;
                   double dosePE = 0;
                   double totCryoAugerEnergy = cryoAugerEnergy * numberOfPhotons * energyPerFluence;
@@ -1087,7 +1093,7 @@ public abstract class Crystal {
                     energyPE = cryoVoxImageEnergy - totCryoAugerEnergy - voxImageFlEnergyRelease;
                     dosePE = cryoVoxImageDose - totCryoAugerDose - voxImageFlDoseRelease;
                   }
-                  double doseAddedBack = addDoseAfterPECryo(iconverted, jconverted, kconverted, energyPE, energyToDoseFactor);
+                  double doseAddedBack = addDoseAfterPECryo(iCryst, jCryst, kCryst, energyPE, energyToDoseFactor);
               //    double doseAddedBack = addDoseAfterPECryo(iconverted, jconverted, kconverted, dosePE, energyToDoseFactor);
                   totalDoseFromSurrounding += doseAddedBack;
                 } // end if voximage dose > 0

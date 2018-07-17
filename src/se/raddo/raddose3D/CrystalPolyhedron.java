@@ -698,8 +698,8 @@ public class CrystalPolyhedron extends Crystal {
     double pixelsPerMicron =  (1/((double)maxPEDistance)) * 20;
  //   double pixelsPerMicron =  4;
  //   double idealPPM = (1/((double)maxPEDistance)) * 20;  //this choosing of resolution may need tweaking 
-    double idealPPM = ((1/((double)maxPEDistance)) * 10) + ((1/((double)maxPEDistance)) * 10 * (1/minDim)) ; 
-//    double idealPPM = 4;
+    double idealPPM = ((1/((double)maxPEDistance)) * 4) + ((1/((double)maxPEDistance)) * 16 * (1/minDim)) ; 
+ //   double idealPPM = 10;
     
     if (idealPPM >= crystalPixPerUM) { // set up a ppm so the crstals can superimpose 
       pixelsPerMicron = Math.ceil(idealPPM / crystalPixPerUM) * crystalPixPerUM;
@@ -2309,11 +2309,11 @@ for (int l = peDistBins-1; l > 0; l--) {
           
           // add counts to total & total within crystal in order to
           // calculate the proportion for a given r.       
-          if (isCrystalAt((int) (i + x), (int) (j + y),
-              (int) (k + z))) {              
+          if (isCrystalAt((int) StrictMath.round(i + x), (int) StrictMath.round(j + y),
+              (int) StrictMath.round(k + z))) {              
             // get dose transferred to this new voxel (due to PE movement)
-            addDose((int) (i + x), (int) (j + y),
-            (int) (k + z), partialDose);
+            addDose((int) StrictMath.round(i + x), (int) StrictMath.round(j + y),
+            (int) StrictMath.round(k + z), partialDose);
           } else {
             doseLostFromCrystalPE += partialDose;
             peRelease += partialDose;
@@ -2363,11 +2363,11 @@ for (int l = peDistBins-1; l > 0; l--) {
          
         // add counts to total & total within crystal in order to
         // calculate the proportion for a given r.     
-        if (isCrystalAt((int) (i + x), (int) (j + y),
-            (int) (k + z))) {              
+        if (isCrystalAt((int) StrictMath.round(i + x), (int) StrictMath.round(j + y),
+            (int) StrictMath.round(k + z))) {              
           // get dose transferred to this new voxel (due to FL movement)
-          addDose((int) (i + x), (int) (j + y),
-          (int) (k + z), flPartialDose);
+          addDose((int) StrictMath.round(i + x), (int) StrictMath.round(j + y),
+          (int) StrictMath.round(k + z), flPartialDose);
         } else {
           doseLostFromCrystalFL += flPartialDose;
           flRelease += flPartialDose;
@@ -2381,7 +2381,7 @@ for (int l = peDistBins-1; l > 0; l--) {
   }  
   
   @Override
-  public double addDoseAfterPECryo(final int i, final int j, final int k,
+  public double addDoseAfterPECryo(final double i, final double j, final double k,
       final double energyIncreasePE, final double energyToDoseFactor) {
     double doseBackInCrystalPE = 0;
     
@@ -2433,16 +2433,16 @@ for (int l = peDistBins-1; l > 0; l--) {
         // at the distance r away (due to PE movement)
         double partialDose = energyIncreasePE * propnDoseDepositedAtDistCryo[m]
             / Math.pow(PE_ANGLE_RESOLUTION,2);
-        partialDose = (partialDose / energyToDoseFactor) * 1E-06;
+        partialDose = (partialDose / energyToDoseFactor) * 1E-06; //Energy to Dose in MGy
         
         // add counts to total & total within crystal in order to
         // calculate the proportion for a given r.       
-        if (isCrystalAt((int) (i + x), (int) (j + y),
-            (int) (k + z))) {              
+        if (isCrystalAt((int) StrictMath.round(i + x), (int) StrictMath.round(j + y),
+            (int) StrictMath.round(k + z))) {              
           // get dose transferred to this new voxel (due to PE movement)
           
-          addDose((int) (i + x), (int) (j + y),
-          (int) (k + z), partialDose);
+          addDose((int) StrictMath.round(i + x), (int) StrictMath.round(j + y),
+          (int) StrictMath.round(k + z), partialDose);
           doseBackInCrystalPE += partialDose;
         } 
       }    

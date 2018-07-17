@@ -567,7 +567,7 @@ public class CrystalCuboidOld extends Crystal {
   }
   
   @Override
-  public double addDoseAfterPECryo(int i, int j, int k, double doseIncreasePE, double energyToDoseFactor) {
+  public double addDoseAfterPECryo(final double i, final double j, final double k, double doseIncreasePE, double energyToDoseFactor) {
     return 0;
   }
   
