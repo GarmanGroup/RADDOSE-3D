@@ -689,12 +689,16 @@ public class CrystalPolyhedron extends Crystal {
     double[] yMinMax = this.minMaxVertices(1, vertices);
     double[] zMinMax = this.minMaxVertices(2, vertices);
     
-
+    double xCryst = xMinMax[1] - xMinMax[0];
+    double yCryst = yMinMax[1] - yMinMax[0];
+    double zCryst = zMinMax[1] - zMinMax[0];
+    double minDim = Math.min(zCryst, Math.min(xCryst, yCryst));
     
  //   double pixelsPerMicron =  (1/((double)maxPEDistance)) * 10;
     double pixelsPerMicron =  (1/((double)maxPEDistance)) * 20;
  //   double pixelsPerMicron =  4;
-    double idealPPM = (1/((double)maxPEDistance)) * 8;
+ //   double idealPPM = (1/((double)maxPEDistance)) * 20;  //this choosing of resolution may need tweaking 
+    double idealPPM = ((1/((double)maxPEDistance)) * 10) + ((1/((double)maxPEDistance)) * 10 * (1/minDim)) ; 
 //    double idealPPM = 4;
     
     if (idealPPM >= crystalPixPerUM) { // set up a ppm so the crstals can superimpose 
@@ -708,9 +712,9 @@ public class CrystalPolyhedron extends Crystal {
     
     
     //Correct dims for bigger size
-    Double xdim = xMinMax[1] - xMinMax[0] + ((extraVoxels / pixelsPerMicron) * 2); // + maxPEDistance * 2;
-    Double ydim = yMinMax[1] - yMinMax[0] + ((extraVoxels / pixelsPerMicron) * 2); // + maxPEDistance * 2;
-    Double zdim = zMinMax[1] - zMinMax[0] + ((extraVoxels / pixelsPerMicron) * 2); // + maxPEDistance * 2;
+    Double xdim = xCryst + ((extraVoxels / pixelsPerMicron) * 2); 
+    Double ydim = yCryst + ((extraVoxels / pixelsPerMicron) * 2);
+    Double zdim = zCryst + ((extraVoxels / pixelsPerMicron) * 2); 
     int nx = (int) StrictMath.round(xdim * pixelsPerMicron) + 1;
     int ny = (int) StrictMath.round(ydim * pixelsPerMicron) + 1;
     int nz = (int) StrictMath.round(zdim * pixelsPerMicron) + 1;

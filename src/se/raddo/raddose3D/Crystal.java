@@ -1029,9 +1029,9 @@ public abstract class Crystal {
           for (int k = 0; k < cryoCrystalSize[2]; k++) {
             //if this is an extra voxel
             
-            int iconverted = (int) ((i - extraVoxels) * (ppmRatio)); 
-            int jconverted = (int) ((j - extraVoxels) * (ppmRatio));
-            int kconverted = (int) ((k - extraVoxels) * (ppmRatio));
+            int iconverted = (int) StrictMath.round((i - extraVoxels) * (ppmRatio)); 
+            int jconverted = (int) StrictMath.round((j - extraVoxels) * (ppmRatio));
+            int kconverted = (int) StrictMath.round((k - extraVoxels) * (ppmRatio));
             if (isCrystalAt(iconverted, jconverted, kconverted) == false) { // if this voxel is not in the original crystal
               cryoCrystCoord = getCryoCrystCoord(i, j, k);
               
