@@ -1423,6 +1423,7 @@ public class CrystalPolyhedron extends Crystal {
     
     //could recalculate cryo gumbel based on new density
     density = (coefCalc.getCryoDensity() * cryoAndCrystalDensity) + (coefCalc.getDensity() * (1-cryoAndCrystalDensity));
+    // this density is pretty bad so I would need to think of something a bit more clever 
     CRYO_GUMBEL_DISTN_CALC_LOC = setGumbelLoc(density, peEnergy);
     CRYO_GUMBEL_DISTN_CALC_SCALE = setGumbelScale(density, peEnergy);
     //I'm not recalculating the max distance though :/ 
@@ -1882,29 +1883,29 @@ for (int l = peDistBins-1; l > 0; l--) {
           }
           
           //Need to apply the rotation matrix here so I shift the x and z axes - shift opposite way to rotation 
-          xNorm = xNorm * Math.cos(thisAngle) + zNorm * Math.sin(thisAngle);
-          zNorm = -1 * xNorm * Math.sin(thisAngle) + zNorm * Math.cos(thisAngle);
+          double xNormrot = xNorm * Math.cos(thisAngle) + zNorm * Math.sin(thisAngle);
+          double zNormrot = -1 * xNorm * Math.sin(thisAngle) + zNorm * Math.cos(thisAngle);
           
           for (int m = 0; m < peDistBins; m++) {
             // calculate r in voxel coordinates rather than pixels
             double r = 0;
             if (cryo == false)  {  
               r = PE_DISTANCES_TRAVELLED[m] * this.crystalPixPerUM; 
-              relativeVoxXYZ[m][counter][0] = r * xNorm;
+              relativeVoxXYZ[m][counter][0] = r * xNormrot;
               relativeVoxXYZ[m][counter][1] = r * yNorm;
-              relativeVoxXYZ[m][counter][2] = r * zNorm;
+              relativeVoxXYZ[m][counter][2] = r * zNormrot;
             }
             else {
               //the r here is for crystal ppm, this is old way
               r = CRYO_PE_DISTANCES_TRAVELLED[m] * this.crystalPixPerUM;
-              relativeVoxXYZCryoCrystal[m][counter][0] = r * xNorm;
+              relativeVoxXYZCryoCrystal[m][counter][0] = r * xNormrot;
               relativeVoxXYZCryoCrystal[m][counter][1] = r * yNorm;
-              relativeVoxXYZCryoCrystal[m][counter][2] = r * zNorm;
+              relativeVoxXYZCryoCrystal[m][counter][2] = r * zNormrot;
               //the r below is new way, for the cryo pixels
               r = CRYO_PE_DISTANCES_TRAVELLED[m] * cryoPPM;
-              relativeVoxXYZCryoSolution[m][counter][0] = r * xNorm;
+              relativeVoxXYZCryoSolution[m][counter][0] = r * xNormrot;
               relativeVoxXYZCryoSolution[m][counter][1] = r * yNorm;
-              relativeVoxXYZCryoSolution[m][counter][2] = r * zNorm;
+              relativeVoxXYZCryoSolution[m][counter][2] = r * zNormrot;
             }
 
           }
