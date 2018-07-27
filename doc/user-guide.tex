@@ -201,7 +201,7 @@ If three parameters are given for a cylindrical crystal (\hyperref[crystaltype]{
 \noindent \Keyword{PIXELSPERMICRON \textit{F}}
 specifies the resolution of the voxel grid used to represent the crystal in voxels/\hbox{\textmu}m. Defaults to 0.5 voxels/\hbox{\textmu}m.
 \newline
-Note: When running \RD with large dimension values (with SAXS the capillary dimensions typically range in the millimetre range) RADDOSE-3D can terminate with the folling error:
+Note: When running \RD with large dimension values (with SAXS the capillary dimensions typically range in the millimetre range) RADDOSE-3D can terminate with the following error:
 \newline
 \textit{Error during invocation of se.raddo.raddose3D.CrystalCylinder: Java heap space}.
 \newline
@@ -360,7 +360,13 @@ Where \Keyword{\textit{CODE}} is the four letter code of the PDB entry to be dow
  \hyperref[numdna]{\Keyword{NUMDNA}},
  \hyperref[proteinheavyatoms]{\Keyword{PROTEINHEAVYATOMS}} and
  \hyperref[solventfraction]{\Keyword{SOLVENTFRACTION}}, and hence these keywords are not needed.
-It will NOT calculate \hyperref[solventheavyconc]{\Keyword{SOLVENTHEAVYCONC}} so if there are any heavy atoms in the solvent then they will have to be specified. Note that an internet connection is required for this option to work.
+It will NOT calculate \hyperref[solventheavyconc]{\Keyword{SOLVENTHEAVYCONC}} so if there are any heavy atoms in the solvent then they will have to be specified. Note that an internet connection is required for this option to work. \SB
+
+\noindent \Keyword{PDB \textit{FILENAME}}
+
+Where \Keyword{\textit{FILENAME}} specifies the location of the PDB file for the chosen sample. 
+Only sequence files in the \href{https://en.wikipedia.org/wiki/Protein_Data_Bank_(file_format)}{\textbf{PDB}} format can be read. \SB
+
 
 \subsection{\Keyword{SEQFILE}}
 \label{seqfile}
@@ -493,6 +499,29 @@ Whether or not to include an explicit 3D model for photoelectron escape from the
 \noindent \Keyword{CALCULATEFLESCAPE \textit{BOOLEAN}}
 Whether or not to include an explicit 3D model for fluorescent X-ray escape from the crystal volume. Set to \Keyword{\textit{TRUE}} to include or \Keyword{\textit{FALSE}} otherwise (defaults to \Keyword{\textit{FALSE}} if not set).
 
+\subsection{\Keyword{CALCSURROUNDING}}
+\label{calcsurrounding}
+
+\noindent \Keyword{CALCSURROUNDING \textit{BOOLEAN}}
+Whether or not to include photoelectron entry from the surrounding material into the crystal volume. Set to \Keyword{\textit{TRUE}} to include or \Keyword{\textit{FALSE}} otherwise (defaults to \Keyword{\textit{FALSE}} if not set).
+Note that \Keyword{CALCULATEPEESCAPE} must be set to \Keyword{\textit{TRUE}} for this option to be used.
+
+\subsection{\Keyword{OILBASED}}
+\label{oilbased}
+
+\noindent \Keyword{OILBASED \textit{BOOLEAN}}
+Whether or not the surrounding is oil based. Set to \Keyword{\textit{TRUE}} to indicate oil based or \Keyword{\textit{FALSE}} otherwise (defaults to \Keyword{\textit{FALSE}} if not set).
+
+\subsection{\Keyword{SURROUNDINGHEAVYCONC}}
+\label{surroundingheavyconc}
+
+\noindent \Keyword{SURROUNDINGHEAVYCONC \textit{El I} (\textit{El I} (\textit{El I} ..))}
+defines the concentration of elements (not including water) in the solvent in millimoles per litre. Oxygen and lighter elements should not be specified.
+
+The command \Keyword{SOLVENTHEAVYCONC Na 1000 Cl 1000} specifies 1M sodium chloride in the surrounding.
+
+Note if \Keyword{OILBASED} is set to \Keyword{\textit{TRUE}}, all elements in the surrounding must be specified.
+
 \label{RDv3End}
 
 
@@ -560,11 +589,15 @@ specifies the location of the .pgm file that describes the beam profile. NOTE: t
 specifies the horizontal and vertical collimation of the beam.
 Delimits where the beam has non-zero intensity.
 This is defined by the slits.
-For an uncollimated Gaussian beam, set to $\approx 3 \times$ FWHM.
+For an uncollimated Gaussian beam, set to $\approx 3 \times$ FWHM. \SB
 
-%\noindent \Keyword{COLLIMATION CIRCULAR \textit{F}}
-%(not implemented!)
-%
+
+\noindent \Keyword{COLLIMATION CIRCULAR \textit{X Y}}
+
+specifies the horizontal and vertical collimation of a circular or elliptical beam.
+Delimits where the beam has non-zero intensity.
+This is defined by the slits.
+
 %\noindent \Keyword{COLLIMATION HORIZONTAL \textit{F}}
 %(not supported!)
 %
