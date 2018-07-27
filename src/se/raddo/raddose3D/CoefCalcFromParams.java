@@ -48,7 +48,7 @@ public class CoefCalcFromParams extends CoefCalcCompute {
       final List<Double> heavySolutionConcNums,
       final List<String> cryoSolutionMolecule,
       final List<Double> cryoSolutionConc,
-      final Double solventFraction, final String oilBased) {
+      final Double solventFraction, final String oilBased, final String calcSurrounding) {
 
     Double alpha = cellAlpha;
     Double beta = cellBeta;
@@ -74,7 +74,7 @@ public class CoefCalcFromParams extends CoefCalcCompute {
 
     calculateAtomOccurrences(numMonomers, numResidues, numRNA, numDNA,
         sf, heavyProteinAtomNames, heavyProteinAtomNums,
-        heavySolutionConcNames, heavySolutionConcNums, cryoSolutionMolecule, cryoSolutionConc, oilBased);
+        heavySolutionConcNames, heavySolutionConcNums, cryoSolutionMolecule, cryoSolutionConc, oilBased, calcSurrounding);
     
     super.calculateDensity();
 
@@ -103,11 +103,11 @@ public class CoefCalcFromParams extends CoefCalcCompute {
       final List<String> heavySolvConcNames,
       final List<Double> heavySolvConcNums,
       final List<String> cryoSolutionAtoms,
-      final List<Double> cryoSolutionConcs, final String oilBased) {
+      final List<Double> cryoSolutionConcs, final String oilBased,  String calcSurrounding) {
 
     // Start by dealing with heavy atom in the
     // protein and adding these to the unit cell.
-
+    
     if (heavyProteinAtomNames != null) {
       for (int i = 0; i < heavyProteinAtomNames.size(); i++) {
         Element heavyAtom = getParser()
@@ -127,7 +127,13 @@ public class CoefCalcFromParams extends CoefCalcCompute {
       addSolventConcentrations(heavySolvConcNames, heavySolvConcNums);
     }
     
-    if (cryoSolutionAtoms != null) {
+    //check whether a surrounding should be calculated 
+    if (calcSurrounding != null) {
+      calcSurrounding = calcSurrounding.toUpperCase();
+    }
+    boolean surrounding = ("TRUE".equals(calcSurrounding));
+    
+    if (surrounding == true) {
       //populate the 'cryo unit cell' with these atoms 
       addCryoConcentrations(cryoSolutionAtoms, cryoSolutionConcs, oilBased);
       super.calculateCryoDensity();

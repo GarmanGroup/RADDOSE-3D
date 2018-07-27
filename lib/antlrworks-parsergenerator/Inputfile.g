@@ -87,6 +87,7 @@ scope {
 	List<Double>	cryoSolutionConc;
 	Double 			solFrac;
 	String                 oilBased;
+	String 	           calcSurrounding;
     HashMap<Object, Object> crystalProperties;
 	}
 @init { 
@@ -104,7 +105,7 @@ if ($crystal::crystalCoefCalc == 2)
   													$crystal::heavyProteinAtomNames, $crystal::heavyProteinAtomNums,
   													$crystal::heavySolutionConcNames, $crystal::heavySolutionConcNums,
   													$crystal::cryoSolutionMolecule, $crystal::cryoSolutionConc,
-  													$crystal::solFrac, $crystal::oilBased	);
+  													$crystal::solFrac, $crystal::oilBased, 	$crystal::calcSurrounding);
 }
 
 if ($crystal::crystalCoefCalc == 3) {
@@ -118,9 +119,9 @@ if ($crystal::crystalCoefCalc == 3) {
 if ($crystal::crystalCoefCalc == 4)
 {
   if ($crystal::heavySolutionConcNames != null)
-  	$crystal::crystalCoefCalcClass = new CoefCalcFromPDB($crystal::pdb, $crystal::heavySolutionConcNames, $crystal::heavySolutionConcNums, $crystal::cryoSolutionMolecule, $crystal::cryoSolutionConc, $crystal::oilBased	);
+  	$crystal::crystalCoefCalcClass = new CoefCalcFromPDB($crystal::pdb, $crystal::heavySolutionConcNames, $crystal::heavySolutionConcNums, $crystal::cryoSolutionMolecule, $crystal::cryoSolutionConc, $crystal::oilBased, 	$crystal::calcSurrounding	);
   else
-	$crystal::crystalCoefCalcClass = new CoefCalcFromPDB($crystal::pdb, $crystal::cryoSolutionMolecule, $crystal::cryoSolutionConc, $crystal::oilBased	);
+	$crystal::crystalCoefCalcClass = new CoefCalcFromPDB($crystal::pdb, $crystal::cryoSolutionMolecule, $crystal::cryoSolutionConc, $crystal::oilBased, 	$crystal::calcSurrounding	);
   													  													
 }
 
@@ -141,7 +142,7 @@ if ($crystal::crystalCoefCalc == 6)
   													$crystal::heavySolutionConcNames, $crystal::heavySolutionConcNums,
   													$crystal::solFrac, $crystal::seqFile,
   													$crystal::cryoSolutionMolecule, $crystal::cryoSolutionConc,
-  													$crystal::oilBased	);
+  													$crystal::oilBased, 	$crystal::calcSurrounding);
 }
 
 if ($crystal::crystalCoefCalc == 7)
@@ -259,10 +260,11 @@ crystalLine
 	| cc=flResolution 		{ $crystal::crystalProperties.put(Crystal.CRYSTAL_FLUORESCENT_RESOLUTION, $cc.value);}
 	| dd=peResolution 		{ $crystal::crystalProperties.put(Crystal.CRYSTAL_PHOTOELECTRON_RESOLUTION, $dd.value);}
 
-	| ee=cryoSolution	        { $crystal::cryoSolutionMolecule	= $ee.names;
+	| ee=surroundingHeavyConc	        { $crystal::cryoSolutionMolecule	= $ee.names;
 							  $crystal::cryoSolutionConc	= $ee.num;	}
 	| ff=oilBased	                { $crystal::oilBased	= $ff.value;  }
 	| gg=goniometerAxis		{ $crystal::crystalProperties.put(Crystal.CRYSTAL_GONIOMETER_AXIS, $gg.value); }
+	| hh=calcSurrounding                { $crystal::calcSurrounding	= $hh.value;  }
 							
 	;
 
@@ -486,17 +488,21 @@ peResolution returns [int value]
 	: PERESOLUTION a=FLOAT {$value = Integer.parseInt($a.text);};
 PERESOLUTION : ('P'|'p')('E'|'e')('R'|'r')('E'|'e')('S'|'s')('O'|'o')('L'|'l')('U'|'u')('T'|'t')('I'|'i')('O'|'o')('N'|'n') ;
 
-cryoSolution returns [List<String> names, List<Double> num;]
+surroundingHeavyConc returns [List<String> names, List<Double> num;]
 @init{
 $names 	= new ArrayList<String>();
 $num	= new ArrayList<Double>();
 }
-	: CRYOSOLUTION (a=ELEMENT b=FLOAT {$names.add($a.text); $num.add(Double.parseDouble($b.text)); } )+ ; 	
-CRYOSOLUTION : ('C'|'c')('R'|'r')('Y'|'y')('O'|'o')('S'|'s')('O'|'o')('L'|'l')('U'|'u')('T'|'t')('I'|'i')('O'|'o')('N'|'n') ;
+	: SURROUNDINGHEAVYCONC (a=ELEMENT b=FLOAT {$names.add($a.text); $num.add(Double.parseDouble($b.text)); } )+ ; 	
+SURROUNDINGHEAVYCONC : ('S'|'s')('U'|'u')('R'|'r')('R'|'r')('O'|'o')('U'|'u')('N'|'n')('D'|'d')('I'|'i')('N'|'n')('G'|'g')('H'|'h')('E'|'e')('A'|'a')('V'|'v')('Y'|'y')('C'|'c')('O'|'o')('N'|'n')('C'|'c') ;
 
 oilBased returns [String value]
 	: OILBASED a=STRING {$value = $a.text;};
 OILBASED : ('O'|'o')('I'|'i')('L'|'l')('B'|'b')('A'|'a')('S'|'s')('E'|'e')('D'|'d') ;
+
+calcSurrounding returns [String value]
+	: CALCSURROUNDING a=STRING {$value = $a.text;};
+CALCSURROUNDING : ('C'|'c')('A'|'a')('L'|'l')('C'|'c')('S'|'s')('U'|'u')('R'|'r')('R'|'r')('O'|'o')('U'|'u')('N'|'n')('D'|'d')('I'|'i')('N'|'n')('G'|'g') ;
 	
 	
 // ------------------------------------------------------------------

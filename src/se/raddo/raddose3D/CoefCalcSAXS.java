@@ -117,7 +117,7 @@ public class CoefCalcSAXS extends CoefCalcFromParams {
 
     calculateAtomOccurrences(numMonomers, numResidues, numRNA, numDNA,
         sf, heavyProteinAtomNames, heavyProteinAtomNums,
-        heavySolutionConcNames, heavySolutionConcNums, emptyAtoms, emptyNumbers, null);
+        heavySolutionConcNames, heavySolutionConcNums, emptyAtoms, emptyNumbers, null, null);
     
     super.calculateDensity();
   }

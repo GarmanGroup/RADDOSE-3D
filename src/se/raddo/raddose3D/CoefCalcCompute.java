@@ -489,6 +489,10 @@ public class CoefCalcCompute extends CoefCalc {
      //   photonMuAbsK = calculateCoefficientsAll(e.getKEdge() - e.getL1Edge());
         photonMuAbsK = calculateCoefficientsAll(e.getKFluorescenceAverage());
         
+  // test
+   //     double test = e.getKFluorescenceAverage();
+        
+        
         //Fluorescent escape probability. This takes muabs as mupe. 
         //Fluorescence too low energy to consider compton in muabs
         escapeMuAbsK = photonMuAbsK.get(PHOTOELECTRIC);
@@ -1124,17 +1128,21 @@ public class CoefCalcCompute extends CoefCalc {
       final List<Double> cryoSolutionConcs, final String oilBased) {
     double nonWaterAtoms = 0;
     // add in the concentrations of the cryo-solution atoms
-    for (int i = 0; i < cryoSolutionAtoms.size(); i++) {
-      Element cryoAtom = elementDB.getElement(cryoSolutionAtoms.get(i));
-      setCryoConcentration(cryoAtom, cryoSolutionConcs.get(i)
-          + getCryoConcentration(cryoAtom));
-    }
+    //need to only do if not null when change
+    if (cryoSolutionAtoms != null) {
+      for (int i = 0; i < cryoSolutionAtoms.size(); i++) {
+        Element cryoAtom = elementDB.getElement(cryoSolutionAtoms.get(i));
+        setCryoConcentration(cryoAtom, cryoSolutionConcs.get(i)
+            + getCryoConcentration(cryoAtom));
+      }
        
-    for (Element e : cryoConcentration.keySet()) {
-      double conc = cryoConcentration.get(e);
-      double atomCount = conc * AVOGADRO_NUM * cellVolume * 1E-3 * 1E-27;
-      incrementCryoOccurrence(e, atomCount);
-      nonWaterAtoms += atomCount;
+      for (Element e : cryoConcentration.keySet()) {
+        double conc = cryoConcentration.get(e);
+        double atomCount = conc * AVOGADRO_NUM * cellVolume * 1E-3 * 1E-27;
+        incrementCryoOccurrence(e, atomCount);
+        nonWaterAtoms += atomCount;
+      }
+    
     }
     
     //check if oil based
@@ -1354,7 +1362,7 @@ public class CoefCalcCompute extends CoefCalc {
   
   @Override
   public boolean isCryo() {
-    if (cryoElements != null) {
+    if (cryoElements != null) { // will this need to change?
       return true;
     }
     else {

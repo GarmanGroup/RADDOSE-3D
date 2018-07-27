@@ -537,7 +537,7 @@ public class CoefCalcFromPDB extends CoefCalcCompute {
    */
   public CoefCalcFromPDB(final String pdbCode,
       final List<String> cryoSolutionMolecule,
-      final List<Double> cryoSolutionConc, final String oilBased) {
+      final List<Double> cryoSolutionConc, final String oilBased, String calcSurrounding) {
     
 
     
@@ -553,7 +553,13 @@ public class CoefCalcFromPDB extends CoefCalcCompute {
     
     super.calculateDensity();
     
-    if (cryoSolutionMolecule != null) {
+  //check whether a surrounding should be calculated 
+    if (calcSurrounding != null) {
+      calcSurrounding = calcSurrounding.toUpperCase();
+    }
+    boolean surrounding = ("TRUE".equals(calcSurrounding));
+    
+    if (surrounding == true) { 
       //populate the 'cryo unit cell' with these atoms 
       addCryoConcentrations(cryoSolutionMolecule, cryoSolutionConc, oilBased);
       super.calculateCryoDensity();
@@ -572,7 +578,7 @@ public class CoefCalcFromPDB extends CoefCalcCompute {
       final List<String> heavySolvConcNames,
       final List<Double> heavySolvConcNums,
       final List<String> cryoSolutionMolecule,
-      final List<Double> cryoSolutionConc, final String oilBased) {
+      final List<Double> cryoSolutionConc, final String oilBased, String calcSurrounding) {
 
     this.addSolventConcentrations(heavySolvConcNames, heavySolvConcNums);
 
@@ -597,7 +603,13 @@ public class CoefCalcFromPDB extends CoefCalcCompute {
     }
     super.calculateDensity();
     
-    if (cryoSolutionMolecule != null) {
+    //check whether a surrounding should be calculated 
+    if (calcSurrounding != null) {
+      calcSurrounding = calcSurrounding.toUpperCase();
+    }
+    boolean surrounding = ("TRUE".equals(calcSurrounding));
+    
+    if (surrounding == true) { 
       //populate the 'cryo unit cell' with these atoms 
       addCryoConcentrations(cryoSolutionMolecule, cryoSolutionConc, oilBased);
       super.calculateCryoDensity();

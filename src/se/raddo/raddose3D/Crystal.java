@@ -526,6 +526,7 @@ public abstract class Crystal {
       totL3 += feFactors[i][0] * feFactors[i][13] * feFactors[i][14];
       
       //Add the Ms here for uranium
+      
       totM1 += feFactors[i][0] * feFactors[i][17] * feFactors[i][18];
       totM2 += feFactors[i][0] * feFactors[i][19] * feFactors[i][20];
       totM3 += feFactors[i][0] * feFactors[i][21] * feFactors[i][22];
@@ -984,7 +985,7 @@ public abstract class Crystal {
 
     
     
-  boolean aSurface = coefCalc.isCryo();
+  boolean aSurface = coefCalc.isCryo(); //iscryo should change
   if (aSurface) {
     if (photoElectronEscape) {
       //loop through all the bigger crystal voxels

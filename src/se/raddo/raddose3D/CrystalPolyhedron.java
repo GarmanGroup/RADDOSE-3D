@@ -1398,6 +1398,7 @@ public class CrystalPolyhedron extends Crystal {
     // Initialise crystal photolectron escape properties here for current beam
     //set Gumbel values based on density
     double density = coefCalc.getDensity();
+  //  density = 1.17;
     double peEnergy = beamEnergy - EnergyToSubtractFromPE;
     GUMBEL_DISTN_CALC_LOC = setGumbelLoc(density, peEnergy);
     GUMBEL_DISTN_CALC_SCALE = setGumbelScale(density, peEnergy);
@@ -1555,7 +1556,7 @@ public class CrystalPolyhedron extends Crystal {
         }
       }
     }
-      
+     
       
       /*
       //Below is how it was done when the energy was deposited linearly along the photoelectron track
