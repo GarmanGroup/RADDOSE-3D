@@ -166,8 +166,8 @@ public abstract class Crystal {
    */
   public Crystal(final Map<Object, Object> properties) {
     if (properties.get(Crystal.CRYSTAL_DDM) == null) {
- //     ddm = new DDMSimple();
-      ddm = new DDMLinear();
+      ddm = new DDMSimple();
+ //     ddm = new DDMLinear();
  //       ddm = new DDMLeal(null,null,null);
     } else {
       ddm = (DDM) properties.get(Crystal.CRYSTAL_DDM);

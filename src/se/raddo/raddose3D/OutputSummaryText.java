@@ -179,6 +179,7 @@ public class OutputSummaryText implements ExposeObserver, Output,
         "Dose Inefficiency PE (Max Dose/mJ Deposited)",
         expSummary.getDoseInefficiencyPE()));
     
+    /*
     //RDE warning
     if (expSummary.getAvgRDE() == true) {
       w.write(String.format("%-42s%n", "WARNING - THE AVG RELATIVE DIFFRACTION EFFICIENCY DROPS BELOW 0.5"));
@@ -186,6 +187,7 @@ public class OutputSummaryText implements ExposeObserver, Output,
     if (expSummary.getWeightedRDE() == true) {
       w.write(String.format("%-42s%n", "WARNING - THE WEIGHTED RELATIVE DIFFRACTION EFFICIENCY DROPS BELOW 0.5"));
     }
+    */
 
     StringBuffer b = new StringBuffer("Final Dose Histogram:\n");
 
