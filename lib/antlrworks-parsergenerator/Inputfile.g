@@ -159,7 +159,9 @@ if ($crystal::crystalCoefCalc == 8)
    													$crystal::numMon,
   													$crystal::smallMoleAtomNames, $crystal::smallMoleAtomNums,
   													$crystal::heavySolutionConcNames, $crystal::heavySolutionConcNums,
-  													$crystal::solFrac);
+  													$crystal::solFrac,
+  													$crystal::cryoSolutionMolecule, $crystal::cryoSolutionConc,
+  													$crystal::oilBased, 	$crystal::calcSurrounding);
 }
 
 if ($crystal::crystalCoefCalc == 9)

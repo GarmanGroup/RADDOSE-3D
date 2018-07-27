@@ -42,7 +42,10 @@ public class CoefCalcSmallMolecules extends CoefCalcCompute {
       final List<Double> smallMoleAtomNums,
       final List<String> heavySolutionConcNames,
       final List<Double> heavySolutionConcNums,
-      final Double solventFraction) {
+      final Double solventFraction,
+      final List<String> cryoSolutionMolecule,
+      final List<Double> cryoSolutionConc,
+      final String oilBased, final String calcSurrounding) {
 
     Double alpha = cellAlpha;
     Double beta = cellBeta;
@@ -72,7 +75,7 @@ public class CoefCalcSmallMolecules extends CoefCalcCompute {
     
     calculateAtomOccurrences(numMonomers,
         sf, smallMoleAtomNames, smallMoleAtomNums,
-        heavySolutionConcNames, heavySolutionConcNums);
+        heavySolutionConcNames, heavySolutionConcNums, cryoSolutionMolecule, cryoSolutionConc, oilBased, calcSurrounding);
     
     super.calculateDensity();  //Calculate density if where presentElements is filled in coefCalcCompute so this must be called
   }
@@ -93,7 +96,10 @@ public class CoefCalcSmallMolecules extends CoefCalcCompute {
       final List<String> smallMoleAtomNames,
       final List<Double> smallMoleAtomNums,
       final List<String> heavySolvConcNames,
-      final List<Double> heavySolvConcNums) {
+      final List<Double> heavySolvConcNums,
+      final List<String> cryoSolutionAtoms,
+      final List<Double> cryoSolutionConcs,
+      final String oilBased, String calcSurrounding) {
 
     // Start by dealing with the atoms in each small molecule
     // and adding these to the unit cell.    
@@ -116,12 +122,24 @@ public class CoefCalcSmallMolecules extends CoefCalcCompute {
       addSolventConcentrations(heavySolvConcNames, heavySolvConcNums);
     }
     
+    //check whether a surrounding should be calculated 
+    if (calcSurrounding != null) {
+      calcSurrounding = calcSurrounding.toUpperCase();
+    }
+    boolean surrounding = ("TRUE".equals(calcSurrounding));
+    
+    if (surrounding == true) {
+      //populate the 'cryo unit cell' with these atoms 
+      addCryoConcentrations(cryoSolutionAtoms, cryoSolutionConcs, oilBased);
+      super.calculateCryoDensity();
+    }
+   
+    
     this.setNumMonomers(monomers);
-    
 
-    boolean fillRestWithWater = false;
+    boolean fillRestWithWater = false; //There are vacuums in small molecule crystals
     
-    if (fillRestWithWater) {
+  if (fillRestWithWater) {
     // If the solvent fraction has not been specified.
     double newSolventFraction = solventFraction;
 
@@ -131,5 +149,7 @@ public class CoefCalcSmallMolecules extends CoefCalcCompute {
 
     calculateSolventWater(newSolventFraction);
   }
+  
+  
   }
 }
