@@ -106,5 +106,9 @@ public abstract class CoefCalc {
    */
   public abstract double[][] getCryoFluorescentEscapeFactors(Beam beam);
   
+  /**
+   * Returns the elements present in the crystal or the surrounding
+   * @param cryo
+   */
   public abstract Set<Element> getPresentElements(boolean cryo);
 }

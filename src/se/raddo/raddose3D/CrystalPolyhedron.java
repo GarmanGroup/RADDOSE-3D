@@ -4,15 +4,10 @@
 package se.raddo.raddose3D;
 
 import java.util.ArrayList;
-//import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-
-import se.raddo.raddose3D.Element.CrossSection;
-
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -61,34 +56,16 @@ public class CrystalPolyhedron extends Crystal {
   private final double[][][]    escapeFactor;
 
   /**
-   * Boolean to determine if escapeFactors have been calculated yet or not.
-   */
-  private boolean               calculatedEscapeFactors  = false;
-
-  /**
-   * Average mean distance travelled by electron.
-   */
-  private static final double   MEAN_ELECTRON_TRAVEL_DISTANCE = 3.;
-
-  /**
    * Constants for calculation of Gumbel distribution mu and beta parameters.
    */
-  private static final double[] GUMBEL_DISTN_CALC_PARAMS = {0.0094,0.0575,0.002,0.0096};
- // private static  double[] GUMBEL_DISTN_CALC_LOC = {0.0121, 0.0405, 0.0098, 0.0943, 0.008, 0.1922}; //initially set as 1.17, <20keV
-//  private static  double[] GUMBEL_DISTN_CALC_SCALE = {0.002, 0.0076, 0.0013, 0.0253, 0.001, 0.0372}; //initially set as 1.17, <20keV
   private static  double[] GUMBEL_DISTN_CALC_LOC = {0.0121, 0.0405}; //initially set as 1.17, <20keV
   private static  double[] GUMBEL_DISTN_CALC_SCALE = {0.002, 0.0076}; //initially set as 1.17, <20keV
   private static  double[] CRYO_GUMBEL_DISTN_CALC_LOC = {0.0121, 0.0405}; //initially set as 1.17, <20keV
   private static  double[] CRYO_GUMBEL_DISTN_CALC_SCALE = {0.002, 0.0076}; //initially set as 1.17, <20keV
-  
- // private static final double[] GUMBEL_DISTN_CALC_PARAMS = {0.0074,0.0391,0.002,0.0096}; //The CSDA at 1.35
-  
+
   /**
    * Distance bins travelled by a photoelectron.
-   */
-//  private static final double[]     PE_DISTANCES_TRAVELLED = {0, 1., 1.5, 2., 2.5, //normal
-//      3., 3.5, 4., 5., 6., 7., 8. };
- 
+   */ 
   private double[]     PE_DISTANCES_TRAVELLED;
   private double[] CRYO_PE_DISTANCES_TRAVELLED;
   
@@ -108,6 +85,9 @@ public class CrystalPolyhedron extends Crystal {
   private double flRelease = 0;
   private double peRelease = 0;
   
+  /**
+   * Stores the percentage of crystal and cryo density to weight for track length calculation
+   */
   public double cryoAndCrystalDensity;
   
   /**
@@ -132,11 +112,14 @@ public class CrystalPolyhedron extends Crystal {
   private static final int   FL_ANGLE_RESOLUTION = 1;
   private static final int   FL_ANGLE_RES_LIMIT = 16;
   
-  private static final int POLARISATION_RES = 16;
-  private int POLARISATION_RES_LIMIT = 128;
-  
-  private int numberOfTracksPE; 
+  /**
+   * Stores the number of tracks used for fluorescence 
+   */
   private int numberOfTracksFL;
+  
+  /**
+   * Stores the indexes of the tracks, biased so a more likely tracks is stored proportionally more times
+   */
   private int [] trackNumberBias;
   
   /**
@@ -144,12 +127,20 @@ public class CrystalPolyhedron extends Crystal {
    */
   private  double[][][] relativeVoxXYZ;
   private  double[][][] relativeVoxXYZCryoCrystal;
-  private  double[][][] relativeVoxXYZCryoSolution;
   
+  /**
+   * Has the photoelectron angular distribution based on the material
+   */
   private double[] angularDistribution;
   private double[] cryoAngularDistribution;
   
+  /**
+   * Pixels per micron of the surrounding material
+   */
   private double cryoPPM;
+  /**
+   * Used to convert surrounding coordinates to crystal coordinates in terms of voxel ijk
+   */
   public int cryoCoordinateShift;
   
   /**
@@ -191,20 +182,6 @@ public class CrystalPolyhedron extends Crystal {
    */
   protected double[][]          vertices;
 
-  /* vertices for cuboid of size 90 x 74 x 40 */
-  /*
-   * = {
-   * { -45, -37, 20 },
-   * { -45, -37, -20 },
-   * { -45, 37, -20 },
-   * { -45, 37, 20 },
-   * { 45, -37, 20 },
-   * { 45, -37, -20 },
-   * { 45, 37, -20 },
-   * { 45, 37, 20 }
-   * };
-   */
-
   /**
    * Vertices which have been rotated for a given wedge angle.
    */
@@ -223,24 +200,6 @@ public class CrystalPolyhedron extends Crystal {
    * by the corresponding rotatedVertex.
    */
   private double[][][]          expandedRotatedVertices;
-
-  /* Indices for cuboid */
-  /*
-   * = {
-   * { 1, 3, 2 },
-   * { 4, 3, 1 },
-   * { 3, 6, 2 },
-   * { 7, 6, 3 },
-   * { 2, 5, 1 },
-   * { 2, 6, 5 },
-   * { 4, 8, 3 },
-   * { 8, 7, 3 },
-   * { 4, 1, 8 },
-   * { 1, 5, 8 },
-   * { 8, 5, 7 },
-   * { 7, 5, 6 }
-   * };
-   */
 
   /**
    * Normal array holding normalised direction vectors for
@@ -419,10 +378,6 @@ public class CrystalPolyhedron extends Crystal {
       double originNormalDotProduct = dotProduct(origin, normalUnitVector);
       double directionNormalDotProduct = dotProduct(directionVector,
           normalUnitVector);
-
-      // assuming direction vector is always (0, 0, 1)
-
-      // double directionNormalDotProduct = directionVector[2] * normalUnitVector[2];
 
       double t = -(originNormalDotProduct + planeDistance)
           / directionNormalDotProduct;
@@ -663,8 +618,6 @@ public class CrystalPolyhedron extends Crystal {
 
     escapeFactor = new double[nx][ny][nz];
     
-    
-  
     // Initialise beam-independent crystal photoelectron escape properties
     //Get fl bins  
     flRes = 0;
@@ -683,6 +636,12 @@ public class CrystalPolyhedron extends Crystal {
    }
   }
   
+  /**
+   * Constructs the surrounding solution the same way as the crystal, but extended off all edges in all dimensions 
+   * by the maximum photoelectron travel distance. The pixels per micron of the surrounding is chosen so the pixels 
+   * match up with the original crystal
+   * @param maxPEDistance
+   */
   public void produceCryoSolutionCrystal(int maxPEDistance) {
     
     double[] xMinMax = this.minMaxVertices(0, vertices);
@@ -694,14 +653,10 @@ public class CrystalPolyhedron extends Crystal {
     double zCryst = zMinMax[1] - zMinMax[0];
     double minDim = Math.min(zCryst, Math.min(xCryst, yCryst));
     
- //   double pixelsPerMicron =  (1/((double)maxPEDistance)) * 10;
     double pixelsPerMicron =  (1/((double)maxPEDistance)) * 20;
- //   double pixelsPerMicron =  4;
- //   double idealPPM = (1/((double)maxPEDistance)) * 20;  //this choosing of resolution may need tweaking 
     double idealPPM = ((1/((double)maxPEDistance)) * 4) + ((1/((double)maxPEDistance)) * 16 * (1/minDim)) ; 
- //   double idealPPM = 10;
-    
-    if (idealPPM >= crystalPixPerUM) { // set up a ppm so the crstals can superimpose 
+
+    if (idealPPM >= crystalPixPerUM) { // set up a ppm so the crsytals can superimpose 
       pixelsPerMicron = Math.ceil(idealPPM / crystalPixPerUM) * crystalPixPerUM;
     } 
     else {
@@ -709,8 +664,7 @@ public class CrystalPolyhedron extends Crystal {
     }
     
     int extraVoxels = getExtraVoxels(maxPEDistance, pixelsPerMicron); // the extra voxels to add on each end
-    
-    
+       
     //Correct dims for bigger size
     Double xdim = xCryst + ((extraVoxels / pixelsPerMicron) * 2); 
     Double ydim = yCryst + ((extraVoxels / pixelsPerMicron) * 2);
@@ -722,7 +676,6 @@ public class CrystalPolyhedron extends Crystal {
     cryoPPM = pixelsPerMicron;
     cryoCoordinateShift = extraVoxels;
     
-
     int[] tempCrystSize = {nx, ny, nz};
     cryoCrystSizeVoxels = tempCrystSize; // Final Value
     
@@ -739,43 +692,6 @@ public class CrystalPolyhedron extends Crystal {
            * Set original coordinate. Temporary variables needed since we use
            * all of the previous xyz's to set each of the new ones.
            */
-   //       double x = 0, y = 0, z = 0;
-          
-          //I am trying to set a pixel size in the outside region based on the maximum PE travel distance 
-          //but still have the centre crystal superimposed so all the original pixels match up
-          
-          //for x
-          /*
-          if (i <= extraVoxels) {
-            x = -xshift + (i / pixelsPerMicron);
-          }
-          else if (i >= nx + extraVoxels) {
-            x = -xshift + (extraVoxels / pixelsPerMicron) + ((nx - 1) / crystalPixPerUM) +  ((i + 1 - nx - extraVoxels) / pixelsPerMicron);
-          }
-          else {
-            x = -xshift + (extraVoxels / pixelsPerMicron) + ((i - extraVoxels) / crystalPixPerUM);
-          }
-          //for y
-          if (j <= extraVoxels) {
-            y = -yshift + (j / pixelsPerMicron);
-          }
-          else if (j >= nx + extraVoxels) {
-            y = -yshift + (extraVoxels / pixelsPerMicron) + ((ny - 1) / crystalPixPerUM) +  ((j + 1 - ny - extraVoxels) / pixelsPerMicron);
-          }
-          else {
-            y = -yshift + (extraVoxels / pixelsPerMicron) + ((j - extraVoxels) / crystalPixPerUM);
-          }
-          //for z
-          if (k <= extraVoxels) {
-            z = -zshift + (k / pixelsPerMicron);
-          }
-          else if (k >= nz + extraVoxels) {
-            z = -zshift + (extraVoxels / pixelsPerMicron) + ((nz -1) / crystalPixPerUM) +  ((k + 1 - nz - extraVoxels) / pixelsPerMicron);
-          }
-          else {
-            z = -zshift + (extraVoxels / pixelsPerMicron) + ((k - extraVoxels) / crystalPixPerUM);
-          }
-          */
           
             double x = -xshift + (i / pixelsPerMicron);
             double y = -yshift + (j / pixelsPerMicron);
@@ -1082,15 +998,6 @@ public class CrystalPolyhedron extends Crystal {
    * @return
    */
   private double[] calculateEnergyDistn(final double[] distancesTravelled, final int bins, final double peEnergy) {
-    //Coefficients - these are currently just set to 10keV, will change with energy when I have the data
-    //Need to get these coefficeints properly...
-    /*
-    double[] lowCoefficients = {-0.00327, 7.032861, -190.401, 2756.785, -21505.5, 84807.1492, -132172.31};
- //   double[] mediumCoefficients = {0.2405, -1.972, 12.504, -38.282, 62.846, -52.696, 17.928};
-    double[] mediumCoefficients = {0.085545007, 0.282066269, -0.553070091, 0.545626478, 0, 0, 0};
-    double[] highCoefficients = {445479.2, -3029051, 8575448, -12938647.4, 10973069, -4959668, 933372.4};
-    */
-    
     ReadEnergyCSV rdCSV = new ReadEnergyCSV();
     double[] lowCoefficients = rdCSV.openCSV("constants/energy-coefs-low.csv", peEnergy);
     double[] mediumCoefficients = rdCSV.openCSV("constants/energy-coefs-med.csv", peEnergy);
@@ -1138,26 +1045,7 @@ public class CrystalPolyhedron extends Crystal {
     double[] gumbParams = new double[2]; //0 = location parameter, 1 = scale parameter
      
     double peEnergy = beamEnergy - energyCorrection;
-    /* Change now I'm doing it slightly differently
-    if (peEnergy <= 20) {
-      gumbParams[0] = GUMBEL_DISTN_CALC_LOC[0]*Math.pow(peEnergy,2) 
-          + GUMBEL_DISTN_CALC_LOC[1]*(peEnergy);
-      gumbParams[1] = GUMBEL_DISTN_CALC_SCALE[0]*Math.pow(peEnergy,2) 
-          + GUMBEL_DISTN_CALC_SCALE[1]*(peEnergy); 
-    }
-    else if (peEnergy > 20 && peEnergy <= 50) {
-      gumbParams[0] = GUMBEL_DISTN_CALC_LOC[2]*Math.pow(peEnergy,2) 
-          + GUMBEL_DISTN_CALC_LOC[3]*(peEnergy);
-      gumbParams[1] = GUMBEL_DISTN_CALC_SCALE[2]*Math.pow(peEnergy,2) 
-          + GUMBEL_DISTN_CALC_SCALE[3]*(peEnergy); 
-    }
-    else {
-      gumbParams[0] = GUMBEL_DISTN_CALC_LOC[4]*Math.pow(peEnergy,2) 
-          + GUMBEL_DISTN_CALC_LOC[5]*(peEnergy);
-      gumbParams[1] = GUMBEL_DISTN_CALC_SCALE[4]*Math.pow(peEnergy,2) 
-          + GUMBEL_DISTN_CALC_SCALE[5]*(peEnergy); 
-    }
-    */
+
     if (cryo == false) {
       gumbParams[0] = GUMBEL_DISTN_CALC_LOC[0]*Math.pow(peEnergy,2) 
           + GUMBEL_DISTN_CALC_LOC[1]*(peEnergy);
@@ -1170,18 +1058,7 @@ public class CrystalPolyhedron extends Crystal {
       gumbParams[1] = GUMBEL_DISTN_CALC_SCALE[0]*Math.pow(peEnergy,2) 
           + CRYO_GUMBEL_DISTN_CALC_SCALE[1]*(peEnergy);
     }
-    
-    /*
-    gumbParams[0] = GUMBEL_DISTN_CALC_PARAMS[0]*Math.pow(beamEnergy - energyCorrection,2) 
-        + GUMBEL_DISTN_CALC_PARAMS[1]*(beamEnergy - energyCorrection); //mu = mean path length of a PE
-    gumbParams[1] = GUMBEL_DISTN_CALC_PARAMS[2]*Math.pow(beamEnergy - energyCorrection,2) 
-        + GUMBEL_DISTN_CALC_PARAMS[3]*(beamEnergy - energyCorrection); //beta - breaks down after 20keV
-    
-    //Try and better approximate beta for 22-30keV
-    if (beamEnergy - energyCorrection >= 22 && beamEnergy - energyCorrection <= 30) {
-      gumbParams[1] = 1.4; // beta = 1.4keV
-    }
-    */
+
     return gumbParams;
   }
   
@@ -1191,11 +1068,6 @@ public class CrystalPolyhedron extends Crystal {
    * @param feFactors
    */
   private void calcFluorescenceDistribution(final double[][] feFactors) {
-
-    //This will look horrible do now and clean up later
-    //It is also currently just dropping energy at each point not losing it gradually along the way so need to check this is right
-    //may be doing for every voxel so check
-    
     int distanceResolution = flDistBins -1;
  //   flDistanceDistribution = new double[feFactors.length][4][flDistBins];
     flDistanceDistribution = new double[feFactors.length][flDistBins];
@@ -1217,15 +1089,10 @@ public class CrystalPolyhedron extends Crystal {
         if (maxDistanceFl > crystalMaxDistance) {
           maxDistanceFl = crystalMaxDistance;
         }
-        
-        //To test
-      //   maxDistanceFl = 40;
- 
           //populate fldistances with crystalMaxDistance as the last
         for (int q = 0; q <= distanceResolution; q++) {
        //   flDistancesTravelled[i][j][q] = (maxDistanceFl/distanceResolution) * q;
           flDistancesTravelled[i][q] = (maxDistanceFl/distanceResolution) * q;
-
         }
 
         for (int l = flDistBins-1; l >= 0; l--) { 
@@ -1254,24 +1121,14 @@ public class CrystalPolyhedron extends Crystal {
   }
   
   /**
-   * Sets the maximum distance of a photoelectron for the given photoelectron energy
+   * Sets the maximum distance of a photoelectron from the crystal for the given photoelectron energy
    * 
    * @param beamEnergy
    */
   private  void setMaxPEDistance(final double beamEnergy) { //needs to be dynamic as it depends on beam energy
     double peEnergy = beamEnergy - EnergyToSubtractFromPE;
-    /*
-    double averagePEDistance = GUMBEL_DISTN_CALC_PARAMS[0]*Math.pow(beamEnergy - EnergyToSubtractFromPE,2) 
-        + GUMBEL_DISTN_CALC_PARAMS[1]*(beamEnergy - EnergyToSubtractFromPE);
-      
-    int maxPEDistance = (int) Math.ceil(averagePEDistance + 6);
-    */
     int maxPEDistance = (int) Math.ceil(getMaxPEDistance(peEnergy));
-    
-    
-    //set up the surrounding environment
-  //  produceCryoSolutionCrystal(maxPEDistance);
-    
+
       //Get PE bins
     if (peRes >= 2) { //if user defined and sensible
       peDistBins = peRes;
@@ -1306,19 +1163,14 @@ public class CrystalPolyhedron extends Crystal {
    relativeVoxXYZ = new double[peDistBins][PE_ANGLE_RES_LIMIT * PE_ANGLE_RES_LIMIT][3];
   }
   
+  /**
+   * Sets the maximum distance of a photoelectron from the surrounding for the given photoelectron energy
+   * @param beamEnergy
+   */
   private  void setMaxPEDistanceCryo(final double beamEnergy) { //needs to be dynamic as it depends on beam energy
     double peEnergy = beamEnergy - cryoEnergyToSubtractFromPE;
 
-    /*
-    double averagePEDistance = GUMBEL_DISTN_CALC_PARAMS[0]*Math.pow(beamEnergy - cryoEnergyToSubtractFromPE,2) 
-        + GUMBEL_DISTN_CALC_PARAMS[1]*(beamEnergy - cryoEnergyToSubtractFromPE);
-    */
-    
-    //Need to redo max
-  //  double averagePEDistance = GUMBEL_DISTN_CALC_LOC[energyRange]*Math.pow(peEnergy,2) 
- //       + GUMBEL_DISTN_CALC_LOC[energyRange+1]*(peEnergy);
-  //  int maxPEDistance = (int) Math.ceil(averagePEDistance + 6);
-    
+    //Need to redo max   
     int maxPEDistance = (int) Math.ceil(getMaxPEDistance(peEnergy));
     
     //find max side
@@ -1329,7 +1181,6 @@ public class CrystalPolyhedron extends Crystal {
     }else {
       cryoAndCrystalDensity = maxPEDistance / (maxPEDistance + averageSide);
     }
-    
     
     //set up the surrounding environment
     produceCryoSolutionCrystal(maxPEDistance);
@@ -1342,7 +1193,6 @@ public class CrystalPolyhedron extends Crystal {
     
     propnDoseDepositedAtDistCryo = new double[peDistBins];
     relativeVoxXYZCryoCrystal = new double[peDistBins][PE_ANGLE_RES_LIMIT * PE_ANGLE_RES_LIMIT][3];
-    relativeVoxXYZCryoSolution = new double[peDistBins][PE_ANGLE_RES_LIMIT * PE_ANGLE_RES_LIMIT][3];
   }
   /*
    * (non-Javadoc)
@@ -1358,17 +1208,7 @@ public class CrystalPolyhedron extends Crystal {
    */
   private double getMaxPEDistance(final double peEnergy) {
     int energyRange = 0;
-/*  //
-    if (peEnergy <= 20) {
-      energyRange = 0;
-    }
-    else if (peEnergy > 20 && peEnergy <= 50) {
-      energyRange = 2;
-    }
-    else {
-      energyRange = 4;
-    }
-    */
+
     double locationParam = GUMBEL_DISTN_CALC_LOC[energyRange]*Math.pow(peEnergy,2) 
         + GUMBEL_DISTN_CALC_LOC[energyRange+1]*(peEnergy); 
     double scaleParam = GUMBEL_DISTN_CALC_SCALE[energyRange]*Math.pow(peEnergy,2) 
@@ -1491,9 +1331,13 @@ public class CrystalPolyhedron extends Crystal {
     return gumbelParams;
   }
   
-  private void calcProportionVoxDoseDepositedByDist(final double beamEnergy) {
-    // calculate the fraction of energy deposited by PE up to each 
-    // distance, assuming PE distances follow a given distribution
+  /**
+   * calculate the fraction of energy deposited by PE up to each 
+   * distance, assuming PE distances follow a given distribution and convoluting with the energy
+   * deposition distribution
+   * @param beamEnergy
+   */
+  private void calcProportionVoxDoseDepositedByDist(final double beamEnergy) { 
     double peEnergy = beamEnergy - EnergyToSubtractFromPE;
     // Set up a mean path length distribution
     double[] pathLengthDistn = new double[peDistBins];
@@ -1542,7 +1386,12 @@ public class CrystalPolyhedron extends Crystal {
      distanceHeights[pathCount] = (pathLengthDistn[l] + pathLengthDistn[l-1]) / 2;
    }
    
-   
+   /*
+    * Starting at the last bin, the population of photoelectron that stop here is calculated based
+    * on the path length distribution. The energy deposition distribution then calculates where to deposit their energy
+    * along the path length. 
+    * Then move back one to second last bin and do the same and keep looping for all bins
+    */
     for (int l = peDistBins-1; l > 0; l--) { //for every bin 
       for (int i = 0; i < peDistBins; i++) { //for every subset of electrons that stop at this path length
         double energyHeight = 0.;
@@ -1556,34 +1405,14 @@ public class CrystalPolyhedron extends Crystal {
         }
       }
     }
-     
-      
-      /*
-      //Below is how it was done when the energy was deposited linearly along the photoelectron track
-for (int l = peDistBins-1; l > 0; l--) {
-        double width = PE_DISTANCES_TRAVELLED[l] - PE_DISTANCES_TRAVELLED[l-1];
-        double height = (pathLengthDistn[l] + pathLengthDistn[l-1]) / 2;
-      if (l == peDistBins-1) 
-      {
-        // the proportion of energy deposited at the end of the PE track. The division
-        // by l is since the energy carried by PEs is deposited linearly at
-        // l divisions along the track up to this point
-        propnDoseDepositedAtDist[l] = width * height / (l * distnIntegral);
-      } else {
-        // the amount of energy deposited by PEs stopping at this distance (divided
-        // by l to account for energy being deposited linearly up to this point),
-        // plus the energy deposited by PEs travelling further than this stopping 
-        // distance that also deposit a fraction of their energy at this distance
-        propnDoseDepositedAtDist[l] = propnDoseDepositedAtDist[l+1] 
-            + width * height / (l * distnIntegral);
-      }
-     
-      
-    }
-    */
   }
   
-  //Will also need to change the cryo PE energy distribution once the first one is in properly
+  /**
+   * calculate the fraction of energy deposited by PE from the surrounding up to each 
+   * distance, assuming PE distances follow a given distribution and convoluting with the energy
+   * deposition distribution
+   * @param beamEnergy
+   */
   private void calcProportionVoxDoseDepositedByDistCryo(final double beamEnergy) {
     // calculate the fraction of energy deposited by PE up to each 
     // distance, assuming PE distances follow a given distribution
@@ -1621,14 +1450,10 @@ for (int l = peDistBins-1; l > 0; l--) {
         }
       }
     }  
-    
-    
-    
     /*
      * The following code calculates the proportion of dose deposited along
      * each track by the travelling PE
      */  
-    
     double[] distanceWidths = new double[peDistBins];
     double[] distanceHeights = new double[peDistBins];
     int pathCount = -1;
@@ -1637,7 +1462,6 @@ for (int l = peDistBins-1; l > 0; l--) {
       distanceWidths[pathCount] = CRYO_PE_DISTANCES_TRAVELLED[l] - CRYO_PE_DISTANCES_TRAVELLED[l-1]; //width of this electron length subset
       distanceHeights[pathCount] = (pathLengthDistn[l] + pathLengthDistn[l-1]) / 2;
     }
-    
     
      for (int l = peDistBins-1; l > 0; l--) { //for every bin 
        for (int i = 0; i < peDistBins; i++) { //for every subset of electrons that stop at this path length
@@ -1652,152 +1476,14 @@ for (int l = peDistBins-1; l > 0; l--) {
          }
        }
      }
-     
-     /*
-    for (int l = peDistBins-1; l > 0; l--) {
-      double width = CRYO_PE_DISTANCES_TRAVELLED[l] - CRYO_PE_DISTANCES_TRAVELLED[l-1];
-      double height = (pathLengthDistn[l] + pathLengthDistn[l-1]) / 2;
-
-      if (l == peDistBins-1) 
-      {
-        // the proportion of energy deposited at the end of the PE track. The division
-        // by l is since the energy carried by PEs is deposited linearly at
-        // l divisions along the track up to this point
-        propnDoseDepositedAtDistCryo[l] = width * height / (l * distnIntegral);
-      } else {
-        // the amount of energy deposited by PEs stopping at this distance (divided
-        // by l to account for energy being deposited linearly up to this point),
-        // plus the energy deposited by PEs travelling further than this stopping 
-        // distance that also deposit a fraction of their energy at this distance
-        propnDoseDepositedAtDistCryo[l] = propnDoseDepositedAtDistCryo[l+1] 
-            + width * height / (l * distnIntegral);
-      }
-  
-    }
-    */
   }
-  
+
   /**
    * finds voxels that lie along the PE tracks
    */
-  /*//this one is wrong as polarised in wrong direction
   @Override
   public void findVoxelsReachedByPE(boolean cryo, CoefCalc coefCalc, final double energy, double[][] feFactors, final double angle) {
-
-    //Work out the angular distribution so tracks can be biased
-  //  double[] angularDistribution = setUpPEPolarisation(coefCalc, energy, feFactors, cryo);
-    double[] distribution = null;
-    if (cryo == false) {
-      distribution = angularDistribution;
-    }
-    else {
-      distribution = cryoAngularDistribution;
-    }
-    int tracks[] = numberOfTracksPerRegion(distribution);
-   
-//    double step = PE_ANGLE_LIMIT / PE_ANGLE_RES_LIMIT;  
-    double step = 2*Math.PI / PE_ANGLE_RES_LIMIT;  
- //   double thetaStep = PE_ANGLE_LIMIT / POLARISATION_RES_LIMIT;
-    double stepTest = PE_ANGLE_LIMIT / PE_ANGLE_RES_LIMIT;
-    double thetaAngle = 0;
-    int trackCounter = 0;
-    double thetaStep = 0;
-   // thetaStep = (PE_ANGLE_LIMIT/2)/POLARISATION_RES / tracks[trackCounter];
-    int counter = -1;
-  //  for (double phi = 0; phi < PE_ANGLE_LIMIT; phi += step) {
-      for (double phi = 0*Math.PI; phi < 2*Math.PI; phi += step) {
-    //Set track counter based on where angle is - i.e need to polarise along beam direction
-      trackCounter = (int) ((angle/(PE_ANGLE_LIMIT/2)) * POLARISATION_RES);
-      if (trackCounter >= POLARISATION_RES) { //if angle more than or = to pi restart distribution 
-        trackCounter -= POLARISATION_RES;
-      }
-      
-      if (tracks[trackCounter] != 0) {
-      thetaStep = (PE_ANGLE_LIMIT/2)/POLARISATION_RES / tracks[trackCounter];
-      }
-      else {
-        thetaStep = (PE_ANGLE_LIMIT/2)/POLARISATION_RES;
-      }
-      
-   //  for (double theta = 0; theta <= PE_ANGLE_LIMIT / 2; theta += thetaStep) {
-     for (double theta = 0; theta <= PE_ANGLE_LIMIT/2 ; theta += stepTest) {  //This is to compare to even distribution
-        // calculate x, y, z coordinates of voxel[i][j][k]
-        // plus the polar coordinates for r, theta, phi
-        
-        //set the step size of theta based on the angular photoelectron distribution
-        thetaAngle = theta + angle;
-        if (thetaAngle >= (((PE_ANGLE_LIMIT/2)/POLARISATION_RES) * (trackCounter + 1))- theta)  { //relook at this, spacing not quite right
-          trackCounter += 1;
-          if (trackCounter >= POLARISATION_RES) { //reset tracks once angle gets back round to 0 
-            trackCounter = 0;
-          }
-          if (tracks[trackCounter] != 0) {
-            thetaStep = ((PE_ANGLE_LIMIT/2)/POLARISATION_RES) / (tracks[trackCounter]);
-          }
-          else {
-            int skipCount = 0;
-            while (tracks[trackCounter] == 0) {
-              skipCount += 1;
-              trackCounter += 1;
-              if (trackCounter >= POLARISATION_RES) { //reset tracks once angle gets back round to 0 
-                trackCounter = 0;
-              }
-            }
-            thetaStep = ((PE_ANGLE_LIMIT/2)/POLARISATION_RES) * skipCount; //skip the zero tracks in this region
-          }
-        }
-        
-        //Check if this track has already been assigned
-        boolean replicateTrack = false;
-        
-        if (theta == 0 || theta == (PE_ANGLE_LIMIT / 2)) {
-          if (phi == 0) {
-            replicateTrack = false;
-          }
-          else {
-            replicateTrack = true;
-          }
-        }
-        
-        if (replicateTrack == false) {
-          counter += 1;
-          double xNorm = Math.sin(theta) * Math.cos(phi);
-          double yNorm = Math.sin(theta) * Math.sin(phi);
-          double zNorm = Math.cos(theta);
-
-          for (int m = 0; m < peDistBins; m++) {
-            // calculate r in voxel coordinates rather than pixels
-            double r = 0;
-            if (cryo == false)  {  
-              r = PE_DISTANCES_TRAVELLED[m] * this.crystalPixPerUM; 
-              relativeVoxXYZ[m][counter][0] = r * xNorm;
-              relativeVoxXYZ[m][counter][1] = r * yNorm;
-              relativeVoxXYZ[m][counter][2] = r * zNorm;
-            }
-            else {
-              r = CRYO_PE_DISTANCES_TRAVELLED[m] * this.crystalPixPerUM;
-              relativeVoxXYZCryo[m][counter][0] = r * xNorm;
-              relativeVoxXYZCryo[m][counter][1] = r * yNorm;
-              relativeVoxXYZCryo[m][counter][2] = r * zNorm;
-            }
-
-          }
-
-        }
-      }
-    }
-    numberOfTracksPE = counter + 1;
-  }
-  */
-  /**
-   * finds voxels that lie along the PE tracks
-   */
-  
-  @Override
-  public void findVoxelsReachedByPE(boolean cryo, CoefCalc coefCalc, final double energy, double[][] feFactors, final double angle) {
-
     //way 2
-    
     //Convert angle to less than 360 if it is more
     int timesOver = (int) (angle/(2*Math.PI));
     double thisAngle = angle - (timesOver * 2 *Math.PI);
@@ -1812,7 +1498,6 @@ for (int l = peDistBins-1; l > 0; l--) {
     else {
       distribution = cryoAngularDistribution;
     }
-    
     //sum
     int numbersInArray = 0;
     for (int i = 0; i < distribution.length; i++){
@@ -1823,20 +1508,13 @@ for (int l = peDistBins-1; l > 0; l--) {
     numbersInArray *= 1.5;  // This is a messy fix to index out of bounds change properly later
     
     double step = 2*Math.PI / PE_ANGLE_RES_LIMIT;
-    double phiAngle = 0;
     int counter = -1;
     int bigArrayIndex = 0;
     int[] theBigArray = new int[numbersInArray];
     
     for (double theta = 0*Math.PI; theta < 2*Math.PI; theta += step) {
-      int phiCount = -1;
       for (double phi = 0; phi <= PE_ANGLE_LIMIT/2 ; phi += step) {
-   //     phiAngle = phi + thisAngle;
-   //     phiCount += 1;
-        
-
-        //Check if this track has already been assigned
-        
+        //Check if this track has already been assigned       
         boolean replicateTrack = false;
         
         if (theta == 0 || theta == (PE_ANGLE_LIMIT / 2)) {
@@ -1854,8 +1532,7 @@ for (int l = peDistBins-1; l > 0; l--) {
           double xNorm = Math.sin(theta) * Math.cos(phi);
           double yNorm = Math.sin(theta) * Math.sin(phi);
           double zNorm = Math.cos(theta);
-          
-          
+
           //weight track in bigarray
           int runningCheck = 0;
           
@@ -1873,7 +1550,6 @@ for (int l = peDistBins-1; l > 0; l--) {
           double angleToX = Math.acos(cosAngleToX);
           //find where angle is in distribution
           int place = (int) Math.rint((angleToX * PE_ANGLE_RES_LIMIT)/PE_ANGLE_LIMIT);
-          
           
           if (distribution[place] > 0) {
             while (runningCheck < distribution[place]) {
@@ -1902,19 +1578,11 @@ for (int l = peDistBins-1; l > 0; l--) {
               relativeVoxXYZCryoCrystal[m][counter][0] = r * xNormrot;
               relativeVoxXYZCryoCrystal[m][counter][1] = r * yNorm;
               relativeVoxXYZCryoCrystal[m][counter][2] = r * zNormrot;
-              //the r below is new way, for the cryo pixels
-              r = CRYO_PE_DISTANCES_TRAVELLED[m] * cryoPPM;
-              relativeVoxXYZCryoSolution[m][counter][0] = r * xNormrot;
-              relativeVoxXYZCryoSolution[m][counter][1] = r * yNorm;
-              relativeVoxXYZCryoSolution[m][counter][2] = r * zNormrot;
             }
-
           }
-
         }
       }
     }
-    numberOfTracksPE = counter + 1;
     
     //count numbers in array, not zeroes at the end - a stupid way of doing it so clean up later
     boolean pastFirst = false;
@@ -1925,12 +1593,10 @@ for (int l = peDistBins-1; l > 0; l--) {
             actualNumber = j;
             break;
           }
-        }
-        
+        }        
         if (theBigArray[j] > 0) {
           pastFirst = true;
         }
-
     }
     int[] actualTrackBias = new int[actualNumber];
     for (int i = 0; i < actualNumber; i++) {
@@ -1938,190 +1604,16 @@ for (int l = peDistBins-1; l > 0; l--) {
     }
     
     trackNumberBias = actualTrackBias;
-    
-    /*
-    // way 1
-    //Work out the angular distribution so tracks can be biased
-  //  double[] angularDistribution = setUpPEPolarisation(coefCalc, energy, feFactors, cryo);
-    
-    //Convert angle to less than 360 if it is more
-    int timesOver = (int) (angle/(2*Math.PI));
-    double thisAngle = angle - (timesOver * 2 *Math.PI);
-    
-    double[] distribution = null;
-    if (cryo == false) {
-      distribution = angularDistribution;
-    }
-    else {
-      distribution = cryoAngularDistribution;
-    }
-    int tracks[] = numberOfTracksPerRegion(distribution);
-   
-//    double step = PE_ANGLE_LIMIT / PE_ANGLE_RES_LIMIT;  
-    double step = 2*Math.PI / PE_ANGLE_RES_LIMIT;  
- //   double thetaStep = PE_ANGLE_LIMIT / POLARISATION_RES_LIMIT;
-    double stepTest = PE_ANGLE_LIMIT / PE_ANGLE_RES_LIMIT;
-    double phiAngle = 0;
-    int trackCounter = 0;
-    double phiStep = 0;
-   // thetaStep = (PE_ANGLE_LIMIT/2)/POLARISATION_RES / tracks[trackCounter];
-    int counter = -1;
-  //  for (double phi = 0; phi < PE_ANGLE_LIMIT; phi += step) {
-      for (double theta = 0*Math.PI; theta < 2*Math.PI; theta += step) {
-    //Set track counter based on where angle is - i.e need to polarise along beam POLARISATION direction
-      trackCounter = (int) ((thisAngle/(PE_ANGLE_LIMIT/2)) * POLARISATION_RES);
-      if (trackCounter >= POLARISATION_RES) { //if angle more than or = to pi restart distribution 
-        trackCounter -= POLARISATION_RES;
-      }
-      
-      if (tracks[trackCounter] != 0) {
-        phiStep = (PE_ANGLE_LIMIT/2)/POLARISATION_RES / tracks[trackCounter];
-      }
-      else {
-        phiStep = (PE_ANGLE_LIMIT/2)/POLARISATION_RES;
-      }
-      
-     for (double phi = 0; phi <= PE_ANGLE_LIMIT / 2; phi += phiStep) {
- //    for (double phi = 0; phi <= PE_ANGLE_LIMIT/2 ; phi += stepTest) {  //This is to compare to even distribution
-        // calculate x, y, z coordinates of voxel[i][j][k]
-        // plus the polar coordinates for r, theta, phi
-        
-        //set the step size of theta based on the angular photoelectron distribution
-       phiAngle = phi + thisAngle;
-        if (phiAngle >= (((PE_ANGLE_LIMIT/2)/POLARISATION_RES) * (trackCounter + 1))- phi)  { //relook at this, spacing not quite right
-          if (phi == 0) { //if this is first iteration rotate to the angle 
-            while (phiAngle >= (((PE_ANGLE_LIMIT/2)/POLARISATION_RES) * (trackCounter + 1))- phi){
-              trackCounter += 1;     
-            }
-          }
-          else {
-            trackCounter += 1;
-          }
-          
-          if (trackCounter >= POLARISATION_RES) { //reset tracks once angle gets back round to 0 
-            trackCounter = 0;
-          }
-          if (tracks[trackCounter] != 0) {
-            phiStep = ((PE_ANGLE_LIMIT/2)/POLARISATION_RES) / (tracks[trackCounter]);
-          }
-          else {
-            int skipCount = 0;
-            while (tracks[trackCounter] == 0) {
-              skipCount += 1;
-              trackCounter += 1;
-              if (trackCounter >= POLARISATION_RES) { //reset tracks once angle gets back round to 0 
-                trackCounter = 0;
-              }
-            }
-            phiStep = ((PE_ANGLE_LIMIT/2)/POLARISATION_RES) * skipCount; //skip the zero tracks in this region
-          }
-        }
-        
-        //Check if this track has already been assigned
-        boolean replicateTrack = false;
-        
-        if (phi == 0 || phi == (PE_ANGLE_LIMIT / 2)) {
-          if (theta == 0) {
-            replicateTrack = false;
-          }
-          else {
-            replicateTrack = true;
-          }
-        }
-        
-        if (replicateTrack == false) {
-          counter += 1;
-          double xNorm = Math.sin(theta) * Math.cos(phi);
-          double yNorm = Math.sin(theta) * Math.sin(phi);
-          double zNorm = Math.cos(theta);
-
-          for (int m = 0; m < peDistBins; m++) {
-            // calculate r in voxel coordinates rather than pixels
-            double r = 0;
-            if (cryo == false)  {  
-              r = PE_DISTANCES_TRAVELLED[m] * this.crystalPixPerUM; 
-              relativeVoxXYZ[m][counter][0] = r * xNorm;
-              relativeVoxXYZ[m][counter][1] = r * yNorm;
-              relativeVoxXYZ[m][counter][2] = r * zNorm;
-            }
-            else {
-              r = CRYO_PE_DISTANCES_TRAVELLED[m] * this.crystalPixPerUM;
-              relativeVoxXYZCryo[m][counter][0] = r * xNorm;
-              relativeVoxXYZCryo[m][counter][1] = r * yNorm;
-              relativeVoxXYZCryo[m][counter][2] = r * zNorm;
-            }
-
-          }
-
-        }
-      }
-    }
-    numberOfTracksPE = counter + 1;
-    */
   }
-  
-  
-  
-  /*
-  // way 1
-  private double[] setUpPEPolarisation(CoefCalc coefCalc, final double energy, double[][] feFactors, boolean cryo) {
-   double beta = 2; //this is only true for s shells but so far I haven't calculated it for other shells
-  //  double beta = 0;
-    // at the moment every photoelectron is polarised. I will change it so it is just for s shells, 
-    // the rest will have an even distribution to contribute, flattening the amount of polarisation. 
-    int counter = -1;
-    //set up my double for storing stuff 
-    double[] area = new double[POLARISATION_RES];
-    
-    double width = Math.PI/POLARISATION_RES;
-    double proportionAtAngleElement[][] = new double[feFactors.length][POLARISATION_RES];
-    Map<Element.CrossSection, Double> cs;
-    for (Element e : coefCalc.getPresentElements(cryo)) {
-      counter += 1;
-      cs = e.getAbsCoefficients(energy);
-      double photoElectric = cs.get(CrossSection.PHOTOELECTRIC);
-      //get the total area under the distribution
-      double sumArea = 0;
-      for (int i = 1; i <= POLARISATION_RES; i ++) {
-        // the equation is (sigma/4pi)*(1+beta*0.5(3cos^2(theta) - 1))
-        double height = (solvePolarisationEquationForAngle(i, photoElectric, beta) + 
-                        solvePolarisationEquationForAngle(i-1, photoElectric, beta)) / 2;
-        area[i-1] = width * height;
-        sumArea += area[i-1];
-      }
-      //get the proportion at each angle sampled
-      for (int i = 0; i <= POLARISATION_RES-1; i ++) {
-        proportionAtAngleElement[counter][i] = area[i] / sumArea;
-      }
-    }
-    //Get the average proportion at each angle sampled based on all elements weighted by their
-    //absorption cross section relative to total cross section
-    double proportionAtAngleTotal[] = new double[POLARISATION_RES];
-    for (int i = 0; i <= POLARISATION_RES-1; i ++) { //for every angle sampled
-      double proportion = 0;
-      for (int j = 0; j < feFactors.length; j++) { //for every element
-        proportion += proportionAtAngleElement[j][i] * feFactors[j][0];
-      }
-      proportionAtAngleTotal[i] = proportion;
-    }
-    
-    //TEST by forcing an extreme distribution
-    
- //   for (int i = 0; i <= POLARISATION_RES-1; i ++) {
- //     if (i == 0) {
- //       proportionAtAngleTotal[i] = 1;
- //     }
-  //    else {
-   //     proportionAtAngleTotal[i] = 0;
-   //   }
- //  }
-    
-    return proportionAtAngleTotal;
-  }
-  */
-  
-  
-  //way 2 - biasing choice
+
+  /**
+   * Calculate how much to bias the tracks based on the beam polarisation vector
+   * @param coefCalc
+   * @param energy
+   * @param feFactors
+   * @param cryo
+   * @return
+   */
   private double[] setUpPEPolarisation(CoefCalc coefCalc, final double energy, double[][] feFactors, boolean cryo) {
     double beta = 2; //this is only true for s shells but so far I haven't calculated it for other shells
  //   double beta = 0;
@@ -2132,7 +1624,6 @@ for (int l = peDistBins-1; l > 0; l--) {
     double point = 0;
     double[] weightedAveragePoint = new double[(PE_ANGLE_RES_LIMIT/2)+1];
     double sumPoint = 0;
-    
     
     elementCounter = -1;
     for (Element e : coefCalc.getPresentElements(cryo)) {
@@ -2150,39 +1641,18 @@ for (int l = peDistBins-1; l > 0; l--) {
      return weightedAveragePoint;
    }
   
-  /*
-  // way 1
-  private double solvePolarisationEquationForAngle(int i, double photoElectric, double beta) {
-    double theta = (i * (Math.PI/POLARISATION_RES));  // + Math.PI/2;
-    double height = (photoElectric / (4*Math.PI)) * (1+(beta*0.5*(3*Math.pow(Math.cos(theta), 2) - 1)));
-    return height;
-  }
-  */
-  
-  //way 2
+  /**
+   * Solve the polarisation equation for given input
+   * @param phi
+   * @param photoElectric
+   * @param beta
+   * @return
+   */
   private double solvePolarisationEquationForAngle(double phi, double photoElectric, double beta) {
     double height = (photoElectric / (4*Math.PI)) * (1+(beta*0.5*(3*Math.pow(Math.cos(phi), 2) - 1)));
     return height;
   }
-  
-  
-  private int[] numberOfTracksPerRegion(double[] angularDistribution) {
-    int[] tracks = new int[angularDistribution.length];
-    POLARISATION_RES_LIMIT = 0; 
-      for (int i = 0; i < angularDistribution.length; i++) {
-        tracks[i] = (int) (PE_ANGLE_RES_LIMIT * angularDistribution[i]);
-        
-        //Test by forcing really high at 0
-    //    if (i == 0) {
-    //      tracks[i] = 100;
-    //    }
-        
-        
-        POLARISATION_RES_LIMIT += tracks[i];
-      }
-      
-    return tracks;
-  }
+
   /**
    * Finds voxels that lie along fluorescence tracks
    * 
@@ -2239,7 +1709,6 @@ for (int l = peDistBins-1; l > 0; l--) {
     numberOfTracksFL = counter + 1;
   }
   
-
   /*
    * (non-Javadoc)
    *
@@ -2249,56 +1718,11 @@ for (int l = peDistBins-1; l > 0; l--) {
   public double addDoseAfterPE(final int i, final int j, final int k,
       final double doseIncreasePE) {
        
-    double doseLostFromCrystalPE = 0;
-    
-    boolean findCloseToSurface = false; // this works if the pixel size is smaller than 8 
-    boolean closeToSurface = false;    
-    double pixelSize = 1/crystalPixPerUM;
-    // This will ensure that close to surface is only used when valid
-    if (pixelSize > PE_DISTANCES_TRAVELLED[peDistBins - 1]) { //if pixel size more than max distance of a PE
-      findCloseToSurface = false;
-    }
-      else {
-        findCloseToSurface = true;
-    }
-    
-    //TO TEST
-    findCloseToSurface = false; //as it affects the DWD of small beam and large crystals needs to stay false
-    
-    if (findCloseToSurface) {
-      // calculate whether this voxel classified as close to surface and  
-      // PE escape should be considered
-      for (int n = 0; n < indices.length; n++) {
-        double[] voxCoord = getCrystCoord(i, j, k);
-        double distanceToPlane = Vector.rayTraceDistance(normals[n],
-            normals[n], voxCoord, originDistances[n]);
-        if (distanceToPlane < PE_DISTANCES_TRAVELLED[peDistBins - 1]) {
-          closeToSurface = true;
-          break;
-        } 
-      }
-    } else {
-      closeToSurface = true;
-    }
-    
-    if (!closeToSurface) {
-      // if not close to surface, add all dose to voxel 
-      dose[i][j][k] += doseIncreasePE;
-      
-    } else {
-      // if voxel is within the specified min distance to surface, take a grid 
-      // of r, theta and phi and calculate for every r within 0.5 um and 
-      // 5 um, what proportion exit the crystal.
-              
+    double doseLostFromCrystalPE = 0;  
       for (int q = 0; q < PE_ANGLE_RESOLUTION*PE_ANGLE_RESOLUTION; q++) { //for every tracks i'm choosing
-    //    int randomTrack = ThreadLocalRandom.current().nextInt(0, numberOfTracksPE); //choose one at random
         int randomIndex = ThreadLocalRandom.current().nextInt(0, trackNumberBias.length);
         int randomTrack = trackNumberBias[randomIndex];
-        
-        
-        //TO TEST
-    //    randomTrack = 0;
-        
+ 
         for (int m = 0; m < peDistBins; m++) {   
           double x = relativeVoxXYZ[m][randomTrack][0];
           double y = relativeVoxXYZ[m][randomTrack][1];
@@ -2322,7 +1746,6 @@ for (int l = peDistBins-1; l > 0; l--) {
           }
         }    
       }
-    }
     return doseLostFromCrystalPE;
   } 
   
@@ -2391,46 +1814,13 @@ for (int l = peDistBins-1; l > 0; l--) {
     //     int randomTrack = ThreadLocalRandom.current().nextInt(0, numberOfTracksPE); //choose one at random
       int randomIndex = ThreadLocalRandom.current().nextInt(0, trackNumberBias.length);
       int randomTrack = trackNumberBias[randomIndex];
-      
-      //TO TEST
-    //  randomTrack = q;
-      
-      boolean outToIn = false;
-      double entryX = 0, entryY = 0, entryZ = 0;
+
       for (int m = 0; m < peDistBins; m++) { 
-  
-        
+     
         double x = relativeVoxXYZCryoCrystal[m][randomTrack][0];
         double y = relativeVoxXYZCryoCrystal[m][randomTrack][1];
-        double z = relativeVoxXYZCryoCrystal[m][randomTrack][2];
-        
-        /*
-        double x = relativeVoxXYZCryoSolution[m][randomTrack][0];
-        double y = relativeVoxXYZCryoSolution[m][randomTrack][1];
-        double z = relativeVoxXYZCryoSolution[m][randomTrack][2];
-        */
-        /*
-        //check if we have entered the crystal
-        if (outToIn == false) { // ensures only triggers this code on the switch
-          if (isCrystalAt((int) (i + x), (int) (j + y),
-              (int) (k + z))) {   
-            outToIn = true;
-            entryX = x;
-            entryY = y;
-            entryZ = z;
-          }
-        }
-        // change the relative voxel ppm now in the crystal
-        if (outToIn == true) {
-          x = entryX + (((x - entryX)/ cryoPPM) * this.crystalPixPerUM);
-          y = entryY + (((y - entryY)/ cryoPPM) * this.crystalPixPerUM);
-          z = entryZ + (((z - entryZ)/ cryoPPM) * this.crystalPixPerUM);
-          if (isCrystalAt((int) (i + x), (int) (j + y),
-              (int) (k + z)) == false) { // if it exits the crystal again
-            break;
-          }
-        } 
-*/
+        double z = relativeVoxXYZCryoCrystal[m][randomTrack][2];      
+
         // get dose transferred to these located voxels 
         // at the distance r away (due to PE movement)
         double partialDose = energyIncreasePE * propnDoseDepositedAtDistCryo[m]
@@ -2632,7 +2022,6 @@ for (int l = peDistBins-1; l > 0; l--) {
     return cryoPPM;
   }
   
-
   /*
    * (non-Javadoc)
    *

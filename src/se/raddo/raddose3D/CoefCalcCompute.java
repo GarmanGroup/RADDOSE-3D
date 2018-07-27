@@ -94,8 +94,6 @@ public class CoefCalcCompute extends CoefCalc {
    * Water concentration in mM.
    */
   protected static final double      WATER_CONCENTRATION          = 55555;    // Density of 1 g/cm^3
- //  protected static final double      WATER_CONCENTRATION          = 52222; // LDA = 0.94 g/cm^3
- //  protected static final double      WATER_CONCENTRATION          = 65000; // HDA = 1.17 g/cm^3 
 
   /**
    * Units per milli-unit.
@@ -416,6 +414,13 @@ public class CoefCalcCompute extends CoefCalc {
     return absCoeffs;
   }
   
+  /**
+   * Calculates the absorption, attenuation and elastic coefficients for
+   * the given set of elements in the surrounding.
+   * @param energy
+   * @param element
+   * @return
+   */
   private Map<String, Double> calculateCoefficientsCryoElement(final double energy, 
       final Element element) {
     
@@ -484,15 +489,9 @@ public class CoefCalcCompute extends CoefCalc {
         //K shell fluorescent yield: checked from element database class
         kFactorB = e.getKShellFluorescenceYield();
         //This gives difference between the edge energies needed for fluorescent escape probability.
-        
-        
-     //   photonMuAbsK = calculateCoefficientsAll(e.getKEdge() - e.getL1Edge());
+
         photonMuAbsK = calculateCoefficientsAll(e.getKFluorescenceAverage());
-        
-  // test
-   //     double test = e.getKFluorescenceAverage();
-        
-        
+
         //Fluorescent escape probability. This takes muabs as mupe. 
         //Fluorescence too low energy to consider compton in muabs
         escapeMuAbsK = photonMuAbsK.get(PHOTOELECTRIC);
@@ -504,23 +503,15 @@ public class CoefCalcCompute extends CoefCalc {
         escapeMuAbsK = 0.0;
       }
       
-      
       if (beam.getPhotonEnergy() > e.getL1Edge() &&
           //   e.getAtomicNumber() >= MIN_ATOMIC_NUM_FOR_L_SHELL_IONISATION) {
           e.getAtomicNumber() >= 12) {
         l1ShellEnergy = e.getL1Edge();
         l1FactorA = (e.getL1ShellIonisationProb()) * (1-kFactorA);
       //  l1FactorB = e.getL1ShellFluorescenceYield();
-        
-        
-      //  photonMuAbsL1 = calculateCoefficientsAll(e.getL1Edge() - e.getM1Edge());
-      //  photonMuAbsL1 = calculateCoefficientsAll(e.getLFluorescenceAverage());
-        
-      //  escapeMuAbsL1 = photonMuAbsL1.get(PHOTOELECTRIC);
-        
-        //TO TEST
-    //    escapeMuAbsL1 = 0;
-        
+               
+      //  photonMuAbsL1 = calculateCoefficientsAll(e.getLFluorescenceAverage());       
+      //  escapeMuAbsL1 = photonMuAbsL1.get(PHOTOELECTRIC);       
       } 
       else {
         l1ShellEnergy = 0.0;
@@ -535,15 +526,9 @@ public class CoefCalcCompute extends CoefCalc {
         l2ShellEnergy = e.getL2Edge();
         l2FactorA = e.getL2ShellIonisationProb() * (1-kFactorA - l1FactorA);
       //  l2FactorB = e.getL2ShellFluorescenceYield();
-        
-        
-      //  photonMuAbsL2 = calculateCoefficientsAll(e.getL2Edge() - e.getM1Edge());
-      //  photonMuAbsL2 = calculateCoefficientsAll(e.getLFluorescenceAverage());
-        
+
+      //  photonMuAbsL2 = calculateCoefficientsAll(e.getLFluorescenceAverage());       
       //  escapeMuAbsL2 = photonMuAbsL2.get(PHOTOELECTRIC);
-        
-        //TO TEST
-    //    escapeMuAbsL2 = 0;
       } 
       else {
         l2ShellEnergy = 0.0;
@@ -558,15 +543,9 @@ public class CoefCalcCompute extends CoefCalc {
         l3ShellEnergy = e.getL3Edge();
         l3FactorA = e.getL3ShellIonisationProb() * (1-kFactorA - l1FactorA - l2FactorA);
       //  l3FactorB = e.getL3ShellFluorescenceYield();
-        
-        
-       // photonMuAbsL3 = calculateCoefficientsAll(e.getL3Edge() - e.getM1Edge());
-      //  photonMuAbsL3 = calculateCoefficientsAll(e.getLFluorescenceAverage());
-        
+
+      //  photonMuAbsL3 = calculateCoefficientsAll(e.getLFluorescenceAverage());       
       //  escapeMuAbsL3 = photonMuAbsL3.get(PHOTOELECTRIC);
-        
-        //TO TEST
-   //     escapeMuAbsL3 = 0;
       } 
       else {
         l3ShellEnergy = 0.0;
@@ -621,8 +600,7 @@ public class CoefCalcCompute extends CoefCalc {
         m5ShellEnergy = 0.0;
         m5FactorA = 0.0;
       }
-      
-      
+  
       double muAbsFrac = elAbsCoeffs.get(PHOTOELECTRIC) / absCoeffphoto;
       
       //TODO change these to be something more readable, like a map structure
@@ -655,11 +633,9 @@ public class CoefCalcCompute extends CoefCalc {
       fluorEscapeFactors[element_counter][24] = m4FactorA;
       fluorEscapeFactors[element_counter][25] = m5ShellEnergy;
       fluorEscapeFactors[element_counter][26] = m5FactorA;
-      
-      
+
       element_counter += 1;
-    }
-    
+    }    
     return fluorEscapeFactors;
   }
 
@@ -688,9 +664,7 @@ public class CoefCalcCompute extends CoefCalc {
         //K shell fluorescent yield: checked from element database class
         kFactorB = e.getKShellFluorescenceYield();
         //This gives difference between the edge energies needed for fluorescent escape probability.
-        
-        
-     //   photonMuAbsK = calculateCoefficientsAll(e.getKEdge() - e.getL1Edge());
+
         photonMuAbsK = calculateCoefficientsAll(e.getKFluorescenceAverage());
         
         //Fluorescent escape probability. This takes muabs as mupe. 
@@ -711,16 +685,9 @@ public class CoefCalcCompute extends CoefCalc {
         l1ShellEnergy = e.getL1Edge();
         l1FactorA = (e.getL1ShellIonisationProb()) * (1-kFactorA);
       //  l1FactorB = e.getL1ShellFluorescenceYield();
-        
-        
-      //  photonMuAbsL1 = calculateCoefficientsAll(e.getL1Edge() - e.getM1Edge());
-      //  photonMuAbsL1 = calculateCoefficientsAll(e.getLFluorescenceAverage());
-        
-      //  escapeMuAbsL1 = photonMuAbsL1.get(PHOTOELECTRIC);
-        
-        //TO TEST
-    //    escapeMuAbsL1 = 0;
-        
+
+      //  photonMuAbsL1 = calculateCoefficientsAll(e.getLFluorescenceAverage());       
+      //  escapeMuAbsL1 = photonMuAbsL1.get(PHOTOELECTRIC);  
       } 
       else {
         l1ShellEnergy = 0.0;
@@ -734,15 +701,9 @@ public class CoefCalcCompute extends CoefCalc {
         l2ShellEnergy = e.getL2Edge();
         l2FactorA = e.getL2ShellIonisationProb() * (1-kFactorA - l1FactorA);
       //  l2FactorB = e.getL2ShellFluorescenceYield();
-        
-        
-      //  photonMuAbsL2 = calculateCoefficientsAll(e.getL2Edge() - e.getM1Edge());
-      //  photonMuAbsL2 = calculateCoefficientsAll(e.getLFluorescenceAverage());
-        
+
+      //  photonMuAbsL2 = calculateCoefficientsAll(e.getLFluorescenceAverage());     
       //  escapeMuAbsL2 = photonMuAbsL2.get(PHOTOELECTRIC);
-        
-        //TO TEST
-    //    escapeMuAbsL2 = 0;
       } 
       else {
         l2ShellEnergy = 0.0;
@@ -755,15 +716,9 @@ public class CoefCalcCompute extends CoefCalc {
         l3ShellEnergy = e.getL3Edge();
         l3FactorA = e.getL3ShellIonisationProb() * (1-kFactorA - l1FactorA - l2FactorA);
       //  l3FactorB = e.getL3ShellFluorescenceYield();
-        
-        
-       // photonMuAbsL3 = calculateCoefficientsAll(e.getL3Edge() - e.getM1Edge());
-      //  photonMuAbsL3 = calculateCoefficientsAll(e.getLFluorescenceAverage());
-        
+
+      //  photonMuAbsL3 = calculateCoefficientsAll(e.getLFluorescenceAverage());    
       //  escapeMuAbsL3 = photonMuAbsL3.get(PHOTOELECTRIC);
-        
-        //TO TEST
-   //     escapeMuAbsL3 = 0;
       } 
       else {
         l3ShellEnergy = 0.0;
@@ -816,8 +771,7 @@ public class CoefCalcCompute extends CoefCalc {
         m5ShellEnergy = 0.0;
         m5FactorA = 0.0;
       }
-      
-      
+
       double muAbsFrac = elAbsCoeffs.get(PHOTOELECTRIC) / cryoAbsCoeffPhoto;
       
       //TODO change these to be something more readable, like a map structure
@@ -850,11 +804,9 @@ public class CoefCalcCompute extends CoefCalc {
       fluorEscapeFactors[element_counter][24] = m4FactorA;
       fluorEscapeFactors[element_counter][25] = m5ShellEnergy;
       fluorEscapeFactors[element_counter][26] = m5FactorA;
-      
-      
+        
       element_counter += 1;
     }
-    
     return fluorEscapeFactors;
   } 
 
@@ -1124,6 +1076,12 @@ public class CoefCalcCompute extends CoefCalc {
     }
   }
   
+  /**
+   * Combine concentrations of heavy atoms in the surrounding and add elements to the voxels 
+   * @param cryoSolutionAtoms
+   * @param cryoSolutionConcs
+   * @param oilBased
+   */
   public void addCryoConcentrations(final List<String> cryoSolutionAtoms,
       final List<Double> cryoSolutionConcs, final String oilBased) {
     double nonWaterAtoms = 0;
