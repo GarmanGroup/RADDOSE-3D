@@ -654,7 +654,7 @@ public class CrystalPolyhedron extends Crystal {
     double minDim = Math.min(zCryst, Math.min(xCryst, yCryst));
     
     double pixelsPerMicron =  (1/((double)maxPEDistance)) * 20;
-    double idealPPM = ((1/((double)maxPEDistance)) * 4) + ((1/((double)maxPEDistance)) * 16 * (1/minDim)) ; 
+    double idealPPM = ((1/((double)maxPEDistance)) * 5) + ((1/((double)maxPEDistance)) * 20 * (1/minDim)) ; 
 
     if (idealPPM >= crystalPixPerUM) { // set up a ppm so the crsytals can superimpose 
       pixelsPerMicron = Math.ceil(idealPPM / crystalPixPerUM) * crystalPixPerUM;
@@ -663,8 +663,15 @@ public class CrystalPolyhedron extends Crystal {
       pixelsPerMicron = crystalPixPerUM / ((int) (crystalPixPerUM / idealPPM));
     }
     
+    //test
+  //  pixelsPerMicron = 3.3333333333;
+    
     int extraVoxels = getExtraVoxels(maxPEDistance, pixelsPerMicron); // the extra voxels to add on each end
-       
+    
+    //test
+ //   extraVoxels = 8;
+    
+    
     //Correct dims for bigger size
     Double xdim = xCryst + ((extraVoxels / pixelsPerMicron) * 2); 
     Double ydim = yCryst + ((extraVoxels / pixelsPerMicron) * 2);
@@ -1040,7 +1047,11 @@ public class CrystalPolyhedron extends Crystal {
   private double[] getGumbelParamsForBeamEnergy(final double beamEnergy, final boolean cryo) {
     // Gumbel distribution for mean photoelectron path lengths depend on 
     // beam energy. Derived from Josh Dickerson's project
-    double energyCorrection = EnergyToSubtractFromPE;
+    double energyCorrection = EnergyToSubtractFromPE;  // this isn't the right energy correction for the cryo...
+    
+    if (cryo == true) {
+      energyCorrection = cryoEnergyToSubtractFromPE;
+    }
     
     double[] gumbParams = new double[2]; //0 = location parameter, 1 = scale parameter
      
@@ -1055,7 +1066,7 @@ public class CrystalPolyhedron extends Crystal {
     else {
       gumbParams[0] = CRYO_GUMBEL_DISTN_CALC_LOC[0]*Math.pow(peEnergy,2) 
           + CRYO_GUMBEL_DISTN_CALC_LOC[1]*(peEnergy);
-      gumbParams[1] = GUMBEL_DISTN_CALC_SCALE[0]*Math.pow(peEnergy,2) 
+      gumbParams[1] = CRYO_GUMBEL_DISTN_CALC_SCALE[0]*Math.pow(peEnergy,2) 
           + CRYO_GUMBEL_DISTN_CALC_SCALE[1]*(peEnergy);
     }
 
@@ -1127,7 +1138,7 @@ public class CrystalPolyhedron extends Crystal {
    */
   private  void setMaxPEDistance(final double beamEnergy) { //needs to be dynamic as it depends on beam energy
     double peEnergy = beamEnergy - EnergyToSubtractFromPE;
-    int maxPEDistance = (int) Math.ceil(getMaxPEDistance(peEnergy));
+    int maxPEDistance = (int) Math.ceil(getMaxPEDistance(peEnergy, false));
 
       //Get PE bins
     if (peRes >= 2) { //if user defined and sensible
@@ -1171,7 +1182,9 @@ public class CrystalPolyhedron extends Crystal {
     double peEnergy = beamEnergy - cryoEnergyToSubtractFromPE;
 
     //Need to redo max   
-    int maxPEDistance = (int) Math.ceil(getMaxPEDistance(peEnergy));
+    int maxPEDistance = (int) Math.ceil(getMaxPEDistance(peEnergy, true)); //need to change for cryo......... 
+    
+
     
     //find max side
     double averageSide = (crystSizeUM[0] + crystSizeUM[1] + crystSizeUM[2])/3;
@@ -1181,6 +1194,9 @@ public class CrystalPolyhedron extends Crystal {
     }else {
       cryoAndCrystalDensity = maxPEDistance / (maxPEDistance + averageSide);
     }
+    
+    // to test
+  //  maxPEDistance += 1;
     
     //set up the surrounding environment
     produceCryoSolutionCrystal(maxPEDistance);
@@ -1206,13 +1222,23 @@ public class CrystalPolyhedron extends Crystal {
    * @param peEnergy
    * @return
    */
-  private double getMaxPEDistance(final double peEnergy) {
+  private double getMaxPEDistance(final double peEnergy, final boolean cryo) {
     int energyRange = 0;
-
-    double locationParam = GUMBEL_DISTN_CALC_LOC[energyRange]*Math.pow(peEnergy,2) 
+    double locationParam = 0;
+    double scaleParam = 0;
+    if (cryo == false) {
+    locationParam = GUMBEL_DISTN_CALC_LOC[energyRange]*Math.pow(peEnergy,2) 
         + GUMBEL_DISTN_CALC_LOC[energyRange+1]*(peEnergy); 
-    double scaleParam = GUMBEL_DISTN_CALC_SCALE[energyRange]*Math.pow(peEnergy,2) 
+    scaleParam = GUMBEL_DISTN_CALC_SCALE[energyRange]*Math.pow(peEnergy,2) 
          + GUMBEL_DISTN_CALC_SCALE[energyRange+1]*(peEnergy);
+    }//need to change for cryo
+    else {
+      locationParam = CRYO_GUMBEL_DISTN_CALC_LOC[energyRange]*Math.pow(peEnergy,2) 
+          + CRYO_GUMBEL_DISTN_CALC_LOC[energyRange+1]*(peEnergy); 
+      scaleParam = CRYO_GUMBEL_DISTN_CALC_SCALE[energyRange]*Math.pow(peEnergy,2) 
+           + CRYO_GUMBEL_DISTN_CALC_SCALE[energyRange+1]*(peEnergy);
+    }
+    
 
     double modalHeight = calculateGumbelPDF(locationParam, locationParam, scaleParam);
     double targetHeight = modalHeight * 0.001;
@@ -1230,6 +1256,9 @@ public class CrystalPolyhedron extends Crystal {
         break;
       }
     }
+
+    
+    
     return maxDistance;
   }
   
@@ -1268,6 +1297,8 @@ public class CrystalPolyhedron extends Crystal {
     CRYO_GUMBEL_DISTN_CALC_LOC = setGumbelLoc(density, peEnergy);
     CRYO_GUMBEL_DISTN_CALC_SCALE = setGumbelScale(density, peEnergy);
     //I'm not recalculating the max distance though :/ 
+    
+    
     
   //  findVoxelsReachedByPE(true, coefCalc, beamEnergy, feFactors);
     cryoAngularDistribution = setUpPEPolarisation(coefCalc, beamEnergy, feFactors, true);

@@ -555,6 +555,7 @@ public abstract class Crystal {
     }
     else {
       cryoEnergyToSubtractFromPE = totK + totL1 + totL2 + totL3 + totM1 + totM2 + totM3 + totM4 + totM5;
+  //    System.out.print("test");
     }
   }
   
