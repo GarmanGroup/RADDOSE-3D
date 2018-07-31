@@ -642,7 +642,7 @@ public class CrystalPolyhedron extends Crystal {
    * match up with the original crystal
    * @param maxPEDistance
    */
-  public void produceCryoSolutionCrystal(int maxPEDistance) {
+  public void produceCryoSolutionCrystal(int maxPEDistance, final Beam beam) {
     
     double[] xMinMax = this.minMaxVertices(0, vertices);
     double[] yMinMax = this.minMaxVertices(1, vertices);
@@ -651,20 +651,12 @@ public class CrystalPolyhedron extends Crystal {
     double xCryst = xMinMax[1] - xMinMax[0];
     double yCryst = yMinMax[1] - yMinMax[0];
     double zCryst = zMinMax[1] - zMinMax[0];
-    double minDim = Math.min(zCryst, Math.min(xCryst, yCryst));
     
-    double pixelsPerMicron =  (1/((double)maxPEDistance)) * 20;
-    double idealPPM = ((1/((double)maxPEDistance)) * 5) + ((1/((double)maxPEDistance)) * 20 * (1/minDim)) ; 
+    //set ppm of cryo - switch to a function 
+    double pixelsPerMicron = setCryoPPM(beam, maxPEDistance, xCryst, yCryst, zCryst);
 
-    if (idealPPM >= crystalPixPerUM) { // set up a ppm so the crsytals can superimpose 
-      pixelsPerMicron = Math.ceil(idealPPM / crystalPixPerUM) * crystalPixPerUM;
-    } 
-    else {
-      pixelsPerMicron = crystalPixPerUM / ((int) (crystalPixPerUM / idealPPM));
-    }
-    
     //test
-  //  pixelsPerMicron = 3.3333333333;
+//    pixelsPerMicron = 1.6;
     
     int extraVoxels = getExtraVoxels(maxPEDistance, pixelsPerMicron); // the extra voxels to add on each end
     
@@ -723,6 +715,35 @@ public class CrystalPolyhedron extends Crystal {
       }
     }  
     cryoCrystCoord = tempCrystCoords;
+  }
+  
+  private double setCryoPPM(final Beam beam, final int maxPEDistance,
+                            final double xCryst, final double yCryst, final double zCryst) {
+    double minDimCryst = Math.min(zCryst, Math.min(xCryst, yCryst)); // incorporste my beam into min dim
+    double minDimBeam = beam.beamMinumumDimension();
+    double minDim = Math.min(minDimBeam,  minDimCryst);
+    
+    double crystalVolume = xCryst * yCryst * zCryst;
+    double beamVolume = maxPEDistance * beam.getBeamArea();
+    
+    double pixelsPerMicron =  (1/((double)maxPEDistance)) * 20;
+    
+    int multiplyFactor = 20;
+    if (minDimCryst >= minDimBeam) {
+      multiplyFactor *= 1.5;
+    }
+    
+ //   if ((crystalVolume > beamVolume) & (minDimCryst >= minDimBeam)
+    
+    double idealPPM = ((1/((double)maxPEDistance)) * 5) + ((1/((double)maxPEDistance)) * multiplyFactor * (1/minDimCryst)) ; 
+
+    if (idealPPM >= crystalPixPerUM) { // set up a ppm so the crsytals can superimpose 
+      pixelsPerMicron = Math.ceil(idealPPM / crystalPixPerUM) * crystalPixPerUM;
+    } 
+    else {
+      pixelsPerMicron = crystalPixPerUM / ((int) (crystalPixPerUM / idealPPM));
+    }
+    return pixelsPerMicron;
   }
   
   @Override
@@ -1178,7 +1199,7 @@ public class CrystalPolyhedron extends Crystal {
    * Sets the maximum distance of a photoelectron from the surrounding for the given photoelectron energy
    * @param beamEnergy
    */
-  private  void setMaxPEDistanceCryo(final double beamEnergy) { //needs to be dynamic as it depends on beam energy
+  private  void setMaxPEDistanceCryo(final double beamEnergy, final Beam beam) { //needs to be dynamic as it depends on beam energy
     double peEnergy = beamEnergy - cryoEnergyToSubtractFromPE;
 
     //Need to redo max   
@@ -1199,7 +1220,7 @@ public class CrystalPolyhedron extends Crystal {
   //  maxPEDistance += 1;
     
     //set up the surrounding environment
-    produceCryoSolutionCrystal(maxPEDistance);
+    produceCryoSolutionCrystal(maxPEDistance, beam);
     
     CRYO_PE_DISTANCES_TRAVELLED = new double[peDistBins];
     double binInterval = (double) maxPEDistance / (peDistBins - 1);
@@ -1280,16 +1301,17 @@ public class CrystalPolyhedron extends Crystal {
   }
   
   @Override
-  public void setCryoPEparamsForCurrentBeam(final double beamEnergy, CoefCalc coefCalc, double[][] feFactors) {
+  public void setCryoPEparamsForCurrentBeam(final Beam beam, CoefCalc coefCalc, double[][] feFactors) {
     // Initialise crystal photolectron escape properties here for current beam
     //set Gumbel values based on density
     double density = coefCalc.getCryoDensity();
+    double beamEnergy = beam.getPhotonEnergy();
   //  double density = coefCalc.getDensity();
     double peEnergy = beamEnergy - cryoEnergyToSubtractFromPE;
     CRYO_GUMBEL_DISTN_CALC_LOC = setGumbelLoc(density, peEnergy);
     CRYO_GUMBEL_DISTN_CALC_SCALE = setGumbelScale(density, peEnergy);
     //first of all need to get PE distances 
-    setMaxPEDistanceCryo(beamEnergy);
+    setMaxPEDistanceCryo(beamEnergy, beam);
     
     //could recalculate cryo gumbel based on new density
     density = (coefCalc.getCryoDensity() * cryoAndCrystalDensity) + (coefCalc.getDensity() * (1-cryoAndCrystalDensity));

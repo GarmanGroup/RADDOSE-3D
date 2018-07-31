@@ -83,6 +83,16 @@ public class ExperimentDummy extends Experiment {
       @Override
       public void generateBeamArray() {        
       }
+
+      @Override
+      public double beamMinumumDimension() {
+        return 0;
+      }
+
+      @Override
+      public double getBeamArea() {
+        return 0;
+      }
     }
   }
 
@@ -272,7 +282,7 @@ public class ExperimentDummy extends Experiment {
       }
       
       @Override
-      public void setCryoPEparamsForCurrentBeam(double beamEnergy, CoefCalc coefCalc, double[][] feFactors) {    
+      public void setCryoPEparamsForCurrentBeam(final Beam beam, CoefCalc coefCalc, double[][] feFactors) {    
       }
       
       @Override

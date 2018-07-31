@@ -46,4 +46,14 @@ public class BeamDummy implements Beam {
   @Override
   public void generateBeamArray() {    
   }
+
+  @Override
+  public double beamMinumumDimension() {
+    return 0;
+  }
+
+  @Override
+  public double getBeamArea() {
+    return 0;
+  }
 }

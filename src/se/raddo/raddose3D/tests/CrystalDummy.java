@@ -3,6 +3,7 @@ package se.raddo.raddose3D.tests;
 import java.util.HashMap;
 import java.util.Map;
 
+import se.raddo.raddose3D.Beam;
 import se.raddo.raddose3D.CoefCalc;
 import se.raddo.raddose3D.Crystal;
 import se.raddo.raddose3D.Wedge;
@@ -132,7 +133,7 @@ public class CrystalDummy extends Crystal {
   }
   
   @Override
-  public void setCryoPEparamsForCurrentBeam(double beamEnergy, CoefCalc coefCalc, double[][] feFactors) {    
+  public void setCryoPEparamsForCurrentBeam(final Beam beam, CoefCalc coefCalc, double[][] feFactors) {    
   }
   
   @Override

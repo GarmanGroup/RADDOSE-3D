@@ -316,7 +316,7 @@ public abstract class Crystal {
    */
   public abstract void setPEparamsForCurrentBeam(double beamEnergy, CoefCalc coefCalc, double[][] feFactors);
   public abstract void setFLparamsForCurrentBeam(final double[][] feFactors);
-  public abstract void setCryoPEparamsForCurrentBeam(double beamEnergy, CoefCalc coefCalc, double[][] feFactors);
+  public abstract void setCryoPEparamsForCurrentBeam(Beam beam, CoefCalc coefCalc, double[][] feFactors);
   
   /**
    * finds the voxels that the bins on the tracks are in
@@ -566,7 +566,7 @@ public abstract class Crystal {
    */
   public void calculateCryoSolutionParameters(final Beam beam, double[][] cryoFeFactors) {
     calculatePEEnergySubtraction(cryoFeFactors, true);
-    setCryoPEparamsForCurrentBeam(beam.getPhotonEnergy(), coefCalc, cryoFeFactors); 
+    setCryoPEparamsForCurrentBeam(beam, coefCalc, cryoFeFactors); 
   }
   
   /**

@@ -79,4 +79,14 @@ public interface Beam {
    * Applies flux attenuation due to the sample container.
    */
   public void applyContainerAttenuation(Container sampleContainer);
+  
+/**
+ * gets the minuimumn beam dimension
+ * @return
+ *          beam min dim
+ */
+  public double beamMinumumDimension();
+  
+  public double getBeamArea();
+  
 }

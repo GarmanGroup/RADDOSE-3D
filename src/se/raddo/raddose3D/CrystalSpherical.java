@@ -289,7 +289,7 @@ public class CrystalSpherical extends Crystal {
   
   
   @Override
-  public void setCryoPEparamsForCurrentBeam(double beamEnergy, CoefCalc coefCalc, double[][] feFactors) {    
+  public void setCryoPEparamsForCurrentBeam(final Beam beam, CoefCalc coefCalc, double[][] feFactors) {    
   }
   
   @Override

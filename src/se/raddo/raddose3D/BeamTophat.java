@@ -127,4 +127,21 @@ public class BeamTophat implements Beam {
       System.out.println(s);
     }
   }
+
+  @Override
+  public double beamMinumumDimension() {
+    return Math.min(beamXum, beamYum);
+  }
+
+  @Override
+  public double getBeamArea() {
+    double beamArea = 0;
+    if (isCircular == true) {
+      beamArea = Math.PI * (beamXum/2) * (beamYum/2);
+    }
+    else {
+      beamArea = beamXum * beamYum;
+    }
+    return beamArea;
+  }
 }

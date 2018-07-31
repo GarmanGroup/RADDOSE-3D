@@ -199,5 +199,16 @@ public class BeamExperimental implements Beam {
       System.out.println(s);
     }
   }
+  
+  @Override
+  public double beamMinumumDimension() {
+    return Math.min(beamXSize, beamYSize);
+  }
+
+  @Override
+  public double getBeamArea() {
+    // TODO Auto-generated method stub
+    return 0;
+  }
 
 }
