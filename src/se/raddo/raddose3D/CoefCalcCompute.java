@@ -563,7 +563,7 @@ public double waterFractionEM;
 
   
   @Override 
-  public double getElectronElastic(Beam beam) {
+  public double getElectronElastic(Beam beam) { //need to think about how to incorporate the thingy about cutting off most in here
     //Individual atom cross sections
     double[] elasticElement = new double[presentElements.size()];
     double elasticMolecule = 0;
@@ -599,7 +599,7 @@ public double waterFractionEM;
     double csquared = 3E8*3E8;  // (m/s)^2
     double Vo = beam.getPhotonEnergy() * Beam.KEVTOJOULES;
     double betaSquared = 1- Math.pow(m*csquared/(Vo + m*csquared), 2);
-    double weirdLetter = (0.02*Beam.KEVTOJOULES)/(betaSquared*(Vo + m*csquared));
+    double weirdLetter = (0.02*Beam.KEVTOJOULES)/(betaSquared*(Vo + m*csquared)); //assuming 0.02 keV per inellastic plasmon event  
     double molWeight = 0;
     double inelasticAll = 0;
 
@@ -661,7 +661,7 @@ public double waterFractionEM;
     double csquared = 3E8*3E8;  // (m/s)^2
     double Vo = beam.getPhotonEnergy() * Beam.KEVTOJOULES;
     double betaSquared = 1- Math.pow(m*csquared/(Vo + m*csquared), 2);
-    double weirdLetter = (0.02*Beam.KEVTOJOULES)/(betaSquared*(Vo + m*csquared));
+    double weirdLetter = (0.02*Beam.KEVTOJOULES)/(betaSquared*(Vo + m*csquared)); //assuming 0.02 keV per inellastic plasmon event  
     double molWeight = 18;
     
     inelasticMolecule = (2*6.4E-5) + ((1.5E-6 * Math.pow(8, 0.5))/betaSquared)*    //for water only

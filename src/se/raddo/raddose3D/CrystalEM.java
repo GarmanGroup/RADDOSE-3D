@@ -58,7 +58,7 @@ public class CrystalEM extends Crystal {
   
   private double EMLETWay(Beam beam, Wedge wedge, CoefCalc coefCalc) {
 //    double surfaceArea = coefCalc.getSA(); //Change to crystal coord when move 
-    double electronNumber = beam.getPhotonsPerSec() * wedge.getTotSec();
+    double electronNumber = beam.getPhotonsPerSec() * wedge.getTotSec(); // total incident electrons
     
     //check if the beam is bigger or smaller than the sample - need to check in x and in y (x = horizontal, y = vertical)
     double exposedAreaY = getExposedY(beam);
@@ -68,9 +68,9 @@ public class CrystalEM extends Crystal {
     
     //Reduce electron number if beam bigger than the sample
     
-    if (totExposedArea < (beam.getBeamX()*beam.getBeamY() * 1E08)) {
+    if (totExposedArea < (beam.getBeamX()*beam.getBeamY() * 1E08)) { 
       double fractionFlux = totExposedArea / (beam.getBeamX()*beam.getBeamY() * 1E08);
-      electronNumber = electronNumber * fractionFlux;
+      electronNumber = electronNumber * fractionFlux; //convert total electron number to electron incident on the sample
     }
     
     
@@ -123,7 +123,7 @@ public class CrystalEM extends Crystal {
     double elasticProbOverT = coefCalc.getElectronElastic(beam);
     double elasticProb = elasticProbOverT * sampleThickness;
     
-    
+    // I don't like this why am I separating and not lumping all in 1? Think I messed up what I think dose is...
     double inelasticProbOverT = coefCalc.getElectronInelastic(beam, exposedVolume);
     double inelasticProb = inelasticProbOverT * sampleThickness;
     //same for solvent
@@ -133,7 +133,7 @@ public class CrystalEM extends Crystal {
     //TO TEST
   //  solventInelasticProb = 0;
     
-
+// Am I doing the mass right???? What is dose it is energy per mass of all right not just protein....
     double numberInelasticEvents = (inelasticProb * electronNumber) + (solventInelasticProb * electronNumber);
     double energyDeposited = (energyPerEvent * numberInelasticEvents) * Beam.KEVTOJOULES; //in J
     double exposedMass = ((coefCalc.getEMConc() * exposedVolume) / 1000) + (((930 * solventFraction) * exposedVolume) / 1000);  //in Kg 
