@@ -155,9 +155,9 @@
    -->
    <fileset dir=".">
     <include name="constants/MuCalcConstants.txt" />
-	<include name="constants/energy-coefs-low.txt" />
-	<include name="constants/energy-coefs-med.txt" />
-	<include name="constants/energy-coefs-high.txt" />
+	<include name="constants/energy-coefs-low.csv" />
+	<include name="constants/energy-coefs-med.csv" />
+	<include name="constants/energy-coefs-high.csv" />
    </fileset>
 
    <manifest>
