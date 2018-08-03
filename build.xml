@@ -97,9 +97,9 @@
    <zipfileset includes="**/*.class" src="lib/commons-math3-3.0/commons-math3-3.0.jar"/>
    <fileset dir=".">
     <include name="constants/MuCalcConstants.txt" />
-	<include name="constants/energy-coefs-low.csv" />
-	<include name="constants/energy-coefs-med.csv" />
-	<include name="constants/energy-coefs-high.csv" />
+    <include name="constants/energy-coefs-low.csv" />
+    <include name="constants/energy-coefs-med.csv" />
+    <include name="constants/energy-coefs-high.csv" />
    </fileset>
 
    <manifest>
@@ -120,9 +120,9 @@
    <zipfileset includes="**/*.class" src="lib/antlr-3.4/antlr-3.4-cutdown.jar"/>
    <fileset dir=".">
     <include name="constants/MuCalcConstants.txt" />
-	<include name="constants/energy-coefs-low.csv" />
-	<include name="constants/energy-coefs-med.csv" />
-	<include name="constants/energy-coefs-high.csv" />
+    <include name="constants/energy-coefs-low.csv" />
+    <include name="constants/energy-coefs-med.csv" />
+    <include name="constants/energy-coefs-high.csv" />
    </fileset>
 
    <manifest>
@@ -155,9 +155,9 @@
    -->
    <fileset dir=".">
     <include name="constants/MuCalcConstants.txt" />
-	<include name="constants/energy-coefs-low.csv" />
-	<include name="constants/energy-coefs-med.csv" />
-	<include name="constants/energy-coefs-high.csv" />
+    <include name="constants/energy-coefs-low.csv" />
+    <include name="constants/energy-coefs-med.csv" />
+    <include name="constants/energy-coefs-high.csv" />
    </fileset>
 
    <manifest>
