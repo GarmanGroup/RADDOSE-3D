@@ -1,3 +1,16 @@
 language: java
+git:
+  depth: false
 script:
  - ant build-debug-warn test-all
+before_deploy:
+ - ant clean
+ - ant build jar jar-server jar-osgi bintray-deploy
+ - ls -la
+deploy:
+  skip_cleanup: true
+  provider: bintray
+  file: ".bintray.json"
+  user: "garmangroup"
+  key:
+    secure: baJcmNSSlmGt6SS1saYguiAxTVCOirFUMOXTVeWwmFpqg1MhXD4vv3Jv79+dpPr6fV37s9Jyue87xCBcDcX9rCJQuabFE6o81jEoxNjggkBgzM0NM2XjnSgJgsqvvF/khogmRjZ59IImKRyiFGyXzqcMvzT/LB004ZitvtLims8Lin9fbxmX2PMe8MTBIubNyZkAQZHswOEHUvy8Fvn9YNKY6WYHFrV2KfRLqVoMqz5rzGQNAEFZTmFZo420Zuiqzb0HAYeOJaMGJk7Mp0dGe5BQ1BuxBNx4s8uAoWlUBDfSgJBKdEBeDHfZ+a0qCHea1n3xAAA62J6KsZ8+hTfihM1kylBCU8t4k7C7qh3ot6sVPTugwXNGu+LmQ8vbWlagSh87OY9uYHtmh3/eHyFl+0ZBU2NMo4VDBbfx0McyDBf4v9nS8ATo2926+4V/jijv0/Wk99xjvq+1RyX6M1RWrI/6jijtJThWhXiqf0w7qzJx9zyLpWxMNkYev7mG2sHGGat8CZIgPm9mmSpK57ViXei4A0u7JuKlMeGWhXkWZmhbr1rgS6ki009SEN6o9UeOQ4Ma2lRwYvUMsfx56U72SWFRxIIuH1gFiLFRhTtJXjIl17fvOal6GQBf0qLdJD51gNc5TH6mXC2T98vAUdsHxuomXbcX6tnuyD33Rp25jPQ=

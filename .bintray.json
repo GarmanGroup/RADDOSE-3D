@@ -1,0 +1,29 @@
+{
+    "package": {
+        "name": "auto-builds",
+        "repo": "RADDOSE-3D",
+        "subject": "garmangroup",
+        "desc": "Automated .jar builds of RADDOSE-3D",
+        "website_url": "http://www.raddo.se",
+        "issue_tracker_url": "https://github.com/GarmanGroup/RADDOSE-3D/issues",
+        "vcs_url": "https://github.com/GarmanGroup/RADDOSE-3D.git",
+        "licenses": ["AGPL-V3"],
+        "labels": ["crystallography", "radiation", "damage", "crystal", "dose"],
+        "public_download_numbers": false,
+        "public_stats": false
+    },
+
+    "version": {
+        "name": "all",
+        "desc": "All RADDOSE-3D builds",
+        "released": "2018-08-01",
+        "gpgSign": false
+    },
+
+    "files":
+        [
+        {"includePattern": "\./deploy/(.*\.jar)", "uploadPattern": "$1"}
+        ],
+    "publish": true
+}
+

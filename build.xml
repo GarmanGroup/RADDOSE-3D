@@ -15,6 +15,11 @@
   <arg value="HEAD" />
  </exec>
 
+ <target name="clean">
+  <delete dir="bin"/>
+  <delete dir="deploy"/>
+ </target>
+
  <target name="versionize">
   <echo message="Raddose3D git repository age is ${repository.revision}" />
 
@@ -28,7 +33,7 @@
 
  <target name="build">
   <antcall target="versionize"/>
- 	
+
   <!-- Standard compile run, no warnings -->
   <mkdir dir="bin"/>
   <javac srcdir="src" destdir="bin"
@@ -171,15 +176,13 @@
   </jar>
  </target>
 
- <target name="jar-deploy">
-  <echo message="Deploy jar - revision is ${repository.revision}" />
+ <target name="bintray-deploy">
+  <java classname="se.raddo.raddose3D.Version" classpath="bin" failonerror="true" outputproperty="raddose.version"/>
+  <echo message="Prepare deployment of version ${raddose.version} to bintray"/>
 
-  <copy file="raddose3d.jar" tofile="/raddose/jars/raddose3d-${repository.revision}.jar" preservelastmodified="true"/>
-  <copy file="raddose3d-server.jar" tofile="/raddose/jars/raddose3d-${repository.revision}-server.jar" preservelastmodified="true"/>
-
-  <exec executable="/raddose/jars/buildregister" dir="/raddose/jars" timeout="30000" failonerror="true">
-   <arg value="${repository.revision}"/>
-  </exec>
+  <copy file="raddose3d.jar" tofile="deploy/v${raddose.version}/raddose3d-${repository.revision}.jar" preservelastmodified="true"/>
+  <copy file="raddose3d-osgi.jar" tofile="deploy/v${raddose.version}/raddose3d-${repository.revision}-osgi.jar" preservelastmodified="true"/>
+  <copy file="raddose3d-server.jar" tofile="deploy/v${raddose.version}/raddose3d-${repository.revision}-server.jar" preservelastmodified="true"/>
  </target>
 
 
@@ -199,7 +202,7 @@
            version="true"
            use="true"
            windowtitle="Raddose3D">
-  	
+
    <fileset dir="src" defaultexcludes="yes">
     <include name="**/*.java"/>
     <exclude name="**/*Test*.java"/>
@@ -216,11 +219,11 @@
 
  <!-- Directory for TestNG, checkstyle, PMD and FindBugs reports -->
  <property name="report.dir" value="reports"/>
- 
+
  <target name="test">
   <mkdir dir="${report.dir}"/>
   <testng outputdir="${report.dir}" classpathref="classes" excludedgroups="advanced" haltOnfailure="true">
-   <xmlfileset dir="." includes="testng.xml"/> 
+   <xmlfileset dir="." includes="testng.xml"/>
    <classpath refid="antlr" />
    <classpath refid="math3" />
    <classpath refid="mockito" />
@@ -230,7 +233,7 @@
  <target name="test-all">
   <mkdir dir="${report.dir}"/>
   <testng outputdir="${report.dir}" classpathref="classes" configFailurePolicy="continue" haltOnfailure="true">
-   <xmlfileset dir="." includes="testng.xml"/> 
+   <xmlfileset dir="." includes="testng.xml"/>
    <classpath refid="antlr" />
    <classpath refid="math3" />
    <classpath refid="mockito" />
