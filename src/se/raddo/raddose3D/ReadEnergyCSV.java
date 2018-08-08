@@ -1,9 +1,13 @@
 package se.raddo.raddose3D;
 
 import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
+//import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 
 
 public class ReadEnergyCSV {
@@ -29,8 +33,11 @@ public class ReadEnergyCSV {
     }
       
     try {
-
-      br = new BufferedReader(new FileReader(csvFileName));
+      
+      InputStreamReader isr = locateConstantsFile(csvFileName);
+       br = new BufferedReader(isr);
+      
+   //   br = new BufferedReader(new FileReader(csvFileName)); //this is the issue
       while ((line = br.readLine()) != null) {
 
           wholeLine = line.split(cvsSplitBy);
@@ -70,6 +77,30 @@ public class ReadEnergyCSV {
   }
     
     return coefficients;
+  }
+  
+  /**
+   * Try to locate ENERGY_FILE. This may be in the class path (ie. within a .jar
+   * file), or in the file system.
+   * 
+   * @return
+   *         InputStreamReader pointing to the correct resource.
+   * @throws FileNotFoundException
+   *           The file could not be found.
+   * @throws UnsupportedEncodingException
+   *           The file charset cannot be interpreted.
+   */
+  private InputStreamReader locateConstantsFile(final String csvFileName)
+      throws UnsupportedEncodingException, FileNotFoundException {
+    // Try to find it within class path;
+    InputStream is = getClass().getResourceAsStream("/" + csvFileName);
+
+    if (is == null) {
+      // If it is not within the class path, try via the file system.
+      is = new FileInputStream(csvFileName);
+    }
+
+    return new InputStreamReader(is, "US-ASCII");
   }
   
   /*

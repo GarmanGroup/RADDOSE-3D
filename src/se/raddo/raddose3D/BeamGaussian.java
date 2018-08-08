@@ -162,8 +162,8 @@ public class BeamGaussian implements Beam {
 // this needs to change for circular
     double cdf;
 //    double test;
-    double Px = gx.cumulativeProbability(x2);
-    double Py = gy.cumulativeProbability(y2);
+ //   double Px = gx.cumulativeProbability(x2);
+ //   double Py = gy.cumulativeProbability(y2);
     if (isCircular == false) {
       cdf = gx.cumulativeProbability(x2) * gy.cumulativeProbability(y2);
       cdf -= gx.cumulativeProbability(x1) * gy.cumulativeProbability(y2);  

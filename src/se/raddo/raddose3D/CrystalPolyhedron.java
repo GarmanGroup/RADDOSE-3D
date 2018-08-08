@@ -1027,9 +1027,9 @@ public class CrystalPolyhedron extends Crystal {
    */
   private double[] calculateEnergyDistn(final double[] distancesTravelled, final int bins, final double peEnergy) {
     ReadEnergyCSV rdCSV = new ReadEnergyCSV();
-    double[] lowCoefficients = rdCSV.openCSV("constants/energy-coefs-low.csv", peEnergy);
-    double[] mediumCoefficients = rdCSV.openCSV("constants/energy-coefs-med.csv", peEnergy);
-    double[] highCoefficients = rdCSV.openCSV("constants/energy-coefs-high.csv", peEnergy);
+    double[] lowCoefficients = rdCSV.openCSV("constants/EnergyCoefsLow.txt", peEnergy);
+    double[] mediumCoefficients = rdCSV.openCSV("constants/EnergyCoefsMed.txt", peEnergy);
+    double[] highCoefficients = rdCSV.openCSV("constants/EnergyCoefsHigh.txt", peEnergy);
     
     double[] energyDeposited = new double[bins];
     

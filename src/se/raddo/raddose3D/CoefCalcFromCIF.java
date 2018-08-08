@@ -5,10 +5,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.FileInputStream;
 import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.List;
+//import java.net.MalformedURLException;
+//import java.net.URL;
+//import java.net.URLConnection;
+//import java.util.List;
 import java.util.Objects;
 
 public class CoefCalcFromCIF extends CoefCalcCompute{
