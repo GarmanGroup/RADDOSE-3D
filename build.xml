@@ -127,9 +127,9 @@
    <zipfileset includes="**/*.class" src="lib/antlr-3.4/antlr-3.4-cutdown.jar"/>
    <fileset dir=".">
     <include name="constants/MuCalcConstants.txt" />
-    <include name="constants/energy-coefs-low.csv" />
-    <include name="constants/energy-coefs-med.csv" />
-    <include name="constants/energy-coefs-high.csv" />
+    <include name="constants/EnergyCoefsLow.txt" />
+    <include name="constants/EnergyCoefsMed.txt" />
+    <include name="constants/EnergyCoefsHigh.txt" />
    </fileset>
 
    <manifest>
@@ -162,9 +162,9 @@
    -->
    <fileset dir=".">
     <include name="constants/MuCalcConstants.txt" />
-    <include name="constants/energy-coefs-low.csv" />
-    <include name="constants/energy-coefs-med.csv" />
-    <include name="constants/energy-coefs-high.csv" />
+    <include name="constants/EnergyCoefsLow.txt" />
+    <include name="constants/EnergyCoefsMed.txt" />
+    <include name="constants/EnergyCoefsHigh.txt" />
    </fileset>
 
    <manifest>
