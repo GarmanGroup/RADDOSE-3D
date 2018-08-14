@@ -439,6 +439,19 @@ If a more accurate estimate is required, individual atoms may be entered explici
 The default value for \textit{I} is 0.
 
 
+\subsection{\Keyword{NUMCARB}}
+\label{numcarb}
+\RDLegacyKeyword
+
+\noindent \Keyword{NUMCARB \textit{I}}
+
+specifies the number of carbohydrate residues per monomer. Only integer numbers \textit{I} should be used. Using this keyword the number and types of atoms are calculated assuming an average carbohydrate content defined as
+\[ \mbox{mean sugar} = 11H + 6C + 5O  \]
+If a more accurate estimate is required, individual atoms may be entered explicitly with \hyperref[proteinheavyatoms]{the \Keyword{PROTEINHEAVYATOMS} keyword}.
+
+The default value for \textit{I} is 0.
+
+
 \subsection{\Keyword{PROTEINHEAVYATOMS}}
 \label{proteinheavyatoms}
 \RDLegacyKeyword
