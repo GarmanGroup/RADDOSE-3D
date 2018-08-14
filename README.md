@@ -47,6 +47,9 @@ NumResidues  51                 # number of residues per monomer
 ProteinHeavyAtoms Zn 0.333 S 6  # heavy atoms added to protein part of the
                                 # monomer, i.e. S, coordinated metals,
                                 # Se in Se-Met
+                                # Note: If a sequence file is used S does not 
+                                # need to be added
+                                
 SolventHeavyConc P 425          # concentration of elements in the solvent
                                 # in mmol/l. Oxygen and lighter elements
                                 # should not be specified
