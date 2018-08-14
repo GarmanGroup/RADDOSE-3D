@@ -37,7 +37,7 @@ public class CoefCalcTests {
 
     CoefCalcFromParams coefCalc = new CoefCalcFromParams(100.0,
         100.0, 100.0, 90.0, 90.0, 90.0, 0, 0, 0, 0, atoms, numbers,
-        atoms, numbers, atoms, numbers, 100.0, null, null);
+        atoms, numbers, atoms, numbers, 100.0, null, null, 0);
 
     Double oxygenOccurrence = coefCalc.getSolventOccurrence(
         coefCalc.getParser().getElement("O"));
@@ -64,7 +64,7 @@ public class CoefCalcTests {
 
     CoefCalcFromParams coefCalc = new CoefCalcFromParams(100.0,
         100.0, 100.0, 90.0, 90.0, 90.0, 24, 10, 0, 0, atoms,
-        numbers, emptyAtoms, emptyNumbers, emptyAtoms, emptyNumbers, 100.0, null, null);
+        numbers, emptyAtoms, emptyNumbers, emptyAtoms, emptyNumbers, 100.0, null, null, 0);
 
     Double zincOccurrence = coefCalc.getMacromolecularOccurrence(
         coefCalc.getParser().getElement("ZN"));
@@ -98,7 +98,7 @@ public class CoefCalcTests {
     CoefCalcFromParams coefCalc = new CoefCalcFromParams(
         79.2, 79.2, 38.1, 90.0, 90.0, 90.0, 8, 129, 0, 0,
         heavyProtAtomNames, heavyProtAtomNums,
-        heavySolutionConcNames, heavySolutionConcNums, emptyAtoms, emptyNumbers, 0., null, null);
+        heavySolutionConcNames, heavySolutionConcNums, emptyAtoms, emptyNumbers, 0., null, null, 0);
 
     Map<Object, Object> beamProperties = new HashMap<Object, Object>();
     beamProperties.put(Beam.BEAM_COLL_H, 80.);
@@ -150,7 +150,7 @@ public class CoefCalcTests {
     CoefCalcFromParams coefCalc = new CoefCalcFromParams(
         79.2, 79.2, 38.1, 70.0, 70.0, 50.0, 4, 200, 0, 0,
         heavyProtAtomNames, heavyProtAtomNums,
-        heavySolutionConcNames, heavySolutionConcNums, emptyAtoms, emptyNumbers, 0., null, null);
+        heavySolutionConcNames, heavySolutionConcNums, emptyAtoms, emptyNumbers, 0., null, null, 0);
 
     Map<Object, Object> beamProperties = new HashMap<Object, Object>();
     beamProperties.put(Beam.BEAM_COLL_H, 80.);
@@ -197,7 +197,7 @@ public class CoefCalcTests {
     CoefCalcFromParams coefCalc = new CoefCalcFromParams(
         78.27, 78.27, 78.27, 90.0, 90.0, 90.0, 24, 51, 0, 0,
         heavyProtAtomNames, heavyProtAtomNums,
-        heavySolutionConcNames, heavySolutionConcNums, emptyAtoms, emptyNumbers, 0., null, null);
+        heavySolutionConcNames, heavySolutionConcNums, emptyAtoms, emptyNumbers, 0., null, null, 0);
 
     Map<Object, Object> beamProperties = new HashMap<Object, Object>();
     beamProperties.put(Beam.BEAM_COLL_H, 20.);
@@ -239,7 +239,7 @@ public class CoefCalcTests {
     CoefCalcFromSequenceSAXS coefCalc = new CoefCalcFromSequenceSAXS(100.0, 100.0, 
         100.0, RIGHT_ANGLE, RIGHT_ANGLE, RIGHT_ANGLE, heavyProtAtomNames,
         heavyProtAtomNums, heavySolutionConcNames, heavySolutionConcNums,
-        -1.0, 1.0, "TestSequence.fasta");
+        -1.0, 1.0, "TestSequence.fasta", 0);
     
     boolean correctNumProtein = false;
     if (coefCalc.getNumAminoAcids() == 25) {
@@ -304,7 +304,7 @@ public class CoefCalcTests {
           unit_cell_length, unit_cell_length, unit_cell_length, 90.0, 90.0,
           90.0, 24, protein_residues, rna_residues, 0,
           heavyProtAtomNames, heavyProtAtomNums,
-          heavySolutionConcNames, heavySolutionConcNums, emptyAtoms, emptyNumbers, 0., null, null);
+          heavySolutionConcNames, heavySolutionConcNums, emptyAtoms, emptyNumbers, 0., null, null, 0);
 
       CoefCalcRaddose coefCalcRDV2 = new CoefCalcRaddose(
           unit_cell_length, unit_cell_length, unit_cell_length, 90.0, 90.0,

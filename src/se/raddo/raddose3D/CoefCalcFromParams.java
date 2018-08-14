@@ -41,14 +41,15 @@ public class CoefCalcFromParams extends CoefCalcCompute {
       final Double cellC,
       final Double cellAlpha, final Double cellBeta, final Double cellGamma,
       final int numMonomers, final int numResidues, final int numRNA,
-      final int numDNA,
+      final int numDNA, 
       final List<String> heavyProteinAtomNames,
       final List<Double> heavyProteinAtomNums,
       final List<String> heavySolutionConcNames,
       final List<Double> heavySolutionConcNums,
       final List<String> cryoSolutionMolecule,
       final List<Double> cryoSolutionConc,
-      final Double solventFraction, final String oilBased, final String calcSurrounding) {
+      final Double solventFraction, final String oilBased, final String calcSurrounding,
+      final int numCarb) {
 
     Double alpha = cellAlpha;
     Double beta = cellBeta;
@@ -74,7 +75,7 @@ public class CoefCalcFromParams extends CoefCalcCompute {
 
     calculateAtomOccurrences(numMonomers, numResidues, numRNA, numDNA,
         sf, heavyProteinAtomNames, heavyProteinAtomNums,
-        heavySolutionConcNames, heavySolutionConcNums, cryoSolutionMolecule, cryoSolutionConc, oilBased, calcSurrounding);
+        heavySolutionConcNames, heavySolutionConcNums, cryoSolutionMolecule, cryoSolutionConc, oilBased, calcSurrounding, numCarb);
     
     super.calculateDensity();
 
@@ -103,7 +104,8 @@ public class CoefCalcFromParams extends CoefCalcCompute {
       final List<String> heavySolvConcNames,
       final List<Double> heavySolvConcNums,
       final List<String> cryoSolutionAtoms,
-      final List<Double> cryoSolutionConcs, final String oilBased,  String calcSurrounding) {
+      final List<Double> cryoSolutionConcs, final String oilBased,  String calcSurrounding,
+      final int numCarbResidues) {
 
     // Start by dealing with heavy atom in the
     // protein and adding these to the unit cell.
@@ -143,6 +145,7 @@ public class CoefCalcFromParams extends CoefCalcCompute {
     this.setNumAminoAcids(numResidues);
     this.setNumRNA(numRNAresidues);
     this.setNumDNA(numDNAresidues);
+    this.setNumCarb(numCarbResidues);
 
     // If the solvent fraction has not been specified.
     double newSolventFraction = solventFraction;
@@ -199,6 +202,14 @@ public class CoefCalcFromParams extends CoefCalcCompute {
     incrementMacromolecularOccurrence(phosphorus,
         PHOSPHORI_PER_DNA_NUCLEOTIDE
             * getNumDNA() * getNumMonomers());
-
+    
+    // Carbohydrate atoms: for every residue
+    // add 11 H + 6 C + 5 O 
+    incrementMacromolecularOccurrence(carbon, CARBONS_PER_CARBOHYDRATE
+        * getNumCarb() * getNumMonomers());
+    incrementMacromolecularOccurrence(oxygen, OXYGENS_PER_CARBOHYDRATE
+        * getNumCarb() * getNumMonomers());
+    incrementMacromolecularOccurrence(hydrogen, HYDROGENS_PER_CARBOHYDRATE
+        * getNumCarb() * getNumMonomers());
   }
 }

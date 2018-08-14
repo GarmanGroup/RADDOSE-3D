@@ -49,6 +49,11 @@ public class CoefCalcCompute extends CoefCalc {
    * DNA density in g/ml.
    */
   protected static final double      DNA_DENSITY                  = 1.35;
+  
+  /**
+   * Carbohydrate density in g/ml.
+   */
+  protected static final double      CARBOHYDRATE_DENSITY                  = 1.54;
 
   /**
    * Density of heteroatoms.
@@ -79,6 +84,11 @@ public class CoefCalcCompute extends CoefCalc {
    * Average weight of an RNA nucleotide.
    */
   protected static final double      RNA_NUCLEOTIDE_MASS          = 321.0;
+  
+  /**
+   * Average weight of a carbohydrate residue.
+   */
+  protected static final double      CARBOHYDRATE_AVE_MASS          = 162.0;
 
   /**
    * Angstroms to ml conversion.
@@ -136,6 +146,13 @@ public class CoefCalcCompute extends CoefCalc {
   /** phosphoruses per DNA nucleotide. */
   protected static final double      PHOSPHORI_PER_DNA_NUCLEOTIDE = 1;
   
+  /** hydrogens per amino acid. */
+  protected static final double      HYDROGENS_PER_CARBOHYDRATE     = 11;
+  /** carbons per amino acid. */
+  protected static final double      CARBONS_PER_CARBOHYDRATE       = 6;
+  /** oxygens per amino acid. */
+  protected static final double      OXYGENS_PER_CARBOHYDRATE      = 5;
+  
   /**
    * Number of X-ray Fluorescent escape factors
    */
@@ -155,6 +172,11 @@ public class CoefCalcCompute extends CoefCalc {
    * Number of DNA residues.
    */
   private double                     numDNA;
+  
+  /**
+   * Number of carbohydrate residues.
+   */
+  private double                     numCarb;
 
   /**
    * Number of monomers per unit cell.
@@ -900,12 +922,33 @@ public class CoefCalcCompute extends CoefCalc {
   protected void setNumDNA(final double newnumDNA) {
     this.numDNA = newnumDNA;
   }
-
+  
   /**
    * @param increment the numDNA to increment
    */
   protected void incrementNumDNA(final double increment) {
     this.numDNA += increment;
+  }
+  
+  /**
+   * @return the numCarb
+   */
+  public double getNumCarb() {
+    return numCarb;
+  }
+
+  /**
+   * @param newnumDNA the numDNA to set
+   */
+  protected void setNumCarb(final double newnumCarb) {
+    this.numCarb = newnumCarb;
+  }
+
+  /**
+   * @param increment the numCarb to increment
+   */
+  protected void incrementNumCarb(final double increment) {
+    this.numCarb += increment;
   }
 
   /**
@@ -978,6 +1021,10 @@ public class CoefCalcCompute extends CoefCalc {
     double dnaMass = ATOMIC_MASS_UNIT * DNA_NUCLEOTIDE_MASS * numDNA
         * numMonomers;
     dnaMass /= cellVolume * DNA_DENSITY * ANGSTROMS_TO_ML;
+    
+    double carbMass = ATOMIC_MASS_UNIT * CARBOHYDRATE_AVE_MASS * numCarb
+        * numMonomers;
+    carbMass /= cellVolume * CARBOHYDRATE_DENSITY * ANGSTROMS_TO_ML;
 
     // heteroatom mass only used in PDBs, otherwise this value is 0 anyway.
 
@@ -1002,7 +1049,7 @@ public class CoefCalcCompute extends CoefCalc {
     // remaining mass to be found in the crystal. Magic!
 
     double solventFraction = 1 - proteinMass - rnaMass - dnaMass
-        - hetatmMass;
+        - hetatmMass - carbMass;
 
     // sanity check
     // TODO: Print to STDERR and/or crash out.
@@ -1287,6 +1334,7 @@ public class CoefCalcCompute extends CoefCalc {
     } else {
       macromolecularOccurrence.put(element, increment);
     }
+ //   System.out.println("test");
   }
 
   public void setMacromolecularOccurrence(final Element element,

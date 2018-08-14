@@ -77,6 +77,7 @@ scope {
 	int 			numRes; 
 	int 			numRNA;
 	int 			numDNA;
+	int                     numCarb;
 	List<String>    smallMoleAtomNames;
 	List<Double>    smallMoleAtomNums; 
 	List<String>	heavyProteinAtomNames;
@@ -105,7 +106,8 @@ if ($crystal::crystalCoefCalc == 2)
   													$crystal::heavyProteinAtomNames, $crystal::heavyProteinAtomNums,
   													$crystal::heavySolutionConcNames, $crystal::heavySolutionConcNums,
   													$crystal::cryoSolutionMolecule, $crystal::cryoSolutionConc,
-  													$crystal::solFrac, $crystal::oilBased, 	$crystal::calcSurrounding);
+  													$crystal::solFrac, $crystal::oilBased, 	$crystal::calcSurrounding,
+  													$crystal::numCarb);
 }
 
 if ($crystal::crystalCoefCalc == 3) {
@@ -131,7 +133,8 @@ if ($crystal::crystalCoefCalc == 5)
   													$crystal::numRes, $crystal::numRNA, $crystal::numDNA,
   													$crystal::heavyProteinAtomNames, $crystal::heavyProteinAtomNums,
   													$crystal::heavySolutionConcNames, $crystal::heavySolutionConcNums,
-  													$crystal::solFrac, $crystal::proteinConc);
+  													$crystal::solFrac, $crystal::proteinConc,
+  													$crystal::numCarb);
 }
 
 if ($crystal::crystalCoefCalc == 6)
@@ -142,7 +145,8 @@ if ($crystal::crystalCoefCalc == 6)
   													$crystal::heavySolutionConcNames, $crystal::heavySolutionConcNums,
   													$crystal::solFrac, $crystal::seqFile,
   													$crystal::cryoSolutionMolecule, $crystal::cryoSolutionConc,
-  													$crystal::oilBased, 	$crystal::calcSurrounding);
+  													$crystal::oilBased, 	$crystal::calcSurrounding,
+  													$crystal::numCarb);
 }
 
 if ($crystal::crystalCoefCalc == 7)
@@ -150,7 +154,8 @@ if ($crystal::crystalCoefCalc == 7)
   $crystal::crystalCoefCalcClass = new CoefCalcFromSequenceSAXS($crystal::cellA, $crystal::cellB, $crystal::cellC, $crystal::cellAl, $crystal::cellBe, $crystal::cellGa,
   													$crystal::heavyProteinAtomNames, $crystal::heavyProteinAtomNums,
   													$crystal::heavySolutionConcNames, $crystal::heavySolutionConcNums,
-  													$crystal::solFrac, $crystal::proteinConc, $crystal::seqFile);
+  													$crystal::solFrac, $crystal::proteinConc, $crystal::seqFile,
+  													$crystal::numCarb);
 }
 
 if ($crystal::crystalCoefCalc == 8)
@@ -241,6 +246,7 @@ crystalLine
 	| o=numresidues 		{ $crystal::numRes					= $o.value;	}
 	| p=numRNA 				{ $crystal::numRNA					= $p.value;	}
 	| q=numDNA 				{ $crystal::numDNA					= $q.value;	}
+	| qa=numcarb 				{ $crystal::numCarb					= $qa.value;	}
 	| r=heavyProteinAtoms	{ $crystal::heavyProteinAtomNames	= $r.names;
 							  $crystal::heavyProteinAtomNums	= $r.num;	}
 	| s=heavySolutionConc	{ $crystal::heavySolutionConcNames	= $s.names;
@@ -381,6 +387,10 @@ NUMRNA : ('N'|'n')('U'|'u')('M'|'m')('R'|'r')('N'|'n')('A'|'a') ;
 numDNA returns [int value]
 	: NUMDNA a=FLOAT {$value = Integer.parseInt($a.text);};
 NUMDNA : ('N'|'n')('U'|'u')('M'|'m')('D'|'d')('N'|'n')('A'|'a') ;
+
+numcarb returns [int value]
+	: NUMCARB a=FLOAT {$value = Integer.parseInt($a.text);};
+NUMCARB : ('N'|'n')('U'|'u')('M'|'m')('C'|'c')('A'|'a')('R'|'r')('B'|'b') ;
 
 heavyProteinAtoms returns [List<String> names, List<Double> num;]
 @init{

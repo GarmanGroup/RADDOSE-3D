@@ -22,7 +22,8 @@ public class CoefCalcFromSequenceSAXS extends CoefCalcFromSequence {
       Double cellAlpha, Double cellBeta, Double cellGamma, 
       List<String> heavyProteinAtomNames, List<Double> heavyProteinAtomNums, 
       List<String> heavySolutionConcNames, List<Double> heavySolutionConcNums, 
-      Double solventFraction, Double proteinConc, String seqFile) {
+      Double solventFraction, Double proteinConc, String seqFile,
+      final int numCarb) {
     
     /**
      * Create local variables for the unit cell parameters.
@@ -87,16 +88,18 @@ public class CoefCalcFromSequenceSAXS extends CoefCalcFromSequence {
     this.setNumMonomers(numMonomers);
     
     calculateHeavyAtomOccurrences(numMonomers, sf, heavyProteinAtomNames,
-        heavyProteinAtomNums, heavySolutionConcNames, heavySolutionConcNums);
+        heavyProteinAtomNums, heavySolutionConcNames, heavySolutionConcNums, numCarb);
     
     multiplyAtoms(this.getNumMonomers());
+    
+    
     
     super.calculateDensity(); 
   }
 
   public void calculateHeavyAtomOccurrences(int monomers, Double solventFraction,
       List<String> heavyProteinAtomNames, List<Double> heavyProteinAtomNums,
-      List<String> heavySolvConcNames, List<Double> heavySolvConcNums) {
+      List<String> heavySolvConcNames, List<Double> heavySolvConcNums, final int numCarb) {
 
     // Start by dealing with heavy atom in the
     // protein and adding these to the unit cell.
@@ -108,8 +111,8 @@ public class CoefCalcFromSequenceSAXS extends CoefCalcFromSequence {
         // note: heavy atoms are provided per monomer,
         // so multiply by number of monomers.
         incrementMacromolecularOccurrence(heavyAtom,
-            heavyProteinAtomNums.get(i)
-                * monomers);
+            heavyProteinAtomNums.get(i) );
+  //              * monomers);  //Atoms multiplied by number of monomers later on
       }
     }
 
@@ -127,6 +130,9 @@ public class CoefCalcFromSequenceSAXS extends CoefCalcFromSequence {
     }
 
     calculateSolventWater(newSolventFraction);
+    
+    //add in carbs 
+    this.addCarbs(numCarb);
   }
   
   /**

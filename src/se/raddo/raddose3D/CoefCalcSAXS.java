@@ -25,6 +25,11 @@ public class CoefCalcSAXS extends CoefCalcFromParams {
    * = grams/mole)
    */
   private static final double AVG_DNA_MASS                        = 327.0;
+  
+  /**
+   * Average weight of a carbohydrate residue.
+   */
+  protected static final double      AVG_CARB_MASS          = 180.0;
 
   /**
    * Conversion factor to convert Angstroms^3 to litres.
@@ -61,7 +66,8 @@ public class CoefCalcSAXS extends CoefCalcFromParams {
       final List<String> heavySolutionConcNames,
       final List<Double> heavySolutionConcNums,
       final Double solventFraction,
-      final Double proteinConc) {
+      final Double proteinConc,
+      final int numCarb) {
 
     /*
      * Create local variables for the unit cell parameters.
@@ -109,7 +115,7 @@ public class CoefCalcSAXS extends CoefCalcFromParams {
 
     //Calculate the number of monomers
     int numMonomers = calculateNumMonomers(numResidues, numRNA, numDNA,
-        proteinConc, unitCellVolume);
+        proteinConc, unitCellVolume, numCarb);
     
     //Add these here as not passing in the surrounding cryo-solution into SAXS
     List<String> emptyAtoms = new ArrayList<String>();
@@ -117,7 +123,7 @@ public class CoefCalcSAXS extends CoefCalcFromParams {
 
     calculateAtomOccurrences(numMonomers, numResidues, numRNA, numDNA,
         sf, heavyProteinAtomNames, heavyProteinAtomNums,
-        heavySolutionConcNames, heavySolutionConcNums, emptyAtoms, emptyNumbers, null, null);
+        heavySolutionConcNames, heavySolutionConcNums, emptyAtoms, emptyNumbers, null, null, numCarb);
     
     super.calculateDensity();
   }
@@ -134,14 +140,15 @@ public class CoefCalcSAXS extends CoefCalcFromParams {
    */
   private int calculateNumMonomers(final int numberOfResidues,
       final int numberOfDNAResidues, final int numberOfRNAResidues,
-      final double proteinConcentration, final double volumeAngstromsCubed) {
+      final double proteinConcentration, final double volumeAngstromsCubed, final int numCarbResidues) {
 
     //Calculate molarity of solution as concentration divided by the total
     //molecular mass.
     double molarity = proteinConcentration
         / (AVG_RESIDUE_MASS * numberOfResidues
             + AVG_DNA_MASS * numberOfDNAResidues
-            + AVG_RNA_MASS * numberOfRNAResidues);
+            + AVG_RNA_MASS * numberOfRNAResidues
+            + AVG_CARB_MASS * numCarbResidues);
 
     // Calculate volume in litres
     double volumeLitres = ANGSTROM_TO_LITRE_VOLUME_CONVERSION

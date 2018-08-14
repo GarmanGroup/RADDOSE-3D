@@ -721,10 +721,10 @@ public class CrystalPolyhedron extends Crystal {
                             final double xCryst, final double yCryst, final double zCryst) {
     double minDimCryst = Math.min(zCryst, Math.min(xCryst, yCryst)); // incorporste my beam into min dim
     double minDimBeam = beam.beamMinumumDimension();
-    double minDim = Math.min(minDimBeam,  minDimCryst);
+ //   double minDim = Math.min(minDimBeam,  minDimCryst);
     
-    double crystalVolume = xCryst * yCryst * zCryst;
-    double beamVolume = maxPEDistance * beam.getBeamArea();
+ //   double crystalVolume = xCryst * yCryst * zCryst;
+ //   double beamVolume = maxPEDistance * beam.getBeamArea();
     
     double pixelsPerMicron =  (1/((double)maxPEDistance)) * 20;
     

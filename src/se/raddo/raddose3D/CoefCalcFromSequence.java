@@ -54,7 +54,8 @@ public class CoefCalcFromSequence extends CoefCalcCompute{
       List<String> heavySolutionConcNames, List<Double> heavySolutionConcNums,
       Double solventFraction, String sequenceFile,
       final List<String> cryoSolutionMolecule,
-      final List<Double> cryoSolutionConc, final String oilBased, final String calcSurrounding) {
+      final List<Double> cryoSolutionConc, final String oilBased, final String calcSurrounding,
+      final int numCarb) {
     
     Double alpha = cellAlpha;
     Double beta = cellBeta;
@@ -86,7 +87,7 @@ public class CoefCalcFromSequence extends CoefCalcCompute{
 
     calculateAtomOccurrences(numMonomers, sf, heavyProteinAtomNames, 
         heavyProteinAtomNums, heavySolutionConcNames, heavySolutionConcNums,
-        sequenceFile, cryoSolutionMolecule, cryoSolutionConc, oilBased, calcSurrounding);
+        sequenceFile, cryoSolutionMolecule, cryoSolutionConc, oilBased, calcSurrounding, numCarb);
     
     
     multiplyAtoms(this.getNumMonomers());
@@ -112,7 +113,8 @@ public class CoefCalcFromSequence extends CoefCalcCompute{
       List<String> heavySolvConcNames, List<Double> heavySolvConcNums,
       String seqFile,
       final List<String> cryoSolutionMolecule,
-      final List<Double> cryoSolutionConc, final String oilBased, String calcSurrounding) {
+      final List<Double> cryoSolutionConc, final String oilBased, String calcSurrounding,
+      final int numCarb) {
 
     // Start by dealing with heavy atom in the
     // protein and adding these to the unit cell.
@@ -124,8 +126,8 @@ public class CoefCalcFromSequence extends CoefCalcCompute{
         // note: heavy atoms are provided per monomer,
         // so multiply by number of monomers.
         incrementMacromolecularOccurrence(heavyAtom,
-            heavyProteinAtomNums.get(i)
-                * monomers);
+            heavyProteinAtomNums.get(i) );
+     //           * monomers);   //Multiply all atoms by number of monomers later on
       }
     }
 
@@ -167,6 +169,25 @@ public class CoefCalcFromSequence extends CoefCalcCompute{
     }
 
     calculateSolventWater(newSolventFraction);
+    
+    addCarbs(numCarb);
+  }
+  
+  public void addCarbs(final int numCarb) {
+    //add in carbs 
+    this.setNumCarb(numCarb);
+    Element hydrogen = getParser().getElement("H");
+    Element oxygen = getParser().getElement("O");
+    Element carbon = getParser().getElement("C");
+    
+    // Carbohydrate atoms: for every residue
+    // add 12 H + 6 C + 6 O 
+    incrementMacromolecularOccurrence(carbon, CARBONS_PER_CARBOHYDRATE
+        * getNumCarb());
+    incrementMacromolecularOccurrence(oxygen, OXYGENS_PER_CARBOHYDRATE
+        * getNumCarb());
+    incrementMacromolecularOccurrence(hydrogen, HYDROGENS_PER_CARBOHYDRATE
+        * getNumCarb());
   }
   
   /**
