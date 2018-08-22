@@ -1196,8 +1196,7 @@ public class CoefCalcCompute extends CoefCalc {
           + waterMolecules * 2);
 
       Element oxygen = elementDB.getElement("O");
-  //    setCryoOccurrence(oxygen, getCryoOccurrence(oxygen) + waterMolecules);
-      setCryoOccurrence(oxygen, getSolventOccurrence(oxygen) + waterMolecules);
+      setCryoOccurrence(oxygen, getCryoOccurrence(oxygen) + waterMolecules);
     }
     
     cryoElements = new HashSet<Element>();
