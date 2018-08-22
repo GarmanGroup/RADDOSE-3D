@@ -388,7 +388,7 @@ public class CoefCalcTests {
    * TODO: Refactor into Jenkins compatible test
    */
   public static void main(final String[] cmdLineParams) {  //not currently being tested
-    int testCount = 5;
+    int testCount = 7;
 
     Random random = new Random(0);
 
