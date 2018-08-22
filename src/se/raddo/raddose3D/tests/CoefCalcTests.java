@@ -270,7 +270,7 @@ public class CoefCalcTests {
     beamProperties.put(Beam.BEAM_ENERGY, 12.4);
     Beam b = new BeamTophat(beamProperties);
 
-    coefCalc.updateCoefficients(b);
+    coefCalc.updateCryoCoefficients(b);
 
     // Values obtained from RADDOSEv2, http://www.raddo.se/legacy/
     Assertion.equals(coefCalc.getCryoAbsorptionCoefficient(), 3.535855532631557E-4,
@@ -325,7 +325,8 @@ public class CoefCalcTests {
     beamProperties.put(Beam.BEAM_ENERGY, 12.4);
     Beam b = new BeamTophat(beamProperties);
 
-    coefCalc.updateCoefficients(b);
+    coefCalc.updateCryoCoefficients(b);
+    
 
     // Values obtained from RADDOSEv2, http://www.raddo.se/legacy/
     Assertion.equals(coefCalc.getCryoAbsorptionCoefficient(), 9.068762586797131E-5,
@@ -389,7 +390,6 @@ public class CoefCalcTests {
    */
   public static void main(final String[] cmdLineParams) {  //not currently being tested
     int testCount = 7;
-
     Random random = new Random(0);
 
     for (int i = 0; i < testCount; i++)
