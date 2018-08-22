@@ -1192,10 +1192,11 @@ public class CoefCalcCompute extends CoefCalc {
       // Add water molecules to hydrogen and oxygen.
 
       Element hydrogen = elementDB.getElement("H");
-      setCryoOccurrence(hydrogen, getSolventOccurrence(hydrogen)
+      setCryoOccurrence(hydrogen, getCryoOccurrence(hydrogen)
           + waterMolecules * 2);
 
       Element oxygen = elementDB.getElement("O");
+  //    setCryoOccurrence(oxygen, getCryoOccurrence(oxygen) + waterMolecules);
       setCryoOccurrence(oxygen, getSolventOccurrence(oxygen) + waterMolecules);
     }
     
