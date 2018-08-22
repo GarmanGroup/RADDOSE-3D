@@ -45,6 +45,8 @@ public class CoefCalcTests {
         coefCalc.getParser().getElement("H"));
 
     Assertion.equals(hydrogenOccurrence, oxygenOccurrence * 2, "O vs H");
+    
+    System.out.println("@Test - testCoefCalcWaterOnly");
   }
 
   /**
@@ -70,6 +72,7 @@ public class CoefCalcTests {
         coefCalc.getParser().getElement("ZN"));
 
     Assertion.equals(zincOccurrence, 48, "Zn = 48");
+    System.out.println("@Test - testHeavyProteinAtoms");
   }
 
   /**
@@ -116,6 +119,8 @@ public class CoefCalcTests {
         "Elastic Coefficient", 0.000005);
     Assertion.equals(coefCalc.getAttenuationCoefficient(), 0.001095,
         "Attenuation Coefficient", 0.000005);
+    
+    System.out.println("@Test - testCoefCalc1");
   }
 
   /**
@@ -168,6 +173,8 @@ public class CoefCalcTests {
         "Elastic Coefficient", 0.000005);
     Assertion.equals(coefCalc.getAttenuationCoefficient(), 0.004769,
         "Attenuation Coefficient", 0.000005);
+    
+    System.out.println("@Test - testCoefCalc2");
   }
 
   /**
@@ -215,6 +222,8 @@ public class CoefCalcTests {
         "Elastic Coefficient", 0.000005);
     Assertion.equals(coefCalc.getAttenuationCoefficient(), 4.97e-04,
         "Attenuation Coefficient", 0.000005);
+    
+    System.out.println("@Test - testCoefCalc3");
   }
   
   /**
@@ -258,6 +267,8 @@ public class CoefCalcTests {
       correctNumRNA = true;
     }
     assertTrue(correctNumRNA, "Sequence file parser is not counting the correct amount of RNA residues");
+    
+    System.out.println("@Test - testSequenceParser");
   }
 
   /**
@@ -332,6 +343,8 @@ public class CoefCalcTests {
       Assertion.equals(coefCalc.getAttenuationCoefficient(),
           coefCalcRDV2.getAttenuationCoefficient(),
           "Attenuation Coefficient", 0.000005);
+      
+      System.out.println("@Test - testCoefCalcMain " + String.valueOf(i));
     }
   }
 }
