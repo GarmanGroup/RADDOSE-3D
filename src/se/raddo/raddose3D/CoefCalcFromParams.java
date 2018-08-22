@@ -1,5 +1,6 @@
 package se.raddo.raddose3D;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class CoefCalcFromParams extends CoefCalcCompute {
@@ -49,7 +50,8 @@ public class CoefCalcFromParams extends CoefCalcCompute {
       final List<String> cryoSolutionMolecule,
       final List<Double> cryoSolutionConc,
       final Double solventFraction, final String oilBased, final String calcSurrounding,
-      final int numCarb) {
+      final int numCarb,
+      final List<String> oilElementNames, final List<Double> oilElementsNums, final double oilDensity) {
 
     Double alpha = cellAlpha;
     Double beta = cellBeta;
@@ -75,7 +77,8 @@ public class CoefCalcFromParams extends CoefCalcCompute {
 
     calculateAtomOccurrences(numMonomers, numResidues, numRNA, numDNA,
         sf, heavyProteinAtomNames, heavyProteinAtomNums,
-        heavySolutionConcNames, heavySolutionConcNums, cryoSolutionMolecule, cryoSolutionConc, oilBased, calcSurrounding, numCarb);
+        heavySolutionConcNames, heavySolutionConcNums, cryoSolutionMolecule, cryoSolutionConc, oilBased, calcSurrounding, numCarb,
+        oilElementNames, oilElementsNums, oilDensity);
     
     super.calculateDensity();
 
@@ -105,7 +108,8 @@ public class CoefCalcFromParams extends CoefCalcCompute {
       final List<Double> heavySolvConcNums,
       final List<String> cryoSolutionAtoms,
       final List<Double> cryoSolutionConcs, final String oilBased,  String calcSurrounding,
-      final int numCarbResidues) {
+      final int numCarbResidues,
+      final List<String> oilElementNames, final List<Double> oilElementsNums, final double oilDensity) {
 
     // Start by dealing with heavy atom in the
     // protein and adding these to the unit cell.
@@ -134,10 +138,10 @@ public class CoefCalcFromParams extends CoefCalcCompute {
       calcSurrounding = calcSurrounding.toUpperCase();
     }
     boolean surrounding = ("TRUE".equals(calcSurrounding));
-    
-    if (surrounding == true) {
+
+    if (surrounding == true) { 
       //populate the 'cryo unit cell' with these atoms 
-      addCryoConcentrations(cryoSolutionAtoms, cryoSolutionConcs, oilBased);
+      addCryoConcentrations(cryoSolutionAtoms, cryoSolutionConcs, oilBased, oilElementNames, oilElementsNums, oilDensity);
       super.calculateCryoDensity();
     }
     

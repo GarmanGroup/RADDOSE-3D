@@ -1130,25 +1130,9 @@ public class CoefCalcCompute extends CoefCalc {
    * @param oilBased
    */
   public void addCryoConcentrations(final List<String> cryoSolutionAtoms,
-      final List<Double> cryoSolutionConcs, final String oilBased) {
+      final List<Double> cryoSolutionConcs, final String oilBased, 
+      final List<String> oilElementNames, final List<Double> oilElementsNums, final double oilDensity) {
     double nonWaterAtoms = 0;
-    // add in the concentrations of the cryo-solution atoms
-    //need to only do if not null when change
-    if (cryoSolutionAtoms != null) {
-      for (int i = 0; i < cryoSolutionAtoms.size(); i++) {
-        Element cryoAtom = elementDB.getElement(cryoSolutionAtoms.get(i));
-        setCryoConcentration(cryoAtom, cryoSolutionConcs.get(i)
-            + getCryoConcentration(cryoAtom));
-      }
-       
-      for (Element e : cryoConcentration.keySet()) {
-        double conc = cryoConcentration.get(e);
-        double atomCount = conc * AVOGADRO_NUM * cellVolume * 1E-3 * 1E-27;
-        incrementCryoOccurrence(e, atomCount);
-        nonWaterAtoms += atomCount;
-      }
-    
-    }
     
     //check if oil based
     boolean calcWater = true;
@@ -1158,6 +1142,46 @@ public class CoefCalcCompute extends CoefCalc {
         calcWater = false;
       }
     }
+    
+    // add in the concentrations of the cryo-solution atoms
+    //need to only do if not null when change
+    if (cryoSolutionAtoms != null) {
+      for (int i = 0; i < cryoSolutionAtoms.size(); i++) {
+        Element cryoAtom = elementDB.getElement(cryoSolutionAtoms.get(i));
+        setCryoConcentration(cryoAtom, cryoSolutionConcs.get(i)
+            + getCryoConcentration(cryoAtom));
+      }
+    }
+      
+      // use oil density if oilbased is true 
+    if (calcWater == false) {
+      double gPerMol = 0;
+      if (oilElementNames != null) {
+      for (int i = 0; i < oilElementNames.size(); i++) {
+        Element cryoAtom = elementDB.getElement(oilElementNames.get(i));
+        //calculate the g/mol
+        gPerMol += cryoAtom.getAtomicWeight() *  oilElementsNums.get(i);
+      }
+      double oilConc = (oilDensity/gPerMol) * 1E6;
+      for (int i = 0; i < oilElementNames.size(); i++) {
+        Element cryoAtom = elementDB.getElement(oilElementNames.get(i));
+        double elementConc = oilConc * oilElementsNums.get(i);
+        setCryoConcentration(cryoAtom, elementConc
+            + getCryoConcentration(cryoAtom));
+      }
+      }
+    }
+       
+    for (Element e : cryoConcentration.keySet()) {
+        double conc = cryoConcentration.get(e);
+        double atomCount = conc * AVOGADRO_NUM * cellVolume * 1E-3 * 1E-27;
+        incrementCryoOccurrence(e, atomCount);
+        nonWaterAtoms += atomCount;
+    }
+    
+   
+    
+
     
     if (calcWater == true){
       //Add in water

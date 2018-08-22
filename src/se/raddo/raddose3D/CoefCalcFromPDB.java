@@ -8,6 +8,7 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -537,7 +538,8 @@ public class CoefCalcFromPDB extends CoefCalcCompute {
    */
   public CoefCalcFromPDB(final String pdbCode,
       final List<String> cryoSolutionMolecule,
-      final List<Double> cryoSolutionConc, final String oilBased, String calcSurrounding) {
+      final List<Double> cryoSolutionConc, final String oilBased, String calcSurrounding,
+      final List<String> oilElementNames, final List<Double> oilElementsNums, final double oilDensity) {
     
 
     
@@ -561,7 +563,7 @@ public class CoefCalcFromPDB extends CoefCalcCompute {
     
     if (surrounding == true) { 
       //populate the 'cryo unit cell' with these atoms 
-      addCryoConcentrations(cryoSolutionMolecule, cryoSolutionConc, oilBased);
+      addCryoConcentrations(cryoSolutionMolecule, cryoSolutionConc, oilBased, oilElementNames, oilElementsNums, oilDensity);
       super.calculateCryoDensity();
     }
   }
@@ -578,7 +580,8 @@ public class CoefCalcFromPDB extends CoefCalcCompute {
       final List<String> heavySolvConcNames,
       final List<Double> heavySolvConcNums,
       final List<String> cryoSolutionMolecule,
-      final List<Double> cryoSolutionConc, final String oilBased, String calcSurrounding) {
+      final List<Double> cryoSolutionConc, final String oilBased, String calcSurrounding,
+      final List<String> oilElementNames, final List<Double> oilElementsNums, final double oilDensity) {
 
     this.addSolventConcentrations(heavySolvConcNames, heavySolvConcNums);
 
@@ -607,11 +610,12 @@ public class CoefCalcFromPDB extends CoefCalcCompute {
     if (calcSurrounding != null) {
       calcSurrounding = calcSurrounding.toUpperCase();
     }
-    boolean surrounding = ("TRUE".equals(calcSurrounding));
     
+    boolean surrounding = ("TRUE".equals(calcSurrounding));
+
     if (surrounding == true) { 
       //populate the 'cryo unit cell' with these atoms 
-      addCryoConcentrations(cryoSolutionMolecule, cryoSolutionConc, oilBased);
+      addCryoConcentrations(cryoSolutionMolecule, cryoSolutionConc, oilBased, oilElementNames, oilElementsNums, oilDensity);
       super.calculateCryoDensity();
     }
   }

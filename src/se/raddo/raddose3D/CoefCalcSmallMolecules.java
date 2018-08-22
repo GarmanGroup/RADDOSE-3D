@@ -45,7 +45,8 @@ public class CoefCalcSmallMolecules extends CoefCalcCompute {
       final Double solventFraction,
       final List<String> cryoSolutionMolecule,
       final List<Double> cryoSolutionConc,
-      final String oilBased, final String calcSurrounding) {
+      final String oilBased, final String calcSurrounding,
+      final List<String> oilElementNames, final List<Double> oilElementsNums, final double oilDensity) {
 
     Double alpha = cellAlpha;
     Double beta = cellBeta;
@@ -75,7 +76,8 @@ public class CoefCalcSmallMolecules extends CoefCalcCompute {
     
     calculateAtomOccurrences(numMonomers,
         sf, smallMoleAtomNames, smallMoleAtomNums,
-        heavySolutionConcNames, heavySolutionConcNums, cryoSolutionMolecule, cryoSolutionConc, oilBased, calcSurrounding);
+        heavySolutionConcNames, heavySolutionConcNums, cryoSolutionMolecule, cryoSolutionConc, oilBased, calcSurrounding,
+        oilElementNames, oilElementsNums, oilDensity);
     
     super.calculateDensity();  //Calculate density if where presentElements is filled in coefCalcCompute so this must be called
   }
@@ -99,7 +101,8 @@ public class CoefCalcSmallMolecules extends CoefCalcCompute {
       final List<Double> heavySolvConcNums,
       final List<String> cryoSolutionAtoms,
       final List<Double> cryoSolutionConcs,
-      final String oilBased, String calcSurrounding) {
+      final String oilBased, String calcSurrounding,
+      final List<String> oilElementNames, final List<Double> oilElementsNums, final double oilDensity) {
 
     // Start by dealing with the atoms in each small molecule
     // and adding these to the unit cell.    
@@ -130,7 +133,7 @@ public class CoefCalcSmallMolecules extends CoefCalcCompute {
     
     if (surrounding == true) {
       //populate the 'cryo unit cell' with these atoms 
-      addCryoConcentrations(cryoSolutionAtoms, cryoSolutionConcs, oilBased);
+      addCryoConcentrations(cryoSolutionAtoms, cryoSolutionConcs, oilBased, oilElementNames, oilElementsNums, oilDensity);
       super.calculateCryoDensity();
     }
    

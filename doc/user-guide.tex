@@ -272,7 +272,7 @@ Specifies the thickness of the container encasing the irradiated sample. The thi
 \subsection{\Keyword{CONTAINERDENSITY}}
 
 \noindent \Keyword{CONTAINERDENSITY \textit{F}}
-Specifies the density of the container encasing the irradiated sample. The density should be given in grams/centimetre.
+Specifies the density of the container encasing the irradiated sample. The density should be given in grams/centimetre\textsuperscript{3}.
 
 
 \newpage
@@ -519,21 +519,14 @@ Whether or not to include an explicit 3D model for fluorescent X-ray escape from
 Whether or not to include photoelectron entry from the surrounding material into the crystal volume. Set to \Keyword{\textit{TRUE}} to include or \Keyword{\textit{FALSE}} otherwise (defaults to \Keyword{\textit{FALSE}} if not set).
 Note that \Keyword{CALCULATEPEESCAPE} must be set to \Keyword{\textit{TRUE}} for this option to be used.
 
-\subsection{\Keyword{OILBASED}}
-\label{oilbased}
-
-\noindent \Keyword{OILBASED \textit{BOOLEAN}}
-Whether or not the surrounding is oil based. Set to \Keyword{\textit{TRUE}} to indicate oil based or \Keyword{\textit{FALSE}} otherwise (defaults to \Keyword{\textit{FALSE}} if not set).
-
 \subsection{\Keyword{SURROUNDINGHEAVYCONC}}
 \label{surroundingheavyconc}
 
 \noindent \Keyword{SURROUNDINGHEAVYCONC \textit{El I} (\textit{El I} (\textit{El I} ..))}
 defines the concentration of elements (not including water) in the solvent in millimoles per litre. Oxygen and lighter elements should not be specified.
 
-The command \Keyword{SOLVENTHEAVYCONC Na 1000 Cl 1000} specifies 1M sodium chloride in the surrounding.
+The command \Keyword{SURROUNDINGHEAVYCONC Na 1000 Cl 1000} specifies 1M sodium chloride in the surrounding.
 
-Note if \Keyword{OILBASED} is set to \Keyword{\textit{TRUE}}, all elements in the surrounding must be specified.
 
 \subsection{\Keyword{GONIOMETERAXIS}}
 \label{goniometeraxis}
@@ -543,6 +536,28 @@ specifies the orientation of the goniometer. Currently only 0 and 90 are accepte
 goniometer (parallel to the floor) and 90 a vertical goniometer (perpendicular to the floor).
 
 The default value for \textit{I} is 0 (horizontal).
+
+\subsection{\Keyword{OILBASED}}
+\label{oilbased}
+
+\noindent \Keyword{OILBASED \textit{BOOLEAN}}
+Whether or not the surrounding is oil based. Set to \Keyword{\textit{TRUE}} to indicate oil based or \Keyword{\textit{FALSE}} otherwise (defaults to \Keyword{\textit{FALSE}} if not set).
+
+\subsection{\Keyword{OILELEMENTS}}
+\label{oilelements}
+
+\noindent \Keyword{OILELEMENTS  \textit{El I} (\textit{El I} (\textit{El I} ..))}
+defines the formula of a lipid based surrounding material. Only to be used when \Keyword{\textit{OILBASED }} and \Keyword{\textit{CALCSURROUNDING}} are set to \Keyword{\textit{TRUE}}
+
+The command \Keyword{OILELEMENTS C 3 H 8} specifies elemental composition of 3 carbon atoms for every 8 hydrogen atoms
+
+\subsection{\Keyword{OILDENSITY}}
+\label{oildensity}
+\noindent \Keyword{SOLVENTFRACTION \textit{F}}
+defines the density of a lipid based surrounding materia in g/ml. Only to be used when \Keyword{\textit{OILBASED }} and \Keyword{\textit{CALCSURROUNDING}} are set to \Keyword{\textit{TRUE}}
+
+
+
 
 
 \label{RDv3End}

@@ -88,6 +88,9 @@ scope {
 	List<Double>	cryoSolutionConc;
 	Double 			solFrac;
 	String                 oilBased;
+	List<String>         oilNames;
+	List<Double>          oilNums;
+	Double 		      oilDensity;
 	String 	           calcSurrounding;
     HashMap<Object, Object> crystalProperties;
 	}
@@ -101,13 +104,16 @@ if ($crystal::crystalCoefCalc == 1) {
 }
 if ($crystal::crystalCoefCalc == 2)
 {
+   if ($crystal::oilDensity == null){
+      $crystal::oilDensity = 0.0 ;
+   }
   $crystal::crystalCoefCalcClass = new CoefCalcFromParams($crystal::cellA, $crystal::cellB, $crystal::cellC, $crystal::cellAl, $crystal::cellBe, $crystal::cellGa,
   													$crystal::numMon, $crystal::numRes, $crystal::numRNA, $crystal::numDNA,
   													$crystal::heavyProteinAtomNames, $crystal::heavyProteinAtomNums,
   													$crystal::heavySolutionConcNames, $crystal::heavySolutionConcNums,
   													$crystal::cryoSolutionMolecule, $crystal::cryoSolutionConc,
   													$crystal::solFrac, $crystal::oilBased, 	$crystal::calcSurrounding,
-  													$crystal::numCarb);
+  													$crystal::numCarb, $crystal::oilNames, $crystal::oilNums,  $crystal::oilDensity);
 }
 
 if ($crystal::crystalCoefCalc == 3) {
@@ -120,10 +126,13 @@ if ($crystal::crystalCoefCalc == 3) {
 
 if ($crystal::crystalCoefCalc == 4)
 {
+   if ($crystal::oilDensity == null){
+      $crystal::oilDensity = 0.0 ;
+   }
   if ($crystal::heavySolutionConcNames != null)
-  	$crystal::crystalCoefCalcClass = new CoefCalcFromPDB($crystal::pdb, $crystal::heavySolutionConcNames, $crystal::heavySolutionConcNums, $crystal::cryoSolutionMolecule, $crystal::cryoSolutionConc, $crystal::oilBased, 	$crystal::calcSurrounding	);
+  	$crystal::crystalCoefCalcClass = new CoefCalcFromPDB($crystal::pdb, $crystal::heavySolutionConcNames, $crystal::heavySolutionConcNums, $crystal::cryoSolutionMolecule, $crystal::cryoSolutionConc, $crystal::oilBased, 	$crystal::calcSurrounding, $crystal::oilNames, $crystal::oilNums, $crystal::oilDensity);
   else
-	$crystal::crystalCoefCalcClass = new CoefCalcFromPDB($crystal::pdb, $crystal::cryoSolutionMolecule, $crystal::cryoSolutionConc, $crystal::oilBased, 	$crystal::calcSurrounding	);
+	$crystal::crystalCoefCalcClass = new CoefCalcFromPDB($crystal::pdb, $crystal::cryoSolutionMolecule, $crystal::cryoSolutionConc, $crystal::oilBased, 	$crystal::calcSurrounding, $crystal::oilNames, $crystal::oilNums, $crystal::oilDensity);
   													  													
 }
 
@@ -139,6 +148,9 @@ if ($crystal::crystalCoefCalc == 5)
 
 if ($crystal::crystalCoefCalc == 6)
 {
+   if ($crystal::oilDensity == null){
+      $crystal::oilDensity = 0.0 ;
+   }
   $crystal::crystalCoefCalcClass = new CoefCalcFromSequence($crystal::cellA, $crystal::cellB, $crystal::cellC, $crystal::cellAl, $crystal::cellBe, $crystal::cellGa,
   													$crystal::numMon,
   													$crystal::heavyProteinAtomNames, $crystal::heavyProteinAtomNums,
@@ -146,7 +158,7 @@ if ($crystal::crystalCoefCalc == 6)
   													$crystal::solFrac, $crystal::seqFile,
   													$crystal::cryoSolutionMolecule, $crystal::cryoSolutionConc,
   													$crystal::oilBased, 	$crystal::calcSurrounding,
-  													$crystal::numCarb);
+  													$crystal::numCarb, $crystal::oilNames, $crystal::oilNums, $crystal::oilDensity);
 }
 
 if ($crystal::crystalCoefCalc == 7)
@@ -160,13 +172,17 @@ if ($crystal::crystalCoefCalc == 7)
 
 if ($crystal::crystalCoefCalc == 8)
 {
+   if ($crystal::oilDensity == null){
+      $crystal::oilDensity = 0.0 ;
+   }
   $crystal::crystalCoefCalcClass = new CoefCalcSmallMolecules($crystal::cellA, $crystal::cellB, $crystal::cellC, $crystal::cellAl, $crystal::cellBe, $crystal::cellGa,
    													$crystal::numMon,
   													$crystal::smallMoleAtomNames, $crystal::smallMoleAtomNums,
   													$crystal::heavySolutionConcNames, $crystal::heavySolutionConcNums,
   													$crystal::solFrac,
   													$crystal::cryoSolutionMolecule, $crystal::cryoSolutionConc,
-  													$crystal::oilBased, 	$crystal::calcSurrounding);
+  													$crystal::oilBased, 	$crystal::calcSurrounding,
+  													$crystal::oilNames, $crystal::oilNums, $crystal::oilDensity);
 }
 
 if ($crystal::crystalCoefCalc == 9)
@@ -273,6 +289,9 @@ crystalLine
 	| ff=oilBased	                { $crystal::oilBased	= $ff.value;  }
 	| gg=goniometerAxis		{ $crystal::crystalProperties.put(Crystal.CRYSTAL_GONIOMETER_AXIS, $gg.value); }
 	| hh=calcSurrounding                { $crystal::calcSurrounding	= $hh.value;  }
+	| ii=oilElements                { $crystal::oilNames    = $ii.names;  
+		                	         $crystal::oilNums	= $ii.num;  }
+	| jj=oilDensity	                { $crystal::oilDensity			= $jj.oildens;  }
 							
 	;
 
@@ -516,6 +535,18 @@ calcSurrounding returns [String value]
 	: CALCSURROUNDING a=STRING {$value = $a.text;};
 CALCSURROUNDING : ('C'|'c')('A'|'a')('L'|'l')('C'|'c')('S'|'s')('U'|'u')('R'|'r')('R'|'r')('O'|'o')('U'|'u')('N'|'n')('D'|'d')('I'|'i')('N'|'n')('G'|'g') ;
 	
+
+oilElements returns [List<String> names, List<Double> num;]
+@init{
+$names 	= new ArrayList<String>();
+$num	= new ArrayList<Double>();
+}
+	: OILELEMENTS (a=ELEMENT b=FLOAT {$names.add($a.text); $num.add(Double.parseDouble($b.text)); } )+ ; 	
+OILELEMENTS : ('O'|'o')('I'|'i')('L'|'l')('E'|'e')('L'|'l')('E'|'e')('M'|'m')('E'|'e')('N'|'n')('T'|'t')('S'|'s') ;
+
+oilDensity returns [double oildens]
+	: OILDENSITY a=FLOAT {$oildens = Double.parseDouble($a.text);};
+OILDENSITY : ('O'|'o')('I'|'i')('L'|'l')('D'|'d')('E'|'e')('N'|'n')('S'|'s')('I'|'i')('T'|'t')('Y'|'y') ;
 	
 // ------------------------------------------------------------------
 beam returns [Beam bObj]
