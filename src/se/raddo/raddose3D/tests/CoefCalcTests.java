@@ -74,6 +74,7 @@ public class CoefCalcTests {
     Assertion.equals(zincOccurrence, 48, "Zn = 48");
     System.out.println("@Test - testHeavyProteinAtoms");
   }
+  
 
   /**
    * Run an actual scenario and compare to values obtained from RADDOSE2.
@@ -227,10 +228,118 @@ public class CoefCalcTests {
   }
   
   /**
+   * Run an actual scenario - water based surrounding 
+   */
+  @Test
+  public void testCoefCalcWaterBasedSurrounding() {
+    List<String> heavyProtAtomNames = new ArrayList<String>();
+    List<Double> heavyProtAtomNums = new ArrayList<Double>();
+
+    List<String> heavySolutionConcNames = new ArrayList<String>();
+    List<Double> heavySolutionConcNums = new ArrayList<Double>();
+    
+    List<String> heavyCryoConcNames = new ArrayList<String>();
+    List<Double> heavyCryoConcNums = new ArrayList<Double>();
+    
+    //These are cryo can test later
+    List<String> emptyAtoms = new ArrayList<String>();
+    List<Double> emptyNumbers = new ArrayList<Double>();
+
+    heavyProtAtomNames.add("S");
+    heavyProtAtomNames.add("Zn");
+    heavyProtAtomNums.add(2.0);
+    heavyProtAtomNums.add(0.333);
+
+    heavySolutionConcNames.add("P");
+    heavySolutionConcNums.add(425.);
+    
+    heavyCryoConcNames.add("Na");
+    heavyCryoConcNames.add("Cl");
+    heavyCryoConcNums.add(1000.);
+    heavyCryoConcNums.add(1000.);
+
+    CoefCalcFromParams coefCalc = new CoefCalcFromParams(
+        78.02, 78.02, 78.02, 90.0, 90.0, 90.0, 24, 51, 0, 0,
+        heavyProtAtomNames, heavyProtAtomNums,
+        heavySolutionConcNames, heavySolutionConcNums, heavyCryoConcNames, heavyCryoConcNums, 0., null, "TRUE", 0, emptyAtoms, emptyNumbers, 0);
+
+    Map<Object, Object> beamProperties = new HashMap<Object, Object>();
+    beamProperties.put(Beam.BEAM_COLL_H, 10.);
+    beamProperties.put(Beam.BEAM_COLL_V, 10.);
+    beamProperties.put(Beam.BEAM_FLUX, 2e12);
+    beamProperties.put(Beam.BEAM_ENERGY, 12.4);
+    Beam b = new BeamTophat(beamProperties);
+
+    coefCalc.updateCoefficients(b);
+
+    // Values obtained from RADDOSEv2, http://www.raddo.se/legacy/
+    Assertion.equals(coefCalc.getCryoAbsorptionCoefficient(), 3.535855532631557E-4,
+        "Cryo Absorption Coefficient", 0.000005);
+
+    
+    System.out.println("@Test - testCoefCalcWaterSurrounding");
+  }
+  
+  /**
+   * Run an actual scenario - oil based surrounding 
+   */
+  @Test
+  public void testCoefCalcOilBasedSurrounding() {
+    List<String> heavyProtAtomNames = new ArrayList<String>();
+    List<Double> heavyProtAtomNums = new ArrayList<Double>();
+
+    List<String> heavySolutionConcNames = new ArrayList<String>();
+    List<Double> heavySolutionConcNums = new ArrayList<Double>();
+    
+    List<String> oilNames = new ArrayList<String>();
+    List<Double> oilNums = new ArrayList<Double>();
+    
+    
+    //These are cryo can test later
+    List<String> emptyAtoms = new ArrayList<String>();
+    List<Double> emptyNumbers = new ArrayList<Double>();
+
+    heavyProtAtomNames.add("S");
+    heavyProtAtomNames.add("Zn");
+    heavyProtAtomNums.add(2.0);
+    heavyProtAtomNums.add(0.333);
+
+    heavySolutionConcNames.add("P");
+    heavySolutionConcNums.add(425.);
+    
+    oilNames.add("C");
+    oilNames.add("H");
+    oilNums.add(3.0);
+    oilNums.add(8.0);  
+    
+
+    CoefCalcFromParams coefCalc = new CoefCalcFromParams(
+        78.02, 78.02, 78.02, 90.0, 90.0, 90.0, 24, 51, 0, 0,
+        heavyProtAtomNames, heavyProtAtomNums,
+        heavySolutionConcNames, heavySolutionConcNums, emptyAtoms, emptyNumbers, 0., "TRUE", "TRUE", 0, oilNames, oilNums, 1.2);
+
+    Map<Object, Object> beamProperties = new HashMap<Object, Object>();
+    beamProperties.put(Beam.BEAM_COLL_H, 10.);
+    beamProperties.put(Beam.BEAM_COLL_V, 10.);
+    beamProperties.put(Beam.BEAM_FLUX, 2e12);
+    beamProperties.put(Beam.BEAM_ENERGY, 12.4);
+    Beam b = new BeamTophat(beamProperties);
+
+    coefCalc.updateCoefficients(b);
+
+    // Values obtained from RADDOSEv2, http://www.raddo.se/legacy/
+    Assertion.equals(coefCalc.getCryoAbsorptionCoefficient(), 9.068762586797131E-5,
+        "Cryo Absorption Coefficient", 0.000005);
+
+    
+    System.out.println("@Test - testCoefCalcOilSurrounding");
+  }
+  
+  /**
    * This test checks that the sequence file parser is able to
    * parse the correct number of protein, DNA and RNA residues.
    */
-  public void testSequenceParser() {
+  public void testSequenceParser() {   //this is currently not being tested
     List<String> heavyProtAtomNames = new ArrayList<String>();
     List<Double> heavyProtAtomNums = new ArrayList<Double>();
 
@@ -278,7 +387,7 @@ public class CoefCalcTests {
    * 
    * TODO: Refactor into Jenkins compatible test
    */
-  public static void main(final String[] cmdLineParams) {
+  public static void main(final String[] cmdLineParams) {  //not currently being tested
     int testCount = 5;
 
     Random random = new Random(0);
