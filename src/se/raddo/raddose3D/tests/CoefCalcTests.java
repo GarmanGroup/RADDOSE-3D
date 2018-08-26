@@ -247,7 +247,7 @@ public class CoefCalcTests {
 
     heavyProtAtomNames.add("S");
     heavyProtAtomNames.add("Zn");
-    heavyProtAtomNums.add(2.0);
+    heavyProtAtomNums.add(6.0);
     heavyProtAtomNums.add(0.333);
 
     heavySolutionConcNames.add("P");
@@ -301,7 +301,7 @@ public class CoefCalcTests {
 
     heavyProtAtomNames.add("S");
     heavyProtAtomNames.add("Zn");
-    heavyProtAtomNums.add(2.0);
+    heavyProtAtomNums.add(6.0);
     heavyProtAtomNums.add(0.333);
 
     heavySolutionConcNames.add("P");
@@ -391,7 +391,7 @@ public class CoefCalcTests {
   public static void main(final String[] cmdLineParams) {  //not currently being tested
     int testCount = 7;
     Random random = new Random(0);
-
+    
     for (int i = 0; i < testCount; i++)
     {
       List<String> heavyProtAtomNames = new ArrayList<String>();
@@ -454,6 +454,9 @@ public class CoefCalcTests {
           "Attenuation Coefficient", 0.000005);
       
       System.out.println("@Test - testCoefCalcMain " + String.valueOf(i));
+      
+      
     }
+    
   }
 }

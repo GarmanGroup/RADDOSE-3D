@@ -13,15 +13,21 @@ package se.raddo.raddose3D.tests;
  */
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static org.testng.Assert.*;
 import org.testng.annotations.*;
 
+import se.raddo.raddose3D.Beam;
+import se.raddo.raddose3D.BeamTophat;
 import se.raddo.raddose3D.CoefCalc;
 import se.raddo.raddose3D.CoefCalcAverage;
 import se.raddo.raddose3D.Crystal;
 import se.raddo.raddose3D.CrystalCuboid;
+import se.raddo.raddose3D.CrystalPolyhedron;
 import se.raddo.raddose3D.CrystalSpherical;
+import se.raddo.raddose3D.CoefCalcFromParams;
 
 public class CrystalBasicTests {
   private static final Double   res  = 0.78;

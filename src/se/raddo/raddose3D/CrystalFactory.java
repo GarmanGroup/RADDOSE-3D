@@ -39,7 +39,7 @@ public class CrystalFactory extends ClassFactory {
     if ("cuboid".equalsIgnoreCase(crystalName)) {
       revisedCrystalName = "se.raddo.raddose3D.CrystalCuboid";
     } else if ("spherical".equalsIgnoreCase(crystalName)) {
-      revisedCrystalName = "se.raddo.raddose3D.CrystalSpherical";
+      revisedCrystalName = "se.raddo.raddose3D.CrystalSphericalNew";
     } else if ("polyhedron".equalsIgnoreCase(crystalName)) {
       revisedCrystalName = "se.raddo.raddose3D.CrystalPolyhedron";
     } else if ("cylinder".equalsIgnoreCase(crystalName)) {

@@ -1160,4 +1160,8 @@ public abstract class Crystal {
     maximumDimensions[1] = yMinMax[1];
     maximumDimensions[2]=  zMinMax[1];
   }
+  
+  public boolean getPEEscapeBool() {
+    return photoElectronEscape;
+  }
 }
