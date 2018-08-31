@@ -17,6 +17,8 @@ imaging real experimental X-ray beam profiles.
 Brought to you by the Garman Lab at the University of Oxford.
 http://www.bioch.ox.ac.uk/garmangroup
 
+If you have any questions on how to run RADDOSE-3D or would like advice on what inputs to use please email joshua.dickerson@oriel.ox.ac.uk  or create an issue.
+
 Usage
 ------
 
