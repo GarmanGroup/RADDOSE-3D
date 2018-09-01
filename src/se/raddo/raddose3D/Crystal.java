@@ -823,6 +823,7 @@ public abstract class Crystal {
               voxImageComptonFluence[i][j][k] = numberofphotons * voxImageElectronEnergyDose; //Re-calculate voxImageFluence using Compton electron energy
               double voxImageDoseCompton = fluenceToDoseFactorCompton * voxImageComptonFluence[i][j][k];
               
+              
               //elastic yield
               voxElasticYield[i][j][k] = fluenceToElasticFactor *
                   voxImageFluence[i][j][k]; //* beamEnergy;

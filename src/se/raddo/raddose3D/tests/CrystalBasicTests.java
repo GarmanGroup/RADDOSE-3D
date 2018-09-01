@@ -26,7 +26,7 @@ import se.raddo.raddose3D.CoefCalcAverage;
 import se.raddo.raddose3D.Crystal;
 import se.raddo.raddose3D.CrystalCuboid;
 import se.raddo.raddose3D.CrystalPolyhedron;
-import se.raddo.raddose3D.CrystalSpherical;
+import se.raddo.raddose3D.CrystalSphericalNew;
 import se.raddo.raddose3D.CoefCalcFromParams;
 
 public class CrystalBasicTests {
@@ -46,7 +46,7 @@ public class CrystalBasicTests {
     properties.put(Crystal.CRYSTAL_RESOLUTION, res);
     properties.put(Crystal.CRYSTAL_COEFCALC, coef);
 
-    crystArrayList.add(new CrystalSpherical(properties));
+    crystArrayList.add(new CrystalSphericalNew(properties));
     crystArrayList.add(new CrystalCuboid(properties));
     return crystArrayList;
   }

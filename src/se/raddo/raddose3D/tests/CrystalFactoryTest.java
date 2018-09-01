@@ -10,7 +10,7 @@ import se.raddo.raddose3D.CoefCalcAverage;
 import se.raddo.raddose3D.Crystal;
 import se.raddo.raddose3D.CrystalCuboid;
 import se.raddo.raddose3D.CrystalFactory;
-import se.raddo.raddose3D.CrystalSpherical;
+import se.raddo.raddose3D.CrystalSphericalNew;
 import se.raddo.raddose3D.DDMSimple;
 
 public class CrystalFactoryTest {
@@ -33,7 +33,7 @@ public class CrystalFactoryTest {
     CrystalFactory cf = new CrystalFactory();
 
     Crystal c = cf.createCrystal("spherical", defaultProperties());
-    assertTrue(c instanceof CrystalSpherical);
+    assertTrue(c instanceof CrystalSphericalNew);
     Assertion.equals(c.getCrystalPixPerUM(), CRYSTALRESOLUTIONMARKER,
         "Resolution");
 

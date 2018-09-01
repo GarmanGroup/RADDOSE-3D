@@ -12,7 +12,7 @@ public abstract class CoefCalc {
   public abstract void updateCoefficients(Beam b);
 
   /**
-   * Returns the current absorption coefficient. (Photoelectric and Compton)
+   * Returns the current absorption coefficient. (Photoelectric)
    * 
    * @return
    *         absorption coefficient in units m^-1 (tbc)
