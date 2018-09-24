@@ -64,6 +64,18 @@ public class CrystalPolyhedron extends Crystal {
   private static  double[] CRYO_GUMBEL_DISTN_CALC_SCALE = {0.002, 0.0076}; //initially set as 1.17, <20keV
 
   /**
+   * Constants for calculation of JohnsonSU distribution gamma and eta and loc/scale parameters.
+   */
+  private static  double JSU_DISTN_CALC_LOC; //initially set as 1.17, <20keV
+  private static  double JSU_DISTN_CALC_SCALE; //initially set as 1.17, <20keV
+  private static  double JSU_DISTN_CALC_GAMMA; //initially set as 1.17, <20keV
+  private static  double JSU_DISTN_CALC_ETA; //initially set as 1.17, <20keV
+  private static  double CRYO_JSU_DISTN_CALC_LOC; //initially set as 1.17, <20keV
+  private static  double CRYO_JSU_DISTN_CALC_SCALE; //initially set as 1.17, <20keV
+  private static  double CRYO_JSU_DISTN_CALC_GAMMA; //initially set as 1.17, <20keV
+  private static  double CRYO_JSU_DISTN_CALC_ETA; //initially set as 1.17, <20keV
+  
+  /**
    * Distance bins travelled by a photoelectron.
    */ 
   private double[]     PE_DISTANCES_TRAVELLED;
@@ -1011,9 +1023,36 @@ public class CrystalPolyhedron extends Crystal {
     }
   }
   
+  private void calculateJohnsonSUDistribution(final double[] distancesTravelled,
+      double[] johnsonDistribution, final double gamma, final double eta, final double loc, final double scale,
+      final int bins) {
+    for (int i = 0; i < bins; i++) {
+      double x = distancesTravelled[i];
+      double hypSinh = asinh((x-loc)/scale);
+      johnsonDistribution[i] = (eta / (Math.pow((Math.pow((x-loc), 2) + Math.pow(scale, 2)), 0.5)  
+                               * Math.pow(2*Math.PI, 0.5))) * 
+                               (Math.exp(-0.5*Math.pow((gamma + eta*hypSinh), 2)));
+    }
+    
+  }
+  
+  private double asinh(double x)
+  {
+    return Math.log(x + Math.sqrt(x*x + 1.0));
+  }
+  
   private double calculateGumbelPDF(final double x, final double mu, final double beta) {
     double z = (x-mu)/beta;
     double PDF = Math.exp(z - Math.exp(z)) / beta;
+    return PDF;
+  }
+  
+  private double calculateJohnsonPDF(final double x, final double gamma, final double eta, 
+      final double loc, final double scale) {
+    double hypSinh = asinh((x-loc)/scale);
+    double PDF = (eta / (Math.pow((Math.pow((x-loc), 2) + Math.pow(scale, 2)), 0.5)  
+        * Math.pow(2*Math.PI, 0.5))) * 
+        (Math.exp(-0.5*Math.pow((gamma + eta*hypSinh), 2)));
     return PDF;
   }
   
@@ -1068,7 +1107,7 @@ public class CrystalPolyhedron extends Crystal {
   private double[] getGumbelParamsForBeamEnergy(final double beamEnergy, final boolean cryo) {
     // Gumbel distribution for mean photoelectron path lengths depend on 
     // beam energy. Derived from Josh Dickerson's project
-    double energyCorrection = EnergyToSubtractFromPE;  // this isn't the right energy correction for the cryo...
+    double energyCorrection = EnergyToSubtractFromPE;  // this isn't the right energy correction for the cryo
     
     if (cryo == true) {
       energyCorrection = cryoEnergyToSubtractFromPE;
@@ -1090,8 +1129,46 @@ public class CrystalPolyhedron extends Crystal {
       gumbParams[1] = CRYO_GUMBEL_DISTN_CALC_SCALE[0]*Math.pow(peEnergy,2) 
           + CRYO_GUMBEL_DISTN_CALC_SCALE[1]*(peEnergy);
     }
-
+    
+  //  gumbParams[0] += 1;
+   // gumbParams[1] = 0.256487;
+    
     return gumbParams;
+  }
+  
+  /**
+   * Gets the distance distribution for a photoelectron
+   * 
+   * @param beamEnergy
+   * @return
+   */ 
+  private double[] getJohnsonParamsForBeamEnergy(final double beamEnergy, final boolean cryo) {
+    // Gumbel distribution for mean photoelectron path lengths depend on 
+    // beam energy. Derived from Josh Dickerson's project
+    double energyCorrection = EnergyToSubtractFromPE;  // this isn't the right energy correction for the cryo
+    
+    if (cryo == true) {
+      energyCorrection = cryoEnergyToSubtractFromPE;
+    }
+    
+    double[] johnsonParams = new double[4]; //0 = location parameter, 1 = scale parameter, 2 = gamma, 3 = eta
+     
+    double peEnergy = beamEnergy - energyCorrection;
+
+    if (cryo == false) {
+      johnsonParams[0] = JSU_DISTN_CALC_LOC;
+      johnsonParams[1] = JSU_DISTN_CALC_SCALE;
+      johnsonParams[2] = JSU_DISTN_CALC_GAMMA;
+      johnsonParams[3] = JSU_DISTN_CALC_ETA;
+    }
+    else {
+      johnsonParams[0] = CRYO_JSU_DISTN_CALC_LOC;
+      johnsonParams[1] = CRYO_JSU_DISTN_CALC_SCALE;
+      johnsonParams[2] = CRYO_JSU_DISTN_CALC_GAMMA;
+      johnsonParams[3] = CRYO_JSU_DISTN_CALC_ETA;
+    }
+    
+    return johnsonParams;
   }
   
   /**
@@ -1160,6 +1237,9 @@ public class CrystalPolyhedron extends Crystal {
   private  void setMaxPEDistance(final double beamEnergy) { //needs to be dynamic as it depends on beam energy
     double peEnergy = beamEnergy - EnergyToSubtractFromPE;
     int maxPEDistance = (int) Math.ceil(getMaxPEDistance(peEnergy, false));
+  //  int maxPEDistance = (int) Math.ceil(getMaxPEDistanceJohnson(peEnergy, false));
+    
+ //   int maxPEDistance = 3;
 
       //Get PE bins
     if (peRes >= 2) { //if user defined and sensible
@@ -1182,6 +1262,9 @@ public class CrystalPolyhedron extends Crystal {
         peDistBins += 1;
         // ramping it up now it is quicker
         peDistBins += 20;
+        
+        //test
+    //    peDistBins += 50;
       }
      }
  // Get PE distances
@@ -1283,6 +1366,52 @@ public class CrystalPolyhedron extends Crystal {
     return maxDistance;
   }
   
+  /**
+   * Takes the averaage photoelectron energy and calculates the maximum distance one can travel
+   * 
+   * @param peEnergy
+   * @return
+   */
+  private double getMaxPEDistanceJohnson(final double peEnergy, final boolean cryo) {
+    int energyRange = 0;
+    double locationParam = 0;
+    double scaleParam = 0;
+    double gamma = 0;
+    double eta = 0;
+    if (cryo == false) {
+    locationParam = JSU_DISTN_CALC_LOC;
+    scaleParam = JSU_DISTN_CALC_SCALE;
+    gamma = JSU_DISTN_CALC_GAMMA;
+    eta = JSU_DISTN_CALC_ETA;
+    }//need to change for cryo
+    else {
+      locationParam = CRYO_JSU_DISTN_CALC_LOC;
+      scaleParam = CRYO_JSU_DISTN_CALC_SCALE;
+      gamma = CRYO_JSU_DISTN_CALC_GAMMA;
+      eta = CRYO_JSU_DISTN_CALC_ETA;
+    }
+    
+
+    double modalHeight = calculateJohnsonPDF(locationParam, gamma, eta, locationParam, scaleParam);
+    double targetHeight = modalHeight * 0.001;
+    double calcHeight = modalHeight;
+    double step = peEnergy/100;
+    if (peEnergy < 10) {
+    step /= 10;
+    }
+    double maxDistance = locationParam;
+    while (calcHeight >= targetHeight) {
+      maxDistance += step;
+      calcHeight = calculateJohnsonPDF(maxDistance, gamma, eta, locationParam, scaleParam);
+      //escape clause in case there is an issue
+      if (maxDistance >= locationParam * 2) {
+        break;
+      }
+    }
+
+    return maxDistance;
+  }
+  
   @Override
   public void setPEparamsForCurrentBeam(final double beamEnergy, CoefCalc coefCalc, double[][] feFactors) {
     // Initialise crystal photolectron escape properties here for current beam
@@ -1292,6 +1421,13 @@ public class CrystalPolyhedron extends Crystal {
     double peEnergy = beamEnergy - EnergyToSubtractFromPE;
     GUMBEL_DISTN_CALC_LOC = setGumbelLoc(density, peEnergy);
     GUMBEL_DISTN_CALC_SCALE = setGumbelScale(density, peEnergy);
+    
+    double jsuParams[] = setJohnsonParams(density, peEnergy);
+    JSU_DISTN_CALC_LOC = jsuParams[0];
+    JSU_DISTN_CALC_SCALE = jsuParams[1];
+    JSU_DISTN_CALC_GAMMA = jsuParams[2];
+    JSU_DISTN_CALC_ETA = jsuParams[3];
+    
     //first of all need to get PE distances 
     setMaxPEDistance(beamEnergy);
     angularDistribution = setUpPEPolarisation(coefCalc, beamEnergy, feFactors, false);
@@ -1384,6 +1520,25 @@ public class CrystalPolyhedron extends Crystal {
     return gumbelParams;
   }
   
+  /**Sets the Location parameters for the Gumbel distribution based on density
+   * 
+   * 
+   * @param density
+   * @param peEnergy
+   * @return
+   */
+  private double[] setJohnsonParams(final double density, final double peEnergy) {
+    double[] johnsonParams = new double[4];
+    //for 11.25keV
+    johnsonParams[0] = 3.884704185; //loc
+    johnsonParams[1] = 0.991818699; //scale
+    johnsonParams[2] = 9.542206584; //gamma
+    johnsonParams[3] = 6.608091735; //eta
+    return johnsonParams;
+  }
+  
+  
+  
   /**
    * calculate the fraction of energy deposited by PE up to each 
    * distance, assuming PE distances follow a given distribution and convoluting with the energy
@@ -1395,9 +1550,20 @@ public class CrystalPolyhedron extends Crystal {
     // Set up a mean path length distribution
     double[] pathLengthDistn = new double[peDistBins];
 
+    
     double[] distnParams = getGumbelParamsForBeamEnergy(beamEnergy, false);
     calculateGumbelDistribution(PE_DISTANCES_TRAVELLED, pathLengthDistn, distnParams[0],
         distnParams[1], peDistBins);
+    
+    
+    /*
+    double[] distnParams = getJohnsonParamsForBeamEnergy(beamEnergy, false);
+    calculateJohnsonSUDistribution(PE_DISTANCES_TRAVELLED, pathLengthDistn, distnParams[2], distnParams[3], distnParams[0],
+        distnParams[1], peDistBins);
+    */
+    
+    
+    
     
     //I'm applying the energy distribution to each PE distance travelled so it can be combined with the distance distribution 
     double[][] totalEnergyDistn = new double[peDistBins][peDistBins];
@@ -1424,12 +1590,14 @@ public class CrystalPolyhedron extends Crystal {
           totEnergyIntegral[i] += width * energyHeight; 
         }
       }
-    }  
+    } 
+
     
-    /*
-     * The following code calculates the proportion of dose deposited along
-     * each track by the travelling PE
-     */  
+    
+     // The following code calculates the proportion of dose deposited along
+     // each track by the travelling PE
+      
+    
    double[] distanceWidths = new double[peDistBins];
    double[] distanceHeights = new double[peDistBins];
    int pathCount = -1;
@@ -1439,12 +1607,13 @@ public class CrystalPolyhedron extends Crystal {
      distanceHeights[pathCount] = (pathLengthDistn[l] + pathLengthDistn[l-1]) / 2;
    }
    
-   /*
-    * Starting at the last bin, the population of photoelectron that stop here is calculated based
-    * on the path length distribution. The energy deposition distribution then calculates where to deposit their energy
-    * along the path length. 
-    * Then move back one to second last bin and do the same and keep looping for all bins
-    */
+   
+    // Starting at the last bin, the population of photoelectron that stop here is calculated based
+    // on the path length distribution. The energy deposition distribution then calculates where to deposit their energy
+    // along the path length. 
+    // Then move back one to second last bin and do the same and keep looping for all bins
+    
+    
     for (int l = peDistBins-1; l > 0; l--) { //for every bin 
       for (int i = 0; i < peDistBins; i++) { //for every subset of electrons that stop at this path length
         double energyHeight = 0.;
@@ -1458,6 +1627,79 @@ public class CrystalPolyhedron extends Crystal {
         }
       }
     }
+
+    
+    /*
+    // get the energy propertion dist
+    double[][] totalEnergyDistn = new double[peDistBins-1][peDistBins-1];
+    double width = PE_DISTANCES_TRAVELLED[1] - PE_DISTANCES_TRAVELLED[0];
+    for (int i = 0; i < peDistBins-1; i++) {
+      double[] energyDistn = calculateEnergyDistn(PE_DISTANCES_TRAVELLED, peDistBins - i, peEnergy);
+      double[] energyPropDistn = new double[peDistBins - 1];
+      double tot = 0;
+      for (int l = 1; l < energyDistn.length; l++) {
+        tot += width * ((energyDistn[l] + energyDistn[l-1])/2);
+      }
+      for (int l = 1; l < energyDistn.length; l++) {
+        energyPropDistn[l-1] = (width * ((energyDistn[l] + energyDistn[l-1])/2))/tot;   //convert to a proportion
+      }
+      int length = energyPropDistn.length;
+      for (int j = (length - 1); j >= 0  ; j--) {
+      totalEnergyDistn[i][j] = energyPropDistn[j];  //i = 0 is longest distance, a high j is top energy
+      }
+    }
+    System.out.println("test");
+    
+    //Now get path lengths
+    double distnIntegral = 0;
+    //start with total area under curve
+    for (int l = 0; l < peDistBins-1; l++) {
+      double height = (pathLengthDistn[l + 1] + pathLengthDistn[l]) / 2;
+      distnIntegral += width * height;
+    }
+    double[] pathLengthPropDist = new double[peDistBins-1];
+    for (int l = 0; l < peDistBins-1; l++) {
+      double height = (pathLengthDistn[l + 1] + pathLengthDistn[l]) / 2;
+      pathLengthPropDist[l] = (width * height)/distnIntegral;
+    }
+    System.out.println("test");
+    
+    //now combine
+    for (int l = peDistBins-1; l > 0; l--) { //for every bin 
+      //get proportion that stop here
+      double proportionStop = pathLengthPropDist[l-1];
+      for (int i = 0; i < l; i++) { //for all the bins within this path length
+        propnDoseDepositedAtDist[i] += proportionStop * totalEnergyDistn[peDistBins-l-1][i];
+      }
+    }
+    
+    //test
+    double test = 0;
+    for(int i = 0; i < propnDoseDepositedAtDist.length; i++) {
+      test += propnDoseDepositedAtDist[i];
+    }
+    System.out.println(test);
+    */
+    /*
+    //just CSDA
+    
+    // get the energy propertion dist
+    double width = PE_DISTANCES_TRAVELLED[1] - PE_DISTANCES_TRAVELLED[0];
+ 
+      double[] energyDistn = calculateEnergyDistn(PE_DISTANCES_TRAVELLED, peDistBins, peEnergy);
+      double[] energyPropDistn = new double[peDistBins - 1];
+      double tot = 0;
+      for (int l = 1; l < energyDistn.length; l++) {
+        tot += width * ((energyDistn[l] + energyDistn[l-1])/2);
+      }
+      for (int l = 1; l < energyDistn.length; l++) {
+        energyPropDistn[l-1] = (width * ((energyDistn[l] + energyDistn[l-1])/2))/tot;   //convert to a proportion
+      }
+    //now combine
+      for (int i = 0; i < l; i++) { //for all the bins within this path length
+        propnDoseDepositedAtDist[i] += energyPropDistn[i];
+      }
+    */
   }
   
   /**
@@ -1472,10 +1714,16 @@ public class CrystalPolyhedron extends Crystal {
     double peEnergy = beamEnergy - cryoEnergyToSubtractFromPE;
     // Set up a mean path length distribution
     double[] pathLengthDistn = new double[peDistBins];
-        
+    
     double[] distnParams = getGumbelParamsForBeamEnergy(beamEnergy, true);
     calculateGumbelDistribution(CRYO_PE_DISTANCES_TRAVELLED, pathLengthDistn, distnParams[0],
         distnParams[1], peDistBins);
+    
+    /*
+    double[] distnParams = getJohnsonParamsForBeamEnergy(beamEnergy, false);
+    calculateJohnsonSUDistribution(CRYO_PE_DISTANCES_TRAVELLED, pathLengthDistn, distnParams[2], distnParams[3], distnParams[0],
+        distnParams[1], peDistBins);
+    */
     
     //I'm applying the energy distribution to each PE distance travelled so it can be combined with the distance distribution 
     double[][] totalEnergyDistn = new double[peDistBins][peDistBins];

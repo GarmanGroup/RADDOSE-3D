@@ -56,4 +56,10 @@ public class BeamDummy implements Beam {
   public double getBeamArea() {
     return 0;
   }
+
+  @Override
+  public double getExposure() {
+    // TODO Auto-generated method stub
+    return 0;
+  }
 }

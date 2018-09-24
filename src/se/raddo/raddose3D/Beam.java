@@ -28,6 +28,9 @@ public interface Beam {
 
   public static final String BEAM_CIRCULAR   = "CIRCULAR";
   
+  /** Constant for data fields in Map constructors: Beam exposure. */
+  public static final String BEAM_EXPOSURE        = "EXPOSURE";
+  
   /** The elementary charge, 1.6*10^-19 coulombs. */
   public static final Double ELEMENTARYCHARGE = 1.602176565e-19;
 
@@ -88,5 +91,13 @@ public interface Beam {
   public double beamMinumumDimension();
   
   public double getBeamArea();
+  
+  /**
+   * Returns exposure of the beam.
+   *
+   * @return
+   *         Beam exposure in electrons per Angstrom squared.
+   */
+  public double getExposure();
   
 }

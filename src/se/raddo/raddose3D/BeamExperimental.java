@@ -211,4 +211,10 @@ public class BeamExperimental implements Beam {
     return 0;
   }
 
+  @Override
+  public double getExposure() {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+
 }

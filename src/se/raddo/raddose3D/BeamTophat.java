@@ -14,6 +14,9 @@ public class BeamTophat implements Beam {
 
   /** Beam flux. */
   private final Double photonsPerSec;
+  
+  /** Beam exposure. */
+  private final Double exposure;
 
   /** Beam energy. */
   private final Double photonEnergy;
@@ -39,22 +42,31 @@ public class BeamTophat implements Beam {
    *          {@link Beam} class.
    */
   public BeamTophat(final Map<Object, Object> properties) {
+
+    
     // Check for valid parameters
     Assertions a = new Assertions("Could not create TopHat beam: ");
     a.checkIsClass(properties.get(Beam.BEAM_COLL_H), Double.class,
         "no horizontal beam collimation specified");
     a.checkIsClass(properties.get(Beam.BEAM_COLL_V), Double.class,
         "no vertical beam collimation specified");
-    a.checkIsClass(properties.get(Beam.BEAM_FLUX), Double.class,
-        "no beam flux specified");
+ //   a.checkIsClass(properties.get(Beam.BEAM_FLUX), Double.class,
+ //       "no beam flux specified");
     a.checkIsClass(properties.get(Beam.BEAM_ENERGY), Double.class,
         "no beam energy specified");
+    if ((properties.get(Beam.BEAM_FLUX) == null)
+        && (properties.get(Beam.BEAM_EXPOSURE) == null)) {
+      a.checkIsClass(properties.get(Beam.BEAM_FLUX), Double.class,
+                 "no beam flux specified");
+    }
+    
 
     // Set the final variables for the object
     beamXum = (Double) properties.get(Beam.BEAM_COLL_H);
     beamYum = (Double) properties.get(Beam.BEAM_COLL_V);
     photonsPerSec = (Double) properties.get(Beam.BEAM_FLUX);
     photonEnergy = (Double) properties.get(Beam.BEAM_ENERGY);
+    exposure = (Double) properties.get(Beam.BEAM_EXPOSURE);
     
     if (properties.get(Beam.BEAM_CIRCULAR) == "TRUE") {
       isCircular = true;
@@ -105,6 +117,11 @@ public class BeamTophat implements Beam {
   @Override
   public double getPhotonsPerSec() {
     return photonsPerSec;
+  }
+  
+  @Override
+  public double getExposure() {
+    return exposure;
   }
 
   @Override

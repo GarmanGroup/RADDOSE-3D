@@ -35,6 +35,8 @@ public abstract class Crystal {
   public static final String     CRYSTAL_FLUORESCENT_ESCAPE       = "FLESCAPE";
   /** Constant for data fields in Map constructors: Goniometer Axis. */
   public static final String     CRYSTAL_GONIOMETER_AXIS       = "GONIOMETER";
+  /** Constant for data fields in Map constructors: Electrons. */
+  public static final String     CRYSTAL_ELECTRONS       = "ELECTRONS";
 
   /** Constant for data fields in Map constructors: Photoelectron resolution. */
   
@@ -119,6 +121,11 @@ public abstract class Crystal {
   public final boolean fluorescentEscape;
   
   /**
+   * whether electrons are used
+   */
+  public final boolean useElectrons;
+  
+  /**
    * Goniometer Orientation
    */
   public final boolean verticalGoniometer; 
@@ -200,6 +207,12 @@ public abstract class Crystal {
     //Get the goniometer axis
     String goniometer =  String.valueOf(properties.get(CRYSTAL_GONIOMETER_AXIS));
     verticalGoniometer = ("90.0".equals(goniometer)); //so horizontal is default 
+    
+    String electrons = (String) properties.get(CRYSTAL_ELECTRONS);
+    if (electrons != null) {
+      electrons = electrons.toUpperCase();
+    }
+    useElectrons = ("TRUE".equals(electrons));
 
     //Check that ppm is sensible
     if ((properties.get(CRYSTAL_RESOLUTION) != null) && (properties.get(CRYSTAL_DIM_X) != null)) {
@@ -552,6 +565,7 @@ public abstract class Crystal {
 
     if (cryo == false) { //is this being called for the crystal or the cryo-solution
       EnergyToSubtractFromPE = totK + totL1 + totL2 + totL3 + totM1 + totM2 + totM3 + totM4 + totM5;
+      
     }
     else {
       cryoEnergyToSubtractFromPE = totK + totL1 + totL2 + totL3 + totM1 + totM2 + totM3 + totM4 + totM5;
@@ -579,6 +593,13 @@ public abstract class Crystal {
    *          translational and rotational information.
    */
   public void expose(final Beam beam, final Wedge wedge) {
+    
+    if (useElectrons == true) {
+      // do electron stuff
+    }
+    else { //photon stuff
+      
+      
     double fluorescenceEnergyRelease = 0;
     double augerEnergy = 0;   
     double cryoAugerEnergy = 0;
@@ -707,6 +728,9 @@ public abstract class Crystal {
       System.out.print(String.format("Total energy that may escape by Fluorescent Escape: %.2e", totalEscapedDoseFL));
       System.out.println(" J.\n");
     }
+    
+    
+  } // this the the end of the if not electrons statement 
 
     ///////////////////////////////////////////////////////
     // END OF EXPOSE METHOD
@@ -717,7 +741,7 @@ public abstract class Crystal {
       final Wedge wedge, final int anglenum, final int anglecount,  
       double fluorescenceEnergyRelease, double augerEnergy, double cryoAugerEnergy,
       double cryoFluorescenceEnergyRelease, double[][] feFactors, double[][] cryoFeFactors) {
-
+    
     final int[] crystalSize = getCrystSizeVoxels();
 
     final Double[] wedgeStart = wedge.getStartVector();
@@ -795,6 +819,16 @@ public abstract class Crystal {
             translateRotateCoords = translateCrystalToPosition(crystCoords, wedgeStart, wedgeTranslation,
                                                                anglecos, anglesin) ;
             
+            
+            //here is where microED and Synchrotron really need to diverge. It will be easy to treat
+            //as one voxel to start but may need to change this at a later date - look at spread in CASINO 
+            //for now the rotation just needs to look at the surface area of the crystal then 
+            //so yeah stick with TopHat for now 
+            
+            //Could update stopping power with pixel depth
+            //My planned additional fudge factor would simply need to be applied to every voxel
+            
+            
             /* Unattenuated beam intensity (J/um^2/s) */
             double unattenuatedBeamIntensity = beam.beamIntensity(
                 translateRotateCoords[0], translateRotateCoords[1],
@@ -822,7 +856,6 @@ public abstract class Crystal {
               double numberofphotons = voxImageFluence[i][j][k] / beamenergy; //This gives I0 in equation 9 in Karthik 2010, dividing by beam energy leaves photons per um^2/s
               voxImageComptonFluence[i][j][k] = numberofphotons * voxImageElectronEnergyDose; //Re-calculate voxImageFluence using Compton electron energy
               double voxImageDoseCompton = fluenceToDoseFactorCompton * voxImageComptonFluence[i][j][k];
-              
               
               //elastic yield
               voxElasticYield[i][j][k] = fluenceToElasticFactor *

@@ -168,7 +168,7 @@ public class ExposureSummary implements ExposeObserver {
   @Override
   public void exposureObservation(final int wedgeImage,
       final int i, final int j, final int k,
-      final double addedDose, final double totalVoxDose, final double fluence,
+      final double addedDose, final double totalVoxDose,  final double fluence,
       final double doseDecay, final double absorbedEnergy,
       final double elastic) {
 

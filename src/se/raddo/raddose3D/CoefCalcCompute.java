@@ -215,6 +215,8 @@ public class CoefCalcCompute extends CoefCalc {
   private final Map<Element, Double> cryoOccurrence;
   
   private final Map<Element, Double> cryoConcentration;
+  
+  public boolean isEM;
 
   /**
    * Simple constructor.
@@ -246,6 +248,7 @@ public class CoefCalcCompute extends CoefCalc {
     }
     
     density = mass * MASS_TO_CELL_VOLUME / (cellVolume * UNITSPERMILLIUNIT);
+//    System.out.println("Test");
   }
   
   /**
