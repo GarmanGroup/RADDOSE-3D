@@ -100,4 +100,8 @@ public interface Beam {
    */
   public double getExposure();
   
+  public double getBeamX();
+  
+  public double getBeamY();
+  
 }

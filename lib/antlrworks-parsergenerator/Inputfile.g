@@ -292,6 +292,7 @@ crystalLine
 	| ii=oilElements                { $crystal::oilNames    = $ii.names;  
 		                	         $crystal::oilNums	= $ii.num;  }
 	| jj=oilDensity	                { $crystal::oilDensity			= $jj.oildens;  }
+	| kk=electrons	                { $crystal::crystalProperties.put(Crystal.CRYSTAL_ELECTRONS, $kk.value); }
 							
 	;
 
@@ -547,7 +548,13 @@ OILELEMENTS : ('O'|'o')('I'|'i')('L'|'l')('E'|'e')('L'|'l')('E'|'e')('M'|'m')('E
 oilDensity returns [double oildens]
 	: OILDENSITY a=FLOAT {$oildens = Double.parseDouble($a.text);};
 OILDENSITY : ('O'|'o')('I'|'i')('L'|'l')('D'|'d')('E'|'e')('N'|'n')('S'|'s')('I'|'i')('T'|'t')('Y'|'y') ;
+
+electrons returns [String value]
+	: ELECTRONS a=STRING {$value = $a.text;};
+ELECTRONS  
+	:	 ('E'|'e')('L'|'l')('E'|'e')('C'|'c')('T'|'t')('R'|'r')('O'|'o')('N'|'n')('S'|'s') ;
 	
+
 // ------------------------------------------------------------------
 beam returns [Beam bObj]
 scope {
@@ -574,12 +581,17 @@ beamLine
 							   } }
 	| f=beamFile             { $beam::beamProperties.put(Beam.BEAM_EXTFILE, $f.filename); }
 	| g=beamPixelSize        { $beam::beamProperties.putAll($g.properties); }
+	| h=beamExposure			 { $beam::beamProperties.put(Beam.BEAM_EXPOSURE, $h.exposure); }
 	
 	;
 
 beamFlux returns [Double flux]
 	: FLUX a=FLOAT {$flux = Double.parseDouble($a.text);};
 FLUX : ('F'|'f')('L'|'l')('U'|'u')('X'|'x') ;
+
+beamExposure returns [Double exposure]
+	: EXPOSURE a=FLOAT {$exposure = Double.parseDouble($a.text);};
+EXPOSURE : ('E'|'e')('X'|'x')('P'|'p')('O'|'o')('S'|'s')('U'|'u')('R'|'r')('E'|'e') ;
 
 beamFWHM returns [Double x, Double y]
 	: FWHM a=FLOAT b=FLOAT {$x = Double.parseDouble($a.text); $y = Double.parseDouble($b.text);};

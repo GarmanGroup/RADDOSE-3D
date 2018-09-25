@@ -111,4 +111,8 @@ public abstract class CoefCalc {
    * @param cryo
    */
   public abstract Set<Element> getPresentElements(boolean cryo);
+  
+  public abstract double getElectronElastic(Beam beam);
+  
+  public abstract double getElectronInelastic(Beam beam, double exposedVolume);
 }

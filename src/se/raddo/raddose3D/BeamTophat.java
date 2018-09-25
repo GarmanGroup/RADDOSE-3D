@@ -161,4 +161,14 @@ public class BeamTophat implements Beam {
     }
     return beamArea;
   }
+  
+  @Override
+  public double getBeamX() {
+    return beamXum;
+  }
+  
+  @Override
+  public double getBeamY() {
+    return beamYum;
+  }
 }

@@ -13,7 +13,6 @@ public class CoefCalcCompute extends CoefCalc {
    * Identified coefficients and density from last program run. Final variables.
    */
   private double                     absCoeffcomp, absCoeffphoto, attCoeff, elasCoeff, density;
-  
 
   public double cellVolume;
 
@@ -1063,6 +1062,8 @@ public class CoefCalcCompute extends CoefCalc {
 
     System.out.println(String.format("Solvent fraction determined as %.2f%%.",
         solventFraction * PERCENTAGE_CONVERSION));
+    
+    
 
     return solventFraction;
   }
@@ -1411,6 +1412,69 @@ public class CoefCalcCompute extends CoefCalc {
     else {
       return cryoElements;
     }
+  }
+  
+  @Override 
+  public double getElectronElastic(Beam beam) { //need to think about how to incorporate the thingy about cutting off most in here
+    //Individual atom cross sections
+    double[] elasticElement = new double[presentElements.size()];
+    double elasticMolecule = 0;
+    double m = 9.10938356E-31; // in Kg
+    double csquared = 3E8*3E8;  // (m/s)^2
+    double Vo = beam.getPhotonEnergy() * Beam.KEVTOJOULES;
+    double betaSquared = 1- Math.pow(m*csquared/(Vo + m*csquared), 2);
+   
+    double molWeight = 0;
+    int counter = 0;
+    for (Element e : this.presentElements) {
+      elasticElement[counter] =  ((1.4E-6 * Math.pow(e.getAtomicNumber(), 1.5))/betaSquared)*
+                       ((1-(0.26*e.getAtomicNumber())/(137*Math.pow(betaSquared, 0.5))));
+                   //    *1E06; // convert nm^2 to pm^2
+      double numEl = totalAtoms(e);
+      elasticMolecule += elasticElement[counter] * numEl;
+      molWeight += numEl * e.getAtomicWeight();
+      counter += 1;
+    }
+
+    double massScatteringCoefficient = elasticMolecule / molWeight;
+    double PoverT = 602 * massScatteringCoefficient  * density; //thickness in nm ; //* (EMThickness/10);
+    
+    return PoverT;
+  }
+  
+  @Override
+  public  double getElectronInelastic(Beam beam, double exposedVolume) {
+    //Individual atom cross sections
+    double[] inelasticElement = new double[presentElements.size()];
+    double inelasticMolecule = 0;
+    double m = 9.10938356E-31; // in Kg
+    double csquared = 3E8*3E8;  // (m/s)^2
+    double Vo = beam.getPhotonEnergy() * Beam.KEVTOJOULES;
+    double betaSquared = 1- Math.pow(m*csquared/(Vo + m*csquared), 2);
+    double weirdLetter = (0.02*Beam.KEVTOJOULES)/(betaSquared*(Vo + m*csquared)); //assuming 0.02 keV per inellastic plasmon event  
+    double molWeight = 0;
+    double inelasticAll = 0;
+
+    int counter = 0;
+    for (Element e : this.presentElements) { 
+      if (e.getAtomicNumber() == 1) { //Correct as formula doesn't work for hydrogen
+        inelasticElement[counter] = 6.4E-5;
+      }
+      else {
+      inelasticElement[counter] =  ((1.5E-6 * Math.pow(e.getAtomicNumber(), 0.5))/betaSquared)*
+                       (Math.log(2/weirdLetter));
+                     //  1E06; // convert nm^2 to pm^2
+      }
+      double numEl = totalAtoms(e);     
+      inelasticMolecule += inelasticElement[counter] * numEl;
+      molWeight += numEl * e.getAtomicWeight();
+      counter += 1;
+    }
+    
+    double massScatteringCoefficient = inelasticMolecule / molWeight;
+    double PoverT = 602 * massScatteringCoefficient  * density;        //* (EMThickness/10);
+    
+    return PoverT;
   }
   
 }

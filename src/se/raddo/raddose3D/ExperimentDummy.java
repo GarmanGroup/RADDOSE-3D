@@ -99,6 +99,18 @@ public class ExperimentDummy extends Experiment {
         // TODO Auto-generated method stub
         return 0;
       }
+
+      @Override
+      public double getBeamX() {
+        // TODO Auto-generated method stub
+        return 0;
+      }
+
+      @Override
+      public double getBeamY() {
+        // TODO Auto-generated method stub
+        return 0;
+      }
     }
   }
 

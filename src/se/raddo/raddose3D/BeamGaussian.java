@@ -283,4 +283,14 @@ public class BeamGaussian implements Beam {
     // TODO Auto-generated method stub
     return 0;
   }
+  @Override
+  public double getBeamX() {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+  @Override
+  public double getBeamY() {
+    // TODO Auto-generated method stub
+    return 0;
+  }
 }

@@ -400,4 +400,16 @@ public class CoefCalcRaddose extends CoefCalc {
   public Set<Element> getPresentElements(boolean cryo){
     return null;
   }
+
+  @Override
+  public double getElectronElastic(Beam beam) {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+
+  @Override
+  public double getElectronInelastic(Beam beam, double exposedVolume) {
+    // TODO Auto-generated method stub
+    return 0;
+  }
 }

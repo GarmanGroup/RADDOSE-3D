@@ -71,6 +71,8 @@ public abstract class Crystal {
   private final CoefCalc         coefCalc;
   /** The container encasing the irradiated sample*/
   private final Container        sampleContainer;
+  
+  
 
   /**
    * Cumulative dose lost from crystal
@@ -135,6 +137,11 @@ public abstract class Crystal {
    */
   public double EnergyToSubtractFromPE; 
   public double cryoEnergyToSubtractFromPE;
+  
+  public double XDim;
+  public double YDim;
+  public double ZDim;
+  
   
   /**
    * The energy of each fluorescent event
@@ -223,6 +230,10 @@ public abstract class Crystal {
         CRYSTAL_RESOLUTION_DEF = 10 / ((double) properties.get(CRYSTAL_DIM_X));
         }  
     }
+    
+    XDim = (Double) properties.get(Crystal.CRYSTAL_DIM_X); // in um
+    YDim = (Double) properties.get(Crystal.CRYSTAL_DIM_Y); // in um
+    ZDim = (Double) properties.get(Crystal.CRYSTAL_DIM_Z); // in um
   }
   
   /**
@@ -330,6 +341,8 @@ public abstract class Crystal {
   public abstract void setPEparamsForCurrentBeam(double beamEnergy, CoefCalc coefCalc, double[][] feFactors);
   public abstract void setFLparamsForCurrentBeam(final double[][] feFactors);
   public abstract void setCryoPEparamsForCurrentBeam(Beam beam, CoefCalc coefCalc, double[][] feFactors);
+  
+
   
   /**
    * finds the voxels that the bins on the tracks are in
@@ -596,6 +609,8 @@ public abstract class Crystal {
     
     if (useElectrons == true) {
       // do electron stuff
+      MicroED microED = new MicroED(XDim, YDim, ZDim);
+      microED.CalculateEM(beam, wedge, coefCalc);
     }
     else { //photon stuff
       
