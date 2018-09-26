@@ -229,4 +229,10 @@ public class BeamExperimental implements Beam {
     return 0;
   }
 
+  @Override
+  public boolean getIsCircular() {
+    // TODO Auto-generated method stub
+    return false;
+  }
+
 }

@@ -171,4 +171,9 @@ public class BeamTophat implements Beam {
   public double getBeamY() {
     return beamYum;
   }
+  
+  @Override
+  public boolean getIsCircular() {
+    return isCircular;
+  }
 }

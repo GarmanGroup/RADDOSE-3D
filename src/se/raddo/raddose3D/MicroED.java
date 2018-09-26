@@ -62,8 +62,13 @@ public class MicroED {
   //check if the beam is bigger or smaller than the sample - need to check in x and in y (x = horizontal, y = vertical)
   double exposedAreaY = getExposedY(beam);
   double exposedAreaX = getExposedX(beam);
-  double totExposedArea;
-  totExposedArea = (exposedAreaX * exposedAreaY) * 1E08; //convert  um^2 to A^2
+  double totExposedArea = 0;
+  if (beam.getIsCircular() == false) {
+    totExposedArea = (exposedAreaX * exposedAreaY) * 1E08; //convert  um^2 to A^2
+  }
+  else {
+    totExposedArea = Math.PI * ((exposedAreaX/2) * (exposedAreaY/2)) * 1E08; //convert  um^2 to A^2
+  }
   
 //  double electronNumber = exposure * totExposedArea;
   
@@ -101,7 +106,14 @@ private double EMEquationWay(Beam beam, Wedge wedge, CoefCalc coefCalc, boolean 
   double energyPerEvent = 0.02; //in keV
 
   //will need to edit when I add in circular
-  double exposedArea = getExposedX(beam) * getExposedY(beam);
+  double exposedArea = 0;
+  if (beam.getIsCircular() == false) {
+    exposedArea = (getExposedX(beam) * getExposedY(beam)); //um^2
+  }
+  else {
+    exposedArea = Math.PI * ((getExposedX(beam)/2) * (getExposedY(beam)/2)); //um^2
+  }
+  
   double exposedVolume = exposedArea  * (sampleThickness/1000) * 1E-15; //exposed volume in dm^3
   
 //  double electronNumber = getElectronNumber(beam, wedge, exposedArea);
@@ -153,7 +165,14 @@ private double EMEquationWay(Beam beam, Wedge wedge, CoefCalc coefCalc, boolean 
 }
 
 private double EMStoppingPowerWay(Beam beam, Wedge wedge, CoefCalc coefCalc) {
-  double exposedArea = getExposedX(beam) * getExposedY(beam);
+  double exposedArea = 0;
+  if (beam.getIsCircular() == false) {
+    exposedArea = (getExposedX(beam) * getExposedY(beam)); //um^2
+  }
+  else {
+    exposedArea = Math.PI * ((getExposedX(beam)/2) * (getExposedY(beam)/2)); //um^2
+  }
+  
   double exposedVolume = exposedArea  * (sampleThickness/1000) * 1E-15; //exposed volume in dm^3
   double exposure = beam.getExposure();
   double electronNumber = exposure * (exposedArea * 1E08);

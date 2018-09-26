@@ -104,4 +104,11 @@ public interface Beam {
   
   public double getBeamY();
   
+  /**
+   * Returns true if the beam is circularly collimated
+   * @return
+   *        circular coll or not
+   */
+  public boolean getIsCircular();
+  
 }

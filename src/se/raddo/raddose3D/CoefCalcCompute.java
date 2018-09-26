@@ -244,6 +244,8 @@ public class CoefCalcCompute extends CoefCalc {
 
     for (Element e : presentElements) {
       mass += totalAtoms(e) * e.getAtomicWeightInGrams();
+      //to test
+ //     System.out.println(e.getAtomicNumber() + " " + totalAtoms(e));
     }
     
     density = mass * MASS_TO_CELL_VOLUME / (cellVolume * UNITSPERMILLIUNIT);
