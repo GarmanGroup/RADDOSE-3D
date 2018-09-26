@@ -267,12 +267,24 @@ public class BeamGaussian implements Beam {
       System.out.println(s);
     }
   }
+  
   @Override
   public double beamMinumumDimension() {
-    double minCol = Math.min(collXum,  collYum);
     double minFWHM = Math.min(fwhmX, fwhmY);
-    return Math.min(minCol,  minFWHM);
+    double minCol = 0;
+    double theMin = 0;
+    if (collXum != null) {
+      minCol = Math.min(collXum,  collYum);
+    }
+    if (minCol != 0) {
+      theMin = Math.min(minCol,  minFWHM);
+    }
+    else {
+      theMin = minFWHM;
+    }
+    return theMin;
   }
+  
   @Override
   public double getBeamArea() {
     // TODO Auto-generated method stub
