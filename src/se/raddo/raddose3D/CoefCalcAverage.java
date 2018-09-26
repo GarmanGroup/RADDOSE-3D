@@ -147,5 +147,11 @@ public class CoefCalcAverage extends CoefCalc {
     // TODO Auto-generated method stub
     return 0;
   }
+
+  @Override
+  public double getStoppingPower(Beam beam) {
+    // TODO Auto-generated method stub
+    return 0;
+  }
   
 }

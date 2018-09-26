@@ -1430,6 +1430,17 @@ public class CoefCalcCompute extends CoefCalc {
       elasticElement[counter] =  ((1.4E-6 * Math.pow(e.getAtomicNumber(), 1.5))/betaSquared)*
                        ((1-(0.26*e.getAtomicNumber())/(137*Math.pow(betaSquared, 0.5))));
                    //    *1E06; // convert nm^2 to pm^2
+      
+      //do by ELSEPA as more accurate if in the table
+      
+      
+      ReadElasticFile rdEl = new ReadElasticFile();
+      double x_section = rdEl.openFile("constants/electron_elastic.txt", beam.getPhotonEnergy(), e.getAtomicNumber());
+      if (x_section > 0.0) {
+        elasticElement[counter] = x_section;
+      }
+      
+       
       double numEl = totalAtoms(e);
       elasticMolecule += elasticElement[counter] * numEl;
       molWeight += numEl * e.getAtomicWeight();
@@ -1475,6 +1486,43 @@ public class CoefCalcCompute extends CoefCalc {
     double PoverT = 602 * massScatteringCoefficient  * density;        //* (EMThickness/10);
     
     return PoverT;
+  }
+  
+  /**
+   * Return the stopping power of the material in keV/nm
+   */
+  @Override
+  public double getStoppingPower(Beam beam) {
+    //get the total mass in the unit cell
+    double molWeight = 0;
+    for (Element e : presentElements) {
+      molWeight += totalAtoms(e) * e.getAtomicWeight();
+    } 
+    
+    double meanJ = 0;
+    for (Element e : this.presentElements) { 
+      //calculate meanJ (mean excitation energy) for this material
+      //molWeight fraction
+      double molWeightFraction = (totalAtoms(e) * e.getAtomicWeight()) / molWeight;
+      double J = 0;
+      int Z = e.getAtomicNumber();
+      if (Z <= 12) {
+        J = Z * 11.5;    //eV
+      }
+      else {
+        J = 9.76 * Z + (58.5/Math.pow(Z, 0.19));  //eV
+      }
+      meanJ += (J * molWeightFraction) / 1000;  //keV
+    }
+    //test
+  //  meanJ = 0.0773;
+    
+    //Now convert to a stopping power
+    double stoppingPower = (78500 * density/beam.getPhotonEnergy()) 
+                            * Math.log(1.166 * beam.getPhotonEnergy()/meanJ)
+                            /1E7;  // keV/nm
+    
+    return stoppingPower;
   }
   
 }

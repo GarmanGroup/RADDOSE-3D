@@ -13,6 +13,12 @@ public class MicroED {
   public double YDimension;
   public double ZDimension;
   
+  private double numberElastic;
+  private double numberSingleElastic;
+  private double numberNotInelasticEqu;
+  private double numberNotInelasticRatio;
+  private double numberProductive;
+  
   
   
   public MicroED(double XDim, double YDim, double ZDim) {
@@ -32,14 +38,21 @@ public class MicroED {
     System.out.println(" MGy\n");
  
   
-    double dose2 = EMEquationWay(beam, wedge, coefCalc);
+    double dose2 = EMEquationWay(beam, wedge, coefCalc, true);
     System.out.print(String.format("\nThe Dose in the exposed area by equation: %.8e", dose2));
     System.out.println(" MGy\n");
     
+    dose2 = EMEquationWay(beam, wedge, coefCalc, false);
+    System.out.print(String.format("\nThe Dose in the exposed area by 3:1: %.8e", dose2));
+    System.out.println(" MGy\n");
     
     double dose3 = EMStoppingPowerWay(beam, wedge, coefCalc);
     System.out.print(String.format("\nThe Dose in the exposed area by stopping power: %.8e", dose3));
     System.out.println(" MGy\n");
+    
+    System.out.println(" Number elastic events: " + numberElastic);
+    System.out.println(" Number single elastic events: " + numberSingleElastic);
+    System.out.println(" Number productive events: " + numberProductive);
   }
   
   private double EMLETWay(Beam beam, Wedge wedge, CoefCalc coefCalc) {
@@ -83,7 +96,7 @@ theDose = baseDose * exposure;
 return theDose;
 }
 
-private double EMEquationWay(Beam beam, Wedge wedge, CoefCalc coefCalc) {
+private double EMEquationWay(Beam beam, Wedge wedge, CoefCalc coefCalc, boolean useInelEqu) {
   double exposure = beam.getExposure();
   double energyPerEvent = 0.02; //in keV
 
@@ -106,13 +119,29 @@ private double EMEquationWay(Beam beam, Wedge wedge, CoefCalc coefCalc) {
 //  coefCalc.calculateDensityEM(exposedVolume);
 //  System.out.println(String.format("\nDensity: %.2e", coefCalc.getDensity()));
   
-  //Testing
+  //Elastic collisions
   double elasticProbOverT = coefCalc.getElectronElastic(beam);
   double elasticProb = elasticProbOverT * sampleThickness;
   
-  // I don't like this why am I separating and not lumping all in 1? Think I messed up what I think dose is...
-  double inelasticProbOverT = coefCalc.getElectronInelastic(beam, exposedVolume);
-  double inelasticProb = inelasticProbOverT * sampleThickness;
+  numberElastic = elasticProb * electronNumber;
+  numberSingleElastic = electronNumber * 
+                        Math.exp(-elasticProb) * (Math.pow(elasticProb, 1) / 1); //Poisson distribution
+  
+  //inelastic 
+  double inelasticProbOverT = 0;
+  double inelasticProb = 0;
+  if (useInelEqu == true) {
+    inelasticProbOverT = coefCalc.getElectronInelastic(beam, exposedVolume);
+    inelasticProb = inelasticProbOverT * sampleThickness;
+    numberNotInelasticEqu = Math.exp(-inelasticProb) * electronNumber;
+  }
+  else {
+    inelasticProb = elasticProb * 3;
+    numberNotInelasticRatio = Math.exp(-inelasticProb) * electronNumber;
+  }
+  
+  numberProductive = numberSingleElastic* numberNotInelasticEqu / electronNumber;
+  
   
 //Am I doing the mass right???? What is dose it is energy per mass of all right not just protein....
   double numberInelasticEvents = (inelasticProb * electronNumber);
@@ -124,8 +153,21 @@ private double EMEquationWay(Beam beam, Wedge wedge, CoefCalc coefCalc) {
 }
 
 private double EMStoppingPowerWay(Beam beam, Wedge wedge, CoefCalc coefCalc) {
+  double exposedArea = getExposedX(beam) * getExposedY(beam);
+  double exposedVolume = exposedArea  * (sampleThickness/1000) * 1E-15; //exposed volume in dm^3
+  double exposure = beam.getExposure();
+  double electronNumber = exposure * (exposedArea * 1E08);
+  
   // need to get the stopping power from coefcalc
-  return 0.;
+  double stoppingPower = coefCalc.getStoppingPower(beam);
+  
+  
+  double energyDeposited = electronNumber * stoppingPower * sampleThickness * Beam.KEVTOJOULES;  //in J, currently per electron
+  
+  double exposedMass = (((coefCalc.getDensity()*1000) * exposedVolume) / 1000);  //in Kg 
+  double dose = (energyDeposited/exposedMass) / 1E06; //dose in MGy 
+  
+  return dose;
 }
 /**
  * Returns the exposed area in the x dimensions of the sample in um
