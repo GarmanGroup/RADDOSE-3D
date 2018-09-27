@@ -1435,6 +1435,7 @@ public class CoefCalcCompute extends CoefCalc {
       
       //do by ELSEPA as more accurate if in the table
       
+      
       if (beam.getPhotonEnergy() <= 300) {
         ReadElasticFile rdEl = new ReadElasticFile();
         double x_section = rdEl.openFile("constants/electron_elastic.txt", beam.getPhotonEnergy(), e.getAtomicNumber()); 
@@ -1442,7 +1443,8 @@ public class CoefCalcCompute extends CoefCalc {
           elasticElement[counter] = x_section;
         }
       }
-       
+      
+      
       double numEl = totalAtoms(e);
       elasticMolecule += elasticElement[counter] * numEl;
       molWeight += numEl * e.getAtomicWeight();
