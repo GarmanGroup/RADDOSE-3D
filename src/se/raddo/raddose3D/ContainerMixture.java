@@ -44,7 +44,7 @@ public class ContainerMixture extends ContainerSemiTransparent{
    *         coefficients.
    */
   private String getNISTURL() {
-    return String.format("http://physics.nist.gov/PhysRefData/XrayMassCoef"
+    return String.format("https://physics.nist.gov/PhysRefData/XrayMassCoef"
         + "/ComTab/%s.html", this.material);
   }
 
