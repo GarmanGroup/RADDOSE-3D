@@ -61,7 +61,7 @@ public class MicroED {
     System.out.println(" Number productive events: " + numberProductive);
     
     try {
-      WriterFile("outputMicroED.CSV", dose3);
+      WriterFile("outputMicroED.CSV", dose2);
     } catch (IOException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();

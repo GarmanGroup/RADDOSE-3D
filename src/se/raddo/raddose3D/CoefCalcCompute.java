@@ -1504,11 +1504,14 @@ public class CoefCalcCompute extends CoefCalc {
     } 
     
     double meanJ = 0;
+    double stoppingPower = 0;
     for (Element e : this.presentElements) { 
       //calculate meanJ (mean excitation energy) for this material
       //molWeight fraction
-      double molWeightFraction = (totalAtoms(e) * e.getAtomicWeight()) / molWeight;
+      double A = e.getAtomicWeight();
+      double molWeightFraction = (totalAtoms(e) * A) / molWeight;
       double J = 0;
+      
       int Z = e.getAtomicNumber();
       if (Z <= 12) {
         J = Z * 11.5;    //eV
@@ -1516,16 +1519,12 @@ public class CoefCalcCompute extends CoefCalc {
       else {
         J = 9.76 * Z + (58.5/Math.pow(Z, 0.19));  //eV
       }
-      meanJ += (J * molWeightFraction) / 1000;  //keV
+  //    meanJ += (J * molWeightFraction) / 1000;  //keV
+      stoppingPower += molWeightFraction * ((78500 * Z * density/(beam.getPhotonEnergy()*A)) 
+          * Math.log(1.166 * beam.getPhotonEnergy()/(J/1000))
+          /1E7);  // keV/nm
     }
-    //test
-  //  meanJ = 0.0773;
-    
-    //Now convert to a stopping power
-    double stoppingPower = (78500 * density/beam.getPhotonEnergy()) 
-                            * Math.log(1.166 * beam.getPhotonEnergy()/meanJ)
-                            /1E7;  // keV/nm
-    
+
     return stoppingPower;
   }
   
