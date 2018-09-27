@@ -32,7 +32,7 @@ public class MicroED {
   }
   
   public void CalculateEM(Beam beam, Wedge wedge, CoefCalc coefCalc) { // also pass in crystal dimensions
-    // Here should be the path to all the other ways of using  
+    // Just to be clear these are all dose of the exposed volume
     double dose1 = EMLETWay(beam, wedge, coefCalc);
     System.out.print(String.format("\nThe Dose in the exposed area by LET: %.8e", dose1));
     System.out.println(" MGy\n");

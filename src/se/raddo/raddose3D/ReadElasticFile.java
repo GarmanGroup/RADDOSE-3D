@@ -31,7 +31,7 @@ public class ReadElasticFile {
           count += 1;
           wholeLine = line.split(splitBy);
           if (Integer.parseInt(wholeLine[0]) == Z) {
-            int index = ((int) (eEnergy/100)) + 1;   // Just rounds down to int for 100, 200 and 300 for now
+            int index = ((int) (eEnergy/50)) + 1;   // Just rounds down to int for 100, 200 and 300 for now
             elastic_cross = Double.parseDouble(wholeLine[index]);
             break;
           }
