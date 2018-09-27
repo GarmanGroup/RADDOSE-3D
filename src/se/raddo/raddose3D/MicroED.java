@@ -1,7 +1,13 @@
 package se.raddo.raddose3D;
 
+import java.io.BufferedWriter;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+
 
 public class MicroED {
+  
   
   public double crystalSurfaceArea;  //A^2
 
@@ -53,6 +59,13 @@ public class MicroED {
     System.out.println(" Number elastic events: " + numberElastic);
     System.out.println(" Number single elastic events: " + numberSingleElastic);
     System.out.println(" Number productive events: " + numberProductive);
+    
+    try {
+      WriterFile("outputMicroED.CSV", dose3);
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
   }
   
   private double EMLETWay(Beam beam, Wedge wedge, CoefCalc coefCalc) {
@@ -223,6 +236,27 @@ private double getExposedY(Beam beam) {
     exposedAreaY = YDimension;
   }
   return exposedAreaY;
+}
+
+private void WriterFile(final String filename, final double dose3) throws IOException {
+  BufferedWriter outFile;
+  outFile = new BufferedWriter(new OutputStreamWriter(
+      new FileOutputStream(filename), "UTF-8"));
+  try {
+    outFile.write("dose, total_el, single_el, productive_el\n");
+    outFile.write(String.format(
+        " %f, %f, %f, %f%n", dose3, numberElastic, numberSingleElastic, numberProductive));
+  } catch (IOException e) {
+    e.printStackTrace();
+    System.err.println("WriterFile: Could not write to file " + filename);
+  }
+  
+  try {
+    outFile.close();
+  } catch (IOException e) {
+    e.printStackTrace();
+    System.err.println("WriterFile: Could not close file " + filename);
+  }
 }
   
 }
