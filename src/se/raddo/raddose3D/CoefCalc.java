@@ -117,4 +117,6 @@ public abstract class CoefCalc {
   public abstract double getElectronInelastic(Beam beam, double exposedVolume);
   
   public abstract double getStoppingPower(Beam beam);
+  
+  public abstract double getEta();
 }

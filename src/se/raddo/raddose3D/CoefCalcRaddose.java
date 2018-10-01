@@ -418,4 +418,10 @@ public class CoefCalcRaddose extends CoefCalc {
     // TODO Auto-generated method stub
     return 0;
   }
+
+  @Override
+  public double getEta() {
+    // TODO Auto-generated method stub
+    return 0;
+  }
 }

@@ -1422,7 +1422,7 @@ public class CoefCalcCompute extends CoefCalc {
     double[] elasticElement = new double[presentElements.size()];
     double elasticMolecule = 0;
     double m = 9.10938356E-31; // in Kg
-    double csquared = 3E8*3E8;  // (m/s)^2
+    double csquared = 3E8*3E8;  // (m/s)^2   //update this to be precise
     double Vo = beam.getPhotonEnergy() * Beam.KEVTOJOULES;
     double betaSquared = 1- Math.pow(m*csquared/(Vo + m*csquared), 2);
    
@@ -1497,6 +1497,17 @@ public class CoefCalcCompute extends CoefCalc {
    */
   @Override
   public double getStoppingPower(Beam beam) {
+    double m = 9.10938356E-31; // in Kg
+    double c = 299792458;
+    double csquared = c*c;  // (m/s)^2
+    double Vo = beam.getPhotonEnergy() * Beam.KEVTOJOULES;
+    double betaSquared = 1- Math.pow(m*csquared/(Vo + m*csquared), 2);
+    double K = 0.31;
+    double gamma = 1/Math.pow((1-betaSquared), 0.5);
+    
+//    double energy = gamma * m * csquared / Beam.KEVTOJOULES;
+    
+    
     //get the total mass in the unit cell
     double molWeight = 0;
     for (Element e : presentElements) {
@@ -1505,27 +1516,103 @@ public class CoefCalcCompute extends CoefCalc {
     
     double meanJ = 0;
     double stoppingPower = 0;
+    double sumA = 0;
+    int sumZ = 0;
     for (Element e : this.presentElements) { 
       //calculate meanJ (mean excitation energy) for this material
       //molWeight fraction
       double A = e.getAtomicWeight();
       double molWeightFraction = (totalAtoms(e) * A) / molWeight;
       double J = 0;
-      
+ //     double energy = beam.getPhotonEnergy();
       int Z = e.getAtomicNumber();
+      sumZ += Z * totalAtoms(e);
+      sumA += A * totalAtoms(e);
       if (Z <= 12) {
         J = Z * 11.5;    //eV
       }
       else {
         J = 9.76 * Z + (58.5/Math.pow(Z, 0.19));  //eV
       }
-  //    meanJ += (J * molWeightFraction) / 1000;  //keV
-      stoppingPower += molWeightFraction * ((78500 * Z * density/(beam.getPhotonEnergy()*A)) 
+      meanJ += (J * molWeightFraction) / 1000;  //keV
+      
+      //density should be of every element...
+      //or use mean density, mean Z/A and mean J
+      //Z might need to be canged to Zeff
+      
+      
+      stoppingPower += molWeightFraction * ((78500 * Z /(beam.getPhotonEnergy()*A)) 
           * Math.log(1.166 * beam.getPhotonEnergy()/(J/1000))
           /1E7);  // keV/nm
+      
+      /*
+      double I = J * Beam.KEVTOJOULES;
+      stoppingPower += K * (Z /A)* (1/betaSquared) * 
+          (Math.log(csquared*betaSquared*m*Math.pow(gamma-1, 0.5)/(I * Math.pow(2, 0.5)))+ 
+              0.5*(1-betaSquared)-((2*gamma-1)/(2*Math.pow(gamma, 2))) + (1/16)*Math.pow((gamma-1)/gamma, 2));
+ */
+      
     }
-
+      stoppingPower *= density;
+//    stoppingPower = stoppingPower * 1000 * density /1E7;
+    //test
+  //  stoppingPower = 2.07E-04;
+    /*
+    meanJ = 0.0904;
+    
+    stoppingPower = (78500 * sumZ * density/(beam.getPhotonEnergy()* sumA)) 
+        * Math.log(1.166 * beam.getPhotonEnergy()/(meanJ))
+        /1E7;  // keV/nm
+    */
+    //lets try again
+      /*
+    double m = 9.10938356E-31; // in Kg
+    double csquared = 3E8*3E8;  // (m/s)^2
+    double Vo = beam.getPhotonEnergy() * Beam.KEVTOJOULES;
+    double betaSquared = 1- Math.pow(m*csquared/(Vo + m*csquared), 2);
+    */
+      /*
+    double Fbeta = 0;
+    meanJ = 77.3;
+    meanJ = meanJ * Beam.KEVTOJOULES;
+    Fbeta = Math.log((m*csquared*(beam.getPhotonEnergy()/1000)* betaSquared) / (2*(1-betaSquared))) 
+            - (2*Math.pow((1-betaSquared),0.5) - 1 + betaSquared)
+            * Math.log(2) + 1 - betaSquared + (1/8)*(1-Math.pow(1-betaSquared,0.5));
+    stoppingPower = (0.153536/betaSquared)*(sumZ/sumA)*(Fbeta - 2*Math.log(meanJ));
+    */
+    
+ //   double K = 0.31;
+ //   double gamma = Math.pow(1/(1-betaSquared), 0.5);
+    meanJ = 0.0773;
+    
+    meanJ = meanJ * Beam.KEVTOJOULES;
+    stoppingPower = K * (sumZ /sumA)* (1/betaSquared) * 
+                    (Math.log(csquared*betaSquared*m*Math.pow(gamma-1, 0.5)/(meanJ * Math.pow(2, 0.5)))+ 
+                        0.5*(1-betaSquared)-((2*gamma-1)/(2*Math.pow(gamma, 2))) + (1/16)*Math.pow((gamma-1)/gamma, 2));
+    stoppingPower = stoppingPower * 1000 * density /1E7;
+    
+//    stoppingPower = 2.107602E-04;
     return stoppingPower;
+  }
+  
+  @Override
+  public double getEta() {
+    double eta = 0;
+    //get the total mass in the unit cell
+    double molWeight = 0;
+    for (Element e : presentElements) {
+      molWeight += totalAtoms(e) * e.getAtomicWeight();
+    } 
+    
+    for (Element e : this.presentElements) { 
+      double A = e.getAtomicWeight();
+      double molWeightFraction = (totalAtoms(e) * A) / molWeight;
+      int Z = e.getAtomicNumber();
+      //backscattering coeeficient
+      eta += molWeightFraction* (0.025 + 0.016*Z - 1.86E-4 * Math.pow(Z, 2) + 8.3E-7*Math.pow(Z, 3));
+      
+    }
+    return eta;
   }
   
 }

@@ -61,7 +61,7 @@ public class MicroED {
     System.out.println(" Number productive events: " + numberProductive);
     
     try {
-      WriterFile("outputMicroED.CSV", dose2);
+      WriterFile("outputMicroED.CSV", dose3);
     } catch (IOException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
@@ -166,6 +166,18 @@ private double EMEquationWay(Beam beam, Wedge wedge, CoefCalc coefCalc, boolean 
   }
   
   numberProductive = numberSingleElastic* numberNotInelasticEqu / electronNumber;
+
+  //calculate backscattering coefficient - Use Heinrichs equation as a start
+  double eta = coefCalc.getEta();
+  double numberBackscattered = electronNumber * (eta / 100);
+  //how I deal with backscattering in terms of dose and productive is really not trivial!!!! 
+  //If I take them off at the start, they don't contribute to dose so that is understimated
+  //If I take them off just the productive, I'm overestimating dose a little
+  //How do I take off - I need to take it off single elastic via a probability
+  //Indep of beam energy also scares me a bit
+  
+  //I should defo do % that were elastically scattered within the specified angle from the
+  //objective aperture as this is much better!!!!!!!!!!!!!!!!!
   
   
 //Am I doing the mass right???? What is dose it is energy per mass of all right not just protein....
