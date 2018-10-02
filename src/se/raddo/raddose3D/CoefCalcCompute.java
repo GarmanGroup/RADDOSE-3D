@@ -1421,13 +1421,13 @@ public class CoefCalcCompute extends CoefCalc {
   }
   
   @Override 
-  public double getElectronElastic(Beam beam) { //need to think about how to incorporate the thingy about cutting off most in here
+  public double getElectronElastic(double avgEnergy) { //need to think about how to incorporate the thingy about cutting off most in here
     //Individual atom cross sections
     double[] elasticElement = new double[presentElements.size()];
     double elasticMolecule = 0;
     double m = 9.10938356E-31; // in Kg
     double csquared = 3E8*3E8;  // (m/s)^2   //update this to be precise
-    double Vo = beam.getPhotonEnergy() * Beam.KEVTOJOULES;
+    double Vo = avgEnergy * Beam.KEVTOJOULES;
     double betaSquared = 1- Math.pow(m*csquared/(Vo + m*csquared), 2);
    
     double molWeight = 0;
@@ -1439,15 +1439,15 @@ public class CoefCalcCompute extends CoefCalc {
       
       //do by ELSEPA as more accurate if in the table
       
-      
-      if (beam.getPhotonEnergy() <= 300) {
+      /*
+      if (avgEnergy <= 300) {
         ReadElasticFile rdEl = new ReadElasticFile();
         double x_section = rdEl.openFile("constants/electron_elastic.txt", beam.getPhotonEnergy(), e.getAtomicNumber()); 
         if (x_section > 0.0) {
           elasticElement[counter] = x_section;
         }
       }
-      
+      */
       
       double numEl = totalAtoms(e);
       elasticMolecule += elasticElement[counter] * numEl;
@@ -1462,13 +1462,13 @@ public class CoefCalcCompute extends CoefCalc {
   }
   
   @Override
-  public  double getElectronInelastic(Beam beam, double exposedVolume) {
+  public  double getElectronInelastic(double avgEnergy, double exposedVolume) {
     //Individual atom cross sections
     double[] inelasticElement = new double[presentElements.size()];
     double inelasticMolecule = 0;
     double m = 9.10938356E-31; // in Kg
     double csquared = 3E8*3E8;  // (m/s)^2
-    double Vo = beam.getPhotonEnergy() * Beam.KEVTOJOULES;
+    double Vo = avgEnergy * Beam.KEVTOJOULES;
     double betaSquared = 1- Math.pow(m*csquared/(Vo + m*csquared), 2);
     double weirdLetter = (0.02*Beam.KEVTOJOULES)/(betaSquared*(Vo + m*csquared)); //assuming 0.02 keV per inellastic plasmon event  
     double molWeight = 0;
@@ -1500,11 +1500,11 @@ public class CoefCalcCompute extends CoefCalc {
    * Return the stopping power of the material in keV/nm
    */
   @Override
-  public double getStoppingPower(Beam beam) {
+  public double getStoppingPower(double avgEnergy) {
     double m = 9.10938356E-31; // in Kg
     double c = 299792458;
     double csquared = c*c;  // (m/s)^2
-    double Vo = beam.getPhotonEnergy() * Beam.KEVTOJOULES;
+    double Vo = avgEnergy * Beam.KEVTOJOULES;
     double betaSquared = 1- Math.pow(m*csquared/(Vo + m*csquared), 2);
     double K = 0.31;
     double gamma = 1/Math.pow((1-betaSquared), 0.5);
@@ -1546,8 +1546,8 @@ public class CoefCalcCompute extends CoefCalc {
       //Z might need to be canged to Zeff
       
       
-      stoppingPower += molWeightFraction * ((78500 * Z /(beam.getPhotonEnergy()*A)) 
-          * Math.log(1.166 * beam.getPhotonEnergy()/(J/1000))
+      stoppingPower += molWeightFraction * ((78500 * Z /(avgEnergy*A)) 
+          * Math.log(1.166 * avgEnergy/(J/1000))
           /1E7);  // keV/nm
       
       /*

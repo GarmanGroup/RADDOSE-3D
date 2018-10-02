@@ -41,6 +41,8 @@ public class MicroED {
   private double numberNotInelasticRatio;
   private double numberProductive;
   private double stoppingPowerESTAR;
+  //to see if multislice is necessary at all
+  private final int numberSlices = 1;
   
   
   
@@ -73,10 +75,12 @@ public class MicroED {
     System.out.print(String.format("\nThe Dose in the exposed area by stopping power: %.8e", dose3));
     System.out.println(" MGy\n");
     
+    /*
     accessESTAR(coefCalc, beam.getPhotonEnergy());
     double dose4 = getESTARDose(coefCalc, beam);
     System.out.print(String.format("\nThe Dose in the exposed area by ESTAR: %.8e", dose4));
     System.out.println(" MGy\n");
+    */
     
     System.out.println(" Number elastic events: " + numberElastic);
     System.out.println(" Number single elastic events: " + numberSingleElastic);
@@ -148,11 +152,12 @@ private double EMEquationWay(Beam beam, Wedge wedge, CoefCalc coefCalc, boolean 
   else {
     exposedArea = Math.PI * ((getExposedX(beam)/2) * (getExposedY(beam)/2)); //um^2
   }
+  double electronNumber = exposure * (exposedArea * 1E08);
   
   double exposedVolume = exposedArea  * (sampleThickness/1000) * 1E-15; //exposed volume in dm^3
   
 //  double electronNumber = getElectronNumber(beam, wedge, exposedArea);
-  double electronNumber = exposure * (exposedArea * 1E08);
+
   
 //  double solventFraction = coefCalc.getEMSolventFraction();
   
@@ -167,8 +172,18 @@ private double EMEquationWay(Beam beam, Wedge wedge, CoefCalc coefCalc, boolean 
 //  System.out.println(String.format("\nDensity: %.2e", coefCalc.getDensity()));
   
   //Elastic collisions
-  double elasticProbOverT = coefCalc.getElectronElastic(beam);
-  double elasticProb = elasticProbOverT * sampleThickness;
+  // put in multislice here as well
+  double elasticProb = 0;
+  double avgEnergy = beam.getPhotonEnergy();
+  for (int i = 1; i <= numberSlices; i++) {
+    double elasticProbOverT = coefCalc.getElectronElastic(avgEnergy);
+    elasticProb += elasticProbOverT * (sampleThickness/numberSlices); 
+    //I need to update the electron energy, will do this with the stopping power for consistency
+    double stoppingPower = coefCalc.getStoppingPower(avgEnergy); //send it electron energy
+    double energyPerEl =  stoppingPower * (sampleThickness/numberSlices);
+    avgEnergy -= energyPerEl;
+  }
+
   
   numberElastic = elasticProb * electronNumber;
   numberSingleElastic = electronNumber * 
@@ -177,9 +192,16 @@ private double EMEquationWay(Beam beam, Wedge wedge, CoefCalc coefCalc, boolean 
   //inelastic 
   double inelasticProbOverT = 0;
   double inelasticProb = 0;
+  avgEnergy = beam.getPhotonEnergy();
   if (useInelEqu == true) {
-    inelasticProbOverT = coefCalc.getElectronInelastic(beam, exposedVolume);
-    inelasticProb = inelasticProbOverT * sampleThickness;
+    for (int i = 1; i <= numberSlices; i++) {
+      inelasticProbOverT = coefCalc.getElectronInelastic(avgEnergy, exposedVolume);
+      inelasticProb += inelasticProbOverT * (sampleThickness/numberSlices);
+      //I need to update the electron energy, will do this with the stopping power for consistency
+      double stoppingPower = coefCalc.getStoppingPower(avgEnergy); //send it electron energy
+      double energyPerEl =  stoppingPower * (sampleThickness/numberSlices);
+      avgEnergy -= energyPerEl;
+    }
     numberNotInelasticEqu = Math.exp(-inelasticProb) * electronNumber;
   }
   else {
@@ -213,26 +235,29 @@ private double EMEquationWay(Beam beam, Wedge wedge, CoefCalc coefCalc, boolean 
 
 private double EMStoppingPowerWay(Beam beam, Wedge wedge, CoefCalc coefCalc) {
   double exposedArea = 0;
+  double exposure = beam.getExposure();
   if (beam.getIsCircular() == false) {
     exposedArea = (getExposedX(beam) * getExposedY(beam)); //um^2
   }
   else {
     exposedArea = Math.PI * ((getExposedX(beam)/2) * (getExposedY(beam)/2)); //um^2
   }
-  
-  double exposedVolume = exposedArea  * (sampleThickness/1000) * 1E-15; //exposed volume in dm^3
-  double exposure = beam.getExposure();
   double electronNumber = exposure * (exposedArea * 1E08);
   
-  // need to get the stopping power from coefcalc
-  double stoppingPower = coefCalc.getStoppingPower(beam);
-  
-  
-  double energyDeposited = electronNumber * stoppingPower * sampleThickness * Beam.KEVTOJOULES;  //in J, currently per electron
-  
+  double exposedVolume = exposedArea  * ((sampleThickness/1000)) * 1E-15; //exposed volume in dm^3
   double exposedMass = (((coefCalc.getDensity()*1000) * exposedVolume) / 1000);  //in Kg 
-  double dose = (energyDeposited/exposedMass) / 1E06; //dose in MGy 
-  
+  double stoppingPower = 0, energyDeposited = 0, dose = 0;
+  double avgEnergy = beam.getPhotonEnergy();
+  for (int i = 1; i <= numberSlices; i++) {
+    // need to get the stopping power from coefcalc
+    stoppingPower = coefCalc.getStoppingPower(avgEnergy); //send it electron energy
+
+ 
+    double energyPerEl =  stoppingPower * (sampleThickness/numberSlices);
+    avgEnergy -= energyPerEl; 
+    energyDeposited = electronNumber * energyPerEl * Beam.KEVTOJOULES;  //in J, currently per electron
+    dose += (energyDeposited/exposedMass) / 1E06; //dose in MGy 
+  }
   return dose;
 }
 /**

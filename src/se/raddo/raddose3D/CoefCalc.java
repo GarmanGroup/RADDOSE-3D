@@ -116,11 +116,11 @@ public abstract class CoefCalc {
    */
   public abstract Set<Element> getPresentElements(boolean cryo);
   
-  public abstract double getElectronElastic(Beam beam);
+  public abstract double getElectronElastic(double avgEnergy);
   
-  public abstract double getElectronInelastic(Beam beam, double exposedVolume);
+  public abstract double getElectronInelastic(double avgEnergy, double exposedVolume);
   
-  public abstract double getStoppingPower(Beam beam);
+  public abstract double getStoppingPower(double avgEnergy);
   
   public abstract double getEta();
   

@@ -403,19 +403,19 @@ public class CoefCalcRaddose extends CoefCalc {
   }
 
   @Override
-  public double getElectronElastic(Beam beam) {
+  public double getElectronElastic(double avgEnergy) {
     // TODO Auto-generated method stub
     return 0;
   }
 
   @Override
-  public double getElectronInelastic(Beam beam, double exposedVolume) {
+  public double getElectronInelastic(double avgEnergy, double exposedVolume) {
     // TODO Auto-generated method stub
     return 0;
   }
 
   @Override
-  public double getStoppingPower(Beam beam) {
+  public double getStoppingPower(double avgEnergy) {
     // TODO Auto-generated method stub
     return 0;
   }
