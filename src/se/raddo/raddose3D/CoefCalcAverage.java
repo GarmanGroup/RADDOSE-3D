@@ -1,5 +1,6 @@
 package se.raddo.raddose3D;
 
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -158,6 +159,12 @@ public class CoefCalcAverage extends CoefCalc {
   public double getEta() {
     // TODO Auto-generated method stub
     return 0;
+  }
+
+  @Override
+  public Map<String, Double> getFractionElementEM() {
+    // TODO Auto-generated method stub
+    return null;
   }
   
 }

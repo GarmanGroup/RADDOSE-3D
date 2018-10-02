@@ -1,6 +1,10 @@
 package se.raddo.raddose3D;
 
 import java.util.Set;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 
 public abstract class CoefCalc {
   /**
@@ -119,4 +123,6 @@ public abstract class CoefCalc {
   public abstract double getStoppingPower(Beam beam);
   
   public abstract double getEta();
+  
+  public abstract Map<String, Double> getFractionElementEM();
 }

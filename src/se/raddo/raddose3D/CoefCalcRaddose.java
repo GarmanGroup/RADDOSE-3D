@@ -9,6 +9,7 @@ import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
 
@@ -423,5 +424,11 @@ public class CoefCalcRaddose extends CoefCalc {
   public double getEta() {
     // TODO Auto-generated method stub
     return 0;
+  }
+
+  @Override
+  public Map<String, Double> getFractionElementEM() {
+    // TODO Auto-generated method stub
+    return null;
   }
 }

@@ -215,6 +215,8 @@ public class CoefCalcCompute extends CoefCalc {
   
   private final Map<Element, Double> cryoConcentration;
   
+  public  Map<String, Double> fractionElementEM;
+  
   public boolean isEM;
 
   /**
@@ -228,6 +230,8 @@ public class CoefCalcCompute extends CoefCalc {
     solventConcentration = new HashMap<Element, Double>();
     cryoOccurrence = new HashMap<Element, Double>();
     cryoConcentration = new HashMap<Element, Double>();
+    
+    fractionElementEM = new HashMap<String, Double>();
   }
   
   /**
@@ -1523,6 +1527,7 @@ public class CoefCalcCompute extends CoefCalc {
       //molWeight fraction
       double A = e.getAtomicWeight();
       double molWeightFraction = (totalAtoms(e) * A) / molWeight;
+      fractionElementEM.put(ElementNameLower(e.getElementName()), molWeightFraction);
       double J = 0;
  //     double energy = beam.getPhotonEnergy();
       int Z = e.getAtomicNumber();
@@ -1613,6 +1618,25 @@ public class CoefCalcCompute extends CoefCalc {
       
     }
     return eta;
+  }
+  
+  private String ElementNameLower(String elementName) { //Elements currently in caps, ESTAR needs the second letter lower case
+    String lowerCaseName = null;
+    if (elementName.length() == 1) {
+      lowerCaseName = elementName;
+    }
+    else {
+      char firstLetter = elementName.charAt(0);
+      char secondLetter = elementName.charAt(1);
+      secondLetter = Character.toLowerCase(secondLetter);
+      lowerCaseName = Character.toString(firstLetter) + Character.toString(secondLetter);
+    }
+    return lowerCaseName;
+  }
+  
+  @Override
+  public Map<String, Double> getFractionElementEM(){
+    return fractionElementEM;
   }
   
 }

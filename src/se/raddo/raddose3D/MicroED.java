@@ -5,6 +5,22 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.Keys;
+//import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.chrome.ChromeDriver;
+//import org.openqa.selenium.support.ui.ExpectedCondition;
+//import org.openqa.selenium.support.ui.WebDriverWait;
+
+import java.text.*;
+import java.awt.Toolkit;
+import java.awt.datatransfer.*;
+import java.util.HashMap;
+import java.util.Map;
+
 
 public class MicroED {
   
@@ -24,6 +40,7 @@ public class MicroED {
   private double numberNotInelasticEqu;
   private double numberNotInelasticRatio;
   private double numberProductive;
+  private double stoppingPowerESTAR;
   
   
   
@@ -54,6 +71,11 @@ public class MicroED {
     
     double dose3 = EMStoppingPowerWay(beam, wedge, coefCalc);
     System.out.print(String.format("\nThe Dose in the exposed area by stopping power: %.8e", dose3));
+    System.out.println(" MGy\n");
+    
+    accessESTAR(coefCalc, beam.getPhotonEnergy());
+    double dose4 = getESTARDose(coefCalc, beam);
+    System.out.print(String.format("\nThe Dose in the exposed area by ESTAR: %.8e", dose4));
     System.out.println(" MGy\n");
     
     System.out.println(" Number elastic events: " + numberElastic);
@@ -269,6 +291,137 @@ private void WriterFile(final String filename, final double dose3) throws IOExce
     e.printStackTrace();
     System.err.println("WriterFile: Could not close file " + filename);
   }
+}
+
+public void accessESTAR(CoefCalc coefCalc, double avgElectronEnergy) {
+  String exePath = "lib\\selenium\\chromedriver.exe";
+  System.setProperty("webdriver.chrome.driver", exePath);
+// Create a new instance of the Firefox driver
+  WebDriver driver = new ChromeDriver();
+  //Launch the Website
+  driver.get("https://physics.nist.gov/PhysRefData/Star/Text/ESTAR-u.html");
+  
+  //Enter material name
+  WebElement name = driver.findElement(By.name("Name"));
+  name.sendKeys("Protein");
+  
+  //Enter density
+  double densityNum = coefCalc.getDensity();
+  String densityString = Double.toString(densityNum);
+  WebElement density = driver.findElement(By.name("Density"));
+  density.sendKeys(densityString);
+  
+  //Enter element fractions
+  Map<String, Double> fractionElementEM = new HashMap<String, Double>();
+  fractionElementEM = coefCalc.getFractionElementEM();
+  WebElement fractions = driver.findElement(By.name("Formulae"));
+  NumberFormat formatNoSF = new DecimalFormat();
+  formatNoSF = new DecimalFormat("0.000000"); //will break if in standard form
+  
+  for (String elementName : fractionElementEM.keySet()) {
+    String fractionElement = formatNoSF.format(fractionElementEM.get(elementName));
+    String toSend = (elementName + " " + fractionElement); 
+    //Write this in the textbox
+    fractions.sendKeys(toSend);
+    fractions.sendKeys(Keys.RETURN);
+  }
+  
+  //submit this information
+  WebElement submit = driver.findElement(By.cssSelector("input[value='Submit']"));
+  submit.click();
+  
+  
+  //enter the beam energy
+  String beamMeV = Double.toString((avgElectronEnergy / 1000));
+  WebElement energy = driver.findElement(By.name("Energies"));
+  energy.sendKeys(beamMeV);
+  //uncheck default energies
+  WebElement checkBox = driver.findElement(By.cssSelector("input[value='on']"));
+  checkBox.click();
+  //remove the graph as unnecessary
+  WebElement radioButton = driver.findElement(By.cssSelector("input[value='None']"));
+  radioButton.click();
+  //submit this page
+  submit = driver.findElement(By.cssSelector("input[value='Submit']"));
+  submit.click();
+  
+  //select to output total stopping power
+  checkBox = driver.findElement(By.name("total"));
+  checkBox.click();
+  //Download data
+  submit = driver.findElement(By.cssSelector("input[value='Download data']"));
+  submit.click();
+  
+  //copy and paste whole page
+  Actions action = new Actions(driver); 
+  action.keyDown(Keys.CONTROL).sendKeys(String.valueOf('\u0061')).perform();
+  action.keyUp(Keys.CONTROL).perform();
+  action.keyDown(Keys.CONTROL).sendKeys(String.valueOf('\u0063')).perform();
+  String wholeTable = getSysClipboardText();
+
+  //get beam energy in a string
+  double MeV = avgElectronEnergy/1000;
+  NumberFormat formatter = new DecimalFormat();
+  formatter = new DecimalFormat("0.000E00");
+  String beamEnergy = formatter.format(MeV); 
+  // search using beam energy
+  int beamEnergyIndex = wholeTable.indexOf(beamEnergy);
+  String numbers = wholeTable.substring(beamEnergyIndex);
+  //find stopping power by the space
+  int spaceIndex = numbers.indexOf(" ");
+  String stoppingPowerString = numbers.substring(spaceIndex + 1);
+  stoppingPowerString = stoppingPowerString.trim();
+  
+  stoppingPowerESTAR = Double.parseDouble(stoppingPowerString);
+  driver.quit(); // close all windows opened by selenium
+   
+}
+
+/**
+* get string from Clipboard
+*/
+public static String getSysClipboardText() {
+   String ret = "";
+   Clipboard sysClip = Toolkit.getDefaultToolkit().getSystemClipboard();
+
+   Transferable clipTf = sysClip.getContents(null);
+
+   if (clipTf != null) {
+
+       if (clipTf.isDataFlavorSupported(DataFlavor.stringFlavor)) {
+           try {
+               ret = (String) clipTf
+                       .getTransferData(DataFlavor.stringFlavor);
+           } catch (Exception e) {
+               e.printStackTrace();
+           }
+       }
+   }
+
+   return ret;
+}
+
+private double getESTARDose(CoefCalc coefCalc, Beam beam) {
+  double exposedArea = 0;
+  if (beam.getIsCircular() == false) {
+    exposedArea = (getExposedX(beam) * getExposedY(beam)); //um^2
+  }
+  else {
+    exposedArea = Math.PI * ((getExposedX(beam)/2) * (getExposedY(beam)/2)); //um^2
+  }
+  
+  double exposedVolume = exposedArea  * (sampleThickness/1000) * 1E-15; //exposed volume in dm^3
+  double exposure = beam.getExposure();
+  double electronNumber = exposure * (exposedArea * 1E08);
+  
+  double stoppingPower = (stoppingPowerESTAR * coefCalc.getDensity() * 1000) / 1E7; //keV/nm
+  
+  double energyDeposited = electronNumber * stoppingPower * sampleThickness * Beam.KEVTOJOULES;  //in J, currently per electron
+  
+  double exposedMass = (((coefCalc.getDensity()*1000) * exposedVolume) / 1000);  //in Kg 
+  double dose = (energyDeposited/exposedMass) / 1E06; //dose in MGy 
+  
+  return dose;
 }
   
 }
