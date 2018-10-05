@@ -633,6 +633,7 @@ private double getIntersectionDistance(double x, double y, double z, double ca, 
   }
 
   double[] directionVector = {ca, cb, cc}; //the actual direction vector
+  double minIntersect = 0;
   double[] origin = new double[3];
   origin[0] = x/1000;
   origin[1] = y/1000;
@@ -650,11 +651,18 @@ private double getIntersectionDistance(double x, double y, double z, double ca, 
         //do nothing
     }
     else {
-      break;
+  //    break; //maybe should just be closest, or an issue with the rayTRace
+      if (minIntersect == 0) {
+        minIntersect = intersectionDistance;
+      }
+      else {
+        double min = Math.min(minIntersect, intersectionDistance);
+        minIntersect = min;
+      }
     }
 
   }
-  return intersectionDistance;
+  return minIntersect;
 }
 
 private double[] getIntersectionPoint(double intersectionDistance, double x, double y, double z,
@@ -664,8 +672,9 @@ private double[] getIntersectionPoint(double intersectionDistance, double x, dou
   origin[0] = x/1000;
   origin[1] = y/1000;
   origin[2] = z/1000;
+  double distance = intersectionDistance / 1000;
   double[] intersectionPoint = Vector.rayTraceToPointWithDistance(
-      directionVector, origin, intersectionDistance);
+      directionVector, origin, distance);
   return intersectionPoint;
 }
 
