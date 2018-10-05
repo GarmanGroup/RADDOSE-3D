@@ -431,4 +431,16 @@ public class CoefCalcRaddose extends CoefCalc {
     // TODO Auto-generated method stub
     return null;
   }
+
+  @Override
+  public double getElectronElasticMFPL(double electronEnergy) {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+
+  @Override
+  public double getRutherfordScreening(double electronEnergy) {
+    // TODO Auto-generated method stub
+    return 0;
+  }
 }

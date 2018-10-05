@@ -157,4 +157,10 @@ public class CrystalDummy extends Crystal {
     
     return 0;
   }
+  
+  @Override
+  public void startMicroED(double XDim, double YDim, double ZDim, Beam beam,
+      Wedge wedge, CoefCalc coefCalc) {
+    
+  }
 }

@@ -330,6 +330,12 @@ public class ExperimentDummy extends Experiment {
         
         return 0;
       }
+      
+      @Override
+      public void startMicroED(double XDim, double YDim, double ZDim, Beam beam,
+          Wedge wedge, CoefCalc coefCalc) {
+        
+      }
     }
   }
 }

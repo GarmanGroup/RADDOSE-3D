@@ -342,6 +342,8 @@ public abstract class Crystal {
   public abstract void setFLparamsForCurrentBeam(final double[][] feFactors);
   public abstract void setCryoPEparamsForCurrentBeam(Beam beam, CoefCalc coefCalc, double[][] feFactors);
   
+  public abstract void startMicroED(double XDim, double YDim, double ZDim, Beam beam, Wedge wedge, CoefCalc coefCalc);
+  
 
   
   /**
@@ -609,8 +611,7 @@ public abstract class Crystal {
     
     if (useElectrons == true) {
       // do electron stuff
-      MicroED microED = new MicroED(XDim, YDim, ZDim);
-      microED.CalculateEM(beam, wedge, coefCalc);
+      startMicroED(XDim, YDim, ZDim, beam, wedge, coefCalc);
     }
     else { //photon stuff
       

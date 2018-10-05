@@ -11,6 +11,8 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.Keys;
 //import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.interactions.Actions;
+
+
 import org.openqa.selenium.chrome.ChromeDriver;
 //import org.openqa.selenium.support.ui.ExpectedCondition;
 //import org.openqa.selenium.support.ui.WebDriverWait;
@@ -23,6 +25,27 @@ import java.util.Map;
 
 
 public class MicroED {
+  
+  //polyhderon variables
+  public double[][] verticesEM;
+  public int[][] indicesEM;
+  public double[][][][] crystCoordEM;
+  public double crystalPixPerUMEM;
+  public int[] crystalSizeVoxelsEM;
+  public boolean[][][][] crystOccEM;
+  /**
+   * Normal array holding normalised direction vectors for
+   * each triangle specified by the index array.
+   * Contains an i, j, k vector per triangle.
+   * Should have same no. of entries as the indices array.
+   */
+  private double[][]            normals, rotatedNormals;
+
+  /**
+   * Distances from origin for each of the triangle planes.
+   * Should have same no. of entries as the indices array.
+   */
+  private double[]              originDistances, rotatedOriginDistances;
   
   
   public double crystalSurfaceArea;  //A^2
@@ -44,20 +67,41 @@ public class MicroED {
   //to see if multislice is necessary at all
   private final int numberSlices = 1;
   
+  private double MonteCarloDose;
+  private int MonteCarloTotElasticCount;
+  private int MonteCarloSingleElasticCount;
   
   
-  public MicroED(double XDim, double YDim, double ZDim) {
-    XDimension = XDim;
-    YDimension = YDim;
-    ZDimension = ZDim;
-    crystalSurfaceArea = XDim * YDim * 1E08; //convert from um^2 to A^2
-    sampleThickness = ZDim * 1000; //convert um to nm
+  
+  public MicroED(double vertices[][], int[][] indices, double[][][][] crystCoord, 
+                  double crystalPixPerUM, int[] crystSizeVoxels, boolean[][][][] crystOcc) {
+    verticesEM = vertices;
+    indicesEM = indices;
+    crystCoordEM = crystCoord;
+    crystalPixPerUMEM = crystalPixPerUM;
+    crystalSizeVoxelsEM = crystSizeVoxels;
+    crystOccEM = crystOcc;
+    
+    double[] xMinMax = this.minMaxVertices(0, vertices);
+    double[] yMinMax = this.minMaxVertices(1, vertices);
+    double[] zMinMax = this.minMaxVertices(2, vertices);
+    XDimension = 1000 * (xMinMax[1] - xMinMax[0]);
+    YDimension = 1000 * (yMinMax[1] - yMinMax[0]);
+    ZDimension = 1000 * (zMinMax[1] - zMinMax[0]);
+    
+    
+    crystalSurfaceArea = XDimension * YDimension * 1E02; //convert from nm^2 to A^2
+    sampleThickness = ZDimension; //convert um to nm
     crystalVolume = (crystalSurfaceArea * (sampleThickness * 10) * 1E-27);    //A^3 to dm^3
+    //note the volume would need to be updated for a polyhedron!!! - currently just a cube or cylinder 
+    //although it isn't used
     
   }
   
   public void CalculateEM(Beam beam, Wedge wedge, CoefCalc coefCalc) { // also pass in crystal dimensions
     // Just to be clear these are all dose of the exposed volume
+    startMonteCarlo(coefCalc, beam); 
+    
     double dose1 = EMLETWay(beam, wedge, coefCalc);
     System.out.print(String.format("\nThe Dose in the exposed area by LET: %.8e", dose1));
     System.out.println(" MGy\n");
@@ -448,5 +492,512 @@ private double getESTARDose(CoefCalc coefCalc, Beam beam) {
   
   return dose;
 }
+
+// Everything below will be the Monte Carlo section of the code
+private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
+  //set up for one electron to start with and then test how many needed to get little deviation and then scale up
+  double electronEnergy = beam.getPhotonEnergy();
+  double stoppingPower = coefCalc.getStoppingPower(electronEnergy);
+  double energyLost = 0;
+  double lambda = coefCalc.getElectronElasticMFPL(electronEnergy); //lambda in nm
+  double s = -lambda*Math.log(Math.random());
+  double alpha = coefCalc.getRutherfordScreening(electronEnergy);
+  //now I'm going to go through the coordinates
+  double previousX = 0, previousY = 0; //atm starting going straight 
+  double cx = 0.0001, cy = 0.0001, cz = 0.9998; //direction cosine are such that just going down in one
+  double ca = cx;
+  double cb = cy;
+  double cc = cz;
+  double previousZ = -ZDimension/2; //this may be dodgy if the top of the specimen is not flat...
+  double xn = previousX + s * ca;
+  double yn = previousY + s * cb;
+  double zn = previousZ + s * cc;
+  boolean exited = false;
+  boolean scattered = false;
   
+  int timesScattered = 0;
+  //check if the electron has left the sample, if it has just do the dose of Z
+  //if it has not left move onto the loop
+  while (exited == false) {
+  if (isMicrocrystalAt(xn, yn, zn) == true) {
+    timesScattered += 1;
+    MonteCarloTotElasticCount += 1;
+    scattered = true;
+    //reset
+    cx = ca;
+    cy = cb;
+    cz = cc;
+    previousX = xn;
+    previousY = yn;
+    previousZ = zn;
+    //update dose and energy and stoppingPower
+    energyLost = s * stoppingPower;
+    MonteCarloDose += energyLost;   //keV
+    electronEnergy -= energyLost;  
+    //add an elastic collision
+
+    //now start the loop - clean up the first iteration into this later 
+    
+    //get new stoppingPower
+    stoppingPower = coefCalc.getStoppingPower(electronEnergy);
+    lambda = coefCalc.getElectronElasticMFPL(electronEnergy);
+    s = -lambda*Math.log(Math.random());
+    alpha = coefCalc.getRutherfordScreening(electronEnergy);
+    
+    double RND = Math.random();
+    double cosPhi = 1 - ((2*alpha * Math.pow(RND, 2))/(1+alpha-RND));
+    double phi = Math.acos(cosPhi);
+    double psi = 2 * Math.PI * Math.random();
+    
+    //x and y are the same as in Joy, so x will be the rotation axis
+    double AN = -(cx/cz); // will need to catch an error here if = 0
+    double AM = 1 / (Math.pow(1 + AN*AN, 0.5));
+    double V1 = AN * Math.sin(phi);
+    double V2 = AN*AM*Math.sin(phi);
+    double V3 = Math.cos(psi);
+    double V4 = Math.sin(psi);
+    
+    ca = (cx*cosPhi) + (V1*V3) + (cy*V2*V4);
+    cb = (cy*cosPhi) + (V4*(cz*V1 - cx*V2));
+    cc = (cz*cosPhi) + (V2*V3) - (cy*V1*V4);
+    
+    //update to new position
+    xn = previousX + s * ca;
+    yn = previousY + s * cb;
+    zn = previousZ + s * cc;
+  }
+  else {
+    exited = true;
+    if (scattered == false) { // so it has just gone straight through with no elastic
+      //deposit the dose - for now just the z dimension
+      energyLost = ZDimension * stoppingPower;
+      MonteCarloDose += energyLost;   //keV
+      //end
+    }
+    else { //it has scattered at least  once but has now exited 
+      //find the plane it is crossing somehow
+      s = 1000 * getIntersectionDistance(previousX, previousY, previousZ, ca, cb, cc);
+      //I'm going to get the point as well for now as it may be useful when doing apertures and stuff
+      //It's also useful for backscattering!!!!
+      double[] intersectionPoint = getIntersectionPoint(s, previousX, previousY, previousZ, ca, cb, cc);
+      energyLost = s * stoppingPower;
+      MonteCarloDose += energyLost;   //keV
+    }
+  }
+  }
+  if (timesScattered == 1) {
+    MonteCarloSingleElasticCount += 1;
+  }
+  //Will need to do something about exiting the correct plane here
+  //Will also need to add in inel scattering here for productive (and then FSE stuff)
+
+  
+}
+
+private boolean isMicrocrystalAt(final double x, final double y, final double z) {
+  //Note that this is absolutely only right for a cuboid at the moment
+  //This can stay as a quick test
+  if ((x > XDimension/2) || (x < -XDimension/2)) {
+    return false;
+  }
+  if ((y > YDimension/2) || (y < -YDimension/2)) {
+    return false;
+  }
+  if ((z > ZDimension/2) || (z < -ZDimension/2)) {
+    return false;
+  }
+
+  //now do the crystal occupancy stuff
+  //convert xyz to ijk
+  double[] xMinMax = this.minMaxVertices(0, verticesEM);
+  double[] yMinMax = this.minMaxVertices(1, verticesEM);
+  double[] zMinMax = this.minMaxVertices(2, verticesEM);
+  int i = (int) StrictMath.round(((x/1000) - xMinMax[0]) * crystalPixPerUMEM);
+  int j = (int) StrictMath.round(((y/1000) - yMinMax[0]) * crystalPixPerUMEM);
+  int k = (int) StrictMath.round(((z/1000) - zMinMax[0]) * crystalPixPerUMEM);
+  
+  boolean[] occ = crystOccEM[i][j][k];  //This means that if has already been done don't do it again
+                                        // Really needed to speed up Monte Carlo
+
+  if (!occ[0]) {
+    occ[1] = calculateCrystalOccupancy(x, y, z);
+    occ[0] = true;
+  }
+
+  return occ[1];
+}
+
+private double getIntersectionDistance(double x, double y, double z, double ca, double cb, double cc) {
+  if (normals == null) {
+    calculateNormals(false);
+  }
+
+  double[] directionVector = {ca, cb, cc}; //the actual direction vector
+  double[] origin = new double[3];
+  origin[0] = x/1000;
+  origin[1] = y/1000;
+  origin[2] = z/1000;
+  
+  double intersectionDistance = 0;
+  for (int l = 0; l < indicesEM.length; l++) {
+    intersectionDistance = Vector.rayTraceDistance(normals[l],
+        directionVector, origin, originDistances[l]);
+
+    Double distanceObject = Double.valueOf(intersectionDistance);
+
+    if (intersectionDistance < 0 || distanceObject.isNaN()
+        || distanceObject.isInfinite()) {
+        //do nothing
+    }
+    else {
+      break;
+    }
+
+  }
+  return intersectionDistance;
+}
+
+private double[] getIntersectionPoint(double intersectionDistance, double x, double y, double z,
+                                    double ca, double cb, double cc) {
+  double[] directionVector = {ca, cb, cc}; //the actual direction vector
+  double[] origin = new double[3];
+  origin[0] = x/1000;
+  origin[1] = y/1000;
+  origin[2] = z/1000;
+  double[] intersectionPoint = Vector.rayTraceToPointWithDistance(
+      directionVector, origin, intersectionDistance);
+  return intersectionPoint;
+}
+
+
+/**
+ * Returns the minimum and maximum values of a vertex array
+ * given chosen dimension (0 = x, 1 = y, 2 = z).
+ *
+ * @param dimension 0 = x, 1 = y, 2 = z
+ * @param vertices vertices to be examined
+ * @return double array, first element minimum, second element maximum
+ */
+public double[] minMaxVertices(final int dimension, final double[][] vertices) {
+
+  double min = java.lang.Double.POSITIVE_INFINITY;
+  double max = java.lang.Double.NEGATIVE_INFINITY;
+
+  for (int i = 0; i < vertices.length; i++) {
+    if (vertices[i][dimension] < min) {
+      min = vertices[i][dimension];
+    }
+
+    if (vertices[i][dimension] > max) {
+      max = vertices[i][dimension];
+    }
+  }
+
+  double[] result = { min, max };
+
+  return result;
+}
+
+/**
+ * Calculates normal array from index and vertex arrays.
+ * Also calculates signed distances of each triangle
+ * from the origin.
+ */
+public void calculateNormals(final boolean rotated) {
+
+  double[][] verticesUsed = verticesEM;
+  double[] originDistancesUsed = new double[verticesEM.length];
+  double[][] normalsUsed = new double[verticesEM.length][3];
+
+  normalsUsed = new double[indicesEM.length][3];
+  originDistancesUsed = new double[indicesEM.length];
+
+  for (int i = 0; i < indicesEM.length; i++) {
+    // get the three vertices which this triangle corresponds to.
+    double[] point1 = verticesUsed[indicesEM[i][0] - 1];
+    double[] point2 = verticesUsed[indicesEM[i][1] - 1];
+    double[] point3 = verticesUsed[indicesEM[i][2] - 1];
+
+    // get two vectors which can be used to define our plane.
+
+    double[] vector1 = Vector.vectorBetweenPoints(point1, point2);
+    double[] vector2 = Vector.vectorBetweenPoints(point1, point3);
+
+    // get the normal vector between these two vectors.
+
+    double[] normalVector = Vector.normalisedCrossProduct(vector1, vector2);
+
+    // copy this vector into the normals array at the given point.
+    System.arraycopy(normalVector, 0, normalsUsed[i], 0, 3);
+
+    double distanceFromOrigin = -(normalVector[0] * point1[0]
+        + normalVector[1] * point1[1] + normalVector[2] * point1[2]);
+
+    originDistancesUsed[i] = distanceFromOrigin;
+  }
+
+    originDistances = new double[indicesEM.length];
+    normals = new double[indicesEM.length][3];
+
+    for (int i = 0; i < normalsUsed.length; i++) {
+      System.arraycopy(normalsUsed[i], 0, normals[i], 0, 3);
+    }
+
+    System.arraycopy(originDistancesUsed, 0, originDistances, 0,
+        indicesEM.length);
+  
+}
+
+
+public boolean calculateCrystalOccupancy(final double x, final double y, final double z)
+{
+  if (normals == null) {
+    calculateNormals(false);
+  }
+
+  boolean inside = false;
+
+  double[] directionVector = { 0, 0, 1 };
+  double[] origin = new double[3];
+  origin[0] = x/1000;
+  origin[1] = y/1000;
+  origin[2] = z/1000;
+  //It doesn't work if x = y so need a fudge here... this is horrible.
+  if (origin[0] == origin[1]) {
+    origin[0] += 0.00001;
+  }
+
+  for (int l = 0; l < indicesEM.length; l++) {
+    double intersectionDistance = Vector.rayTraceDistance(normals[l],
+        directionVector, origin, originDistances[l]);
+
+    Double distanceObject = Double.valueOf(intersectionDistance);
+
+    if (intersectionDistance < 0 || distanceObject.isNaN()
+        || distanceObject.isInfinite()) {
+      continue;
+    }
+
+    double[] intersectionPoint = Vector.rayTraceToPointWithDistance(
+        directionVector, origin, intersectionDistance);
+
+    double[][] triangleVertices = new double[3][3];
+
+    // copy vertices referenced by indices into single array for
+    // passing onto the polygon inclusion test.
+    for (int m = 0; m < 3; m++) {
+      System.arraycopy(verticesEM[indicesEM[l][m] - 1], 0, triangleVertices[m],
+          0, 3);
+    }
+
+    boolean crosses = Vector.polygonInclusionTest(triangleVertices,
+        intersectionPoint);
+
+    if (crosses) {
+      inside = !inside;
+    }
+  }
+
+  return inside;
+}
+
+/**
+ * Vector class containing magical vector methods
+ * like cross products and magnitudes.
+ *
+ * @author magd3052
+ */
+private static class Vector {
+  /**
+   * Returns magnitude of 3D vector.
+   *
+   * @param vector 3d coordinates of vector
+   * @return magnitude scalar.
+   */
+  public static double vectorMagnitude(final double[] vector) {
+    double squaredDistance = Math.pow(vector[0], 2) + Math.pow(vector[1], 2)
+        + Math.pow(vector[2], 2);
+
+    double distance = Math.sqrt(squaredDistance);
+
+    return distance;
+  }
+
+  /**
+   * returns 3D vector between FROM and TO points.
+   *
+   * @param from from point
+   * @param to to point
+   * @return vector between points.
+   */
+  public static double[] vectorBetweenPoints(final double[] from,
+      final double[] to) {
+    double[] newVector = new double[3];
+
+    for (int i = 0; i < 3; i++) {
+      newVector[i] = to[i] - from[i];
+    }
+
+    return newVector;
+  }
+
+  /**
+   * returns 3D cross-product between two vectors.
+   *
+   * @param vector1 vector1
+   * @param vector2 vector2
+   * @return cross product
+   */
+  public static double[] crossProduct(final double[] vector1,
+      final double[] vector2) {
+    double[] newVector = new double[3];
+
+    newVector[0] = vector1[1] * vector2[2] - vector1[2] * vector2[1];
+    newVector[1] = vector1[2] * vector2[0] - vector1[0] * vector2[2];
+    newVector[2] = vector1[0] * vector2[1] - vector1[1] * vector2[0];
+
+    return newVector;
+  }
+
+  /**
+   * returns 3D cross product with magnitude set to 1 between
+   * two vectors.
+   *
+   * @param vector1 vector1
+   * @param vector2 vector2
+   * @return normalised cross product
+   */
+  public static double[] normalisedCrossProduct(final double[] vector1,
+      final double[] vector2) {
+    double[] newVector = crossProduct(vector1, vector2);
+    double magnitude = vectorMagnitude(newVector);
+
+    for (int i = 0; i < 3; i++) {
+      newVector[i] /= magnitude;
+    }
+
+    return newVector;
+  }
+
+  /**
+   * returns dot product between two 3D vectors.
+   *
+   * @param vector1 vector1
+   * @param vector2 vector2
+   * @return dot product
+   */
+  public static double dotProduct(final double[] vector1,
+      final double[] vector2) {
+    double dotProduct = 0;
+
+    for (int i = 0; i < 3; i++) {
+      dotProduct += vector1[i] * vector2[i];
+    }
+
+    return dotProduct;
+  }
+
+  /**
+   * Ray trace from a point to a plane via a direction vector,
+   * find the intersection between the direction vector and the
+   * plane and return this point.
+   *
+   * @param normalUnitVector normal vector with magnitude 1
+   * @param directionVector direction vector of any magnitude
+   * @param origin point from which ray is traced (i.e. voxel coordinate)
+   * @param planeDistance distance of plane from true origin (0, 0, 0)
+   * @return intersection point between plane and direction vector
+   */
+  @SuppressWarnings("unused")
+  public static double[] rayTraceToPoint(final double[] normalUnitVector,
+      final double[] directionVector, final double[] origin,
+      final double planeDistance) {
+    double t = rayTraceDistance(normalUnitVector, directionVector, origin,
+        planeDistance);
+
+    double[] point = new double[3];
+
+    for (int i = 0; i < 3; i++) {
+      point[i] = origin[i] + t * directionVector[i];
+    }
+
+    return point;
+  }
+
+  /**
+   * Ray trace - find intersection of direction vector from point
+   * with plane from already-known distance t.
+   *
+   * @param directionVector direction vector
+   * @param origin point from which ray is traced
+   * @param t distance of origin to plane along direction vector
+   * @return point of intersection
+   */
+  public static double[] rayTraceToPointWithDistance(
+      final double[] directionVector,
+      final double[] origin,
+      final double t) {
+    double[] point = new double[3];
+
+    for (int i = 0; i < 3; i++) {
+      point[i] = origin[i] + t * directionVector[i];
+    }
+
+    return point;
+  }
+
+  /**
+   * Ray trace from a point to a plane via a direction vector,
+   * find the signed distance between the direction vector and
+   * the plane and return this point.
+   *
+   * @param normalUnitVector normal vector with magnitude 1
+   * @param directionVector direction vector of any magnitude
+   * @param origin point from which ray is traced (i.e. voxel coordinate)
+   * @param planeDistance distance of plane from true origin (0, 0, 0)
+   * @return signed distance between direction vector and plane
+   */
+  public static double rayTraceDistance(final double[] normalUnitVector,
+      final double[] directionVector, final double[] origin,
+      final double planeDistance) {
+
+    double originNormalDotProduct = dotProduct(origin, normalUnitVector);
+    double directionNormalDotProduct = dotProduct(directionVector,
+        normalUnitVector);
+
+    double t = -(originNormalDotProduct + planeDistance)
+        / directionNormalDotProduct;
+
+    return t;
+  }
+
+  /**
+   * Original C code
+   * http://www.ecse.rpi.edu/~wrf/Research/Short_Notes/pnpoly.html
+   * Takes an array of vertices of a polygon and determines whether a point
+   * is contained within the polygon or not. Ignores the z axis at the
+   * moment.
+   *
+   * @param vertices array of 3D vertices
+   * @param point point to test inclusion - must be in same plane
+   *          as vertices
+   * @return boolean value - in polygon or not in polygon.
+   */
+  public static boolean polygonInclusionTest(final double[][] vertices,
+      final double[] point) {
+    boolean c = false;
+
+    for (int i = 0, j = vertices.length - 1; i < vertices.length; j = i++) {
+      if (((vertices[i][1] > point[1]) != (vertices[j][1] > point[1]))
+          && (point[0] < (vertices[j][0] - vertices[i][0])
+              * (point[1] - vertices[i][1])
+              / (vertices[j][1] - vertices[i][1]) + vertices[i][0])) {
+        c = !c;
+      }
+    }
+
+    return c;
+  }
+}
+
 }

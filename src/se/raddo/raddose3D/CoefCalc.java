@@ -125,4 +125,8 @@ public abstract class CoefCalc {
   public abstract double getEta();
   
   public abstract Map<String, Double> getFractionElementEM();
+  
+  public abstract double getElectronElasticMFPL(double electronEnergy);
+  
+  public abstract double getRutherfordScreening(double electronEnergy);
 }

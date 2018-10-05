@@ -12,7 +12,7 @@ public class CoefCalcCompute extends CoefCalc {
   /**
    * Identified coefficients and density from last program run. Final variables.
    */
-  private double                     absCoeffcomp, absCoeffphoto, attCoeff, elasCoeff, density;
+  private double                     absCoeffcomp, absCoeffphoto, attCoeff, elasCoeff, density, molecularWeight;
 
   public double cellVolume;
 
@@ -1448,7 +1448,7 @@ public class CoefCalcCompute extends CoefCalc {
         }
       }
       */
-      
+
       double numEl = totalAtoms(e);
       elasticMolecule += elasticElement[counter] * numEl;
       molWeight += numEl * e.getAtomicWeight();
@@ -1459,6 +1459,65 @@ public class CoefCalcCompute extends CoefCalc {
     double PoverT = 602 * massScatteringCoefficient  * density; //thickness in nm ; //* (EMThickness/10);
     
     return PoverT;
+  }
+  /**
+   * Return the electron elastic cross section of the material in nm^2
+   * @param electronEnergy
+   * @return
+   */
+  private double getElectronElasticCrossSection(double electronEnergy) {
+    //get the total mass in the unit cell
+    double molWeight = 0;
+    for (Element e : presentElements) {
+      molWeight += totalAtoms(e) * e.getAtomicWeight();
+    } 
+    
+    
+    double[] elasticElement = new double[presentElements.size()];
+    double elasticMolecule = 0, partLambda =0;
+    double m = 9.10938356E-31; // in Kg
+    double csquared = 3E8*3E8;  // (m/s)^2   //update this to be precise
+    double Vo = electronEnergy * Beam.KEVTOJOULES;
+    double betaSquared = 1- Math.pow(m*csquared/(Vo + m*csquared), 2);
+    int counter = 0;
+    for (Element e : this.presentElements) {
+      elasticElement[counter] =  ((1.4E-6 * Math.pow(e.getAtomicNumber(), 1.5))/betaSquared)*
+                       ((1-(0.26*e.getAtomicNumber())/(137*Math.pow(betaSquared, 0.5))));
+                   //    *1E06; // convert nm^2 to pm^2
+      double A = e.getAtomicWeight();
+      double molWeightFraction = (totalAtoms(e) * A) / molWeight;
+      //do by ELSEPA as more accurate if in the table
+      
+      /*
+      if (avgEnergy <= 300) {
+        ReadElasticFile rdEl = new ReadElasticFile();
+        double x_section = rdEl.openFile("constants/electron_elastic.txt", beam.getPhotonEnergy(), e.getAtomicNumber()); 
+        if (x_section > 0.0) {
+          elasticElement[counter] = x_section;
+        }
+      }
+      */
+
+      double numEl = totalAtoms(e);
+ //    elasticElement[counter] *= numEl;
+      elasticMolecule += elasticElement[counter];
+      partLambda += (molWeightFraction * elasticElement[counter])/A;
+   //   partLambda += elasticElement[counter]/A;
+      counter += 1;
+
+    }
+    // not summing the elastic cross section in the same way as Drouin et al 2007 CASINO 2.42 to get 
+    // lambda so need to have a look at this by comparisons to CASINOv3
+    molecularWeight = molWeight;
+    return partLambda; //nm^2
+  }
+  
+  @Override
+  public double getElectronElasticMFPL(double electronEnergy) {
+    double partLambda = getElectronElasticCrossSection(electronEnergy);
+ //   double lambda = molecularWeight / ((density/1E21) * AVOGADRO_NUM * elasticXSection);
+    double lambda = 1 / (AVOGADRO_NUM * (density/1E21) * partLambda);
+    return lambda; //nm
   }
   
   @Override
@@ -1509,6 +1568,8 @@ public class CoefCalcCompute extends CoefCalc {
     double K = 0.31;
     double gamma = 1/Math.pow((1-betaSquared), 0.5);
     
+    double KE = (gamma - 1) * m * csquared;
+    
 //    double energy = gamma * m * csquared / Beam.KEVTOJOULES;
     
     
@@ -1520,7 +1581,7 @@ public class CoefCalcCompute extends CoefCalc {
     
     double meanJ = 0;
     double stoppingPower = 0;
-    double sumA = 0;
+    double sumA = 0, meanZoverA = 0;
     int sumZ = 0;
     for (Element e : this.presentElements) { 
       //calculate meanJ (mean excitation energy) for this material
@@ -1531,6 +1592,7 @@ public class CoefCalcCompute extends CoefCalc {
       double J = 0;
  //     double energy = beam.getPhotonEnergy();
       int Z = e.getAtomicNumber();
+      meanZoverA += molWeightFraction * (Z/A);
       sumZ += Z * totalAtoms(e);
       sumA += A * totalAtoms(e);
       if (Z <= 12) {
@@ -1547,8 +1609,7 @@ public class CoefCalcCompute extends CoefCalc {
       
       
       stoppingPower += molWeightFraction * ((78500 * Z /(avgEnergy*A)) 
-          * Math.log(1.166 * avgEnergy/(J/1000))
-          /1E7);  // keV/nm
+          * Math.log(1.166 * avgEnergy/(J/1000)));  // keV/nm
       
       /*
       double I = J * Beam.KEVTOJOULES;
@@ -1558,7 +1619,7 @@ public class CoefCalcCompute extends CoefCalc {
  */
       
     }
-      stoppingPower *= density;
+      stoppingPower *= density /1E7;
 //    stoppingPower = stoppingPower * 1000 * density /1E7;
     //test
   //  stoppingPower = 2.07E-04;
@@ -1576,28 +1637,41 @@ public class CoefCalcCompute extends CoefCalc {
     double Vo = beam.getPhotonEnergy() * Beam.KEVTOJOULES;
     double betaSquared = 1- Math.pow(m*csquared/(Vo + m*csquared), 2);
     */
-      /*
+      
     double Fbeta = 0;
     meanJ = 77.3;
-    meanJ = meanJ * Beam.KEVTOJOULES;
-    Fbeta = Math.log((m*csquared*(beam.getPhotonEnergy()/1000)* betaSquared) / (2*(1-betaSquared))) 
+    meanJ = (meanJ/1000) * Beam.KEVTOJOULES;
+    double energy = avgEnergy * Beam.KEVTOJOULES;
+    Fbeta = Math.log((m*csquared*(energy)* betaSquared) / (2*(1-betaSquared))) 
             - (2*Math.pow((1-betaSquared),0.5) - 1 + betaSquared)
             * Math.log(2) + 1 - betaSquared + (1/8)*(1-Math.pow(1-betaSquared,0.5));
     stoppingPower = (0.153536/betaSquared)*(sumZ/sumA)*(Fbeta - 2*Math.log(meanJ));
-    */
+    stoppingPower = stoppingPower * 1000 * density /1E7;
+    //note no density effect corrections, shell corrections or Bremstrahlung (can justify why)
     
+ /*   
  //   double K = 0.31;
  //   double gamma = Math.pow(1/(1-betaSquared), 0.5);
     meanJ = 0.0773;
-    
+    double test = sumZ/sumA;
+ //   meanJ = meanJ/1000;
     meanJ = meanJ * Beam.KEVTOJOULES;
-    stoppingPower = K * (sumZ /sumA)* (1/betaSquared) * 
-                    (Math.log(csquared*betaSquared*m*Math.pow(gamma-1, 0.5)/(meanJ * Math.pow(2, 0.5)))+ 
+    meanZoverA = 0.56;
+    stoppingPower = K * (meanZoverA)* (1/betaSquared) * 
+                    (Math.log((csquared*betaSquared*m*Math.pow(gamma-1, 0.5))/(meanJ * Math.pow(2, 0.5)))+ 
                         0.5*(1-betaSquared)-((2*gamma-1)/(2*Math.pow(gamma, 2))) + (1/16)*Math.pow((gamma-1)/gamma, 2));
     stoppingPower = stoppingPower * 1000 * density /1E7;
     
+    //without corrections
+    meanJ = 0.0753 * Beam.KEVTOJOULES;
+    stoppingPower = K * (meanZoverA)* (1/betaSquared) * 
+        (Math.log((csquared*betaSquared*m*gamma)/(meanJ * 2))-betaSquared);
+stoppingPower = stoppingPower * 1000 * density /1E7;
+    
 //    stoppingPower = 2.107602E-04;
-    return stoppingPower;
+ 
+ */
+    return stoppingPower;  //keV/nm
   }
   
   @Override
@@ -1638,5 +1712,23 @@ public class CoefCalcCompute extends CoefCalc {
   public Map<String, Double> getFractionElementEM(){
     return fractionElementEM;
   }
+
+  @Override
+  public double getRutherfordScreening(double electronEnergy) {
+    double alpha = 0;
+    //get the total mass in the unit cell
+    double molWeight = 0;
+    for (Element e : presentElements) {
+      molWeight += totalAtoms(e) * e.getAtomicWeight();
+    } 
+    for (Element e : this.presentElements) { 
+      double A = e.getAtomicWeight();
+      double molWeightFraction = (totalAtoms(e) * A) / molWeight;
+      alpha += molWeightFraction * (3.4E-3 * (Math.pow(e.getAtomicNumber(), 0.67)/electronEnergy));
+    }
+    return alpha;
+  }
+  
+  
   
 }
