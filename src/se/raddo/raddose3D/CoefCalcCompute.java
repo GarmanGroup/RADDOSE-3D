@@ -1468,13 +1468,15 @@ public class CoefCalcCompute extends CoefCalc {
   private double getElectronElasticCrossSection(double electronEnergy) {
     //get the total mass in the unit cell
     double molWeight = 0;
+    double totAtoms = 0;
     for (Element e : presentElements) {
       molWeight += totalAtoms(e) * e.getAtomicWeight();
+      totAtoms += totalAtoms(e);
     } 
     
     
     double[] elasticElement = new double[presentElements.size()];
-    double elasticMolecule = 0, partLambda =0;
+    double elasticMolecule = 0, partLambda =0, numerator = 0, denominator = 0;
     double m = 9.10938356E-31; // in Kg
     double csquared = 3E8*3E8;  // (m/s)^2   //update this to be precise
     double Vo = electronEnergy * Beam.KEVTOJOULES;
@@ -1486,29 +1488,39 @@ public class CoefCalcCompute extends CoefCalc {
                    //    *1E06; // convert nm^2 to pm^2
       double A = e.getAtomicWeight();
       double molWeightFraction = (totalAtoms(e) * A) / molWeight;
+      double atomicFraction = totalAtoms(e) / totAtoms;
       //do by ELSEPA as more accurate if in the table
       
       /*
-      if (avgEnergy <= 300) {
+      if (electronEnergy <= 300) {
         ReadElasticFile rdEl = new ReadElasticFile();
-        double x_section = rdEl.openFile("constants/electron_elastic.txt", beam.getPhotonEnergy(), e.getAtomicNumber()); 
+        double x_section = rdEl.openFile("constants/electron_elastic.txt", electronEnergy, e.getAtomicNumber()); 
         if (x_section > 0.0) {
           elasticElement[counter] = x_section;
         }
       }
       */
+      //needs to just read the ELSEPA file once and store in an array or summin like that - CASINO interpolates
 
       double numEl = totalAtoms(e);
- //    elasticElement[counter] *= numEl;
+  //   elasticElement[counter] *= numEl * atomicFraction;
       elasticMolecule += elasticElement[counter];
       partLambda += (molWeightFraction * elasticElement[counter])/A;
    //   partLambda += elasticElement[counter]/A;
+      //other part Lambda
+   //   numerator += (molWeightFraction * A / density);
+   //   denominator += atomicFraction * elasticElement[counter];
+      
       counter += 1;
 
     }
     // not summing the elastic cross section in the same way as Drouin et al 2007 CASINO 2.42 to get 
     // lambda so need to have a look at this by comparisons to CASINOv3
     molecularWeight = molWeight;
+    
+    //testing the other way
+  //  partLambda = numerator/denominator;
+    
     return partLambda; //nm^2
   }
   
@@ -1517,6 +1529,10 @@ public class CoefCalcCompute extends CoefCalc {
     double partLambda = getElectronElasticCrossSection(electronEnergy);
  //   double lambda = molecularWeight / ((density/1E21) * AVOGADRO_NUM * elasticXSection);
     double lambda = 1 / (AVOGADRO_NUM * (density/1E21) * partLambda);
+    //other way
+ //   double lambda = (partLambda * 1E21) / AVOGADRO_NUM;
+    //test
+   // lambda = 515;
     return lambda; //nm
   }
   

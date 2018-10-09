@@ -68,8 +68,10 @@ public class MicroED {
   private final int numberSlices = 1;
   
   private double MonteCarloDose;
-  private int MonteCarloTotElasticCount;
-  private int MonteCarloSingleElasticCount;
+  private double MonteCarloTotElasticCount;
+  private double MonteCarloSingleElasticCount;
+  
+  protected static final double NUM_MONTE_CARLO_ELECTRONS = 100000;
   
   
   
@@ -91,7 +93,7 @@ public class MicroED {
     
     
     crystalSurfaceArea = XDimension * YDimension * 1E02; //convert from nm^2 to A^2
-    sampleThickness = ZDimension; //convert um to nm
+    sampleThickness = ZDimension; //nm
     crystalVolume = (crystalSurfaceArea * (sampleThickness * 10) * 1E-27);    //A^3 to dm^3
     //note the volume would need to be updated for a polyhedron!!! - currently just a cube or cylinder 
     //although it isn't used
@@ -100,7 +102,7 @@ public class MicroED {
   
   public void CalculateEM(Beam beam, Wedge wedge, CoefCalc coefCalc) { // also pass in crystal dimensions
     // Just to be clear these are all dose of the exposed volume
-    startMonteCarlo(coefCalc, beam); 
+   
     
     double dose1 = EMLETWay(beam, wedge, coefCalc);
     System.out.print(String.format("\nThe Dose in the exposed area by LET: %.8e", dose1));
@@ -119,6 +121,13 @@ public class MicroED {
     System.out.print(String.format("\nThe Dose in the exposed area by stopping power: %.8e", dose3));
     System.out.println(" MGy\n");
     
+    //start the Monte carlo stuff
+    startMonteCarlo(coefCalc, beam); 
+    double dose4 = processMonteCarloDose(beam, coefCalc);
+    System.out.print(String.format("\nThe Dose in the exposed area by Monte Carlo: %.8e", dose4));
+    System.out.println(" MGy\n");
+    
+    
     /*
     accessESTAR(coefCalc, beam.getPhotonEnergy());
     double dose4 = getESTARDose(coefCalc, beam);
@@ -129,6 +138,9 @@ public class MicroED {
     System.out.println(" Number elastic events: " + numberElastic);
     System.out.println(" Number single elastic events: " + numberSingleElastic);
     System.out.println(" Number productive events: " + numberProductive);
+    
+    System.out.println(" Number elastic events Monte Carlo: " + MonteCarloTotElasticCount);
+    System.out.println(" Number single elastic events Monte Carlo: " + MonteCarloSingleElasticCount);
     
     try {
       WriterFile("outputMicroED.CSV", dose3);
@@ -496,15 +508,48 @@ private double getESTARDose(CoefCalc coefCalc, Beam beam) {
 // Everything below will be the Monte Carlo section of the code
 private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
   //set up for one electron to start with and then test how many needed to get little deviation and then scale up
-  double electronEnergy = beam.getPhotonEnergy();
-  double stoppingPower = coefCalc.getStoppingPower(electronEnergy);
+  int numberBackscattered = 0;
+  //Start stuff to make quicker
+  double startingEnergy = beam.getPhotonEnergy();
+  double startingStoppingPower = coefCalc.getStoppingPower(startingEnergy);
+  double startingLambda = coefCalc.getElectronElasticMFPL(startingEnergy);
+  
+  //test ELSEPA
+ // startingLambda = 236;
+  
+  for (int i = 0; i < NUM_MONTE_CARLO_ELECTRONS; i++) {
+    
+  
+  double electronEnergy = startingEnergy;
+  double stoppingPower = startingStoppingPower;
   double energyLost = 0;
-  double lambda = coefCalc.getElectronElasticMFPL(electronEnergy); //lambda in nm
-  double s = -lambda*Math.log(Math.random());
-  double alpha = coefCalc.getRutherfordScreening(electronEnergy);
+  double lambda = startingLambda; //lambda in nm
+  double s = -startingLambda*Math.log(Math.random());
+//  double s = -startingLambda*Math.log10(Math.random());
   //now I'm going to go through the coordinates
+  
+  
+  //Need to change these to a uniform beam
   double previousX = 0, previousY = 0; //atm starting going straight 
   double cx = 0.0001, cy = 0.0001, cz = 0.9998; //direction cosine are such that just going down in one
+  //position
+  double RNDx = Math.random();
+  previousX = (RNDx * XDimension) - (XDimension/2);
+  double RNDy = Math.random();
+  previousY = (RNDy * YDimension) - (YDimension/2);
+  //direction
+  RNDx = Math.random();
+  double changex = 1, changey = 1;
+  if (RNDx < 0.5){
+    changex = -1;
+  }
+  cx = cx * changex;
+  RNDy = Math.random();
+  if (RNDy < 0.5){
+    changey = -1;
+  }
+  cy = cy * changey;
+  
   double ca = cx;
   double cb = cy;
   double cc = cz;
@@ -514,6 +559,7 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
   double zn = previousZ + s * cc;
   boolean exited = false;
   boolean scattered = false;
+  
   
   int timesScattered = 0;
   //check if the electron has left the sample, if it has just do the dose of Z
@@ -542,7 +588,7 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
     stoppingPower = coefCalc.getStoppingPower(electronEnergy);
     lambda = coefCalc.getElectronElasticMFPL(electronEnergy);
     s = -lambda*Math.log(Math.random());
-    alpha = coefCalc.getRutherfordScreening(electronEnergy);
+    double alpha = coefCalc.getRutherfordScreening(electronEnergy);
     
     double RND = Math.random();
     double cosPhi = 1 - ((2*alpha * Math.pow(RND, 2))/(1+alpha-RND));
@@ -582,17 +628,51 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
       double[] intersectionPoint = getIntersectionPoint(s, previousX, previousY, previousZ, ca, cb, cc);
       energyLost = s * stoppingPower;
       MonteCarloDose += energyLost;   //keV
+      if (intersectionPoint[2] == -125) {
+        numberBackscattered += 1;
+      }
+      
     }
   }
   }
   if (timesScattered == 1) {
     MonteCarloSingleElasticCount += 1;
   }
+  
+  } //end looping through electrons
+  
   //Will need to do something about exiting the correct plane here
+
   //Will also need to add in inel scattering here for productive (and then FSE stuff)
 
   
 }
+
+private double processMonteCarloDose(Beam beam, CoefCalc coefCalc) {
+  double exposedArea = 0;
+  if (beam.getIsCircular() == false) {
+    exposedArea = (getExposedX(beam) * getExposedY(beam)); //um^2
+  }
+  else {
+    exposedArea = Math.PI * ((getExposedX(beam)/2) * (getExposedY(beam)/2)); //um^2
+  }
+  
+  double exposedVolume = exposedArea  * (sampleThickness/1000) * 1E-15; //exposed volume in dm^3
+  double exposure = beam.getExposure();
+  double electronNumber = exposure * (exposedArea * 1E08);
+  
+  //do the elastic stuff
+  MonteCarloTotElasticCount = MonteCarloTotElasticCount * (electronNumber / NUM_MONTE_CARLO_ELECTRONS);
+  MonteCarloSingleElasticCount = MonteCarloSingleElasticCount * (electronNumber / NUM_MONTE_CARLO_ELECTRONS);
+  
+  MonteCarloDose = (MonteCarloDose * (electronNumber / NUM_MONTE_CARLO_ELECTRONS)) * Beam.KEVTOJOULES;
+  
+  double exposedMass = (((coefCalc.getDensity()*1000) * exposedVolume) / 1000);  //in Kg 
+  double dose = (MonteCarloDose/exposedMass) / 1E06; //dose in MGy 
+  
+  return dose;
+}
+
 
 private boolean isMicrocrystalAt(final double x, final double y, final double z) {
   //Note that this is absolutely only right for a cuboid at the moment
