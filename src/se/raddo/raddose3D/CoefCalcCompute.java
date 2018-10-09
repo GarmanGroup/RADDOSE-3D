@@ -1656,6 +1656,9 @@ public class CoefCalcCompute extends CoefCalc {
       
     double Fbeta = 0;
     meanJ = 77.3;
+    //modify meanJ for lower energy by Joy and Luo method - essential for FSEs
+    meanJ = meanJ / (1 + 0.85*meanJ/(avgEnergy*1000));
+    
     meanJ = (meanJ/1000) * Beam.KEVTOJOULES;
     double energy = avgEnergy * Beam.KEVTOJOULES;
     Fbeta = Math.log((m*csquared*(energy)* betaSquared) / (2*(1-betaSquared))) 
@@ -1745,6 +1748,21 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     return alpha;
   }
   
-  
+  @Override
+  public double getFSELambda(double FSExSection) {
+    //get the total mass in the unit cell
+    double molWeight = 0;
+    for (Element e : presentElements) {
+      molWeight += totalAtoms(e) * e.getAtomicWeight();
+    } 
+    double lambda = 0;
+    for (Element e : this.presentElements) { 
+      double A = e.getAtomicWeight();
+      double molWeightFraction = (totalAtoms(e) * A) / molWeight;
+      lambda += molWeightFraction*(A / (e.getAtomicNumber() * AVOGADRO_NUM * (density/1E21) * FSExSection));
+    }
+ //   lambda *= 1E7;  //convert cm to nm
+    return lambda;
+  }
   
 }

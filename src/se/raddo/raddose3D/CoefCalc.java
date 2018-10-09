@@ -129,4 +129,6 @@ public abstract class CoefCalc {
   public abstract double getElectronElasticMFPL(double electronEnergy);
   
   public abstract double getRutherfordScreening(double electronEnergy);
+  
+  public abstract double getFSELambda(double FSExSection);
 }

@@ -178,5 +178,11 @@ public class CoefCalcAverage extends CoefCalc {
     // TODO Auto-generated method stub
     return 0;
   }
+
+  @Override
+  public double getFSELambda(double FSExSection) {
+    // TODO Auto-generated method stub
+    return 0;
+  }
   
 }

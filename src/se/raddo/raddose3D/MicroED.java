@@ -70,6 +70,7 @@ public class MicroED {
   private double MonteCarloDose;
   private double MonteCarloTotElasticCount;
   private double MonteCarloSingleElasticCount;
+  private double MonteCarloFSEEscape;
   
   protected static final double NUM_MONTE_CARLO_ELECTRONS = 100000;
   
@@ -507,25 +508,36 @@ private double getESTARDose(CoefCalc coefCalc, Beam beam) {
 
 // Everything below will be the Monte Carlo section of the code
 private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
+
   //set up for one electron to start with and then test how many needed to get little deviation and then scale up
   int numberBackscattered = 0;
   //Start stuff to make quicker
   double startingEnergy = beam.getPhotonEnergy();
   double startingStoppingPower = coefCalc.getStoppingPower(startingEnergy);
-  double startingLambda = coefCalc.getElectronElasticMFPL(startingEnergy);
+  double startingLambda_el = coefCalc.getElectronElasticMFPL(startingEnergy);
+  
+  //the FSE stuff
+  
+  double startingFSExSection = getFSEXSection(beam.getPhotonEnergy() * 1000);
+  double startingFSELambda = coefCalc.getFSELambda(startingFSExSection);
+  
+  //not going to change the direction of the program yet going to write it separately and then
+  //incorporate it in -remember that lambda_el now needs to always be lambda_t!!!!!!!!!
   
   //test ELSEPA
  // startingLambda = 236;
   
-  for (int i = 0; i < NUM_MONTE_CARLO_ELECTRONS; i++) {
+  for (int i = 0; i < NUM_MONTE_CARLO_ELECTRONS; i++) { //for every electron to simulate
     
   
   double electronEnergy = startingEnergy;
   double stoppingPower = startingStoppingPower;
   double energyLost = 0;
-  double lambda = startingLambda; //lambda in nm
-  double s = -startingLambda*Math.log(Math.random());
-//  double s = -startingLambda*Math.log10(Math.random());
+//  double lambdaT = startingLambda_el; //lambda in nm
+  double lambdaT = 1 / (1/startingLambda_el + 1/startingFSELambda);
+  double PEL = lambdaT / startingLambda_el;
+  
+  double s = -lambdaT*Math.log(Math.random());
   //now I'm going to go through the coordinates
   
   
@@ -566,8 +578,6 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
   //if it has not left move onto the loop
   while (exited == false) {
   if (isMicrocrystalAt(xn, yn, zn) == true) {
-    timesScattered += 1;
-    MonteCarloTotElasticCount += 1;
     scattered = true;
     //reset
     cx = ca;
@@ -581,36 +591,106 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
     MonteCarloDose += energyLost;   //keV
     electronEnergy -= energyLost;  
     //add an elastic collision
-
-    //now start the loop - clean up the first iteration into this later 
     
+    //update stopping powers
     //get new stoppingPower
     stoppingPower = coefCalc.getStoppingPower(electronEnergy);
-    lambda = coefCalc.getElectronElasticMFPL(electronEnergy);
-    s = -lambda*Math.log(Math.random());
-    double alpha = coefCalc.getRutherfordScreening(electronEnergy);
+    //get new lambdaT
+    double FSExSection = getFSEXSection(electronEnergy * 1000);
+    double FSELambda = coefCalc.getFSELambda(FSExSection);
+    lambdaT =  1 / (1/coefCalc.getElectronElasticMFPL(electronEnergy) + 1/FSELambda);
+    s = -lambdaT*Math.log(Math.random());
     
-    double RND = Math.random();
-    double cosPhi = 1 - ((2*alpha * Math.pow(RND, 2))/(1+alpha-RND));
-    double phi = Math.acos(cosPhi);
-    double psi = 2 * Math.PI * Math.random();
+
+    //Determining if the scattering event was inelastic or elastic 
+    double RNDscatter = Math.random();
+    double phi = 0, cosPhi = 0, psi = 0, AN = 0, AM = 0, V1 = 0, V2 = 0, V3 = 0, V4 = 0;
+    if (RNDscatter > PEL) {
+      //Do inelastic
+      //firstly calculate the FSE energy
+      double omega = 1 / (1000 - 998*Math.random());
+      double FSEEnergy = omega * electronEnergy;
+      //I'm going to take t as the energy of that particular electron
+      // This could be two values for the primary, with stopping power or with inel removal
+      double sinSquaredAlpha = 0;
+      double sinSquaredGamma = 0;
+      if (FSEEnergy > 0.5) { // so I only care about the FSE if it is more than 500eV or it probably won't escape
+        // determine the angles of the FSE and the primary electron
+        double tPrimary = (electronEnergy-FSEEnergy)/511; //t is in rest mass units. Need to change to stopping power en
+        double tFSE = FSEEnergy/511;
+        //alpha = angle of primary electron
+        sinSquaredAlpha = (2 * omega) / (2 + tPrimary - tPrimary*omega);
+        //gamma - angle of secondary electron
+        sinSquaredGamma = 2*(1-omega) / (2 + tFSE*omega); 
+      }
+      //need to sort out when I'm tracking and when I'm not properly
+      
+      //then track the secondary electron and see how much dose escapes
+      phi = Math.asin(Math.pow(sinSquaredGamma, 0.5));
+      cosPhi = Math.cos(phi);
+      psi = 2 * Math.PI * Math.random();
+      
+      //x and y are the same as in Joy, so x will be the rotation axis
+      AN = -(cx/cz); // will need to catch an error here if = 0
+      AM = 1 / (Math.pow(1 + AN*AN, 0.5));
+      V1 = AN * Math.sin(phi);
+      V2 = AN*AM*Math.sin(phi);
+      V3 = Math.cos(psi);
+      V4 = Math.sin(psi);
+      
+      ca = (cx*cosPhi) + (V1*V3) + (cy*V2*V4);
+      cb = (cy*cosPhi) + (V4*(cz*V1 - cx*V2));
+      cc = (cz*cosPhi) + (V2*V3) - (cy*V1*V4);
+      
+      //now I have a vector need to find where it will intersect point and the distance
+      double escapeDist = 1000 * getIntersectionDistance(previousX, previousY, previousZ, ca, cb, cc); //nm
+      double FSEStoppingPower = coefCalc.getStoppingPower(FSEEnergy);
+      double energyToEdge = FSEStoppingPower * escapeDist;
+      if (energyToEdge < FSEEnergy){
+        MonteCarloFSEEscape += FSEEnergy - energyToEdge;
+      }
+      
+      
+      
+      //track the primary electron 
+      phi = Math.asin(Math.pow(sinSquaredAlpha, 0.5));
+      cosPhi = Math.cos(phi);
+    } 
+    else { //else it stays false and the collision will be elastic
+      
+      timesScattered += 1;
+      MonteCarloTotElasticCount += 1;
+
+      //now start the loop - clean up the first iteration into this later 
+      
+      //get the angles
+      double alpha = coefCalc.getRutherfordScreening(electronEnergy);
+      double RND = Math.random();
+      cosPhi = 1 - ((2*alpha * Math.pow(RND, 2))/(1+alpha-RND));
+      phi = Math.acos(cosPhi);
+    }
+    //now further update the primary
+      psi = 2 * Math.PI * Math.random();
+      
+      //x and y are the same as in Joy, so x will be the rotation axis
+      AN = -(cx/cz); // will need to catch an error here if = 0
+      AM = 1 / (Math.pow(1 + AN*AN, 0.5));
+      V1 = AN * Math.sin(phi);
+      V2 = AN*AM*Math.sin(phi);
+      V3 = Math.cos(psi);
+      V4 = Math.sin(psi);
+      
+      ca = (cx*cosPhi) + (V1*V3) + (cy*V2*V4);
+      cb = (cy*cosPhi) + (V4*(cz*V1 - cx*V2));
+      cc = (cz*cosPhi) + (V2*V3) - (cy*V1*V4);
+      
+      //update to new position
+      xn = previousX + s * ca;
+      yn = previousY + s * cb;
+      zn = previousZ + s * cc;
+   
     
-    //x and y are the same as in Joy, so x will be the rotation axis
-    double AN = -(cx/cz); // will need to catch an error here if = 0
-    double AM = 1 / (Math.pow(1 + AN*AN, 0.5));
-    double V1 = AN * Math.sin(phi);
-    double V2 = AN*AM*Math.sin(phi);
-    double V3 = Math.cos(psi);
-    double V4 = Math.sin(psi);
-    
-    ca = (cx*cosPhi) + (V1*V3) + (cy*V2*V4);
-    cb = (cy*cosPhi) + (V4*(cz*V1 - cx*V2));
-    cc = (cz*cosPhi) + (V2*V3) - (cy*V1*V4);
-    
-    //update to new position
-    xn = previousX + s * ca;
-    yn = previousY + s * cb;
-    zn = previousZ + s * cc;
+
   }
   else {
     exited = true;
@@ -645,7 +725,7 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
 
   //Will also need to add in inel scattering here for productive (and then FSE stuff)
 
-  
+  MonteCarloDose -= MonteCarloFSEEscape;
 }
 
 private double processMonteCarloDose(Beam beam, CoefCalc coefCalc) {
@@ -671,6 +751,46 @@ private double processMonteCarloDose(Beam beam, CoefCalc coefCalc) {
   double dose = (MonteCarloDose/exposedMass) / 1E06; //dose in MGy 
   
   return dose;
+}
+
+private double getFSEXSection(double electronEnergy) {
+  //integrate equation - currently this isn't right... Do it numerically
+  double constant = (Math.PI * Math.exp(4)) / Math.pow(electronEnergy, 2);
+ // double crossSection = 0; //so this is in cm^2
+  
+  //equ integrates t 1/1-x -1/x + C
+ double  crossSection = (1/(1-0.5) - 1/0.5) - ((1/(1-0.001) - 1/0.001));
+  crossSection *= constant;
+  
+  /*
+  for (int i = 2; i <= 50; i++) {
+    double omega = (double) i /100;
+    double omegaMinusOne = ((double)i-1) / 100;
+    double width = ((double)i /100) - (((double)i-1)/100);
+    double height = ((constant * ((1/Math.pow(omega, 2)) + (1/Math.pow(1-omega, 2))))
+                    + (constant * ((1/Math.pow(omegaMinusOne, 2)) + (1/Math.pow(1-omegaMinusOne, 2))))) 
+                    / 2;
+    crossSection += width * height;
+  }
+  */
+  return crossSection; //cm^2/atom //nm^2 per atom??? //Really not sure about units here
+}
+
+private void inelasticFSEProduced(double electronEnergy) {
+
+  //next stage is to track the FSE
+  // 1) Use vector stuff to draw vector to point and determine energy by stopping power
+          // make sure that I don't go to a negative energy
+  // 2) Track the FSE by Monte Carlo
+  
+  
+  
+  
+  //Use two methods to incorporate this
+  // Method 1 - Only update the primary electron energy using the stopping power and subtract escape energy from the end
+  //Method 2 - try incorporating the direct energy losses from this
+              // - would expect these energy losses to be much lower but need to quantify
+
 }
 
 
