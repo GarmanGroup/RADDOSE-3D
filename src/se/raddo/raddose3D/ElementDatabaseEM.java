@@ -10,90 +10,40 @@ import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
+//import se.raddo.raddose3D.ElementDatabase.DatabaseFields;
+
 /**
- * The ElementDatabase holds X-ray cross section information for (nearly) all
- * elements of the periodic table. It relies on a constants file containing the
- * Pathikrit Bandyopadhyay parameterization of the McMaster tables.
- * This class is a Singleton. Its constructor is therefore not publicly
- * accessible. To obtain an instance of this class, call the getInstance()
- * function.
- */
-public class ElementDatabase {
+ * The ElementDatabase holds electron information for (nearly) all
+ * elements of the periodic table
+**/
+
+public class ElementDatabaseEM {
   /**
    * Reference to the singleton instance of ElementDatabase.
    */
-  private static ElementDatabase     singleton;
+  private static ElementDatabaseEM     singleton;
 
   /**
    * Map of all Element objects in the database.
    */
-  private final Map<Object, Element> elements;
+  private final Map<Object, ElementEM> elements;
 
   /**
    * List of available fields in the database file.
    */
   public static enum DatabaseFields {
-    /** K edge in Angstroms. */
-    EDGE_K(2),
-    /** L edge in Angstroms. */
-    EDGE_L(3),
-    /** M edge in Angstroms. */
-    EDGE_M(4),
-    /** K coefficients in polynomial expansion. */
-    K_COEFF_0(5), K_COEFF_1(6), K_COEFF_2(7), K_COEFF_3(8),
-    /** L coefficients in polynomial expansion. */
-    L_COEFF_0(9), L_COEFF_1(10), L_COEFF_2(11), L_COEFF_3(12),
-    /** M coefficients in polynomial expansion. */
-    M_COEFF_0(13), M_COEFF_1(14), M_COEFF_2(15), M_COEFF_3(16),
-    /** N coefficients for polynomial expansion. */
-    N_COEFF_0(17), N_COEFF_1(18), N_COEFF_2(19), N_COEFF_3(20),
-
-    /** Atomic weight. */
-    ATOMIC_WEIGHT(23),
-
-    /** Coherent coefficients for polynomial expansion. */
-    COHERENT_COEFF_0(24), COHERENT_COEFF_1(25),
-    /** Coherent coefficients for polynomial expansion. */
-    COHERENT_COEFF_2(26), COHERENT_COEFF_3(27),
-
-    /** Incoherent coefficients for polynomial expansion. */
-    INCOHERENT_COEFF_0(28), INCOHERENT_COEFF_1(29),
-    /** Incoherent coefficients for polynomial expansion. */
-    INCOHERENT_COEFF_2(30), INCOHERENT_COEFF_3(31),
-
-    /** L2. */
-    L2(36),
-
-    /** L3. */
-    L3(37),
-    
-    /** Fluorescent yields */
-    FLUORESCENCE_YIELD_K(39), FLUORESCENCE_YIELD_L1(40),
-    FLUORESCENCE_YIELD_L2(41), FLUORESCENCE_YIELD_L3(42),
-    
-    /** Edge Ratios */
-    K_EDGE_RATIO(43), L1_EDGE_RATIO(44), L2_EDGE_RATIO(45),
-    L3_EDGE_RATIO(46),    
-    
-    /** K and L shell weighted fluoresence energy */
-    K_FL_AVERAGE(47), L_FL_AVERAGE(48),
-    
-    /** M edge energies */
-    EDGE_M2(49), EDGE_M3(50), EDGE_M4(51), EDGE_M5(52),
-    
-    /** M edge ratios */
-    M1_EDGE_RATIO(53), M2_EDGE_RATIO(54), M3_EDGE_RATIO(55), M4_EDGE_RATIO(56), M5_EDGE_RATIO(57),
     /** Valid energy ranges for low energy x sections */
-    EminLow(58), EmaxLow(59),
+    EminLow(2), EmaxLow(3),
     /** Constants for the lower energy K shell*/
-    bKlow(60), cKlow(61), 
+    bKlow(4), cKlow(5), 
     /** Valid energy ranges for high energy x sections */
-    EminHigh(62), 
+    EminHigh(6), 
     /** Constants for the higher energy K shell*/
-    bKhigh(63), cKhigh(64), 
+    bKhigh(7), cKhigh(8), 
     /** ELSEPA elastic cross section */
-    EL_50(65), EL_100(66), EL_150(67), EL_200(68), EL_250(69), EL_300(70);
-
+    EL_50(9), EL_100(10), EL_150(11), EL_200(12), EL_250(13), EL_300(14),
+    /**K edge */
+    EDGE_K(15);
     
     /**
      * The position of each element in the database line. Index starting at 0.
@@ -126,7 +76,7 @@ public class ElementDatabase {
   /**
    * Location of MuCalcConstants library.
    */
-  private static final String MUCALC_FILE   = "constants/MuCalcConstants.txt";
+  private static final String ELCALC_FILE   = "constants/ElCalcConstants.CSV";
 
   /** Position of the atomic number in the database file. */
   private static final int    ATOMIC_NUMBER = 0;
@@ -143,8 +93,8 @@ public class ElementDatabase {
    *           The constant file could not be found or accessed.
    */
   @SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
-  protected ElementDatabase() throws IOException {
-    elements = new HashMap<Object, Element>();
+  protected ElementDatabaseEM() throws IOException {
+    elements = new HashMap<Object, ElementEM>();
 
     InputStreamReader isr = locateConstantsFile();
     BufferedReader br = new BufferedReader(isr);
@@ -163,7 +113,7 @@ public class ElementDatabase {
       }
 
       // array containing all those numbers from the calculator file
-      components = line.split("\t", -1);
+      components = line.split(",", -1);
 
       // Setting all the properties of the new atom.
       // component[x] where the values of x are in order
@@ -180,8 +130,8 @@ public class ElementDatabase {
         }
       }
 
-      Element elem = new Element(components[ELEMENT_NAME], atomicNumber,
-          elementInfo);
+      ElementEM elem = new ElementEM(components[ELEMENT_NAME], atomicNumber,
+          elementInfo);   //really check this
       elements.put(components[ELEMENT_NAME].toLowerCase(), elem);
       elements.put(atomicNumber, elem);
     }
@@ -204,11 +154,11 @@ public class ElementDatabase {
   private InputStreamReader locateConstantsFile()
       throws UnsupportedEncodingException, FileNotFoundException {
     // Try to find it within class path;
-    InputStream is = getClass().getResourceAsStream("/" + MUCALC_FILE);
+    InputStream is = getClass().getResourceAsStream("/" + ELCALC_FILE);
 
     if (is == null) {
       // If it is not within the class path, try via the file system.
-      is = new FileInputStream(MUCALC_FILE);
+      is = new FileInputStream(ELCALC_FILE);
     }
 
     return new InputStreamReader(is, "US-ASCII");
@@ -222,13 +172,13 @@ public class ElementDatabase {
    *         Instance of the element database.
    */
   @SuppressWarnings("PMD.AvoidSynchronizedAtMethodLevel")
-  public static synchronized ElementDatabase getInstance() {
+  public static synchronized ElementDatabaseEM getInstance() {
     if (singleton == null) {
       try {
-        singleton = new ElementDatabase();
+        singleton = new ElementDatabaseEM();
       } catch (IOException e) {
         throw new IllegalStateException("Error accessing element database file "
-            + MUCALC_FILE, e);
+            + ELCALC_FILE, e);
       }
     }
     return singleton;
@@ -243,7 +193,7 @@ public class ElementDatabase {
    * @return
    *         associated Element object
    */
-  public Element getElement(final int z) {
+  public ElementEM getElement(final int z) {
     return elements.get(z);
   }
 
@@ -255,7 +205,7 @@ public class ElementDatabase {
    * @return
    *         associated Element object
    */
-  public Element getElement(final String name) {
+  public ElementEM getElement(final String name) {
     return elements.get(name.toLowerCase());
   }
 }

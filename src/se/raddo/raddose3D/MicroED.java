@@ -71,6 +71,7 @@ public class MicroED {
   private double MonteCarloTotElasticCount;
   private double MonteCarloSingleElasticCount;
   private double MonteCarloFSEEscape;
+  private double totFSEEnergy;
   
   protected static final double NUM_MONTE_CARLO_ELECTRONS = 100000;
   
@@ -516,10 +517,14 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
   double startingStoppingPower = coefCalc.getStoppingPower(startingEnergy);
   double startingLambda_el = coefCalc.getElectronElasticMFPL(startingEnergy);
   
-  //the FSE stuff
-  
+  //the FSE stuff 
+  /*
   double startingFSExSection = getFSEXSection(beam.getPhotonEnergy() * 1000);
   double startingFSELambda = coefCalc.getFSELambda(startingFSExSection);
+  */
+  //Inner shell ionisation x section
+  double startingInnerShellLambda = coefCalc.betheIonisationxSection(startingEnergy);
+  Map<Element, Double> ionisationProbs = coefCalc.getInnerShellProbs(); //Really need to make sure that these are in the same order
   
   //not going to change the direction of the program yet going to write it separately and then
   //incorporate it in -remember that lambda_el now needs to always be lambda_t!!!!!!!!!
@@ -533,8 +538,9 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
   double electronEnergy = startingEnergy;
   double stoppingPower = startingStoppingPower;
   double energyLost = 0;
-//  double lambdaT = startingLambda_el; //lambda in nm
-  double lambdaT = 1 / (1/startingLambda_el + 1/startingFSELambda);
+ // double lambdaT = startingLambda_el; //lambda in nm  -//Just elastic
+ // double lambdaT = 1 / (1/startingLambda_el + 1/startingFSELambda); //FSE one
+  double lambdaT = 1 / (1/startingLambda_el + 1/startingInnerShellLambda);
   double PEL = lambdaT / startingLambda_el;
   
   double s = -lambdaT*Math.log(Math.random());
@@ -589,24 +595,17 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
     //update dose and energy and stoppingPower
     energyLost = s * stoppingPower;
     MonteCarloDose += energyLost;   //keV
-    electronEnergy -= energyLost;  
+     
     //add an elastic collision
-    
-    //update stopping powers
-    //get new stoppingPower
-    stoppingPower = coefCalc.getStoppingPower(electronEnergy);
-    //get new lambdaT
-    double FSExSection = getFSEXSection(electronEnergy * 1000);
-    double FSELambda = coefCalc.getFSELambda(FSExSection);
-    lambdaT =  1 / (1/coefCalc.getElectronElasticMFPL(electronEnergy) + 1/FSELambda);
-    s = -lambdaT*Math.log(Math.random());
-    
+
 
     //Determining if the scattering event was inelastic or elastic 
     double RNDscatter = Math.random();
-    double phi = 0, cosPhi = 0, psi = 0, AN = 0, AM = 0, V1 = 0, V2 = 0, V3 = 0, V4 = 0;
+    double phi = 0, cosPhi = 1, psi = 0, AN = 0, AM = 0, V1 = 0, V2 = 0, V3 = 0, V4 = 0;
+    
     if (RNDscatter > PEL) {
       //Do inelastic
+      /*  So the FSE stuff is all commented out for now
       //firstly calculate the FSE energy
       double omega = 1 / (1000 - 998*Math.random());
       double FSEEnergy = omega * electronEnergy;
@@ -646,6 +645,7 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
       double escapeDist = 1000 * getIntersectionDistance(previousX, previousY, previousZ, ca, cb, cc); //nm
       double FSEStoppingPower = coefCalc.getStoppingPower(FSEEnergy);
       double energyToEdge = FSEStoppingPower * escapeDist;
+      totFSEEnergy += FSEEnergy;
       if (energyToEdge < FSEEnergy){
         MonteCarloFSEEscape += FSEEnergy - energyToEdge;
       }
@@ -655,6 +655,24 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
       //track the primary electron 
       phi = Math.asin(Math.pow(sinSquaredAlpha, 0.5));
       cosPhi = Math.cos(phi);
+      */
+      
+      
+      //so now I'm saying the collision was an inner shell ionisation event
+      
+      //RND to determine what element that came from - which element should be added into the elastic as well
+      double elementRND = Math.random();
+      Element collidedElement = null;
+      for (Element e : ionisationProbs.keySet()) {
+        if (ionisationProbs.get(e) > elementRND) { //Then this element is the one that was ionised
+          collidedElement = e;
+        }
+      }
+      
+      double fluoresenceYieldRND = Math.random();
+      //RND for FL or Auger given it was that element
+      //RND for fluorescence energy
+      
     } 
     else { //else it stays false and the collision will be elastic
       
@@ -689,8 +707,22 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
       yn = previousY + s * cb;
       zn = previousZ + s * cc;
    
-    
-
+      //update stopping powers
+      //get new stoppingPower
+      electronEnergy -= energyLost; 
+      stoppingPower = coefCalc.getStoppingPower(electronEnergy);
+      //get new lambdaT
+      double FSExSection = getFSEXSection(electronEnergy * 1000);
+      double FSELambda = coefCalc.getFSELambda(FSExSection);
+      double lambdaEl = coefCalc.getElectronElasticMFPL(electronEnergy);
+      double innerShellLambda = coefCalc.betheIonisationxSection(electronEnergy);
+    //  lambdaT =  1 / (1/coefCalc.getElectronElasticMFPL(electronEnergy) + 1/FSELambda);
+    lambdaT =  1 / (1/coefCalc.getElectronElasticMFPL(electronEnergy) + 1/innerShellLambda);
+ //     lambdaT =  1 / (1/lambdaEl);
+      s = -lambdaT*Math.log(Math.random());
+      PEL = lambdaT / lambdaEl;
+      ionisationProbs = coefCalc.getInnerShellProbs();
+      
   }
   else {
     exited = true;
@@ -725,7 +757,7 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
 
   //Will also need to add in inel scattering here for productive (and then FSE stuff)
 
-  MonteCarloDose -= MonteCarloFSEEscape;
+  // MonteCarloDose -= MonteCarloFSEEscape;
 }
 
 private double processMonteCarloDose(Beam beam, CoefCalc coefCalc) {

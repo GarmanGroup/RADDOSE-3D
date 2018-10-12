@@ -669,4 +669,68 @@ public class Element {
   public Double getLFluorescenceAverage() {
     return elementData.get(DatabaseFields.L_FL_AVERAGE);
   }
+  
+  
+  //EM stuff
+  
+  public double[] getELSEPACoefficients() {
+    double[] crossSection = new double[6];
+    for (int i = 1; i < 7; i++) {
+      String keV = String.valueOf((double)i * 50);
+      String field = "EL_" + keV;
+      crossSection[i-1] = elementData.get(ElementDatabase.DatabaseFields.valueOf(field));
+    }
+    return crossSection;
+  }
+  
+  
+  
+  /**
+   * @return the minimum energy for low ionisation coefficients
+   */
+  public Double getEminLow() {
+    return elementData.get(DatabaseFields.EminLow);
+  }
+  
+  /**
+   * @return the maximum energy for low ionisation coefficients
+   */
+  public Double getEmaxLow() {
+    return elementData.get(DatabaseFields.EmaxLow);
+  }
+  
+  /**
+   * @return the bK constant for low energy
+   */
+  public Double getbKLow() {
+    return elementData.get(DatabaseFields.bKlow);
+  }
+  
+  /**
+   * @return the cK constant for low energy
+   */
+  public Double getcKLow() {
+    return elementData.get(DatabaseFields.cKlow);
+  }
+  
+  /**
+   * @return the minimum energy for high energy ionisation coefficients
+   */
+  public Double getEminHigh() {
+    return elementData.get(DatabaseFields.EminHigh);
+  }
+  
+  /**
+   * @return the bK constant for high energy
+   */
+  public Double getbKHigh() {
+    return elementData.get(DatabaseFields.bKhigh);
+  }
+  
+  /**
+   * @return the cK constant for high energy
+   */
+  public Double getcKHigh() {
+    return elementData.get(DatabaseFields.cKhigh);
+  }
 }

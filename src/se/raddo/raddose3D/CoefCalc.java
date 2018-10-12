@@ -131,4 +131,8 @@ public abstract class CoefCalc {
   public abstract double getRutherfordScreening(double electronEnergy);
   
   public abstract double getFSELambda(double FSExSection);
+  
+  public abstract double betheIonisationxSection(double electronEnergy);
+  
+  public abstract Map<Element, Double> getInnerShellProbs();
 }

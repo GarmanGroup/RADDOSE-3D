@@ -449,4 +449,16 @@ public class CoefCalcRaddose extends CoefCalc {
     // TODO Auto-generated method stub
     return 0;
   }
+
+  @Override
+  public double betheIonisationxSection(double electronEnergy) {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+
+  @Override
+  public Map<Element, Double> getInnerShellProbs() {
+    // TODO Auto-generated method stub
+    return null;
+  }
 }
