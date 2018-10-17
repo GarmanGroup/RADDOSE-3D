@@ -461,4 +461,10 @@ public class CoefCalcRaddose extends CoefCalc {
     // TODO Auto-generated method stub
     return null;
   }
+
+  @Override
+  public double getEMFlAbsCoef(double flEnergy) {
+    // TODO Auto-generated method stub
+    return 0;
+  }
 }

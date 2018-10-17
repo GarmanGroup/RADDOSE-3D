@@ -325,6 +325,8 @@ public class CoefCalcCompute extends CoefCalc {
     cryoAbsCoeffPhoto = absCoefficients.get(PHOTOELECTRIC);
   }
   
+  
+  
   /**
    * Calculates the absorption, attenuation and elastic coefficients for
    * the entire crystal.
@@ -1513,14 +1515,22 @@ public class CoefCalcCompute extends CoefCalc {
     double Vo = electronEnergy * Beam.KEVTOJOULES;
     double betaSquared = 1- Math.pow(m*csquared/(Vo + m*csquared), 2);
     int counter = 0;
+    double sumZ = 0, sumA = 0;
+    double xSectionTotPerElement = 0;
     for (Element e : this.presentElements) {
-      elasticElement[counter] =  ((1.4E-6 * Math.pow(e.getAtomicNumber(), 1.5))/betaSquared)*
-                       ((1-(0.26*e.getAtomicNumber())/(137*Math.pow(betaSquared, 0.5))));
-                   //    *1E06; // convert nm^2 to pm^2
+      double Z = e.getAtomicNumber();
+      elasticElement[counter] =  ((1.4E-6 * Math.pow(Z, 1.5))/betaSquared)*
+                       ((1-(0.26*Z)/(137*Math.pow(betaSquared, 0.5))));
+                   //    *1E06; // nm^2/atom
       double A = e.getAtomicWeight();
       double molWeightFraction = (totalAtoms(e) * A) / molecularWeight;
       double atomicFraction = totalAtoms(e) / totAtoms;
       //do by ELSEPA as more accurate if in the table
+      
+      //test for this atom
+      double NperVol = totalAtoms(e)/(cellVolume /1000); //Atoms per nm^3
+      double NperVol2 = molWeightFraction*(AVOGADRO_NUM * (density/1E21))/A; //Atoms per nm^3
+      xSectionTotPerElement += elasticElement[counter] * NperVol; //nm^-1
       
       /*
       if (electronEnergy <= 300) {
@@ -1532,6 +1542,7 @@ public class CoefCalcCompute extends CoefCalc {
       }
       */
       //needs to just read the ELSEPA file once and store in an array or summin like that - CASINO interpolates
+      //This is now incorporated in element database 
 
       double numEl = totalAtoms(e);
   //   elasticElement[counter] *= numEl * atomicFraction;
@@ -1551,6 +1562,7 @@ public class CoefCalcCompute extends CoefCalc {
     
     //testing the other way
   //  partLambda = numerator/denominator;
+    double lambda = 1/ xSectionTotPerElement;
     
     return partLambda; //nm^2
   }
@@ -1587,8 +1599,8 @@ public class CoefCalcCompute extends CoefCalc {
       }
       else {
       inelasticElement[counter] =  ((1.5E-6 * Math.pow(e.getAtomicNumber(), 0.5))/betaSquared)*
-                       (Math.log(2/weirdLetter));
-                     //  1E06; // convert nm^2 to pm^2
+                       (Math.log(2/weirdLetter));  //nm^2/atom
+                     //  1E06; // 
       }
       double numEl = totalAtoms(e);     
       inelasticMolecule += inelasticElement[counter] * numEl;
@@ -1762,20 +1774,32 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
   }
   
   @Override
-  public double getFSELambda(double FSExSection) {
+  public double getFSELambda(double FSExSection) {  //FSExSection is in cm^2/electron
     double lambda = 0;
+    double numEl = 0; //num electrons in the unit cell
+    for (Element e : this.presentElements) { 
+      numEl += e.getAtomicNumber() * totalAtoms(e);
+    }
+    double elPerVolume = numEl/(cellVolume/1E24); //electrons/cm^3
+    double xSection = elPerVolume * FSExSection;  //cm^-1
+    lambda = 1/xSection;
+    /*
     for (Element e : this.presentElements) { 
       double A = e.getAtomicWeight();
       double molWeightFraction = (totalAtoms(e) * A) / molecularWeight;
       lambda += molWeightFraction*(A / (e.getAtomicNumber() * AVOGADRO_NUM * (density/1E21) * FSExSection));
     }
- //   lambda *= 1E7;  //convert cm to nm
+    */
+    lambda *= 1E7;  //convert cm to nm
+  
+    
     return lambda;
   }
   
   @Override
   public double betheIonisationxSection(double electronEnergy) {  //still need to do L and M edges as well
     double m = 9.10938356E-31; // in Kg
+    double elementaryCharge = 1.6021766208E-19;
     double c = 299792458;
     double csquared = c*c;  // (m/s)^2
     double Vo = electronEnergy * Beam.KEVTOJOULES;
@@ -1785,6 +1809,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     double bi = 0, ci = 0;
     boolean calculate = true;
     betheXSections= new HashMap<Element, Double>();
+    double xSectionTotPerElement = 0;
     for (Element e : presentElements) {
       int numEl = 2;  //true for K shells
       double A = e.getAtomicWeight();
@@ -1807,16 +1832,21 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
         }
       }
       //this didn't work so using the one from Joy 1995 with relativistic correction
-  //    elXSection = ((2*Math.PI * Math.exp(4) * numEl * bi) / (m * vsquared * shellBindingEnergy))
-  //                      * ((Math.log(betaSquared/(1-betaSquared)) - betaSquared) + Math.log(ci*m*csquared/(2*shellBindingEnergy)));
+
       if (calculate == true){
-        elXSection = (6.51E-21)*((numEl*bi)/(electronEnergy*shellBindingEnergy))
+     //   elXSection = ((2*Math.PI * Math.pow(elementaryCharge, 4) * numEl * bi) / (electronEnergy*Beam.KEVTOJOULES * shellBindingEnergy*Beam.KEVTOJOULES))
+     //       * ((Math.log(betaSquared/(1-betaSquared)) - betaSquared) + Math.log(ci*m*csquared/(2*shellBindingEnergy*Beam.KEVTOJOULES)));
+        elXSection = (6.51E-20)*((numEl*bi)/(electronEnergy*shellBindingEnergy))
                       * ((Math.log(betaSquared/(1-betaSquared)) - betaSquared) + Math.log(ci*m*csquared/(2*e.getKEdge()*Beam.KEVTOJOULES)));
         //cm^2
-        elXSection = elXSection * 1E14;
-        betheXSections.put(e, elXSection);
+        elXSection = elXSection * 1E14; //convert to nm^2
+        betheXSections.put(e, elXSection);   //nm^2/atom 
         //Will need to combine this in the same why I did the elastic stuff
         partLambda += (molWeightFraction * elXSection)/A;
+        
+        double NperVol = totalAtoms(e)/(cellVolume /1000); //Atoms per nm^3
+        double NperVol2 = molWeightFraction*(AVOGADRO_NUM * (density/1E21))/A; //Atoms per nm^3
+        xSectionTotPerElement += elXSection * NperVol; //nm^-1
       }
     }
     double lambda = 1 / (AVOGADRO_NUM * (density/1E21) * partLambda);
@@ -1841,5 +1871,13 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
       ionisationProbs.put(e, runningSumFraction);
     }
     return ionisationProbs;
+  }
+  
+  @Override
+  public double getEMFlAbsCoef(double flEnergy) {
+    double escapeMuAbsK = 0;
+    Map<String, Double> absCoefficients = calculateCoefficientsAll(flEnergy);
+    escapeMuAbsK = absCoefficients.get(PHOTOELECTRIC);
+    return escapeMuAbsK;
   }
 }

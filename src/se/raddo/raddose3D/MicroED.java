@@ -71,7 +71,11 @@ public class MicroED {
   private double MonteCarloTotElasticCount;
   private double MonteCarloSingleElasticCount;
   private double MonteCarloFSEEscape;
+  private double MonteCarloFlEscape;
+  private double MonteCarloAugerEscape;
+ 
   private double totFSEEnergy;
+  private double totAugerEnergy;
   
   protected static final double NUM_MONTE_CARLO_ELECTRONS = 100000;
   
@@ -200,7 +204,8 @@ return theDose;
 
 private double EMEquationWay(Beam beam, Wedge wedge, CoefCalc coefCalc, boolean useInelEqu) {
   double exposure = beam.getExposure();
-  double energyPerEvent = 0.02; //in keV
+ // double energyPerEvent = 0.02; //in keV
+  double energyPerEvent = 0.037; //in keV
 
   //will need to edit when I add in circular
   double exposedArea = 0;
@@ -518,10 +523,10 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
   double startingLambda_el = coefCalc.getElectronElasticMFPL(startingEnergy);
   
   //the FSE stuff 
-  /*
-  double startingFSExSection = getFSEXSection(beam.getPhotonEnergy() * 1000);
+  
+  double startingFSExSection = getFSEXSection(beam.getPhotonEnergy());
   double startingFSELambda = coefCalc.getFSELambda(startingFSExSection);
-  */
+  
   //Inner shell ionisation x section
   double startingInnerShellLambda = coefCalc.betheIonisationxSection(startingEnergy);
   Map<Element, Double> ionisationProbs = coefCalc.getInnerShellProbs(); //Really need to make sure that these are in the same order
@@ -539,11 +544,11 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
   double stoppingPower = startingStoppingPower;
   double energyLost = 0;
  // double lambdaT = startingLambda_el; //lambda in nm  -//Just elastic
- // double lambdaT = 1 / (1/startingLambda_el + 1/startingFSELambda); //FSE one
-  double lambdaT = 1 / (1/startingLambda_el + 1/startingInnerShellLambda);
+  double lambdaT = 1 / (1/startingLambda_el + 1/startingFSELambda); //FSE one
+ // double lambdaT = 1 / (1/startingLambda_el + 1/startingInnerShellLambda);
   double PEL = lambdaT / startingLambda_el;
-  
-  double s = -lambdaT*Math.log(Math.random());
+  double testRND = Math.random();
+  double s = -lambdaT*Math.log(testRND);
   //now I'm going to go through the coordinates
   
   
@@ -601,11 +606,12 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
 
     //Determining if the scattering event was inelastic or elastic 
     double RNDscatter = Math.random();
+//    RNDscatter = 0; // test
     double phi = 0, cosPhi = 1, psi = 0, AN = 0, AM = 0, V1 = 0, V2 = 0, V3 = 0, V4 = 0;
     
     if (RNDscatter > PEL) {
       //Do inelastic
-      /*  So the FSE stuff is all commented out for now
+ 
       //firstly calculate the FSE energy
       double omega = 1 / (1000 - 998*Math.random());
       double FSEEnergy = omega * electronEnergy;
@@ -655,9 +661,9 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
       //track the primary electron 
       phi = Math.asin(Math.pow(sinSquaredAlpha, 0.5));
       cosPhi = Math.cos(phi);
-      */
       
       
+      /*
       //so now I'm saying the collision was an inner shell ionisation event
       
       //RND to determine what element that came from - which element should be added into the elastic as well
@@ -666,12 +672,47 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
       for (Element e : ionisationProbs.keySet()) {
         if (ionisationProbs.get(e) > elementRND) { //Then this element is the one that was ionised
           collidedElement = e;
+          break;
         }
       }
       
-      double fluoresenceYieldRND = Math.random();
-      //RND for FL or Auger given it was that element
-      //RND for fluorescence energy
+    //RND for FL or Auger given it was that element
+      double fluoresenceYieldKRND = Math.random();
+      double KshellFluorescenceYield = collidedElement.getKShellFluorescenceYield();
+      if (fluoresenceYieldKRND <= KshellFluorescenceYield) { 
+      //then it's fluorescence
+        // get the absorption coefficient of the crystal
+        double flEnergy = collidedElement.getKFluorescenceAverage();
+        double absCoef = coefCalc.getEMFlAbsCoef(flEnergy); //units um^-1
+        //get a random direction vector
+        double xNorm = Math.random();
+        double yNorm = Math.random();
+        double zNorm = Math.random();
+        //Draw the vector to the edge
+        double flEscapeDist = getIntersectionDistance(previousX, previousY, previousZ, xNorm, yNorm, zNorm); //um
+        double escapeFraction = Math.exp(-absCoef * flEscapeDist);
+        MonteCarloFlEscape += escapeFraction * flEnergy;
+        
+      }
+      else {
+        //need to do Auger electrons
+        //Auger electron energy equals flEnergy - shell binding energy of Auger electron
+        //for now ignore the shell binding energy so overestimating their significance
+        double augerEnergy = collidedElement.getKFluorescenceAverage();
+        totAugerEnergy += augerEnergy;
+        //get a random direction vector
+        double xNorm = Math.random();
+        double yNorm = Math.random();
+        double zNorm = Math.random();
+        //Draw the vector to the edge
+        double augerEscapeDist = 1000* getIntersectionDistance(previousX, previousY, previousZ, xNorm, yNorm, zNorm); //um
+        double augerStoppingPower = coefCalc.getStoppingPower(augerEnergy);
+        double augerEnergyToEdge = augerStoppingPower * augerEscapeDist;
+        if (augerEnergyToEdge < augerEnergy){
+          MonteCarloAugerEscape += augerEnergy - augerEnergyToEdge;
+        }
+      }
+      */
       
     } 
     else { //else it stays false and the collision will be elastic
@@ -702,10 +743,7 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
       cb = (cy*cosPhi) + (V4*(cz*V1 - cx*V2));
       cc = (cz*cosPhi) + (V2*V3) - (cy*V1*V4);
       
-      //update to new position
-      xn = previousX + s * ca;
-      yn = previousY + s * cb;
-      zn = previousZ + s * cc;
+
    
       //update stopping powers
       //get new stoppingPower
@@ -722,6 +760,11 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
       s = -lambdaT*Math.log(Math.random());
       PEL = lambdaT / lambdaEl;
       ionisationProbs = coefCalc.getInnerShellProbs();
+      
+      //update to new position
+      xn = previousX + s * ca;
+      yn = previousY + s * cb;
+      zn = previousZ + s * cc;
       
   }
   else {
@@ -757,7 +800,9 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
 
   //Will also need to add in inel scattering here for productive (and then FSE stuff)
 
-  // MonteCarloDose -= MonteCarloFSEEscape;
+ //  MonteCarloDose -= MonteCarloFSEEscape;
+ //  MonteCarloDose -= MonteCarloAugerEscape;
+ //  MonteCarloDose -= MonteCarloFlEscape;
 }
 
 private double processMonteCarloDose(Beam beam, CoefCalc coefCalc) {
@@ -787,12 +832,19 @@ private double processMonteCarloDose(Beam beam, CoefCalc coefCalc) {
 
 private double getFSEXSection(double electronEnergy) {
   //integrate equation - currently this isn't right... Do it numerically
-  double constant = (Math.PI * Math.exp(4)) / Math.pow(electronEnergy, 2);
+//  double constant = (Math.PI * Math.pow(Beam.ELEMENTARYCHARGE, 4)) / Math.pow(electronEnergy*Beam.KEVTOJOULES, 2);  //maybe go with Murata
+//  double constant = (Math.PI * Math.exp(4)) / Math.pow(electronEnergy*Beam.KEVTOJOULES, 2);  
+  double constant = (6.21E-20 / Math.pow(electronEnergy, 2)); // *1E14;  //nm^2 ???
+  
+  //So the equation in Murata is cross section per electron (i assume cm^2/electron). So need to
+  //1) Work out electrons per unit volume
+  //2) multiply to get cross section in cm^-1 and convert to nm^-1
+  
  // double crossSection = 0; //so this is in cm^2
   
   //equ integrates t 1/1-x -1/x + C
  double  crossSection = (1/(1-0.5) - 1/0.5) - ((1/(1-0.001) - 1/0.001));
-  crossSection *= constant;
+  
   
   /*
   for (int i = 2; i <= 50; i++) {
@@ -805,6 +857,9 @@ private double getFSEXSection(double electronEnergy) {
     crossSection += width * height;
   }
   */
+ 
+ crossSection *= constant;  // I think this is now in cm^2 per electron
+ 
   return crossSection; //cm^2/atom //nm^2 per atom??? //Really not sure about units here
 }
 
