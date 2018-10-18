@@ -843,13 +843,20 @@ private double getFSEXSection(double electronEnergy) {
   double c = 29979245800.0;  //in cm
   //classical for now
   //find the electron velocity in cm/s
-  double vsquared = ((electronEnergy*Beam.KEVTOJOULES * 2) / (m/1000)) * 10000; //(cm/s)^2
+//  double vsquared = ((electronEnergy*Beam.KEVTOJOULES * 2) / (m/1000)) * 10000; //(cm/s)^2
   
+  double csquared = Math.pow(c/100, 2);
+  double Vo = electronEnergy * Beam.KEVTOJOULES;
+  double betaSquared = 1- Math.pow((m/1000)*csquared/(Vo + (m/1000)*csquared), 2);
+  double vsquared = (betaSquared * csquared)*10000;
+  
+  //the v sqaured being relativistic or not is what makes the difference
   
   //integrate equation - currently this isn't right... Do it numerically
 //  double constant = (Math.PI * Math.pow(Beam.ELEMENTARYCHARGE, 4)) / Math.pow(electronEnergy*Beam.KEVTOJOULES, 2);  //maybe go with Murata
 //  double constant = (6.21E-20 / Math.pow(electronEnergy, 2)); // *1E14;  //cm^2/electron? ???
-  double constant = (4* Math.PI * Math.pow(elementaryCharge, 4)) / (Math.pow(m*vsquared, 2));
+//  double constant = (4* Math.PI * Math.pow(elementaryCharge, 4)) / (Math.pow(m*vsquared, 2));
+  double constant = (2* Math.PI * Math.pow(elementaryCharge, 4)) / (m*vsquared * (Vo*1000*10000));
   
   //So the equation in Murata is cross section per electron (i assume cm^2/electron). So need to
   //1) Work out electrons per unit volume
@@ -859,34 +866,32 @@ private double getFSEXSection(double electronEnergy) {
   
   //equ integrates t 1/1-x -1/x + C
   
- double  crossSection = (1/(1-0.5) - 1/0.5) - ((1/(1-0.001) - 1/0.001));
- crossSection *= constant;  // I think this is now in cm^2 per electron
+// double  crossSection = (1/(1-0.5) - 1/0.5) - ((1/(1-0.001) - 1/0.001));
+// crossSection *= constant;  // I think this is now in cm^2 per electron
   
-  /*
+/*
   double crossSection = 0;
-  for (int i = 2; i <= 500; i++) {
-    double omega = (double) i /1000;
-    double omegaMinusOne = ((double)i-1) / 1000;
-    double width = ((double)i /1000) - (((double)i-1)/1000);
+  for (double i = 1.1; i <= 500; i+=0.1) {
+    double omega = i /1000;
+    double omegaMinusOne = (i-0.1) / 1000;
+    double width = (i /1000) - ((i-0.1)/1000);
     double height = ((constant * ((1/Math.pow(omega, 2)) + (1/Math.pow(1-omega, 2))))
                     + (constant * ((1/Math.pow(omegaMinusOne, 2)) + (1/Math.pow(1-omegaMinusOne, 2))))) 
                     / 2;
     crossSection += width * height;
   }
-  */
- 
- 
+ */
  
  
  //try the relativistic cross section from Murata et al - with times
-  /*
+  
   double restMassEnergy = 511; //keV
   double tau = electronEnergy/restMassEnergy;
   double crossSection = 0;
-  for (int i = 2; i <= 500; i++) {
-    double omega = (double) i /1000;
-    double omegaMinusOne = ((double)i-1) / 1000;
-    double width = ((double)i /1000) - (((double)i-1)/1000);
+  for (double i = 1.1; i <= 500; i+=0.1) {
+    double omega = i /1000;
+    double omegaMinusOne = (i-0.1) / 1000;
+    double width = (i /1000) - ((i-0.1)/1000);
     double height = ((constant * ((1/Math.pow(omega, 2)) + (1/Math.pow(1-omega, 2)) + Math.pow(tau/(tau+1), 2) 
                   - ((2*tau+1)/Math.pow(tau+1, 2)) * (1/(omega*(1-omega)))))
         
@@ -895,7 +900,7 @@ private double getFSEXSection(double electronEnergy) {
                     / 2;
     crossSection += width * height;
   }
-  */
+  
 
  
  //Book classical

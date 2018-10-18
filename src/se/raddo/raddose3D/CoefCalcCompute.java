@@ -1799,7 +1799,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
   @Override
   public double betheIonisationxSection(double electronEnergy) {  //still need to do L and M edges as well
     double m = 9.10938356E-31; // in Kg
-    double elementaryCharge = 1.6021766208E-19;
+    double elementaryCharge = 4.80320425E-10; //units = esu = g^0.5 cm^1.5 s^-1
     double c = 299792458;
     double csquared = c*c;  // (m/s)^2
     double Vo = electronEnergy * Beam.KEVTOJOULES;
@@ -1834,10 +1834,20 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
       //this didn't work so using the one from Joy 1995 with relativistic correction
 
       if (calculate == true){
-     //   elXSection = ((2*Math.PI * Math.pow(elementaryCharge, 4) * numEl * bi) / (electronEnergy*Beam.KEVTOJOULES * shellBindingEnergy*Beam.KEVTOJOULES))
-     //       * ((Math.log(betaSquared/(1-betaSquared)) - betaSquared) + Math.log(ci*m*csquared/(2*shellBindingEnergy*Beam.KEVTOJOULES)));
-        elXSection = (6.51E-20)*((numEl*bi)/(electronEnergy*shellBindingEnergy))
-                      * ((Math.log(betaSquared/(1-betaSquared)) - betaSquared) + Math.log(ci*m*csquared/(2*e.getKEdge()*Beam.KEVTOJOULES)));
+        //relativistic
+        elXSection = ((2*Math.PI * Math.pow(elementaryCharge, 4) * numEl * bi) / (((m*1000)*(vsquared*10000)) * (shellBindingEnergy*Beam.KEVTOJOULES*1000*10000)))
+            * ((Math.log(betaSquared/(1-betaSquared)) - betaSquared) + Math.log(ci*m*csquared/(2*shellBindingEnergy*Beam.KEVTOJOULES)));
+        //non-relativistic
+    //    elXSection = ((Math.PI * Math.pow(elementaryCharge, 4) * numEl * bi) / ((electronEnergy*Beam.KEVTOJOULES * 1000*10000) * (shellBindingEnergy*Beam.KEVTOJOULES*1000*10000)))
+    //        * (Math.log(ci*electronEnergy/(shellBindingEnergy)));
+        
+        
+        //Tests
+    //    elXSection = ((2*Math.PI * Math.pow(elementaryCharge, 4) * numEl * bi) / ((2*electronEnergy*Beam.KEVTOJOULES * 1000*10000) * (shellBindingEnergy*Beam.KEVTOJOULES*1000*10000)))
+    //        * ((Math.log(betaSquared/(1-betaSquared)) - betaSquared) + Math.log(ci*m*csquared/(2*shellBindingEnergy*Beam.KEVTOJOULES)));
+        
+     //   elXSection = (6.51E-20)*((numEl*bi)/(electronEnergy*shellBindingEnergy))
+     //                 * ((Math.log(betaSquared/(1-betaSquared)) - betaSquared) + Math.log(ci*m*csquared/(2*e.getKEdge()*Beam.KEVTOJOULES)));
         //cm^2
         elXSection = elXSection * 1E14; //convert to nm^2
         betheXSections.put(e, elXSection);   //nm^2/atom 
