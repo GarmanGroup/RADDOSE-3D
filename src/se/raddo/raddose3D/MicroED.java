@@ -514,7 +514,9 @@ private double getESTARDose(CoefCalc coefCalc, Beam beam) {
 
 // Everything below will be the Monte Carlo section of the code
 private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
-
+int triggered = 0;
+int thisTriggered = 0;
+  
   //set up for one electron to start with and then test how many needed to get little deviation and then scale up
   int numberBackscattered = 0;
   //Start stuff to make quicker
@@ -547,6 +549,7 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
   double lambdaT = 1 / (1/startingLambda_el + 1/startingFSELambda); //FSE one
  // double lambdaT = 1 / (1/startingLambda_el + 1/startingInnerShellLambda);
   double PEL = lambdaT / startingLambda_el;
+  double Pinel = 1 - (lambdaT / startingLambda_el);
   double testRND = Math.random();
   double s = -lambdaT*Math.log(testRND);
   //now I'm going to go through the coordinates
@@ -590,6 +593,7 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
   while (exited == false) {
   if (isMicrocrystalAt(xn, yn, zn) == true) {
     scattered = true;
+    thisTriggered += 1;
     //reset
     cx = ca;
     cy = cb;
@@ -609,17 +613,19 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
 //    RNDscatter = 0; // test
     double phi = 0, cosPhi = 1, psi = 0, AN = 0, AM = 0, V1 = 0, V2 = 0, V3 = 0, V4 = 0;
     
-    if (RNDscatter > PEL) {
+    if (RNDscatter < Pinel) {
       //Do inelastic
- 
+      triggered += 1;
       //firstly calculate the FSE energy
       double omega = 1 / (1000 - 998*Math.random());
+  //    double omega = 1 / (100 - 98*Math.random());
       double FSEEnergy = omega * electronEnergy;
       //I'm going to take t as the energy of that particular electron
       // This could be two values for the primary, with stopping power or with inel removal
       double sinSquaredAlpha = 0;
       double sinSquaredGamma = 0;
-      if (FSEEnergy > 0.5) { // so I only care about the FSE if it is more than 500eV or it probably won't escape
+      if (FSEEnergy > electronEnergy/1000) { // so I only care about the FSE if it is more than x 
+   //   if (FSEEnergy > 0) { // so I only care about the FSE if it is more than x 
         // determine the angles of the FSE and the primary electron
         double tPrimary = (electronEnergy-FSEEnergy)/511; //t is in rest mass units. Need to change to stopping power en
         double tFSE = FSEEnergy/511;
@@ -750,15 +756,16 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
       electronEnergy -= energyLost; 
       stoppingPower = coefCalc.getStoppingPower(electronEnergy);
       //get new lambdaT
-      double FSExSection = getFSEXSection(electronEnergy * 1000);
+      double FSExSection = getFSEXSection(electronEnergy);
       double FSELambda = coefCalc.getFSELambda(FSExSection);
       double lambdaEl = coefCalc.getElectronElasticMFPL(electronEnergy);
       double innerShellLambda = coefCalc.betheIonisationxSection(electronEnergy);
-    //  lambdaT =  1 / (1/coefCalc.getElectronElasticMFPL(electronEnergy) + 1/FSELambda);
-    lambdaT =  1 / (1/coefCalc.getElectronElasticMFPL(electronEnergy) + 1/innerShellLambda);
+      lambdaT =  1 / (1/lambdaEl + 1/FSELambda);
+   // lambdaT =  1 / (1/lambdaEl + 1/innerShellLambda);
  //     lambdaT =  1 / (1/lambdaEl);
       s = -lambdaT*Math.log(Math.random());
       PEL = lambdaT / lambdaEl;
+      Pinel = 1 - (lambdaT / lambdaEl);
       ionisationProbs = coefCalc.getInnerShellProbs();
       
       //update to new position
@@ -800,7 +807,7 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
 
   //Will also need to add in inel scattering here for productive (and then FSE stuff)
 
- //  MonteCarloDose -= MonteCarloFSEEscape;
+   MonteCarloDose -= MonteCarloFSEEscape;
  //  MonteCarloDose -= MonteCarloAugerEscape;
  //  MonteCarloDose -= MonteCarloFlEscape;
 }
@@ -831,10 +838,18 @@ private double processMonteCarloDose(Beam beam, CoefCalc coefCalc) {
 }
 
 private double getFSEXSection(double electronEnergy) {
+  double elementaryCharge = 4.80320425E-10; //units = esu = g^0.5 cm^1.5 s^-1
+  double m = 9.10938356E-28; // in g
+  double c = 29979245800.0;  //in cm
+  //classical for now
+  //find the electron velocity in cm/s
+  double vsquared = ((electronEnergy*Beam.KEVTOJOULES * 2) / (m/1000)) * 10000; //(cm/s)^2
+  
+  
   //integrate equation - currently this isn't right... Do it numerically
 //  double constant = (Math.PI * Math.pow(Beam.ELEMENTARYCHARGE, 4)) / Math.pow(electronEnergy*Beam.KEVTOJOULES, 2);  //maybe go with Murata
-//  double constant = (Math.PI * Math.exp(4)) / Math.pow(electronEnergy*Beam.KEVTOJOULES, 2);  
-  double constant = (6.21E-20 / Math.pow(electronEnergy, 2)); // *1E14;  //nm^2 ???
+//  double constant = (6.21E-20 / Math.pow(electronEnergy, 2)); // *1E14;  //cm^2/electron? ???
+  double constant = (4* Math.PI * Math.pow(elementaryCharge, 4)) / (Math.pow(m*vsquared, 2));
   
   //So the equation in Murata is cross section per electron (i assume cm^2/electron). So need to
   //1) Work out electrons per unit volume
@@ -843,14 +858,16 @@ private double getFSEXSection(double electronEnergy) {
  // double crossSection = 0; //so this is in cm^2
   
   //equ integrates t 1/1-x -1/x + C
- double  crossSection = (1/(1-0.5) - 1/0.5) - ((1/(1-0.001) - 1/0.001));
   
+ double  crossSection = (1/(1-0.5) - 1/0.5) - ((1/(1-0.001) - 1/0.001));
+ crossSection *= constant;  // I think this is now in cm^2 per electron
   
   /*
-  for (int i = 2; i <= 50; i++) {
-    double omega = (double) i /100;
-    double omegaMinusOne = ((double)i-1) / 100;
-    double width = ((double)i /100) - (((double)i-1)/100);
+  double crossSection = 0;
+  for (int i = 2; i <= 500; i++) {
+    double omega = (double) i /1000;
+    double omegaMinusOne = ((double)i-1) / 1000;
+    double width = ((double)i /1000) - (((double)i-1)/1000);
     double height = ((constant * ((1/Math.pow(omega, 2)) + (1/Math.pow(1-omega, 2))))
                     + (constant * ((1/Math.pow(omegaMinusOne, 2)) + (1/Math.pow(1-omegaMinusOne, 2))))) 
                     / 2;
@@ -858,7 +875,69 @@ private double getFSEXSection(double electronEnergy) {
   }
   */
  
- crossSection *= constant;  // I think this is now in cm^2 per electron
+ 
+ 
+ 
+ //try the relativistic cross section from Murata et al - with times
+  /*
+  double restMassEnergy = 511; //keV
+  double tau = electronEnergy/restMassEnergy;
+  double crossSection = 0;
+  for (int i = 2; i <= 500; i++) {
+    double omega = (double) i /1000;
+    double omegaMinusOne = ((double)i-1) / 1000;
+    double width = ((double)i /1000) - (((double)i-1)/1000);
+    double height = ((constant * ((1/Math.pow(omega, 2)) + (1/Math.pow(1-omega, 2)) + Math.pow(tau/(tau+1), 2) 
+                  - ((2*tau+1)/Math.pow(tau+1, 2)) * (1/(omega*(1-omega)))))
+        
+                    + (constant * ((1/Math.pow(omegaMinusOne, 2)) + (1/Math.pow(1-omegaMinusOne, 2)) + Math.pow(tau/(tau+1), 2) 
+                    - ((2*tau+1)/Math.pow(tau+1, 2)) * (1/(omegaMinusOne*(1-omegaMinusOne)))))) 
+                    / 2;
+    crossSection += width * height;
+  }
+  */
+
+ 
+ //Book classical
+  //constant is same as above
+  /*
+  double T = electronEnergy * Beam.KEVTOJOULES;
+  double crossSection = 0;
+  for (double i = 2*(T/1000); i <= T/2; i+= T/1000) {
+    double Q = i;
+    double QMinusOne = i - (T/1000);
+    double width = T/1000;
+    double height = ((constant * ((1/Math.pow(Q, 2)) * Math.pow(T/(T-Q), 2) * (1-2*(Q/T) + 2*Math.pow(Q/T, 2))))
+                    + (constant * ((1/Math.pow(QMinusOne, 2)) * Math.pow(T/(T-QMinusOne), 2) * (1-2*(QMinusOne/T) + 2*Math.pow(QMinusOne/T, 2)))))
+                    / 2;
+    crossSection += width * height;
+  }
+  */
+/*
+  //book relativistic
+  //constant is same as above
+  double T = electronEnergy * Beam.KEVTOJOULES;
+  double m = 9.10938356E-31; // in Kg
+  double c = 299792458;
+  double csquared = c*c;
+  double crossSection = 0;
+  for (double i = 2*(T/1000); i <= T/2; i+= T/1000) {
+    double Q = i;
+    double QMinusOne = i - (T/1000);
+    double width = T/1000;
+    double height = ((constant * ((1/Math.pow(Q, 2)) * Math.pow(T/(T-Q), 2) * 
+                    (1-(3-Math.pow(T/(T+m*csquared), 2))*(Q/T)*(1-(Q/T))+(Math.pow(Q/(T+m*csquared), 2) * Math.pow(1-(Q/T), 2)))))
+        
+                    + (constant * ((1/Math.pow(QMinusOne, 2)) * Math.pow(T/(T-QMinusOne), 2) * 
+                        (1-(3-Math.pow(T/(T+m*csquared), 2))*(QMinusOne/T)*(1-(QMinusOne/T))+(Math.pow(QMinusOne/(T+m*csquared), 2) * Math.pow(1-(QMinusOne/T), 2))))))
+                    / 2;
+    crossSection += width * height;
+  }
+  */
+  //book non-rel
+  
+  //book very rel
+
  
   return crossSection; //cm^2/atom //nm^2 per atom??? //Really not sure about units here
 }
