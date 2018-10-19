@@ -202,5 +202,11 @@ public class CoefCalcAverage extends CoefCalc {
     // TODO Auto-generated method stub
     return 0;
   }
+
+  @Override
+  public Map<Element, Double> getElasticProbs() {
+    // TODO Auto-generated method stub
+    return null;
+  }
   
 }

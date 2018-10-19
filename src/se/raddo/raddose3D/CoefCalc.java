@@ -135,6 +135,8 @@ public abstract class CoefCalc {
   public abstract double betheIonisationxSection(double electronEnergy);
   
   public abstract Map<Element, Double> getInnerShellProbs();
+ 
+  public abstract Map<Element, Double> getElasticProbs();
   
   public abstract double getEMFlAbsCoef(double flEnergy);
 }

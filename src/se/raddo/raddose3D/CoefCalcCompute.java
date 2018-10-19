@@ -234,6 +234,9 @@ public class CoefCalcCompute extends CoefCalc {
   
   public Map<Element, Double> betheXSections;
   public double BethexSectionTotPerElement;
+  public Map<Element, Double> elasticXSections;
+  public double ElasticxSectionTotPerElement;
+  
   
   public boolean isEM;
 
@@ -1518,6 +1521,9 @@ public class CoefCalcCompute extends CoefCalc {
     int counter = 0;
     double sumZ = 0, sumA = 0;
     double xSectionTotPerElement = 0;
+    ElasticxSectionTotPerElement = 0;
+    elasticXSections = new HashMap<Element, Double>();
+    
     for (Element e : this.presentElements) {
       double Z = e.getAtomicNumber();
       elasticElement[counter] =  ((1.4E-6 * Math.pow(Z, 1.5))/betaSquared)*
@@ -1532,6 +1538,7 @@ public class CoefCalcCompute extends CoefCalc {
       double NperVol = totalAtoms(e)/(cellVolume /1000); //Atoms per nm^3
       double NperVol2 = molWeightFraction*(AVOGADRO_NUM * (density/1E21))/A; //Atoms per nm^3
       xSectionTotPerElement += elasticElement[counter] * NperVol; //nm^-1
+      elasticXSections.put(e, elasticElement[counter] * NperVol);
       
       /*
       if (electronEnergy <= 300) {
@@ -1564,6 +1571,8 @@ public class CoefCalcCompute extends CoefCalc {
     //testing the other way
   //  partLambda = numerator/denominator;
     double lambda = 1/ xSectionTotPerElement;
+    ElasticxSectionTotPerElement = xSectionTotPerElement;
+    
     
     return partLambda; //nm^2
   }
@@ -1578,6 +1587,18 @@ public class CoefCalcCompute extends CoefCalc {
     //test
    // lambda = 515;
     return lambda; //nm
+  }
+  
+  @Override
+  public Map<Element, Double> getElasticProbs(){
+    Map<Element, Double> elasticProbs = new HashMap<Element, Double>();
+    double runningSumFraction = 0;  //should equal 1 by the end
+    for (Element e : elasticXSections.keySet()) {
+      double lambdaFraction = elasticXSections.get(e)/ElasticxSectionTotPerElement;
+      runningSumFraction += lambdaFraction;
+      elasticProbs.put(e, runningSumFraction);
+    }
+    return elasticProbs;
   }
   
   @Override
@@ -1764,7 +1785,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
   }
 
   @Override
-  public double getRutherfordScreening(double electronEnergy) {
+  public double getRutherfordScreening(double electronEnergy) { //this isn't weighted right, do for each element instead
     double alpha = 0;
     for (Element e : this.presentElements) { 
       double A = e.getAtomicWeight();
@@ -1799,6 +1820,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
   
   @Override
   public double betheIonisationxSection(double electronEnergy) {  //still need to do L and M edges as well
+    //need to sort this out for when energy less than shell binding energy
     double m = 9.10938356E-31; // in Kg
     double elementaryCharge = 4.80320425E-10; //units = esu = g^0.5 cm^1.5 s^-1
     double c = 299792458;
@@ -1817,6 +1839,10 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
       double A = e.getAtomicWeight();
       double molWeightFraction = (totalAtoms(e) * A) / molecularWeight;
       double shellBindingEnergy = e.getKEdge();   //ofc I need to look this up properly
+      
+      if (shellBindingEnergy > electronEnergy) {
+        calculate = false;
+      }
       
       if ((e.getEminLow() == 0) || (e.getEminLow() == null)) { //if there is no entry
         calculate = false;
@@ -1863,7 +1889,10 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
         
       }
     }
-    double lambda = 1 / (AVOGADRO_NUM * (density/1E21) * partLambda);
+    double lambda = 0;
+    if (partLambda > 0) {
+      lambda = 1 / (AVOGADRO_NUM * (density/1E21) * partLambda);
+    }
     return lambda; //nm
   }
   
