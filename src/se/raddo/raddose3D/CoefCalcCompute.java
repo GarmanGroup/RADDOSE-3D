@@ -233,6 +233,7 @@ public class CoefCalcCompute extends CoefCalc {
   public  Map<String, Double> fractionElementEM;
   
   public Map<Element, Double> betheXSections;
+  public double BethexSectionTotPerElement;
   
   public boolean isEM;
 
@@ -1809,7 +1810,8 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     double bi = 0, ci = 0;
     boolean calculate = true;
     betheXSections= new HashMap<Element, Double>();
-    double xSectionTotPerElement = 0;
+    BethexSectionTotPerElement = 0;
+  //  double xSectionTotPerElement = 0;
     for (Element e : presentElements) {
       int numEl = 2;  //true for K shells
       double A = e.getAtomicWeight();
@@ -1850,13 +1852,15 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
      //                 * ((Math.log(betaSquared/(1-betaSquared)) - betaSquared) + Math.log(ci*m*csquared/(2*e.getKEdge()*Beam.KEVTOJOULES)));
         //cm^2
         elXSection = elXSection * 1E14; //convert to nm^2
-        betheXSections.put(e, elXSection);   //nm^2/atom 
+      //  betheXSections.put(e, elXSection);   //nm^2/atom 
         //Will need to combine this in the same why I did the elastic stuff
         partLambda += (molWeightFraction * elXSection)/A;
         
         double NperVol = totalAtoms(e)/(cellVolume /1000); //Atoms per nm^3
         double NperVol2 = molWeightFraction*(AVOGADRO_NUM * (density/1E21))/A; //Atoms per nm^3
-        xSectionTotPerElement += elXSection * NperVol; //nm^-1
+        BethexSectionTotPerElement += elXSection * NperVol; //nm^-1
+        betheXSections.put(e, elXSection * NperVol);
+        
       }
     }
     double lambda = 1 / (AVOGADRO_NUM * (density/1E21) * partLambda);
@@ -1866,17 +1870,22 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
   @Override
   public Map<Element, Double> getInnerShellProbs(){
     Map<Element, Double> ionisationProbs = new HashMap<Element, Double>();
+    /*
     double totalLambda = 0;
     for (Element e : betheXSections.keySet()) {
       double A = e.getAtomicWeight();
       double molWeightFraction = (totalAtoms(e) * A) / molecularWeight;
       totalLambda += molWeightFraction * (betheXSections.get(e) / A);
     }
+    */
     double runningSumFraction = 0;  //should equal 1 by the end
     for (Element e : betheXSections.keySet()) {
+      /*
       double A = e.getAtomicWeight();
       double molWeightFraction = (totalAtoms(e) * A) / molecularWeight;
-      double lambdaFraction = (molWeightFraction * (betheXSections.get(e) / A))/totalLambda;
+      */
+    //  double lambdaFraction = (molWeightFraction * (betheXSections.get(e) / A))/totalLambda;
+      double lambdaFraction = betheXSections.get(e)/BethexSectionTotPerElement;
       runningSumFraction += lambdaFraction;
       ionisationProbs.put(e, runningSumFraction);
     }
