@@ -1653,7 +1653,7 @@ public class CoefCalcCompute extends CoefCalc {
     
 //    double energy = gamma * m * csquared / Beam.KEVTOJOULES;
     
-    double meanJ = 0;
+    double meanJ = 0, meanlnI = 0;
     double stoppingPower = 0;
     double sumA = 0, meanZoverA = 0;
     int sumZ = 0;
@@ -1663,19 +1663,81 @@ public class CoefCalcCompute extends CoefCalc {
       double A = e.getAtomicWeight();
       double molWeightFraction = (totalAtoms(e) * A) / molecularWeight;
       fractionElementEM.put(ElementNameLower(e.getElementName()), molWeightFraction);
-      double J = 0;
+      double J = 0, Jstar = 0, k = 0;
  //     double energy = beam.getPhotonEnergy();
       int Z = e.getAtomicNumber();
       meanZoverA += molWeightFraction * (Z/A);
       sumZ += Z * totalAtoms(e);
       sumA += A * totalAtoms(e);
+      /*
       if (Z <= 12) {
         J = Z * 11.5;    //eV
       }
       else {
         J = 9.76 * Z + (58.5/Math.pow(Z, 0.19));  //eV
       }
-      meanJ += (J * molWeightFraction) / 1000;  //keV
+      */
+      J = e.getI();
+      if ((Z != 1) && (Z != 6) && (Z != 7) && (Z != 8) && (Z!= 9) && (Z != 17)) { //already modified in table
+        J *= 1.13; //modified from gas to liquid/solid phase
+      }
+      k = 0.7344 * Math.pow(Z, 0.0367);
+      Jstar = J / (1+ k*(J/(avgEnergy*1000)));
+      meanJ += (Jstar * molWeightFraction);  //eV
+     
+      
+      meanlnI +=  molWeightFraction * (Z/A) * Math.log(Jstar);
+      
+      /*
+      //Big point - the adjustment factor should be done only once and then stored as it is not dependetn on energy
+      //chnage this once it is in
+      //get density effect modification
+    //  double h = 6.626070040E-34;
+      double plasmaFrequency = 28.816 * Math.pow(density*(Z/A), 0.5); //equals (h/2pi)*omegap
+    //  Get number of shells and number of electrons in each shell - when looping through shells
+      int[] electronsPerShell = {2, 8, 18, 32, 50};
+      double minMu = 10;
+      double minDifference = 9E20;
+      double nMax = 0;
+      for(double mu = 1.0; mu <= 3.0; mu += 0.05) {
+        int runningElectronSum = 0;
+        boolean exitLoop = false;
+        double lnISum = 0;
+        for (int i = 1; i <= 5; i++) { // for every shell
+          int electronsInShell = 0;
+          double fn = 0;
+          runningElectronSum += electronsPerShell[i-1];
+          if (Z > runningElectronSum) { //if there are electrons in a higher shell
+            electronsInShell = electronsPerShell[i-1];
+          }
+          else {
+            electronsInShell = Z - (runningElectronSum - electronsPerShell[i-1]);
+            exitLoop = true;
+            nMax = i;  //need to sort out what happens when there is a full shell
+            
+          }
+          fn = electronsInShell / Z;
+          lnISum += fn * Math.log(Math.pow(Math.pow(mu, 2) * Math.pow(i, 2) + fn * Math.pow(plasmaFrequency, 2), 0.5));
+          if (exitLoop == true) {
+            break;
+          }
+        }
+        double lnI = Math.log(J);
+        double difference = Math.pow(lnI-lnISum, 2);
+        if (difference < minDifference) {
+          minDifference = difference;
+          minMu = mu;
+        }
+      }
+      double delta = 0;
+      for (int j = 1; j <= nMax; j++) {
+        //redo electrons in shell stuff
+        double EnL = Math.pow(Math.pow(minMu, 2)*Math.pow(j, 2) + fn * Math.pow(plasmaFrequency, 2), 0.5, 0.5);
+        
+        delta += 
+      }
+      */
+      
       
       //density should be of every element...
       //or use mean density, mean Z/A and mean J
@@ -1711,11 +1773,14 @@ public class CoefCalcCompute extends CoefCalc {
     double Vo = beam.getPhotonEnergy() * Beam.KEVTOJOULES;
     double betaSquared = 1- Math.pow(m*csquared/(Vo + m*csquared), 2);
     */
-      
+   
+   meanlnI = meanlnI/(sumZ/sumA); 
+      double meanI = Math.exp(meanlnI);  //This is now right!!!
     double Fbeta = 0;
-    meanJ = 77.3;
+    meanJ = meanI; //eV  
     //modify meanJ for lower energy by Joy and Luo method - essential for FSEs
-    meanJ = meanJ / (1 + 0.85*meanJ/(avgEnergy*1000));
+   // double k = 0.85; //test
+   // meanJ = meanJ / (1 + 0.85*meanJ/(avgEnergy*1000));
     
     meanJ = (meanJ/1000) * Beam.KEVTOJOULES;
     double energy = avgEnergy * Beam.KEVTOJOULES;
@@ -1927,5 +1992,10 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     Map<String, Double> absCoefficients = calculateCoefficientsAll(flEnergy);
     escapeMuAbsK = absCoefficients.get(PHOTOELECTRIC);
     return escapeMuAbsK;
+  }
+  
+  @Override
+  public void calculateSterheimerFactor() {
+    
   }
 }

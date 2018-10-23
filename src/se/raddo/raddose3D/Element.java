@@ -733,4 +733,8 @@ public class Element {
   public Double getcKHigh() {
     return elementData.get(DatabaseFields.cKhigh);
   }
+  
+  public double getI() {
+    return elementData.get(DatabaseFields.I);
+  }
 }

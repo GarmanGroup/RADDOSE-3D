@@ -92,7 +92,9 @@ public class ElementDatabase {
     /** Constants for the higher energy K shell*/
     bKhigh(63), cKhigh(64), 
     /** ELSEPA elastic cross section */
-    EL_50(65), EL_100(66), EL_150(67), EL_200(68), EL_250(69), EL_300(70);
+    EL_50(65), EL_100(66), EL_150(67), EL_200(68), EL_250(69), EL_300(70),
+    /**Mean ionisation potential**/
+    I(71);
 
     
     /**

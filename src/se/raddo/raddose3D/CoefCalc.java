@@ -139,4 +139,6 @@ public abstract class CoefCalc {
   public abstract Map<Element, Double> getElasticProbs();
   
   public abstract double getEMFlAbsCoef(double flEnergy);
+  
+  public abstract void calculateSterheimerFactor();
 }

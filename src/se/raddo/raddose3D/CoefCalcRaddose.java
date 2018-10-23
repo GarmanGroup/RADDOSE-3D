@@ -473,4 +473,10 @@ public class CoefCalcRaddose extends CoefCalc {
     // TODO Auto-generated method stub
     return null;
   }
+
+  @Override
+  public void calculateSterheimerFactor() {
+    // TODO Auto-generated method stub
+    
+  }
 }
