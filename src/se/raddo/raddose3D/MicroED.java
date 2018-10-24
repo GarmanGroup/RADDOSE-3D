@@ -571,13 +571,20 @@ int thisTriggered = 0; //testing
   double previousX = 0, previousY = 0; //atm starting going straight 
   double xNorm = 0.0000, yNorm = 0.0000, zNorm = 1.0; //direction cosine are such that just going down in one
   double theta = 0, phi = 0, previousTheta = 0, previousPhi = 0, thisTheta = 0;
-
+  double previousZ = -ZDimension/2;  //dodgy if specimen not flat - change for concave holes
   
   //position
   double RNDx = Math.random();
   previousX = (RNDx * XDimension) - (XDimension/2);
   double RNDy = Math.random();
   previousY = (RNDy * YDimension) - (YDimension/2);
+  
+  //direction 
+  double[] directionVector = getElectronStartingDirection(beam, previousX, previousY, previousZ);
+  xNorm = directionVector[0];
+  yNorm = directionVector[1];
+  zNorm = directionVector[2];
+  
   
   /*
   //direction
@@ -597,7 +604,6 @@ int thisTriggered = 0; //testing
 //  double ca = cx;
 //  double cb = cy;
 //  double cc = cz;
-  double previousZ = -ZDimension/2; //this may be dodgy if the top of the specimen is not flat...
   double xn = previousX + s * xNorm;
   double yn = previousY + s * yNorm;
   double zn = previousZ + s * zNorm;
@@ -1420,6 +1426,27 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
       exited = true;
     }
   }
+}
+
+private double[] getElectronStartingDirection(Beam beam, double previousX, double previousY, double previousZ) {
+  double beamSemiAngle = 10;  //in mrad
+  double beamApertureRadius = 1.2;  // how many times bigger the aperture is than the beam
+  double beamRadius = Math.pow(Math.pow((beam.getBeamX()/2),2) + Math.pow(beam.getBeamY()/2, 2), 0.5);
+  double extraLength = beamRadius * (beamApertureRadius - 1);
+  //now get the aperture point
+  double signX = (previousX >= 0) ? 1 : -1;
+  double signY = (previousY >= 0) ? 1 : -1;
+  double apertureX = signX*(Math.random() * beamApertureRadius) + previousX;
+  double apertureY = signY*(Math.random() * beamApertureRadius) + previousY;
+  double apertureZ = previousZ - (extraLength/Math.tan(beamSemiAngle/1000));
+  double[] coordinateFrom = {apertureX, apertureY, apertureZ};
+  double[] coordinateTo = {previousX, previousY, previousZ};
+  double[] directionVector = Vector.vectorBetweenPoints(coordinateFrom, coordinateTo);
+  double magnitude = Vector.vectorMagnitude(directionVector);
+  for (int v = 0; v <= 2; v ++) {
+    directionVector[v] /= magnitude;   //this is to normalise it 
+  }
+  return directionVector;
 }
 
 
