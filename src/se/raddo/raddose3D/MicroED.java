@@ -529,7 +529,7 @@ int thisTriggered = 0; //testing
   double startingEnergy = beam.getPhotonEnergy();
   double startingStoppingPower = coefCalc.getStoppingPower(startingEnergy);
   double startingLambda_el = coefCalc.getElectronElasticMFPL(startingEnergy);
-  Map<Element, Double> elasticProbs = coefCalc.getElasticProbs();
+  Map<ElementEM, Double> elasticProbs = coefCalc.getElasticProbs();
   
   //the FSE stuff 
   
@@ -812,8 +812,8 @@ int thisTriggered = 0; //testing
       //Determine what element elastically scattered the electron so can choose an alpha correctly
       
       double elasticElementRND = Math.random();
-      Element elasticElement = null;
-      for (Element e : elasticProbs.keySet()) {
+      ElementEM elasticElement = null;
+      for (ElementEM e : elasticProbs.keySet()) {
         if (elasticProbs.get(e) > elasticElementRND) { //Then this element is the one that was ionised
           elasticElement = e;
           break;
@@ -1064,7 +1064,7 @@ private double getFSEXSection(double electronEnergy) {
   return crossSection; //cm^2/atom //nm^2 per atom??? //Really not sure about units here
 }
 
-private double getRutherfordScreeningElement(Element e, double electronEnergy) {
+private double getRutherfordScreeningElement(ElementEM e, double electronEnergy) {
   double alpha = 0;
   alpha = 3.4E-3 * (Math.pow(e.getAtomicNumber(), 0.67)/electronEnergy);
   return alpha;
@@ -1193,7 +1193,7 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
   double stoppingPower = startingStoppingPower;
   
   double startingLambda_el = coefCalc.getElectronElasticMFPL(startingEnergy);
-  Map<Element, Double> elasticProbs = coefCalc.getElasticProbs();
+  Map<ElementEM, Double> elasticProbs = coefCalc.getElasticProbs();
   
   double startingInnerShellLambda = coefCalc.betheIonisationxSection(startingEnergy);
   Map<Element, Double> ionisationProbs = coefCalc.getInnerShellProbs(); 
@@ -1292,8 +1292,8 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
     }
     else {
       double elasticElementRND = Math.random();
-      Element elasticElement = null;
-      for (Element e : elasticProbs.keySet()) {
+      ElementEM elasticElement = null;
+      for (ElementEM e : elasticProbs.keySet()) {
         if (elasticProbs.get(e) > elasticElementRND) { //Then this element is the one that was ionised
           elasticElement = e;
           break;

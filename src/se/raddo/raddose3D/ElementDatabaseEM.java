@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
+import java.util.TreeMap;
 import java.util.Map;
 
 //import se.raddo.raddose3D.ElementDatabase.DatabaseFields;
@@ -31,24 +32,25 @@ public class ElementDatabaseEM {
   /**
    * List of available fields in the database file.
    */
-  public static enum DatabaseFields {
+  
+ // public static enum DatabaseFields {
     /** Valid energy ranges for low energy x sections */
-    EminLow(2), EmaxLow(3),
+  //  EminLow(2), EmaxLow(3),
     /** Constants for the lower energy K shell*/
-    bKlow(4), cKlow(5), 
+  //  bKlow(4), cKlow(5), 
     /** Valid energy ranges for high energy x sections */
-    EminHigh(6), 
+  //  EminHigh(6), 
     /** Constants for the higher energy K shell*/
-    bKhigh(7), cKhigh(8), 
+  //  bKhigh(7), cKhigh(8), 
     /** ELSEPA elastic cross section */
-    EL_50(9), EL_100(10), EL_150(11), EL_200(12), EL_250(13), EL_300(14),
+  //  EL_50(9), EL_100(10), EL_150(11), EL_200(12), EL_250(13), EL_300(14),
     /**K edge */
-    EDGE_K(15);
+  //  EDGE_K(15);
     
     /**
      * The position of each element in the database line. Index starting at 0.
      */
-    private final int field;
+ //   private final int field;
 
     /**
      * Initialization of each enum type entry.
@@ -57,10 +59,11 @@ public class ElementDatabaseEM {
      *          The position of this element in the database line. Index
      *          starting at 0.
      */
+    /*
     DatabaseFields(final int fieldnumber) {
       field = fieldnumber;
     }
-
+*/
     /**
      * Returns the position of this element in the database line.
      * 
@@ -68,15 +71,17 @@ public class ElementDatabaseEM {
      *         Position of this element in the database line. Index starting at
      *         0.
      */
+    /*
     private int fieldNumber() {
       return field;
     }
   }
+  */
 
   /**
    * Location of MuCalcConstants library.
    */
-  private static final String ELCALC_FILE   = "constants/ElCalcConstants.CSV";
+  private static final String ELCALC_FILE   = "constants/full_elsepa.CSV";
 
   /** Position of the atomic number in the database file. */
   private static final int    ATOMIC_NUMBER = 0;
@@ -103,8 +108,8 @@ public class ElementDatabaseEM {
     String line;
     String[] components;
 
-    Map<DatabaseFields, Double> elementInfo =
-        new HashMap<DatabaseFields, Double>();
+    TreeMap<Double, Double> elementInfo =
+        new TreeMap<Double, Double>();
 
     while ((line = br.readLine()) != null) {
       // ignore commented out lines.
@@ -120,17 +125,25 @@ public class ElementDatabaseEM {
       // as listed in the constants file.
 
       int atomicNumber = Integer.parseInt(components[ATOMIC_NUMBER]);
+      double atomicWeight = Double.valueOf(components[2]);
 
       elementInfo.clear();
-      for (DatabaseFields df : DatabaseFields.values()) {
-        if ("".equals(components[df.fieldNumber()])) {
-          elementInfo.put(df, null);
+      for (int i = 3; i <= 321; i++) {
+        double multiplyFactor = 0.05;
+        int minusFactor = 2;
+        if (i >= 23) {
+          minusFactor = 21;
+          multiplyFactor = 1;
+        }
+        double energy = ((double)(i - minusFactor)) * multiplyFactor;
+        if ("".equals(components[i])) {
+          elementInfo.put(energy, null);
         } else {
-          elementInfo.put(df, Double.valueOf(components[df.fieldNumber()]));
+          elementInfo.put(energy, Double.valueOf(components[i]));
         }
       }
 
-      ElementEM elem = new ElementEM(components[ELEMENT_NAME], atomicNumber,
+      ElementEM elem = new ElementEM(components[ELEMENT_NAME], atomicNumber, atomicWeight,
           elementInfo);   //really check this
       elements.put(components[ELEMENT_NAME].toLowerCase(), elem);
       elements.put(atomicNumber, elem);

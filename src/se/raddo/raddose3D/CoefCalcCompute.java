@@ -28,7 +28,7 @@ public class CoefCalcCompute extends CoefCalc {
    * Set of the unique elements present in the crystal (including solvent
    * and macromolecular)
    */
-  //private Set<ElementEM>               presentElementsEM;
+  private Set<ElementEM>               presentElementsEM;
 
   /**
    * Set of the unique elements present in the cryo-solution
@@ -196,7 +196,7 @@ public class CoefCalcCompute extends CoefCalc {
   /**
    * Element database keeping the coefficients of all elements for EM.
    */
- // private final ElementDatabaseEM      elementDBEM;
+  private final ElementDatabaseEM      elementDBEM;
   
   private static final String        PHOTOELECTRIC                = "Photoelectric";
   private static final String        ELASTIC                      = "Elastic";
@@ -227,14 +227,16 @@ public class CoefCalcCompute extends CoefCalc {
   private final Map<Element, Double> cryoConcentration;
   
   /** Number of atoms (all) per monomer. */
- // private final Map<ElementEM, Double> macromolecularOccurrenceEM;
- // private final Map<ElementEM, Double> solventOccurrenceEM;
+  private final Map<ElementEM, Double> macromolecularOccurrenceEM;
+  private final Map<ElementEM, Double> solventOccurrenceEM;
+  private final Map<ElementEM, Double> heteroAtomOccurrenceEM;
+  private final Map<ElementEM, Double> solventConcentrationEM;
   
   public  Map<String, Double> fractionElementEM;
   
   public Map<Element, Double> betheXSections;
   public double BethexSectionTotPerElement;
-  public Map<Element, Double> elasticXSections;
+  public Map<ElementEM, Double> elasticXSections;
   public double ElasticxSectionTotPerElement;
   
   
@@ -245,7 +247,7 @@ public class CoefCalcCompute extends CoefCalc {
    */
   public CoefCalcCompute() {
     elementDB = ElementDatabase.getInstance();
-  //  elementDBEM = ElementDatabaseEM.getInstance();
+    elementDBEM = ElementDatabaseEM.getInstance();
     macromolecularOccurrence = new HashMap<Element, Double>();
     heteroAtomOccurrence = new HashMap<Element, Double>();
     solventOccurrence = new HashMap<Element, Double>();
@@ -253,8 +255,10 @@ public class CoefCalcCompute extends CoefCalc {
     cryoOccurrence = new HashMap<Element, Double>();
     cryoConcentration = new HashMap<Element, Double>();
     
-  //  macromolecularOccurrenceEM = new HashMap<ElementEM, Double>();
-  //  solventOccurrenceEM = new HashMap<ElementEM, Double>();
+    macromolecularOccurrenceEM = new HashMap<ElementEM, Double>();
+    solventOccurrenceEM = new HashMap<ElementEM, Double>();
+    heteroAtomOccurrenceEM = new HashMap<ElementEM, Double>();
+    solventConcentrationEM = new HashMap<ElementEM, Double>();
     
     fractionElementEM = new HashMap<String, Double>();
     
@@ -272,9 +276,9 @@ public class CoefCalcCompute extends CoefCalc {
     presentElements.addAll(solventOccurrence.keySet());
     presentElements.addAll(macromolecularOccurrence.keySet());
     
-  //  presentElementsEM = new HashSet<ElementEM>();
-  //  presentElementsEM.addAll(solventOccurrenceEM.keySet());
-  //  presentElementsEM.addAll(macromolecularOccurrenceEM.keySet());
+    presentElementsEM = new HashSet<ElementEM>();
+    presentElementsEM.addAll(solventOccurrenceEM.keySet());
+    presentElementsEM.addAll(macromolecularOccurrenceEM.keySet());
 
     for (Element e : presentElements) {
       mass += totalAtoms(e) * e.getAtomicWeightInGrams();
@@ -1014,6 +1018,11 @@ public class CoefCalcCompute extends CoefCalc {
   public ElementDatabase getParser() {
     return elementDB;
   }
+  
+  
+  public ElementDatabaseEM getParserEM() {
+    return elementDBEM;
+  }
 
   /**
    * Returns string containing absorption, attenuation, elastic
@@ -1085,6 +1094,7 @@ public class CoefCalcCompute extends CoefCalc {
             * e.getAtomicWeightInGrams();
       }
     }
+    
 
     hetatmMass /= cellVolume * HETATM_DENSITY * ANGSTROMS_TO_ML;
 
@@ -1129,6 +1139,14 @@ public class CoefCalcCompute extends CoefCalc {
       incrementSolventOccurrence(e, atomCount);
       nonWaterAtoms += atomCount;
     }
+    //same for EM
+    for (ElementEM eM : solventConcentrationEM.keySet()) {
+      double conc = solventConcentrationEM.get(eM);
+      double atomCount = conc * AVOGADRO_NUM * cellVolume * solventFraction
+          * 1E-3 * 1E-27;
+      incrementSolventOccurrenceEM(eM, atomCount);
+    }
+    
 
     // Calculating number of water molecules.
     // NOTE: using updated value for concentration of water,
@@ -1147,6 +1165,13 @@ public class CoefCalcCompute extends CoefCalc {
 
     Element oxygen = elementDB.getElement("O");
     setSolventOccurrence(oxygen, getSolventOccurrence(oxygen) + waterMolecules);
+    
+    ElementEM hydrogenEM = elementDBEM.getElement("H");
+    setSolventOccurrenceEM(hydrogenEM, getSolventOccurrenceEM(hydrogenEM)
+        + waterMolecules * 2);
+
+    ElementEM oxygenEM = elementDBEM.getElement("O");
+    setSolventOccurrenceEM(oxygenEM, getSolventOccurrenceEM(oxygenEM) + waterMolecules);
 
   }
 
@@ -1162,9 +1187,13 @@ public class CoefCalcCompute extends CoefCalc {
 
     for (int i = 0; i < heavySolvConcNames.size(); i++) {
       Element heavyAtom = elementDB.getElement(heavySolvConcNames.get(i));
-
+      
       setSolventConcentration(heavyAtom, heavySolvConcNums.get(i)
           + getSolventConcentration(heavyAtom));
+      
+      ElementEM heavyAtomEM = elementDBEM.getElement(heavySolvConcNames.get(i));
+      setSolventConcentrationEM(heavyAtomEM, heavySolvConcNums.get(i)
+          + getSolventConcentrationEM(heavyAtomEM));
     }
   }
   
@@ -1297,10 +1326,25 @@ public class CoefCalcCompute extends CoefCalc {
       final Double newsolventConcentration) {
     solventConcentration.put(element, newsolventConcentration);
   }
+  
+  public void setSolventConcentrationEM(final ElementEM element,
+      final Double newsolventConcentration) {
+    solventConcentrationEM.put(element, newsolventConcentration);
+  }
+  
+  
 
   public double getSolventConcentration(final Element element) {
     if (solventConcentration.containsKey(element)) {
       return solventConcentration.get(element);
+    } else {
+      return 0.;
+    }
+  }
+  
+  public double getSolventConcentrationEM(final ElementEM element) {
+    if (solventConcentrationEM.containsKey(element)) {
+      return solventConcentrationEM.get(element);
     } else {
       return 0.;
     }
@@ -1326,6 +1370,14 @@ public class CoefCalcCompute extends CoefCalc {
       return 0.;
     }
   }
+  
+  public Double getSolventOccurrenceEM(final ElementEM element) {
+    if (solventOccurrenceEM.containsKey(element)) {
+      return solventOccurrenceEM.get(element);
+    } else {
+      return 0.;
+    }
+  }
 
   public void incrementSolventOccurrence(final Element element,
       final Double increment) {
@@ -1341,6 +1393,22 @@ public class CoefCalcCompute extends CoefCalc {
       final Double newsolventOccurrence) {
     solventOccurrence.put(element, newsolventOccurrence);
   }
+  
+  public void incrementSolventOccurrenceEM(final ElementEM element,
+      final Double increment) {
+    if (solventOccurrenceEM.containsKey(element)) {
+      solventOccurrenceEM.put(element,
+          increment + solventOccurrenceEM.get(element));
+    } else {
+      solventOccurrenceEM.put(element, increment);
+    }
+  }
+
+  public void setSolventOccurrenceEM(final ElementEM element,
+      final Double newsolventOccurrence) {
+    solventOccurrenceEM.put(element, newsolventOccurrence);
+  }
+
   
   public Double getCryoOccurrence(final Element element) {
     if (cryoOccurrence.containsKey(element)) {
@@ -1386,6 +1454,30 @@ public class CoefCalcCompute extends CoefCalc {
   public void setHetatmOccurrence(final Element element, final Double haOcc) {
     heteroAtomOccurrence.put(element, haOcc);
   }
+  
+  
+  public Double getHetatmOccurrenceEM(final ElementEM element) {
+    if (heteroAtomOccurrenceEM.containsKey(element)) {
+      return heteroAtomOccurrenceEM.get(element);
+    } else {
+      return 0.;
+    }
+  }
+
+  public void incrementHetatmOccurrenceEM(final ElementEM element,
+      final Double increment) {
+    if (heteroAtomOccurrenceEM.containsKey(element)) {
+      heteroAtomOccurrenceEM.put(element,
+          increment + heteroAtomOccurrenceEM.get(element));
+    } else {
+      heteroAtomOccurrenceEM.put(element, increment);
+    }
+  }
+
+  public void setHetatmOccurrenceEM(final ElementEM element, final Double haOcc) {
+    heteroAtomOccurrenceEM.put(element, haOcc);
+  }
+  
 
   public Double getMacromolecularOccurrence(final Element element) {
     if (macromolecularOccurrence.containsKey(element)) {
@@ -1410,6 +1502,30 @@ public class CoefCalcCompute extends CoefCalc {
       final Double mmOcc) {
     macromolecularOccurrence.put(element, mmOcc);
   }
+  
+  public Double getMacromolecularOccurrenceEM(final ElementEM element) {
+    if (macromolecularOccurrenceEM.containsKey(element)) {
+      return macromolecularOccurrenceEM.get(element);
+    } else {
+      return 0.;
+    }
+  }
+
+  public void incrementMacromolecularOccurrenceEM(final ElementEM element,
+      final Double increment) {
+    if (macromolecularOccurrenceEM.containsKey(element)) {
+      macromolecularOccurrenceEM.put(element,
+          increment + macromolecularOccurrenceEM.get(element));
+    } else {
+      macromolecularOccurrenceEM.put(element, increment);
+    }
+ //   System.out.println("test");
+  }
+
+  public void setMacromolecularOccurrenceEM(final ElementEM element,
+      final Double mmOcc) {
+    macromolecularOccurrenceEM.put(element, mmOcc);
+  }
 
   /**
    * Take into account the number of molecules in the unit cell; equal to NCS
@@ -1431,9 +1547,25 @@ public class CoefCalcCompute extends CoefCalc {
     }
   }
   
+  public void multiplyAtomsEM(final int num) {
+    for (ElementEM e : macromolecularOccurrenceEM.keySet()) {
+      setMacromolecularOccurrenceEM(e,
+          getMacromolecularOccurrenceEM(e) * num);
+    }
+
+    for (ElementEM e : heteroAtomOccurrenceEM.keySet()) {
+      setHetatmOccurrenceEM(e,
+          getHetatmOccurrenceEM(e) * num);
+    }
+  }
+  
 
   public double totalAtoms(final Element element) {
     return getSolventOccurrence(element) + getMacromolecularOccurrence(element);
+  }
+  
+  public double totalAtomsEM(final ElementEM element) {
+    return getSolventOccurrenceEM(element) + getMacromolecularOccurrenceEM(element);
   }
   
   
@@ -1456,6 +1588,8 @@ public class CoefCalcCompute extends CoefCalc {
       return cryoElements;
     }
   }
+  
+  
   
   @Override 
   public double getElectronElastic(double avgEnergy) { //need to think about how to incorporate the thingy about cutting off most in here
@@ -1522,37 +1656,43 @@ public class CoefCalcCompute extends CoefCalc {
     double sumZ = 0, sumA = 0;
     double xSectionTotPerElement = 0;
     ElasticxSectionTotPerElement = 0;
-    elasticXSections = new HashMap<Element, Double>();
+    elasticXSections = new HashMap<ElementEM, Double>();
     
-    for (Element e : this.presentElements) {
+    for (ElementEM e : this.presentElementsEM) {
       double Z = e.getAtomicNumber();
       elasticElement[counter] =  ((1.4E-6 * Math.pow(Z, 1.5))/betaSquared)*
                        ((1-(0.26*Z)/(137*Math.pow(betaSquared, 0.5))));
                    //    *1E06; // nm^2/atom
       double A = e.getAtomicWeight();
-      double molWeightFraction = (totalAtoms(e) * A) / molecularWeight;
-      double atomicFraction = totalAtoms(e) / totAtoms;
+      double molWeightFraction = (totalAtomsEM(e) * A) / molecularWeight;
+      double atomicFraction = totalAtomsEM(e) / totAtoms;
       //do by ELSEPA as more accurate if in the table
       
       //test for this atom
-      double NperVol = totalAtoms(e)/(cellVolume /1000); //Atoms per nm^3
+      double NperVol = totalAtomsEM(e)/(cellVolume /1000); //Atoms per nm^3
       double NperVol2 = molWeightFraction*(AVOGADRO_NUM * (density/1E21))/A; //Atoms per nm^3
       xSectionTotPerElement += elasticElement[counter] * NperVol; //nm^-1
       elasticXSections.put(e, elasticElement[counter] * NperVol);
       
-      /*
-      if (electronEnergy <= 300) {
+      //Do ELSEPA
+      if ((electronEnergy <= 300) && (electronEnergy >= 0.05)) {
+        /*
         ReadElasticFile rdEl = new ReadElasticFile();
         double x_section = rdEl.openFile("constants/electron_elastic.txt", electronEnergy, e.getAtomicNumber()); 
         if (x_section > 0.0) {
           elasticElement[counter] = x_section;
         }
+        */
+        double x_section = e.getElasticCoefficient(electronEnergy);
+        if (x_section > 0.0) {
+          elasticElement[counter] = x_section;
+        }
       }
-      */
+      
       //needs to just read the ELSEPA file once and store in an array or summin like that - CASINO interpolates
       //This is now incorporated in element database 
 
-      double numEl = totalAtoms(e);
+      double numEl = totalAtomsEM(e);
   //   elasticElement[counter] *= numEl * atomicFraction;
       elasticMolecule += elasticElement[counter];
       partLambda += (molWeightFraction * elasticElement[counter])/A;
@@ -1590,10 +1730,10 @@ public class CoefCalcCompute extends CoefCalc {
   }
   
   @Override
-  public Map<Element, Double> getElasticProbs(){
-    Map<Element, Double> elasticProbs = new HashMap<Element, Double>();
+  public Map<ElementEM, Double> getElasticProbs(){
+    Map<ElementEM, Double> elasticProbs = new HashMap<ElementEM, Double>();
     double runningSumFraction = 0;  //should equal 1 by the end
-    for (Element e : elasticXSections.keySet()) {
+    for (ElementEM e : elasticXSections.keySet()) {
       double lambdaFraction = elasticXSections.get(e)/ElasticxSectionTotPerElement;
       runningSumFraction += lambdaFraction;
       elasticProbs.put(e, runningSumFraction);

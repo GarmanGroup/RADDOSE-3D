@@ -1,9 +1,10 @@
 package se.raddo.raddose3D;
 
 import java.util.HashMap;
+import java.util.TreeMap;
 import java.util.Map;
 
-import se.raddo.raddose3D.ElementDatabaseEM.DatabaseFields;
+// import se.raddo.raddose3D.ElementDatabaseEM.DatabaseFields;
 
 public class ElementEM {
   /**
@@ -17,9 +18,14 @@ public class ElementEM {
   private final int                                         atomicNumberEM;
 
   /**
+   * Atomic weight.
+   */
+  private final double                                         atomicWeightEM;
+  
+  /**
    * Stored information about the chemical element.
    */
-  private final Map<ElementDatabaseEM.DatabaseFields, Double> elementDataEM;
+  private final TreeMap<Double, Double> elementDataEM;
 
 
   /**
@@ -32,20 +38,33 @@ public class ElementEM {
    * @param elementInformation
    *          Map containing the associated element information
    */
-  public ElementEM(final String element, final int protons,
-      final Map<ElementDatabaseEM.DatabaseFields, Double> elementInformation) {
+  public ElementEM(final String element, final int protons, final double mass,
+      final TreeMap<Double, Double> elementInformation) {
     elementNameEM = element;
     atomicNumberEM = protons;
-    elementDataEM = new HashMap<ElementDatabaseEM.DatabaseFields, Double>(
+    atomicWeightEM = mass;
+    elementDataEM = new TreeMap<Double, Double>(
         elementInformation);
   }
   
-  public double[] getELSEPACoefficients() {
-    double[] crossSection = new double[6];
-    for (int i = 1; i < 7; i++) {
-      String keV = String.valueOf((double)i * 50);
-      String field = "EL_" + keV;
-      crossSection[i-1] = elementDataEM.get(ElementDatabaseEM.DatabaseFields.valueOf(field));
+  public double getElasticCoefficient(double electronEnergy) {
+    double crossSection = 0;
+    double beforeKey = 0, afterKey = 0;
+    //get keys above and below
+    if (electronEnergy >= 0.05 && electronEnergy <= 300) {
+      beforeKey = elementDataEM.floorKey(electronEnergy);
+      afterKey =  elementDataEM.ceilingKey(electronEnergy);
+      beforeKey = (beforeKey == 0) ? afterKey: beforeKey;
+      afterKey = (afterKey == 0) ? beforeKey: afterKey;
+      //find distance across
+      double distanceAcross = 0;
+      if (afterKey != beforeKey) {
+        distanceAcross = (electronEnergy - beforeKey) / (afterKey - beforeKey);
+      }
+      double lowVal = elementDataEM.get(beforeKey);
+      double highVal = elementDataEM.get(afterKey);
+      crossSection = lowVal + 
+          ((highVal - lowVal) * distanceAcross);
     }
     return crossSection;
   }
@@ -65,62 +84,9 @@ public class ElementEM {
   }
   
   /**
-   * @return the minimum energy for low ionisation coefficients
+   * @return the atomicWeight
    */
-  public Double getEminLow() {
-    return elementDataEM.get(DatabaseFields.EminLow);
+  public double getAtomicWeight() {
+    return atomicWeightEM;
   }
-  
-  /**
-   * @return the maximum energy for low ionisation coefficients
-   */
-  public Double getEmaxLow() {
-    return elementDataEM.get(DatabaseFields.EmaxLow);
-  }
-  
-  /**
-   * @return the bK constant for low energy
-   */
-  public Double getbKLow() {
-    return elementDataEM.get(DatabaseFields.bKlow);
-  }
-  
-  /**
-   * @return the cK constant for low energy
-   */
-  public Double getcKLow() {
-    return elementDataEM.get(DatabaseFields.cKlow);
-  }
-  
-  /**
-   * @return the minimum energy for high energy ionisation coefficients
-   */
-  public Double getEminHigh() {
-    return elementDataEM.get(DatabaseFields.EminHigh);
-  }
-  
-  /**
-   * @return the bK constant for high energy
-   */
-  public Double getbKHigh() {
-    return elementDataEM.get(DatabaseFields.bKhigh);
-  }
-  
-  /**
-   * @return the cK constant for high energy
-   */
-  public Double getcKHigh() {
-    return elementDataEM.get(DatabaseFields.cKhigh);
-  }
-  
-  /**
-   * Return the K edge energy in keV of the element
-   * 
-   * @return
-   *         the K edge energy in keV
-   */
-  public Double getKEdge() {
-    return elementDataEM.get(DatabaseFields.EDGE_K);
-  }
-  
 }
