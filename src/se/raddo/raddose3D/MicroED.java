@@ -585,6 +585,24 @@ int thisTriggered = 0; //testing
   yNorm = directionVector[1];
   zNorm = directionVector[2];
   
+  //need to update theta and phi for these direction vectors 
+  
+  // theta angle between 0 0 1 and vector, phi angle between 1 0 0 and vector
+  double[] zaxis = {0, 0, 1};
+  theta = Math.acos(Vector.dotProduct(zaxis, directionVector));
+  double[]xaxis = {1, 0, 0};
+  double[] phiVector = {xNorm, yNorm, 0};
+  //test
+//  double[] phiVector = {0, -1, 0};
+  double phiVectorMag = Vector.vectorMagnitude(phiVector);
+  for (int m = 0; m <= 2; m++) {
+    phiVector[m] /= phiVectorMag;
+  }
+  phi = Math.acos(Vector.dotProduct(xaxis, phiVector));
+  if (yNorm < 0) {
+    phi = 2*Math.PI - phi;  //so phi can be between 0 and 2pi not just pi
+  }
+  
   
   /*
   //direction
