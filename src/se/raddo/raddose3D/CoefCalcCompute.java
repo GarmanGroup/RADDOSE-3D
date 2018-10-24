@@ -2138,4 +2138,16 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
   public void calculateSterheimerFactor() {
     
   }
+  
+  @Override
+  public double getZav() {
+    double Zav = 0;
+    double atomTot = 0, Ztot = 0;
+    for (Element e : presentElements) {
+      atomTot += totalAtoms(e);
+      Ztot += totalAtoms(e) * e.getAtomicNumber();
+    }
+    Zav = Ztot/atomTot;
+    return Zav;
+  }
 }

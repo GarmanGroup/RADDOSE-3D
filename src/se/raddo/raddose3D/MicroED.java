@@ -76,6 +76,9 @@ public class MicroED {
   private double extraFlEscape;
   private double extraAugerEscape;
   private double newMonteCarloFSEEscape;
+  
+  private double elasticEnergyTot;
+  private double displacementEnergy;
  
   private double totFSEEnergy;
   private double totAugerEnergy;
@@ -211,7 +214,8 @@ return theDose;
 private double EMEquationWay(Beam beam, Wedge wedge, CoefCalc coefCalc, boolean useInelEqu) {
   double exposure = beam.getExposure();
  // double energyPerEvent = 0.02; //in keV
-  double energyPerEvent = 0.037; //in keV
+//  double energyPerEvent = (7 * coefCalc.getZav())/1000; //in keV  //Change this to 7* Zav
+  double energyPerEvent = 0.042;
 
   //will need to edit when I add in circular
   double exposedArea = 0;
@@ -566,7 +570,7 @@ int thisTriggered = 0; //testing
   //Need to change these to a uniform beam
   double previousX = 0, previousY = 0; //atm starting going straight 
   double xNorm = 0.0000, yNorm = 0.0000, zNorm = 1.0; //direction cosine are such that just going down in one
-  double theta = 0, phi = 0, previousTheta = 0, previousPhi = 0;
+  double theta = 0, phi = 0, previousTheta = 0, previousPhi = 0, thisTheta = 0;
 
   
   //position
@@ -606,6 +610,7 @@ int thisTriggered = 0; //testing
   //if it has not left move onto the loop
   while (exited == false) {
   if (isMicrocrystalAt(xn, yn, zn) == true) {
+    ElementEM elasticElement = null;
     scattered = true;
     thisTriggered += 1;
     //reset
@@ -812,7 +817,7 @@ int thisTriggered = 0; //testing
       //Determine what element elastically scattered the electron so can choose an alpha correctly
       
       double elasticElementRND = Math.random();
-      ElementEM elasticElement = null;
+      
       for (ElementEM e : elasticProbs.keySet()) {
         if (elasticProbs.get(e) > elasticElementRND) { //Then this element is the one that was ionised
           elasticElement = e;
@@ -828,6 +833,35 @@ int thisTriggered = 0; //testing
       phi = Math.acos(cosPhi);
       */
       theta = Math.acos(1 - ((2*alpha * Math.pow(RND, 2))/(1+alpha-RND)));
+      thisTheta = theta;
+      
+      //Impart elastic knock-on energy???
+      
+      double Emax = electronEnergy * ((1 + electronEnergy)/1022)/(456*elasticElement.getAtomicWeight());
+      double m = 9.10938356E-28; //kg
+      double u = 1.660539040E-27; //kg/(g/mol)
+      double restEnergy = 511;
+      Emax = (2/elasticElement.getAtomicWeight())*(m/u)*electronEnergy*((2+electronEnergy)/(restEnergy));
+      double Ed = 35;
+      /*
+      double nuclearMass = elasticElement.getAtomicWeight() * 1.660539040E-27;
+      double c = 299792458;
+      double csquared = c*c;
+      double Mcsquared = nuclearMass * csquared;
+      double KinE = electronEnergy * Beam.KEVTOJOULES;
+      double sintheta = Math.pow(Math.sin(theta/2), 2);
+      double energyTransmitted = (Math.pow(KinE, 2) / (Mcsquared))
+                                  * ((2 * sintheta) / (1 + sintheta *(2*(KinE)/Mcsquared) ));
+      energyTransmitted /= Beam.KEVTOJOULES;
+      elasticEnergyTot += energyTransmitted;
+      */
+      
+      double sintheta = Math.pow(Math.sin(theta/2), 2);
+      double en = (Emax/1000) * sintheta;
+      elasticEnergyTot += en;
+      if (Emax > Ed) {
+        displacementEnergy += en;
+      }
     }
     //now further update the primary
     //  psi = 2 * Math.PI * Math.random();
@@ -858,6 +892,7 @@ int thisTriggered = 0; //testing
     xNorm = Math.sin(theta) * Math.cos(phi);
     yNorm = Math.sin(theta) * Math.sin(phi);
     zNorm = Math.cos(theta);
+    
     
       //update stopping powers
       //get new stoppingPower

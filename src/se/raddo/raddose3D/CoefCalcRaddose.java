@@ -479,4 +479,10 @@ public class CoefCalcRaddose extends CoefCalc {
     // TODO Auto-generated method stub
     
   }
+
+  @Override
+  public double getZav() {
+    // TODO Auto-generated method stub
+    return 0;
+  }
 }

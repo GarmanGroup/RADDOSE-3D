@@ -141,4 +141,6 @@ public abstract class CoefCalc {
   public abstract double getEMFlAbsCoef(double flEnergy);
   
   public abstract void calculateSterheimerFactor();
+  
+  public abstract double getZav();
 }
