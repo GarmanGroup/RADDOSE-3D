@@ -1,6 +1,7 @@
 package se.raddo.raddose3D;
 
 import java.util.Set;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -134,7 +135,9 @@ public abstract class CoefCalc {
   
   public abstract double betheIonisationxSection(double electronEnergy);
   
-  public abstract Map<Element, Double> getInnerShellProbs();
+  // public abstract Map<Element, Double> getInnerShellProbs();
+  
+  public abstract Map<Element, double[]> getAllShellProbs();
  
   public abstract Map<ElementEM, Double> getElasticProbs();
   
@@ -143,4 +146,6 @@ public abstract class CoefCalc {
   public abstract void calculateSterheimerFactor();
   
   public abstract double getZav();
+  
+  public abstract void populateCrossSectionCoefficients();
 }

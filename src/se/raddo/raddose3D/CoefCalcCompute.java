@@ -5,6 +5,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 
 import se.raddo.raddose3D.Element.CrossSection;
 
@@ -17,6 +24,24 @@ public class CoefCalcCompute extends CoefCalc {
   public double cellVolume;
 
   private double cryoAbsCoeffComp, cryoAbsCoeffPhoto, cryoAttCoeff, cryoElasCoeff, cryoDensity;
+  
+  /**
+   * Parameters used to calculate the ionisation cross section for a specific shell of an element
+   * This array is for when the overvoltage is less than 16
+   * the array is [Atomic number][shell number][coefficient]
+   * For shell number [K=0, L1=1, L2=2, L3=3, M1=4, M2=5, M3=6, M4=7, M5=8
+   * For coefficient; 0=binding energy, 1 = a1, 2=a2, 3=a3, 4=a4, 5=a5
+   */
+  private double[][][] lowOvervoltages; 
+  
+  /**
+   * Parameters used to calculate the ionisation cross section for a specific shell of an element
+   * This array is for when the overvoltage is less than 16
+   * the array is [Atomic number][shell number][coefficient]
+   * For shell number K=0, L1=1, L2=2, L3=3, M1=4, M2=5, M3=6, M4=7, M5=8
+   * For coefficient; 0=b-, 1=b+, 2=Anlj, 3=g1, 4=g2, 5=g3, 6=g4
+   */
+  private double[][][] highOvervoltages;
   
   /**
    * Set of the unique elements present in the crystal (including solvent
@@ -235,6 +260,8 @@ public class CoefCalcCompute extends CoefCalc {
   public  Map<String, Double> fractionElementEM;
   
   public Map<Element, Double> betheXSections;
+  
+  public Map<Element, double[]> shellXSections;
   public double BethexSectionTotPerElement;
   public Map<ElementEM, Double> elasticXSections;
   public double ElasticxSectionTotPerElement;
@@ -2026,20 +2053,77 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
   @Override
   public double betheIonisationxSection(double electronEnergy) {  //still need to do L and M edges as well
     //need to sort this out for when energy less than shell binding energy
+    double a0 = 5.2917721067E-2; //bohr radius in nm
     double m = 9.10938356E-31; // in Kg
     double elementaryCharge = 4.80320425E-10; //units = esu = g^0.5 cm^1.5 s^-1
     double c = 299792458;
     double csquared = c*c;  // (m/s)^2
     double Vo = electronEnergy * Beam.KEVTOJOULES;
     double betaSquared = 1- Math.pow(m*csquared/(Vo + m*csquared), 2);
+//    double betaSquared2 = (Vo * (Vo + 2*m*csquared))/Math.pow(Vo + m*csquared, 2);
     double vsquared = betaSquared * csquared;
     double elXSection = 0, partLambda = 0;
     double bi = 0, ci = 0;
     boolean calculate = true;
     betheXSections= new HashMap<Element, Double>();
+    shellXSections= new HashMap<Element, double[]>();
     BethexSectionTotPerElement = 0;
   //  double xSectionTotPerElement = 0;
     for (Element e : presentElements) {
+      //look at doing this using the table
+      //get number of shells with cross sections
+      int Z = e.getAtomicNumber();
+      int numShells = getNumberOfShells(Z);
+  //    double[] shellSigma = new double[numShells];
+      double[] shellSigma = new double[4];
+      elXSection = 0;
+      
+      double A = e.getAtomicWeight();
+      double molWeightFraction = (totalAtoms(e) * A) / molecularWeight;
+      double NperVol = totalAtoms(e)/(cellVolume /1000); //Atoms per nm^3
+      
+      //keep to just L shells
+      if (numShells > 4) {
+        numShells = 4;    //for now only going to cinsider ionisation of K and L shells
+      }
+      
+      for (int i = 0; i < numShells; i++) { //for every shell in this element
+        //work out overvoltage
+        double bindingEnergy = lowOvervoltages[Z][i][0]/1000; //binding energy in keV
+        double U = electronEnergy / bindingEnergy;
+        if (U < 16) {
+          //low overVoltage calculation
+          shellSigma[i] = 4*Math.PI*Math.pow(a0, 2)*((U-1)/Math.pow(U, 2)) *
+                         Math.pow(lowOvervoltages[Z][i][1] + U*lowOvervoltages[Z][i][2] + 
+                          lowOvervoltages[Z][i][3]/(1+U) + lowOvervoltages[Z][i][4]/Math.pow(1+U, 3) + 
+                          lowOvervoltages[Z][i][5]/Math.pow(1+U, 5), 2) ; //nm^2
+        }
+        else {
+          //high overVoltage calculation
+          double X = Math.pow(Vo * (Vo + 2*m*csquared), 0.5)/(m*csquared);
+          double sigmaPWBA = 4*Math.PI*Math.pow(a0, 2)*(highOvervoltages[Z][i][2]/betaSquared) * 
+                             ((Math.log(Math.pow(X, 2)) - betaSquared)*(1+(1/X)*highOvervoltages[Z][i][3]) +
+                             highOvervoltages[Z][i][4] + highOvervoltages[Z][i][5]*Math.pow(1-betaSquared, 0.25) + 
+                             highOvervoltages[Z][i][6]*(1/X) );
+          shellSigma[i] = sigmaPWBA * (U/(U+highOvervoltages[Z][i][0]));
+        }
+        elXSection += shellSigma[i]; 
+        shellSigma[i] *= NperVol; //converts to total cross section of elemental shell per nm
+        
+        //Remove hydrogen from the equation for now
+        if (Z == 1) {
+          elXSection = 0;
+          shellSigma[i] = 0;
+        }
+        
+      }
+      
+      
+      
+      
+      
+      /*
+      
       int numEl = 2;  //true for K shells
       double A = e.getAtomicWeight();
       double molWeightFraction = (totalAtoms(e) * A) / molecularWeight;
@@ -2093,31 +2177,41 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
         betheXSections.put(e, elXSection * NperVol);
         
       }
+      */
+      
+
+      partLambda += (molWeightFraction * elXSection)/A;
+      BethexSectionTotPerElement += elXSection * NperVol; //nm^-1
+      shellXSections.put(e, shellSigma); //nm^2
     }
     double lambda = 0;
+    
     if (partLambda > 0) {
       lambda = 1 / (AVOGADRO_NUM * (density/1E21) * partLambda);
     }
+    if (BethexSectionTotPerElement > 0) {
+      lambda = 1/BethexSectionTotPerElement;  //should both give the same result 
+    }
     return lambda; //nm
   }
-  
+  /*
   @Override
   public Map<Element, Double> getInnerShellProbs(){
     Map<Element, Double> ionisationProbs = new HashMap<Element, Double>();
-    /*
-    double totalLambda = 0;
-    for (Element e : betheXSections.keySet()) {
-      double A = e.getAtomicWeight();
-      double molWeightFraction = (totalAtoms(e) * A) / molecularWeight;
-      totalLambda += molWeightFraction * (betheXSections.get(e) / A);
-    }
-    */
+    
+//    double totalLambda = 0;
+//    for (Element e : betheXSections.keySet()) {
+//      double A = e.getAtomicWeight();
+//      double molWeightFraction = (totalAtoms(e) * A) / molecularWeight;
+//      totalLambda += molWeightFraction * (betheXSections.get(e) / A);
+//    }
+    
     double runningSumFraction = 0;  //should equal 1 by the end
     for (Element e : betheXSections.keySet()) {
-      /*
-      double A = e.getAtomicWeight();
-      double molWeightFraction = (totalAtoms(e) * A) / molecularWeight;
-      */
+      
+   //   double A = e.getAtomicWeight();
+   //   double molWeightFraction = (totalAtoms(e) * A) / molecularWeight;
+      
     //  double lambdaFraction = (molWeightFraction * (betheXSections.get(e) / A))/totalLambda;
       double lambdaFraction = betheXSections.get(e)/BethexSectionTotPerElement;
       runningSumFraction += lambdaFraction;
@@ -2125,6 +2219,26 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     }
     return ionisationProbs;
   }
+  */
+  
+  @Override
+  public Map<Element, double[]> getAllShellProbs(){
+    Map<Element, double[]> ionisationProbs = new HashMap<Element, double[]>();
+    double runningSumFraction = 0;  //should equal 1 by the end
+    for (Element e : shellXSections.keySet()) {
+      double[] elementShells = shellXSections.get(e);
+      double[] shellProbs = new double[4];
+   //   for (int i = 0; i < elementShells.length; i++) {]
+      for (int i = 0; i < 4; i++) {
+        double lambdaFraction = elementShells[i]/BethexSectionTotPerElement;
+        runningSumFraction += lambdaFraction;
+        shellProbs[i] = runningSumFraction;
+      }
+      ionisationProbs.put(e, shellProbs);
+    }
+    return ionisationProbs;
+  }
+  
   
   @Override
   public double getEMFlAbsCoef(double flEnergy) {
@@ -2149,5 +2263,123 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     }
     Zav = Ztot/atomTot;
     return Zav;
+  }
+  
+  @Override
+  public void populateCrossSectionCoefficients(){
+    try {
+      populateLowOvervoltageCoefficeints();
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    try {
+      populateHighOvervoltageCoefficeints();
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+  }
+  
+  private void populateLowOvervoltageCoefficeints() throws IOException{
+    lowOvervoltages = new double[95][9][6];
+    InputStreamReader isr = locateConstantsFile("constants/low_overvoltage.csv");
+    BufferedReader br = new BufferedReader(isr);
+    String line;
+    String[] components;
+    
+    while ((line = br.readLine()) != null) {
+      components = line.split(",");
+      int atomicNumber = Integer.parseInt(components[0]);
+      int numberIterations = (int)(components.length - 1) / 7;
+      
+      for (int i = 0; i < numberIterations; i++) {
+        /*
+        int shell = i;
+        double bindingEnergy = Double.valueOf(components[(i*7)+2]);
+        double a1 =  Double.valueOf(components[(i*7)+3]);
+        double a2 = Double.valueOf(components[(i*7)+4]);
+        double a3 =  Double.valueOf(components[(i*7)+5]);
+        double a4 = Double.valueOf(components[(i*7)+6]);
+        double a5 = Double.valueOf(components[(i*7)+7]);
+        */
+        for (int j = 0; j < 6; j++) {
+          lowOvervoltages[atomicNumber][i][j] = Double.valueOf(components[(i*7)+j+2]);
+        }
+      }
+    }
+    br.close();
+    isr.close();
+  }
+  
+  private void populateHighOvervoltageCoefficeints() throws IOException{
+    highOvervoltages = new double[95][9][7];
+    InputStreamReader isr = locateConstantsFile("constants/high_overvoltage.csv");
+    BufferedReader br = new BufferedReader(isr);
+    String line;
+    String[] components;
+    
+    while ((line = br.readLine()) != null) {
+      components = line.split(",");
+      int atomicNumber = Integer.parseInt(components[0]);
+      int numberIterations = (int)(components.length - 1) / 8;
+      
+      for (int i = 0; i < numberIterations; i++) {
+        /*
+        int shell = i;
+        double b- =  Double.valueOf(components[(i*8)+2]);
+        double b+ =  Double.valueOf(components[(i*8)+3]);
+        double A = Double.valueOf(components[(i*8)+4]);
+        double g1 =  Double.valueOf(components[(i*8)+5]);
+        double g2 = Double.valueOf(components[(i*8)+6]);
+        double g3 = Double.valueOf(components[(i*8)+7]);
+        double g4 = Double.valueOf(components[(i*8)+8]);
+        */
+        for (int j = 0; j < 7; j++) {
+          highOvervoltages[atomicNumber][i][j] = Double.valueOf(components[(i*8)+j+2]);
+        }
+      }
+    }
+    br.close();
+    isr.close();
+  }
+  
+  private InputStreamReader locateConstantsFile(String fileName)
+      throws UnsupportedEncodingException, FileNotFoundException {
+    // Try to find it within class path;
+    InputStream is = getClass().getResourceAsStream("/" + fileName);
+
+    if (is == null) {
+      // If it is not within the class path, try via the file system.
+      is = new FileInputStream(fileName);
+    }
+
+    return new InputStreamReader(is, "US-ASCII");
+  }
+  
+  private int getNumberOfShells(int Z) {
+    int numShells = 0;
+    if (Z <= 10) {
+      numShells = 1;
+    }
+    else if (Z == 11) {
+      numShells = 2;
+    }
+    else if (Z >= 12 && Z <= 19) {
+      numShells = 4;
+    }
+    else if (Z >= 20 && Z <= 22) {
+      numShells = 5;
+    }
+    else if (Z == 23) {
+      numShells = 6;
+    }
+    else if (Z >= 24 && Z <= 32) {
+      numShells = 7;
+    }
+    else {
+      numShells = 9;
+    }
+    return numShells;
   }
 }

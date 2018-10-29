@@ -1,5 +1,6 @@
 package se.raddo.raddose3D;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
 
@@ -191,12 +192,13 @@ public class CoefCalcAverage extends CoefCalc {
     return 0;
   }
 
+  /*
   @Override
   public Map<Element, Double> getInnerShellProbs() {
     // TODO Auto-generated method stub
     return null;
   }
-
+*/
   @Override
   public double getEMFlAbsCoef(double flEnergy) {
     // TODO Auto-generated method stub
@@ -219,6 +221,18 @@ public class CoefCalcAverage extends CoefCalc {
   public double getZav() {
     // TODO Auto-generated method stub
     return 0;
+  }
+
+  @Override
+  public void populateCrossSectionCoefficients(){
+    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public Map<Element, double[]> getAllShellProbs() {
+    // TODO Auto-generated method stub
+    return null;
   }
   
 }
