@@ -1,9 +1,15 @@
 package se.raddo.raddose3D;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.FileNotFoundException;
 import java.io.OutputStreamWriter;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -20,8 +26,14 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import java.text.*;
 import java.awt.Toolkit;
 import java.awt.datatransfer.*;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
+
+
 
 
 public class MicroED {
@@ -40,6 +52,9 @@ public class MicroED {
    * Should have same no. of entries as the indices array.
    */
   private double[][]            normals, rotatedNormals;
+  
+  private TreeMap<Double, double[]>[]  lowEnergyAngles;
+  private TreeMap<Double, double[]>[]  highEnergyAngles;
 
   /**
    * Distances from origin for each of the triangle planes.
@@ -89,6 +104,7 @@ public class MicroED {
   
   
   
+  @SuppressWarnings("unchecked")
   public MicroED(double vertices[][], int[][] indices, double[][][][] crystCoord, 
                   double crystalPixPerUM, int[] crystSizeVoxels, boolean[][][][] crystOcc) {
     verticesEM = vertices;
@@ -111,6 +127,11 @@ public class MicroED {
     crystalVolume = (crystalSurfaceArea * (sampleThickness * 10) * 1E-27);    //A^3 to dm^3
     //note the volume would need to be updated for a polyhedron!!! - currently just a cube or cylinder 
     //although it isn't used
+    
+    
+    lowEnergyAngles = new TreeMap[95];
+    highEnergyAngles = new TreeMap[95];
+    
     
   }
   
@@ -904,6 +925,13 @@ int thisTriggered = 0; //testing
       phi = Math.acos(cosPhi);
       */
       theta = Math.acos(1 - ((2*alpha * Math.pow(RND, 2))/(1+alpha-RND)));
+      
+      //get angle by ELSEPA stuff
+
+      theta = getPrimaryElasticScatteringAngle(electronEnergy, elasticElement.getAtomicNumber());
+
+
+      
       thisTheta = theta;
       
       //Impart elastic knock-on energy???
@@ -927,7 +955,7 @@ int thisTriggered = 0; //testing
       elasticEnergyTot += energyTransmitted;
       */
       
-      double sintheta = Math.pow(Math.sin(theta/2), 2);
+      double sintheta = Math.pow(Math.sin(thisTheta/2), 2);
       double en = (Emax/1000) * sintheta;
       elasticEnergyTot += en;
       if (Emax > Ed) {
@@ -1473,6 +1501,12 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
       phi = Math.acos(cosPhi);
     */
       theta = Math.acos(1 - ((2*alpha * Math.pow(RND, 2))/(1+alpha-RND)));
+      
+      //ELSEPA stuff
+
+      theta = getPrimaryElasticScatteringAngle(electronEnergy, elasticElement.getAtomicNumber());
+
+      
       theta = previousTheta + theta;
       if (theta >= (2 * Math.PI)) {
         theta -= 2*Math.PI;
@@ -1572,6 +1606,203 @@ private double[] getElectronStartingDirection(Beam beam, double previousX, doubl
   return directionVector;
 }
 
+private double getPrimaryElasticScatteringAngle(double electronEnergy, int atomicNumber){
+  boolean highEnergy = false;
+  if (electronEnergy > 20) {
+    highEnergy = true;
+  }
+ 
+  //determine if need to get data from file or it's already loaded
+  boolean getFile = mapPopulated(highEnergy, atomicNumber);
+  
+  //get the right file if I need to
+  if (getFile == true) {
+    
+    TreeMap<Double, double[]> elementData = new TreeMap<Double, double[]>();
+    try {
+      elementData =  getAngleFileData(highEnergy, atomicNumber);
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } 
+    //now add the file data to the global array
+    if (highEnergy == true) {
+      highEnergyAngles[atomicNumber] = elementData;
+    }
+    else {
+      lowEnergyAngles[atomicNumber] = elementData;
+    }
+  }
+  
+  //Now use the data in the global array to work out the angle
+  //get nearest energy
+  Double energyKey = returnNearestEnergy(highEnergy, atomicNumber, electronEnergy);
+  //get the differential cross sections for that energy of the element
+  double[] energyAngleProbs = null;
+  if (highEnergy == true) {
+    energyAngleProbs = highEnergyAngles[atomicNumber].get(energyKey);
+  }
+  else {
+    energyAngleProbs = lowEnergyAngles[atomicNumber].get(energyKey);
+  }
+  //get the angle from this 
+  double deflectionAngle = returnDeflectionAngle(highEnergy, energyAngleProbs);
+  
+  return deflectionAngle;
+}
+
+private InputStreamReader locateFile(String filePath) 
+          throws UnsupportedEncodingException, FileNotFoundException{
+  InputStream is = getClass().getResourceAsStream("/" + filePath);
+  
+  if (is == null) {
+    is = new FileInputStream(filePath);
+  }
+  
+  return new InputStreamReader(is, "US-ASCII");
+}
+
+private boolean mapPopulated(boolean highEnergy, int atomicNumber) {
+  if (highEnergy == true) {
+    if (highEnergyAngles[atomicNumber] == null) {
+      return true;
+    }
+    else {
+      return false;
+    }
+  }
+  else {
+    if (lowEnergyAngles[atomicNumber] == null) {
+      return true;
+    }
+    else;
+    return false;
+  }
+}
+
+  //--put it in here when I have copy and paste back
+private TreeMap<Double, double[]> getAngleFileData(boolean highEnergy, int atomicNum) throws IOException{
+  String elementNum = String.valueOf(atomicNum) + ".csv";
+  String filePath = "";
+  if (highEnergy == true) {
+    filePath = "constants/above_20000/" + elementNum;
+  }
+  else {
+    filePath = "constants/below_20000/" + elementNum;
+  }
+  
+  InputStreamReader isr = locateFile(filePath);
+  BufferedReader br = new BufferedReader(isr);
+  TreeMap<Double, double[]> elementData = new TreeMap<Double, double[]>();
+  String line;
+  String[] components;
+  while ((line = br.readLine()) != null) {
+    components = line.split(",");
+    if (components[0] != "energy") { //if this is not the first line
+      Double energy = Double.valueOf(components[0]);
+      String[] angleProbsString = Arrays.copyOfRange(components, 1, components.length);
+      double[] angleProbs = new double[angleProbsString.length];
+      for (int i = 0; i < angleProbsString.length; i++) {
+        angleProbs[i] = Double.parseDouble(angleProbsString[i]);
+      }
+      //Now add this to the local treemap
+      elementData.put(energy, angleProbs);
+    }
+  }
+  return elementData;
+}
+
+
+private Double returnNearestEnergy(boolean highEnergy, int atomicNumber, double electronEnergy) {
+  Double nearestEnergy = 0.;
+  if (electronEnergy >= 0.05 && electronEnergy <= 300) {
+    Double beforeKey = 0.;
+    Double afterKey = 0.;
+    if (highEnergy == true) {
+      beforeKey = highEnergyAngles[atomicNumber].floorKey(electronEnergy);
+      afterKey = highEnergyAngles[atomicNumber].ceilingKey(electronEnergy);
+      
+    }
+    else {
+      beforeKey = lowEnergyAngles[atomicNumber].floorKey(electronEnergy);
+      afterKey = lowEnergyAngles[atomicNumber].ceilingKey(electronEnergy);
+    }
+    beforeKey = (beforeKey == 0.) ? afterKey: beforeKey;
+    afterKey = (afterKey == 0.) ? beforeKey: afterKey;
+    if (Math.abs(electronEnergy - beforeKey) <= Math.abs(electronEnergy-afterKey)) {
+      nearestEnergy = beforeKey;
+    }
+    else {
+      nearestEnergy = afterKey;
+    }
+    
+  }
+  return nearestEnergy;
+}
+
+private double returnDeflectionAngle(boolean highEnergy, double[] energyAngleProbs) {
+  double totalProb = 0;
+  for (int i = 0; i < energyAngleProbs.length; i++) {
+    totalProb += energyAngleProbs[i];
+  }
+  double[] probPerAngle = new double[energyAngleProbs.length];
+  double sumProb = 0;
+  for (int j = 0; j < energyAngleProbs.length; j++) {
+    sumProb += energyAngleProbs[j];
+    probPerAngle[j] = sumProb/totalProb;
+  }
+  
+  double RND = Math.random();
+  double index = 0;
+  for (int k = 0; k < probPerAngle.length; k++) {
+    if (probPerAngle[k] >= RND) {
+      index = k;
+    }
+  }
+  //convert the index to an angle
+  double angleDegrees = 0;
+  if (highEnergy == true) {
+    double startFactor = 0.;
+    int factor = 0;
+    double divideFactor = 4;
+    double minusFactor = 0;
+    double modFactor = 0;
+    if (index >=1 && index < 146) {
+      minusFactor = 1;
+      modFactor = 36;
+      factor = (int) ((int) (index - minusFactor)/modFactor);
+      startFactor = Math.pow(10, factor) * 0.0001;
+      divideFactor = 4;
+    }
+    else if (index >= 146 && index < 236) {
+   //   factor = (int) (index-146)/100;
+      startFactor = 1;
+      divideFactor = 10;
+      minusFactor = 146;
+      modFactor = 90;
+    }
+    else if (index >= 236 && index <= 296) {
+      startFactor = 10;  //go until 25
+      divideFactor = 40;
+      minusFactor = 236;
+      modFactor = 60;
+    }
+    else if (index > 296) {
+      startFactor = 25;
+      divideFactor = 50;
+      minusFactor = 296;
+      modFactor = 1000000; //just anything super high as all but first one
+    }
+    angleDegrees = startFactor + (((index-minusFactor)%modFactor)*(startFactor/divideFactor));
+
+  }
+  else {
+    angleDegrees = 1.0 * index;
+  }
+  double angleRadians = angleDegrees * Math.PI/180;
+  
+  return angleRadians;
+}
 
 private boolean isMicrocrystalAt(final double x, final double y, final double z) {
   //Note that this is absolutely only right for a cuboid at the moment
