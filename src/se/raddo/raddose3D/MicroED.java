@@ -85,6 +85,8 @@ public class MicroED {
   
   protected static final double NUM_MONTE_CARLO_ELECTRONS = 100000;
   
+  protected static final double CUTOFF = 0.0001;
+  
   
   
   public MicroED(double vertices[][], int[][] indices, double[][][][] crystCoord, 
@@ -753,23 +755,33 @@ int thisTriggered = 0; //testing
       //Track the secondary electron
       double FSEtheta = 0, FSEphi = 0, FSEpreviousTheta = 0, FSEpreviousPhi = 0, FSExNorm = 0, FSEyNorm = 0, FSEzNorm = 0;
       //firstly calculate the FSE energy
-      double omega = 1 / (10000 - 9998*Math.random());
+      double RNDFSEEnergy = Math.random();
+      
+      double tau = electronEnergy/511;
+      double alphaParam = Math.pow(tau/(tau+1), 2);
+      double betaParam = (2*tau + 1)/Math.pow(tau+1, 2);
+      double gammaParam = (1/CUTOFF)-(1/(1-CUTOFF))-(alphaParam*CUTOFF)-(betaParam*Math.log((1-CUTOFF)/((electronEnergy*CUTOFF)/511)));
+      double omegaParam = RNDFSEEnergy*(gammaParam + (alphaParam/2)) - gammaParam;
+      double epsilon = (omegaParam-2-betaParam+Math.pow(Math.pow(omegaParam-2-betaParam, 2) + 4*(omegaParam+alphaParam-2*betaParam), 0.5)) /
+                        (2*(omegaParam+alphaParam-2*betaParam));
+      
+      double omega = 1 / ((1/CUTOFF) - ((1/CUTOFF)-2)*RNDFSEEnergy);
   //    double omega = 1 / (100 - 98*Math.random());
-      double FSEEnergy = omega * electronEnergy; // - shellBindingEnergy;
+      double FSEEnergy = epsilon * electronEnergy; // - shellBindingEnergy;
       //I'm going to take t as the energy of that particular electron
       // This could be two values for the primary, with stopping power or with inel removal
       double sinSquaredAlpha = 0;
       double sinSquaredGamma = 0;
       double escapeDist = 0, maxDist = 0;
-      if (FSEEnergy > electronEnergy/10000) { // so I only care about the FSE if it is more than x 
+      if (FSEEnergy > electronEnergy*CUTOFF) { // so I only care about the FSE if it is more than x 
    //   if (FSEEnergy > 0) { // so I only care about the FSE if it is more than x 
         // determine the angles of the FSE and the primary electron
         double tPrimary = (electronEnergy-FSEEnergy)/511; //t is in rest mass units. Need to change to stopping power en
         double tFSE = FSEEnergy/511;
         //alpha = angle of primary electron
-        sinSquaredAlpha = (2 * omega) / (2 + tPrimary - tPrimary*omega);
+        sinSquaredAlpha = (2 * epsilon) / (2 + tPrimary - tPrimary*epsilon);
         //gamma - angle of secondary electron
-        sinSquaredGamma = 2*(1-omega) / (2 + tFSE*omega); 
+        sinSquaredGamma = 2*(1-epsilon) / (2 + tFSE*epsilon); 
       
       //need to sort out when I'm tracking and when I'm not properly
       /*
@@ -1111,7 +1123,7 @@ private double getFSEXSection(double electronEnergy) {
   double restMassEnergy = 511; //keV
   double tau = electronEnergy/restMassEnergy;
   double crossSection = (((2*tau+1)/Math.pow(tau+1, 2))*(Math.log((1/0.5)-1)) + Math.pow(tau/(tau+1), 2) - (1/0.5) - (1/(0.5-1))) -
-                        (((2*tau+1)/Math.pow(tau+1, 2))*(Math.log((1/0.0001)-1)) + Math.pow(tau/(tau+1), 2) - (1/0.0001) - (1/(0.0001-1))); 
+                        (((2*tau+1)/Math.pow(tau+1, 2))*(Math.log((1/CUTOFF)-1)) + Math.pow(tau/(tau+1), 2) - (1/CUTOFF) - (1/(CUTOFF-1))); 
                         
   crossSection*= constant;
 

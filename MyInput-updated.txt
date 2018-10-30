@@ -1,0 +1,88 @@
+##############################################################################
+#                                 Crystal Block                              #
+##############################################################################
+
+
+Crystal
+
+Type Cuboid
+
+       # Crystal shape can be Cuboid or Spherical
+
+Dimensions 10 10 10 
+       # Dimensions of the crystal in X,Y,Z in µm.
+       # Z is the beam axis, Y the rotation axis and
+       # X completes the right handed set
+
+PixelsPerMicron 2.5        
+       # This defines the coarseness of the simulation 
+       # (i.e. how many voxels the crystal is divided into.)
+
+
+# Also need to specify the crystal composition below (Example case for insulin given):
+AbsCoefCalc  RD3D
+       # Absorption Coefficients calculated 
+       # using RADDOSE-3D (Zeldin et al. 2013).
+
+UnitCell   78.02  78.02  78.02     
+       # unit cell size: a, b, c with alpha, beta and gamma angles default to 90°
+
+NumMonomers  24                    
+       # number of monomers in unit cell
+
+NumResidues  51                    
+       # number of residues per monomer
+
+ProteinHeavyAtoms Zn 0.333 S 6         
+       # heavy atoms added to protein part of the
+       # monomer, i.e. S, coordinated metals, Se in Se-Met
+
+SolventHeavyConc P 425             
+       # concentration of elements in the solvent
+       # in mmol/l. Oxygen and lighter elements
+       # should not be specified
+
+SolventFraction 0.67
+       # fraction of the unit cell occupied by solvent
+
+CALCULATEFLESCAPE FALSE
+	# Whether or not fluorescent escape is calculated
+CALCULATEPEESCAPE TRUE
+	# Whether or not photoelectron escape is calculated
+
+GONIOMETERAXIS 0
+	# 0 is horixontal, 90 is vertical
+
+# CRYOSOLUTION H 0
+	# concentration of elements in the surrounding material
+	# in mmol/l. Oxygen and lighter elements
+	# should not be specified
+##############################################################################
+#                                  Beam Block                                #
+##############################################################################
+
+Beam
+
+Type TopHat            
+       # beam profile can be Gaussian or TopHat
+Flux 2e12                 
+       # in photons per second (2e12 = 2 * 10^12)
+
+Energy 50             
+       # photon energy in keV
+
+Collimation Rectangular 10 10 
+       # Horizontal/Vertical collimation of the beam
+       # For 'uncollimated' Gaussians, 3xFWHM recommended
+
+
+##############################################################################
+#                                  Wedge Block                               #
+##############################################################################
+
+Wedge 0 360
+       # Start and End rotational angle of the crystal with Start < End
+
+ExposureTime 50           
+       # Total time for entire angular range
+
