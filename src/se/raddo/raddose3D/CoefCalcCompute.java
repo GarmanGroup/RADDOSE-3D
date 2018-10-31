@@ -2106,7 +2106,8 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
       int Z = e.getAtomicNumber();
       int numShells = getNumberOfShells(Z);
   //    double[] shellSigma = new double[numShells];
-      double[] shellSigma = new double[4];
+  //    double[] shellSigma = new double[4];
+      double[] shellSigma = new double[9];
       elXSection = 0;
       
       double A = e.getAtomicWeight();
@@ -2114,10 +2115,11 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
       double NperVol = totalAtoms(e)/(cellVolume /1000); //Atoms per nm^3
       
       //keep to just L shells
+      /*
       if (numShells > 4) {
-        numShells = 4;    //for now only going to cinsider ionisation of K and L shells
+        numShells = 4;    //for now only going to consider ionisation of K and L shells
       }
-      
+      */
       for (int i = 0; i < numShells; i++) { //for every shell in this element
         //work out overvoltage
         double bindingEnergy = lowOvervoltages[Z][i][0]/1000; //binding energy in keV
@@ -2141,11 +2143,13 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
         elXSection += shellSigma[i]; 
         shellSigma[i] *= NperVol; //converts to total cross section of elemental shell per nm
         
+        /*
         //Remove hydrogen from the equation for now
         if (Z == 1) {
           elXSection = 0;
           shellSigma[i] = 0;
         }
+        */
         
       }
       
@@ -2258,9 +2262,11 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     double runningSumFraction = 0;  //should equal 1 by the end
     for (Element e : shellXSections.keySet()) {
       double[] elementShells = shellXSections.get(e);
-      double[] shellProbs = new double[4];
+ //     double[] shellProbs = new double[4];
+      double[] shellProbs = new double[9];
    //   for (int i = 0; i < elementShells.length; i++) {]
-      for (int i = 0; i < 4; i++) {
+   //   for (int i = 0; i < 4; i++) {
+      for (int i = 0; i < 9; i++) {
         double lambdaFraction = elementShells[i]/BethexSectionTotPerElement;
         runningSumFraction += lambdaFraction;
         shellProbs[i] = runningSumFraction;
