@@ -1803,6 +1803,37 @@ public class CoefCalcCompute extends CoefCalc {
     return PoverT;
   }
   
+  @Override
+  public double getElectronInelasticMFPL(double electronEnergy) {
+    //Individual atom cross sections
+    double[] inelasticElement = new double[presentElements.size()];
+    double inelasticMolecule = 0;
+    double m = 9.10938356E-31; // in Kg
+    double csquared = 3E8*3E8;  // (m/s)^2
+    double Vo = electronEnergy * Beam.KEVTOJOULES;
+    double betaSquared = 1- Math.pow(m*csquared/(Vo + m*csquared), 2);
+    double weirdLetter = (0.02*Beam.KEVTOJOULES)/(betaSquared*(Vo + m*csquared)); //assuming 0.02 keV per inellastic plasmon event  
+    double molWeight = 0;
+    double inelasticAll = 0;
+
+    int counter = 0;
+    for (Element e : this.presentElements) { 
+      if (e.getAtomicNumber() == 1) { //Correct as formula doesn't work for hydrogen
+        inelasticElement[counter] = 6.4E-5;
+      }
+      else {
+      inelasticElement[counter] =  ((1.5E-6 * Math.pow(e.getAtomicNumber(), 0.5))/betaSquared)*
+                       (Math.log(2/weirdLetter));  //nm^2/atom
+                     //  1E06; // 
+      }
+      double NperVol = totalAtoms(e)/(cellVolume /1000);  //atoms/nm^3
+      inelasticAll += NperVol * inelasticElement[counter];
+      counter +=1;
+    }
+    double lambda = 1/inelasticAll;
+    return lambda;
+  }
+  
   /**
    * Return the stopping power of the material in keV/nm
    */
@@ -2381,5 +2412,32 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
       numShells = 9;
     }
     return numShells;
+  }
+  
+  @Override
+  public double getPlasmaMFPL(double electronEnergy) {  //non-relativistic at the moment
+    double lambda = 0;
+    double m = 9.10938356E-31;
+    double h = 6.626070040E-34; //m^2 Kg/s
+    double hbar = h/(2*Math.PI);
+    double a0 = 5.291772106E-2; //nm
+    int sumZ = 0;  //sumA = molecularWeight
+    for (Element e : this.presentElements) {
+      sumZ += e.getAtomicNumber() * totalAtoms(e);
+    }
+    double plasmaFrequency = 28.816 * Math.pow(density*(sumZ/molecularWeight), 0.5); //equals (h/2pi)*omegap //this is in eV
+    double fermiEnergy = 0.294 * Math.pow(plasmaFrequency, 4/3); //eV
+    double kf = Math.pow(((fermiEnergy/1000)*Beam.KEVTOJOULES)*2*m/Math.pow(hbar, 2), 0.5);  //m^-1
+    double kMinus = Math.pow(2*m, 0.5) *
+                    (Math.pow(electronEnergy*Beam.KEVTOJOULES, 0.5)- Math.pow((electronEnergy - plasmaFrequency/1000)*Beam.KEVTOJOULES, 0.5));
+                    //m Kg s^-1
+    double kPlusOne = Math.pow(2*m, 0.5) *
+                      (Math.pow(electronEnergy*Beam.KEVTOJOULES, 0.5) + Math.pow((electronEnergy-plasmaFrequency/1000)*Beam.KEVTOJOULES, 0.5));
+                    //m Kg s^-1
+    double kPlusTwo = Math.pow(2*m, 0.5) * Math.pow(((fermiEnergy+plasmaFrequency)/1000)*Beam.KEVTOJOULES, 0.5) - (hbar*kf); //m Kg s^-1
+    double kPlus = Math.min(kPlusOne, kPlusTwo); // / hbar; //m^-1
+    lambda = 1/((plasmaFrequency / (2*a0*(electronEnergy*1000)))*Math.log(kPlus/kMinus));
+    
+    return lambda;
   }
 }

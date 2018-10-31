@@ -148,4 +148,8 @@ public abstract class CoefCalc {
   public abstract double getZav();
   
   public abstract void populateCrossSectionCoefficients();
+  
+  public abstract double getPlasmaMFPL(double electronEnergy);
+  
+  public abstract double getElectronInelasticMFPL(double electronEnergy);
 }

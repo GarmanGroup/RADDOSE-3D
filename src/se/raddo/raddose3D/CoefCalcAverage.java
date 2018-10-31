@@ -234,5 +234,17 @@ public class CoefCalcAverage extends CoefCalc {
     // TODO Auto-generated method stub
     return null;
   }
+
+  @Override
+  public double getPlasmaMFPL(double electronEnergy) {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+
+  @Override
+  public double getElectronInelasticMFPL(double electronEnergy) {
+    // TODO Auto-generated method stub
+    return 0;
+  }
   
 }

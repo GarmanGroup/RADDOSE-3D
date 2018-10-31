@@ -98,6 +98,9 @@ public class MicroED {
   private double totFSEEnergy;
   private double totAugerEnergy;
   
+  private int numAuger;
+  private int numFL;
+  
   protected static final double NUM_MONTE_CARLO_ELECTRONS = 100000;
   
   protected static final double CUTOFF = 0.0001;
@@ -137,8 +140,6 @@ public class MicroED {
   
   public void CalculateEM(Beam beam, Wedge wedge, CoefCalc coefCalc) { // also pass in crystal dimensions
     // Just to be clear these are all dose of the exposed volume
-   
- 
     
     double dose1 = EMLETWay(beam, wedge, coefCalc);
     System.out.print(String.format("\nThe Dose in the exposed area by LET: %.8e", dose1));
@@ -550,8 +551,9 @@ private double getESTARDose(CoefCalc coefCalc, Beam beam) {
 
 // Everything below will be the Monte Carlo section of the code
 private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
-int triggered = 0; //testing
-int thisTriggered = 0; //testing
+  int triggered = 0; //testing
+  int thisTriggered = 0; //testing
+  
   
   //set up for one electron to start with and then test how many needed to get little deviation and then scale up
   int numberBackscattered = 0;
@@ -574,6 +576,8 @@ int thisTriggered = 0; //testing
   Map<Element, double[]> ionisationProbs = coefCalc.getAllShellProbs(); //Really need to make sure that these are in the same order
   
   
+  coefCalc.getPlasmaMFPL(startingEnergy);
+  coefCalc.getElectronInelasticMFPL(startingEnergy);
   
   //not going to change the direction of the program yet going to write it separately and then
   //incorporate it in -remember that lambda_el now needs to always be lambda_t!!!!!!!!!
@@ -750,6 +754,7 @@ int thisTriggered = 0; //testing
           double flEscapeDist = getIntersectionDistance(previousX, previousY, previousZ, SExNorm, SEyNorm, SEzNorm); //um
           double escapeFraction = Math.exp(-absCoef * flEscapeDist);
           MonteCarloFlEscape += escapeFraction * flauEnergy;
+          numFL += 1;
           
         }
         else {
@@ -758,6 +763,7 @@ int thisTriggered = 0; //testing
           //for now ignore the shell binding energy so overestimating their significance
        //   double augerEnergy = collidedElement.getKFluorescenceAverage();
           totAugerEnergy += flauEnergy;
+          numAuger += 1;
           //get a random direction vector
           double SExNorm = Math.random();
           double SEyNorm = Math.random();
@@ -843,6 +849,7 @@ int thisTriggered = 0; //testing
       
             //now I have a vector need to find where it will intersect point and the distance
       //If doing Monte Carlo of FSE would start tracking it here
+      totFSEEnergy += FSEEnergy;
       MonteCarloSecondaryElastic(coefCalc, FSEEnergy, previousX, previousY, previousZ, FSEtheta, FSEphi);
       
       /*
@@ -1637,6 +1644,9 @@ private double getPrimaryElasticScatteringAngle(double electronEnergy, int atomi
   //Now use the data in the global array to work out the angle
   //get nearest energy
   Double energyKey = returnNearestEnergy(highEnergy, atomicNumber, electronEnergy);
+  
+  //should probably interpolate the values here tbh.... will do at some point
+  
   //get the differential cross sections for that energy of the element
   double[] energyAngleProbs = null;
   if (highEnergy == true) {
@@ -1696,9 +1706,11 @@ private TreeMap<Double, double[]> getAngleFileData(boolean highEnergy, int atomi
   TreeMap<Double, double[]> elementData = new TreeMap<Double, double[]>();
   String line;
   String[] components;
+  int count = -1;
   while ((line = br.readLine()) != null) {
+    count +=1 ;
     components = line.split(",");
-    if (components[0] != "energy") { //if this is not the first line
+    if (count > 0) { //if this is not the first line
       Double energy = Double.valueOf(components[0]);
       String[] angleProbsString = Arrays.copyOfRange(components, 1, components.length);
       double[] angleProbs = new double[angleProbsString.length];
@@ -1726,6 +1738,12 @@ private Double returnNearestEnergy(boolean highEnergy, int atomicNumber, double 
     else {
       beforeKey = lowEnergyAngles[atomicNumber].floorKey(electronEnergy);
       afterKey = lowEnergyAngles[atomicNumber].ceilingKey(electronEnergy);
+    }
+    if (beforeKey == null) {
+      beforeKey = 0.;
+    }
+    if (afterKey == null) {
+      afterKey = 0.;
     }
     beforeKey = (beforeKey == 0.) ? afterKey: beforeKey;
     afterKey = (afterKey == 0.) ? beforeKey: afterKey;
@@ -1757,6 +1775,7 @@ private double returnDeflectionAngle(boolean highEnergy, double[] energyAnglePro
   for (int k = 0; k < probPerAngle.length; k++) {
     if (probPerAngle[k] >= RND) {
       index = k;
+      break;
     }
   }
   //convert the index to an angle
@@ -1800,6 +1819,10 @@ private double returnDeflectionAngle(boolean highEnergy, double[] energyAnglePro
     angleDegrees = 1.0 * index;
   }
   double angleRadians = angleDegrees * Math.PI/180;
+  
+  if (index > 296 && highEnergy == true) {
+    System.out.println("test");
+  }
   
   return angleRadians;
 }
