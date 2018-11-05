@@ -197,7 +197,7 @@ public class MicroED {
     System.out.println("Number of productive electrons Monte Carlo: " + MonteCarloProductive);
     
     try {
-      WriterFile("outputMicroED.CSV", dose3);
+      WriterFile("outputMicroED.CSV", dose4);
     } catch (IOException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
@@ -432,14 +432,14 @@ private double getExposedY(Beam beam) {
   return exposedAreaY;
 }
 
-private void WriterFile(final String filename, final double dose3) throws IOException {
+private void WriterFile(final String filename, final double dose4) throws IOException {
   BufferedWriter outFile;
   outFile = new BufferedWriter(new OutputStreamWriter(
       new FileOutputStream(filename), "UTF-8"));
   try {
-    outFile.write("dose, total_el, single_el, productive_el\n");
+    outFile.write("dose, numSimulated\n");
     outFile.write(String.format(
-        " %f, %f, %f, %f%n", dose3, numberElastic, numberSingleElastic, numberProductive));
+        " %f, %d%n", dose4, numSimulatedElectrons));
   } catch (IOException e) {
     e.printStackTrace();
     System.err.println("WriterFile: Could not write to file " + filename);
