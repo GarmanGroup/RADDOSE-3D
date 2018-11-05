@@ -145,6 +145,13 @@ public class MicroED {
   public void CalculateEM(Beam beam, Wedge wedge, CoefCalc coefCalc) { // also pass in crystal dimensions
     // Just to be clear these are all dose of the exposed volume
     
+    double wavelength = getWavelength(beam);
+    double resRough = getResolutionRough(wavelength);
+    double maxRes = getMaxRes(wavelength);
+    System.out.println(String.format("The rough maximum resolution is: %.2e", resRough));
+    System.out.println(String.format("The max res is: %.2e", maxRes));
+    
+    
     double dose1 = EMLETWay(beam, wedge, coefCalc);
     System.out.print(String.format("\nThe Dose in the exposed area by LET: %.8e", dose1));
     System.out.println(" MGy\n");
@@ -194,6 +201,28 @@ public class MicroED {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
+  }
+  
+  private double getWavelength(Beam beam) {
+    double h = 6.626070040E-34;
+    double c = 299792458;
+    double csquared = c*c;
+    double m0 = 9.109383356E-31; //Kg
+    double V0 = beam.getPhotonEnergy()*Beam.KEVTOJOULES; 
+    double lambda = (h*c)/Math.pow(Math.pow(V0, 2) + 2*V0*m0*csquared, 0.5); // in m
+    lambda *= 1E10; //convert m to A
+    return lambda;
+  }
+  
+  private double getResolutionRough(double wavelength) {
+    double a = 0.01; //radians
+    double n = 1;
+    return (wavelength / (2*n*Math.sin(a)));  
+  }
+  private double getMaxRes(double wavelength) {
+    double Cs = 1E7; //A
+    double res = Math.pow(Cs*Math.pow(wavelength, 3)/6, 0.25);
+    return res;
   }
   
 
