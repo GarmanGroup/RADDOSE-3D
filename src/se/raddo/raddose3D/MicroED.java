@@ -73,6 +73,8 @@ public class MicroED {
   public double YDimension;
   public double ZDimension;
   
+  private long numSimulatedElectrons;
+  
   private double numberElastic;
   private double numberSingleElastic;
   private double numberNotInelasticEqu;
@@ -105,7 +107,7 @@ public class MicroED {
   private int numAuger;
   private int numFL;
   
-  protected static final double NUM_MONTE_CARLO_ELECTRONS = 100000;
+  protected static final long NUM_MONTE_CARLO_ELECTRONS = 100000;
   
   protected static final double CUTOFF = 0.0001;
   
@@ -134,7 +136,6 @@ public class MicroED {
     crystalVolume = (crystalSurfaceArea * (sampleThickness * 10) * 1E-27);    //A^3 to dm^3
     //note the volume would need to be updated for a polyhedron!!! - currently just a cube or cylinder 
     //although it isn't used
-    
     
     lowEnergyAngles = new TreeMap[95];
     highEnergyAngles = new TreeMap[95];
@@ -588,6 +589,13 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
   int triggered = 0; //testing
   int thisTriggered = 0; //testing
   
+  //get number of electrons to simulate
+  long numSim = coefCalc.getNumberSimulatedElectrons();
+  if (numSim == 0) {
+    numSim = NUM_MONTE_CARLO_ELECTRONS;
+  }
+  numSimulatedElectrons = numSim;
+  
   
   //set up for one electron to start with and then test how many needed to get little deviation and then scale up
   int numberBackscattered = 0;
@@ -624,7 +632,7 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
   //test ELSEPA
  // startingLambda = 236;
   
-  for (int i = 0; i < NUM_MONTE_CARLO_ELECTRONS; i++) { //for every electron to simulate
+  for (int i = 0; i < numSimulatedElectrons; i++) { //for every electron to simulate
   boolean inelastic = false;
   boolean backscattered = false;
   int elasticCount = 0;
@@ -1184,11 +1192,11 @@ private double processMonteCarloDose(Beam beam, CoefCalc coefCalc) {
   double electronNumber = exposure * (exposedArea * 1E08);
   
   //do the elastic stuff
-  MonteCarloTotElasticCount = MonteCarloTotElasticCount * (electronNumber / NUM_MONTE_CARLO_ELECTRONS);
-  MonteCarloSingleElasticCount = MonteCarloSingleElasticCount * (electronNumber / NUM_MONTE_CARLO_ELECTRONS);
-  MonteCarloProductive = MonteCarloProductive * (electronNumber/ NUM_MONTE_CARLO_ELECTRONS);
+  MonteCarloTotElasticCount = MonteCarloTotElasticCount * (electronNumber / numSimulatedElectrons);
+  MonteCarloSingleElasticCount = MonteCarloSingleElasticCount * (electronNumber / numSimulatedElectrons);
+  MonteCarloProductive = MonteCarloProductive * (electronNumber/ numSimulatedElectrons);
   
-  MonteCarloDose = (MonteCarloDose * (electronNumber / NUM_MONTE_CARLO_ELECTRONS)) * Beam.KEVTOJOULES;
+  MonteCarloDose = (MonteCarloDose * (electronNumber / numSimulatedElectrons)) * Beam.KEVTOJOULES;
   
   double exposedMass = (((coefCalc.getDensity()*1000) * exposedVolume) / 1000);  //in Kg 
   double dose = (MonteCarloDose/exposedMass) / 1E06; //dose in MGy 

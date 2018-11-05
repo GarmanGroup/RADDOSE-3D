@@ -51,7 +51,8 @@ public class CoefCalcFromParams extends CoefCalcCompute {
       final List<Double> cryoSolutionConc,
       final Double solventFraction, final String oilBased, final String calcSurrounding,
       final int numCarb,
-      final List<String> oilElementNames, final List<Double> oilElementsNums, final double oilDensity) {
+      final List<String> oilElementNames, final List<Double> oilElementsNums, final double oilDensity,
+      final long numSimElectrons) {
 
     Double alpha = cellAlpha;
     Double beta = cellBeta;
@@ -74,6 +75,9 @@ public class CoefCalcFromParams extends CoefCalcCompute {
     }
 
     cellVolume(cellA, cellB, cellC, alpha, beta, gamma);
+    
+    //set number of simulated electrons
+    setNumberSimulatedElectrons(numSimElectrons);
 
     calculateAtomOccurrences(numMonomers, numResidues, numRNA, numDNA,
         sf, heavyProteinAtomNames, heavyProteinAtomNums,

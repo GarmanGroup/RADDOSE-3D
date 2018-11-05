@@ -155,4 +155,6 @@ public abstract class CoefCalc {
   
   public abstract double getElectronInelasticMFPL(double electronEnergy);
   
+  public abstract long getNumberSimulatedElectrons();
+  
 }

@@ -20,7 +20,9 @@ public class CoefCalcCompute extends CoefCalc {
    * Identified coefficients and density from last program run. Final variables.
    */
   private double                     absCoeffcomp, absCoeffphoto, attCoeff, elasCoeff, density, molecularWeight;
-
+  
+  private long numSimulatedElectrons;
+  
   public double cellVolume;
 
   private double cryoAbsCoeffComp, cryoAbsCoeffPhoto, cryoAttCoeff, cryoElasCoeff, cryoDensity;
@@ -2455,5 +2457,14 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     }
     double plasmaFrequency = 28.816 * Math.pow(density*(sumZ/molecularWeight), 0.5); //equals (h/2pi)*omegap //this is in eV
     return plasmaFrequency; //in eV
+  }
+  
+  public void setNumberSimulatedElectrons(long numSim) {
+    numSimulatedElectrons = numSim;
+  }
+  
+  @Override
+  public long getNumberSimulatedElectrons() {
+    return numSimulatedElectrons;
   }
 }

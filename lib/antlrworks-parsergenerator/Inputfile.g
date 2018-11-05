@@ -92,6 +92,7 @@ scope {
 	List<Double>          oilNums;
 	Double 		      oilDensity;
 	String 	           calcSurrounding;
+	long              simElectrons;
     HashMap<Object, Object> crystalProperties;
 	}
 @init { 
@@ -113,7 +114,8 @@ if ($crystal::crystalCoefCalc == 2)
   													$crystal::heavySolutionConcNames, $crystal::heavySolutionConcNums,
   													$crystal::cryoSolutionMolecule, $crystal::cryoSolutionConc,
   													$crystal::solFrac, $crystal::oilBased, 	$crystal::calcSurrounding,
-  													$crystal::numCarb, $crystal::oilNames, $crystal::oilNums,  $crystal::oilDensity);
+  													$crystal::numCarb, $crystal::oilNames, $crystal::oilNums,  $crystal::oilDensity, 
+  													$crystal::simElectrons);
 }
 
 if ($crystal::crystalCoefCalc == 3) {
@@ -293,6 +295,7 @@ crystalLine
 		                	         $crystal::oilNums	= $ii.num;  }
 	| jj=oilDensity	                { $crystal::oilDensity			= $jj.oildens;  }
 	| kk=electrons	                { $crystal::crystalProperties.put(Crystal.CRYSTAL_ELECTRONS, $kk.value); }
+	| ll=simElectrons		{ $crystal::simElectrons		= $ll.simel; }
 							
 	;
 
@@ -549,14 +552,19 @@ oilDensity returns [double oildens]
 	: OILDENSITY a=FLOAT {$oildens = Double.parseDouble($a.text);};
 OILDENSITY : ('O'|'o')('I'|'i')('L'|'l')('D'|'d')('E'|'e')('N'|'n')('S'|'s')('I'|'i')('T'|'t')('Y'|'y') ;
 
+simElectrons returns [long simel]
+	: SIMELECTRONS a=FLOAT {$simel = Long.parseLong($a.text);};
+SIMELECTRONS :	('S'|'s')('I'|'i')('M'|'m')('E'|'e')('L'|'l')('E'|'e')('C'|'c')('T'|'t')('R'|'r')('O'|'o')('N'|'n')('S'|'s');
+
+
 electrons returns [String value]
 	: ELECTRONS a=STRING {$value = $a.text;};
 ELECTRONS  
 	:	 ('E'|'e')('L'|'l')('E'|'e')('C'|'c')('T'|'t')('R'|'r')('O'|'o')('N'|'n')('S'|'s') ;
-	
+
 
 // ------------------------------------------------------------------
-beam returns [Beam bObj]
+beam returns [Beam bObj] 
 scope {
 		String beamType;
 		HashMap<Object, Object> beamProperties;
@@ -735,5 +743,4 @@ STRING
 /*CHAR:  '\'' ( ESC_SEQ | ~('\''|'\\') ) '\''
 //    ;
 */
-
 
