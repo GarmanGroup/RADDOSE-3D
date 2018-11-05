@@ -88,6 +88,7 @@ public class MicroED {
   private double MonteCarloFSEEscape;
   private double MonteCarloFlEscape;
   private double MonteCarloAugerEscape;
+  private double MonteCarloProductive;
   private double extraFlEscape;
   private double extraAugerEscape;
   private double newMonteCarloFSEEscape;
@@ -98,6 +99,8 @@ public class MicroED {
   private double totFSEEnergy;
   private double totAugerEnergy;
   private double totShellEnergy;
+  private double totPlasmonEnergy;
+  private double totBreakdownEnergy;
   
   private int numAuger;
   private int numFL;
@@ -183,6 +186,7 @@ public class MicroED {
     
     System.out.println("Number elastic events Monte Carlo: " + MonteCarloTotElasticCount);
     System.out.println("Number single elastic events Monte Carlo: " + MonteCarloSingleElasticCount);
+    System.out.println("Number of productive electrons Monte Carlo: " + MonteCarloProductive);
     
     try {
       WriterFile("outputMicroED.CSV", dose3);
@@ -576,9 +580,14 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
  // Map<Element, Double> ionisationProbs = coefCalc.getInnerShellProbs(); //Really need to make sure that these are in the same order
   Map<Element, double[]> ionisationProbs = coefCalc.getAllShellProbs(); //Really need to make sure that these are in the same order
   
-  
+  //plasmon stuff
+  /*
   double startingPlasmonLambda = coefCalc.getPlasmaMFPL(startingEnergy);
-
+  double plasmaEnergy = coefCalc.getPlasmaFrequency()/1000.0; //in keV
+  */
+  
+  //tot inelastic
+  double startingInelasticLambda = coefCalc.getElectronInelasticMFPL(startingEnergy);
   
   //not going to change the direction of the program yet going to write it separately and then
   //incorporate it in -remember that lambda_el now needs to always be lambda_t!!!!!!!!!
@@ -587,17 +596,23 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
  // startingLambda = 236;
   
   for (int i = 0; i < NUM_MONTE_CARLO_ELECTRONS; i++) { //for every electron to simulate
-    
+  boolean inelastic = false;
+  boolean backscattered = false;
+  int elasticCount = 0;
   
   double electronEnergy = startingEnergy;
   double stoppingPower = startingStoppingPower;
   double energyLost = 0;
  // double lambdaT = startingLambda_el; //lambda in nm  -//Just elastic
-  double lambdaT = 1 / (1/startingLambda_el + 1/startingFSELambda); //FSE one
+ // double lambdaT = 1 / (1/startingLambda_el + 1/startingFSELambda); //FSE one
+//  double lambdaT = 1 / (1/startingLambda_el + 1/startingFSELambda + 1/startingPlasmonLambda);
  // double lambdaT = 1 / (1/startingLambda_el + 1/startingInnerShellLambda + 1/startingFSELambda);
+  double lambdaT = 1 / (1/startingLambda_el + 1/startingInelasticLambda);
   double PEL = lambdaT / startingLambda_el;
   double Pinel = 1 - (lambdaT / startingLambda_el);
+//  double Pplasmon = startingPlasmonLambda/ (startingFSELambda + startingPlasmonLambda);
 // double PinnerShell = startingFSELambda/(startingInnerShellLambda + startingFSELambda); //this is not making sense, it's all innner shell now
+  double Pfse = startingInelasticLambda/startingFSELambda;
   double testRND = Math.random();
   double s = -lambdaT*Math.log(testRND);
   //now I'm going to go through the coordinates
@@ -692,6 +707,22 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
     
     if (RNDscatter < Pinel) {
       //Do inelastic
+      inelastic = true;
+      /*
+      //if plasmon do plasmon
+      double RNDplasmon = Math.random();
+      if (RNDplasmon > Pplasmon) {
+        theta = 0;
+        totPlasmonEnergy += plasmaEnergy;
+      }
+      */
+      //if no secondary elecrton produced (other type of inelastic interaction such as a plasmon)
+      double RNDFSE = Math.random();
+      if (RNDFSE > Pfse) { //this was another interaction
+        theta = 0;
+      }
+      else {
+      //else produce an FSE
       triggered += 1;
       boolean innerShell = false;
       double shellBindingEnergy = 0;
@@ -921,9 +952,10 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
       }
       */
   //  } 
-    }
+      } //end if not plasmon
+    } //end if inelastic scatter
     else { //else it stays false and the collision will be elastic
-      
+      elasticCount += 1;
       timesScattered += 1;
       MonteCarloTotElasticCount += 1;
 
@@ -1023,13 +1055,19 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
       double FSExSection = getFSEXSection(electronEnergy);
       double FSELambda = coefCalc.getFSELambda(FSExSection);
       double lambdaEl = coefCalc.getElectronElasticMFPL(electronEnergy);
+      double lambdaInel = coefCalc.getElectronInelasticMFPL(electronEnergy);
       double innerShellLambda = coefCalc.betheIonisationxSection(electronEnergy);
-   //   lambdaT =  1 / (1/lambdaEl + 1/FSELambda);
-      lambdaT =  1 / (1/lambdaEl + 1/innerShellLambda + 1/FSELambda);
+      double plasmonLambda = coefCalc.getPlasmaMFPL(electronEnergy);
+    //  lambdaT =  1 / (1/lambdaEl + 1/FSELambda);
+  //    lambdaT = 1 / (1/lambdaEl + 1/FSELambda + 1/plasmonLambda);
+ //     lambdaT =  1 / (1/lambdaEl + 1/innerShellLambda + 1/FSELambda);
  //     lambdaT =  1 / (1/lambdaEl);
+      lambdaT = 1 / (1/lambdaEl + 1/lambdaInel);
       s = -lambdaT*Math.log(Math.random());
       PEL = lambdaT / lambdaEl;
       Pinel = 1 - (lambdaT / lambdaEl);
+      Pfse = lambdaInel / FSELambda;
+ //     Pplasmon = plasmonLambda/ (FSELambda + plasmonLambda); 
  //     PinnerShell = FSELambda/(innerShellLambda + FSELambda);
       
       ionisationProbs = coefCalc.getAllShellProbs();
@@ -1045,6 +1083,10 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
     exited = true;
     if (scattered == false) { // so it has just gone straight through with no elastic
       //deposit the dose - for now just the z dimension
+      
+      //need to change this as not going straight anymore!!!!
+      
+      
       energyLost = ZDimension * stoppingPower;
       MonteCarloDose += energyLost;   //keV
       //end
@@ -1057,8 +1099,9 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
       double[] intersectionPoint = getIntersectionPoint(s, previousX, previousY, previousZ, xNorm, yNorm, zNorm);
       energyLost = s * stoppingPower;
       MonteCarloDose += energyLost;   //keV
-      if (intersectionPoint[2] == -125) {
+      if (intersectionPoint[2] == -125 || zNorm < 0) {
         numberBackscattered += 1;
+        backscattered = true;
       }
     }
   }
@@ -1067,12 +1110,19 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
     MonteCarloSingleElasticCount += 1;
   }
   
+  //check if this was a productive electron
+  if (elasticCount == 1 && backscattered == false && inelastic == false) {
+    MonteCarloProductive += 1;
+  }
+  
   } //end looping through electrons
   
   //Will need to do something about exiting the correct plane here
 
   //Will also need to add in inel scattering here for productive (and then FSE stuff)
 
+   totBreakdownEnergy = totFSEEnergy + totShellEnergy + totPlasmonEnergy;
+  
    MonteCarloDose -= MonteCarloFSEEscape;
    MonteCarloDose -= newMonteCarloFSEEscape;
    MonteCarloDose -= MonteCarloAugerEscape;
@@ -1107,6 +1157,7 @@ private double processMonteCarloDose(Beam beam, CoefCalc coefCalc) {
   //do the elastic stuff
   MonteCarloTotElasticCount = MonteCarloTotElasticCount * (electronNumber / NUM_MONTE_CARLO_ELECTRONS);
   MonteCarloSingleElasticCount = MonteCarloSingleElasticCount * (electronNumber / NUM_MONTE_CARLO_ELECTRONS);
+  MonteCarloProductive = MonteCarloProductive * (electronNumber/ NUM_MONTE_CARLO_ELECTRONS);
   
   MonteCarloDose = (MonteCarloDose * (electronNumber / NUM_MONTE_CARLO_ELECTRONS)) * Beam.KEVTOJOULES;
   

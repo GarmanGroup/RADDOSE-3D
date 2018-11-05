@@ -246,5 +246,11 @@ public class CoefCalcAverage extends CoefCalc {
     // TODO Auto-generated method stub
     return 0;
   }
+
+  @Override
+  public double getPlasmaFrequency() {
+    // TODO Auto-generated method stub
+    return 0;
+  }
   
 }

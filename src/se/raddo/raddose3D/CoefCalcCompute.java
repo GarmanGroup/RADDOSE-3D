@@ -2431,7 +2431,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     for (Element e : this.presentElements) {
       sumZ += e.getAtomicNumber() * totalAtoms(e);
     }
-    double plasmaFrequency = 28.816 * Math.pow(density*(sumZ/molecularWeight), 0.5); //equals (h/2pi)*omegap //this is in eV
+    double plasmaFrequency = getPlasmaFrequency();
     double fermiEnergy = 0.294 * Math.pow(plasmaFrequency, 4/3); //eV
     double kf = Math.pow(((fermiEnergy/1000)*Beam.KEVTOJOULES)*2*m/Math.pow(hbar, 2), 0.5);  //m^-1
     double kMinus = Math.pow(2*m, 0.5) *
@@ -2445,5 +2445,15 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     lambda = 1/((plasmaFrequency / (2*a0*(electronEnergy*1000)))*Math.log(kPlus/kMinus));
     
     return lambda;
+  }
+  
+  @Override
+  public double getPlasmaFrequency() {
+    int sumZ = 0;  //sumA = molecularWeight
+    for (Element e : this.presentElements) {
+      sumZ += e.getAtomicNumber() * totalAtoms(e);
+    }
+    double plasmaFrequency = 28.816 * Math.pow(density*(sumZ/molecularWeight), 0.5); //equals (h/2pi)*omegap //this is in eV
+    return plasmaFrequency; //in eV
   }
 }

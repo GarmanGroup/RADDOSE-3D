@@ -151,5 +151,8 @@ public abstract class CoefCalc {
   
   public abstract double getPlasmaMFPL(double electronEnergy);
   
+  public abstract double getPlasmaFrequency();
+  
   public abstract double getElectronInelasticMFPL(double electronEnergy);
+  
 }
