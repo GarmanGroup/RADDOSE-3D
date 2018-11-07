@@ -590,6 +590,8 @@ beamLine
 	| f=beamFile             { $beam::beamProperties.put(Beam.BEAM_EXTFILE, $f.filename); }
 	| g=beamPixelSize        { $beam::beamProperties.putAll($g.properties); }
 	| h=beamExposure			 { $beam::beamProperties.put(Beam.BEAM_EXPOSURE, $h.exposure); }
+	| i=beamSemiAngle	{ $beam::beamProperties.put(Beam.BEAM_SEMIANGLE, $i.semiAngle);}
+	| j=beamApertureRadius	{ $beam::beamProperties.put(Beam.BEAM_APERTURERADIUS, $j.apertureRadius);}
 	
 	;
 
@@ -611,6 +613,16 @@ beamEnergy returns [Double energy]
 	;
 ENERGY : ('E'|'e')('N'|'n')('E'|'e')('R'|'r')('G'|'g')('Y'|'y') ;
 KEV : ('K'|'k')('E'|'e')('V'|'v') ;
+
+beamSemiAngle returns [Double semiAngle]
+	: SEMIANGLE a=FLOAT {$semiAngle = Double.parseDouble($a.text);};
+SEMIANGLE 
+	:	 ('S'|'s')('E'|'e')('M'|'m')('I'|'i')('A'|'a')('N'|'n')('G'|'g')('L'|'l')('E'|'e');
+
+beamApertureRadius returns [Double apertureRadius]
+	: APERTURERADIUS a=FLOAT {$apertureRadius = Double.parseDouble($a.text);};
+APERTURERADIUS
+	:	('A'|'a')('P'|'p')('E'|'e')('R'|'r')('T'|'t')('U'|'u')('R'|'r')('E'|'e')('R'|'r')('A'|'a')('D'|'d')('I'|'i')('U'|'u')('S'|'s');
 
 beamFile returns [String filename]
 	: FILE a=STRING {$filename = $a.text;}

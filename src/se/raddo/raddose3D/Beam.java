@@ -31,6 +31,9 @@ public interface Beam {
   /** Constant for data fields in Map constructors: Beam exposure. */
   public static final String BEAM_EXPOSURE        = "EXPOSURE";
   
+  public static final String BEAM_SEMIANGLE = "SEMIANGLE";
+  public static final String BEAM_APERTURERADIUS = "APERTURERADIUS";
+  
   /** The elementary charge, 1.6*10^-19 coulombs. */
   public static final Double ELEMENTARYCHARGE = 1.602176565e-19;
 
@@ -110,5 +113,8 @@ public interface Beam {
    *        circular coll or not
    */
   public boolean getIsCircular();
+  
+  public double getSemiAngle();
+  public double getApertureRadius();
   
 }

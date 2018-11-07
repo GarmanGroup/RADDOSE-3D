@@ -20,6 +20,9 @@ public class BeamTophat implements Beam {
 
   /** Beam energy. */
   private final Double photonEnergy;
+  
+  private  Double semiAngle;
+  private  Double apertureRadius;
 
   /** Attenuated beam flux.  */
   private double attenuatedPhotonsPerSec;
@@ -67,6 +70,8 @@ public class BeamTophat implements Beam {
     photonsPerSec = (Double) properties.get(Beam.BEAM_FLUX);
     photonEnergy = (Double) properties.get(Beam.BEAM_ENERGY);
     exposure = (Double) properties.get(Beam.BEAM_EXPOSURE);
+    semiAngle = (Double) properties.get(Beam.BEAM_SEMIANGLE);
+    apertureRadius = (Double) properties.get(Beam.BEAM_APERTURERADIUS);;
     
     if (properties.get(Beam.BEAM_CIRCULAR) == "TRUE") {
       isCircular = true;
@@ -175,5 +180,20 @@ public class BeamTophat implements Beam {
   @Override
   public boolean getIsCircular() {
     return isCircular;
+  }
+  
+  @Override
+  public double getSemiAngle() {
+    if (semiAngle == null) {
+      semiAngle = 0.;
+    }
+    return semiAngle;
+  }
+  @Override
+  public double getApertureRadius() {
+    if (apertureRadius == null) {
+      apertureRadius = 0.;
+    }
+    return apertureRadius;
   }
 }

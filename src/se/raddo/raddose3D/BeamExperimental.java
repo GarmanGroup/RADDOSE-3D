@@ -235,4 +235,16 @@ public class BeamExperimental implements Beam {
     return false;
   }
 
+  @Override
+  public double getSemiAngle() {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+
+  @Override
+  public double getApertureRadius() {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+
 }

@@ -147,6 +147,8 @@ public class MicroED {
   
   public void CalculateEM(Beam beam, Wedge wedge, CoefCalc coefCalc) { // also pass in crystal dimensions
     // Just to be clear these are all dose of the exposed volume
+ //   testingXFELQuick(beam, coefCalc);
+    
     
     double wavelength = getWavelength(beam);
     double resRough = getResolutionRough(wavelength);
@@ -183,6 +185,7 @@ public class MicroED {
     long runtime = System.nanoTime() - start;
     System.out.println(String.format("The Monte Carlo runtime in seconds was: %.8e", runtime/1E9));
     MonteCarloRuntime = runtime/1E9;
+    
     /*
     accessESTAR(coefCalc, beam.getPhotonEnergy());
     double dose4 = getESTARDose(coefCalc, beam);
@@ -1743,8 +1746,15 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
 }
 
 private double[] getElectronStartingDirection(Beam beam, double previousX, double previousY, double previousZ) {
-  double beamSemiAngle = 10;  //in mrad
-  double beamApertureRadius = 1.2;  // how many times bigger the aperture is than the beam
+  double beamSemiAngle = beam.getSemiAngle();  //in mrad
+  if (beamSemiAngle == 0) {
+    beamSemiAngle = 10;
+  }
+  double beamApertureRadius = beam.getApertureRadius();
+  if (beamApertureRadius == 0) {
+    beamApertureRadius = 1.2; // how many times bigger the aperture is than the beam
+  }
+    
   double beamRadius = Math.pow(Math.pow((beam.getBeamX()/2),2) + Math.pow(beam.getBeamY()/2, 2), 0.5);
   double extraLength = beamRadius * (beamApertureRadius - 1);
   //now get the aperture point
@@ -2391,6 +2401,53 @@ private static class Vector {
 
     return c;
   }
+}
+
+private void testingXFELQuick(Beam beam, CoefCalc coefcalc) {
+  double m = 9.10938356E-31; // in Kg
+  double c = 299792458;
+  double csquared = c*c;  // (m/s)^2
+  
+  double onefsTotDose = 5.5833391; //this would be 1E11 photons in 10fs
+  double beamEnergy = beam.getPhotonEnergy();
+  double electronEnergy = beamEnergy - 1.497;
+  double photonDosePerfs = (1.497/beamEnergy)*onefsTotDose;
+  
+  //so for 2fs
+  int time = 20;  // fs
+  double stoppingPower = 0;
+  double photonDose = photonDosePerfs * time;
+  double electronDose = 0;
+  for (int i = 1; i < time; i++) {  //so i is fs since first pe produced (time - 1)
+    stoppingPower = coefcalc.getStoppingPower(electronEnergy);
+    //get the speed
+    double Vo = electronEnergy * Beam.KEVTOJOULES;
+    double betaSquared = 1- Math.pow(m*csquared/(Vo + m*csquared), 2);
+    double v = Math.pow(betaSquared*csquared, 0.5) * 1E9 / 1E15; //nm/fs
+    double distanceMoved = (v*1);
+    double energyDeposited = stoppingPower * distanceMoved;
+    double doseDeposited = (energyDeposited/beamEnergy)*onefsTotDose;
+    
+    electronDose += doseDeposited * (time-i);
+    electronEnergy -= energyDeposited;
+    if (electronEnergy < 0.05) {
+      break;
+    }
+  }
+  double totDose = photonDose + electronDose;
+  System.out.println(totDose);
+  
+  //so the photon dose is contentious because of outrunning Auger, need to consider this
+  //The elctron dose is largely not inner shell but fraction that is and outrunning Auger should be considered
+  //Need to consider photoelectron escape as well as this could be huge
+  //I think a Monte Carlo simulation and multiplying up might work, need Monte Carlo because of the timescale I think 
+  
+  //I should be able to predict pulse lengths at which damage is seen for a given beam energy, sample composition and stuff
+  //Should also be able to use elastic scattering cross sections to advise on beam energy and stuff 
+}
+
+private void MonteCarloXFEL() {
+  //this will be where my Monte Carlo simulation for XFELs is set up and I can see what I can learn from this
 }
 
 }

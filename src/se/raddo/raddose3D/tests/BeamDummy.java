@@ -80,4 +80,16 @@ public class BeamDummy implements Beam {
     // TODO Auto-generated method stub
     return false;
   }
+
+  @Override
+  public double getSemiAngle() {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+
+  @Override
+  public double getApertureRadius() {
+    // TODO Auto-generated method stub
+    return 0;
+  }
 }
