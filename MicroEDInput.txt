@@ -9,13 +9,13 @@ Type Cuboid
 
        # Crystal shape can be Cuboid or Spherical
 
-Dimensions 0.25 0.25 0.25
+Dimensions 0.025 0.025 0.025
        # Dimensions of the crystal in X,Y,Z in µm.
        # Z is the beam axis, Y the rotation axis and
        # X completes the right handed set
        #   (vertical if starting face-on).
 
-PixelsPerMicron 100           
+PixelsPerMicron 500           
        # This defines the coarseness of the simulation 
        # (i.e. how many voxels the crystal is divided into.)
        # Preferably set as high as possible, however for a higher
@@ -58,6 +58,7 @@ SolventHeavyConc Na 1540 Cl 1540
        # fraction of the unit cell occupied by solvent
 
 ELECTRONS TRUE
+SIMELECTRONS 10000
 ##############################################################################
 #                                  Beam Block                                #
 ##############################################################################
@@ -65,15 +66,19 @@ ELECTRONS TRUE
 Beam
 
 Type TopHat
+#Type Experimentalpgm  # Tell RADDOSE-3D that it should expect an experimental beam
+#File beam_test.pgm  # location of experimental beam file
+#PixelSize 0.1 0.1  # Pixel size in microns
+
        # beam profile can be Gaussian or TopHat
-# Flux 1e10                 
+#Flux 1e10                 
        # in photons per second (2e12 = 2 * 10^12)
 # FWHM 1 1                
        # in µm, horizontal by vertical for a Gaussian beam
 Energy 200            
        # photon energy in keV
 
-Collimation Circular 0.25 0.25
+Collimation Circular 0.025 0.025
        # Horizontal/Vertical collimation of the beam
        # For 'uncollimated' Gaussians, 3xFWHM recommended
 

@@ -1,2 +1,2 @@
-dose, total_el, single_el, productive_el
- 43.526795, 33236300.054162, 16887240.030219, 2461796.189071
+dose, numSimulated, runtime, total electrons, total elastic, single elastic, productive
+ 33.911355, 10000, 2.547753, 490873.852123, 30139.654520, 28225.246497, 23316.507976

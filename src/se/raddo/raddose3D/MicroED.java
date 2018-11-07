@@ -74,6 +74,7 @@ public class MicroED {
   public double ZDimension;
   
   private long numSimulatedElectrons;
+  private double numElectrons;
   
   private double numberElastic;
   private double numberSingleElastic;
@@ -81,6 +82,7 @@ public class MicroED {
   private double numberNotInelasticRatio;
   private double numberProductive;
   private double stoppingPowerESTAR;
+  private double MonteCarloRuntime;
   //to see if multislice is necessary at all
   private final int numberSlices = 1;
   
@@ -180,7 +182,7 @@ public class MicroED {
     System.out.println(" MGy\n");
     long runtime = System.nanoTime() - start;
     System.out.println(String.format("The Monte Carlo runtime in seconds was: %.8e", runtime/1E9));
-    
+    MonteCarloRuntime = runtime/1E9;
     /*
     accessESTAR(coefCalc, beam.getPhotonEnergy());
     double dose4 = getESTARDose(coefCalc, beam);
@@ -288,6 +290,7 @@ private double EMEquationWay(Beam beam, Wedge wedge, CoefCalc coefCalc, boolean 
     exposedArea = Math.PI * ((getExposedX(beam)/2) * (getExposedY(beam)/2)); //um^2
   }
   double electronNumber = exposure * (exposedArea * 1E08);
+  numElectrons = electronNumber;
   
   double exposedVolume = exposedArea  * (sampleThickness/1000) * 1E-15; //exposed volume in dm^3
   
@@ -437,9 +440,9 @@ private void WriterFile(final String filename, final double dose4) throws IOExce
   outFile = new BufferedWriter(new OutputStreamWriter(
       new FileOutputStream(filename), "UTF-8"));
   try {
-    outFile.write("dose, numSimulated\n");
+    outFile.write("dose, numSimulated, runtime, total electrons, total elastic, single elastic, productive\n");
     outFile.write(String.format(
-        " %f, %d%n", dose4, numSimulatedElectrons));
+        " %f, %d, %f, %f, %f, %f, %f%n", dose4, numSimulatedElectrons, MonteCarloRuntime, numElectrons, MonteCarloTotElasticCount, MonteCarloSingleElasticCount, MonteCarloProductive));
   } catch (IOException e) {
     e.printStackTrace();
     System.err.println("WriterFile: Could not write to file " + filename);
@@ -666,6 +669,7 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
   previousX = (RNDx * XDimension) - (XDimension/2);
   double RNDy = Math.random();
   previousY = (RNDy * YDimension) - (YDimension/2);
+  
   
   //direction 
   double[] directionVector = getElectronStartingDirection(beam, previousX, previousY, previousZ);
@@ -933,7 +937,11 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
             //now I have a vector need to find where it will intersect point and the distance
       //If doing Monte Carlo of FSE would start tracking it here
     //  totFSEEnergy += FSEEnergy;
+      
+      
+      
       MonteCarloSecondaryElastic(coefCalc, FSEEnergy, previousX, previousY, previousZ, FSEtheta, FSEphi);
+      
       
       /*
       escapeDist = 1000 * getIntersectionDistance(previousX, previousY, previousZ, FSExNorm, FSEyNorm, FSEzNorm); //nm
@@ -1018,9 +1026,10 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
       theta = Math.acos(1 - ((2*alpha * Math.pow(RND, 2))/(1+alpha-RND)));
       
       //get angle by ELSEPA stuff
-
-      theta = getPrimaryElasticScatteringAngle(electronEnergy, elasticElement.getAtomicNumber());
-
+      
+      if ((electronEnergy <= 300) && (electronEnergy >= 0.05)) {
+        theta = getPrimaryElasticScatteringAngle(electronEnergy, elasticElement.getAtomicNumber());
+      }
 
       
       thisTheta = theta;
@@ -1164,6 +1173,7 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
    MonteCarloDose -= newMonteCarloFSEEscape;
    MonteCarloDose -= MonteCarloAugerEscape;
    MonteCarloDose -= MonteCarloFlEscape;
+   
 }
 
 private int findIfElementIonised(Element e, Map<Element, double[]> ionisationProbs, double elementRND) {
@@ -1959,10 +1969,11 @@ private double returnDeflectionAngle(boolean highEnergy, double[] energyAnglePro
     angleDegrees = 1.0 * index;
   }
   double angleRadians = angleDegrees * Math.PI/180;
-  
+  /*
   if (index > 296 && highEnergy == true) {
     System.out.println("test");
   }
+  */
   
   return angleRadians;
 }
