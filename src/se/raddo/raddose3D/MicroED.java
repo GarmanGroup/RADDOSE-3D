@@ -669,11 +669,24 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
   
   //position
   double RNDx = Math.random();
-  previousX = (RNDx * XDimension) - (XDimension/2);
+  double beamX = beam.getBeamX();
+  previousX = (RNDx * XDimension) - (XDimension/2); //places on sample
+  previousX = (RNDx * beamX) - (beamX/2); //places in beam area
+  
   double RNDy = Math.random();
+  double beamY = beam.getBeamY();
   previousY = (RNDy * YDimension) - (YDimension/2);
+  if (beam.getIsCircular()) {   //reduce Y limits so you can't put it out of the circle / ellipse
+    double fractionLimit = Math.pow(1 - Math.pow(previousX/beamX, 2), 0.5);
+    RNDy *= fractionLimit;
+    
+  }
+  previousY = (RNDy * beamY) - (beamY/2);
+
   
   
+  
+  /*
   //direction 
   double[] directionVector = getElectronStartingDirection(beam, previousX, previousY, previousZ);
   xNorm = directionVector[0];
@@ -697,7 +710,7 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
   if (yNorm < 0) {
     phi = 2*Math.PI - phi;  //so phi can be between 0 and 2pi not just pi
   }
-  
+  */
   
   /*
   //direction
@@ -946,7 +959,7 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
       MonteCarloSecondaryElastic(coefCalc, FSEEnergy, previousX, previousY, previousZ, FSEtheta, FSEphi);
       
       
-      /*
+      
       escapeDist = 1000 * getIntersectionDistance(previousX, previousY, previousZ, FSExNorm, FSEyNorm, FSEzNorm); //nm
       double FSEStoppingPower = coefCalc.getStoppingPower(FSEEnergy);
       double energyToEdge = FSEStoppingPower * escapeDist;
@@ -962,8 +975,9 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
         //will scatter and change direction
         double energyLostStep = 0;
         double newEnergy = FSEEnergy;
-        for (int j = 0; j < 10; j++) { //I will need to play around with the amount of slicing when I am writing up
-          energyLostStep = (escapeDist/10) * FSEStoppingPower;
+        int numSlices = 1;
+        for (int j = 0; j < numSlices; j++) { //I will need to play around with the amount of slicing when I am writing up
+          energyLostStep = (escapeDist/numSlices) * FSEStoppingPower;
           newEnergy -= energyLostStep;
           FSEStoppingPower = coefCalc.getStoppingPower(newEnergy);
         }
@@ -972,7 +986,7 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
         }
         
       }
-      */
+      
       }
       /*
       //Track Fl and Auger from this secondary electron
@@ -2408,10 +2422,17 @@ private void testingXFELQuick(Beam beam, CoefCalc coefcalc) {
   double c = 299792458;
   double csquared = c*c;  // (m/s)^2
   
-  double onefsTotDose = 5.5833391; //this would be 1E11 photons in 10fs
+  double onefsTotDose = 193.7; //this would be 1E11 photons in 10fs
   double beamEnergy = beam.getPhotonEnergy();
-  double electronEnergy = beamEnergy - 1.497;
-  double photonDosePerfs = (1.497/beamEnergy)*onefsTotDose;
+  double peBinding = 0.48;
+  double electronEnergy = beamEnergy - peBinding;
+  double photonDosePerfs = (peBinding/beamEnergy)*onefsTotDose;
+  
+  //just a test
+  //pulse energy of 1.5mJ 
+  double pulseEn = 2.11E-3; //J
+  double energyPerPhoton = beam.getPhotonEnergy()*Beam.KEVTOJOULES;
+  double numberOfPhotons = pulseEn/energyPerPhoton;
   
   //so for 2fs
   int time = 20;  // fs
