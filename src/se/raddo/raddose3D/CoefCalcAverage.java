@@ -151,7 +151,7 @@ public class CoefCalcAverage extends CoefCalc {
   }
 
   @Override
-  public double getStoppingPower(double avgEnergy) {
+  public double getStoppingPower(double avgEnergy, boolean surrounding) {
     // TODO Auto-generated method stub
     return 0;
   }
@@ -169,7 +169,7 @@ public class CoefCalcAverage extends CoefCalc {
   }
 
   @Override
-  public double getElectronElasticMFPL(double electronEnergy) {
+  public double getElectronElasticMFPL(double electronEnergy, boolean surrounding) {
     // TODO Auto-generated method stub
     return 0;
   }
@@ -181,13 +181,13 @@ public class CoefCalcAverage extends CoefCalc {
   }
 
   @Override
-  public double getFSELambda(double FSExSection) {
+  public double getFSELambda(double FSExSection, boolean surrounding) {
     // TODO Auto-generated method stub
     return 0;
   }
 
   @Override
-  public double betheIonisationxSection(double electronEnergy) {
+  public double betheIonisationxSection(double electronEnergy, boolean surrounding) {
     // TODO Auto-generated method stub
     return 0;
   }
@@ -206,7 +206,7 @@ public class CoefCalcAverage extends CoefCalc {
   }
 
   @Override
-  public Map<ElementEM, Double> getElasticProbs() {
+  public Map<ElementEM, Double> getElasticProbs(boolean surrounding) {
     // TODO Auto-generated method stub
     return null;
   }
@@ -230,7 +230,7 @@ public class CoefCalcAverage extends CoefCalc {
   }
 
   @Override
-  public Map<Element, double[]> getAllShellProbs() {
+  public Map<Element, double[]> getAllShellProbs(boolean surrounding) {
     // TODO Auto-generated method stub
     return null;
   }
@@ -242,7 +242,7 @@ public class CoefCalcAverage extends CoefCalc {
   }
 
   @Override
-  public double getElectronInelasticMFPL(double electronEnergy) {
+  public double getElectronInelasticMFPL(double electronEnergy, boolean surrounding) {
     // TODO Auto-generated method stub
     return 0;
   }

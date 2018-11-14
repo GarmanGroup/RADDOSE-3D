@@ -610,7 +610,6 @@ public abstract class Crystal {
   public void expose(final Beam beam, final Wedge wedge) {
     
     if (useElectrons == true) {
-      // do electron stuff
       startMicroED(XDim, YDim, ZDim, beam, wedge, coefCalc);
     }
     else { //photon stuff
@@ -658,7 +657,7 @@ public abstract class Crystal {
    if (coefCalc.isCryo() == true && photoElectronEscape == true){
      coefCalc.updateCryoCoefficients(beam);
      cryoFeFactors = coefCalc.getCryoFluorescentEscapeFactors(beam);
-     calculateCryoSolutionParameters(beam, cryoFeFactors);
+     calculateCryoSolutionParameters(beam, cryoFeFactors); //crystal and everhting set here 
      cryoAugerEnergy = getAugerEnergy(cryoFeFactors);
        if (fluorescentEscape) {
          cryoFluorescenceEnergyRelease = calcFluorescence(beam, cryoFeFactors);

@@ -121,25 +121,25 @@ public abstract class CoefCalc {
   
   public abstract double getElectronInelastic(double avgEnergy, double exposedVolume);
   
-  public abstract double getStoppingPower(double avgEnergy);
+  public abstract double getStoppingPower(double avgEnergy, boolean surrounding);
   
   public abstract double getEta();
   
   public abstract Map<String, Double> getFractionElementEM();
   
-  public abstract double getElectronElasticMFPL(double electronEnergy);
+  public abstract double getElectronElasticMFPL(double electronEnergy, boolean surrounding );
   
   public abstract double getRutherfordScreening(double electronEnergy);
   
-  public abstract double getFSELambda(double FSExSection);
+  public abstract double getFSELambda(double FSExSection, boolean surrounding);
   
-  public abstract double betheIonisationxSection(double electronEnergy);
+  public abstract double betheIonisationxSection(double electronEnergy, boolean surrounding);
   
   // public abstract Map<Element, Double> getInnerShellProbs();
   
-  public abstract Map<Element, double[]> getAllShellProbs();
+  public abstract Map<Element, double[]> getAllShellProbs(boolean surrounding);
  
-  public abstract Map<ElementEM, Double> getElasticProbs();
+  public abstract Map<ElementEM, Double> getElasticProbs(boolean surrounding);
   
   public abstract double getEMFlAbsCoef(double flEnergy);
   
@@ -153,7 +153,7 @@ public abstract class CoefCalc {
   
   public abstract double getPlasmaFrequency();
   
-  public abstract double getElectronInelasticMFPL(double electronEnergy);
+  public abstract double getElectronInelasticMFPL(double electronEnergy, boolean surrounding);
   
   public abstract long getNumberSimulatedElectrons();
   

@@ -19,7 +19,7 @@ public class CoefCalcCompute extends CoefCalc {
   /**
    * Identified coefficients and density from last program run. Final variables.
    */
-  private double                     absCoeffcomp, absCoeffphoto, attCoeff, elasCoeff, density, molecularWeight;
+  private double                     absCoeffcomp, absCoeffphoto, attCoeff, elasCoeff, density, molecularWeight, molecularWeightSurrounding;
   
   private long numSimulatedElectrons;
   
@@ -61,6 +61,11 @@ public class CoefCalcCompute extends CoefCalc {
    * Set of the unique elements present in the cryo-solution
    */
   private Set<Element>               cryoElements;
+  
+  /**
+   * Set of the unique elements present in the cryo-solution
+   */
+  private Set<ElementEM>               cryoElementsEM;
   
   /**
    * Percentage conversion.
@@ -259,14 +264,23 @@ public class CoefCalcCompute extends CoefCalc {
   private final Map<ElementEM, Double> heteroAtomOccurrenceEM;
   private final Map<ElementEM, Double> solventConcentrationEM;
   
+  private final Map<ElementEM, Double> cryoOccurrenceEM;
+  private final Map<ElementEM, Double> cryoConcentrationEM;
+  
   public  Map<String, Double> fractionElementEM;
+  
   
   public Map<Element, Double> betheXSections;
   
   public Map<Element, double[]> shellXSections;
   public double BethexSectionTotPerElement;
+  public Map<Element, double[]> shellXSectionsSurrounding;
+  public double BethexSectionTotPerElementSurrounding;
+  
   public Map<ElementEM, Double> elasticXSections;
   public double ElasticxSectionTotPerElement;
+  public Map<ElementEM, Double> elasticXSectionsSurrounding;
+  public double ElasticxSectionTotPerElementSurrounding;
   
   
   public boolean isEM;
@@ -288,6 +302,9 @@ public class CoefCalcCompute extends CoefCalc {
     solventOccurrenceEM = new HashMap<ElementEM, Double>();
     heteroAtomOccurrenceEM = new HashMap<ElementEM, Double>();
     solventConcentrationEM = new HashMap<ElementEM, Double>();
+    
+    cryoOccurrenceEM = new HashMap<ElementEM, Double>();
+    cryoConcentrationEM = new HashMap<ElementEM, Double>();
     
     fractionElementEM = new HashMap<String, Double>();
     
@@ -332,6 +349,7 @@ public class CoefCalcCompute extends CoefCalc {
 
     for (Element e : cryoElements) {
       mass += getCryoOccurrence(e) * e.getAtomicWeightInGrams();
+      molecularWeightSurrounding += getCryoOccurrence(e) * e.getAtomicWeight();
     }
     
     cryoDensity = mass * MASS_TO_CELL_VOLUME / (cellVolume * UNITSPERMILLIUNIT);
@@ -1253,6 +1271,10 @@ public class CoefCalcCompute extends CoefCalc {
         Element cryoAtom = elementDB.getElement(cryoSolutionAtoms.get(i));
         setCryoConcentration(cryoAtom, cryoSolutionConcs.get(i)
             + getCryoConcentration(cryoAtom));
+        
+        ElementEM cryoAtomEM = elementDBEM.getElement(cryoSolutionAtoms.get(i));
+        setCryoConcentrationEM(cryoAtomEM, cryoSolutionConcs.get(i)
+            + getCryoConcentrationEM(cryoAtomEM));
       }
     }
       
@@ -1271,6 +1293,11 @@ public class CoefCalcCompute extends CoefCalc {
         double elementConc = oilConc * oilElementsNums.get(i);
         setCryoConcentration(cryoAtom, elementConc
             + getCryoConcentration(cryoAtom));
+        
+        ElementEM cryoAtomEM = elementDBEM.getElement(oilElementNames.get(i));
+        setCryoConcentrationEM(cryoAtomEM, elementConc
+            + getCryoConcentrationEM(cryoAtomEM));
+        
       }
       }
     }
@@ -1280,6 +1307,11 @@ public class CoefCalcCompute extends CoefCalc {
         double atomCount = conc * AVOGADRO_NUM * cellVolume * 1E-3 * 1E-27;
         incrementCryoOccurrence(e, atomCount);
         nonWaterAtoms += atomCount;
+    }
+    for (ElementEM e : cryoConcentrationEM.keySet()) {
+      double conc = cryoConcentrationEM.get(e);
+      double atomCount = conc * AVOGADRO_NUM * cellVolume * 1E-3 * 1E-27;
+      incrementCryoOccurrenceEM(e, atomCount);
     }
     
    
@@ -1300,10 +1332,20 @@ public class CoefCalcCompute extends CoefCalc {
 
       Element oxygen = elementDB.getElement("O");
       setCryoOccurrence(oxygen, getCryoOccurrence(oxygen) + waterMolecules);
+      
+      ElementEM hydrogenEM = elementDBEM.getElement("H");
+      setCryoOccurrenceEM(hydrogenEM, getCryoOccurrenceEM(hydrogenEM)
+          + waterMolecules * 2);
+
+      ElementEM oxygenEM = elementDBEM.getElement("O");
+      setCryoOccurrenceEM(oxygenEM, getCryoOccurrenceEM(oxygenEM) + waterMolecules);
     }
     
     cryoElements = new HashSet<Element>();
     cryoElements.addAll(cryoOccurrence.keySet());
+    
+    cryoElementsEM = new HashSet<ElementEM>();
+    cryoElementsEM.addAll(cryoOccurrenceEM.keySet());
   }
 
   /**
@@ -1384,9 +1426,22 @@ public class CoefCalcCompute extends CoefCalc {
     cryoConcentration.put(element, newsolventConcentration);
   }
   
+  public void setCryoConcentrationEM(final ElementEM element,
+      final Double newsolventConcentration) {
+    cryoConcentrationEM.put(element, newsolventConcentration);
+  }
+  
   public double getCryoConcentration(final Element element) {
     if (cryoConcentration.containsKey(element)) {
       return cryoConcentration.get(element);
+    } else {
+      return 0.;
+    }
+  }
+  
+  public double getCryoConcentrationEM(final ElementEM element) {
+    if (cryoConcentrationEM.containsKey(element)) {
+      return cryoConcentrationEM.get(element);
     } else {
       return 0.;
     }
@@ -1462,6 +1517,29 @@ public class CoefCalcCompute extends CoefCalc {
     cryoOccurrence.put(element, newsolventOccurrence);
   }
 
+  public Double getCryoOccurrenceEM(final ElementEM element) {
+    if (cryoOccurrenceEM.containsKey(element)) {
+      return cryoOccurrenceEM.get(element);
+    } else {
+      return 0.;
+    }
+  }
+
+  public void incrementCryoOccurrenceEM(final ElementEM element,
+      final Double increment) {
+    if (cryoOccurrenceEM.containsKey(element)) {
+      cryoOccurrenceEM.put(element,
+          increment + cryoOccurrenceEM.get(element));
+    } else {
+      cryoOccurrenceEM.put(element, increment);
+    }
+  }
+
+  public void setCryoOccurrenceEM(final ElementEM element,
+      final Double newsolventOccurrence) {
+    cryoOccurrenceEM.put(element, newsolventOccurrence);
+  }
+  
   public Double getHetatmOccurrence(final Element element) {
     if (heteroAtomOccurrence.containsKey(element)) {
       return heteroAtomOccurrence.get(element);
@@ -1665,17 +1743,14 @@ public class CoefCalcCompute extends CoefCalc {
    * @param electronEnergy
    * @return
    */
-  private double getElectronElasticCrossSection(double electronEnergy) {
-    //get the total mass in the unit cell
-    double molWeight = 0;
-    double totAtoms = 0;
-    for (Element e : presentElements) {
-      molWeight += totalAtoms(e) * e.getAtomicWeight();
-      totAtoms += totalAtoms(e);
-    } 
+  private double getElectronElasticCrossSection(double electronEnergy, boolean surrounding) {
+    //set stuff for surrounding or not
+    Set<ElementEM> elementList = this.presentElementsEM;
+    if (surrounding == true) {
+      elementList = cryoElementsEM;
+    }
     
-    
-    double[] elasticElement = new double[presentElements.size()];
+    double[] elasticElement = new double[elementList.size()];
     double elasticMolecule = 0, partLambda =0, numerator = 0, denominator = 0;
     double m = 9.10938356E-31; // in Kg
     double csquared = 3E8*3E8;  // (m/s)^2   //update this to be precise
@@ -1685,23 +1760,42 @@ public class CoefCalcCompute extends CoefCalc {
     double sumZ = 0, sumA = 0;
     double xSectionTotPerElement = 0;
     ElasticxSectionTotPerElement = 0;
+    ElasticxSectionTotPerElementSurrounding = 0;
     elasticXSections = new HashMap<ElementEM, Double>();
+    elasticXSectionsSurrounding = new HashMap<ElementEM, Double>();
+
     
-    for (ElementEM e : this.presentElementsEM) {
+    for (ElementEM e : elementList) {
       double Z = e.getAtomicNumber();
       elasticElement[counter] =  ((1.4E-6 * Math.pow(Z, 1.5))/betaSquared)*
                        ((1-(0.26*Z)/(137*Math.pow(betaSquared, 0.5))));
                    //    *1E06; // nm^2/atom
       double A = e.getAtomicWeight();
-      double molWeightFraction = (totalAtomsEM(e) * A) / molecularWeight;
-      double atomicFraction = totalAtomsEM(e) / totAtoms;
+      double molWeightFraction = 0;
+ //     double atomicFraction = totalAtomsEM(e) / totAtoms;
       //do by ELSEPA as more accurate if in the table
       
       //test for this atom
-      double NperVol = totalAtomsEM(e)/(cellVolume /1000); //Atoms per nm^3
-      double NperVol2 = molWeightFraction*(AVOGADRO_NUM * (density/1E21))/A; //Atoms per nm^3
+      double NperVol = 0; //Atoms per nm^3
+      
+      if (surrounding == false) {
+        molWeightFraction = (totalAtomsEM(e) * A) / molecularWeight;
+        NperVol = totalAtomsEM(e)/(cellVolume /1000); //Atoms per nm^3
+      }
+      else {
+        molWeightFraction = (getCryoOccurrenceEM(e) * A) / molecularWeightSurrounding;
+        NperVol = getCryoOccurrenceEM(e)/(cellVolume /1000); //Atoms per nm^3
+      }
+      
+    //  double NperVol2 = molWeightFraction*(AVOGADRO_NUM * (density/1E21))/A; //Atoms per nm^3
       xSectionTotPerElement += elasticElement[counter] * NperVol; //nm^-1
-      elasticXSections.put(e, elasticElement[counter] * NperVol);
+      if (surrounding == false) {
+        elasticXSections.put(e, elasticElement[counter] * NperVol);
+      }
+      else {
+        elasticXSectionsSurrounding.put(e, elasticElement[counter] * NperVol);
+      }
+      
       
       //Do ELSEPA
       if ((electronEnergy <= 300) && (electronEnergy >= 0.05)) {
@@ -1721,7 +1815,7 @@ public class CoefCalcCompute extends CoefCalc {
       //needs to just read the ELSEPA file once and store in an array or summin like that - CASINO interpolates
       //This is now incorporated in element database 
 
-      double numEl = totalAtomsEM(e);
+   //   double numEl = totalAtomsEM(e);
   //   elasticElement[counter] *= numEl * atomicFraction;
       elasticMolecule += elasticElement[counter];
       partLambda += (molWeightFraction * elasticElement[counter])/A;
@@ -1740,17 +1834,29 @@ public class CoefCalcCompute extends CoefCalc {
     //testing the other way
   //  partLambda = numerator/denominator;
     double lambda = 1/ xSectionTotPerElement;
-    ElasticxSectionTotPerElement = xSectionTotPerElement;
     
+    if (surrounding == false) {
+      ElasticxSectionTotPerElement = xSectionTotPerElement;
+    }
+    else {
+      ElasticxSectionTotPerElementSurrounding = xSectionTotPerElement;
+    }
     
     return partLambda; //nm^2
   }
   
   @Override
-  public double getElectronElasticMFPL(double electronEnergy) {
-    double partLambda = getElectronElasticCrossSection(electronEnergy);
+  public double getElectronElasticMFPL(double electronEnergy, boolean surrounding) {
+    double partLambda = getElectronElasticCrossSection(electronEnergy, surrounding);
+    double densityCalc = 0;
+    if (surrounding == false) {
+      densityCalc = density;
+    }
+    else {
+      densityCalc = cryoDensity;
+    }
  //   double lambda = molecularWeight / ((density/1E21) * AVOGADRO_NUM * elasticXSection);
-    double lambda = 1 / (AVOGADRO_NUM * (density/1E21) * partLambda);
+    double lambda = 1 / (AVOGADRO_NUM * (densityCalc/1E21) * partLambda);
     //other way
  //   double lambda = (partLambda * 1E21) / AVOGADRO_NUM;
     //test
@@ -1759,13 +1865,22 @@ public class CoefCalcCompute extends CoefCalc {
   }
   
   @Override
-  public Map<ElementEM, Double> getElasticProbs(){
+  public Map<ElementEM, Double> getElasticProbs(boolean surrounding){
     Map<ElementEM, Double> elasticProbs = new HashMap<ElementEM, Double>();
     double runningSumFraction = 0;  //should equal 1 by the end
-    for (ElementEM e : elasticXSections.keySet()) {
-      double lambdaFraction = elasticXSections.get(e)/ElasticxSectionTotPerElement;
-      runningSumFraction += lambdaFraction;
-      elasticProbs.put(e, runningSumFraction);
+    if (surrounding == false) {
+      for (ElementEM e : elasticXSections.keySet()) {
+        double lambdaFraction = elasticXSections.get(e)/ElasticxSectionTotPerElement;
+        runningSumFraction += lambdaFraction;
+        elasticProbs.put(e, runningSumFraction);
+      }
+    }
+    else {
+      for (ElementEM e : elasticXSectionsSurrounding.keySet()) {
+        double lambdaFraction = elasticXSectionsSurrounding.get(e)/ElasticxSectionTotPerElementSurrounding;
+        runningSumFraction += lambdaFraction;
+        elasticProbs.put(e, runningSumFraction);
+      }
     }
     return elasticProbs;
   }
@@ -1806,9 +1921,14 @@ public class CoefCalcCompute extends CoefCalc {
   }
   
   @Override
-  public double getElectronInelasticMFPL(double electronEnergy) {
+  public double getElectronInelasticMFPL(double electronEnergy, boolean surrounding) {
     //Individual atom cross sections
-    double[] inelasticElement = new double[presentElements.size()];
+    Set<Element> elementList = presentElements;
+    if (surrounding == true) {
+      elementList = cryoElements;
+    }
+    
+    double[] inelasticElement = new double[elementList.size()];
     double inelasticMolecule = 0;
     double m = 9.10938356E-31; // in Kg
     double csquared = 3E8*3E8;  // (m/s)^2
@@ -1819,7 +1939,13 @@ public class CoefCalcCompute extends CoefCalc {
     double inelasticAll = 0;
 
     int counter = 0;
-    for (Element e : this.presentElements) { 
+
+    
+    for (Element e : elementList) { 
+      double totalAtoms = totalAtoms(e);
+      if (surrounding == true) {
+        totalAtoms = getCryoOccurrence(e);
+      }
       if (e.getAtomicNumber() == 1) { //Correct as formula doesn't work for hydrogen
         inelasticElement[counter] = 6.4E-5;
       }
@@ -1828,7 +1954,8 @@ public class CoefCalcCompute extends CoefCalc {
                        (Math.log(2/weirdLetter));  //nm^2/atom
                      //  1E06; // 
       }
-      double NperVol = totalAtoms(e)/(cellVolume /1000);  //atoms/nm^3
+  //    System.out.println(e.getAtomicNumber() + " " + inelasticElement[counter]);
+      double NperVol = totalAtoms/(cellVolume /1000);  //atoms/nm^3
       inelasticAll += NperVol * inelasticElement[counter];
       counter +=1;
     }
@@ -1840,7 +1967,61 @@ public class CoefCalcCompute extends CoefCalc {
    * Return the stopping power of the material in keV/nm
    */
   @Override
-  public double getStoppingPower(double avgEnergy) {
+  public double getStoppingPower(double avgEnergy, boolean surrounding) {
+    double stoppingPower = 0;
+    if (surrounding == false) {
+      stoppingPower = calcStoppingPower(avgEnergy, presentElements, density, surrounding);
+    }
+    else {
+      stoppingPower = calcStoppingPower(avgEnergy, cryoElements, cryoDensity, surrounding);
+    }
+
+//    stoppingPower = stoppingPower * 1000 * density /1E7;
+    //test
+  //  stoppingPower = 2.07E-04;
+    /*
+    meanJ = 0.0904;
+    
+    stoppingPower = (78500 * sumZ * density/(beam.getPhotonEnergy()* sumA)) 
+        * Math.log(1.166 * beam.getPhotonEnergy()/(meanJ))
+        /1E7;  // keV/nm
+    */
+    //lets try again
+      /*
+    double m = 9.10938356E-31; // in Kg
+    double csquared = 3E8*3E8;  // (m/s)^2
+    double Vo = beam.getPhotonEnergy() * Beam.KEVTOJOULES;
+    double betaSquared = 1- Math.pow(m*csquared/(Vo + m*csquared), 2);
+    */
+   
+    //note no density effect corrections, shell corrections or Bremstrahlung (can justify why)
+    
+ /*   
+ //   double K = 0.31;
+ //   double gamma = Math.pow(1/(1-betaSquared), 0.5);
+    meanJ = 0.0773;
+    double test = sumZ/sumA;
+ //   meanJ = meanJ/1000;
+    meanJ = meanJ * Beam.KEVTOJOULES;
+    meanZoverA = 0.56;
+    stoppingPower = K * (meanZoverA)* (1/betaSquared) * 
+                    (Math.log((csquared*betaSquared*m*Math.pow(gamma-1, 0.5))/(meanJ * Math.pow(2, 0.5)))+ 
+                        0.5*(1-betaSquared)-((2*gamma-1)/(2*Math.pow(gamma, 2))) + (1/16)*Math.pow((gamma-1)/gamma, 2));
+    stoppingPower = stoppingPower * 1000 * density /1E7;
+    
+    //without corrections
+    meanJ = 0.0753 * Beam.KEVTOJOULES;
+    stoppingPower = K * (meanZoverA)* (1/betaSquared) * 
+        (Math.log((csquared*betaSquared*m*gamma)/(meanJ * 2))-betaSquared);
+stoppingPower = stoppingPower * 1000 * density /1E7;
+    
+//    stoppingPower = 2.107602E-04;
+ 
+ */
+    return stoppingPower;  //keV/nm
+  }
+  
+  private double calcStoppingPower(double avgEnergy, Set<Element> elements, double passedDensity, boolean surrounding) {
     double m = 9.10938356E-31; // in Kg
     double c = 299792458;
     double csquared = c*c;  // (m/s)^2
@@ -1848,27 +2029,33 @@ public class CoefCalcCompute extends CoefCalc {
     double betaSquared = 1- Math.pow(m*csquared/(Vo + m*csquared), 2);
     double K = 0.31;
     double gamma = 1/Math.pow((1-betaSquared), 0.5);
-    
     double KE = (gamma - 1) * m * csquared;
-    
-//    double energy = gamma * m * csquared / Beam.KEVTOJOULES;
     
     double meanJ = 0, meanlnI = 0;
     double stoppingPower = 0;
     double sumA = 0, meanZoverA = 0;
     int sumZ = 0;
-    for (Element e : this.presentElements) { 
+    for (Element e : elements) { 
       //calculate meanJ (mean excitation energy) for this material
       //molWeight fraction
       double A = e.getAtomicWeight();
-      double molWeightFraction = (totalAtoms(e) * A) / molecularWeight;
+      double molWeightFraction = 0;
+      int Z = e.getAtomicNumber();
+      if (surrounding == false) {
+        molWeightFraction = (totalAtoms(e) * A) / molecularWeight;
+        sumZ += Z * totalAtoms(e);
+        sumA += A * totalAtoms(e);
+      }
+      else {
+        molWeightFraction = (getCryoOccurrence(e) * A) / molecularWeightSurrounding;
+        sumZ += Z * getCryoOccurrence(e);
+        sumA += A * getCryoOccurrence(e);
+      }
       fractionElementEM.put(ElementNameLower(e.getElementName()), molWeightFraction);
       double J = 0, Jstar = 0, k = 0;
  //     double energy = beam.getPhotonEnergy();
-      int Z = e.getAtomicNumber();
       meanZoverA += molWeightFraction * (Z/A);
-      sumZ += Z * totalAtoms(e);
-      sumA += A * totalAtoms(e);
+
       /*
       if (Z <= 12) {
         J = Z * 11.5;    //eV
@@ -1888,6 +2075,14 @@ public class CoefCalcCompute extends CoefCalc {
       
       meanlnI +=  molWeightFraction * (Z/A) * Math.log(Jstar);
       
+      
+      stoppingPower += molWeightFraction * ((78500 * Z /(avgEnergy*A)) 
+          * Math.log(1.166 * avgEnergy/(J/1000)));  // keV/nm
+
+      
+    }
+      stoppingPower *= passedDensity /1E7;
+
       /*
       //Big point - the adjustment factor should be done only once and then stored as it is not dependetn on energy
       //chnage this once it is in
@@ -1942,37 +2137,6 @@ public class CoefCalcCompute extends CoefCalc {
       //density should be of every element...
       //or use mean density, mean Z/A and mean J
       //Z might need to be canged to Zeff
-      
-      
-      stoppingPower += molWeightFraction * ((78500 * Z /(avgEnergy*A)) 
-          * Math.log(1.166 * avgEnergy/(J/1000)));  // keV/nm
-      
-      /*
-      double I = J * Beam.KEVTOJOULES;
-      stoppingPower += K * (Z /A)* (1/betaSquared) * 
-          (Math.log(csquared*betaSquared*m*Math.pow(gamma-1, 0.5)/(I * Math.pow(2, 0.5)))+ 
-              0.5*(1-betaSquared)-((2*gamma-1)/(2*Math.pow(gamma, 2))) + (1/16)*Math.pow((gamma-1)/gamma, 2));
- */
-      
-    }
-      stoppingPower *= density /1E7;
-//    stoppingPower = stoppingPower * 1000 * density /1E7;
-    //test
-  //  stoppingPower = 2.07E-04;
-    /*
-    meanJ = 0.0904;
-    
-    stoppingPower = (78500 * sumZ * density/(beam.getPhotonEnergy()* sumA)) 
-        * Math.log(1.166 * beam.getPhotonEnergy()/(meanJ))
-        /1E7;  // keV/nm
-    */
-    //lets try again
-      /*
-    double m = 9.10938356E-31; // in Kg
-    double csquared = 3E8*3E8;  // (m/s)^2
-    double Vo = beam.getPhotonEnergy() * Beam.KEVTOJOULES;
-    double betaSquared = 1- Math.pow(m*csquared/(Vo + m*csquared), 2);
-    */
    
    meanlnI = meanlnI/(sumZ/sumA); 
       double meanI = Math.exp(meanlnI);  //This is now right!!!
@@ -1988,32 +2152,9 @@ public class CoefCalcCompute extends CoefCalc {
             - (2*Math.pow((1-betaSquared),0.5) - 1 + betaSquared)
             * Math.log(2) + 1 - betaSquared + (1/8)*(1-Math.pow(1-betaSquared,0.5));
     stoppingPower = (0.153536/betaSquared)*(sumZ/sumA)*(Fbeta - 2*Math.log(meanJ));
-    stoppingPower = stoppingPower * 1000 * density /1E7;
-    //note no density effect corrections, shell corrections or Bremstrahlung (can justify why)
+    stoppingPower = stoppingPower * 1000 * passedDensity /1E7;
     
- /*   
- //   double K = 0.31;
- //   double gamma = Math.pow(1/(1-betaSquared), 0.5);
-    meanJ = 0.0773;
-    double test = sumZ/sumA;
- //   meanJ = meanJ/1000;
-    meanJ = meanJ * Beam.KEVTOJOULES;
-    meanZoverA = 0.56;
-    stoppingPower = K * (meanZoverA)* (1/betaSquared) * 
-                    (Math.log((csquared*betaSquared*m*Math.pow(gamma-1, 0.5))/(meanJ * Math.pow(2, 0.5)))+ 
-                        0.5*(1-betaSquared)-((2*gamma-1)/(2*Math.pow(gamma, 2))) + (1/16)*Math.pow((gamma-1)/gamma, 2));
-    stoppingPower = stoppingPower * 1000 * density /1E7;
-    
-    //without corrections
-    meanJ = 0.0753 * Beam.KEVTOJOULES;
-    stoppingPower = K * (meanZoverA)* (1/betaSquared) * 
-        (Math.log((csquared*betaSquared*m*gamma)/(meanJ * 2))-betaSquared);
-stoppingPower = stoppingPower * 1000 * density /1E7;
-    
-//    stoppingPower = 2.107602E-04;
- 
- */
-    return stoppingPower;  //keV/nm
+    return stoppingPower;
   }
   
   @Override
@@ -2023,7 +2164,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
       double A = e.getAtomicWeight();
       double molWeightFraction = (totalAtoms(e) * A) / molecularWeight;
       int Z = e.getAtomicNumber();
-      //backscattering coeeficient
+      //backscattering coefficient
       eta += molWeightFraction* (0.025 + 0.016*Z - 1.86E-4 * Math.pow(Z, 2) + 8.3E-7*Math.pow(Z, 3));
       
     }
@@ -2061,11 +2202,18 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
   }
   
   @Override
-  public double getFSELambda(double FSExSection) {  //FSExSection is in cm^2/electron
+  public double getFSELambda(double FSExSection, boolean surrounding) {  //FSExSection is in cm^2/electron
     double lambda = 0;
-    double numEl = 0; //num electrons in the unit cell
-    for (Element e : this.presentElements) { 
-      numEl += e.getAtomicNumber() * totalAtoms(e);
+    double numEl = 0; //num electrons in the unit cell  
+    if (surrounding == false) {
+      for (Element e : this.presentElements) { 
+        numEl += e.getAtomicNumber() * totalAtoms(e);
+      }
+    }
+    else {
+      for (Element e : cryoElements) { 
+        numEl += e.getAtomicNumber() * getCryoOccurrence(e);
+      }
     }
     double elPerVolume = numEl/(cellVolume/1E24); //electrons/cm^3
     double xSection = elPerVolume * FSExSection;  //cm^-1
@@ -2083,8 +2231,10 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     return lambda;
   }
   
+
+  
   @Override
-  public double betheIonisationxSection(double electronEnergy) {  //still need to do L and M edges as well
+  public double betheIonisationxSection(double electronEnergy, boolean surrounding) {  //still need to do L and M edges as well
     //need to sort this out for when energy less than shell binding energy
     double a0 = 5.2917721067E-2; //bohr radius in nm
     double m = 9.10938356E-31; // in Kg
@@ -2101,8 +2251,23 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     betheXSections= new HashMap<Element, Double>();
     shellXSections= new HashMap<Element, double[]>();
     BethexSectionTotPerElement = 0;
+    shellXSectionsSurrounding= new HashMap<Element, double[]>();
+    BethexSectionTotPerElementSurrounding = 0;
   //  double xSectionTotPerElement = 0;
-    for (Element e : presentElements) {
+    double molWeight = molecularWeight;
+    Set<Element> elementList = presentElements;
+    double thisDensity = density;
+    if (surrounding == true) {
+      molWeight = molecularWeightSurrounding;
+      elementList = cryoElements;
+      thisDensity = cryoDensity;
+    }
+    
+    for (Element e : elementList) {
+      double totAtoms = totalAtoms(e);
+      if (surrounding == true) {
+        totAtoms = getCryoOccurrence(e);
+      }
       //look at doing this using the table
       //get number of shells with cross sections
       int Z = e.getAtomicNumber();
@@ -2113,8 +2278,8 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
       elXSection = 0;
       
       double A = e.getAtomicWeight();
-      double molWeightFraction = (totalAtoms(e) * A) / molecularWeight;
-      double NperVol = totalAtoms(e)/(cellVolume /1000); //Atoms per nm^3
+      double molWeightFraction = (totAtoms * A) / molWeight;
+      double NperVol = totAtoms/(cellVolume /1000); //Atoms per nm^3
       
       //keep to just L shells
       /*
@@ -2216,18 +2381,31 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
       }
       */
       
-
+  //    System.out.println(Z + " " + elXSection);
       partLambda += (molWeightFraction * elXSection)/A;
-      BethexSectionTotPerElement += elXSection * NperVol; //nm^-1
-      shellXSections.put(e, shellSigma); //nm^2
+      if (surrounding == false) {
+        BethexSectionTotPerElement += elXSection * NperVol; //nm^-1
+        shellXSections.put(e, shellSigma); //nm^2
+      }
+      else {
+        BethexSectionTotPerElementSurrounding += elXSection * NperVol; //nm^-1
+        shellXSectionsSurrounding.put(e, shellSigma); //nm^2
+      }
     }
     double lambda = 0;
     
     if (partLambda > 0) {
-      lambda = 1 / (AVOGADRO_NUM * (density/1E21) * partLambda);
+      lambda = 1 / (AVOGADRO_NUM * (thisDensity/1E21) * partLambda);
     }
-    if (BethexSectionTotPerElement > 0) {
-      lambda = 1/BethexSectionTotPerElement;  //should both give the same result 
+    if (surrounding == false) {
+      if (BethexSectionTotPerElement > 0) {
+        lambda = 1/BethexSectionTotPerElement;  //should both give the same result 
+      }
+    }
+    else {
+      if (BethexSectionTotPerElementSurrounding > 0) {
+        lambda = 1/BethexSectionTotPerElementSurrounding;  //should both give the same result 
+      }
     }
     return lambda; //nm
   }
@@ -2259,22 +2437,40 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
   */
   
   @Override
-  public Map<Element, double[]> getAllShellProbs(){
+  public Map<Element, double[]> getAllShellProbs(boolean surrounding){
     Map<Element, double[]> ionisationProbs = new HashMap<Element, double[]>();
     double runningSumFraction = 0;  //should equal 1 by the end
-    for (Element e : shellXSections.keySet()) {
-      double[] elementShells = shellXSections.get(e);
- //     double[] shellProbs = new double[4];
-      double[] shellProbs = new double[9];
-   //   for (int i = 0; i < elementShells.length; i++) {]
-   //   for (int i = 0; i < 4; i++) {
-      for (int i = 0; i < 9; i++) {
-        double lambdaFraction = elementShells[i]/BethexSectionTotPerElement;
-        runningSumFraction += lambdaFraction;
-        shellProbs[i] = runningSumFraction;
+    if (surrounding == false) {
+      for (Element e : shellXSections.keySet()) {
+        double[] elementShells = shellXSections.get(e);
+   //     double[] shellProbs = new double[4];
+        double[] shellProbs = new double[9];
+     //   for (int i = 0; i < elementShells.length; i++) {]
+     //   for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 9; i++) {
+          double lambdaFraction = elementShells[i]/BethexSectionTotPerElement;
+          runningSumFraction += lambdaFraction;
+          shellProbs[i] = runningSumFraction;
+        }
+        ionisationProbs.put(e, shellProbs);
       }
-      ionisationProbs.put(e, shellProbs);
     }
+    else {
+      for (Element e : shellXSectionsSurrounding.keySet()) {
+        double[] elementShells = shellXSectionsSurrounding.get(e);
+   //     double[] shellProbs = new double[4];
+        double[] shellProbs = new double[9];
+     //   for (int i = 0; i < elementShells.length; i++) {]
+     //   for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 9; i++) {
+          double lambdaFraction = elementShells[i]/BethexSectionTotPerElementSurrounding;
+          runningSumFraction += lambdaFraction;
+          shellProbs[i] = runningSumFraction;
+        }
+        ionisationProbs.put(e, shellProbs);
+      }
+    }
+    
     return ionisationProbs;
   }
   

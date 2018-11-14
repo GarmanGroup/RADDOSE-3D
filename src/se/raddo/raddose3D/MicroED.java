@@ -320,7 +320,7 @@ private double EMEquationWay(Beam beam, Wedge wedge, CoefCalc coefCalc, boolean 
     double elasticProbOverT = coefCalc.getElectronElastic(avgEnergy);
     elasticProb += elasticProbOverT * (sampleThickness/numberSlices); 
     //I need to update the electron energy, will do this with the stopping power for consistency
-    double stoppingPower = coefCalc.getStoppingPower(avgEnergy); //send it electron energy
+    double stoppingPower = coefCalc.getStoppingPower(avgEnergy, false); //send it electron energy
     double energyPerEl =  stoppingPower * (sampleThickness/numberSlices);
     avgEnergy -= energyPerEl;
   }
@@ -339,7 +339,7 @@ private double EMEquationWay(Beam beam, Wedge wedge, CoefCalc coefCalc, boolean 
       inelasticProbOverT = coefCalc.getElectronInelastic(avgEnergy, exposedVolume);
       inelasticProb += inelasticProbOverT * (sampleThickness/numberSlices);
       //I need to update the electron energy, will do this with the stopping power for consistency
-      double stoppingPower = coefCalc.getStoppingPower(avgEnergy); //send it electron energy
+      double stoppingPower = coefCalc.getStoppingPower(avgEnergy, false); //send it electron energy
       double energyPerEl =  stoppingPower * (sampleThickness/numberSlices);
       avgEnergy -= energyPerEl;
     }
@@ -391,7 +391,7 @@ private double EMStoppingPowerWay(Beam beam, Wedge wedge, CoefCalc coefCalc) {
   double avgEnergy = beam.getPhotonEnergy();
   for (int i = 1; i <= numberSlices; i++) {
     // need to get the stopping power from coefcalc
-    stoppingPower = coefCalc.getStoppingPower(avgEnergy); //send it electron energy
+    stoppingPower = coefCalc.getStoppingPower(avgEnergy, false); //send it electron energy
 
  
     double energyPerEl =  stoppingPower * (sampleThickness/numberSlices);
@@ -606,22 +606,23 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
   //set up for one electron to start with and then test how many needed to get little deviation and then scale up
   int numberBackscattered = 0;
   //Start stuff to make quicker
+  
+  // These are for the sample, need to do them all again for the surrounding 
+  
   double startingEnergy = beam.getPhotonEnergy();
-  double startingStoppingPower = coefCalc.getStoppingPower(startingEnergy);
-  double startingLambda_el = coefCalc.getElectronElasticMFPL(startingEnergy);
-  Map<ElementEM, Double> elasticProbs = coefCalc.getElasticProbs();
+  double startingStoppingPower = coefCalc.getStoppingPower(startingEnergy, false);
+  double startingLambda_el = coefCalc.getElectronElasticMFPL(startingEnergy, false);
+  Map<ElementEM, Double> elasticProbs = coefCalc.getElasticProbs(false);
   
   //the FSE stuff 
-  
   double startingFSExSection = getFSEXSection(startingEnergy);
-  double startingFSELambda = coefCalc.getFSELambda(startingFSExSection);
+  double startingFSELambda = coefCalc.getFSELambda(startingFSExSection, false);
   
   //Inner shell ionisation x section
   coefCalc.populateCrossSectionCoefficients();
-
-  double startingInnerShellLambda = coefCalc.betheIonisationxSection(startingEnergy);
+  double startingInnerShellLambda = coefCalc.betheIonisationxSection(startingEnergy, false);
  // Map<Element, Double> ionisationProbs = coefCalc.getInnerShellProbs(); //Really need to make sure that these are in the same order
-  Map<Element, double[]> ionisationProbs = coefCalc.getAllShellProbs(); //Really need to make sure that these are in the same order
+  Map<Element, double[]> ionisationProbs = coefCalc.getAllShellProbs(false); //Really need to make sure that these are in the same order
   
   //plasmon stuff
   /*
@@ -630,7 +631,27 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
   */
   
   //tot inelastic
-  double startingInelasticLambda = coefCalc.getElectronInelasticMFPL(startingEnergy);
+  double startingInelasticLambda = coefCalc.getElectronInelasticMFPL(startingEnergy, false);
+  Map<ElementEM, Double> elasticProbsSurrounding = null;
+  Map<Element, double[]> ionisationProbsSurrounding = null;
+  //now do all of the starting stuff again for electrons in the surrounding 
+  double startingStoppingPowerSurrounding = 0, startingLambda_elSurrounding = 0, startingInelasticLambdaSurrounding = 0;
+  double startingFSELambdaSurrounding = 0, startingInnershellLambdaSurrounding = 0;;
+  if (coefCalc.isCryo()) {
+    //stopping power
+    startingStoppingPowerSurrounding = coefCalc.getStoppingPower(startingEnergy, true);
+    //elastic
+    startingLambda_elSurrounding = coefCalc.getElectronElasticMFPL(startingEnergy, true);
+    elasticProbsSurrounding = coefCalc.getElasticProbs(true);
+    //total inelastic
+    startingInelasticLambdaSurrounding = coefCalc.getElectronInelasticMFPL(startingEnergy, true); 
+    //FSE stuff
+    startingFSELambdaSurrounding = coefCalc.getFSELambda(startingFSExSection, true); //xSection per electron is the same
+    //inner shell ionisation
+    startingInnershellLambdaSurrounding = coefCalc.betheIonisationxSection(startingEnergy, true);
+    ionisationProbsSurrounding = coefCalc.getAllShellProbs(true);
+  }
+  
   
   //not going to change the direction of the program yet going to write it separately and then
   //incorporate it in -remember that lambda_el now needs to always be lambda_t!!!!!!!!!
@@ -639,6 +660,57 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
  // startingLambda = 236;
   
   for (int i = 0; i < numSimulatedElectrons; i++) { //for every electron to simulate
+    //position stuff first
+    
+    //Need to change these to a uniform beam
+    double previousX = 0, previousY = 0; //atm starting going straight 
+    double xNorm = 0.0000, yNorm = 0.0000, zNorm = 1.0; //direction cosine are such that just going down in one
+    double theta = 0, phi = 0, previousTheta = 0, previousPhi = 0, thisTheta = 0;
+    double previousZ = -ZDimension/2;  //dodgy if specimen not flat - change for concave holes
+    
+    //position
+    double RNDx = Math.random();
+    double beamX = beam.getBeamX();
+    previousX = (RNDx * XDimension) - (XDimension/2); //places on sample
+    previousX = (RNDx * beamX) - (beamX/2); //places in beam area
+    
+    double RNDy = Math.random();
+    double beamY = beam.getBeamY();
+    previousY = (RNDy * YDimension) - (YDimension/2);
+    if (beam.getIsCircular()) {   //reduce Y limits so you can't put it out of the circle / ellipse
+      double fractionLimit = Math.pow(1 - Math.pow(previousX/beamX, 2), 0.5);
+      RNDy *= fractionLimit;
+    }
+    previousY = (RNDy * beamY) - (beamY/2);
+
+    /*
+    //direction 
+    double[] directionVector = getElectronStartingDirection(beam, previousX, previousY, previousZ);
+    xNorm = directionVector[0];
+    yNorm = directionVector[1];
+    zNorm = directionVector[2];
+    
+    //need to update theta and phi for these direction vectors 
+    
+    // theta angle between 0 0 1 and vector, phi angle between 1 0 0 and vector
+    double[] zaxis = {0, 0, 1};
+    theta = Math.acos(Vector.dotProduct(zaxis, directionVector));
+    double[]xaxis = {1, 0, 0};
+    double[] phiVector = {xNorm, yNorm, 0};
+    //test
+//    double[] phiVector = {0, -1, 0};
+    double phiVectorMag = Vector.vectorMagnitude(phiVector);
+    for (int m = 0; m <= 2; m++) {
+      phiVector[m] /= phiVectorMag;
+    }
+    phi = Math.acos(Vector.dotProduct(xaxis, phiVector));
+    if (yNorm < 0) {
+      phi = 2*Math.PI - phi;  //so phi can be between 0 and 2pi not just pi
+    }
+    */
+   
+    //determine if the electron is incident on the sample or not 
+    
   boolean inelastic = false;
   boolean backscattered = false;
   int elasticCount = 0;
@@ -659,73 +731,6 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
   double testRND = Math.random();
   double s = -lambdaT*Math.log(testRND);
   //now I'm going to go through the coordinates
-  
-  
-  //Need to change these to a uniform beam
-  double previousX = 0, previousY = 0; //atm starting going straight 
-  double xNorm = 0.0000, yNorm = 0.0000, zNorm = 1.0; //direction cosine are such that just going down in one
-  double theta = 0, phi = 0, previousTheta = 0, previousPhi = 0, thisTheta = 0;
-  double previousZ = -ZDimension/2;  //dodgy if specimen not flat - change for concave holes
-  
-  //position
-  double RNDx = Math.random();
-  double beamX = beam.getBeamX();
-  previousX = (RNDx * XDimension) - (XDimension/2); //places on sample
-  previousX = (RNDx * beamX) - (beamX/2); //places in beam area
-  
-  double RNDy = Math.random();
-  double beamY = beam.getBeamY();
-  previousY = (RNDy * YDimension) - (YDimension/2);
-  if (beam.getIsCircular()) {   //reduce Y limits so you can't put it out of the circle / ellipse
-    double fractionLimit = Math.pow(1 - Math.pow(previousX/beamX, 2), 0.5);
-    RNDy *= fractionLimit;
-    
-  }
-  previousY = (RNDy * beamY) - (beamY/2);
-
-  
-  
-  
-  /*
-  //direction 
-  double[] directionVector = getElectronStartingDirection(beam, previousX, previousY, previousZ);
-  xNorm = directionVector[0];
-  yNorm = directionVector[1];
-  zNorm = directionVector[2];
-  
-  //need to update theta and phi for these direction vectors 
-  
-  // theta angle between 0 0 1 and vector, phi angle between 1 0 0 and vector
-  double[] zaxis = {0, 0, 1};
-  theta = Math.acos(Vector.dotProduct(zaxis, directionVector));
-  double[]xaxis = {1, 0, 0};
-  double[] phiVector = {xNorm, yNorm, 0};
-  //test
-//  double[] phiVector = {0, -1, 0};
-  double phiVectorMag = Vector.vectorMagnitude(phiVector);
-  for (int m = 0; m <= 2; m++) {
-    phiVector[m] /= phiVectorMag;
-  }
-  phi = Math.acos(Vector.dotProduct(xaxis, phiVector));
-  if (yNorm < 0) {
-    phi = 2*Math.PI - phi;  //so phi can be between 0 and 2pi not just pi
-  }
-  */
-  
-  /*
-  //direction
-  RNDx = Math.random();
-  double changex = 1, changey = 1;
-  if (RNDx < 0.5){
-    changex = -1;
-  }
-  cx = cx * changex;
-  RNDy = Math.random();
-  if (RNDy < 0.5){
-    changey = -1;
-  }
-  cy = cy * changey;
-  */
   
 //  double ca = cx;
 //  double cb = cy;
@@ -885,7 +890,7 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
           double SEzNorm = Math.random();
           //Draw the vector to the edge
           double augerEscapeDist = 1000* getIntersectionDistance(previousX, previousY, previousZ, SExNorm, SEyNorm, SEzNorm); //um
-          double augerStoppingPower = coefCalc.getStoppingPower(flauEnergy);
+          double augerStoppingPower = coefCalc.getStoppingPower(flauEnergy, false);
           double augerEnergyToEdge = augerStoppingPower * augerEscapeDist;
           if (augerEnergyToEdge < flauEnergy){
             MonteCarloAugerEscape += flauEnergy - augerEnergyToEdge;
@@ -961,7 +966,7 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
       
       
       escapeDist = 1000 * getIntersectionDistance(previousX, previousY, previousZ, FSExNorm, FSEyNorm, FSEzNorm); //nm
-      double FSEStoppingPower = coefCalc.getStoppingPower(FSEEnergy);
+      double FSEStoppingPower = coefCalc.getStoppingPower(FSEEnergy, false);
       double energyToEdge = FSEStoppingPower * escapeDist;
       maxDist = FSEEnergy / FSEStoppingPower;
       totFSEEnergy += FSEEnergy;
@@ -979,7 +984,7 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
         for (int j = 0; j < numSlices; j++) { //I will need to play around with the amount of slicing when I am writing up
           energyLostStep = (escapeDist/numSlices) * FSEStoppingPower;
           newEnergy -= energyLostStep;
-          FSEStoppingPower = coefCalc.getStoppingPower(newEnergy);
+          FSEStoppingPower = coefCalc.getStoppingPower(newEnergy, false);
         }
         if (newEnergy > 0) {
           MonteCarloFSEEscape += newEnergy;
@@ -1113,13 +1118,13 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
       //update stopping powers
       //get new stoppingPower
       electronEnergy -= energyLost; 
-      stoppingPower = coefCalc.getStoppingPower(electronEnergy);
+      stoppingPower = coefCalc.getStoppingPower(electronEnergy, false);
       //get new lambdaT
       double FSExSection = getFSEXSection(electronEnergy);
-      double FSELambda = coefCalc.getFSELambda(FSExSection);
-      double lambdaEl = coefCalc.getElectronElasticMFPL(electronEnergy);
-      double lambdaInel = coefCalc.getElectronInelasticMFPL(electronEnergy);
-      double innerShellLambda = coefCalc.betheIonisationxSection(electronEnergy);
+      double FSELambda = coefCalc.getFSELambda(FSExSection, false);
+      double lambdaEl = coefCalc.getElectronElasticMFPL(electronEnergy, false);
+      double lambdaInel = coefCalc.getElectronInelasticMFPL(electronEnergy, false);
+      double innerShellLambda = coefCalc.betheIonisationxSection(electronEnergy, false);
       double plasmonLambda = coefCalc.getPlasmaMFPL(electronEnergy);
     //  lambdaT =  1 / (1/lambdaEl + 1/FSELambda);
   //    lambdaT = 1 / (1/lambdaEl + 1/FSELambda + 1/plasmonLambda);
@@ -1133,8 +1138,8 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
  //     Pplasmon = plasmonLambda/ (FSELambda + plasmonLambda); 
  //     PinnerShell = FSELambda/(innerShellLambda + FSELambda);
       
-      ionisationProbs = coefCalc.getAllShellProbs();
-      elasticProbs = coefCalc.getElasticProbs();
+      ionisationProbs = coefCalc.getAllShellProbs(false);
+      elasticProbs = coefCalc.getElasticProbs(false);
       
       //update to new position
       xn = previousX + s * xNorm;
@@ -1532,15 +1537,15 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
   double phi = FSEphi;
   double electronEnergy = FSEenergy;
   double startingEnergy = FSEenergy;
-  double startingStoppingPower = coefCalc.getStoppingPower(startingEnergy);
+  double startingStoppingPower = coefCalc.getStoppingPower(startingEnergy, false);
   double stoppingPower = startingStoppingPower;
   
-  double startingLambda_el = coefCalc.getElectronElasticMFPL(startingEnergy);
-  Map<ElementEM, Double> elasticProbs = coefCalc.getElasticProbs();
+  double startingLambda_el = coefCalc.getElectronElasticMFPL(startingEnergy, false);
+  Map<ElementEM, Double> elasticProbs = coefCalc.getElasticProbs(false);
   
-  double startingInnerShellLambda = coefCalc.betheIonisationxSection(startingEnergy);
+  double startingInnerShellLambda = coefCalc.betheIonisationxSection(startingEnergy, false);
  // Map<Element, Double> ionisationProbs = coefCalc.getInnerShellProbs(); 
-  Map<Element, double[]> ionisationProbs = coefCalc.getAllShellProbs(); 
+  Map<Element, double[]> ionisationProbs = coefCalc.getAllShellProbs(false); 
 
   //Just do elastic for now and then incorporate inner shell
 //  double lambdaT = startingLambda_el;
@@ -1646,7 +1651,7 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
           double SEzNorm = Math.random();
           //Draw the vector to the edge
           double augerEscapeDist = 1000 * getIntersectionDistance(previousX, previousY, previousZ, SExNorm, SEyNorm, SEzNorm); //um
-          double augerStoppingPower = coefCalc.getStoppingPower(flauEnergy);
+          double augerStoppingPower = coefCalc.getStoppingPower(flauEnergy, false);
           double augerEnergyToEdge = augerStoppingPower * augerEscapeDist;
           if (augerEnergyToEdge < flauEnergy){
             MonteCarloAugerEscape += flauEnergy - augerEnergyToEdge;
@@ -1714,10 +1719,10 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
       //update stopping powers
       //get new stoppingPower
       electronEnergy -= energyLost; 
-      stoppingPower = coefCalc.getStoppingPower(electronEnergy);
+      stoppingPower = coefCalc.getStoppingPower(electronEnergy, false);
       //get new lambdaT
-      double lambdaEl = coefCalc.getElectronElasticMFPL(electronEnergy);
-      double innerShellLambda = coefCalc.betheIonisationxSection(electronEnergy);
+      double lambdaEl = coefCalc.getElectronElasticMFPL(electronEnergy, false);
+      double innerShellLambda = coefCalc.betheIonisationxSection(electronEnergy, false);
       if (innerShellLambda > 0) {
         lambdaT =  1 / ((1/lambdaEl)+(1/innerShellLambda));
       }
@@ -1725,8 +1730,8 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
         lambdaT = lambdaEl;
       }
       s = -lambdaT*Math.log(Math.random());
-      elasticProbs = coefCalc.getElasticProbs();
-      ionisationProbs = coefCalc.getAllShellProbs();
+      elasticProbs = coefCalc.getElasticProbs(false);
+      ionisationProbs = coefCalc.getAllShellProbs(false);
       //update to new position
       xn = previousX + s * xNorm;
       yn = previousY + s * yNorm;
@@ -1736,7 +1741,7 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
       exited = true;
           //I need to add the distance bit here - multislice 
         double escapeDist = 1000 * getIntersectionDistance(previousX, previousY, previousZ, xNorm, yNorm, zNorm); //nm
-        double FSEStoppingPower = coefCalc.getStoppingPower(electronEnergy);
+        double FSEStoppingPower = coefCalc.getStoppingPower(electronEnergy, false);
         double energyToEdge = FSEStoppingPower * escapeDist;
         if (energyToEdge < electronEnergy){
           double energyLostStep = 0;
@@ -1744,7 +1749,7 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
           for (int j = 0; j < 10; j++) { //I will need to play around with the amount of slicing when I am writing up
             energyLostStep = (escapeDist/10) * FSEStoppingPower;
             newEnergy -= energyLostStep;
-            FSEStoppingPower = coefCalc.getStoppingPower(newEnergy);
+            FSEStoppingPower = coefCalc.getStoppingPower(newEnergy, false);
           }
           if (newEnergy > 0) {
            // MonteCarloFSEEscape += newEnergy;
@@ -2440,7 +2445,7 @@ private void testingXFELQuick(Beam beam, CoefCalc coefcalc) {
   double photonDose = photonDosePerfs * time;
   double electronDose = 0;
   for (int i = 1; i < time; i++) {  //so i is fs since first pe produced (time - 1)
-    stoppingPower = coefcalc.getStoppingPower(electronEnergy);
+    stoppingPower = coefcalc.getStoppingPower(electronEnergy, false);
     //get the speed
     double Vo = electronEnergy * Beam.KEVTOJOULES;
     double betaSquared = 1- Math.pow(m*csquared/(Vo + m*csquared), 2);
