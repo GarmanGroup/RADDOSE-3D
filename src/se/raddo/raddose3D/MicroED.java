@@ -92,6 +92,7 @@ public class MicroED {
   private double MonteCarloFSEEscape;
   private double MonteCarloFlEscape;
   private double MonteCarloAugerEscape;
+  private double MonteCarloAugerEntry;
   private double MonteCarloProductive;
   private double extraFlEscape;
   private double extraAugerEscape;
@@ -410,11 +411,11 @@ private double EMStoppingPowerWay(Beam beam, Wedge wedge, CoefCalc coefCalc) {
 private double getExposedX(Beam beam) {
   double exposedAreaX;
   double beamX = beam.getBeamX();
-  if (XDimension > beamX) {
+  if (XDimension/1000 > beamX) {
     exposedAreaX = beamX;
   }
   else {
-    exposedAreaX = XDimension;
+    exposedAreaX = XDimension/1000;
   }
   return exposedAreaX;
 }
@@ -429,11 +430,11 @@ private double getExposedY(Beam beam) {
   double exposedAreaY;
   double beamY = beam.getBeamY();
 
-  if (YDimension > beamY) {
+  if (YDimension/1000 > beamY) {
     exposedAreaY = beamY;
   }
   else {
-    exposedAreaY = YDimension;
+    exposedAreaY = YDimension/1000;
   }
   return exposedAreaY;
 }
@@ -670,12 +671,12 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
     
     //position
     double RNDx = Math.random();
-    double beamX = beam.getBeamX();
+    double beamX = beam.getBeamX()*1000;
     previousX = (RNDx * XDimension) - (XDimension/2); //places on sample
     previousX = (RNDx * beamX) - (beamX/2); //places in beam area
     
     double RNDy = Math.random();
-    double beamY = beam.getBeamY();
+    double beamY = beam.getBeamY()*1000;
     previousY = (RNDy * YDimension) - (YDimension/2);
     if (beam.getIsCircular()) {   //reduce Y limits so you can't put it out of the circle / ellipse
       double fractionLimit = Math.pow(1 - Math.pow(previousX/beamX, 2), 0.5);
@@ -709,35 +710,85 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
     }
     */
    
-    //determine if the electron is incident on the sample or not 
+    //determine if the electron is incident on the sample or not - 
+    boolean surrounding = !isMicrocrystalAt(previousX, previousY, 0); //Z = 0 as just looking at x and y
+    // if it is a certain distance away from the sample ignore it entirely - if it is times 2?
+    boolean track = false;
+    if (surrounding == true) {
+      double distanceFrom = Math.pow(Math.pow(Math.abs(previousX) - (XDimension/2), 2) + Math.pow(Math.abs(previousY) - (YDimension/2), 2), 0.5);
+      double distanceOf = Math.pow(Math.pow(XDimension, 2) + Math.pow(YDimension, 2), 0.5);
+      if (distanceFrom < distanceOf) {
+        track = true;
+      }
+    }
+    //if it isn't I need to track it, untrack if exits this boundary I set up, deposit dose if something goes in the xtal
+    //secondaries from the surrounding should only be tracked if they are heading in the right direction initially 
+    //remember to adjust how the Monte Carlo dose is adjusted accordingly 
+    
+    
     
   boolean inelastic = false;
   boolean backscattered = false;
   int elasticCount = 0;
-  
   double electronEnergy = startingEnergy;
-  double stoppingPower = startingStoppingPower;
   double energyLost = 0;
- // double lambdaT = startingLambda_el; //lambda in nm  -//Just elastic
- // double lambdaT = 1 / (1/startingLambda_el + 1/startingFSELambda); //FSE one
-//  double lambdaT = 1 / (1/startingLambda_el + 1/startingFSELambda + 1/startingPlasmonLambda);
- // double lambdaT = 1 / (1/startingLambda_el + 1/startingInnerShellLambda + 1/startingFSELambda);
-  double lambdaT = 1 / (1/startingLambda_el + 1/startingInelasticLambda);
-  double PEL = lambdaT / startingLambda_el;
-  double Pinel = 1 - (lambdaT / startingLambda_el);
-//  double Pplasmon = startingPlasmonLambda/ (startingFSELambda + startingPlasmonLambda);
-// double PinnerShell = startingFSELambda/(startingInnerShellLambda + startingFSELambda); //this is not making sense, it's all innner shell now
-  double Pfse = startingInelasticLambda/startingFSELambda;
-  double testRND = Math.random();
-  double s = -lambdaT*Math.log(testRND);
-  //now I'm going to go through the coordinates
   
-//  double ca = cx;
-//  double cb = cy;
-//  double cc = cz;
-  double xn = previousX + s * xNorm;
-  double yn = previousY + s * yNorm;
-  double zn = previousZ + s * zNorm;
+  double stoppingPower = 0, lambdaT = 0, PEL = 0, Pinel = 0, Pfse = 0, s = 0, xn = 0, yn = 0, zn = 0;
+  
+  if (surrounding == true) {
+    stoppingPower = startingStoppingPowerSurrounding;
+    lambdaT = 1 / (1/startingLambda_elSurrounding + 1/startingInelasticLambdaSurrounding);
+    PEL = lambdaT / startingLambda_elSurrounding;
+    Pinel = 1 - (lambdaT / startingLambda_elSurrounding);
+    Pfse = startingInelasticLambdaSurrounding/startingFSELambdaSurrounding;
+    double testRND = Math.random();
+    s = -lambdaT*Math.log(testRND);
+    // I need to check if it's going to intersect and what the distance is
+    double intersectionDistance = 1000*getIntersectionDistance(previousX, previousY, previousZ, xNorm, yNorm, zNorm);
+    double[] intersectionPoint = getIntersectionPoint(intersectionDistance, previousX, previousY, previousZ, xNorm, yNorm, zNorm);
+    boolean pointInCrystal = isIntersectionInCrystal(intersectionPoint);
+    if (intersectionDistance < s && pointInCrystal == true) { //then need to change region here and reset stuff
+      surrounding = false;
+      electronEnergy -= intersectionDistance * stoppingPower;
+      previousX = intersectionPoint[0];
+      previousY = intersectionPoint[1];
+      previousZ = intersectionPoint[2];
+    }
+  }
+  
+  
+  if (surrounding == false) {
+    if (electronEnergy < startingEnergy) { //if this electron has entered from the surrounding 
+      stoppingPower = coefCalc.getStoppingPower(electronEnergy, false);
+    }
+    else {
+    stoppingPower = startingStoppingPower;
+    }
+   // double lambdaT = startingLambda_el; //lambda in nm  -//Just elastic
+   // double lambdaT = 1 / (1/startingLambda_el + 1/startingFSELambda); //FSE one
+  //  double lambdaT = 1 / (1/startingLambda_el + 1/startingFSELambda + 1/startingPlasmonLambda);
+   // double lambdaT = 1 / (1/startingLambda_el + 1/startingInnerShellLambda + 1/startingFSELambda);
+    lambdaT = 1 / (1/startingLambda_el + 1/startingInelasticLambda);
+    PEL = lambdaT / startingLambda_el;
+    Pinel = 1 - (lambdaT / startingLambda_el);
+  //  double Pplasmon = startingPlasmonLambda/ (startingFSELambda + startingPlasmonLambda);
+  // double PinnerShell = startingFSELambda/(startingInnerShellLambda + startingFSELambda); //this is not making sense, it's all innner shell now
+    Pfse = startingInelasticLambda/startingFSELambda;
+    double testRND = Math.random();
+    s = -lambdaT*Math.log(testRND);
+    //now I'm going to go through the coordinates
+  
+  //  double ca = cx;
+  //  double cb = cy;
+  //  double cc = cz;
+
+  }
+
+  xn = previousX + s * xNorm;
+  yn = previousY + s * yNorm;
+  zn = previousZ + s * zNorm;
+  
+  
   boolean exited = false;
   boolean scattered = false;
   
@@ -786,306 +837,16 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
       else {
       //else produce an FSE
       triggered += 1;
-      boolean innerShell = false;
-      double shellBindingEnergy = 0;
-      Element collidedElement = null;
-      int collidedShell = -1;
-      //did this come from an inner shell?
-      double RNDinnerShell = Math.random();
-  //    if (RNDinnerShell < PinnerShell) {  //they're all going to be coming from inner shells now
-        //Then this secondary electron came from an inner shell
-        innerShell = true;
-        //determine which elemental shell it came from
-        double elementRND = Math.random();
-        for (Element e : ionisationProbs.keySet()) {
-          collidedShell = findIfElementIonised(e, ionisationProbs, elementRND);
-          if (collidedShell >= 0) {
-            collidedElement = e;
-            break;
-          }
-          /*
-          double[] elementShellProbs = ionisationProbs.get(e);
-          for (int k = 0; k < elementShellProbs.length; k++) {
-            if (elementShellProbs[k] > elementRND) { //Then this element is the one that was ionised
-              collidedElement = e;
-              collidedShell = k;
-            }
-          }
-          */
-        }
-        
-        shellBindingEnergy = getShellBindingEnergy(collidedElement, collidedShell);
-        double FSEtheta = 0, FSEphi = 0, FSEpreviousTheta = 0, FSEpreviousPhi = 0, FSExNorm = 0, FSEyNorm = 0, FSEzNorm = 0;
-        //firstly calculate the FSE energy
-        double RNDFSEEnergy = Math.random();
-        double energyCutOff = (14.0/1000.0)/electronEnergy;
-        
-        double tau = electronEnergy/511;
-        double alphaParam = Math.pow(tau/(tau+1), 2);
-        double betaParam = (2*tau + 1)/Math.pow(tau+1, 2);
-        double gammaParam = (1/energyCutOff)-(1/(1-energyCutOff))-(alphaParam*energyCutOff)-(betaParam*Math.log((1-energyCutOff)/((electronEnergy*energyCutOff)/511)));
-        double omegaParam = RNDFSEEnergy*(gammaParam + (alphaParam/2)) - gammaParam;
-        double epsilon = (omegaParam-2-betaParam+Math.pow(Math.pow(omegaParam-2-betaParam, 2) + 4*(omegaParam+alphaParam-2*betaParam), 0.5)) /
-                          (2*(omegaParam+alphaParam-2*betaParam));
-        
-        double omega = 1 / ((1/energyCutOff) - ((1/energyCutOff)-2)*RNDFSEEnergy);
-    //    double omega = 1 / (100 - 98*Math.random());
-        double FSEEnergy = epsilon * electronEnergy - shellBindingEnergy;
-        if (FSEEnergy > 0) { //so only if it happened
-          totFSEEnergy += FSEEnergy; //tot energy of all  
-          totShellEnergy += shellBindingEnergy;
-        }
-       
-      if (collidedElement.getAtomicNumber() > 2 && collidedShell < 4 && FSEEnergy > 0) { //only do fl or Auger if K or L shell and not H or He K shells
-        double shellFluorescenceYield = 0;
-        double flauEnergy = 0;
-        if (collidedShell == 0) {
-          shellFluorescenceYield = collidedElement.getKShellFluorescenceYield();
-          flauEnergy = collidedElement.getKFluorescenceAverage();
-        }
-        else if (collidedShell == 1) {
-          shellFluorescenceYield = collidedElement.getL1ShellFluorescenceYield();
-          flauEnergy = collidedElement.getLFluorescenceAverage();
-        }
-        else if (collidedShell == 2) {
-          shellFluorescenceYield = collidedElement.getL2ShellFluorescenceYield();
-          flauEnergy = collidedElement.getLFluorescenceAverage();
-        }
-        else if (collidedShell == 3){
-          shellFluorescenceYield = collidedElement.getL3ShellFluorescenceYield();
-          flauEnergy = collidedElement.getLFluorescenceAverage();
-        }
-        
-        //Do Fl or Auger
-      //RND for FL or Auger given it was that element
-        double fluoresenceYieldKRND = Math.random();
-      //  double KshellFluorescenceYield = collidedElement.getKShellFluorescenceYield();
-        if(flauEnergy > 0) {
-        if (fluoresenceYieldKRND <= shellFluorescenceYield) { 
-        //then it's fluorescence
-          // get the absorption coefficient of the crystal
-      //    double flEnergy = collidedElement.getKFluorescenceAverage();
-          double absCoef = coefCalc.getEMFlAbsCoef(flauEnergy); //units um^-1
-          //get a random direction vector
-          double SExNorm = Math.random();
-          double SEyNorm = Math.random();
-          double SEzNorm = Math.random();
-          //Draw the vector to the edge
-          double flEscapeDist = getIntersectionDistance(previousX, previousY, previousZ, SExNorm, SEyNorm, SEzNorm); //um
-          double escapeFraction = Math.exp(-absCoef * flEscapeDist);
-          MonteCarloFlEscape += escapeFraction * flauEnergy;
-          numFL += 1;
-          
-        }
-        else {
-          //need to do Auger electrons
-          //Auger electron energy equals flEnergy - shell binding energy of Auger electron
-          //for now ignore the shell binding energy so overestimating their significance
-       //   double augerEnergy = collidedElement.getKFluorescenceAverage();
-          totAugerEnergy += flauEnergy;
-          numAuger += 1;
-          //get a random direction vector
-          double SExNorm = Math.random();
-          double SEyNorm = Math.random();
-          double SEzNorm = Math.random();
-          //Draw the vector to the edge
-          double augerEscapeDist = 1000* getIntersectionDistance(previousX, previousY, previousZ, SExNorm, SEyNorm, SEzNorm); //um
-          double augerStoppingPower = coefCalc.getStoppingPower(flauEnergy, false);
-          double augerEnergyToEdge = augerStoppingPower * augerEscapeDist;
-          if (augerEnergyToEdge < flauEnergy){
-            MonteCarloAugerEscape += flauEnergy - augerEnergyToEdge;
-          }
-        }
-        }
-      }
-     //   theta = 0;
-  //    }
-  //    else {
-      //Track the secondary electron
-      //I'm going to take t as the energy of that particular electron
-      // This could be two values for the primary, with stopping power or with inel removal
-      double sinSquaredAlpha = 0;
-      double sinSquaredGamma = 0;
-      double escapeDist = 0, maxDist = 0;
-      double minTrackEnergy = 0.05;  //this needs to be tested 
-      if (FSEEnergy > minTrackEnergy) { // so I only care about the FSE if it is more than x 
-   //   if (FSEEnergy > 0) { // so I only care about the FSE if it is more than x 
-        // determine the angles of the FSE and the primary electron
-        double tPrimary = (electronEnergy-FSEEnergy)/511; //t is in rest mass units. Need to change to stopping power en
-        double tFSE = FSEEnergy/511;
-        //alpha = angle of primary electron
-        sinSquaredAlpha = (2 * epsilon) / (2 + tPrimary - tPrimary*epsilon);
-        //gamma - angle of secondary electron
-        sinSquaredGamma = 2*(1-epsilon) / (2 + tFSE*epsilon); 
-      
-      //need to sort out when I'm tracking and when I'm not properly
-      /*
-      //then track the secondary electron and see how much dose escapes
-      phi = Math.asin(Math.pow(sinSquaredGamma, 0.5));
-      cosPhi = Math.cos(phi);
-      psi = 2 * Math.PI * Math.random();
-      
-      //x and y are the same as in Joy, so x will be the rotation axis
-      AN = -(cx/cz); // will need to catch an error here if = 0
-      AM = 1 / (Math.pow(1 + AN*AN, 0.5));
-      V1 = AN * Math.sin(phi);
-      V2 = AN*AM*Math.sin(phi);
-      V3 = Math.cos(psi);
-      V4 = Math.sin(psi);
-      
-      ca = (cx*cosPhi) + (V1*V3) + (cy*V2*V4);
-      cb = (cy*cosPhi) + (V4*(cz*V1 - cx*V2));
-      cc = (cz*cosPhi) + (V2*V3) - (cy*V1*V4);
-      */
-      
-      FSEtheta = Math.asin(Math.pow(sinSquaredGamma, 0.5));
-      FSEphi = 2 * Math.PI * Math.random();
-      
-      
-      FSEtheta = FSEpreviousTheta + FSEtheta;
-      if (FSEtheta >= (2 * Math.PI)) {
-        FSEtheta -= 2*Math.PI;
-      }
-      FSEphi = FSEpreviousPhi + FSEphi;
-      if (FSEphi >= (2 * Math.PI)) {
-        FSEphi -= 2*Math.PI;
-      }
-        
-      FSExNorm = Math.sin(FSEtheta) * Math.cos(FSEphi);
-      FSEyNorm = Math.sin(FSEtheta) * Math.sin(FSEphi);
-      FSEzNorm = Math.cos(FSEtheta);
-      
-            //now I have a vector need to find where it will intersect point and the distance
-      //If doing Monte Carlo of FSE would start tracking it here
-    //  totFSEEnergy += FSEEnergy;
-      
-      
-      
-      MonteCarloSecondaryElastic(coefCalc, FSEEnergy, previousX, previousY, previousZ, FSEtheta, FSEphi);
-      
-      
-      
-      escapeDist = 1000 * getIntersectionDistance(previousX, previousY, previousZ, FSExNorm, FSEyNorm, FSEzNorm); //nm
-      double FSEStoppingPower = coefCalc.getStoppingPower(FSEEnergy, false);
-      double energyToEdge = FSEStoppingPower * escapeDist;
-      maxDist = FSEEnergy / FSEStoppingPower;
-      totFSEEnergy += FSEEnergy;
-      if (energyToEdge < FSEEnergy){
-      //  MonteCarloFSEEscape += FSEEnergy - energyToEdge;
-        double test = FSEEnergy - energyToEdge;
-        //I'm thinking about multislicing this secondary electron and seeing if that makes a difference!!!
-        //I think it will and it should reduce escape so increase dose - and it did
-        
-        //I should possibly also think about actually Monte Carlo tracking these at these low energies as they
-        //will scatter and change direction
-        double energyLostStep = 0;
-        double newEnergy = FSEEnergy;
-        int numSlices = 1;
-        for (int j = 0; j < numSlices; j++) { //I will need to play around with the amount of slicing when I am writing up
-          energyLostStep = (escapeDist/numSlices) * FSEStoppingPower;
-          newEnergy -= energyLostStep;
-          FSEStoppingPower = coefCalc.getStoppingPower(newEnergy, false);
-        }
-        if (newEnergy > 0) {
-          MonteCarloFSEEscape += newEnergy;
-        }
-        
-      }
-      
-      }
-      /*
-      //Track Fl and Auger from this secondary electron
-      //Need to think about the distance it is going and stuff like that though before I plough on
-      double distTravelled = Math.min(maxDist, escapeDist);
-      MonteCarloSecondaryElectronInnerShell(coefCalc, FSEEnergy, previousX, previousY, previousZ, FSExNorm, FSEyNorm, FSEzNorm, distTravelled);
-      */
-      //track the primary electron 
-      /*
-      phi = Math.asin(Math.pow(sinSquaredAlpha, 0.5));
-      cosPhi = Math.cos(phi);
-      */
-      theta = Math.asin(Math.pow(sinSquaredAlpha, 0.5));
-      /* not needed as done later
-      phi = 2 * Math.PI * Math.random();
-      
-      
-      theta = previousTheta + theta;
-      if (theta >= (2 * Math.PI)) {
-        theta -= 2*Math.PI;
-      }
-      phi = previousPhi + phi;
-      if (phi >= (2 * Math.PI)) {
-        phi -= 2*Math.PI;
-      }
-      */
-  //  } 
+      theta = doPrimaryInelastic(coefCalc, previousX, previousY, previousZ, electronEnergy, ionisationProbs, false);
       } //end if not plasmon
     } //end if inelastic scatter
     else { //else it stays false and the collision will be elastic
       elasticCount += 1;
       timesScattered += 1;
       MonteCarloTotElasticCount += 1;
-
-      //now start the loop - clean up the first iteration into this later 
-      //Determine what element elastically scattered the electron so can choose an alpha correctly
-      
-      double elasticElementRND = Math.random();
-      
-      for (ElementEM e : elasticProbs.keySet()) {
-        if (elasticProbs.get(e) > elasticElementRND) { //Then this element is the one that was ionised
-          elasticElement = e;
-          break;
-        }
-      }
-      
-      //get the angles
-      double alpha = getRutherfordScreeningElement(elasticElement, electronEnergy);
-      double RND = Math.random();
-      /*
-      cosPhi = 1 - ((2*alpha * Math.pow(RND, 2))/(1+alpha-RND));
-      phi = Math.acos(cosPhi);
-      */
-      theta = Math.acos(1 - ((2*alpha * Math.pow(RND, 2))/(1+alpha-RND)));
-      
-      //get angle by ELSEPA stuff
-      
-      if ((electronEnergy <= 300) && (electronEnergy >= 0.05)) {
-        theta = getPrimaryElasticScatteringAngle(electronEnergy, elasticElement.getAtomicNumber());
-      }
-
-      
-      thisTheta = theta;
-      
-      //Impart elastic knock-on energy???
-      
-      double Emax = electronEnergy * ((1 + electronEnergy)/1022)/(456*elasticElement.getAtomicWeight());
-      double m = 9.10938356E-28; //kg
-      double u = 1.660539040E-27; //kg/(g/mol)
-      double restEnergy = 511;
-      Emax = (2/elasticElement.getAtomicWeight())*(m/u)*electronEnergy*((2+electronEnergy)/(restEnergy));
-      double Ed = 35;
-      /*
-      double nuclearMass = elasticElement.getAtomicWeight() * 1.660539040E-27;
-      double c = 299792458;
-      double csquared = c*c;
-      double Mcsquared = nuclearMass * csquared;
-      double KinE = electronEnergy * Beam.KEVTOJOULES;
-      double sintheta = Math.pow(Math.sin(theta/2), 2);
-      double energyTransmitted = (Math.pow(KinE, 2) / (Mcsquared))
-                                  * ((2 * sintheta) / (1 + sintheta *(2*(KinE)/Mcsquared) ));
-      energyTransmitted /= Beam.KEVTOJOULES;
-      elasticEnergyTot += energyTransmitted;
-      */
-      
-      double sintheta = Math.pow(Math.sin(thisTheta/2), 2);
-      double en = (Emax/1000) * sintheta;
-      elasticEnergyTot += en;
-      if (Emax > Ed) {
-        displacementEnergy += en;
-      }
+      theta = doPrimaryElastic(electronEnergy, elasticProbs, false);
     }
     //now further update the primary
-    //  psi = 2 * Math.PI * Math.random();
     phi =  2 * Math.PI * Math.random();
     theta = previousTheta + theta;
     if (theta >= (2 * Math.PI)) {
@@ -1095,20 +856,6 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
     if (phi >= (2 * Math.PI)) {
       phi -= 2*Math.PI;
     }
-      
-    /*
-      //x and y are the same as in Joy, so x will be the rotation axis
-      AN = -(cx/cz); // will need to catch an error here if = 0
-      AM = 1 / (Math.pow(1 + AN*AN, 0.5));
-      V1 = AN * Math.sin(phi);
-      V2 = AN*AM*Math.sin(phi);
-      V3 = Math.cos(psi);
-      V4 = Math.sin(psi);
-      
-      ca = (cx*cosPhi) + (V1*V3) + (cy*V2*V4);
-      cb = (cy*cosPhi) + (V4*(cz*V1 - cx*V2));
-      cc = (cz*cosPhi) + (V2*V3) - (cy*V1*V4);
-      */
    
     xNorm = Math.sin(theta) * Math.cos(phi);
     yNorm = Math.sin(theta) * Math.sin(phi);
@@ -1148,18 +895,8 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
       
   }
   else {
-    exited = true;
-    if (scattered == false) { // so it has just gone straight through with no elastic
-      //deposit the dose - for now just the z dimension
-      
-      //need to change this as not going straight anymore!!!!
-      
-      
-      energyLost = ZDimension * stoppingPower;
-      MonteCarloDose += energyLost;   //keV
-      //end
-    }
-    else { //it has scattered at least  once but has now exited 
+    if (surrounding == false) {
+      exited = true;
       //find the plane it is crossing somehow
       s = 1000 * getIntersectionDistance(previousX, previousY, previousZ, xNorm, yNorm, zNorm);
       //I'm going to get the point as well for now as it may be useful when doing apertures and stuff
@@ -1167,11 +904,137 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
       double[] intersectionPoint = getIntersectionPoint(s, previousX, previousY, previousZ, xNorm, yNorm, zNorm);
       energyLost = s * stoppingPower;
       MonteCarloDose += energyLost;   //keV
-      if (intersectionPoint[2] == -125 || zNorm < 0) {
+      if (intersectionPoint[2] == -ZDimension/2 || zNorm < 0) {
         numberBackscattered += 1;
         backscattered = true;
       }
     }
+    else { // surrounding = true 
+      // track this electron until track = false - it is out of Z area or the extended area 
+      //check whether to track it or not
+      double distanceFrom = Math.pow(Math.pow(Math.abs(xn) - (XDimension/2), 2) + Math.pow(Math.abs(yn) - (YDimension/2), 2), 0.5);
+      double distanceOf = Math.pow(Math.pow(XDimension, 2) + Math.pow(YDimension, 2), 0.5);
+      if (distanceFrom > distanceOf || zn > ZDimension/2 || zn < ZDimension/2) {
+        track = false;
+      }
+      if (track == true) {
+        previousTheta = theta;
+        previousPhi = phi;
+        previousX = xn;
+        previousY = yn;
+        previousZ = zn;
+        //update dose and energy and stoppingPower
+        energyLost = s * stoppingPower;
+        
+        double RNDscatter = Math.random();
+//      RNDscatter = 0; // test
+   //   double phi = 0, cosPhi = 1, psi = 0, AN = 0, AM = 0, V1 = 0, V2 = 0, V3 = 0, V4 = 0;
+      
+      if (RNDscatter < Pinel) {
+        //Do inelastic
+        inelastic = true;
+        /*
+        //if plasmon do plasmon
+        double RNDplasmon = Math.random();
+        if (RNDplasmon > Pplasmon) {
+          theta = 0;
+          totPlasmonEnergy += plasmaEnergy;
+        }
+        */
+        //if no secondary elecrton produced (other type of inelastic interaction such as a plasmon)
+        double RNDFSE = Math.random();
+        if (RNDFSE > Pfse) { //this was another interaction
+          theta = 0;
+        }
+        else {
+        //else produce an FSE
+        triggered += 1;
+        theta = doPrimaryInelastic(coefCalc, previousX, previousY, previousZ, electronEnergy, ionisationProbsSurrounding, true);
+        } //end if not plasmon
+      } //end if inelastic scatter
+      else { //else it stays false and the collision will be elastic
+        elasticCount += 1;
+        timesScattered += 1;
+        MonteCarloTotElasticCount += 1;
+        theta = doPrimaryElastic(electronEnergy, elasticProbsSurrounding, true);
+      }
+      //now further update the primary
+      phi =  2 * Math.PI * Math.random();
+      theta = previousTheta + theta;
+      if (theta >= (2 * Math.PI)) {
+        theta -= 2*Math.PI;
+      }
+      phi = previousPhi + phi;
+      if (phi >= (2 * Math.PI)) {
+        phi -= 2*Math.PI;
+      }
+     
+      xNorm = Math.sin(theta) * Math.cos(phi);
+      yNorm = Math.sin(theta) * Math.sin(phi);
+      zNorm = Math.cos(theta);
+      
+      
+        //update stopping powers
+        //get new stoppingPower
+        electronEnergy -= energyLost; 
+        stoppingPower = coefCalc.getStoppingPower(electronEnergy, true);
+        //get new lambdaT
+        double FSExSection = getFSEXSection(electronEnergy);
+        double FSELambda = coefCalc.getFSELambda(FSExSection, true);
+        double lambdaEl = coefCalc.getElectronElasticMFPL(electronEnergy, true);
+        double lambdaInel = coefCalc.getElectronInelasticMFPL(electronEnergy, true);
+        double innerShellLambda = coefCalc.betheIonisationxSection(electronEnergy, true);
+        double plasmonLambda = coefCalc.getPlasmaMFPL(electronEnergy);
+      //  lambdaT =  1 / (1/lambdaEl + 1/FSELambda);
+    //    lambdaT = 1 / (1/lambdaEl + 1/FSELambda + 1/plasmonLambda);
+   //     lambdaT =  1 / (1/lambdaEl + 1/innerShellLambda + 1/FSELambda);
+   //     lambdaT =  1 / (1/lambdaEl);
+        lambdaT = 1 / (1/lambdaEl + 1/lambdaInel);
+        s = -lambdaT*Math.log(Math.random());
+
+   //     Pplasmon = plasmonLambda/ (FSELambda + plasmonLambda); 
+   //     PinnerShell = FSELambda/(innerShellLambda + FSELambda);
+        
+        ionisationProbsSurrounding = coefCalc.getAllShellProbs(true);
+        elasticProbsSurrounding = coefCalc.getElasticProbs(true);
+        
+        //need to check if it crosses before it reaches s again and if it does update to this point
+        double intersectionDistance = 1000*getIntersectionDistance(previousX, previousY, previousZ, xNorm, yNorm, zNorm);
+        double[] intersectionPoint = getIntersectionPoint(intersectionDistance, previousX, previousY, previousZ, xNorm, yNorm, zNorm);
+        boolean pointInCrystal = isIntersectionInCrystal(intersectionPoint);
+        if (intersectionDistance < s && pointInCrystal == true) { //then need to change region here and reset stuff
+          surrounding = false;
+          electronEnergy -= intersectionDistance * stoppingPower;
+          previousX = intersectionPoint[0];
+          previousY = intersectionPoint[1];
+          previousZ = intersectionPoint[2];
+          stoppingPower = coefCalc.getStoppingPower(electronEnergy, false);
+          FSExSection = getFSEXSection(electronEnergy);
+          FSELambda = coefCalc.getFSELambda(FSExSection, false);
+          lambdaEl = coefCalc.getElectronElasticMFPL(electronEnergy, false);
+          lambdaInel = coefCalc.getElectronInelasticMFPL(electronEnergy, false);
+          lambdaT = 1 / (1/lambdaEl + 1/lambdaInel);
+          s = -lambdaT*Math.log(Math.random());
+        }
+        
+        PEL = lambdaT / lambdaEl;
+        Pinel = 1 - (lambdaT / lambdaEl);
+        Pfse = lambdaInel / FSELambda;
+        //update to new position
+        xn = previousX + s * xNorm;
+        yn = previousY + s * yNorm;
+        zn = previousZ + s * zNorm;
+        
+        //need to also check whether to track the primary electron anymore or give up on it 
+
+      }
+      else {
+        exited = true;
+      }
+    }
+  }
+  if (electronEnergy < 0.05) {
+    exited = true;
   }
   }
   if (timesScattered == 1) {
@@ -1195,6 +1058,7 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
    MonteCarloDose -= newMonteCarloFSEEscape;
    MonteCarloDose -= MonteCarloAugerEscape;
    MonteCarloDose -= MonteCarloFlEscape;
+   MonteCarloDose += MonteCarloAugerEntry;
    
 }
 
@@ -1222,6 +1086,10 @@ private double processMonteCarloDose(Beam beam, CoefCalc coefCalc) {
   double exposedVolume = exposedArea  * (sampleThickness/1000) * 1E-15; //exposed volume in dm^3
   double exposure = beam.getExposure();
   double electronNumber = exposure * (exposedArea * 1E08);
+  //change electron number now simulating whole area of beam
+  double beamArea = beam.getBeamArea();
+  electronNumber = exposure * (beamArea * 1E08);
+  
   
   //do the elastic stuff
   MonteCarloTotElasticCount = MonteCarloTotElasticCount * (electronNumber / numSimulatedElectrons);
@@ -1405,147 +1273,221 @@ private double getShellBindingEnergy(Element collidedElement, int collidedShell)
   return shellBindingEnergy;
 }
 
-/*
-private void MonteCarloSecondaryElectronInnerShell(CoefCalc coefCalc, double FSEenergy, double previousX, double previousY, double previousZ, 
-                                          double ca, double cb, double cc, double distTravelled) {
-  //need to be careful here as they will change Bethe global variables in coefCalc so this void must be called at the end of a collision
-  double electronEnergy = FSEenergy;
-  double innerShellLambda = coefCalc.betheIonisationxSection(electronEnergy);
-  Map<Element, double[]> ionisationProbs = coefCalc.getAllShellProbs();
-  double testRND = Math.random();
-  double s = -innerShellLambda*Math.log(testRND);
-  double runningDist = s;
-  double xn = previousX + s * ca;
-  double yn = previousY + s * cb;
-  double zn = previousZ + s * cc;
-  boolean exited = false;
-  while (exited == false) {
-    if ((runningDist > distTravelled) || (innerShellLambda <= 0)) {
-      exited = true;
+private double doPrimaryInelastic(CoefCalc coefCalc, double previousX, double previousY, double previousZ, 
+                                  double electronEnergy, Map<Element, double[]> ionisationProbs, boolean surrounding) {
+  double theta = 0;
+  boolean innerShell = false;
+  double shellBindingEnergy = 0;
+  Element collidedElement = null;
+  int collidedShell = -1;
+  //did this come from an inner shell?
+  double RNDinnerShell = Math.random();
+//    if (RNDinnerShell < PinnerShell) {  //they're all going to be coming from inner shells now
+    //Then this secondary electron came from an inner shell
+    innerShell = true;
+    //determine which elemental shell it came from
+    double elementRND = Math.random();
+    for (Element e : ionisationProbs.keySet()) {
+      collidedShell = findIfElementIonised(e, ionisationProbs, elementRND);
+      if (collidedShell >= 0) {
+        collidedElement = e;
+        break;
+      }
+    }        
+    shellBindingEnergy = getShellBindingEnergy(collidedElement, collidedShell);
+    double FSEtheta = 0, FSEphi = 0, FSEpreviousTheta = 0, FSEpreviousPhi = 0, FSExNorm = 0, FSEyNorm = 0, FSEzNorm = 0;
+    //firstly calculate the FSE energy
+    double epsilon = getFSEEnergy(electronEnergy, shellBindingEnergy);
+    double FSEEnergy = epsilon * electronEnergy - shellBindingEnergy;
+    if (FSEEnergy > 0) { //so only if it happened
+      totFSEEnergy += FSEEnergy; //tot energy of all  
+      totShellEnergy += shellBindingEnergy;
     }
-    if ((isMicrocrystalAt(xn, yn, zn) == true) && (exited == false)) {
-      previousX = xn;
-      previousY = yn;
-      previousZ = zn;
-      //determine which element has been ionized
-      double shellBindingEnergy = 0;
-      Element collidedElement = null;
-      double collidedShell = 0;
-      
-      double elementRND = Math.random();
-      for (Element e : ionisationProbs.keySet()) {
-        double[] elementShellProbs = ionisationProbs.get(e);
-        for (int k = 0; k < elementShellProbs.length; k++) {
-          if (elementShellProbs[k] > elementRND) { //Then this element is the one that was ionised
-            collidedElement = e;
-            collidedShell = k;
-            break;
-          }
-        }
-      }
-      
-      double shellFluorescenceYield = 0;
-      double flauEnergy = 0;
-      if (collidedShell == 0) {
-        shellBindingEnergy = collidedElement.getKEdge();
-        shellFluorescenceYield = collidedElement.getKShellFluorescenceYield();
-        flauEnergy = collidedElement.getKFluorescenceAverage();
-      }
-      else if (collidedShell == 1) {
-        shellBindingEnergy = collidedElement.getL1Edge();
-        shellFluorescenceYield = collidedElement.getL1ShellFluorescenceYield();
-        flauEnergy = collidedElement.getLFluorescenceAverage();
-      }
-      else if (collidedShell == 2) {
-        shellBindingEnergy = collidedElement.getL2Edge();
-        shellFluorescenceYield = collidedElement.getL2ShellFluorescenceYield();
-        flauEnergy = collidedElement.getLFluorescenceAverage();
-      }
-      else if (collidedShell == 3){
-        shellBindingEnergy = collidedElement.getL3Edge();
-        shellFluorescenceYield = collidedElement.getL3ShellFluorescenceYield();
-        flauEnergy = collidedElement.getLFluorescenceAverage();
-      }
-      
-      
-      
-      if (electronEnergy > shellBindingEnergy) { //only a collision if it is physically possible
-        //Do Fl or Auger
-      //RND for FL or Auger given it was that element
-        double fluoresenceYieldKRND = Math.random();
-  //      double KshellFluorescenceYield = collidedElement.getKShellFluorescenceYield();
-        if (fluoresenceYieldKRND <= shellFluorescenceYield) { 
-        //then it's fluorescence
-          // get the absorption coefficient of the crystal
-       //   double flEnergy = collidedElement.getKFluorescenceAverage();
-          double absCoef = coefCalc.getEMFlAbsCoef(flauEnergy); //units um^-1
-          //get a random direction vector
-          double xNorm = Math.random();
-          double yNorm = Math.random();
-          double zNorm = Math.random();
-          //Draw the vector to the edge
-          double flEscapeDist = getIntersectionDistance(previousX, previousY, previousZ, xNorm, yNorm, zNorm); //um
-          double escapeFraction = Math.exp(-absCoef * flEscapeDist);
-          MonteCarloFlEscape += escapeFraction * flauEnergy;
-          extraFlEscape += escapeFraction * flauEnergy;
-        }
-        else {
-          //need to do Auger electrons
-          //Auger electron energy equals flEnergy - shell binding energy of Auger electron
-          //for now ignore the shell binding energy so overestimating their significance
-     //     double augerEnergy = collidedElement.getKFluorescenceAverage();
-     //     totAugerEnergy += flauEnergy;
-          //get a random direction vector
-          double xNorm = Math.random();
-          double yNorm = Math.random();
-          double zNorm = Math.random();
-          //Draw the vector to the edge
-          double augerEscapeDist = 1000 * getIntersectionDistance(previousX, previousY, previousZ, xNorm, yNorm, zNorm); //um
-          double augerStoppingPower = coefCalc.getStoppingPower(flauEnergy);
-          double augerEnergyToEdge = augerStoppingPower * augerEscapeDist;
-          if (augerEnergyToEdge < flauEnergy){
-            MonteCarloAugerEscape += flauEnergy - augerEnergyToEdge;
-            extraAugerEscape += flauEnergy - augerEnergyToEdge;
-          }
-        }
-        //update new energy
-        electronEnergy -= shellBindingEnergy;
-        innerShellLambda = coefCalc.betheIonisationxSection(electronEnergy);
-        ionisationProbs = coefCalc.getAllShellProbs();
-      }  
-      //update stuff for next collision
-      s = -innerShellLambda*Math.log(Math.random());
-      runningDist += s;
-      xn = previousX + s * ca;
-      yn = previousY + s * cb;
-      zn = previousZ + s * cc;
+  if (collidedElement.getAtomicNumber() > 2 && collidedShell < 4 && FSEEnergy > 0) { //only do fl or Auger if K or L shell and not H or He K shells
+    FlAugerMonteCarlo(collidedElement, previousX, previousY, previousZ, collidedShell, coefCalc, surrounding);
+  }
+ //   theta = 0;
+//    }
+//    else {
+  //Track the secondary electron
+  //I'm going to take t as the energy of that particular electron
+  // This could be two values for the primary, with stopping power or with inel removal
+  double sinSquaredAlpha = 0;
+  double sinSquaredGamma = 0;
+  double escapeDist = 0, maxDist = 0;
+  double minTrackEnergy = 0.05;  //this needs to be tested 
+  if (FSEEnergy > minTrackEnergy) { // so I only care about the FSE if it is more than x 
+//   if (FSEEnergy > 0) { // so I only care about the FSE if it is more than x 
+    // determine the angles of the FSE and the primary electron
+    double tPrimary = (electronEnergy-FSEEnergy)/511; //t is in rest mass units. Need to change to stopping power en
+    double tFSE = FSEEnergy/511;
+    //alpha = angle of primary electron
+    sinSquaredAlpha = (2 * epsilon) / (2 + tPrimary - tPrimary*epsilon);
+    //gamma - angle of secondary electron
+    sinSquaredGamma = 2*(1-epsilon) / (2 + tFSE*epsilon); 
+  
+  FSEtheta = Math.asin(Math.pow(sinSquaredGamma, 0.5));
+  FSEphi = 2 * Math.PI * Math.random();
+  
+  
+  FSEtheta = FSEpreviousTheta + FSEtheta;
+  if (FSEtheta >= (2 * Math.PI)) {
+    FSEtheta -= 2*Math.PI;
+  }
+  FSEphi = FSEpreviousPhi + FSEphi;
+  if (FSEphi >= (2 * Math.PI)) {
+    FSEphi -= 2*Math.PI;
+  }
+ /*   
+  FSExNorm = Math.sin(FSEtheta) * Math.cos(FSEphi);
+  FSEyNorm = Math.sin(FSEtheta) * Math.sin(FSEphi);
+  FSEzNorm = Math.cos(FSEtheta);
+  */
+        //now I have a vector need to find where it will intersect point and the distance
+  //If doing Monte Carlo of FSE would start tracking it here
+//  totFSEEnergy += FSEEnergy;
+  
+  
+  
+  MonteCarloSecondaryElastic(coefCalc, FSEEnergy, previousX, previousY, previousZ, FSEtheta, FSEphi, surrounding);
+  
+  
+  /*
+  escapeDist = 1000 * getIntersectionDistance(previousX, previousY, previousZ, FSExNorm, FSEyNorm, FSEzNorm); //nm
+  double FSEStoppingPower = coefCalc.getStoppingPower(FSEEnergy, false);
+  double energyToEdge = FSEStoppingPower * escapeDist;
+  maxDist = FSEEnergy / FSEStoppingPower;
+  totFSEEnergy += FSEEnergy;
+  if (energyToEdge < FSEEnergy){
+  //  MonteCarloFSEEscape += FSEEnergy - energyToEdge;
+    double test = FSEEnergy - energyToEdge;
+    //I'm thinking about multislicing this secondary electron and seeing if that makes a difference!!!
+    //I think it will and it should reduce escape so increase dose - and it did
+    
+    //I should possibly also think about actually Monte Carlo tracking these at these low energies as they
+    //will scatter and change direction
+    double energyLostStep = 0;
+    double newEnergy = FSEEnergy;
+    int numSlices = 1;
+    for (int j = 0; j < numSlices; j++) { //I will need to play around with the amount of slicing when I am writing up
+      energyLostStep = (escapeDist/numSlices) * FSEStoppingPower;
+      newEnergy -= energyLostStep;
+      FSEStoppingPower = coefCalc.getStoppingPower(newEnergy, false);
     }
-    else {
-      exited = true;
+    if (newEnergy > 0) {
+      MonteCarloFSEEscape += newEnergy;
     }
-    if (electronEnergy < 0.1) {
-      exited = true; //exit the loop if the electron is below a certain energy, set here at 100eV
+    
+  }
+  */
+  }
+  /*
+  //Track Fl and Auger from this secondary electron
+  //Need to think about the distance it is going and stuff like that though before I plough on
+  double distTravelled = Math.min(maxDist, escapeDist);
+  MonteCarloSecondaryElectronInnerShell(coefCalc, FSEEnergy, previousX, previousY, previousZ, FSExNorm, FSEyNorm, FSEzNorm, distTravelled);
+  */
+  //track the primary electron 
+  /*
+  phi = Math.asin(Math.pow(sinSquaredAlpha, 0.5));
+  cosPhi = Math.cos(phi);
+  */
+  theta = Math.asin(Math.pow(sinSquaredAlpha, 0.5));
+  /* not needed as done later
+  phi = 2 * Math.PI * Math.random();
+  
+  
+  theta = previousTheta + theta;
+  if (theta >= (2 * Math.PI)) {
+    theta -= 2*Math.PI;
+  }
+  phi = previousPhi + phi;
+  if (phi >= (2 * Math.PI)) {
+    phi -= 2*Math.PI;
+  }
+  */
+//  } 
+  return theta;
+}
+
+private double doPrimaryElastic(double electronEnergy, Map<ElementEM, Double> elasticProbs, boolean surrounding) {
+//now start the loop - clean up the first iteration into this later 
+  //Determine what element elastically scattered the electron so can choose an alpha correctly
+  
+  double elasticElementRND = Math.random();
+  ElementEM elasticElement = null;
+  for (ElementEM e : elasticProbs.keySet()) {
+    if (elasticProbs.get(e) > elasticElementRND) { //Then this element is the one that was ionised
+      elasticElement = e;
+      break;
     }
   }
   
+  //get the angles
+  double alpha = getRutherfordScreeningElement(elasticElement, electronEnergy);
+  double RND = Math.random();
+  /*
+  cosPhi = 1 - ((2*alpha * Math.pow(RND, 2))/(1+alpha-RND));
+  phi = Math.acos(cosPhi);
+  */
+  double theta = Math.acos(1 - ((2*alpha * Math.pow(RND, 2))/(1+alpha-RND)));
+  
+  //get angle by ELSEPA stuff
+  
+  if ((electronEnergy <= 300) && (electronEnergy >= 0.05)) {
+    theta = getPrimaryElasticScatteringAngle(electronEnergy, elasticElement.getAtomicNumber());
+  }
+
+  
+  double thisTheta = theta;
+  
+  //Impart elastic knock-on energy???
+  if (surrounding == false) {
+    double Emax = electronEnergy * ((1 + electronEnergy)/1022)/(456*elasticElement.getAtomicWeight());
+    double m = 9.10938356E-28; //kg
+    double u = 1.660539040E-27; //kg/(g/mol)
+    double restEnergy = 511;
+    Emax = (2/elasticElement.getAtomicWeight())*(m/u)*electronEnergy*((2+electronEnergy)/(restEnergy));
+    double Ed = 35;
+  /*
+  double nuclearMass = elasticElement.getAtomicWeight() * 1.660539040E-27;
+  double c = 299792458;
+  double csquared = c*c;
+  double Mcsquared = nuclearMass * csquared;
+  double KinE = electronEnergy * Beam.KEVTOJOULES;
+  double sintheta = Math.pow(Math.sin(theta/2), 2);
+  double energyTransmitted = (Math.pow(KinE, 2) / (Mcsquared))
+                              * ((2 * sintheta) / (1 + sintheta *(2*(KinE)/Mcsquared) ));
+  energyTransmitted /= Beam.KEVTOJOULES;
+  elasticEnergyTot += energyTransmitted;
+  */
+  
+    double sintheta = Math.pow(Math.sin(thisTheta/2), 2);
+    double en = (Emax/1000) * sintheta;
+    elasticEnergyTot += en;
+    if (Emax > Ed) {
+      displacementEnergy += en;
+    }
+  }
+  return theta;
 }
-*/
+
 private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, double previousX, double previousY, double previousZ, 
-    double FSEtheta, double FSEphi) { //Will need to combine this with the inner shell stuff as well - means re-updating the inner shell x sections after I mess with them
+    double FSEtheta, double FSEphi, boolean surrounding) { //Will need to combine this with the inner shell stuff as well - means re-updating the inner shell x sections after I mess with them
   double energyLost = 0;
   double theta = FSEtheta;
   double phi = FSEphi;
   double electronEnergy = FSEenergy;
   double startingEnergy = FSEenergy;
-  double startingStoppingPower = coefCalc.getStoppingPower(startingEnergy, false);
+  double startingStoppingPower = coefCalc.getStoppingPower(startingEnergy, surrounding);
   double stoppingPower = startingStoppingPower;
   
-  double startingLambda_el = coefCalc.getElectronElasticMFPL(startingEnergy, false);
-  Map<ElementEM, Double> elasticProbs = coefCalc.getElasticProbs(false);
+  double startingLambda_el = coefCalc.getElectronElasticMFPL(startingEnergy, surrounding);
+  Map<ElementEM, Double> elasticProbs = coefCalc.getElasticProbs(surrounding);
   
-  double startingInnerShellLambda = coefCalc.betheIonisationxSection(startingEnergy, false);
+  double startingInnerShellLambda = coefCalc.betheIonisationxSection(startingEnergy, surrounding);
  // Map<Element, Double> ionisationProbs = coefCalc.getInnerShellProbs(); 
-  Map<Element, double[]> ionisationProbs = coefCalc.getAllShellProbs(false); 
+  Map<Element, double[]> ionisationProbs = coefCalc.getAllShellProbs(surrounding); 
 
   //Just do elastic for now and then incorporate inner shell
 //  double lambdaT = startingLambda_el;
@@ -1562,6 +1504,50 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
   double xNorm = Math.sin(theta) * Math.cos(phi);
   double yNorm = Math.sin(theta) * Math.sin(phi);
   double zNorm = Math.cos(theta);
+  
+  
+  boolean track = true;
+  //determine if it crosses into the crystal before s
+  // I need to check if it's going to intersect and what the distance is
+  if (surrounding == true) {
+    double intersectionDistance = 1000*getIntersectionDistance(previousX, previousY, previousZ, xNorm, yNorm, zNorm);
+    Double distanceObject = Double.valueOf(intersectionDistance);
+    if (intersectionDistance < 0 || distanceObject.isNaN()
+        || distanceObject.isInfinite()) {
+        track = false;
+    }
+    if (track == true) {
+      double[] intersectionPoint = getIntersectionPoint(intersectionDistance, previousX, previousY, previousZ, xNorm, yNorm, zNorm);
+      boolean pointInCrystal = isIntersectionInCrystal(intersectionPoint);
+      if (intersectionDistance < s && pointInCrystal == true) { //then need to change region here and reset stuff
+        surrounding = false;
+        electronEnergy -= intersectionDistance * stoppingPower;
+        previousX = intersectionPoint[0];
+        previousY = intersectionPoint[1];
+        previousZ = intersectionPoint[2];
+        //update the stopping power and stuff
+        stoppingPower = coefCalc.getStoppingPower(startingEnergy, surrounding);
+        startingLambda_el = coefCalc.getElectronElasticMFPL(startingEnergy, surrounding);
+        elasticProbs = coefCalc.getElasticProbs(surrounding);
+        startingInnerShellLambda = coefCalc.betheIonisationxSection(startingEnergy, surrounding);
+       // Map<Element, Double> ionisationProbs = coefCalc.getInnerShellProbs(); 
+        ionisationProbs = coefCalc.getAllShellProbs(surrounding); 
+        //Just do elastic for now and then incorporate inner shell
+  //      double lambdaT = startingLambda_el;
+        if (startingInnerShellLambda > 0) {
+          lambdaT = 1/((1/startingLambda_el) + (1/startingInnerShellLambda));
+        }
+        else{
+          lambdaT = startingLambda_el;   //should probably change the whole thing to the FSe model and just not track the extra electrons
+        }
+        testRND = Math.random();
+        s = -lambdaT*Math.log(testRND);
+        Pinel = 1 - (lambdaT / startingLambda_el);
+      }
+    }
+  }
+  
+  
   double xn = previousX + s * xNorm;
   double yn = previousY + s * yNorm;
   double zn = previousZ + s * zNorm;
@@ -1601,6 +1587,7 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
       
       shellBindingEnergy = getShellBindingEnergy(collidedElement, collidedShell);
       if (collidedElement.getAtomicNumber() > 2 && collidedShell < 4) {
+        
       double shellFluorescenceYield = 0;
       double flauEnergy = 0;
       if (collidedShell == 0) {
@@ -1738,6 +1725,7 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
       zn = previousZ + s * zNorm;
     }
     else {
+      if (surrounding == false) {
       exited = true;
           //I need to add the distance bit here - multislice 
         double escapeDist = 1000 * getIntersectionDistance(previousX, previousY, previousZ, xNorm, yNorm, zNorm); //nm
@@ -1756,7 +1744,113 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
             newMonteCarloFSEEscape += newEnergy;
           }
         }
-      
+      }
+      else { //surrounding = true
+        double distanceFrom = Math.pow(Math.pow(Math.abs(xn) - (XDimension/2), 2) + Math.pow(Math.abs(yn) - (YDimension/2), 2), 0.5);
+        double distanceOf = Math.pow(Math.pow(XDimension, 2) + Math.pow(YDimension, 2), 0.5);
+        if (distanceFrom > distanceOf || zn > ZDimension/2 || zn < ZDimension/2) {
+          track = false;
+        }
+        if (track == true) {
+          previousTheta = theta;
+          previousPhi = phi;
+          previousX = xn;
+          previousY = yn;
+          previousZ = zn;
+          //update dose and energy and stoppingPower
+          energyLost = s * stoppingPower;
+          
+          
+        double RNDscatter = Math.random();
+        if (RNDscatter < Pinel) { // If the scatter was an inner shell ionisation 
+            //do nothing
+        } //end if inelastic scatter
+        else { //else it stays false and the collision will be elastic
+            //elastic just want to get the angle
+          double elasticElementRND = Math.random();
+          ElementEM elasticElement = null;
+          for (ElementEM e : elasticProbs.keySet()) {
+            if (elasticProbs.get(e) > elasticElementRND) { //Then this element is the one that was ionised
+              elasticElement = e;
+              break;
+            }
+          }
+          
+          //get the angles
+     //     double phi = 0, cosPhi = 1, psi = 0, AN = 0, AM = 0, V1 = 0, V2 = 0, V3 = 0, V4 = 0;
+          double alpha = getRutherfordScreeningElement(elasticElement, electronEnergy);
+          double RND = Math.random();
+          /*
+          cosPhi = 1 - ((2*alpha * Math.pow(RND, 2))/(1+alpha-RND));
+          phi = Math.acos(cosPhi);
+        */
+          theta = Math.acos(1 - ((2*alpha * Math.pow(RND, 2))/(1+alpha-RND)));
+          
+          //ELSEPA stuff
+
+          theta = getPrimaryElasticScatteringAngle(electronEnergy, elasticElement.getAtomicNumber());
+
+          
+          theta = previousTheta + theta;
+          if (theta >= (2 * Math.PI)) {
+            theta -= 2*Math.PI;
+          }
+          phi = 2 * Math.PI * Math.random();
+          phi = previousPhi + phi;
+          if (phi >= (2 * Math.PI)) {
+            phi -= 2*Math.PI;
+          }
+          
+          xNorm = Math.sin(theta) * Math.cos(phi);
+          yNorm = Math.sin(theta) * Math.sin(phi);
+          zNorm = Math.cos(theta);
+        }
+        
+          //update stopping powers
+          //get new stoppingPower
+          electronEnergy -= energyLost; 
+          stoppingPower = coefCalc.getStoppingPower(electronEnergy, true);
+          //get new lambdaT
+          double FSExSection = getFSEXSection(electronEnergy);
+          double lambdaEl = coefCalc.getElectronElasticMFPL(electronEnergy, true);
+          double lambdaInel = coefCalc.getElectronInelasticMFPL(electronEnergy, true);
+          lambdaT = 1 / (1/lambdaEl + 1/lambdaInel);
+          s = -lambdaT*Math.log(Math.random());
+   
+          ionisationProbs = coefCalc.getAllShellProbs(true);
+          elasticProbs = coefCalc.getElasticProbs(true);
+          
+          //need to check if it crosses before it reaches s again and if it does update to this point
+          double intersectionDistance = 1000*getIntersectionDistance(previousX, previousY, previousZ, xNorm, yNorm, zNorm);
+          double[] intersectionPoint = getIntersectionPoint(intersectionDistance, previousX, previousY, previousZ, xNorm, yNorm, zNorm);
+          boolean pointInCrystal = isIntersectionInCrystal(intersectionPoint);
+          if (intersectionDistance < s && pointInCrystal == true) { //then need to change region here and reset stuff
+            surrounding = false;
+            electronEnergy -= intersectionDistance * stoppingPower;
+            previousX = intersectionPoint[0];
+            previousY = intersectionPoint[1];
+            previousZ = intersectionPoint[2];
+            stoppingPower = coefCalc.getStoppingPower(electronEnergy, false);
+            FSExSection = getFSEXSection(electronEnergy);
+            lambdaEl = coefCalc.getElectronElasticMFPL(electronEnergy, false);
+            lambdaInel = coefCalc.getElectronInelasticMFPL(electronEnergy, false);
+            lambdaT = 1 / (1/lambdaEl + 1/lambdaInel);
+            s = -lambdaT*Math.log(Math.random());
+          }
+          
+          Pinel = 1 - (lambdaT / lambdaEl);
+          //update to new position
+          xn = previousX + s * xNorm;
+          yn = previousY + s * yNorm;
+          zn = previousZ + s * zNorm;
+          
+          //need to also check whether to track the primary electron anymore or 
+          
+        }
+        else {
+          exited = true;
+        }
+      }
     }
     if (electronEnergy < 0.05) { // play with this and maybe graph it
       exited = true;
@@ -1838,6 +1932,112 @@ private double getPrimaryElasticScatteringAngle(double electronEnergy, int atomi
   double deflectionAngle = returnDeflectionAngle(highEnergy, energyAngleProbs);
   
   return deflectionAngle;
+}
+
+private double getFSEEnergy(double electronEnergy, double shellBindingEnergy) {
+  double RNDFSEEnergy = Math.random();
+  double energyCutOff = (14.0/1000.0)/electronEnergy;
+  
+  double tau = electronEnergy/511;
+  double alphaParam = Math.pow(tau/(tau+1), 2);
+  double betaParam = (2*tau + 1)/Math.pow(tau+1, 2);
+  double gammaParam = (1/energyCutOff)-(1/(1-energyCutOff))-(alphaParam*energyCutOff)-(betaParam*Math.log((1-energyCutOff)/((electronEnergy*energyCutOff)/511)));
+  double omegaParam = RNDFSEEnergy*(gammaParam + (alphaParam/2)) - gammaParam;
+  double epsilon = (omegaParam-2-betaParam+Math.pow(Math.pow(omegaParam-2-betaParam, 2) + 4*(omegaParam+alphaParam-2*betaParam), 0.5)) /
+                    (2*(omegaParam+alphaParam-2*betaParam));
+  
+  double omega = 1 / ((1/energyCutOff) - ((1/energyCutOff)-2)*RNDFSEEnergy);
+//    double omega = 1 / (100 - 98*Math.random());
+  return epsilon;
+}
+
+private void FlAugerMonteCarlo(Element collidedElement, double previousX, double previousY, double previousZ, 
+                                int collidedShell, CoefCalc coefCalc, boolean surrounding) {
+  double shellFluorescenceYield = 0;
+  double flauEnergy = 0;
+  if (collidedShell == 0) {
+    shellFluorescenceYield = collidedElement.getKShellFluorescenceYield();
+    flauEnergy = collidedElement.getKFluorescenceAverage();
+  }
+  else if (collidedShell == 1) {
+    shellFluorescenceYield = collidedElement.getL1ShellFluorescenceYield();
+    flauEnergy = collidedElement.getLFluorescenceAverage();
+  }
+  else if (collidedShell == 2) {
+    shellFluorescenceYield = collidedElement.getL2ShellFluorescenceYield();
+    flauEnergy = collidedElement.getLFluorescenceAverage();
+  }
+  else if (collidedShell == 3){
+    shellFluorescenceYield = collidedElement.getL3ShellFluorescenceYield();
+    flauEnergy = collidedElement.getLFluorescenceAverage();
+  }
+  
+  //Do Fl or Auger
+//RND for FL or Auger given it was that element
+  double fluoresenceYieldKRND = Math.random();
+//  double KshellFluorescenceYield = collidedElement.getKShellFluorescenceYield();
+  if(flauEnergy > 0) {
+    if (fluoresenceYieldKRND <= shellFluorescenceYield) { 
+    //then it's fluorescence
+      // get the absorption coefficient of the crystal
+  //    double flEnergy = collidedElement.getKFluorescenceAverage();
+      if (surrounding == false) {
+        double absCoef = coefCalc.getEMFlAbsCoef(flauEnergy); //units um^-1
+        //get a random direction vector
+        double SExNorm = Math.random();
+        double SEyNorm = Math.random();
+        double SEzNorm = Math.random();
+        //Draw the vector to the edge
+        double flEscapeDist = getIntersectionDistance(previousX, previousY, previousZ, SExNorm, SEyNorm, SEzNorm); //um
+        double escapeFraction = Math.exp(-absCoef * flEscapeDist);
+        MonteCarloFlEscape += escapeFraction * flauEnergy;
+        numFL += 1;
+      }
+      //if it's in the surrounding don't bother with fluorescence
+    }
+    else {
+      //need to do Auger electrons
+      //Auger electron energy equals flEnergy - shell binding energy of Auger electron
+      //for now ignore the shell binding energy so overestimating their significance
+   //   double augerEnergy = collidedElement.getKFluorescenceAverage();
+      totAugerEnergy += flauEnergy;
+      numAuger += 1;
+      //get a random direction vector
+      double SExNorm = Math.random();
+      double SEyNorm = Math.random();
+      double SEzNorm = Math.random();
+      //Draw the vector to the edge
+      if (surrounding == false) {
+        double augerEscapeDist = 1000* getIntersectionDistance(previousX, previousY, previousZ, SExNorm, SEyNorm, SEzNorm); //um
+        double augerStoppingPower = coefCalc.getStoppingPower(flauEnergy, false);
+        double augerEnergyToEdge = augerStoppingPower * augerEscapeDist;
+        if (augerEnergyToEdge < flauEnergy){
+          MonteCarloAugerEscape += flauEnergy - augerEnergyToEdge;
+        }
+      }
+      else {
+        Double augerEntryDist = 1000* getIntersectionDistance(previousX, previousY, previousZ, SExNorm, SEyNorm, SEzNorm); //um
+        boolean pointInCrystal = false;
+        if (augerEntryDist <= 0 || augerEntryDist.isNaN()
+            || augerEntryDist.isInfinite()){
+              //do nothing
+            }
+        else {
+          //see if in crystal
+          double[] interSectionPoint = getIntersectionPoint(augerEntryDist, previousX, previousY, previousZ, SExNorm, SEyNorm, SEzNorm);
+        }
+        if (pointInCrystal == true) {
+          double augerStoppingPower = coefCalc.getStoppingPower(flauEnergy, true);
+          double augerEnergyToEdge = augerStoppingPower * augerEntryDist;
+          if (augerEnergyToEdge < flauEnergy){
+            MonteCarloAugerEntry += flauEnergy - augerEnergyToEdge;
+          }
+        }
+        //I am overestimating here a bit because the Auger can't enter and come back out again, 
+        //given the small significance of Auger this doesn't matter much
+      }
+    }
+  }
 }
 
 private InputStreamReader locateFile(String filePath) 
@@ -2038,6 +2238,20 @@ private boolean isMicrocrystalAt(final double x, final double y, final double z)
   }
 
   return occ[1];
+}
+
+private boolean isIntersectionInCrystal(double[] intersectionPoint) {
+  //fudge the point
+  for (int j = 0; j < 3; j++) {
+    if (intersectionPoint[j] < 0) {
+      intersectionPoint[j] -= 0.000001;
+    }
+    else {
+      intersectionPoint[j] += 0.000001;
+    }
+  }
+  boolean pointInCrystal = isMicrocrystalAt(intersectionPoint[0], intersectionPoint[1], intersectionPoint[2]);
+  return pointInCrystal;
 }
 
 private double getIntersectionDistance(double x, double y, double z, double ca, double cb, double cc) {
