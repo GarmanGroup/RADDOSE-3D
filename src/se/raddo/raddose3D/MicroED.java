@@ -90,6 +90,7 @@ public class MicroED {
   private double MonteCarloTotElasticCount;
   private double MonteCarloSingleElasticCount;
   private double MonteCarloFSEEscape;
+  private double MonteCarloFSEEntry; 
   private double MonteCarloFlEscape;
   private double MonteCarloAugerEscape;
   private double MonteCarloAugerEntry;
@@ -684,7 +685,7 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
     }
     previousY = (RNDy * beamY) - (beamY/2);
 
-    /*
+    
     //direction 
     double[] directionVector = getElectronStartingDirection(beam, previousX, previousY, previousZ);
     xNorm = directionVector[0];
@@ -708,10 +709,11 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
     if (yNorm < 0) {
       phi = 2*Math.PI - phi;  //so phi can be between 0 and 2pi not just pi
     }
-    */
+    
    
     //determine if the electron is incident on the sample or not - 
     boolean surrounding = !isMicrocrystalAt(previousX, previousY, 0); //Z = 0 as just looking at x and y
+
     // if it is a certain distance away from the sample ignore it entirely - if it is times 2?
     boolean track = false;
     if (surrounding == true) {
@@ -724,9 +726,10 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
     //if it isn't I need to track it, untrack if exits this boundary I set up, deposit dose if something goes in the xtal
     //secondaries from the surrounding should only be tracked if they are heading in the right direction initially 
     //remember to adjust how the Monte Carlo dose is adjusted accordingly 
-    
-    
-    
+    if (coefCalc.isCryo() == false) {
+      track = false;
+    }  
+
   boolean inelastic = false;
   boolean backscattered = false;
   int elasticCount = 0;
@@ -798,6 +801,7 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
   //if it has not left move onto the loop
   while (exited == false) {
   if (isMicrocrystalAt(xn, yn, zn) == true) {
+    surrounding = false;
     ElementEM elasticElement = null;
     scattered = true;
     thisTriggered += 1;
@@ -844,6 +848,10 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
       elasticCount += 1;
       timesScattered += 1;
       MonteCarloTotElasticCount += 1;
+      
+      //reupdate elastic probs because Monte carlo seconadry may have messed it up
+      double fix = coefCalc.getElectronElasticMFPL(electronEnergy, false);
+      elasticProbs = coefCalc.getElasticProbs(false);
       theta = doPrimaryElastic(electronEnergy, elasticProbs, false);
     }
     //now further update the primary
@@ -912,10 +920,12 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
     else { // surrounding = true 
       // track this electron until track = false - it is out of Z area or the extended area 
       //check whether to track it or not
+      if (track == true){
       double distanceFrom = Math.pow(Math.pow(Math.abs(xn) - (XDimension/2), 2) + Math.pow(Math.abs(yn) - (YDimension/2), 2), 0.5);
       double distanceOf = Math.pow(Math.pow(XDimension, 2) + Math.pow(YDimension, 2), 0.5);
-      if (distanceFrom > distanceOf || zn > ZDimension/2 || zn < ZDimension/2) {
+      if (distanceFrom > distanceOf || zn > ZDimension/2 || zn < -ZDimension/2) {
         track = false;
+      }
       }
       if (track == true) {
         previousTheta = theta;
@@ -956,6 +966,8 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
         elasticCount += 1;
         timesScattered += 1;
         MonteCarloTotElasticCount += 1;
+        double fix = coefCalc.getElectronElasticMFPL(electronEnergy, true);
+        elasticProbsSurrounding = coefCalc.getElasticProbs(true);
         theta = doPrimaryElastic(electronEnergy, elasticProbsSurrounding, true);
       }
       //now further update the primary
@@ -1059,6 +1071,7 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
    MonteCarloDose -= MonteCarloAugerEscape;
    MonteCarloDose -= MonteCarloFlEscape;
    MonteCarloDose += MonteCarloAugerEntry;
+   MonteCarloDose += MonteCarloFSEEntry;
    
 }
 
@@ -1413,7 +1426,7 @@ private double doPrimaryInelastic(CoefCalc coefCalc, double previousX, double pr
 private double doPrimaryElastic(double electronEnergy, Map<ElementEM, Double> elasticProbs, boolean surrounding) {
 //now start the loop - clean up the first iteration into this later 
   //Determine what element elastically scattered the electron so can choose an alpha correctly
-  
+
   double elasticElementRND = Math.random();
   ElementEM elasticElement = null;
   for (ElementEM e : elasticProbs.keySet()) {
@@ -1507,6 +1520,8 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
   
   
   boolean track = true;
+  boolean entered = false;
+  double entryEnergy = 0;
   //determine if it crosses into the crystal before s
   // I need to check if it's going to intersect and what the distance is
   if (surrounding == true) {
@@ -1521,7 +1536,9 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
       boolean pointInCrystal = isIntersectionInCrystal(intersectionPoint);
       if (intersectionDistance < s && pointInCrystal == true) { //then need to change region here and reset stuff
         surrounding = false;
+        entered = true;
         electronEnergy -= intersectionDistance * stoppingPower;
+        entryEnergy = electronEnergy;
         previousX = intersectionPoint[0];
         previousY = intersectionPoint[1];
         previousZ = intersectionPoint[2];
@@ -1560,6 +1577,11 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
   while (exited == false) {
     if (isMicrocrystalAt(xn, yn, zn) == true) {
       //reset
+      if (surrounding == true) {
+        entered = true;
+        entryEnergy = electronEnergy;
+      }
+      surrounding = false;
       scattered = true;
       previousTheta = theta;
       previousPhi = phi;
@@ -1728,6 +1750,8 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
       if (surrounding == false) {
       exited = true;
           //I need to add the distance bit here - multislice 
+      
+
         double escapeDist = 1000 * getIntersectionDistance(previousX, previousY, previousZ, xNorm, yNorm, zNorm); //nm
         double FSEStoppingPower = coefCalc.getStoppingPower(electronEnergy, false);
         double energyToEdge = FSEStoppingPower * escapeDist;
@@ -1741,14 +1765,25 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
           }
           if (newEnergy > 0) {
            // MonteCarloFSEEscape += newEnergy;
-            newMonteCarloFSEEscape += newEnergy;
+            if (entered == false) {
+              newMonteCarloFSEEscape += newEnergy;
+            }
+            else {
+              MonteCarloFSEEntry += entryEnergy - newEnergy;  //here the entered FSE has escaped again
+            }
           }
         }
+        else {
+          if (entered == true) {  // here the entered FSE has stoppped int he sample so all energy stays in sample
+            MonteCarloFSEEntry += entryEnergy;
+          }
+        }
+     
       }
       else { //surrounding = true
         double distanceFrom = Math.pow(Math.pow(Math.abs(xn) - (XDimension/2), 2) + Math.pow(Math.abs(yn) - (YDimension/2), 2), 0.5);
         double distanceOf = Math.pow(Math.pow(XDimension, 2) + Math.pow(YDimension, 2), 0.5);
-        if (distanceFrom > distanceOf || zn > ZDimension/2 || zn < ZDimension/2) {
+        if (distanceFrom > distanceOf || zn > ZDimension/2 || zn < -ZDimension/2) {
           track = false;
         }
         if (track == true) {
@@ -1826,7 +1861,9 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
           boolean pointInCrystal = isIntersectionInCrystal(intersectionPoint);
           if (intersectionDistance < s && pointInCrystal == true) { //then need to change region here and reset stuff
             surrounding = false;
+            entered = true;
             electronEnergy -= intersectionDistance * stoppingPower;
+            entryEnergy = electronEnergy;
             previousX = intersectionPoint[0];
             previousY = intersectionPoint[1];
             previousZ = intersectionPoint[2];
@@ -2244,13 +2281,13 @@ private boolean isIntersectionInCrystal(double[] intersectionPoint) {
   //fudge the point
   for (int j = 0; j < 3; j++) {
     if (intersectionPoint[j] < 0) {
-      intersectionPoint[j] -= 0.000001;
-    }
-    else {
       intersectionPoint[j] += 0.000001;
     }
+    else {
+      intersectionPoint[j] -= 0.000001;
+    }
   }
-  boolean pointInCrystal = isMicrocrystalAt(intersectionPoint[0], intersectionPoint[1], intersectionPoint[2]);
+  boolean pointInCrystal = isMicrocrystalAt(intersectionPoint[0]*1000, intersectionPoint[1]*1000, intersectionPoint[2]*1000);
   return pointInCrystal;
 }
 
