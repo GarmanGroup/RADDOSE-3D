@@ -99,6 +99,11 @@ public class MicroED {
   private double extraAugerEscape;
   private double newMonteCarloFSEEscape;
   
+  private double MonteCarloElectronsExited;
+  private double MonteCarloElectronsEntered;
+  private double MonteCarloCharge;
+  private double MonteCarloChargeDensity;
+  
   private double elasticEnergyTot;
   private double displacementEnergy;
  
@@ -202,6 +207,9 @@ public class MicroED {
     System.out.println("Number elastic events Monte Carlo: " + MonteCarloTotElasticCount);
     System.out.println("Number single elastic events Monte Carlo: " + MonteCarloSingleElasticCount);
     System.out.println("Number of productive electrons Monte Carlo: " + MonteCarloProductive);
+    
+    System.out.println("\nCharge buildup: " + MonteCarloCharge);
+    System.out.println("Charge density " + MonteCarloChargeDensity);
     
     try {
       WriterFile("outputMicroED.CSV", dose4);
@@ -1104,6 +1112,7 @@ private double processMonteCarloDose(Beam beam, CoefCalc coefCalc) {
   electronNumber = exposure * (beamArea * 1E08);
   
   
+  
   //do the elastic stuff
   MonteCarloTotElasticCount = MonteCarloTotElasticCount * (electronNumber / numSimulatedElectrons);
   MonteCarloSingleElasticCount = MonteCarloSingleElasticCount * (electronNumber / numSimulatedElectrons);
@@ -1113,6 +1122,10 @@ private double processMonteCarloDose(Beam beam, CoefCalc coefCalc) {
   
   double exposedMass = (((coefCalc.getDensity()*1000) * exposedVolume) / 1000);  //in Kg 
   double dose = (MonteCarloDose/exposedMass) / 1E06; //dose in MGy 
+  
+  //charge stuff
+  MonteCarloCharge = (MonteCarloElectronsExited - MonteCarloElectronsEntered) * (electronNumber / numSimulatedElectrons) * Beam.ELEMENTARYCHARGE; //need to add in Auger to these
+  MonteCarloChargeDensity = MonteCarloCharge / (exposedVolume/1000); // C/m^3
   
   return dose;
 }
@@ -1767,6 +1780,7 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
            // MonteCarloFSEEscape += newEnergy;
             if (entered == false) {
               newMonteCarloFSEEscape += newEnergy;
+              MonteCarloElectronsExited += 1;
             }
             else {
               MonteCarloFSEEntry += entryEnergy - newEnergy;  //here the entered FSE has escaped again
@@ -1774,8 +1788,9 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
           }
         }
         else {
-          if (entered == true) {  // here the entered FSE has stoppped int he sample so all energy stays in sample
+          if (entered == true) {  // here the entered FSE has stopped in the sample so all energy stays in sample
             MonteCarloFSEEntry += entryEnergy;
+            MonteCarloElectronsEntered += 1;
           }
         }
      
@@ -2050,6 +2065,7 @@ private void FlAugerMonteCarlo(Element collidedElement, double previousX, double
         double augerEnergyToEdge = augerStoppingPower * augerEscapeDist;
         if (augerEnergyToEdge < flauEnergy){
           MonteCarloAugerEscape += flauEnergy - augerEnergyToEdge;
+          MonteCarloElectronsExited += 1;
         }
       }
       else {
@@ -2068,6 +2084,7 @@ private void FlAugerMonteCarlo(Element collidedElement, double previousX, double
           double augerEnergyToEdge = augerStoppingPower * augerEntryDist;
           if (augerEnergyToEdge < flauEnergy){
             MonteCarloAugerEntry += flauEnergy - augerEnergyToEdge;
+            MonteCarloElectronsEntered += 1;
           }
         }
         //I am overestimating here a bit because the Auger can't enter and come back out again, 
