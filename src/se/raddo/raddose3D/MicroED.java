@@ -118,6 +118,9 @@ public class MicroED {
   
   protected static final long NUM_MONTE_CARLO_ELECTRONS = 100000;
   
+  protected static final double c = 299792458; //m/s
+  protected static final double m =  9.10938356E-31; //Kg
+  
   protected static final double CUTOFF = 0.0001;
   
   
@@ -849,7 +852,7 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
       else {
       //else produce an FSE
       triggered += 1;
-      theta = doPrimaryInelastic(coefCalc, previousX, previousY, previousZ, electronEnergy, ionisationProbs, false);
+      theta = doPrimaryInelastic(coefCalc, previousX, previousY, previousZ, electronEnergy, ionisationProbs, false, beam, i);
       } //end if not plasmon
     } //end if inelastic scatter
     else { //else it stays false and the collision will be elastic
@@ -967,7 +970,7 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
         else {
         //else produce an FSE
         triggered += 1;
-        theta = doPrimaryInelastic(coefCalc, previousX, previousY, previousZ, electronEnergy, ionisationProbsSurrounding, true);
+        theta = doPrimaryInelastic(coefCalc, previousX, previousY, previousZ, electronEnergy, ionisationProbsSurrounding, true, beam, i);
         } //end if not plasmon
       } //end if inelastic scatter
       else { //else it stays false and the collision will be elastic
@@ -1129,6 +1132,7 @@ private double processMonteCarloDose(Beam beam, CoefCalc coefCalc) {
   
   return dose;
 }
+
 
 private double getFSEXSection(double electronEnergy) {
   double elementaryCharge = 4.80320425E-10; //units = esu = g^0.5 cm^1.5 s^-1
@@ -1300,7 +1304,7 @@ private double getShellBindingEnergy(Element collidedElement, int collidedShell)
 }
 
 private double doPrimaryInelastic(CoefCalc coefCalc, double previousX, double previousY, double previousZ, 
-                                  double electronEnergy, Map<Element, double[]> ionisationProbs, boolean surrounding) {
+                                  double electronEnergy, Map<Element, double[]> ionisationProbs, boolean surrounding, Beam beam, int i) {
   double theta = 0;
   boolean innerShell = false;
   double shellBindingEnergy = 0;
@@ -1375,7 +1379,7 @@ private double doPrimaryInelastic(CoefCalc coefCalc, double previousX, double pr
   
   
   
-  MonteCarloSecondaryElastic(coefCalc, FSEEnergy, previousX, previousY, previousZ, FSEtheta, FSEphi, surrounding);
+  MonteCarloSecondaryElastic(coefCalc, FSEEnergy, previousX, previousY, previousZ, FSEtheta, FSEphi, surrounding, beam, i);
   
   
   /*
@@ -1499,7 +1503,7 @@ private double doPrimaryElastic(double electronEnergy, Map<ElementEM, Double> el
 }
 
 private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, double previousX, double previousY, double previousZ, 
-    double FSEtheta, double FSEphi, boolean surrounding) { //Will need to combine this with the inner shell stuff as well - means re-updating the inner shell x sections after I mess with them
+    double FSEtheta, double FSEphi, boolean surrounding, Beam beam, int numSimSoFar) { //Will need to combine this with the inner shell stuff as well - means re-updating the inner shell x sections after I mess with them
   double energyLost = 0;
   double theta = FSEtheta;
   double phi = FSEphi;
@@ -1577,6 +1581,31 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
     }
   }
   
+  //Coulomb's law stuff will need to happen before here 
+  double electronNumber = beam.getExposure() * (beam.getBeamArea()*1E8);
+  MonteCarloCharge = (MonteCarloElectronsExited - MonteCarloElectronsEntered) * (electronNumber / numSimulatedElectrons)  * ((double)numSimSoFar/numSimulatedElectrons) * Beam.ELEMENTARYCHARGE;
+  double[] electronPosition = {previousX, previousY, previousZ};
+  double[] chargePosition = {0, 0, 0};
+  double csquared = Math.pow(c, 2);
+  double gamma = 0, newKineticEnergy = 0, kineticEnergyLossByCharge = 0, newVelocityMagnitude = 0;
+  double[] newVelocityVector = new double[3];
+  double[] newVelocityUnitVector = new double[3];
+  
+  if (MonteCarloCharge != 0) {
+    newVelocityVector = adjustVelocityVectorByCharge(electronPosition, chargePosition, s, electronEnergy, xNorm, yNorm, zNorm);
+    newVelocityMagnitude = Vector.vectorMagnitude(newVelocityVector) /1E9; //m/s
+    newVelocityUnitVector = Vector.normaliseVector(newVelocityVector);
+    //update new xNorm. yNorm, zNorm
+    xNorm = newVelocityUnitVector[0];
+    yNorm = newVelocityUnitVector[1];
+    zNorm = newVelocityUnitVector[2];
+  
+    //work out the new kinetic energy
+  
+    gamma = 1 / Math.pow(1 - (Math.pow(newVelocityMagnitude, 2)/Math.pow(c, 2)), 0.5);
+    newKineticEnergy = (gamma - 1) * m * Math.pow(c, 2); // in Joules
+    kineticEnergyLossByCharge = ((electronEnergy*Beam.KEVTOJOULES) - newKineticEnergy)/Beam.KEVTOJOULES; //in keV
+  }
   
   double xn = previousX + s * xNorm;
   double yn = previousY + s * yNorm;
@@ -1603,7 +1632,8 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
       previousZ = zn;
       //update dose and energy and stoppingPower
       energyLost = s * stoppingPower;
-      
+      //energy lost from charge
+      energyLost += kineticEnergyLossByCharge;
       
     double RNDscatter = Math.random();
     if (RNDscatter < Pinel) { // If the scatter was an inner shell ionisation 
@@ -1754,6 +1784,34 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
       s = -lambdaT*Math.log(Math.random());
       elasticProbs = coefCalc.getElasticProbs(false);
       ionisationProbs = coefCalc.getAllShellProbs(false);
+      
+      //update the position and kinetic energy from the charge 
+      if (electronEnergy >= 0.05) {
+      MonteCarloCharge = (MonteCarloElectronsExited - MonteCarloElectronsEntered) * (electronNumber / numSimulatedElectrons)  * ((double)numSimSoFar/numSimulatedElectrons) * Beam.ELEMENTARYCHARGE;
+      if (MonteCarloCharge != 0) {
+        electronPosition[0] = previousX;
+        electronPosition[1] = previousY;
+        electronPosition[2] = previousZ;
+        //chargePosition = {0, 0, 0};
+        newVelocityVector = adjustVelocityVectorByCharge(electronPosition, chargePosition, s, electronEnergy, xNorm, yNorm, zNorm);
+        newVelocityMagnitude = Vector.vectorMagnitude(newVelocityVector);
+        newVelocityUnitVector = Vector.normaliseVector(newVelocityVector);
+      
+        //update new xNorm. yNorm, zNorm
+        xNorm = newVelocityUnitVector[0];
+        yNorm = newVelocityUnitVector[1];
+        zNorm = newVelocityUnitVector[2];
+      
+        //work out the new kinetic energy
+        gamma = 1 / Math.pow(1 - (Math.pow(newVelocityMagnitude, 2)/Math.pow(c, 2)), 0.5);
+        newKineticEnergy = (gamma - 1) * m * Math.pow(c, 2); // in Joules
+        kineticEnergyLossByCharge = ((electronEnergy*Beam.KEVTOJOULES) - newKineticEnergy)/Beam.KEVTOJOULES; //in keV
+      }
+      else {
+        kineticEnergyLossByCharge = 0;
+      }
+      }
+      
       //update to new position
       xn = previousX + s * xNorm;
       yn = previousY + s * yNorm;
@@ -1809,6 +1867,7 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
           previousZ = zn;
           //update dose and energy and stoppingPower
           energyLost = s * stoppingPower;
+          energyLost += kineticEnergyLossByCharge;
           
           
         double RNDscatter = Math.random();
@@ -1891,6 +1950,34 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
           }
           
           Pinel = 1 - (lambdaT / lambdaEl);
+          
+          //Charge stuff
+          if (electronEnergy >= 0.05) {
+          MonteCarloCharge = (MonteCarloElectronsExited - MonteCarloElectronsEntered) * (electronNumber / numSimulatedElectrons)  * ((double)numSimSoFar/numSimulatedElectrons) * Beam.ELEMENTARYCHARGE;
+          if (MonteCarloCharge != 0) {
+            electronPosition[0] = previousX;
+            electronPosition[1] = previousY;
+            electronPosition[2] = previousZ;
+            //chargePosition = {0, 0, 0};
+            newVelocityVector = adjustVelocityVectorByCharge(electronPosition, chargePosition, s, electronEnergy, xNorm, yNorm, zNorm);
+            newVelocityMagnitude = Vector.vectorMagnitude(newVelocityVector);
+            newVelocityUnitVector = Vector.normaliseVector(newVelocityVector);
+          
+            //update new xNorm. yNorm, zNorm
+            xNorm = newVelocityUnitVector[0];
+            yNorm = newVelocityUnitVector[1];
+            zNorm = newVelocityUnitVector[2];
+          
+            //work out the new kinetic energy
+            gamma = 1 / Math.pow(1 - (Math.pow(newVelocityMagnitude, 2)/Math.pow(c, 2)), 0.5);
+            newKineticEnergy = (gamma - 1) * m * Math.pow(c, 2); // in Joules
+            kineticEnergyLossByCharge = ((electronEnergy*Beam.KEVTOJOULES) - newKineticEnergy)/Beam.KEVTOJOULES; //in keV
+          }
+          else {
+            kineticEnergyLossByCharge = 0;
+          }
+          }
+          
           //update to new position
           xn = previousX + s * xNorm;
           yn = previousY + s * yNorm;
@@ -2487,9 +2574,65 @@ public boolean calculateCrystalOccupancy(final double x, final double y, final d
       inside = !inside;
     }
   }
-
+  https://www.studentbeans.com/uk/join-simple/check-email-verification?user_email=chesschamp10%40googlemail.com&user_return_to=studentbeans%3A%2F%2Fusers%2Femail-verification%2Fcallback&user_token=jjMmwLzBup9h-igfGzsD&verification_id=5585124&email_token=672c33054a4df09511532be1b77856c6
   return inside;
 }
+
+//coulombs law function
+//I pass in a point from (electron) and to (centre of sample/pixel)
+//Calculate the vector and then the unit vector
+//Calculate coulomb law (the vector version) - and convert to acceleration with F = ma
+//after s is determined I need to work out how long it will take to get there based on the velocity vector (direction + magnitude as speed)
+//This time can be used to convert the acceleration vector to a velocity vector
+//Combine the two velocity vectors to get a new one 
+//this is what I need to return
+
+//Use this velocity to work back to the kinetic energy. This is extra kinetic energy change by the end of the step.
+//This will happen in the main void
+
+private double[] adjustVelocityVectorByCharge(double[] electronPosition, double[] chargePosition, double s, double electronEnergy,
+                                              double xNorm, double yNorm, double zNorm) {
+  double Ke = 8.987551787E+27; // N nm^2 C^-2
+  
+  //calculate time taken for electron to travel distance s
+  
+  double csquared = c*c;  // (m/s)^2
+  double Vo = electronEnergy * Beam.KEVTOJOULES;
+  double betaSquared = 1- Math.pow(m*csquared/(Vo + m*csquared), 2);
+  double v = Math.pow(betaSquared*csquared, 0.5) *1E9; // nm/s
+  double seconds = (1/v) * s;  //seconds to move s nm
+  
+  //calculate the electron velocity vector (in nm/s)
+  double[] electronVelocityVector = new double[3];
+  double[] unitVector = {xNorm, yNorm, zNorm};
+  for (int i = 0; i < 3; i++) {
+    electronVelocityVector[i] = v * unitVector[i]; //nm/s
+  }
+  
+  //calculate the force/acceleration/velocity vector to the charge
+  double[] vectorToCharge = Vector.vectorBetweenPoints(electronPosition, chargePosition);  //nm
+  double vectorToChargeMagnitude = Vector.vectorMagnitude(vectorToCharge); //nm
+  double[] normalisedVectorToCharge = Vector.normaliseVector(vectorToCharge);
+  
+  double forceVectorConstant = Ke *  ((MonteCarloCharge*Beam.ELEMENTARYCHARGE)/Math.pow(vectorToChargeMagnitude, 2)); //N or J/m
+  double[] forceVector = new double[3];
+  double[] accelerationVector = new double[3];
+  double[] chargeVelocityVector = new double[3];
+  double[] totalVelocityVector = new double[3];
+  for (int j = 0; j < 3; j++) {
+    forceVector[j] = forceVectorConstant * normalisedVectorToCharge[j]; //N or J/m
+    accelerationVector[j] = forceVector[j] / m; // m/s^2
+    chargeVelocityVector[j] = accelerationVector[j] * seconds * 1E9; // nm/s
+    totalVelocityVector[j] = chargeVelocityVector[j] + electronVelocityVector[j];
+  }
+  
+  if (MonteCarloCharge > 1E-14  && vectorToChargeMagnitude < 150) {
+    System.out.println("test");
+  }
+  
+  return totalVelocityVector;
+}
+
 
 /**
  * Vector class containing magical vector methods
@@ -2528,6 +2671,17 @@ private static class Vector {
       newVector[i] = to[i] - from[i];
     }
 
+    return newVector;
+  }
+  
+  public static double[] normaliseVector(final double[] vector) {
+    double[] newVector = new double[3];
+    double magnitude = vectorMagnitude(vector);
+    
+    for (int i = 0; i < 3; i++) {
+      newVector[i] = vector[i]/magnitude;
+    }
+    
     return newVector;
   }
 
