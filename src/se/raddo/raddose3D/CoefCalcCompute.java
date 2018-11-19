@@ -27,6 +27,8 @@ public class CoefCalcCompute extends CoefCalc {
 
   private double cryoAbsCoeffComp, cryoAbsCoeffPhoto, cryoAttCoeff, cryoElasCoeff, cryoDensity;
   
+  private double solFraction;
+  
   /**
    * Parameters used to calculate the ionisation cross section for a specific shell of an element
    * This array is for when the overvoltage is less than 16
@@ -1161,7 +1163,7 @@ public class CoefCalcCompute extends CoefCalc {
     System.out.println(String.format("Solvent fraction determined as %.2f%%.",
         solventFraction * PERCENTAGE_CONVERSION));
     
-    
+    solFraction = solventFraction;
 
     return solventFraction;
   }
@@ -1666,6 +1668,10 @@ public class CoefCalcCompute extends CoefCalc {
     }
   }
   
+  @Override
+  public double getSolventFraction() {
+    return solFraction;
+  }
 
   public double totalAtoms(final Element element) {
     return getSolventOccurrence(element) + getMacromolecularOccurrence(element);

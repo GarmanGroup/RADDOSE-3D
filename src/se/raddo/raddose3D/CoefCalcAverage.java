@@ -258,5 +258,11 @@ public class CoefCalcAverage extends CoefCalc {
     // TODO Auto-generated method stub
     return 0;
   }
+
+  @Override
+  public double getSolventFraction() {
+    // TODO Auto-generated method stub
+    return 0;
+  }
   
 }

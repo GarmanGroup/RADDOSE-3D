@@ -1592,7 +1592,7 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
   double[] newVelocityUnitVector = new double[3];
   
   if (MonteCarloCharge != 0) {
-    newVelocityVector = adjustVelocityVectorByCharge(electronPosition, chargePosition, s, electronEnergy, xNorm, yNorm, zNorm);
+    newVelocityVector = adjustVelocityVectorByCharge(electronPosition, chargePosition, s, electronEnergy, xNorm, yNorm, zNorm, coefCalc);
     newVelocityMagnitude = Vector.vectorMagnitude(newVelocityVector) /1E9; //m/s
     newVelocityUnitVector = Vector.normaliseVector(newVelocityVector);
     //update new xNorm. yNorm, zNorm
@@ -1793,7 +1793,7 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
         electronPosition[1] = previousY;
         electronPosition[2] = previousZ;
         //chargePosition = {0, 0, 0};
-        newVelocityVector = adjustVelocityVectorByCharge(electronPosition, chargePosition, s, electronEnergy, xNorm, yNorm, zNorm);
+        newVelocityVector = adjustVelocityVectorByCharge(electronPosition, chargePosition, s, electronEnergy, xNorm, yNorm, zNorm, coefCalc);
         newVelocityMagnitude = Vector.vectorMagnitude(newVelocityVector);
         newVelocityUnitVector = Vector.normaliseVector(newVelocityVector);
       
@@ -1959,7 +1959,7 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
             electronPosition[1] = previousY;
             electronPosition[2] = previousZ;
             //chargePosition = {0, 0, 0};
-            newVelocityVector = adjustVelocityVectorByCharge(electronPosition, chargePosition, s, electronEnergy, xNorm, yNorm, zNorm);
+            newVelocityVector = adjustVelocityVectorByCharge(electronPosition, chargePosition, s, electronEnergy, xNorm, yNorm, zNorm, coefCalc);
             newVelocityMagnitude = Vector.vectorMagnitude(newVelocityVector);
             newVelocityUnitVector = Vector.normaliseVector(newVelocityVector);
           
@@ -2363,14 +2363,8 @@ private boolean isMicrocrystalAt(final double x, final double y, final double z)
 
   //now do the crystal occupancy stuff
   //convert xyz to ijk
-  double[] xMinMax = this.minMaxVertices(0, verticesEM);
-  double[] yMinMax = this.minMaxVertices(1, verticesEM);
-  double[] zMinMax = this.minMaxVertices(2, verticesEM);
-  int i = (int) StrictMath.round(((x/1000) - xMinMax[0]) * crystalPixPerUMEM);
-  int j = (int) StrictMath.round(((y/1000) - yMinMax[0]) * crystalPixPerUMEM);
-  int k = (int) StrictMath.round(((z/1000) - zMinMax[0]) * crystalPixPerUMEM);
-  
-  boolean[] occ = crystOccEM[i][j][k];  //This means that if has already been done don't do it again
+  int[] pixelCoords = convertToPixelCoordinates(x, y, z); 
+  boolean[] occ = crystOccEM[pixelCoords[0]][pixelCoords[1]][pixelCoords[2]];  //This means that if has already been done don't do it again
                                         // Really needed to speed up Monte Carlo
 
   if (!occ[0]) {
@@ -2379,6 +2373,17 @@ private boolean isMicrocrystalAt(final double x, final double y, final double z)
   }
 
   return occ[1];
+}
+
+private int[] convertToPixelCoordinates(final double x, final double y, final double z) {
+  double[] xMinMax = this.minMaxVertices(0, verticesEM);
+  double[] yMinMax = this.minMaxVertices(1, verticesEM);
+  double[] zMinMax = this.minMaxVertices(2, verticesEM);
+  int i = (int) StrictMath.round(((x/1000) - xMinMax[0]) * crystalPixPerUMEM);
+  int j = (int) StrictMath.round(((y/1000) - yMinMax[0]) * crystalPixPerUMEM);
+  int k = (int) StrictMath.round(((z/1000) - zMinMax[0]) * crystalPixPerUMEM);
+  int[] pixelCoords = {i, j, k};
+  return pixelCoords;
 }
 
 private boolean isIntersectionInCrystal(double[] intersectionPoint) {
@@ -2591,7 +2596,7 @@ public boolean calculateCrystalOccupancy(final double x, final double y, final d
 //This will happen in the main void
 
 private double[] adjustVelocityVectorByCharge(double[] electronPosition, double[] chargePosition, double s, double electronEnergy,
-                                              double xNorm, double yNorm, double zNorm) {
+                                              double xNorm, double yNorm, double zNorm, CoefCalc coefCalc) {
   double Ke = 8.987551787E+27; // N nm^2 C^-2
   
   //calculate time taken for electron to travel distance s
@@ -2614,7 +2619,14 @@ private double[] adjustVelocityVectorByCharge(double[] electronPosition, double[
   double vectorToChargeMagnitude = Vector.vectorMagnitude(vectorToCharge); //nm
   double[] normalisedVectorToCharge = Vector.normaliseVector(vectorToCharge);
   
-  double forceVectorConstant = Ke *  ((MonteCarloCharge*Beam.ELEMENTARYCHARGE)/Math.pow(vectorToChargeMagnitude, 2)); //N or J/m
+  //estimate relative permittivity of the medium
+  double solventFraction = coefCalc.getSolventFraction();
+  if (solventFraction == 0) {
+    solventFraction = 0.5;
+  }
+  double relativeEpsilon = (80*solventFraction) + ((1-solventFraction)*4);
+  
+  double forceVectorConstant = Ke *  ((MonteCarloCharge*Beam.ELEMENTARYCHARGE)/(Math.pow(vectorToChargeMagnitude, 2)*relativeEpsilon)); //N or J/m
   double[] forceVector = new double[3];
   double[] accelerationVector = new double[3];
   double[] chargeVelocityVector = new double[3];
@@ -2625,11 +2637,11 @@ private double[] adjustVelocityVectorByCharge(double[] electronPosition, double[
     chargeVelocityVector[j] = accelerationVector[j] * seconds * 1E9; // nm/s
     totalVelocityVector[j] = chargeVelocityVector[j] + electronVelocityVector[j];
   }
-  
+  /*
   if (MonteCarloCharge > 1E-14  && vectorToChargeMagnitude < 150) {
     System.out.println("test");
   }
-  
+  */
   return totalVelocityVector;
 }
 

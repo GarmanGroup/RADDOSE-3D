@@ -157,4 +157,6 @@ public abstract class CoefCalc {
   
   public abstract long getNumberSimulatedElectrons();
   
+  public abstract double getSolventFraction();
+  
 }
