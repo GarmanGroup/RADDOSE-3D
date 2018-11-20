@@ -764,9 +764,9 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
     if (intersectionDistance < s && pointInCrystal == true) { //then need to change region here and reset stuff
       surrounding = false;
       electronEnergy -= intersectionDistance * stoppingPower;
-      previousX = intersectionPoint[0];
-      previousY = intersectionPoint[1];
-      previousZ = intersectionPoint[2];
+      previousX = intersectionPoint[0]*1000;
+      previousY = intersectionPoint[1]*1000;
+      previousZ = intersectionPoint[2]*1000;
     }
   }
   
@@ -923,7 +923,7 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
       double[] intersectionPoint = getIntersectionPoint(s, previousX, previousY, previousZ, xNorm, yNorm, zNorm);
       energyLost = s * stoppingPower;
       MonteCarloDose += energyLost;   //keV
-      if (intersectionPoint[2] == -ZDimension/2 || zNorm < 0) {
+      if (1000*intersectionPoint[2] == -ZDimension/2 || zNorm < 0) {
         numberBackscattered += 1;
         backscattered = true;
       }
@@ -1006,7 +1006,7 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
         double FSELambda = coefCalc.getFSELambda(FSExSection, true);
         double lambdaEl = coefCalc.getElectronElasticMFPL(electronEnergy, true);
         double lambdaInel = coefCalc.getElectronInelasticMFPL(electronEnergy, true);
-        double innerShellLambda = coefCalc.betheIonisationxSection(electronEnergy, true);
+        double innerShellLambdaSurrounding = coefCalc.betheIonisationxSection(electronEnergy, true);
         double plasmonLambda = coefCalc.getPlasmaMFPL(electronEnergy);
       //  lambdaT =  1 / (1/lambdaEl + 1/FSELambda);
     //    lambdaT = 1 / (1/lambdaEl + 1/FSELambda + 1/plasmonLambda);
@@ -1028,9 +1028,9 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
         if (intersectionDistance < s && pointInCrystal == true) { //then need to change region here and reset stuff
           surrounding = false;
           electronEnergy -= intersectionDistance * stoppingPower;
-          previousX = intersectionPoint[0];
-          previousY = intersectionPoint[1];
-          previousZ = intersectionPoint[2];
+          previousX = intersectionPoint[0]*1000;
+          previousY = intersectionPoint[1]*1000;
+          previousZ = intersectionPoint[2]*1000;
           stoppingPower = coefCalc.getStoppingPower(electronEnergy, false);
           FSExSection = getFSEXSection(electronEnergy);
           FSELambda = coefCalc.getFSELambda(FSExSection, false);
@@ -1038,6 +1038,11 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
           lambdaInel = coefCalc.getElectronInelasticMFPL(electronEnergy, false);
           lambdaT = 1 / (1/lambdaEl + 1/lambdaInel);
           s = -lambdaT*Math.log(Math.random());
+          
+          innerShellLambdaSurrounding = coefCalc.betheIonisationxSection(electronEnergy, false);
+          ionisationProbsSurrounding = coefCalc.getAllShellProbs(false);
+          elasticProbsSurrounding = coefCalc.getElasticProbs(false);
+          
         }
         
         PEL = lambdaT / lambdaEl;
@@ -1504,6 +1509,7 @@ private double doPrimaryElastic(double electronEnergy, Map<ElementEM, Double> el
 
 private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, double previousX, double previousY, double previousZ, 
     double FSEtheta, double FSEphi, boolean surrounding, Beam beam, int numSimSoFar) { //Will need to combine this with the inner shell stuff as well - means re-updating the inner shell x sections after I mess with them
+  double test = previousX;
   double energyLost = 0;
   double theta = FSEtheta;
   double phi = FSEphi;
@@ -1534,7 +1540,9 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
   double xNorm = Math.sin(theta) * Math.cos(phi);
   double yNorm = Math.sin(theta) * Math.sin(phi);
   double zNorm = Math.cos(theta);
-  
+  if (Double.isNaN(xNorm)){
+    System.out.println("test");
+  }
   
   boolean track = true;
   boolean entered = false;
@@ -1556,9 +1564,9 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
         entered = true;
         electronEnergy -= intersectionDistance * stoppingPower;
         entryEnergy = electronEnergy;
-        previousX = intersectionPoint[0];
-        previousY = intersectionPoint[1];
-        previousZ = intersectionPoint[2];
+        previousX = intersectionPoint[0]*1000;
+        previousY = intersectionPoint[1]*1000;
+        previousZ = intersectionPoint[2]*1000;
         //update the stopping power and stuff
         stoppingPower = coefCalc.getStoppingPower(startingEnergy, surrounding);
         startingLambda_el = coefCalc.getElectronElasticMFPL(startingEnergy, surrounding);
@@ -1590,15 +1598,24 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
   double gamma = 0, newKineticEnergy = 0, kineticEnergyLossByCharge = 0, newVelocityMagnitude = 0;
   double[] newVelocityVector = new double[3];
   double[] newVelocityUnitVector = new double[3];
-  
+  double test2 = 0;
+ // MonteCarloCharge = 0;
   if (MonteCarloCharge != 0) {
     newVelocityVector = adjustVelocityVectorByCharge(electronPosition, chargePosition, s, electronEnergy, xNorm, yNorm, zNorm, coefCalc);
     newVelocityMagnitude = Vector.vectorMagnitude(newVelocityVector) /1E9; //m/s
     newVelocityUnitVector = Vector.normaliseVector(newVelocityVector);
+    test2 = 1/previousX;
     //update new xNorm. yNorm, zNorm
     xNorm = newVelocityUnitVector[0];
     yNorm = newVelocityUnitVector[1];
     zNorm = newVelocityUnitVector[2];
+    //update theta and phi
+    theta = Math.acos(zNorm);
+    phi = Math.asin(yNorm/Math.sin(theta));
+    
+    if (Double.isNaN(xNorm)){
+      System.out.println("test");
+    }
   
     //work out the new kinetic energy
   
@@ -1767,6 +1784,9 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
       xNorm = Math.sin(theta) * Math.cos(phi);
       yNorm = Math.sin(theta) * Math.sin(phi);
       zNorm = Math.cos(theta);
+      if (Double.isNaN(xNorm)){
+        System.out.println("test");
+      }
     }
       //update stopping powers
       //get new stoppingPower
@@ -1788,19 +1808,27 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
       //update the position and kinetic energy from the charge 
       if (electronEnergy >= 0.05) {
       MonteCarloCharge = (MonteCarloElectronsExited - MonteCarloElectronsEntered) * (electronNumber / numSimulatedElectrons)  * ((double)numSimSoFar/numSimulatedElectrons) * Beam.ELEMENTARYCHARGE;
+ //     MonteCarloCharge = 0;
       if (MonteCarloCharge != 0) {
         electronPosition[0] = previousX;
         electronPosition[1] = previousY;
         electronPosition[2] = previousZ;
         //chargePosition = {0, 0, 0};
         newVelocityVector = adjustVelocityVectorByCharge(electronPosition, chargePosition, s, electronEnergy, xNorm, yNorm, zNorm, coefCalc);
-        newVelocityMagnitude = Vector.vectorMagnitude(newVelocityVector);
+        newVelocityMagnitude = Vector.vectorMagnitude(newVelocityVector) /1E9;
         newVelocityUnitVector = Vector.normaliseVector(newVelocityVector);
       
         //update new xNorm. yNorm, zNorm
         xNorm = newVelocityUnitVector[0];
         yNorm = newVelocityUnitVector[1];
         zNorm = newVelocityUnitVector[2];
+        //update theta and phi
+        theta = Math.acos(zNorm);
+        phi = Math.asin(yNorm/Math.sin(theta));
+        
+        if (Double.isNaN(xNorm)){
+          System.out.println("test");
+        }
       
         //work out the new kinetic energy
         gamma = 1 / Math.pow(1 - (Math.pow(newVelocityMagnitude, 2)/Math.pow(c, 2)), 0.5);
@@ -1873,6 +1901,7 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
         double RNDscatter = Math.random();
         if (RNDscatter < Pinel) { // If the scatter was an inner shell ionisation 
             //do nothing
+          
         } //end if inelastic scatter
         else { //else it stays false and the collision will be elastic
             //elastic just want to get the angle
@@ -1913,6 +1942,10 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
           xNorm = Math.sin(theta) * Math.cos(phi);
           yNorm = Math.sin(theta) * Math.sin(phi);
           zNorm = Math.cos(theta);
+          
+          if (Double.isNaN(xNorm)){
+            System.out.println("test");
+          }
         }
         
           //update stopping powers
@@ -1922,8 +1955,13 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
           //get new lambdaT
           double FSExSection = getFSEXSection(electronEnergy);
           double lambdaEl = coefCalc.getElectronElasticMFPL(electronEnergy, true);
-          double lambdaInel = coefCalc.getElectronInelasticMFPL(electronEnergy, true);
-          lambdaT = 1 / (1/lambdaEl + 1/lambdaInel);
+          double innerShellLambda = coefCalc.betheIonisationxSection(electronEnergy, true);
+          if (innerShellLambda > 0) {
+            lambdaT = 1 / (1/lambdaEl + 1/innerShellLambda);
+          }
+          else {
+            lambdaT = 1 / (1/lambdaEl);
+          }
           s = -lambdaT*Math.log(Math.random());
    
           ionisationProbs = coefCalc.getAllShellProbs(true);
@@ -1938,15 +1976,23 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
             entered = true;
             electronEnergy -= intersectionDistance * stoppingPower;
             entryEnergy = electronEnergy;
-            previousX = intersectionPoint[0];
-            previousY = intersectionPoint[1];
-            previousZ = intersectionPoint[2];
+            previousX = intersectionPoint[0]*1000;
+            previousY = intersectionPoint[1]*1000;
+            previousZ = intersectionPoint[2]*1000;
             stoppingPower = coefCalc.getStoppingPower(electronEnergy, false);
             FSExSection = getFSEXSection(electronEnergy);
             lambdaEl = coefCalc.getElectronElasticMFPL(electronEnergy, false);
-            lambdaInel = coefCalc.getElectronInelasticMFPL(electronEnergy, false);
-            lambdaT = 1 / (1/lambdaEl + 1/lambdaInel);
+            innerShellLambda = coefCalc.betheIonisationxSection(electronEnergy, false);
+            if (innerShellLambda > 0) {
+              lambdaT = 1 / (1/lambdaEl + 1/innerShellLambda);
+            }
+            else {
+              lambdaT = 1 / (1/lambdaEl);
+            }
             s = -lambdaT*Math.log(Math.random());
+            elasticProbs = coefCalc.getElasticProbs(surrounding);
+            ionisationProbs = coefCalc.getAllShellProbs(surrounding);
+            
           }
           
           Pinel = 1 - (lambdaT / lambdaEl);
@@ -1954,19 +2000,27 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
           //Charge stuff
           if (electronEnergy >= 0.05) {
           MonteCarloCharge = (MonteCarloElectronsExited - MonteCarloElectronsEntered) * (electronNumber / numSimulatedElectrons)  * ((double)numSimSoFar/numSimulatedElectrons) * Beam.ELEMENTARYCHARGE;
+       //   MonteCarloCharge = 0;
           if (MonteCarloCharge != 0) {
             electronPosition[0] = previousX;
             electronPosition[1] = previousY;
             electronPosition[2] = previousZ;
             //chargePosition = {0, 0, 0};
             newVelocityVector = adjustVelocityVectorByCharge(electronPosition, chargePosition, s, electronEnergy, xNorm, yNorm, zNorm, coefCalc);
-            newVelocityMagnitude = Vector.vectorMagnitude(newVelocityVector);
+            newVelocityMagnitude = Vector.vectorMagnitude(newVelocityVector)/1E9;
             newVelocityUnitVector = Vector.normaliseVector(newVelocityVector);
           
             //update new xNorm. yNorm, zNorm
             xNorm = newVelocityUnitVector[0];
             yNorm = newVelocityUnitVector[1];
             zNorm = newVelocityUnitVector[2];
+            //update theta and phi
+            theta = Math.acos(zNorm);
+            phi = Math.asin(yNorm/Math.sin(theta));
+            
+            if (Double.isNaN(xNorm)){
+              System.out.println("test");
+            }
           
             //work out the new kinetic energy
             gamma = 1 / Math.pow(1 - (Math.pow(newVelocityMagnitude, 2)/Math.pow(c, 2)), 0.5);
@@ -1982,6 +2036,10 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
           xn = previousX + s * xNorm;
           yn = previousY + s * yNorm;
           zn = previousZ + s * zNorm;
+          
+          if (Double.isNaN(xNorm)){
+            System.out.println("test");
+          }
           
           //need to also check whether to track the primary electron anymore or 
           
@@ -2070,6 +2128,9 @@ private double getPrimaryElasticScatteringAngle(double electronEnergy, int atomi
   //get the angle from this 
   double deflectionAngle = returnDeflectionAngle(highEnergy, energyAngleProbs);
   
+  if (Double.isNaN(deflectionAngle)){
+    System.out.println("test");
+  }
   return deflectionAngle;
 }
 
@@ -2333,7 +2394,10 @@ private double returnDeflectionAngle(boolean highEnergy, double[] energyAnglePro
       modFactor = 1000000; //just anything super high as all but first one
     }
     angleDegrees = startFactor + (((index-minusFactor)%modFactor)*(startFactor/divideFactor));
-
+    if (Double.isNaN(angleDegrees)){
+   //   System.out.println("test");
+      angleDegrees = 0;
+    }
   }
   else {
     angleDegrees = 1.0 * index;
@@ -2344,7 +2408,7 @@ private double returnDeflectionAngle(boolean highEnergy, double[] energyAnglePro
     System.out.println("test");
   }
   */
-  
+
   return angleRadians;
 }
 
@@ -2579,7 +2643,6 @@ public boolean calculateCrystalOccupancy(final double x, final double y, final d
       inside = !inside;
     }
   }
-  https://www.studentbeans.com/uk/join-simple/check-email-verification?user_email=chesschamp10%40googlemail.com&user_return_to=studentbeans%3A%2F%2Fusers%2Femail-verification%2Fcallback&user_token=jjMmwLzBup9h-igfGzsD&verification_id=5585124&email_token=672c33054a4df09511532be1b77856c6
   return inside;
 }
 
@@ -2625,6 +2688,8 @@ private double[] adjustVelocityVectorByCharge(double[] electronPosition, double[
     solventFraction = 0.5;
   }
   double relativeEpsilon = (80*solventFraction) + ((1-solventFraction)*4);
+  //vacuum
+ // relativeEpsilon = 1;
   
   double forceVectorConstant = Ke *  ((MonteCarloCharge*Beam.ELEMENTARYCHARGE)/(Math.pow(vectorToChargeMagnitude, 2)*relativeEpsilon)); //N or J/m
   double[] forceVector = new double[3];
