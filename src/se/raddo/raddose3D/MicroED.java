@@ -116,6 +116,12 @@ public class MicroED {
   private int numAuger;
   private int numFL;
   
+  private double[][][] voxelCharge;
+  private double[][][] voxelDose;
+  private double maxX, maxY, maxZ;
+  
+  
+  
   protected static final long NUM_MONTE_CARLO_ELECTRONS = 100000;
   
   protected static final double c = 299792458; //m/s
@@ -152,7 +158,13 @@ public class MicroED {
     lowEnergyAngles = new TreeMap[95];
     highEnergyAngles = new TreeMap[95];
     
-    
+    //initialise voxel dose and charge
+    int[] maxVoxel = getMaxPixelCoordinates();
+    voxelCharge = new double[maxVoxel[0]][maxVoxel[1]][maxVoxel[2]];
+    voxelDose = new double[maxVoxel[0]][maxVoxel[1]][maxVoxel[2]];
+    maxX = maxVoxel[0];
+    maxY = maxVoxel[1];
+    maxZ = maxVoxel[2];
   }
   
   public void CalculateEM(Beam beam, Wedge wedge, CoefCalc coefCalc) { // also pass in crystal dimensions
@@ -1509,7 +1521,10 @@ private double doPrimaryElastic(double electronEnergy, Map<ElementEM, Double> el
 
 private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, double previousX, double previousY, double previousZ, 
     double FSEtheta, double FSEphi, boolean surrounding, Beam beam, int numSimSoFar) { //Will need to combine this with the inner shell stuff as well - means re-updating the inner shell x sections after I mess with them
-  double test = previousX;
+  //find the pixel that the electron is staring in
+  int[] startingPixel = convertToPixelCoordinates(previousX, previousY, previousZ);
+  int[] thisPixel = startingPixel;
+  
   double energyLost = 0;
   double theta = FSEtheta;
   double phi = FSEphi;
@@ -1591,7 +1606,7 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
   
   //Coulomb's law stuff will need to happen before here 
   double electronNumber = beam.getExposure() * (beam.getBeamArea()*1E8);
-  MonteCarloCharge = (MonteCarloElectronsExited - MonteCarloElectronsEntered) * (electronNumber / numSimulatedElectrons)  * ((double)numSimSoFar/numSimulatedElectrons) * Beam.ELEMENTARYCHARGE;
+  
   double[] electronPosition = {previousX, previousY, previousZ};
   double[] chargePosition = {0, 0, 0};
   double csquared = Math.pow(c, 2);
@@ -1599,12 +1614,13 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
   double[] newVelocityVector = new double[3];
   double[] newVelocityUnitVector = new double[3];
   double test2 = 0;
+//  MonteCarloCharge = (MonteCarloElectronsExited - MonteCarloElectronsEntered) * (electronNumber / numSimulatedElectrons)  * ((double)numSimSoFar/numSimulatedElectrons) * Beam.ELEMENTARYCHARGE;
  // MonteCarloCharge = 0;
+  /*
   if (MonteCarloCharge != 0) {
     newVelocityVector = adjustVelocityVectorByCharge(electronPosition, chargePosition, s, electronEnergy, xNorm, yNorm, zNorm, coefCalc);
     newVelocityMagnitude = Vector.vectorMagnitude(newVelocityVector) /1E9; //m/s
     newVelocityUnitVector = Vector.normaliseVector(newVelocityVector);
-    test2 = 1/previousX;
     //update new xNorm. yNorm, zNorm
     xNorm = newVelocityUnitVector[0];
     yNorm = newVelocityUnitVector[1];
@@ -1620,9 +1636,50 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
     //work out the new kinetic energy
   
     gamma = 1 / Math.pow(1 - (Math.pow(newVelocityMagnitude, 2)/Math.pow(c, 2)), 0.5);
-    newKineticEnergy = (gamma - 1) * m * Math.pow(c, 2); // in Joules
-    kineticEnergyLossByCharge = ((electronEnergy*Beam.KEVTOJOULES) - newKineticEnergy)/Beam.KEVTOJOULES; //in keV
+    newKineticEnergy = (gamma - 1) * m * Math.pow(c, 2)/Beam.KEVTOJOULES; // in keV
+    kineticEnergyLossByCharge = electronEnergy - newKineticEnergy; //in keV
   }
+  */
+  //now do the voxel charge here
+  double[] newTotalVelocityVector = new double[3];
+  for (int i = 0; i < maxX; i++) {
+    for (int j = 0; j < maxY; j++) {
+      for (int k = 0; k < maxZ; k++) {
+        if (voxelCharge[i][j][k] != 0) {
+          int[] voxCoord = {i, j, k};
+          if (thisPixel != voxCoord) {
+            //convert pixel coord to a cartesian coord
+            chargePosition = convertToCartesianCoordinates(i, j, k);
+            newVelocityVector = adjustVelocityVectorByCharge(electronPosition, chargePosition, s, electronEnergy, xNorm, yNorm, zNorm, coefCalc);
+            for (int m = 0; m < 3; m++) {
+              newTotalVelocityVector[m] += newVelocityVector[m];
+            }
+          }
+        }
+      }
+    }
+  }
+  newVelocityMagnitude = Vector.vectorMagnitude(newVelocityVector) /1E9; //m/s
+  if (newVelocityMagnitude > 0) { //so there is a charge pulling
+    newVelocityUnitVector = Vector.normaliseVector(newVelocityVector);
+    //update new xNorm. yNorm, zNorm
+    xNorm = newVelocityUnitVector[0];
+    yNorm = newVelocityUnitVector[1];
+    zNorm = newVelocityUnitVector[2];
+    //update theta and phi
+    theta = Math.acos(zNorm);
+    phi = Math.asin(yNorm/Math.sin(theta));
+    //work out the new kinetic energy
+    gamma = 1 / Math.pow(1 - (Math.pow(newVelocityMagnitude, 2)/Math.pow(c, 2)), 0.5);
+//   newKineticEnergy = ((gamma - 1) * m * Math.pow(c, 2)); // in Joules
+    newKineticEnergy = ((gamma - 1) * m * Math.pow(c, 2))/Beam.KEVTOJOULES; // in keV
+ //   kineticEnergyLossByCharge = ((electronEnergy*Beam.KEVTOJOULES) - newKineticEnergy)/Beam.KEVTOJOULES; //in keV
+    kineticEnergyLossByCharge = electronEnergy - newKineticEnergy;
+    if (Math.abs(kineticEnergyLossByCharge) > 0.001 ) {
+      System.out.println("test");
+    }
+  }
+  
   
   double xn = previousX + s * xNorm;
   double yn = previousY + s * yNorm;
@@ -1642,6 +1699,7 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
       }
       surrounding = false;
       scattered = true;
+      //update position and angle
       previousTheta = theta;
       previousPhi = phi;
       previousX = xn;
@@ -1807,6 +1865,7 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
       
       //update the position and kinetic energy from the charge 
       if (electronEnergy >= 0.05) {
+        /*
       MonteCarloCharge = (MonteCarloElectronsExited - MonteCarloElectronsEntered) * (electronNumber / numSimulatedElectrons)  * ((double)numSimSoFar/numSimulatedElectrons) * Beam.ELEMENTARYCHARGE;
  //     MonteCarloCharge = 0;
       if (MonteCarloCharge != 0) {
@@ -1832,12 +1891,50 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
       
         //work out the new kinetic energy
         gamma = 1 / Math.pow(1 - (Math.pow(newVelocityMagnitude, 2)/Math.pow(c, 2)), 0.5);
-        newKineticEnergy = (gamma - 1) * m * Math.pow(c, 2); // in Joules
-        kineticEnergyLossByCharge = ((electronEnergy*Beam.KEVTOJOULES) - newKineticEnergy)/Beam.KEVTOJOULES; //in keV
+        newKineticEnergy = (gamma - 1) * m * Math.pow(c, 2)/Beam.KEVTOJOULES; // in keV
+        kineticEnergyLossByCharge = electronEnergy - newKineticEnergy; //in keV
       }
       else {
         kineticEnergyLossByCharge = 0;
       }
+      */
+        for (int i = 0; i < maxX; i++) {
+          for (int j = 0; j < maxY; j++) {
+            for (int k = 0; k < maxZ; k++) {
+              if (voxelCharge[i][j][k] != 0) {
+                int[] voxCoord = {i, j, k};
+                if (thisPixel != voxCoord) {
+                  //convert pixel coord to a cartesian coord
+                  chargePosition = convertToCartesianCoordinates(i, j, k);
+                  newVelocityVector = adjustVelocityVectorByCharge(electronPosition, chargePosition, s, electronEnergy, xNorm, yNorm, zNorm, coefCalc);
+                  for (int m = 0; m < 3; m++) {
+                    newTotalVelocityVector[m] += newVelocityVector[m];
+                  }
+                }
+              }
+            }
+          }
+        }
+        newVelocityMagnitude = Vector.vectorMagnitude(newVelocityVector) /1E9; //m/s
+        if (newVelocityMagnitude > 0) { //so there is a charge pulling
+          newVelocityUnitVector = Vector.normaliseVector(newVelocityVector);
+          //update new xNorm. yNorm, zNorm
+          xNorm = newVelocityUnitVector[0];
+          yNorm = newVelocityUnitVector[1];
+          zNorm = newVelocityUnitVector[2];
+          //update theta and phi
+          theta = Math.acos(zNorm);
+          phi = Math.asin(yNorm/Math.sin(theta));
+          //work out the new kinetic energy
+          gamma = 1 / Math.pow(1 - (Math.pow(newVelocityMagnitude, 2)/Math.pow(c, 2)), 0.5);
+//         newKineticEnergy = ((gamma - 1) * m * Math.pow(c, 2)); // in Joules
+          newKineticEnergy = ((gamma - 1) * m * Math.pow(c, 2))/Beam.KEVTOJOULES; // in keV
+       //   kineticEnergyLossByCharge = ((electronEnergy*Beam.KEVTOJOULES) - newKineticEnergy)/Beam.KEVTOJOULES; //in keV
+          kineticEnergyLossByCharge = electronEnergy - newKineticEnergy;
+        }
+        else {
+          kineticEnergyLossByCharge = 0;
+        }
       }
       
       //update to new position
@@ -1867,6 +1964,8 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
             if (entered == false) {
               newMonteCarloFSEEscape += newEnergy;
               MonteCarloElectronsExited += 1;
+              //add this charge to the pixel it came from
+              voxelCharge[startingPixel[0]][startingPixel[1]][startingPixel[2]] += Beam.ELEMENTARYCHARGE * (electronNumber / numSimulatedElectrons);
             }
             else {
               MonteCarloFSEEntry += entryEnergy - newEnergy;  //here the entered FSE has escaped again
@@ -1877,6 +1976,9 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
           if (entered == true) {  // here the entered FSE has stopped in the sample so all energy stays in sample
             MonteCarloFSEEntry += entryEnergy;
             MonteCarloElectronsEntered += 1;
+            //add negative charge to this pixel
+            thisPixel = convertToPixelCoordinates(xn, yn, zn);
+            voxelCharge[thisPixel[0]][thisPixel[1]][thisPixel[2]] += Beam.ELEMENTARYCHARGE * (electronNumber / numSimulatedElectrons);
           }
         }
      
@@ -1999,6 +2101,7 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
           
           //Charge stuff
           if (electronEnergy >= 0.05) {
+            /*
           MonteCarloCharge = (MonteCarloElectronsExited - MonteCarloElectronsEntered) * (electronNumber / numSimulatedElectrons)  * ((double)numSimSoFar/numSimulatedElectrons) * Beam.ELEMENTARYCHARGE;
        //   MonteCarloCharge = 0;
           if (MonteCarloCharge != 0) {
@@ -2024,12 +2127,50 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
           
             //work out the new kinetic energy
             gamma = 1 / Math.pow(1 - (Math.pow(newVelocityMagnitude, 2)/Math.pow(c, 2)), 0.5);
-            newKineticEnergy = (gamma - 1) * m * Math.pow(c, 2); // in Joules
-            kineticEnergyLossByCharge = ((electronEnergy*Beam.KEVTOJOULES) - newKineticEnergy)/Beam.KEVTOJOULES; //in keV
+            newKineticEnergy = (gamma - 1) * m * Math.pow(c, 2)/Beam.KEVTOJOULES; // in keV
+            kineticEnergyLossByCharge = electronEnergy - newKineticEnergy; //in keV
           }
           else {
             kineticEnergyLossByCharge = 0;
           }
+          */
+            for (int i = 0; i < maxX; i++) {
+              for (int j = 0; j < maxY; j++) {
+                for (int k = 0; k < maxZ; k++) {
+                  if (voxelCharge[i][j][k] != 0) {
+                    int[] voxCoord = {i, j, k};
+                    if (thisPixel != voxCoord) {
+                      //convert pixel coord to a cartesian coord
+                      chargePosition = convertToCartesianCoordinates(i, j, k);
+                      newVelocityVector = adjustVelocityVectorByCharge(electronPosition, chargePosition, s, electronEnergy, xNorm, yNorm, zNorm, coefCalc);
+                      for (int m = 0; m < 3; m++) {
+                        newTotalVelocityVector[m] += newVelocityVector[m];
+                      }
+                    }
+                  }
+                }
+              }
+            }
+            newVelocityMagnitude = Vector.vectorMagnitude(newVelocityVector) /1E9; //m/s
+            if (newVelocityMagnitude > 0) { //so there is a charge pulling
+              newVelocityUnitVector = Vector.normaliseVector(newVelocityVector);
+              //update new xNorm. yNorm, zNorm
+              xNorm = newVelocityUnitVector[0];
+              yNorm = newVelocityUnitVector[1];
+              zNorm = newVelocityUnitVector[2];
+              //update theta and phi
+              theta = Math.acos(zNorm);
+              phi = Math.asin(yNorm/Math.sin(theta));
+              //work out the new kinetic energy
+              gamma = 1 / Math.pow(1 - (Math.pow(newVelocityMagnitude, 2)/Math.pow(c, 2)), 0.5);
+//             newKineticEnergy = ((gamma - 1) * m * Math.pow(c, 2)); // in Joules
+              newKineticEnergy = ((gamma - 1) * m * Math.pow(c, 2))/Beam.KEVTOJOULES; // in keV
+           //   kineticEnergyLossByCharge = ((electronEnergy*Beam.KEVTOJOULES) - newKineticEnergy)/Beam.KEVTOJOULES; //in keV
+              kineticEnergyLossByCharge = electronEnergy - newKineticEnergy;
+            }
+            else {
+              kineticEnergyLossByCharge = 0;
+            }
           }
           
           //update to new position
@@ -2051,6 +2192,18 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
     }
     if (electronEnergy < 0.05) { // play with this and maybe graph it
       exited = true;
+      
+      if (surrounding == false && entered == false) { //the FSE was from the sample and never left
+        //redistribute it's charge within the sample
+        thisPixel = convertToPixelCoordinates(previousX, previousY, previousZ);
+        if (thisPixel != startingPixel) {
+          //add negative charge to this pixel
+          voxelCharge[thisPixel[0]][thisPixel[1]][thisPixel[2]] -= Beam.ELEMENTARYCHARGE * (electronNumber / numSimulatedElectrons);
+          //add positive charge to the original pixel
+          voxelCharge[startingPixel[0]][startingPixel[1]][startingPixel[2]] += Beam.ELEMENTARYCHARGE * (electronNumber / numSimulatedElectrons);
+        }
+      }
+      
     }
   }
 }
@@ -2448,6 +2601,31 @@ private int[] convertToPixelCoordinates(final double x, final double y, final do
   int k = (int) StrictMath.round(((z/1000) - zMinMax[0]) * crystalPixPerUMEM);
   int[] pixelCoords = {i, j, k};
   return pixelCoords;
+}
+
+private double[] convertToCartesianCoordinates(final int i, final int j, final int k) {
+  double[] xMinMax = this.minMaxVertices(0, verticesEM);
+  double[] yMinMax = this.minMaxVertices(1, verticesEM);
+  double[] zMinMax = this.minMaxVertices(2, verticesEM);
+  double x = ((i/crystalPixPerUMEM) + xMinMax[0])*1000;
+  double y = ((j/crystalPixPerUMEM) + yMinMax[0])*1000;
+  double z = ((k/crystalPixPerUMEM) + zMinMax[0])*1000;
+  double[] cartesianCoords = {x, y, z};
+  return cartesianCoords;
+}
+
+private int[] getMaxPixelCoordinates() {
+  double[] xMinMax = this.minMaxVertices(0, verticesEM);
+  double[] yMinMax = this.minMaxVertices(1, verticesEM);
+  double[] zMinMax = this.minMaxVertices(2, verticesEM);
+  Double xdim = xMinMax[1] - xMinMax[0];
+  Double ydim = yMinMax[1] - yMinMax[0];
+  Double zdim = zMinMax[1] - zMinMax[0];
+  int nx = (int) StrictMath.round(xdim * crystalPixPerUMEM) + 1;
+  int ny = (int) StrictMath.round(ydim * crystalPixPerUMEM) + 1;
+  int nz = (int) StrictMath.round(zdim * crystalPixPerUMEM) + 1;
+  int[] maxCoord = {nx, ny, nz};
+  return maxCoord;
 }
 
 private boolean isIntersectionInCrystal(double[] intersectionPoint) {
