@@ -118,6 +118,7 @@ public class MicroED {
   
   private double[][][] voxelCharge;
   private double[][][] voxelDose;
+  private double avgVoxelDose;
   private double maxX, maxY, maxZ;
   
   
@@ -128,6 +129,8 @@ public class MicroED {
   protected static final double m =  9.10938356E-31; //Kg
   
   protected static final double CUTOFF = 0.0001;
+  
+  protected static final int BIN_DIVISION = 2; //how many bins to divide the dose deposition into 
   
   
   
@@ -828,15 +831,25 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
     ElementEM elasticElement = null;
     scattered = true;
     thisTriggered += 1;
+    
+    //update dose and energy and stoppingPower
+    energyLost = s * stoppingPower;
+    //will need to split this energy lost up to get the full spatially resolved dose model
+    
+    MonteCarloDose += energyLost;   //keV
+    
+    //split the dose up into voxels
+    addDoseToVoxels(s, xNorm, yNorm, zNorm, previousX, previousY, previousZ, energyLost, beam, coefCalc);
+    
     //reset
     previousTheta = theta;
     previousPhi = phi;
     previousX = xn;
     previousY = yn;
     previousZ = zn;
-    //update dose and energy and stoppingPower
-    energyLost = s * stoppingPower;
-    MonteCarloDose += energyLost;   //keV
+
+    
+    
      
     //add an elastic collision
 
@@ -935,6 +948,8 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
       double[] intersectionPoint = getIntersectionPoint(s, previousX, previousY, previousZ, xNorm, yNorm, zNorm);
       energyLost = s * stoppingPower;
       MonteCarloDose += energyLost;   //keV
+      //split the dose up into voxels
+      addDoseToVoxels(s, xNorm, yNorm, zNorm, previousX, previousY, previousZ, energyLost, beam, coefCalc);
       if (1000*intersectionPoint[2] == -ZDimension/2 || zNorm < 0) {
         numberBackscattered += 1;
         backscattered = true;
@@ -1147,6 +1162,20 @@ private double processMonteCarloDose(Beam beam, CoefCalc coefCalc) {
   MonteCarloCharge = (MonteCarloElectronsExited - MonteCarloElectronsEntered) * (electronNumber / numSimulatedElectrons) * Beam.ELEMENTARYCHARGE; //need to add in Auger to these
   MonteCarloChargeDensity = MonteCarloCharge / (exposedVolume/1000); // C/m^3
   
+  //process voxel dose
+  //for every voxel, convert keV to dose and average this
+  int count = 0;
+  double sumDose = 0;
+  for (int i = 0; i < maxX; i++) {
+    for (int j = 0; j < maxY; j++) {
+      for (int k = 0; k < maxZ; k++) {
+        voxelDose[i][j][k] = convertVoxEnergyToDose(voxelDose[i][j][k], beam, coefCalc);
+        sumDose += voxelDose[i][j][k];
+        count += 1;
+      }
+    }
+  }
+  avgVoxelDose = sumDose / count;
   return dose;
 }
 
@@ -1278,6 +1307,12 @@ private double getRutherfordScreeningElement(ElementEM e, double electronEnergy)
   return alpha;
 }
 
+private int getNumberOfBins(double s) {
+  double pixelDivisionSize = (1/crystalPixPerUMEM)/2;
+  int pixelDivisionNumber =  (int) StrictMath.round(s/pixelDivisionSize);
+  return Math.max(pixelDivisionNumber, BIN_DIVISION);
+}
+
 private void inelasticFSEProduced(double electronEnergy) {
 
   //next stage is to track the FSE
@@ -1351,7 +1386,7 @@ private double doPrimaryInelastic(CoefCalc coefCalc, double previousX, double pr
       totShellEnergy += shellBindingEnergy;
     }
   if (collidedElement.getAtomicNumber() > 2 && collidedShell < 4 && FSEEnergy > 0) { //only do fl or Auger if K or L shell and not H or He K shells
-    FlAugerMonteCarlo(collidedElement, previousX, previousY, previousZ, collidedShell, coefCalc, surrounding);
+    FlAugerMonteCarlo(collidedElement, previousX, previousY, previousZ, collidedShell, coefCalc, surrounding, beam);
   }
  //   theta = 0;
 //    }
@@ -1533,6 +1568,12 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
   double startingStoppingPower = coefCalc.getStoppingPower(startingEnergy, surrounding);
   double stoppingPower = startingStoppingPower;
   
+  //remove the starting dose from the original voxel
+  /*
+  if (surrounding == false) {
+    voxelDose[startingPixel[0]][startingPixel[1]][startingPixel[2]] -= FSEenergy;
+  }
+  */
   double startingLambda_el = coefCalc.getElectronElasticMFPL(startingEnergy, surrounding);
   Map<ElementEM, Double> elasticProbs = coefCalc.getElasticProbs(surrounding);
   
@@ -1613,10 +1654,9 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
   double gamma = 0, newKineticEnergy = 0, kineticEnergyLossByCharge = 0, newVelocityMagnitude = 0;
   double[] newVelocityVector = new double[3];
   double[] newVelocityUnitVector = new double[3];
-  double test2 = 0;
-//  MonteCarloCharge = (MonteCarloElectronsExited - MonteCarloElectronsEntered) * (electronNumber / numSimulatedElectrons)  * ((double)numSimSoFar/numSimulatedElectrons) * Beam.ELEMENTARYCHARGE;
+  MonteCarloCharge = (MonteCarloElectronsExited - MonteCarloElectronsEntered) * (electronNumber / numSimulatedElectrons)  * ((double)numSimSoFar/numSimulatedElectrons) * Beam.ELEMENTARYCHARGE;
  // MonteCarloCharge = 0;
-  /*
+  
   if (MonteCarloCharge != 0) {
     newVelocityVector = adjustVelocityVectorByCharge(electronPosition, chargePosition, s, electronEnergy, xNorm, yNorm, zNorm, coefCalc);
     newVelocityMagnitude = Vector.vectorMagnitude(newVelocityVector) /1E9; //m/s
@@ -1639,7 +1679,8 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
     newKineticEnergy = (gamma - 1) * m * Math.pow(c, 2)/Beam.KEVTOJOULES; // in keV
     kineticEnergyLossByCharge = electronEnergy - newKineticEnergy; //in keV
   }
-  */
+  
+  /*
   //now do the voxel charge here
   double[] newTotalVelocityVector = new double[3];
   for (int i = 0; i < maxX; i++) {
@@ -1675,11 +1716,8 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
     newKineticEnergy = ((gamma - 1) * m * Math.pow(c, 2))/Beam.KEVTOJOULES; // in keV
  //   kineticEnergyLossByCharge = ((electronEnergy*Beam.KEVTOJOULES) - newKineticEnergy)/Beam.KEVTOJOULES; //in keV
     kineticEnergyLossByCharge = electronEnergy - newKineticEnergy;
-    if (Math.abs(kineticEnergyLossByCharge) > 0.001 ) {
-      System.out.println("test");
-    }
   }
-  
+  */
   
   double xn = previousX + s * xNorm;
   double yn = previousY + s * yNorm;
@@ -1699,16 +1737,20 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
       }
       surrounding = false;
       scattered = true;
+      
+      //update dose and energy and stoppingPower
+      energyLost = s * stoppingPower;
+      //energy lost from charge
+      energyLost += kineticEnergyLossByCharge;
+      //split the dose up into voxels
+      addDoseToVoxels(s, xNorm, yNorm, zNorm, previousX, previousY, previousZ, energyLost, beam, coefCalc);
       //update position and angle
       previousTheta = theta;
       previousPhi = phi;
       previousX = xn;
       previousY = yn;
       previousZ = zn;
-      //update dose and energy and stoppingPower
-      energyLost = s * stoppingPower;
-      //energy lost from charge
-      energyLost += kineticEnergyLossByCharge;
+      
       
     double RNDscatter = Math.random();
     if (RNDscatter < Pinel) { // If the scatter was an inner shell ionisation 
@@ -1746,8 +1788,13 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
         shellFluorescenceYield = collidedElement.getL3ShellFluorescenceYield();
         flauEnergy = collidedElement.getLFluorescenceAverage();
       }
-      if (electronEnergy > shellBindingEnergy) { //only a collision if it is physically possible
+      if (electronEnergy > shellBindingEnergy && flauEnergy > 0) { //only a collision if it is physically possible
         //Do Fl or Auger
+        
+        //remove the flauenergy from this pixel
+        int[] getPixel = convertToPixelCoordinates(xn, yn, zn);
+     //   voxelDose[getPixel[0]][getPixel[1]][getPixel[2]] -= flauEnergy;
+        
       //RND for FL or Auger given it was that element
         double fluoresenceYieldKRND = Math.random();
     //    double KshellFluorescenceYield = collidedElement.getKShellFluorescenceYield();
@@ -1765,6 +1812,10 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
           double escapeFraction = Math.exp(-absCoef * flEscapeDist);
           MonteCarloFlEscape += escapeFraction * flauEnergy;
           extraFlEscape += escapeFraction * flauEnergy;
+          //add dose to voxels
+          double energyRemained = 1- (escapeFraction * flauEnergy);
+          addDoseToVoxels(flEscapeDist, SExNorm, SEyNorm, SEzNorm, previousX, previousY, previousZ, energyRemained, beam, coefCalc);
+          
         }
         else {
           //need to do Auger electrons
@@ -1784,6 +1835,20 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
             MonteCarloAugerEscape += flauEnergy - augerEnergyToEdge;
             extraAugerEscape += flauEnergy - augerEnergyToEdge;
           }
+          
+          //redistribute the dose
+          double distanceToStop = flauEnergy/augerStoppingPower; //nm
+          double trackDistance = 0, augerEnergyLoss = 0; //Math.min(distanceToStop, augerEscapeDist);
+          if (distanceToStop < augerEscapeDist) { //so loses all it's energy in the sample
+            augerEnergyLoss = flauEnergy;
+            trackDistance = distanceToStop;
+          }
+          else { //it escapes
+            augerEnergyLoss = augerEnergyToEdge;
+            trackDistance = augerEscapeDist;
+          }
+          addDoseToVoxels(trackDistance, SExNorm, SEyNorm, SEzNorm, previousX, previousY, previousZ, augerEnergyLoss, beam, coefCalc);
+          
         }
       }  
       }
@@ -1865,7 +1930,7 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
       
       //update the position and kinetic energy from the charge 
       if (electronEnergy >= 0.05) {
-        /*
+        
       MonteCarloCharge = (MonteCarloElectronsExited - MonteCarloElectronsEntered) * (electronNumber / numSimulatedElectrons)  * ((double)numSimSoFar/numSimulatedElectrons) * Beam.ELEMENTARYCHARGE;
  //     MonteCarloCharge = 0;
       if (MonteCarloCharge != 0) {
@@ -1897,7 +1962,8 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
       else {
         kineticEnergyLossByCharge = 0;
       }
-      */
+      
+       /*
         for (int i = 0; i < maxX; i++) {
           for (int j = 0; j < maxY; j++) {
             for (int k = 0; k < maxZ; k++) {
@@ -1935,6 +2001,7 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
         else {
           kineticEnergyLossByCharge = 0;
         }
+        */
       }
       
       //update to new position
@@ -1951,35 +2018,44 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
         double escapeDist = 1000 * getIntersectionDistance(previousX, previousY, previousZ, xNorm, yNorm, zNorm); //nm
         double FSEStoppingPower = coefCalc.getStoppingPower(electronEnergy, false);
         double energyToEdge = FSEStoppingPower * escapeDist;
-        if (energyToEdge < electronEnergy){
-          double energyLostStep = 0;
+        if (energyToEdge < electronEnergy){ //the FSE has escaped
+          double energyLostStep = 0, totFSEenLostLastStep = 0;
           double newEnergy = electronEnergy;
           for (int j = 0; j < 10; j++) { //I will need to play around with the amount of slicing when I am writing up
             energyLostStep = (escapeDist/10) * FSEStoppingPower;
             newEnergy -= energyLostStep;
+            totFSEenLostLastStep += energyLostStep;
             FSEStoppingPower = coefCalc.getStoppingPower(newEnergy, false);
           }
           if (newEnergy > 0) {
            // MonteCarloFSEEscape += newEnergy;
-            if (entered == false) {
+            if (entered == false) { //it started here
               newMonteCarloFSEEscape += newEnergy;
               MonteCarloElectronsExited += 1;
               //add this charge to the pixel it came from
               voxelCharge[startingPixel[0]][startingPixel[1]][startingPixel[2]] += Beam.ELEMENTARYCHARGE * (electronNumber / numSimulatedElectrons);
+            //split the dose up into voxels
+              addDoseToVoxels(escapeDist, xNorm, yNorm, zNorm, previousX, previousY, previousZ, totFSEenLostLastStep, beam, coefCalc);
             }
             else {
               MonteCarloFSEEntry += entryEnergy - newEnergy;  //here the entered FSE has escaped again
+              //split the dose up into voxels
+              addDoseToVoxels(escapeDist, xNorm, yNorm, zNorm, previousX, previousY, previousZ, totFSEenLostLastStep, beam, coefCalc);
             }
           }
         }
-        else {
-          if (entered == true) {  // here the entered FSE has stopped in the sample so all energy stays in sample
+        else { //FSE has stopped in the sample...just
+          /*
+          if (entered == true && electronEnergy > 0.05) {  // here the entered FSE has stopped in the sample so all energy stays in sample
             MonteCarloFSEEntry += entryEnergy;
             MonteCarloElectronsEntered += 1;
             //add negative charge to this pixel
             thisPixel = convertToPixelCoordinates(xn, yn, zn);
             voxelCharge[thisPixel[0]][thisPixel[1]][thisPixel[2]] += Beam.ELEMENTARYCHARGE * (electronNumber / numSimulatedElectrons);
+            addDoseToVoxels(escapeDist, xNorm, yNorm, zNorm, previousX, previousY, previousZ, electronEnergy, beam, coefCalc);
           }
+          */
+          
         }
      
       }
@@ -2101,7 +2177,7 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
           
           //Charge stuff
           if (electronEnergy >= 0.05) {
-            /*
+            
           MonteCarloCharge = (MonteCarloElectronsExited - MonteCarloElectronsEntered) * (electronNumber / numSimulatedElectrons)  * ((double)numSimSoFar/numSimulatedElectrons) * Beam.ELEMENTARYCHARGE;
        //   MonteCarloCharge = 0;
           if (MonteCarloCharge != 0) {
@@ -2133,7 +2209,8 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
           else {
             kineticEnergyLossByCharge = 0;
           }
-          */
+          
+            /*
             for (int i = 0; i < maxX; i++) {
               for (int j = 0; j < maxY; j++) {
                 for (int k = 0; k < maxZ; k++) {
@@ -2171,6 +2248,7 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
             else {
               kineticEnergyLossByCharge = 0;
             }
+            */
           }
           
           //update to new position
@@ -2192,18 +2270,38 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
     }
     if (electronEnergy < 0.05) { // play with this and maybe graph it
       exited = true;
+      thisPixel = convertToPixelCoordinates(previousX, previousY, previousZ);
       
       if (surrounding == false && entered == false) { //the FSE was from the sample and never left
         //redistribute it's charge within the sample
-        thisPixel = convertToPixelCoordinates(previousX, previousY, previousZ);
         if (thisPixel != startingPixel) {
           //add negative charge to this pixel
           voxelCharge[thisPixel[0]][thisPixel[1]][thisPixel[2]] -= Beam.ELEMENTARYCHARGE * (electronNumber / numSimulatedElectrons);
           //add positive charge to the original pixel
           voxelCharge[startingPixel[0]][startingPixel[1]][startingPixel[2]] += Beam.ELEMENTARYCHARGE * (electronNumber / numSimulatedElectrons);
         }
+        //add last bit of dose to voxel it stopped in
+        if (Double.isNaN(electronEnergy)) {
+          System.out.println("Test");
+        }
+        voxelDose[thisPixel[0]][thisPixel[1]][thisPixel[2]] += electronEnergy;
+        if (Double.isNaN(voxelDose[thisPixel[0]][thisPixel[1]][thisPixel[2]])) {
+          System.out.println("Test");
+        }
       }
-      
+      if (surrounding == false && entered == true) {  // here the entered FSE has stopped in the sample so all energy stays in sample
+        MonteCarloFSEEntry += entryEnergy;
+        MonteCarloElectronsEntered += 1;
+        //add negative charge to this pixel
+        voxelCharge[thisPixel[0]][thisPixel[1]][thisPixel[2]] += Beam.ELEMENTARYCHARGE * (electronNumber / numSimulatedElectrons);
+        if (Double.isNaN(electronEnergy)) {
+          System.out.println("Test");
+        }
+        voxelDose[thisPixel[0]][thisPixel[1]][thisPixel[2]] += electronEnergy;
+        if (Double.isNaN(voxelDose[thisPixel[0]][thisPixel[1]][thisPixel[2]])) {
+          System.out.println("Test");
+        }
+      }
     }
   }
 }
@@ -2305,7 +2403,7 @@ private double getFSEEnergy(double electronEnergy, double shellBindingEnergy) {
 }
 
 private void FlAugerMonteCarlo(Element collidedElement, double previousX, double previousY, double previousZ, 
-                                int collidedShell, CoefCalc coefCalc, boolean surrounding) {
+                                int collidedShell, CoefCalc coefCalc, boolean surrounding, Beam beam) {
   double shellFluorescenceYield = 0;
   double flauEnergy = 0;
   if (collidedShell == 0) {
@@ -2330,6 +2428,11 @@ private void FlAugerMonteCarlo(Element collidedElement, double previousX, double
   double fluoresenceYieldKRND = Math.random();
 //  double KshellFluorescenceYield = collidedElement.getKShellFluorescenceYield();
   if(flauEnergy > 0) {
+    //subtract dose from the voxel that's this is in
+    if (surrounding == false) {
+      int[] getPixel = convertToPixelCoordinates(previousX, previousY, previousZ);
+   //   voxelDose[getPixel[0]][getPixel[1]][getPixel[2]] -= flauEnergy;
+    }
     if (fluoresenceYieldKRND <= shellFluorescenceYield) { 
     //then it's fluorescence
       // get the absorption coefficient of the crystal
@@ -2345,6 +2448,9 @@ private void FlAugerMonteCarlo(Element collidedElement, double previousX, double
         double escapeFraction = Math.exp(-absCoef * flEscapeDist);
         MonteCarloFlEscape += escapeFraction * flauEnergy;
         numFL += 1;
+        //add dose to voxels
+        double energyRemained = 1- (escapeFraction * flauEnergy);
+        addDoseToVoxels(flEscapeDist, SExNorm, SEyNorm, SEzNorm, previousX, previousY, previousZ, energyRemained, beam, coefCalc);
       }
       //if it's in the surrounding don't bother with fluorescence
     }
@@ -2368,8 +2474,21 @@ private void FlAugerMonteCarlo(Element collidedElement, double previousX, double
           MonteCarloAugerEscape += flauEnergy - augerEnergyToEdge;
           MonteCarloElectronsExited += 1;
         }
+        //redistribute the dose
+        double distanceToStop = flauEnergy/augerStoppingPower; //nm
+        double trackDistance = 0, augerEnergyLoss = 0; //Math.min(distanceToStop, augerEscapeDist);
+        if (distanceToStop < augerEscapeDist) { //so loses all it's energy in the sample
+          augerEnergyLoss = flauEnergy;
+          trackDistance = distanceToStop;
+        }
+        else { //it escapes
+          augerEnergyLoss = augerEnergyToEdge;
+          trackDistance = augerEscapeDist;
+        }
+        addDoseToVoxels(trackDistance, SExNorm, SEyNorm, SEzNorm, previousX, previousY, previousZ, augerEnergyLoss, beam, coefCalc);
+        
       }
-      else {
+      else { //surrounding = true
         Double augerEntryDist = 1000* getIntersectionDistance(previousX, previousY, previousZ, SExNorm, SEyNorm, SEzNorm); //um
         boolean pointInCrystal = false;
         if (augerEntryDist <= 0 || augerEntryDist.isNaN()
@@ -2390,6 +2509,8 @@ private void FlAugerMonteCarlo(Element collidedElement, double previousX, double
         }
         //I am overestimating here a bit because the Auger can't enter and come back out again, 
         //given the small significance of Auger this doesn't matter much
+        
+        //in the voxel model I'm not going to have auger electrons enter at all for now!
       }
     }
   }
@@ -2568,6 +2689,8 @@ private double returnDeflectionAngle(boolean highEnergy, double[] energyAnglePro
 private boolean isMicrocrystalAt(final double x, final double y, final double z) {
   //Note that this is absolutely only right for a cuboid at the moment
   //This can stay as a quick test
+  //this quick test actually messes with the program and it's imperfect placing of pixels
+  
   if ((x > XDimension/2) || (x < -XDimension/2)) {
     return false;
   }
@@ -2577,10 +2700,12 @@ private boolean isMicrocrystalAt(final double x, final double y, final double z)
   if ((z > ZDimension/2) || (z < -ZDimension/2)) {
     return false;
   }
-
+   
   //now do the crystal occupancy stuff
   //convert xyz to ijk
+  
   int[] pixelCoords = convertToPixelCoordinates(x, y, z); 
+  
   boolean[] occ = crystOccEM[pixelCoords[0]][pixelCoords[1]][pixelCoords[2]];  //This means that if has already been done don't do it again
                                         // Really needed to speed up Monte Carlo
 
@@ -2626,6 +2751,55 @@ private int[] getMaxPixelCoordinates() {
   int nz = (int) StrictMath.round(zdim * crystalPixPerUMEM) + 1;
   int[] maxCoord = {nx, ny, nz};
   return maxCoord;
+}
+
+private void addDoseToVoxels(double s, double xNorm, double yNorm, double zNorm, double previousX, double previousY, double previousZ
+                             , double energyLost, Beam beam, CoefCalc coefCalc) {
+  int numberBins = getNumberOfBins(s);
+  double binLength = s / numberBins;
+  double energyDivision = energyLost/numberBins;
+  double xPos, yPos, zPos = 0;
+  for (int j = 1; j <= numberBins; j++) {
+    xPos = previousX + (binLength *j) * xNorm;
+    yPos = previousY + (binLength *j) * yNorm;
+    zPos = previousZ + (binLength *j) * zNorm;
+    if (isMicrocrystalAt(xPos, yPos, zPos) == true) { // needed for electrons that enter from the surrounding 
+      addDoseToPosition(xPos, yPos, zPos, energyDivision, beam, coefCalc);
+    }
+  }
+}
+
+private void addDoseToPosition(double x, double y, double z, double keV, Beam beam, CoefCalc coefCalc) {
+  int[] voxCoord = convertToPixelCoordinates(x, y, z);
+  if (Double.isNaN(keV)) {
+    System.out.println("Test");
+  }
+  voxelDose[voxCoord[0]][voxCoord[1]][voxCoord[2]] += keV; //probably easier to do keV and process at the end
+  if (Double.isNaN(voxelDose[voxCoord[0]][voxCoord[1]][voxCoord[2]])) {
+    System.out.println("Test");
+  }
+  /*
+  double electronNumber = beam.getExposure() * (beam.getBeamArea()*1E8);
+  double totalJ = (keV * (electronNumber/numSimulatedElectrons))*Beam.KEVTOJOULES;
+  
+  double voxelVolume = Math.pow((1/crystalPixPerUMEM) /1E4,3); // voxel volume in cm^3
+  double voxelMass = (coefCalc.getDensity() * voxelVolume)/1000; //voxel mass in Kg
+  double dose = (totalJ/voxelMass) / 1E6; //dose in MGy
+  voxelDose[voxCoord[0]][voxCoord[1]][voxCoord[2]] += dose;
+  */
+}
+
+private double convertVoxEnergyToDose(double energy, Beam beam, CoefCalc coefCalc) {
+  double electronNumber = beam.getExposure() * (beam.getBeamArea()*1E8);
+  double totalJ = (energy * (electronNumber/numSimulatedElectrons))*Beam.KEVTOJOULES;
+  
+  double voxelVolume = Math.pow((1/crystalPixPerUMEM) /1E4,3); // voxel volume in cm^3
+  double voxelMass = (coefCalc.getDensity() * voxelVolume)/1000; //voxel mass in Kg
+  double dose = (totalJ/voxelMass) / 1E6; //dose in MGy
+  if (Double.isNaN(dose)) {
+    System.out.println("Test");
+  }
+  return dose;
 }
 
 private boolean isIntersectionInCrystal(double[] intersectionPoint) {
