@@ -692,10 +692,10 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
   Map<Element, double[]> ionisationProbs = coefCalc.getAllShellProbs(false); //Really need to make sure that these are in the same order
   
   //plasmon stuff
-  /*
+  
   double startingPlasmonLambda = coefCalc.getPlasmaMFPL(startingEnergy);
   double plasmaEnergy = coefCalc.getPlasmaFrequency()/1000.0; //in keV
-  */
+  
   
   //tot inelastic
   double startingInelasticLambda = coefCalc.getElectronInelasticMFPL(startingEnergy, false);
@@ -1821,11 +1821,13 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
       
       //update dose and energy and stoppingPower
       energyLost = s * stoppingPower;
-      //energy lost from charge
-      energyLost += kineticEnergyLossByCharge;
       //split the dose up into voxels
  //     addDoseToVoxels(s, xNorm, yNorm, zNorm, previousX, previousY, previousZ, energyLost, beam, coefCalc);
       addDoseToRegion(s, xNorm, yNorm, zNorm, previousX, previousY, previousZ, energyLost);
+      
+      //energy lost from charge - charge energy not appropriate to count towards dose or get negative dose
+      energyLost += kineticEnergyLossByCharge;
+
       //update position and angle
       previousTheta = theta;
       previousPhi = phi;
@@ -2856,6 +2858,7 @@ private void addDoseToVoxels(double s, double xNorm, double yNorm, double zNorm,
 
 private void addDoseToRegion(double s, double xNorm, double yNorm, double zNorm, double previousX, double previousY, double previousZ
                             , double energyLost) {
+  if (energyLost > 0) {
   double regionBinDistance = Math.min((XDimension/2)/10, (YDimension/2)/10);
   int numBins = (int) Math.ceil(s/regionBinDistance);
   double binLength = s/numBins;
@@ -2876,6 +2879,10 @@ private void addDoseToRegion(double s, double xNorm, double yNorm, double zNorm,
       //add energy to this region
       regionDose[index] += energyDivision;
     }
+  }
+  }
+  else {
+    System.out.println("Test");
   }
 }
 
