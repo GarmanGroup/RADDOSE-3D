@@ -115,11 +115,18 @@ public class MicroED {
   
   private int numAuger;
   private int numFL;
+  private int numFSEFromSurr;
+  private int numFSEFromSample;
   
   private double[][][] voxelCharge;
   private double[][][] voxelDose;
   private double avgVoxelDose;
   private double maxX, maxY, maxZ;
+  private double[] regionDose;
+  private double[] regionVolume;
+  private double avgRegionDose;
+  
+  protected static final int NUM_REGIONS = 10;
   
   
   
@@ -168,6 +175,9 @@ public class MicroED {
     maxX = maxVoxel[0];
     maxY = maxVoxel[1];
     maxZ = maxVoxel[2];
+    regionDose = new double[NUM_REGIONS];
+    regionVolume = new double[NUM_REGIONS];
+    populateRegionVolumes();
   }
   
   public void CalculateEM(Beam beam, Wedge wedge, CoefCalc coefCalc) { // also pass in crystal dimensions
@@ -474,6 +484,35 @@ private void WriterFile(final String filename, final double dose4) throws IOExce
     outFile.write("dose, numSimulated, runtime, total electrons, total elastic, single elastic, productive\n");
     outFile.write(String.format(
         " %f, %d, %f, %f, %f, %f, %f%n", dose4, numSimulatedElectrons, MonteCarloRuntime, numElectrons, MonteCarloTotElasticCount, MonteCarloSingleElasticCount, MonteCarloProductive));
+  } catch (IOException e) {
+    e.printStackTrace();
+    System.err.println("WriterFile: Could not write to file " + filename);
+  }
+  
+  try {
+    outFile.close();
+  } catch (IOException e) {
+    e.printStackTrace();
+    System.err.println("WriterFile: Could not close file " + filename);
+  }
+}
+
+private void writeDoseCSV(final String filename) throws IOException {
+  BufferedWriter outFile;
+  outFile = new BufferedWriter(new OutputStreamWriter(
+      new FileOutputStream(filename), "UTF-8"));
+  try {
+    outFile.write("X,Y,Z,scalar\n");
+    for (int i = 0; i < maxX; i++) {
+      for (int j = 0; j < maxY; j++) {
+        for (int k = 0; k < maxZ; k++) {
+          double[] coords = convertToCartesianCoordinates(i, j, k);
+          outFile.write(String.format(
+              "%f,%f,%f,%f%n", coords[0], coords[1], coords[2], voxelDose[i][j][k]));
+        }
+      }
+    }
+    
   } catch (IOException e) {
     e.printStackTrace();
     System.err.println("WriterFile: Could not write to file " + filename);
@@ -839,7 +878,8 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
     MonteCarloDose += energyLost;   //keV
     
     //split the dose up into voxels
-    addDoseToVoxels(s, xNorm, yNorm, zNorm, previousX, previousY, previousZ, energyLost, beam, coefCalc);
+  //  addDoseToVoxels(s, xNorm, yNorm, zNorm, previousX, previousY, previousZ, energyLost, beam, coefCalc);
+    addDoseToRegion(s, xNorm, yNorm, zNorm, previousX, previousY, previousZ, energyLost);
     
     //reset
     previousTheta = theta;
@@ -949,7 +989,8 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
       energyLost = s * stoppingPower;
       MonteCarloDose += energyLost;   //keV
       //split the dose up into voxels
-      addDoseToVoxels(s, xNorm, yNorm, zNorm, previousX, previousY, previousZ, energyLost, beam, coefCalc);
+     // addDoseToVoxels(s, xNorm, yNorm, zNorm, previousX, previousY, previousZ, energyLost, beam, coefCalc);
+      addDoseToRegion(s, xNorm, yNorm, zNorm, previousX, previousY, previousZ, energyLost);
       if (1000*intersectionPoint[2] == -ZDimension/2 || zNorm < 0) {
         numberBackscattered += 1;
         backscattered = true;
@@ -1164,6 +1205,7 @@ private double processMonteCarloDose(Beam beam, CoefCalc coefCalc) {
   
   //process voxel dose
   //for every voxel, convert keV to dose and average this
+  /*
   int count = 0;
   double sumDose = 0;
   for (int i = 0; i < maxX; i++) {
@@ -1176,6 +1218,39 @@ private double processMonteCarloDose(Beam beam, CoefCalc coefCalc) {
     }
   }
   avgVoxelDose = sumDose / count;
+  
+  //scale
+  double scaleFactor = dose / avgVoxelDose;
+  for (int i = 0; i < maxX; i++) {
+    for (int j = 0; j < maxY; j++) {
+      for (int k = 0; k < maxZ; k++) {
+        voxelDose[i][j][k] *= scaleFactor;
+      }
+    }
+  }
+  //write a csv file
+  try {
+    writeDoseCSV("outputVoxDose.CSV");
+  } catch (IOException e) {
+    // TODO Auto-generated catch block
+    e.printStackTrace();
+  }
+  */
+  
+  //process region dose
+  int count = 0;
+  double sumDose = 0;
+  for (int i = 0; i < NUM_REGIONS; i++) {
+    regionDose[i] = convertRegionEnergyToDose(regionDose[i], i, beam, coefCalc);
+    sumDose += regionDose[i];
+    count += 1;
+  }
+  avgRegionDose = sumDose / count;
+  double scaleFactor = dose / avgRegionDose;
+  for (int i = 0; i < NUM_REGIONS; i++) {
+        regionDose[i] *= scaleFactor;
+
+  }
   return dose;
 }
 
@@ -1556,6 +1631,12 @@ private double doPrimaryElastic(double electronEnergy, Map<ElementEM, Double> el
 
 private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, double previousX, double previousY, double previousZ, 
     double FSEtheta, double FSEphi, boolean surrounding, Beam beam, int numSimSoFar) { //Will need to combine this with the inner shell stuff as well - means re-updating the inner shell x sections after I mess with them
+  if (surrounding == true) {
+    numFSEFromSurr += 1;
+  }
+  else {
+    numFSEFromSample += 1;
+  }
   //find the pixel that the electron is staring in
   int[] startingPixel = convertToPixelCoordinates(previousX, previousY, previousZ);
   int[] thisPixel = startingPixel;
@@ -1743,7 +1824,8 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
       //energy lost from charge
       energyLost += kineticEnergyLossByCharge;
       //split the dose up into voxels
-      addDoseToVoxels(s, xNorm, yNorm, zNorm, previousX, previousY, previousZ, energyLost, beam, coefCalc);
+ //     addDoseToVoxels(s, xNorm, yNorm, zNorm, previousX, previousY, previousZ, energyLost, beam, coefCalc);
+      addDoseToRegion(s, xNorm, yNorm, zNorm, previousX, previousY, previousZ, energyLost);
       //update position and angle
       previousTheta = theta;
       previousPhi = phi;
@@ -1814,8 +1896,8 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
           extraFlEscape += escapeFraction * flauEnergy;
           //add dose to voxels
           double energyRemained = 1- (escapeFraction * flauEnergy);
-          addDoseToVoxels(flEscapeDist, SExNorm, SEyNorm, SEzNorm, previousX, previousY, previousZ, energyRemained, beam, coefCalc);
-          
+   //       addDoseToVoxels(flEscapeDist, SExNorm, SEyNorm, SEzNorm, previousX, previousY, previousZ, energyRemained, beam, coefCalc);
+          addDoseToRegion(flEscapeDist, SExNorm, SEyNorm, SEzNorm, previousX, previousY, previousZ, energyRemained);
         }
         else {
           //need to do Auger electrons
@@ -1847,8 +1929,8 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
             augerEnergyLoss = augerEnergyToEdge;
             trackDistance = augerEscapeDist;
           }
-          addDoseToVoxels(trackDistance, SExNorm, SEyNorm, SEzNorm, previousX, previousY, previousZ, augerEnergyLoss, beam, coefCalc);
-          
+  //        addDoseToVoxels(trackDistance, SExNorm, SEyNorm, SEzNorm, previousX, previousY, previousZ, augerEnergyLoss, beam, coefCalc);
+          addDoseToRegion(trackDistance, SExNorm, SEyNorm, SEzNorm, previousX, previousY, previousZ, augerEnergyLoss);
         }
       }  
       }
@@ -2035,12 +2117,14 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
               //add this charge to the pixel it came from
               voxelCharge[startingPixel[0]][startingPixel[1]][startingPixel[2]] += Beam.ELEMENTARYCHARGE * (electronNumber / numSimulatedElectrons);
             //split the dose up into voxels
-              addDoseToVoxels(escapeDist, xNorm, yNorm, zNorm, previousX, previousY, previousZ, totFSEenLostLastStep, beam, coefCalc);
+         //     addDoseToVoxels(escapeDist, xNorm, yNorm, zNorm, previousX, previousY, previousZ, totFSEenLostLastStep, beam, coefCalc);
+              addDoseToRegion(escapeDist, xNorm, yNorm, zNorm, previousX, previousY, previousZ, totFSEenLostLastStep);
             }
             else {
               MonteCarloFSEEntry += entryEnergy - newEnergy;  //here the entered FSE has escaped again
               //split the dose up into voxels
-              addDoseToVoxels(escapeDist, xNorm, yNorm, zNorm, previousX, previousY, previousZ, totFSEenLostLastStep, beam, coefCalc);
+        //      addDoseToVoxels(escapeDist, xNorm, yNorm, zNorm, previousX, previousY, previousZ, totFSEenLostLastStep, beam, coefCalc);
+              addDoseToRegion(escapeDist, xNorm, yNorm, zNorm, previousX, previousY, previousZ, totFSEenLostLastStep);
             }
           }
         }
@@ -2450,7 +2534,8 @@ private void FlAugerMonteCarlo(Element collidedElement, double previousX, double
         numFL += 1;
         //add dose to voxels
         double energyRemained = 1- (escapeFraction * flauEnergy);
-        addDoseToVoxels(flEscapeDist, SExNorm, SEyNorm, SEzNorm, previousX, previousY, previousZ, energyRemained, beam, coefCalc);
+    //    addDoseToVoxels(flEscapeDist, SExNorm, SEyNorm, SEzNorm, previousX, previousY, previousZ, energyRemained, beam, coefCalc);
+        addDoseToRegion(flEscapeDist, SExNorm, SEyNorm, SEzNorm, previousX, previousY, previousZ, energyRemained);
       }
       //if it's in the surrounding don't bother with fluorescence
     }
@@ -2485,8 +2570,8 @@ private void FlAugerMonteCarlo(Element collidedElement, double previousX, double
           augerEnergyLoss = augerEnergyToEdge;
           trackDistance = augerEscapeDist;
         }
-        addDoseToVoxels(trackDistance, SExNorm, SEyNorm, SEzNorm, previousX, previousY, previousZ, augerEnergyLoss, beam, coefCalc);
-        
+    //    addDoseToVoxels(trackDistance, SExNorm, SEyNorm, SEzNorm, previousX, previousY, previousZ, augerEnergyLoss, beam, coefCalc);
+        addDoseToRegion(trackDistance, SExNorm, SEyNorm, SEzNorm, previousX, previousY, previousZ, augerEnergyLoss);
       }
       else { //surrounding = true
         Double augerEntryDist = 1000* getIntersectionDistance(previousX, previousY, previousZ, SExNorm, SEyNorm, SEzNorm); //um
@@ -2769,6 +2854,31 @@ private void addDoseToVoxels(double s, double xNorm, double yNorm, double zNorm,
   }
 }
 
+private void addDoseToRegion(double s, double xNorm, double yNorm, double zNorm, double previousX, double previousY, double previousZ
+                            , double energyLost) {
+  double regionBinDistance = Math.min((XDimension/2)/10, (YDimension/2)/10);
+  int numBins = (int) Math.ceil(s/regionBinDistance);
+  double binLength = s/numBins;
+  double energyDivision = energyLost/numBins;
+  double xPos, yPos, zPos = 0;
+  for (int j = 1; j <= numBins; j++) {
+    xPos = previousX + (binLength *j) * xNorm;
+    yPos = previousY + (binLength *j) * yNorm;
+    zPos = previousZ + (binLength *j) * zNorm;
+    if (isMicrocrystalAt(xPos, yPos, zPos) == true) { // needed for electrons that enter from the surrounding 
+      //find region
+      int indexX = (int) ((((XDimension/2)-Math.abs(xPos)))/(0.5*XDimension/NUM_REGIONS));
+      int indexY = (int) ((((YDimension/2)-Math.abs(yPos)))/(0.5*YDimension/NUM_REGIONS));
+      int index = Math.min(indexX, indexY);
+      if (index == 10) { //stops it breaking if it's exactly in 0,0,0
+        index -= 1;
+      }
+      //add energy to this region
+      regionDose[index] += energyDivision;
+    }
+  }
+}
+
 private void addDoseToPosition(double x, double y, double z, double keV, Beam beam, CoefCalc coefCalc) {
   int[] voxCoord = convertToPixelCoordinates(x, y, z);
   if (Double.isNaN(keV)) {
@@ -2800,6 +2910,29 @@ private double convertVoxEnergyToDose(double energy, Beam beam, CoefCalc coefCal
     System.out.println("Test");
   }
   return dose;
+}
+
+private double convertRegionEnergyToDose(double energy, int index,Beam beam, CoefCalc coefCalc) {
+  //find total energy in the region
+  double electronNumber = beam.getExposure() * (beam.getBeamArea()*1E8);
+  double totalJ = (energy * (electronNumber/numSimulatedElectrons))*Beam.KEVTOJOULES;
+  
+  double volume = regionVolume[index] / 1E21; //in cm^3
+  double regionMass = (coefCalc.getDensity()*volume) / 1000;
+  double dose = (totalJ/regionMass) / 1E6; //MGy
+  return dose;
+}
+
+private void populateRegionVolumes() {
+  //find the volume of the region
+  //for now I'm just going to deal with cubes but will need to change this later
+  double totalVolume = XDimension*YDimension*ZDimension;
+  double sumVolume = 0;
+  for (int i=0; i < NUM_REGIONS; i++) {
+    double innerVolume = (XDimension - (i+1)*(XDimension/NUM_REGIONS)) * (YDimension-(i+1)*(YDimension/NUM_REGIONS)) * ZDimension;
+    regionVolume[i] = totalVolume - (innerVolume + sumVolume);
+    sumVolume += regionVolume[i];
+  }
 }
 
 private boolean isIntersectionInCrystal(double[] intersectionPoint) {
