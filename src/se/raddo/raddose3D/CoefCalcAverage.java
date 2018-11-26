@@ -264,5 +264,17 @@ public class CoefCalcAverage extends CoefCalc {
     // TODO Auto-generated method stub
     return 0;
   }
+
+  @Override
+  public Map<Element, Double> getPhotoElectricProbsElement(double beamEnergy) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public double getElementAbsorptionCoef(double beamEnergy, Element e) {
+    // TODO Auto-generated method stub
+    return 0;
+  }
   
 }

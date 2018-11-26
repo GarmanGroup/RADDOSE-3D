@@ -314,4 +314,11 @@ public class CrystalSphericalOld extends Crystal {
       Wedge wedge, CoefCalc coefCalc) {
     
   }
+
+  @Override
+  public void startXFEL(double XDim, double YDim, double ZDim, Beam beam,
+      Wedge wedge, CoefCalc coefCalc) {
+    // TODO Auto-generated method stub
+    
+  }
 }

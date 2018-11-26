@@ -159,4 +159,8 @@ public abstract class CoefCalc {
   
   public abstract double getSolventFraction();
   
+  public abstract Map<Element, Double> getPhotoElectricProbsElement(double beamEnergy);
+  
+  public abstract double getElementAbsorptionCoef(double beamEnergy, Element e);
+  
 }

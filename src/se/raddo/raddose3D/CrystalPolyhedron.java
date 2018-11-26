@@ -1846,8 +1846,8 @@ public class CrystalPolyhedron extends Crystal {
           }else {
             dotProduct = yNorm;
           } 
-          double magnitude = Math.sqrt(Math.pow(xNorm, 2) + Math.pow(yNorm, 2) + Math.pow(zNorm, 2));
-          double cosAngleToX = dotProduct / magnitude;
+          double magnitude = Math.sqrt(Math.pow(xNorm, 2) + Math.pow(yNorm, 2) + Math.pow(zNorm, 2)); //always 1
+          double cosAngleToX = dotProduct / magnitude; 
           double angleToX = Math.acos(cosAngleToX);
           //find where angle is in distribution
           int place = (int) Math.rint((angleToX * PE_ANGLE_RES_LIMIT)/PE_ANGLE_LIMIT);
@@ -2358,5 +2358,14 @@ public class CrystalPolyhedron extends Crystal {
     MicroED microED = new MicroED(vertices, indices, crystCoord, 
                                   crystalPixPerUM, crystSizeVoxels, crystOcc);
     microED.CalculateEM(beam, wedge, coefCalc);
+  }
+  @Override
+  public void startXFEL(double XDim, double YDim, double ZDim, Beam beam,
+      Wedge wedge, CoefCalc coefCalc) {
+    //also need indices, vertices, crystalCoords, numberVoxelsm, PPM (may not need all of these but just 
+    //to be safe for now
+    XFEL xfel = new XFEL(vertices, indices, crystCoord, 
+                                  crystalPixPerUM, crystSizeVoxels, crystOcc);
+    xfel.CalculateXFEL(beam, wedge, coefCalc);
   }
 }

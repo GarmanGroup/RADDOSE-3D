@@ -483,6 +483,25 @@ public class CoefCalcCompute extends CoefCalc {
 
     return absCoeffs;
   }
+  
+  @Override
+  public Map<Element, Double> getPhotoElectricProbsElement(double beamEnergy) {
+    Map<Element, Double> elementAbsorptionProbs = new HashMap<Element, Double>(); 
+    double runnningSumProb = 0;
+    for (Element e : this.presentElements) {
+      Map<String, Double> absCoeffs = calculateCoefficientsElement(beamEnergy, e);
+      double absorptionProb = absCoeffs.get(PHOTOELECTRIC)/absCoeffphoto;
+      runnningSumProb += absorptionProb;
+      elementAbsorptionProbs.put(e, runnningSumProb);
+    }
+    return elementAbsorptionProbs;
+  }
+  
+  @Override
+  public double getElementAbsorptionCoef(double beamEnergy, Element e) {
+    Map<String, Double> absCoeffs = calculateCoefficientsElement(beamEnergy, e);
+    return absCoeffs.get(PHOTOELECTRIC);
+  }
 
   /**
    * Calculates the absorption, attenuation and elastic coefficients for

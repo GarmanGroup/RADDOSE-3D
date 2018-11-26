@@ -1195,9 +1195,13 @@ private double processMonteCarloDose(Beam beam, CoefCalc coefCalc) {
   MonteCarloProductive = MonteCarloProductive * (electronNumber/ numSimulatedElectrons);
   
   MonteCarloDose = (MonteCarloDose * (electronNumber / numSimulatedElectrons)) * Beam.KEVTOJOULES;
+  newMonteCarloFSEEscape = (newMonteCarloFSEEscape * (electronNumber / numSimulatedElectrons)) * Beam.KEVTOJOULES;
+  MonteCarloFSEEntry = (MonteCarloFSEEntry * (electronNumber / numSimulatedElectrons)) * Beam.KEVTOJOULES;
   
   double exposedMass = (((coefCalc.getDensity()*1000) * exposedVolume) / 1000);  //in Kg 
   double dose = (MonteCarloDose/exposedMass) / 1E06; //dose in MGy 
+  double doseExited = (newMonteCarloFSEEscape/exposedMass) / 1E06; //dose in MGy 
+  double doseEntered = (MonteCarloFSEEntry/exposedMass) / 1E06; //dose in MGy 
   
   //charge stuff
   MonteCarloCharge = (MonteCarloElectronsExited - MonteCarloElectronsEntered) * (electronNumber / numSimulatedElectrons) * Beam.ELEMENTARYCHARGE; //need to add in Auger to these
@@ -2110,6 +2114,9 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
             newEnergy -= energyLostStep;
             totFSEenLostLastStep += energyLostStep;
             FSEStoppingPower = coefCalc.getStoppingPower(newEnergy, false);
+            if (newEnergy < 0) {
+              break;
+            }
           }
           if (newEnergy > 0) {
            // MonteCarloFSEEscape += newEnergy;
@@ -2627,8 +2634,9 @@ private boolean mapPopulated(boolean highEnergy, int atomicNumber) {
     if (lowEnergyAngles[atomicNumber] == null) {
       return true;
     }
-    else;
-    return false;
+    else {
+      return false;
+    }
   }
 }
 

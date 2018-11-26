@@ -343,7 +343,7 @@ public abstract class Crystal {
   public abstract void setCryoPEparamsForCurrentBeam(Beam beam, CoefCalc coefCalc, double[][] feFactors);
   
   public abstract void startMicroED(double XDim, double YDim, double ZDim, Beam beam, Wedge wedge, CoefCalc coefCalc);
-  
+  public abstract void startXFEL(double XDim, double YDim, double ZDim, Beam beam, Wedge wedge, CoefCalc coefCalc);
 
   
   /**
@@ -608,6 +608,9 @@ public abstract class Crystal {
    *          translational and rotational information.
    */
   public void expose(final Beam beam, final Wedge wedge) {
+    //start XFEL here, just comment and uncomment for now
+    
+    startXFEL(XDim, YDim, ZDim, beam, wedge, coefCalc);
     
     if (useElectrons == true) {
       startMicroED(XDim, YDim, ZDim, beam, wedge, coefCalc);
