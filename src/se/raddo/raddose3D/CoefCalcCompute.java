@@ -1812,15 +1812,6 @@ public class CoefCalcCompute extends CoefCalc {
         NperVol = getCryoOccurrenceEM(e)/(cellVolume /1000); //Atoms per nm^3
       }
       
-    //  double NperVol2 = molWeightFraction*(AVOGADRO_NUM * (density/1E21))/A; //Atoms per nm^3
-      xSectionTotPerElement += elasticElement[counter] * NperVol; //nm^-1
-      if (surrounding == false) {
-        elasticXSections.put(e, elasticElement[counter] * NperVol);
-      }
-      else {
-        elasticXSectionsSurrounding.put(e, elasticElement[counter] * NperVol);
-      }
-      
       
       //Do ELSEPA
       if ((electronEnergy <= 300) && (electronEnergy >= 0.05)) {
@@ -1836,6 +1827,17 @@ public class CoefCalcCompute extends CoefCalc {
           elasticElement[counter] = x_section;
         }
       }
+      
+    //  double NperVol2 = molWeightFraction*(AVOGADRO_NUM * (density/1E21))/A; //Atoms per nm^3
+      xSectionTotPerElement += elasticElement[counter] * NperVol; //nm^-1
+      if (surrounding == false) {
+        elasticXSections.put(e, elasticElement[counter] * NperVol);
+      }
+      else {
+        elasticXSectionsSurrounding.put(e, elasticElement[counter] * NperVol);
+      }
+      
+
       
       //needs to just read the ELSEPA file once and store in an array or summin like that - CASINO interpolates
       //This is now incorporated in element database 

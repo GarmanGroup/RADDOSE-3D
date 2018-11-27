@@ -3,11 +3,20 @@
  */
 package se.raddo.raddose3D;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -123,6 +132,10 @@ public class CrystalPolyhedron extends Crystal {
   
   private static final int   FL_ANGLE_RESOLUTION = 1;
   private static final int   FL_ANGLE_RES_LIMIT = 16;
+
+  private final int numberAngularEmissionBins = 10;
+  private TreeMap<Double, double[]>[]  lowEnergyAngles;
+  private TreeMap<Double, double[]>[]  highEnergyAngles;
   
   /**
    * Stores the number of tracks used for fluorescence 
@@ -646,6 +659,8 @@ public class CrystalPolyhedron extends Crystal {
    if (photoElectronEscape) {
     peRes = (int) mergedProperties.get(Crystal.CRYSTAL_PHOTOELECTRON_RESOLUTION);
    }
+   lowEnergyAngles = new TreeMap[95];
+   highEnergyAngles = new TreeMap[95];
   }
   
   /**
@@ -2368,4 +2383,560 @@ public class CrystalPolyhedron extends Crystal {
                                   crystalPixPerUM, crystSizeVoxels, crystOcc);
     xfel.CalculateXFEL(beam, wedge, coefCalc);
   }
+  
+  
+  
+  
+  
+  //photoelectron Monte Carlo stuff starts below
+  
+  
+  
+  
+  @Override
+  public double trackPhotoelectron(int i, int j, int k, double doseIncreasePE, CoefCalc coefCalc, 
+                    Map<Element, Double> elementAbsorptionProbs, Map<Element, double[]> ionisationProbs, double[] angularEmissionProbs,
+                    Beam beam, boolean surrounding) {
+    double energyEscapedPE = 0;
+    //determine which element absorbed this photoelectron and which shell it came from
+    Element ionisedElement = getIonisedElement(elementAbsorptionProbs);
+    int shellIndex = getIonisedShell(ionisationProbs, ionisedElement);
+    double shellBindingEnergy = getShellBindingEnergy(ionisedElement, shellIndex);
+    double photoelectronEnergy = beam.getPhotonEnergy() - shellBindingEnergy;
+    //get the dose scaling factor
+    double voxelVolume = Math.pow(((1/crystalPixPerUM)/1E4),3); //in cm^3
+    double voxelMass = (coefCalc.getDensity() *  voxelVolume) / 1000; //in Kg
+    double startingDose = ((photoelectronEnergy * Beam.KEVTOJOULES) / voxelMass)/1E6; //in  MGy
+    double doseScale = doseIncreasePE / startingDose;
+    
+    //convert pixel coordinates to cartesian to get starting point
+    double[] startingCoordinates = convertToCartesianCoordinates(i, j, k); //um
+    double previousX = startingCoordinates[0];
+    double previousY = startingCoordinates[1];
+    double previousZ = startingCoordinates[2];
+    //choose an initial direction
+    double theta = 0, phi = 0, xNorm = 0, yNorm = 0, zNorm = 0;
+    if (shellIndex == 0) { //then I want to send out in a biased direction
+      xNorm = getCosAngleToX(angularEmissionProbs);
+      //get yNorm and zNorm
+      yNorm = PosOrNeg() * Math.random() * Math.pow(1-Math.pow(xNorm, 2), 0.5);
+      zNorm = PosOrNeg() * Math.pow(1 - Math.pow(xNorm, 2) - Math.pow(yNorm, 2), 0.5);
+      //get theta and phi
+      theta = Math.acos(zNorm);
+      phi = Math.acos(xNorm / Math.sin(theta));
+    }
+    else { // send it out in a random direction
+      theta = Math.random() * 2 * Math.PI;
+      phi = Math.random() * 2 * Math.PI;
+      xNorm = Math.sin(theta) * Math.cos(phi);
+      yNorm = Math.sin(theta) * Math.sin(phi);
+      zNorm = Math.cos(theta);
+    }
+    
+    //now set up the energy and MFPL stuff for the Monte Carlo simulation
+    double electronEnergy = photoelectronEnergy;
+    double energyLost = 0;
+    surrounding = false;   //I'm just going to focus on the crystal for now and see how long it takes to run, then add in surrounding 
+    double stoppingPower = coefCalc.getStoppingPower(photoelectronEnergy, surrounding); //in keV/nm
+    
+    double startingLambda_el = coefCalc.getElectronElasticMFPL(photoelectronEnergy, surrounding);
+    Map<ElementEM, Double> elasticProbs = coefCalc.getElasticProbs(surrounding);
+    
+    double lambdaT = 0;
+    lambdaT = startingLambda_el;
+    
+    //first distance
+    double testRND = Math.random();
+    double s = -lambdaT*Math.log(testRND) / 1000; //um
+ //   double Pinel = 1 - (lambdaT / startingLambda_el);
+    double xn = previousX + s * xNorm;
+    double yn = previousY + s * yNorm;
+    double zn = previousZ + s * zNorm;
+    
+    
+    boolean exited = false;
+    double previousTheta = 0, previousPhi = 0;
+    if (photoelectronEnergy < 0.05) {
+      exited = true;
+    }
+    while (exited == false) {
+      //convert coordinate to voxel
+      int[] pixelCoords = convertToPixelCoordinates(xn, yn, zn);
+      if (isCrystalAt(pixelCoords[0], pixelCoords[1], pixelCoords[2]) == true) { //photoelectron still in the crystal
+        energyLost = s*1000 * stoppingPower;
+        //convert this energy to dose and add it to the middle voxel in the track
+        double middleX = previousX + (s/2) * xNorm;
+        double middleY = previousY + (s/2) * yNorm;
+        double middleZ = previousZ + (s/2) * zNorm;
+        addMonteCarloDoseToPixels(energyLost, middleX, middleY, middleZ, doseScale, voxelMass);
+
+        //update position and angle
+        //update position and angle
+        previousTheta = theta;
+        previousPhi = phi;
+        previousX = xn;
+        previousY = yn;
+        previousZ = zn;
+        
+        //update angle and stuff - for now it is always an elastic interaction
+        double elasticElementRND = Math.random();
+        ElementEM elasticElement = null;
+        for (ElementEM e : elasticProbs.keySet()) {
+          if (elasticProbs.get(e) > elasticElementRND) { //Then this element is the one that was ionised
+            elasticElement = e;
+            break;
+          }
+        }
+        
+        //get the angles
+        //ELSEPA stuff
+
+        theta = getPrimaryElasticScatteringAngle(electronEnergy, elasticElement.getAtomicNumber());
+
+        
+        theta = previousTheta + theta;
+        if (theta >= (2 * Math.PI)) {
+          theta -= 2*Math.PI;
+        }
+        phi = 2 * Math.PI * Math.random();
+        phi = previousPhi + phi;
+        if (phi >= (2 * Math.PI)) {
+          phi -= 2*Math.PI;
+        }
+      //now further update the primary
+        
+        xNorm = Math.sin(theta) * Math.cos(phi);
+        yNorm = Math.sin(theta) * Math.sin(phi);
+        zNorm = Math.cos(theta);
+        
+        //update the energy and stopping Power and stuff
+        electronEnergy -= energyLost; 
+        stoppingPower = coefCalc.getStoppingPower(electronEnergy, false);
+        //get new lambdaT
+        double lambdaEl = coefCalc.getElectronElasticMFPL(electronEnergy, false);
+        lambdaT = lambdaEl;
+        s = -lambdaT*Math.log(Math.random()) /1000;
+        elasticProbs = coefCalc.getElasticProbs(false);
+        
+        //update to new position
+        xn = previousX + s * xNorm;
+        yn = previousY + s * yNorm;
+        zn = previousZ + s * zNorm;
+      }
+      else { //it's left the crystal
+        exited = true;
+        //get the energy deposited before it left the crystal. - when I slice need to also do timestamps 
+        double escapeDist = getIntersectionDistance(previousX, previousY, previousZ, xNorm, yNorm, zNorm); //nm
+        double FSEStoppingPower = coefCalc.getStoppingPower(electronEnergy, false);
+        double energyToEdge = FSEStoppingPower * escapeDist*1000;
+        if (energyToEdge < electronEnergy){ //the FSE has escaped
+          double energyLostStep = 0, totFSEenLostLastStep = 0;
+          double newEnergy = electronEnergy;
+          for (int m = 0; m < 10; m++) { //I will need to play around with the amount of slicing when I am writing up
+            energyLostStep = (escapeDist/10)*1000 * FSEStoppingPower;
+            //add dose to the pixel in the centre of the slice
+            double middleX = previousX + (m*(escapeDist/10) + escapeDist/20) * xNorm;
+            double middleY = previousY + (m*(escapeDist/10) + escapeDist/20) * yNorm;
+            double middleZ = previousZ + (m*(escapeDist/10) + escapeDist/20) * zNorm;
+            addMonteCarloDoseToPixels(energyLostStep, middleX, middleY, middleZ, doseScale, voxelMass);
+            
+            newEnergy -= energyLostStep;
+            FSEStoppingPower = coefCalc.getStoppingPower(newEnergy, false);
+            if (newEnergy < 0) {
+              break;
+            }
+          } 
+          if (newEnergy > 0) {
+            energyEscapedPE += newEnergy;
+          }
+        }
+        else {
+          //didn't quite escape, add all to middle pixel
+          double middleX = previousX + (escapeDist/2) * xNorm;
+          double middleY = previousY + (escapeDist/2) * yNorm;
+          double middleZ = previousZ + (escapeDist/2) * zNorm;
+          addMonteCarloDoseToPixels(energyLost, middleX, middleY, middleZ, doseScale, voxelMass);
+        }
+      }
+      if (electronEnergy < 0.05) {
+        exited = true;
+      }
+    }
+    energyEscapedPE = doseScale*(((energyEscapedPE * Beam.KEVTOJOULES) / voxelMass)/1E6);
+    return energyEscapedPE;
+  }
+  
+  private void addMonteCarloDoseToPixels(double energyLost, double middleX, double middleY, double middleZ, 
+                                        double doseScale, double voxelMass) {
+    int[] middlePixelCoords = convertToPixelCoordinates(middleX, middleY, middleZ);
+    if (isCrystalAt(middlePixelCoords[0], middlePixelCoords[1], middlePixelCoords[2]) == true) { //needed as could go out and in again
+      //then convert energy to dose
+      double doseLost = ((energyLost * Beam.KEVTOJOULES) / voxelMass)/1E6; //in  MGy
+      //scale this dose up to be representative of all
+      double doseToAdd = doseLost * doseScale;
+      //add this dose to the pixel
+      addDose(middlePixelCoords[0], middlePixelCoords[1], middlePixelCoords[2], doseToAdd);
+    }
+  }
+  
+  private double[] convertToCartesianCoordinates(final int i, final int j, final int k) {
+    double[] xMinMax = this.minMaxVertices(0, vertices);
+    double[] yMinMax = this.minMaxVertices(1, vertices);
+    double[] zMinMax = this.minMaxVertices(2, vertices);
+    double x = ((i/crystalPixPerUM) + xMinMax[0]);
+    double y = ((j/crystalPixPerUM) + yMinMax[0]);
+    double z = ((k/crystalPixPerUM) + zMinMax[0]);
+    double[] cartesianCoords = {x, y, z};
+    return cartesianCoords; // in um
+  }
+  
+  private int[] convertToPixelCoordinates(final double x, final double y, final double z) {
+    double[] xMinMax = this.minMaxVertices(0, vertices);
+    double[] yMinMax = this.minMaxVertices(1, vertices);
+    double[] zMinMax = this.minMaxVertices(2, vertices);
+    int i = (int) StrictMath.round(((x) - xMinMax[0]) * crystalPixPerUM);
+    int j = (int) StrictMath.round(((y) - yMinMax[0]) * crystalPixPerUM);
+    int k = (int) StrictMath.round(((z) - zMinMax[0]) * crystalPixPerUM);
+    int[] pixelCoords = {i, j, k};
+    return pixelCoords;
+  }
+  
+  private Element getIonisedElement(Map<Element, Double> elementAbsorptionProbs) {
+    double elementRND = Math.random();
+    Element ionisedElement = null;
+    for (Element e : elementAbsorptionProbs.keySet()) {
+      double elementProb =  elementAbsorptionProbs.get(e);
+      if (elementProb > elementRND) {
+        ionisedElement = e;
+        break;
+      }
+    }
+    return ionisedElement;
+  }
+  
+  private int getIonisedShell(Map<Element, double[]> ionisationProbs, Element ionisedElement) {
+    double[] shellProbs = ionisationProbs.get(ionisedElement);
+    double shellRND = Math.random();
+    int shellIndex = 0;
+    for (int j = 0; j < shellProbs.length; j++) {
+      if (shellProbs[j] > shellRND) {
+        shellIndex = j;
+        break;
+      }
+    }
+    return shellIndex;
+  }
+  
+  private double getShellBindingEnergy(Element collidedElement, int collidedShell) {
+    double shellBindingEnergy = 0;
+    switch (collidedShell) {
+      case 0: shellBindingEnergy = collidedElement.getKEdge();
+              break;
+      case 1: shellBindingEnergy = collidedElement.getL1Edge();
+              break;
+      case 2: shellBindingEnergy = collidedElement.getL2Edge();
+              break;
+      case 3: shellBindingEnergy = collidedElement.getL3Edge();
+              break;
+      case 4: shellBindingEnergy = collidedElement.getM1Edge();
+              break;
+      case 5: shellBindingEnergy = collidedElement.getM2Edge();
+              break;
+      case 6: shellBindingEnergy = collidedElement.getM3Edge();
+              break;
+      case 7: shellBindingEnergy = collidedElement.getM4Edge();
+              break;
+      case 8: shellBindingEnergy = collidedElement.getM5Edge();
+              break;
+    }
+    return shellBindingEnergy;
+  }
+  
+  private double getCosAngleToX( double[] angularEmissionProbs) {
+    double RNDangle = Math.random();
+    double lastProb = 0;
+    double angle = 0;
+    for (int i = 0; i < numberAngularEmissionBins; i++) {
+      if (RNDangle < angularEmissionProbs[i]) { //then it's in this angle range
+        //interpolate angle
+        double angleStart = i * Math.PI/numberAngularEmissionBins;
+        double angleEnd = (i+1) * (Math.PI/numberAngularEmissionBins);
+        double proportionAlong = (RNDangle - lastProb) / (angularEmissionProbs[i] - lastProb);
+        angle = angleStart + (proportionAlong * (angleEnd - angleStart));
+        break;
+      }
+      lastProb = angularEmissionProbs[i];
+    }
+    return Math.cos(angle);
+  }
+  private double PosOrNeg() {
+    double RND = Math.random();
+    if (RND < 0.5) {
+      return 1;
+    }
+    else {
+      return -1;
+    }
+  }
+  
+  private double getPrimaryElasticScatteringAngle(double electronEnergy, int atomicNumber){
+    boolean highEnergy = false;
+    if (electronEnergy > 20) {
+      highEnergy = true;
+    }
+   
+    //determine if need to get data from file or it's already loaded
+    boolean getFile = mapPopulated(highEnergy, atomicNumber);
+    
+    //get the right file if I need to
+    if (getFile == true) {
+      
+      TreeMap<Double, double[]> elementData = new TreeMap<Double, double[]>();
+      try {
+        elementData =  getAngleFileData(highEnergy, atomicNumber);
+      } catch (IOException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      } 
+      //now add the file data to the global array
+      if (highEnergy == true) {
+        highEnergyAngles[atomicNumber] = elementData;
+      }
+      else {
+        lowEnergyAngles[atomicNumber] = elementData;
+      }
+    }
+    
+    //Now use the data in the global array to work out the angle
+    //get nearest energy
+    Double energyKey = returnNearestEnergy(highEnergy, atomicNumber, electronEnergy);
+    
+    //should probably interpolate the values here tbh.... will do at some point
+    
+    //get the differential cross sections for that energy of the element
+    double[] energyAngleProbs = null;
+    if (highEnergy == true) {
+      energyAngleProbs = highEnergyAngles[atomicNumber].get(energyKey);
+    }
+    else {
+      energyAngleProbs = lowEnergyAngles[atomicNumber].get(energyKey);
+    }
+    //get the angle from this 
+    double deflectionAngle = returnDeflectionAngle(highEnergy, energyAngleProbs);
+    
+    if (Double.isNaN(deflectionAngle)){
+      System.out.println("test");
+    }
+    return deflectionAngle;
+  }
+  
+  private InputStreamReader locateFile(String filePath) 
+      throws UnsupportedEncodingException, FileNotFoundException{
+    InputStream is = getClass().getResourceAsStream("/" + filePath);
+
+    if (is == null) {
+      is = new FileInputStream(filePath);
+    }
+
+    return new InputStreamReader(is, "US-ASCII");
+  }
+
+  private boolean mapPopulated(boolean highEnergy, int atomicNumber) {
+    if (highEnergy == true) {
+      if (highEnergyAngles[atomicNumber] == null) {
+        return true;
+      }
+      else {
+        return false;
+      }
+    }
+    else {
+      if (lowEnergyAngles[atomicNumber] == null) {
+        return true;
+      }
+      else {
+       return false;
+      }
+    }
+  }
+
+//--put it in here when I have copy and paste back
+private TreeMap<Double, double[]> getAngleFileData(boolean highEnergy, int atomicNum) throws IOException{
+String elementNum = String.valueOf(atomicNum) + ".csv";
+String filePath = "";
+if (highEnergy == true) {
+filePath = "constants/above_20000/" + elementNum;
+}
+else {
+filePath = "constants/below_20000/" + elementNum;
+}
+
+InputStreamReader isr = locateFile(filePath);
+BufferedReader br = new BufferedReader(isr);
+TreeMap<Double, double[]> elementData = new TreeMap<Double, double[]>();
+String line;
+String[] components;
+int count = -1;
+while ((line = br.readLine()) != null) {
+count +=1 ;
+components = line.split(",");
+if (count > 0) { //if this is not the first line
+  Double energy = Double.valueOf(components[0]);
+  String[] angleProbsString = Arrays.copyOfRange(components, 1, components.length);
+  double[] angleProbs = new double[angleProbsString.length];
+  for (int i = 0; i < angleProbsString.length; i++) {
+    angleProbs[i] = Double.parseDouble(angleProbsString[i]);
+  }
+  //Now add this to the local treemap
+  elementData.put(energy, angleProbs);
+}
+}
+return elementData;
+}
+
+
+private Double returnNearestEnergy(boolean highEnergy, int atomicNumber, double electronEnergy) {
+Double nearestEnergy = 0.;
+if (electronEnergy >= 0.05 && electronEnergy <= 300) {
+Double beforeKey = 0.;
+Double afterKey = 0.;
+if (highEnergy == true) {
+  beforeKey = highEnergyAngles[atomicNumber].floorKey(electronEnergy);
+  afterKey = highEnergyAngles[atomicNumber].ceilingKey(electronEnergy);
+  
+}
+else {
+  beforeKey = lowEnergyAngles[atomicNumber].floorKey(electronEnergy);
+  afterKey = lowEnergyAngles[atomicNumber].ceilingKey(electronEnergy);
+}
+if (beforeKey == null) {
+  beforeKey = 0.;
+}
+if (afterKey == null) {
+  afterKey = 0.;
+}
+beforeKey = (beforeKey == 0.) ? afterKey: beforeKey;
+afterKey = (afterKey == 0.) ? beforeKey: afterKey;
+if (Math.abs(electronEnergy - beforeKey) <= Math.abs(electronEnergy-afterKey)) {
+  nearestEnergy = beforeKey;
+}
+else {
+  nearestEnergy = afterKey;
+}
+
+}
+return nearestEnergy;
+}
+
+private double returnDeflectionAngle(boolean highEnergy, double[] energyAngleProbs) {
+double totalProb = 0;
+for (int i = 0; i < energyAngleProbs.length; i++) {
+totalProb += energyAngleProbs[i];
+}
+double[] probPerAngle = new double[energyAngleProbs.length];
+double sumProb = 0;
+for (int j = 0; j < energyAngleProbs.length; j++) {
+sumProb += energyAngleProbs[j];
+probPerAngle[j] = sumProb/totalProb;
+}
+
+double RND = Math.random();
+double index = 0;
+for (int k = 0; k < probPerAngle.length; k++) {
+if (probPerAngle[k] >= RND) {
+  index = k;
+  break;
+}
+}
+//convert the index to an angle
+double angleDegrees = 0;
+if (highEnergy == true) {
+double startFactor = 0.;
+int factor = 0;
+double divideFactor = 4;
+double minusFactor = 0;
+double modFactor = 0;
+if (index >=1 && index < 146) {
+  minusFactor = 1;
+  modFactor = 36;
+  factor = (int) ((int) (index - minusFactor)/modFactor);
+  startFactor = Math.pow(10, factor) * 0.0001;
+  divideFactor = 4;
+}
+else if (index >= 146 && index < 236) {
+//   factor = (int) (index-146)/100;
+  startFactor = 1;
+  divideFactor = 10;
+  minusFactor = 146;
+  modFactor = 90;
+}
+else if (index >= 236 && index <= 296) {
+  startFactor = 10;  //go until 25
+  divideFactor = 40;
+  minusFactor = 236;
+  modFactor = 60;
+}
+else if (index > 296) {
+  startFactor = 25;
+  divideFactor = 50;
+  minusFactor = 296;
+  modFactor = 1000000; //just anything super high as all but first one
+}
+angleDegrees = startFactor + (((index-minusFactor)%modFactor)*(startFactor/divideFactor));
+if (Double.isNaN(angleDegrees)){
+//   System.out.println("test");
+  angleDegrees = 0;
+}
+}
+else {
+angleDegrees = 1.0 * index;
+}
+double angleRadians = angleDegrees * Math.PI/180;
+/*
+if (index > 296 && highEnergy == true) {
+System.out.println("test");
+}
+*/
+
+return angleRadians;
+}
+
+private double getIntersectionDistance(double x, double y, double z, double ca, double cb, double cc) {
+  if (normals == null) {
+    calculateNormals(false);
+  }
+
+  double[] directionVector = {ca, cb, cc}; //the actual direction vector
+  double minIntersect = 0;
+  double[] origin = new double[3];
+  origin[0] = x;
+  origin[1] = y;
+  origin[2] = z;
+  
+  double intersectionDistance = 0;
+  for (int l = 0; l < indices.length; l++) {
+    intersectionDistance = Vector.rayTraceDistance(normals[l],
+        directionVector, origin, originDistances[l]);
+
+    Double distanceObject = Double.valueOf(intersectionDistance);
+
+    if (intersectionDistance < 0 || distanceObject.isNaN()
+        || distanceObject.isInfinite()) {
+        //do nothing
+    }
+    else {
+  //    break; //maybe should just be closest, or an issue with the rayTRace
+      if (minIntersect == 0) {
+        minIntersect = intersectionDistance;
+      }
+      else {
+        double min = Math.min(minIntersect, intersectionDistance);
+        minIntersect = min;
+      }
+    }
+
+  }
+  return minIntersect;
+}
+
 }

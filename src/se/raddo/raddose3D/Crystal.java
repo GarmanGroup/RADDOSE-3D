@@ -1,6 +1,7 @@
 package se.raddo.raddose3D;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -141,6 +142,8 @@ public abstract class Crystal {
   public double XDim;
   public double YDim;
   public double ZDim;
+  
+  private final int numberAngularEmissionBins = 10;
   
   
   /**
@@ -321,6 +324,10 @@ public abstract class Crystal {
    */
   public abstract double addDoseAfterPE(int i, int j, int k, double doseIncreasePE);
   public abstract double addDoseAfterPECryo(double i, double j, double k, double doseIncreasePE, double energyToDoseFactor);
+  
+  public abstract double trackPhotoelectron(int i, int j, int k, double doseIncreasePE, CoefCalc coefCalc, 
+                                            Map<Element, Double> elementAbsorptionProbs, Map<Element, double[]> ionisationProbs, double[] angularEmissionProbs,
+                                            Beam beam, boolean surrounding);
   
   /**
    * This accounts for FL energy transfer to nearby voxels and caluclates release
@@ -610,7 +617,7 @@ public abstract class Crystal {
   public void expose(final Beam beam, final Wedge wedge) {
     //start XFEL here, just comment and uncomment for now
     
-    startXFEL(XDim, YDim, ZDim, beam, wedge, coefCalc);
+  //  startXFEL(XDim, YDim, ZDim, beam, wedge, coefCalc);
     
     if (useElectrons == true) {
       startMicroED(XDim, YDim, ZDim, beam, wedge, coefCalc);
@@ -628,13 +635,28 @@ public abstract class Crystal {
 
     //Set up PE and FE - no need to do this is PE false
     double[][] feFactors = coefCalc.getFluorescentEscapeFactors(beam); 
-   
+    Map<Element, Double> elementAbsorptionProbs = null;
+    Map<Element, double[]> ionisationProbs = null;
+    double[] angularEmissionProbs = null;
     if (photoElectronEscape) {
       //Calculate PE electron binding energy subtraction
+      
     calculatePEEnergySubtraction(feFactors, false); 
     setPEparamsForCurrentBeam(beam.getPhotonEnergy(), coefCalc, feFactors); 
+    /*
+    //change this stuff for the Monte carlo methos to element absorption probs and angular distribution
+    //populate the relative element cross sections here 
+    elementAbsorptionProbs = coefCalc.getPhotoElectricProbsElement(beam.getPhotonEnergy());
+    //populate the relative shell cross sections
+    ionisationProbs = getRelativeShellProbs(elementAbsorptionProbs, beam.getPhotonEnergy());
+    //populate the angular emission probs
+    angularEmissionProbs = getAngularEmissionProbs();
+    //elastic electron angle setup
+    coefCalc.populateCrossSectionCoefficients();
+    */
     //Calc Auger
     augerEnergy = getAugerEnergy(feFactors);
+
     }
    if (fluorescentEscape) {
     //Calc % energy contribution of each event
@@ -709,7 +731,8 @@ public abstract class Crystal {
     for (int n = 0; n < angles.length; n++) {
       // Expose one angle
       exposeAngle(angles[n], beam, wedge, n, angles.length, fluorescenceEnergyRelease, 
-                  augerEnergy, cryoAugerEnergy, cryoFluorescenceEnergyRelease, feFactors, cryoFeFactors);
+                  augerEnergy, cryoAugerEnergy, cryoFluorescenceEnergyRelease, feFactors, cryoFeFactors,
+                  elementAbsorptionProbs, ionisationProbs, angularEmissionProbs);
 
       for (ExposeObserver eo : exposureObservers) {
         eo.imageComplete(n, angles[n]);
@@ -758,7 +781,8 @@ public abstract class Crystal {
   private void exposeAngle(final double angle, final Beam beam,
       final Wedge wedge, final int anglenum, final int anglecount,  
       double fluorescenceEnergyRelease, double augerEnergy, double cryoAugerEnergy,
-      double cryoFluorescenceEnergyRelease, double[][] feFactors, double[][] cryoFeFactors) {
+      double cryoFluorescenceEnergyRelease, double[][] feFactors, double[][] cryoFeFactors,
+      Map<Element, Double> elementAbsorptionProbs, Map<Element, double[]> ionisationProbs, double[] angularEmissionProbs) {
     
     final int[] crystalSize = getCrystSizeVoxels();
 
@@ -772,10 +796,12 @@ public abstract class Crystal {
     
     //Set up tracks in polarised direction for photoelectrons
     if (photoElectronEscape) {
+      
       findVoxelsReachedByPE(false, coefCalc, beam.getPhotonEnergy(), feFactors, angle);
       if (coefCalc.isCryo() == true) {
         findVoxelsReachedByPE(true, coefCalc, beam.getPhotonEnergy(), cryoFeFactors, angle);
       }
+      
     }
     
     double energyPerFluence =
@@ -898,9 +924,11 @@ public abstract class Crystal {
                   double totAugerDose = augerEnergy * numberofphotons * fluenceToDoseFactor;
                   
                   //Do PE
-                  double dosePE = voxImageDose[i][j][k] - voxImageFlDoseRelease - totAugerDose;
+             //     double dosePE = voxImageDose[i][j][k] - voxImageFlDoseRelease - totAugerDose;
+                  double dosePE = voxImageDose[i][j][k] - (EnergyToSubtractFromPE/beam.getPhotonEnergy())*voxImageDose[i][j][k];
                    
                   double doseLostFromCrystalPE = addDoseAfterPE(i, j, k, dosePE); //to run with new photoelectron escape
+                  
                   double doseLostFromCrytsalFL = 0;
                   if (voxImageFlDoseRelease > 0) { //necessary to prevent error when 0
                   doseLostFromCrytsalFL = addDoseAfterFL(i, j, k, voxImageFlDoseRelease);
@@ -923,8 +951,12 @@ public abstract class Crystal {
                   //Dose in voxel
                   double totAugerDose = augerEnergy * numberofphotons * fluenceToDoseFactor;
                   //Do PE
-                  double dosePE = voxImageDose[i][j][k] - totAugerDose;
+                //  double dosePE = voxImageDose[i][j][k] - totAugerDose; //change this to binding energy fraction
+                  double dosePE = voxImageDose[i][j][k] - (EnergyToSubtractFromPE/beam.getPhotonEnergy())*voxImageDose[i][j][k];
                   double doseLostFromCrystalPE = addDoseAfterPE(i, j, k, dosePE);
+                  
+               //   double doseLostFromCrystalPE = trackPhotoelectron(i, j, k, dosePE, coefCalc, elementAbsorptionProbs, ionisationProbs, angularEmissionProbs, beam, false);
+                  
                   totalEscapedDosePE +=  doseLostFromCrystalPE;
                   totalEscapedDose += doseLostFromCrystalPE;
                   //add Auger to Voxel
@@ -1066,8 +1098,10 @@ public abstract class Crystal {
                     //convert this to a dose to be released
                     double voxImageFlEnergyRelease = energyPerFluence * totCryoFluorescenceEnergyRelease;
                     double voxImageFlDoseRelease = fluenceToDoseFactor * totCryoFluorescenceEnergyRelease;
-                    energyPE = cryoVoxImageEnergy - totCryoAugerEnergy - voxImageFlEnergyRelease;
-                    dosePE = cryoVoxImageDose - totCryoAugerDose - voxImageFlDoseRelease;
+              //      energyPE = cryoVoxImageEnergy - totCryoAugerEnergy - voxImageFlEnergyRelease;
+                    energyPE = cryoVoxImageEnergy - (cryoEnergyToSubtractFromPE/beam.getPhotonEnergy())*cryoVoxImageEnergy;
+                  //  dosePE = cryoVoxImageDose - totCryoAugerDose - voxImageFlDoseRelease;
+                    dosePE = cryoVoxImageDose - (cryoEnergyToSubtractFromPE/beam.getPhotonEnergy())*cryoVoxImageDose;
                   }
                   double doseAddedBack = addDoseAfterPECryo(iCryst, jCryst, kCryst, energyPE, energyToDoseFactor);
               //    double doseAddedBack = addDoseAfterPECryo(iconverted, jconverted, kconverted, dosePE, energyToDoseFactor);
@@ -1215,5 +1249,101 @@ public abstract class Crystal {
   
   public boolean getPEEscapeBool() {
     return photoElectronEscape;
+  }
+  
+  private Map<Element, double[]> getRelativeShellProbs(Map<Element, Double> elementAbsorptionProbs, double beamEnergy){
+    Map<Element, double[]> ionisationProbs = new HashMap<Element, double[]>();
+    for (Element e : elementAbsorptionProbs.keySet()) {
+      e.EdgeRatio();
+      double runningSumProb = 0;
+      double kshellProb = 0, L1shellProb = 0, L2shellProb = 0, L3shellProb = 0, M1shellProb = 0, M2shellProb = 0, M3shellProb = 0, M4shellProb = 0, M5shellProb = 0;
+      double[] shellProbs = new double[9];
+  //    double shellProb = 0;
+      if (beamEnergy > e.getKEdge() ) {
+        kshellProb = e.getKShellIonisationProb();
+        runningSumProb += kshellProb;
+        shellProbs[0] = runningSumProb;
+      }
+      if (beamEnergy > e.getL1Edge() && e.getAtomicNumber() >= 12) {
+        L1shellProb = e.getL1ShellIonisationProb() * (1-kshellProb);
+        runningSumProb += L1shellProb;
+        shellProbs[1] = runningSumProb;
+      }
+      if (beamEnergy > e.getL2Edge() && e.getAtomicNumber() >= 12) {
+        L2shellProb = e.getL2ShellIonisationProb() * (1-kshellProb-L1shellProb);
+        runningSumProb += L2shellProb;
+        shellProbs[2] = runningSumProb;
+      }
+      if (beamEnergy > e.getL3Edge() && e.getAtomicNumber() >= 12) {
+        L3shellProb = e.getL3ShellIonisationProb() * (1-kshellProb-L1shellProb-L2shellProb);
+        runningSumProb += L3shellProb;
+        shellProbs[3] = runningSumProb;
+      }
+      if (beamEnergy > e.getM1Edge() && e.getAtomicNumber() >= 73) { 
+        M1shellProb = e.getM1ShellIonisationProb() * (1-kshellProb-L1shellProb-L2shellProb-L3shellProb);
+        runningSumProb += M1shellProb;
+        shellProbs[4] = runningSumProb;
+      }
+      if (beamEnergy > e.getM2Edge() && e.getAtomicNumber() >= 73) { 
+        M2shellProb = e.getM2ShellIonisationProb() * (1-kshellProb-L1shellProb-L2shellProb-L3shellProb-M1shellProb);
+        runningSumProb += M2shellProb;
+        shellProbs[5] = runningSumProb;
+      }
+      if (beamEnergy > e.getM3Edge() && e.getAtomicNumber() >= 73) { 
+        M3shellProb = e.getM3ShellIonisationProb() * (1-kshellProb-L1shellProb-L2shellProb-L3shellProb-M1shellProb-M2shellProb);
+        runningSumProb += M3shellProb;
+        shellProbs[6] = runningSumProb;
+      }
+      if (beamEnergy > e.getM4Edge() && e.getAtomicNumber() >= 73) { 
+        M4shellProb = e.getM4ShellIonisationProb() * (1-kshellProb-L1shellProb-L2shellProb-L3shellProb-M1shellProb-M2shellProb-M3shellProb);
+        runningSumProb += M4shellProb;
+        shellProbs[7] = runningSumProb;
+      }
+      if (beamEnergy > e.getM5Edge() && e.getAtomicNumber() >= 73) { 
+        M4shellProb = e.getM5ShellIonisationProb() * (1-kshellProb-L1shellProb-L2shellProb-L3shellProb-M1shellProb-M2shellProb-M3shellProb-M4shellProb);
+        runningSumProb += M4shellProb;
+        shellProbs[8] = runningSumProb;
+      }
+      ionisationProbs.put(e, shellProbs);
+    }
+    return ionisationProbs;
+  }
+  
+  private double[] getAngularEmissionProbs() {
+    double[] angularEmissionProbs = new double[numberAngularEmissionBins];
+  //    double photoelectric = coefCalc.getElementAbsorptionCoef(beam.getPhotonEnergy(), e);
+      //integrate under the whole curve
+      double lastHeight = 0;
+      double totalArea = 0;
+      for (int i = 0; i <= 100; i++) {
+        double angle = ((Math.PI)/100)*i;
+        double height = solvePolarisationEquationForAngle(angle, 1, 2);
+        if (i > 0) {
+          double area = ((lastHeight + height)/2) * ((Math.PI)/100);
+          totalArea += area;
+        }
+        lastHeight = height;
+      }
+      //now get the proportion of some of these
+   //   double[] emissionProbs = new double[numberAngularEmissionBins];
+      lastHeight = 0;
+      double cumulativeProb = 0;
+      for (int i = 0; i <= numberAngularEmissionBins; i++) {
+        double angle = ((Math.PI)/numberAngularEmissionBins)*i;
+        double height = solvePolarisationEquationForAngle(angle, 1, 2);
+        if (i > 0) {
+          double area = ((lastHeight + height)/2) * ((Math.PI)/numberAngularEmissionBins);
+          cumulativeProb += area / totalArea;
+          angularEmissionProbs[i-1] = cumulativeProb;
+        }
+        lastHeight = height;
+      }
+    //  angularEmissionProbs.put(e, emissionProbs);
+    return angularEmissionProbs;
+  }
+  
+  private double solvePolarisationEquationForAngle(double phi, double photoElectric, double beta) {
+    double height = (photoElectric / (4*Math.PI)) * (1+(beta*0.5*(3*Math.pow(Math.cos(phi), 2) - 1)));
+    return height;
   }
 }

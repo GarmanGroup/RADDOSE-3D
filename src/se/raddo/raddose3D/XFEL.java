@@ -283,8 +283,9 @@ public class XFEL {
       if (isMicrocrystalAt(xn, yn, zn) == true) { //photoelectron still in the crystal
         energyLost = s * stoppingPower;
         //work out how long it took to travel this far 
-        timeStamp += getTimeToDistance(electronEnergy, s) / 2;
-        int doseTime = (int) (timeStamp/PULSE_BIN_LENGTH);
+        double timeToDistance = getTimeToDistance(electronEnergy, s);
+        int doseTime = (int) ((timeStamp + (timeToDistance/2))/PULSE_BIN_LENGTH);
+        timeStamp += timeToDistance;
         dose[doseTime] += energyLost;  //still just adding keV
         electronDose[doseTime] += energyLost;
        
@@ -353,8 +354,9 @@ public class XFEL {
           for (int j = 0; j < 10; j++) { //I will need to play around with the amount of slicing when I am writing up
             energyLostStep = (escapeDist/10) * FSEStoppingPower;
             //add dose to timeStamp
-            timeStamp += getTimeToDistance(newEnergy, escapeDist/10) / 2;
-            int doseTime = (int) (timeStamp/PULSE_BIN_LENGTH);
+            double timeToDistance = getTimeToDistance(newEnergy, escapeDist/10);
+            int doseTime = (int) ((timeStamp + (timeToDistance/2))/PULSE_BIN_LENGTH); // over 2 as adding it half way
+            timeStamp += timeToDistance;
             dose[doseTime] += energyLostStep;  //still just adding keV
             electronDose[doseTime] += energyLostStep;
             
@@ -368,8 +370,9 @@ public class XFEL {
         }
         else {
           //didn't quite escape, add the electron energy to the dose
-          timeStamp += getTimeToDistance(electronEnergy, escapeDist) / 2;
-          int doseTime = (int) (timeStamp/PULSE_BIN_LENGTH);
+          double timeToDistance = getTimeToDistance(electronEnergy, s);
+          int doseTime = (int) ((timeStamp + (timeToDistance/2))/PULSE_BIN_LENGTH);
+          timeStamp += timeToDistance;
           dose[doseTime] += electronEnergy;  //still just adding keV
           electronDose[doseTime] += electronEnergy;
         }
