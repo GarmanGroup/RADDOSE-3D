@@ -2493,12 +2493,18 @@ public class CrystalPolyhedron extends Crystal {
 
         theta = getPrimaryElasticScatteringAngle(electronEnergy, elasticElement.getAtomicNumber());
 
+        //to test a straight line
+      //  theta = 0;
         
         theta = previousTheta + theta;
         if (theta >= (2 * Math.PI)) {
           theta -= 2*Math.PI;
         }
         phi = 2 * Math.PI * Math.random();
+        
+        //testing a straight line
+     //   phi = 0;
+        
         phi = previousPhi + phi;
         if (phi >= (2 * Math.PI)) {
           phi -= 2*Math.PI;
@@ -2531,6 +2537,13 @@ public class CrystalPolyhedron extends Crystal {
         double energyToEdge = FSEStoppingPower * escapeDist*1000;
         if (energyToEdge < electronEnergy){ //the FSE has escaped
           double energyLostStep = 0, totFSEenLostLastStep = 0;
+          energyLost = escapeDist * 1000 * stoppingPower;
+          double middleX = previousX + (escapeDist/2) * xNorm;
+          double middleY = previousY + (escapeDist/2) * yNorm;
+          double middleZ = previousZ + (escapeDist/2) * zNorm;
+          addMonteCarloDoseToPixels(energyLost, middleX, middleY, middleZ, doseScale, voxelMass);
+          double newEnergy = electronEnergy - energyLost;
+          /*
           double newEnergy = electronEnergy;
           for (int m = 0; m < 10; m++) { //I will need to play around with the amount of slicing when I am writing up
             energyLostStep = (escapeDist/10)*1000 * FSEStoppingPower;
@@ -2546,6 +2559,7 @@ public class CrystalPolyhedron extends Crystal {
               break;
             }
           } 
+          */
           if (newEnergy > 0) {
             energyEscapedPE += newEnergy;
           }
@@ -2555,7 +2569,7 @@ public class CrystalPolyhedron extends Crystal {
           double middleX = previousX + (escapeDist/2) * xNorm;
           double middleY = previousY + (escapeDist/2) * yNorm;
           double middleZ = previousZ + (escapeDist/2) * zNorm;
-          addMonteCarloDoseToPixels(energyLost, middleX, middleY, middleZ, doseScale, voxelMass);
+          addMonteCarloDoseToPixels(electronEnergy, middleX, middleY, middleZ, doseScale, voxelMass);
         }
       }
       if (electronEnergy < 0.05) {

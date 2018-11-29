@@ -234,9 +234,16 @@ public abstract class Crystal {
         }  
     }
     
-    XDim = (Double) properties.get(Crystal.CRYSTAL_DIM_X); // in um
-    YDim = (Double) properties.get(Crystal.CRYSTAL_DIM_Y); // in um
-    ZDim = (Double) properties.get(Crystal.CRYSTAL_DIM_Z); // in um
+    XDim = (double) properties.get(Crystal.CRYSTAL_DIM_X); // in um
+    try {
+    YDim = (double) properties.get(Crystal.CRYSTAL_DIM_Y); // in um
+    ZDim = (double) properties.get(Crystal.CRYSTAL_DIM_Z); // in um
+    }
+    catch (NullPointerException e){
+      YDim = 0;
+      ZDim = 0;
+    }
+    
   }
   
   /**
@@ -643,7 +650,7 @@ public abstract class Crystal {
       
     calculatePEEnergySubtraction(feFactors, false); 
     setPEparamsForCurrentBeam(beam.getPhotonEnergy(), coefCalc, feFactors); 
-    /*
+    
     //change this stuff for the Monte carlo methos to element absorption probs and angular distribution
     //populate the relative element cross sections here 
     elementAbsorptionProbs = coefCalc.getPhotoElectricProbsElement(beam.getPhotonEnergy());
@@ -653,7 +660,7 @@ public abstract class Crystal {
     angularEmissionProbs = getAngularEmissionProbs();
     //elastic electron angle setup
     coefCalc.populateCrossSectionCoefficients();
-    */
+    
     //Calc Auger
     augerEnergy = getAugerEnergy(feFactors);
 
@@ -955,7 +962,7 @@ public abstract class Crystal {
                   double dosePE = voxImageDose[i][j][k] - (EnergyToSubtractFromPE/beam.getPhotonEnergy())*voxImageDose[i][j][k];
                   double doseLostFromCrystalPE = addDoseAfterPE(i, j, k, dosePE);
                   
-               //   double doseLostFromCrystalPE = trackPhotoelectron(i, j, k, dosePE, coefCalc, elementAbsorptionProbs, ionisationProbs, angularEmissionProbs, beam, false);
+            //      double doseLostFromCrystalPE = trackPhotoelectron(i, j, k, dosePE, coefCalc, elementAbsorptionProbs, ionisationProbs, angularEmissionProbs, beam, false);
                   
                   totalEscapedDosePE +=  doseLostFromCrystalPE;
                   totalEscapedDose += doseLostFromCrystalPE;
