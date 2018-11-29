@@ -92,4 +92,15 @@ public class BeamDummy implements Beam {
     // TODO Auto-generated method stub
     return 0;
   }
+
+  @Override
+  public double getImageX() {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+  @Override
+  public double getImageY() {
+    // TODO Auto-generated method stub
+    return 0;
+  }
 }

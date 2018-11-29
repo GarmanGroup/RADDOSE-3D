@@ -28,6 +28,8 @@ public class BeamTophat implements Beam {
   private double attenuatedPhotonsPerSec;
   
   private boolean isCircular;
+  
+  private final Double imageX, imageY;
 
   /**
    * Generic property constructor for Top Hat beams. Extracts all required
@@ -71,7 +73,9 @@ public class BeamTophat implements Beam {
     photonEnergy = (Double) properties.get(Beam.BEAM_ENERGY);
     exposure = (Double) properties.get(Beam.BEAM_EXPOSURE);
     semiAngle = (Double) properties.get(Beam.BEAM_SEMIANGLE);
-    apertureRadius = (Double) properties.get(Beam.BEAM_APERTURERADIUS);;
+    apertureRadius = (Double) properties.get(Beam.BEAM_APERTURERADIUS);
+    imageX = (Double) properties.get(Beam.IMAGE_X);
+    imageY = (Double) properties.get(Beam.IMAGE_Y);
     
     if (properties.get(Beam.BEAM_CIRCULAR) == "TRUE") {
       isCircular = true;
@@ -195,5 +199,25 @@ public class BeamTophat implements Beam {
       apertureRadius = 0.;
     }
     return apertureRadius;
+  }
+  
+  @Override
+  public double getImageX() {
+    if (imageX == null) {
+      return 0;
+    }
+    else {
+      return imageX;
+    }
+  }
+  
+  @Override
+  public double getImageY() {
+    if (imageY == null) {
+      return 0;
+    }
+    else {
+      return imageY;
+    }
   }
 }

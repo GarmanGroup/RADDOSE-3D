@@ -592,6 +592,8 @@ beamLine
 	| h=beamExposure			 { $beam::beamProperties.put(Beam.BEAM_EXPOSURE, $h.exposure); }
 	| i=beamSemiAngle	{ $beam::beamProperties.put(Beam.BEAM_SEMIANGLE, $i.semiAngle);}
 	| j=beamApertureRadius	{ $beam::beamProperties.put(Beam.BEAM_APERTURERADIUS, $j.apertureRadius);}
+	| k=imageDimensions		{ $beam::beamProperties.put(Beam.IMAGE_X, $k.xImage); 
+	                           $beam::beamProperties.put(Beam.IMAGE_Y, $k.yImage); }
 	
 	;
 
@@ -602,6 +604,11 @@ FLUX : ('F'|'f')('L'|'l')('U'|'u')('X'|'x') ;
 beamExposure returns [Double exposure]
 	: EXPOSURE a=FLOAT {$exposure = Double.parseDouble($a.text);};
 EXPOSURE : ('E'|'e')('X'|'x')('P'|'p')('O'|'o')('S'|'s')('U'|'u')('R'|'r')('E'|'e') ;
+
+imageDimensions returns [Double xImage, Double yImage]
+	: IMAGEDIM a=FLOAT b=FLOAT {$xImage = Double.parseDouble($a.text); $yImage = Double.parseDouble($b.text);};
+IMAGEDIM 
+	:	 ('I'|'i')('M'|'m')('A'|'a')('G'|'g')('E'|'e')('D'|'d')('I'|'i')('M'|'m') ;
 
 beamFWHM returns [Double x, Double y]
 	: FWHM a=FLOAT b=FLOAT {$x = Double.parseDouble($a.text); $y = Double.parseDouble($b.text);};

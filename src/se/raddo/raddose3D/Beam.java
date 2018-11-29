@@ -34,6 +34,9 @@ public interface Beam {
   public static final String BEAM_SEMIANGLE = "SEMIANGLE";
   public static final String BEAM_APERTURERADIUS = "APERTURERADIUS";
   
+  public static final String IMAGE_X = "IMAGE_X";
+  public static final String IMAGE_Y = "IMAGE_Y";
+  
   /** The elementary charge, 1.6*10^-19 coulombs. */
   public static final Double ELEMENTARYCHARGE = 1.602176565e-19;
 
@@ -116,5 +119,8 @@ public interface Beam {
   
   public double getSemiAngle();
   public double getApertureRadius();
+  
+  public double getImageX();
+  public double getImageY();
   
 }
