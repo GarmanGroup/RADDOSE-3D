@@ -316,7 +316,7 @@ public class CrystalSpherical extends Crystal {
 
   @Override
   public void startMicroED(double XDim, double YDim, double ZDim, Beam beam,
-      Wedge wedge, CoefCalc coefCalc) {
+      Wedge wedge, CoefCalc coefCalc, String crystalType) {
     
   }
 

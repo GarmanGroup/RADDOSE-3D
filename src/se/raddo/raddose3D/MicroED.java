@@ -72,6 +72,7 @@ public class MicroED {
   public double XDimension; //um
   public double YDimension;
   public double ZDimension;
+  public String crystalTypeEM;
   
   private long numSimulatedElectrons;
   private double numElectrons;
@@ -144,13 +145,14 @@ public class MicroED {
   
   @SuppressWarnings("unchecked")
   public MicroED(double vertices[][], int[][] indices, double[][][][] crystCoord, 
-                  double crystalPixPerUM, int[] crystSizeVoxels, boolean[][][][] crystOcc) {
+                  double crystalPixPerUM, int[] crystSizeVoxels, boolean[][][][] crystOcc, String crystalType) {
     verticesEM = vertices;
     indicesEM = indices;
     crystCoordEM = crystCoord;
     crystalPixPerUMEM = crystalPixPerUM;
     crystalSizeVoxelsEM = crystSizeVoxels;
     crystOccEM = crystOcc;
+    crystalTypeEM = crystalType;
     
     double[] xMinMax = this.minMaxVertices(0, vertices);
     double[] yMinMax = this.minMaxVertices(1, vertices);
@@ -161,8 +163,14 @@ public class MicroED {
     
     
     crystalSurfaceArea = XDimension * YDimension * 1E02; //convert from nm^2 to A^2
+    if (crystalTypeEM == "CYLINDER") {
+      crystalSurfaceArea = Math.PI * (XDimension/2) * (YDimension/2); 
+    }
     sampleThickness = ZDimension; //nm
     crystalVolume = (crystalSurfaceArea * (sampleThickness * 10) * 1E-27);    //A^3 to dm^3
+    if (crystalTypeEM == "SPHERICAL") {
+      crystalVolume = (4/3) * Math.PI * (XDimension/2) * (YDimension/2) * (ZDimension/2);
+    }
     //note the volume would need to be updated for a polyhedron!!! - currently just a cube or cylinder 
     //although it isn't used
     
@@ -1185,10 +1193,17 @@ private double[] processMonteCarloDose(Beam beam, CoefCalc coefCalc) {
     exposedArea = Math.PI * ((getExposedX(beam)/2) * (getExposedY(beam)/2)); //um^2
   }
   
+  if (exposedArea > crystalSurfaceArea) {
+    exposedArea = crystalSurfaceArea;
+  }
+  
   double imageArea = beam.getImageX() * beam.getImageY(); //um^2
   double imageVolume = imageArea  * (sampleThickness/1000) * 1E-15; //dm^3
   
   double exposedVolume = exposedArea  * (sampleThickness/1000) * 1E-15; //exposed volume in dm^3
+  if (exposedVolume > crystalVolume) {
+    exposedVolume = crystalVolume;
+  }
   double exposure = beam.getExposure();
   double electronNumber = exposure * (exposedArea * 1E08);
   //change electron number now simulating whole area of beam

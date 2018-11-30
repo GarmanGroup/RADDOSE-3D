@@ -73,6 +73,8 @@ public abstract class Crystal {
   /** The container encasing the irradiated sample*/
   private final Container        sampleContainer;
   
+  public String crystalType;
+  
   
 
   /**
@@ -234,16 +236,27 @@ public abstract class Crystal {
         }  
     }
     
+    crystalType = "CUBOID";
     XDim = (double) properties.get(Crystal.CRYSTAL_DIM_X); // in um
     try {
-    YDim = (double) properties.get(Crystal.CRYSTAL_DIM_Y); // in um
-    ZDim = (double) properties.get(Crystal.CRYSTAL_DIM_Z); // in um
+      YDim = (double) properties.get(Crystal.CRYSTAL_DIM_Y); // in um
     }
     catch (NullPointerException e){
-      YDim = 0;
-      ZDim = 0;
+      //then the crystal is spherical
+      crystalType = "SPHERICAL";
+      YDim = XDim;
+      ZDim = XDim;
     }
-    
+    try {
+      ZDim = (double) properties.get(Crystal.CRYSTAL_DIM_Z); // in um
+    }
+    catch (NullPointerException e){
+      if (crystalType == "CUBOID") { //then it's a cylinder
+        crystalType = "CYLINDER";
+        ZDim = YDim;
+        YDim = XDim;
+      }
+    }
   }
   
   /**
@@ -356,7 +369,7 @@ public abstract class Crystal {
   public abstract void setFLparamsForCurrentBeam(final double[][] feFactors);
   public abstract void setCryoPEparamsForCurrentBeam(Beam beam, CoefCalc coefCalc, double[][] feFactors);
   
-  public abstract void startMicroED(double XDim, double YDim, double ZDim, Beam beam, Wedge wedge, CoefCalc coefCalc);
+  public abstract void startMicroED(double XDim, double YDim, double ZDim, Beam beam, Wedge wedge, CoefCalc coefCalc, String crystalType);
   public abstract void startXFEL(double XDim, double YDim, double ZDim, Beam beam, Wedge wedge, CoefCalc coefCalc);
 
   
@@ -627,7 +640,7 @@ public abstract class Crystal {
   //  startXFEL(XDim, YDim, ZDim, beam, wedge, coefCalc);
     
     if (useElectrons == true) {
-      startMicroED(XDim, YDim, ZDim, beam, wedge, coefCalc);
+      startMicroED(XDim, YDim, ZDim, beam, wedge, coefCalc, crystalType);
     }
     else { //photon stuff
       

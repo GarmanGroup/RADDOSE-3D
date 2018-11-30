@@ -2367,11 +2367,11 @@ public class CrystalPolyhedron extends Crystal {
 
   @Override
   public void startMicroED(double XDim, double YDim, double ZDim, Beam beam,
-      Wedge wedge, CoefCalc coefCalc) {
+      Wedge wedge, CoefCalc coefCalc, String crystalType) {
     //also need indices, vertices, crystalCoords, numberVoxelsm, PPM (may not need all of these but just 
     //to be safe for now
     MicroED microED = new MicroED(vertices, indices, crystCoord, 
-                                  crystalPixPerUM, crystSizeVoxels, crystOcc);
+                                  crystalPixPerUM, crystSizeVoxels, crystOcc, crystalType);
     microED.CalculateEM(beam, wedge, coefCalc);
   }
   @Override
