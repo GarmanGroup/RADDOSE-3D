@@ -97,6 +97,7 @@ public class MicroED {
   private double MonteCarloAugerEscape;
   private double MonteCarloAugerEntry;
   private double MonteCarloProductive;
+  private double MonteCarloProductiveImage;
   private double extraFlEscape;
   private double extraAugerEscape;
   private double newMonteCarloFSEEscape;
@@ -164,12 +165,12 @@ public class MicroED {
     
     crystalSurfaceArea = XDimension * YDimension * 1E02; //convert from nm^2 to A^2
     if (crystalTypeEM == "CYLINDER") {
-      crystalSurfaceArea = Math.PI * (XDimension/2) * (YDimension/2); 
+      crystalSurfaceArea = (Math.PI * (XDimension/2) * (YDimension/2)) * 1E02; 
     }
     sampleThickness = ZDimension; //nm
     crystalVolume = (crystalSurfaceArea * (sampleThickness * 10) * 1E-27);    //A^3 to dm^3
     if (crystalTypeEM == "SPHERICAL") {
-      crystalVolume = (4/3) * Math.PI * (XDimension/2) * (YDimension/2) * (ZDimension/2);
+      crystalVolume = ((4/3) * Math.PI * (XDimension/2) * (YDimension/2) * (ZDimension/2)) * 1E-24; //nm^3
     }
     //note the volume would need to be updated for a polyhedron!!! - currently just a cube or cylinder 
     //although it isn't used
@@ -813,7 +814,7 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
   double energyLost = 0;
   
   double stoppingPower = 0, lambdaT = 0, PEL = 0, Pinel = 0, Pfse = 0, s = 0, xn = 0, yn = 0, zn = 0;
-  
+  boolean entered = false;
   if (surrounding == true) {
     stoppingPower = startingStoppingPowerSurrounding;
     lambdaT = 1 / (1/startingLambda_elSurrounding + 1/startingInelasticLambdaSurrounding);
@@ -828,6 +829,7 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
     boolean pointInCrystal = isIntersectionInCrystal(intersectionPoint);
     if (intersectionDistance < s && pointInCrystal == true) { //then need to change region here and reset stuff
       surrounding = false;
+      entered = true;
       electronEnergy -= intersectionDistance * stoppingPower;
       previousX = intersectionPoint[0]*1000;
       previousY = intersectionPoint[1]*1000;
@@ -843,6 +845,8 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
     else {
     stoppingPower = startingStoppingPower;
     }
+    
+    
    // double lambdaT = startingLambda_el; //lambda in nm  -//Just elastic
    // double lambdaT = 1 / (1/startingLambda_el + 1/startingFSELambda); //FSE one
   //  double lambdaT = 1 / (1/startingLambda_el + 1/startingFSELambda + 1/startingPlasmonLambda);
@@ -877,6 +881,9 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
   //if it has not left move onto the loop
   while (exited == false) {
   if (isMicrocrystalAt(xn, yn, zn) == true) {
+    if (surrounding == true) {
+      entered = true;
+    }
     surrounding = false;
     ElementEM elasticElement = null;
     scattered = true;
@@ -1108,6 +1115,7 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
         boolean pointInCrystal = isIntersectionInCrystal(intersectionPoint);
         if (intersectionDistance < s && pointInCrystal == true) { //then need to change region here and reset stuff
           surrounding = false;
+          entered = true;
           electronEnergy -= intersectionDistance * stoppingPower;
           previousX = intersectionPoint[0]*1000;
           previousY = intersectionPoint[1]*1000;
@@ -1151,7 +1159,7 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
   }
   
   //check if this was a productive electron
-  if (elasticCount == 1 && backscattered == false && inelastic == false) {
+  if (elasticCount == 1 && backscattered == false && inelastic == false && surrounding == false && entered == false) {
     MonteCarloProductive += 1;
   }
   
@@ -1210,12 +1218,12 @@ private double[] processMonteCarloDose(Beam beam, CoefCalc coefCalc) {
   double beamArea = beam.getBeamArea();
   electronNumber = exposure * (beamArea * 1E08);
   
-  
-  
   //do the elastic stuff
   MonteCarloTotElasticCount = MonteCarloTotElasticCount * (electronNumber / numSimulatedElectrons);
   MonteCarloSingleElasticCount = MonteCarloSingleElasticCount * (electronNumber / numSimulatedElectrons);
+  MonteCarloProductiveImage = ((electronNumber/ numSimulatedElectrons) * (imageArea/beamArea)) * MonteCarloProductive;
   MonteCarloProductive = MonteCarloProductive * (electronNumber/ numSimulatedElectrons);
+  
   
   MonteCarloDose = (MonteCarloDose * (electronNumber / numSimulatedElectrons)) * Beam.KEVTOJOULES;
   MonteCarloImageDose = (MonteCarloImageDose * (electronNumber / numSimulatedElectrons)) * Beam.KEVTOJOULES;
@@ -1721,6 +1729,8 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
   //determine if it crosses into the crystal before s
   // I need to check if it's going to intersect and what the distance is
   if (surrounding == true) {
+    
+    // this could be a potential source of error as it could deflect in so need to test this to make sure it is valid
     double intersectionDistance = 1000*getIntersectionDistance(previousX, previousY, previousZ, xNorm, yNorm, zNorm);
     Double distanceObject = Double.valueOf(intersectionDistance);
     if (intersectionDistance < 0 || distanceObject.isNaN()
@@ -2150,7 +2160,10 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
             newEnergy -= energyLostStep;
             totFSEenLostLastStep += energyLostStep;
             FSEStoppingPower = coefCalc.getStoppingPower(newEnergy, false);
-            if (newEnergy < 0) {
+            if (newEnergy < 0.05) {
+              if (newEnergy > 0) {
+                totFSEenLostLastStep += newEnergy;
+              }
               break;
             }
           }

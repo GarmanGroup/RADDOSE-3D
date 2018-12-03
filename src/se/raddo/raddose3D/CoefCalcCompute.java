@@ -498,6 +498,19 @@ public class CoefCalcCompute extends CoefCalc {
   }
   
   @Override
+  public Map<Element, Double> getPhotoElectricProbsElementSurrounding(double beamEnergy) {
+    Map<Element, Double> elementAbsorptionProbs = new HashMap<Element, Double>(); 
+    double runnningSumProb = 0;
+    for (Element e : cryoElements) {
+      Map<String, Double> absCoeffs = calculateCoefficientsCryoElement(beamEnergy, e);
+      double absorptionProb = absCoeffs.get(PHOTOELECTRIC)/cryoAbsCoeffPhoto;
+      runnningSumProb += absorptionProb;
+      elementAbsorptionProbs.put(e, runnningSumProb);
+    }
+    return elementAbsorptionProbs;
+  }
+  
+  @Override
   public double getElementAbsorptionCoef(double beamEnergy, Element e) {
     Map<String, Double> absCoeffs = calculateCoefficientsElement(beamEnergy, e);
     return absCoeffs.get(PHOTOELECTRIC);
@@ -980,6 +993,11 @@ public class CoefCalcCompute extends CoefCalc {
   @Override
   public double getCryoDensity() {
     return cryoDensity;
+  }
+  
+  @Override
+  public double getCryoInelasticCoefficient() {
+    return cryoAbsCoeffComp;
   }
   
   /**

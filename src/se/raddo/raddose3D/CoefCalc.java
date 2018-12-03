@@ -163,4 +163,7 @@ public abstract class CoefCalc {
   
   public abstract double getElementAbsorptionCoef(double beamEnergy, Element e);
   
+  public abstract double getCryoInelasticCoefficient();
+  
+  public abstract Map<Element, Double> getPhotoElectricProbsElementSurrounding(double beamEnergy);
 }

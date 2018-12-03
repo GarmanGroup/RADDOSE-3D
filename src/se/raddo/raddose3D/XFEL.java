@@ -42,7 +42,10 @@ public class XFEL {
   public double[] dose;
   public double[] photonDose;
   public double[] electronDose;
+  public double[] electronDoseSurrounding;
   public double raddoseStyleDose;
+  public double raddoseStyleDoseCompton;
+  public double escapedEnergy;
   
   private double lastTime;
   
@@ -52,10 +55,13 @@ public class XFEL {
   private TreeMap<Double, double[]>[]  lowEnergyAngles;
   private TreeMap<Double, double[]>[]  highEnergyAngles;
   
-  protected static final long NUM_PHOTONS = 50000000;
-  protected static final long PULSE_LENGTH = 70; //length in fs
-  protected static final double PULSE_BIN_LENGTH = 0.5; //length in fs
-  protected static final double PULSE_ENERGY = 2.11E-3; //energy in J
+  //cryo crystal stuff
+  
+  
+  protected static final long NUM_PHOTONS = 1000000;
+  protected static final long PULSE_LENGTH = 20; //length in fs
+  protected static final double PULSE_BIN_LENGTH = 1; //length in fs
+  protected static final double PULSE_ENERGY = 1.6E-3; //energy in J
   protected static final double c = 299792458; //m/s
   protected static final double m = 9.10938356E-31; // in Kg
   
@@ -76,9 +82,10 @@ public class XFEL {
     ZDimension = 1000 * (zMinMax[1] - zMinMax[0]);
     
     //these break way way too easily so need a more permanent solution
-    dose = new double[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (50/PULSE_BIN_LENGTH))];
-    photonDose = new double[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (50/PULSE_BIN_LENGTH))];
-    electronDose = new double[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (50/PULSE_BIN_LENGTH))];
+    dose = new double[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (100/PULSE_BIN_LENGTH))];
+    photonDose = new double[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (100/PULSE_BIN_LENGTH))];
+    electronDose = new double[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (100/PULSE_BIN_LENGTH))];
+    electronDoseSurrounding = new double[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (100/PULSE_BIN_LENGTH))];
     
     lowEnergyAngles = new TreeMap[95];
     highEnergyAngles = new TreeMap[95];
@@ -91,11 +98,22 @@ public class XFEL {
     
   }
   
+  /**
+   * @param beam
+   * @param wedge
+   * @param coefCalc
+   */
   public void startMonteCarloXFEL(Beam beam, Wedge wedge, CoefCalc coefCalc) {
     //get absorption coefficient
     coefCalc.updateCoefficients(beam);
+
     double absCoef = coefCalc.getAbsorptionCoefficient(); //um-1
-    double photonMFPL = (1/absCoef)*1000; //just photoelectric absorption for now can put in Compton later
+    double comptonCoef = coefCalc.getInelasticCoefficient(); //um-1
+    
+    
+ //   double photonMFPL = (1/absCoef)*1000; //just photoelectric absorption for now can put in Compton later
+    double photonMFPL = (1/(absCoef + comptonCoef))*1000; //including Compton
+    double probCompton = 1 - (photonMFPL/((1/absCoef)*1000));
     
     //populate the relative element cross sections here 
     Map<Element, Double> elementAbsorptionProbs = coefCalc.getPhotoElectricProbsElement(beam.getPhotonEnergy());
@@ -104,14 +122,38 @@ public class XFEL {
     //populate the angular emission probs
     populateAngularEmissionProbs();
     
-    //elastic elect5ron angle setup
+    //elastic electron angle setup
     coefCalc.populateCrossSectionCoefficients();
+    
+    
+    //set up the surrounding stuff if there is one
+    double absCoefSurrounding = 0, comptonCoefSurrounding = 0, photonMFPLSurrounding = 0, probComptonSurrounding = 0, distanceNM = 0;
+    Map<Element, Double> elementAbsorptionProbsSurrounding = null;
+    Map<Element, double[]> ionisationProbsSurrounding = null;
+    if (coefCalc.isCryo() == true) { //user wants to simulate a surrounding
+      coefCalc.updateCryoCoefficients(beam);
+      absCoefSurrounding = coefCalc.getCryoAbsorptionCoefficient();
+      comptonCoefSurrounding = coefCalc.getCryoInelasticCoefficient();
+      photonMFPLSurrounding = (1/(absCoefSurrounding + comptonCoefSurrounding))*1000;
+      probComptonSurrounding = 1 - (photonMFPLSurrounding/((1/absCoefSurrounding)*1000));
+      elementAbsorptionProbsSurrounding = coefCalc.getPhotoElectricProbsElementSurrounding(beam.getPhotonEnergy());
+      ionisationProbsSurrounding = getRelativeShellProbs(elementAbsorptionProbsSurrounding, beam.getPhotonEnergy());
+      //just use the same angular emission probs
+      
+      //get the maximum photoelectron travel distance (based on photon energy) for tracking purposes   
+      //take the max using the CSDA without integration so a little bit of an overestimate 
+      double stoppingPower = coefCalc.getStoppingPower(beam.getPhotonEnergy(), true);
+      distanceNM = (beam.getPhotonEnergy()/stoppingPower);      
+      //set up my cryo crystal bigger than the normal one using this distance, similar to PE escape stuff
+      
+    }
     
     //Decide a starting time stamp for the photons
     double photonDivisions =  NUM_PHOTONS / (PULSE_LENGTH/PULSE_BIN_LENGTH);
 
     double xn = 0, yn = 0, zn = 0;
     for (int i = 0; i < NUM_PHOTONS; i++) { //for every electron to simulate
+      boolean exited = false;
       double timeStamp = ((int) (i/ photonDivisions)) * PULSE_BIN_LENGTH;
       //firstly I need to get a position of the beam on the sample. the direction will simply be 0 0 1
       double xNorm = 0.0000, yNorm = 0.0000, zNorm = 1.0; //direction cosine are such that just going down in one
@@ -123,16 +165,78 @@ public class XFEL {
       double previousY = xyPos[1];
       
       //determine if the electron is incident on the sample or not
+      double s = 0;
       boolean surrounding = !isMicrocrystalAt(previousX, previousY, 0); //Z = 0 as just looking at x and y
+      boolean track = false;
+      if (coefCalc.isCryo()) {
+        track = true;
+        if (surrounding == true) {
+          //determine if it is worth tracking it or not
+          if ((Math.abs(previousX) - distanceNM) > XDimension/2 || (Math.abs(previousY) - distanceNM) > YDimension/2){
+            track = false;
+          }
+          if (track == true) {
+            photonMFPL = photonMFPLSurrounding;
+            //update Z
+            previousZ = previousZ - distanceNM;
+            //give it a negative timestamp
+            timeStamp -= -1*((1/c) * ((distanceNM)/1E9));
+          }
+          else {
+            exited = false; //no point tracking it at all
+          }
+        }
+        else { // a photon that could hit the crystal
+          s = -photonMFPLSurrounding*Math.log(Math.random());
+          if ((s < distanceNM) || (distanceNM + ZDimension < s && s < 2*distanceNM + ZDimension) ) { //then this photon will interact before or after hitting the crystal, I'm not going to track it after this
+            //need to give it a timestamp, I'm going to start it off with a negative one and if it is negative one put it on 0
+            int beforeOrAfter = 1; 
+            double distance = s - distanceNM;
+            if ( s < distanceNM) {
+              beforeOrAfter = -1; // -1 = before crystal, +1 = after crystal
+              distance = distanceNM - s;
+            }
+            double timeToPoint =  beforeOrAfter*((1/c) * ((distance)/1E9)); //in seconds
+            timeStamp += timeToPoint * 1E15;
+            int doseTime = (int) (timeStamp/PULSE_BIN_LENGTH);
+            if (doseTime < 0) {
+              doseTime = 0;  //not a perfect solution but not too bad, especially if slice fine enough
+            }
+            previousZ = previousZ - distanceNM; 
+            xn = previousX + s * xNorm;
+            yn = previousY + s * yNorm;
+            zn = previousZ + s * zNorm;
+         
+            double RNDcompton = Math.random();
+            if (RNDcompton < probComptonSurrounding) {
+              //produce a compton electron
+              produceCompton(beam, coefCalc, timeStamp, xn, yn, zn, surrounding);
+            }
+            else {
+              //produce a photoelectron
+              producePhotoElectron(beam, coefCalc, elementAbsorptionProbs, ionisationProbs, timeStamp, doseTime, xn, yn, zn, surrounding);
+            }           
+            // set exited to true so this photon is no longer tracked 
+            exited = true;
+          }
+        }
+      }
+      //I need some pretest here 
+      //for those photons that could hit the crystal, pre-test to see if they are absorbed by the surrounding first
+      //for those photons that couldn't, just start them off with a surrounding MFPL
+      
+      
+      
       //the next step is to work out the distance s
-      double s = -photonMFPL*Math.log(Math.random());
+      s = -photonMFPL*Math.log(Math.random());
+
       xn = previousX + s * xNorm;
       yn = previousY + s * yNorm;
       zn = previousZ + s * zNorm;
       //to test
    //   zn = 0;
       //now start the simulation
-      boolean exited = false;
+      
       while (exited == false) {
         if (isMicrocrystalAt(xn, yn, zn) == true) { //ignoring entry from the surrounding for now
           // if the microcrystal is here a photoelectron will need to be produced
@@ -141,52 +245,43 @@ public class XFEL {
           timeStamp += timeToPoint * 1E15; //time from start of pulse that this happened
           int doseTime = (int) (timeStamp/PULSE_BIN_LENGTH); //rounding down so 0 = 0-0.99999, 1 - 1-1.99999 etc 
           
-          //work out the element that has been absorbed with and hence the shell binding energy and photoelectron energy
-          
-          //element
-          double elementRND = Math.random();
-          Element ionisedElement = null;
-          for (Element e : elementAbsorptionProbs.keySet()) {
-            double elementProb =  elementAbsorptionProbs.get(e);
-            if (elementProb > elementRND) {
-              ionisedElement = e;
-              break;
-            }
+          //determine if this was Compton scattering or photoelectric absorption
+          double RNDcompton = Math.random();
+          if (RNDcompton < probCompton) {
+            produceCompton(beam, coefCalc, timeStamp, xn, yn, zn, surrounding);
           }
-          //shell
-          double[] shellProbs = ionisationProbs.get(ionisedElement);
-          double shellRND = Math.random();
-          int shellIndex = 0;
-          for (int j = 0; j < shellProbs.length; j++) {
-            if (shellProbs[j] > shellRND) {
-              shellIndex = j;
-              break;
-            }
+          else {
+            //this was a photoelectric absorption
+            producePhotoElectron(beam, coefCalc, elementAbsorptionProbs, ionisationProbs, timeStamp, doseTime, xn, yn, zn, surrounding);
           }
-          //get the shell binding energy
-          double shellBindingEnergy = getShellBindingEnergy(ionisedElement, shellIndex);
-          double photoelectronEnergy = beam.getPhotonEnergy() - shellBindingEnergy;
-          
-          //Add the dose (shell binding energy) to the appropriate time
-          dose[doseTime] += shellBindingEnergy;
-          photonDose[doseTime] += shellBindingEnergy;
-          raddoseStyleDose += beam.getPhotonEnergy();
-          
-          //send out the photoelectron in with the same timestamp of the photon - I think I should have this timestamp as a double
-          trackPhotoelectron(coefCalc, timeStamp, photoelectronEnergy, ionisedElement, shellIndex, xn, yn, zn);
-          
-          
-          
           //photon is absorbed so don't need to keep track of it after this and update stuff
-          exited = true; // because the photon is absorbed
         }
         else {
-          exited = true;
+          //check if this point is in a trackable point in the surrounding
+          if (track == true) { // lazy way, but this is same as if user wants to track surrounding 
+            //check that the z is not ridiculuous
+            if (zn > -distanceNM - ZDimension/2 && zn < ZDimension/2 + distanceNM) {
+              double timeToPoint = (1/c) * (s/1E9); //in seconds
+              timeStamp += timeToPoint * 1E15; //time from start of pulse that this happened
+              int doseTime = (int) (timeStamp/PULSE_BIN_LENGTH); //rounding down so 0 = 0-0.99999, 1 - 1-1.99999 etc 
+              double RNDcompton = Math.random();
+              if (RNDcompton < probComptonSurrounding) {
+                //produce a compton electron
+                produceCompton(beam, coefCalc, timeStamp, xn, yn, zn, surrounding);
+              }
+              else {
+                //produce a photoelectron
+                producePhotoElectron(beam, coefCalc, elementAbsorptionProbs, ionisationProbs, timeStamp, doseTime, xn, yn, zn, surrounding);
+              }           
+            }
+          }
         }
+        exited = true; // because the photon is absorbed, also not tracking compton electrons after they scatter as unlikely to scatter again
       }
     }
     //get time at which last photon exits the sample
     lastTime = ((1/c) * (ZDimension/1E9) * 1E15) + PULSE_LENGTH;
+    
   }
   
   private void processDose(Beam beam, CoefCalc coefCalc) {
@@ -197,26 +292,42 @@ public class XFEL {
     
     double energyPerPhoton = beam.getPhotonEnergy()*Beam.KEVTOJOULES;
     double numberOfPhotons = PULSE_ENERGY/energyPerPhoton;
-    double sumDose = 0, sumElectronDose = 0, sumPhotonDose = 0;
-    double sumDoseNoCutOff = 0, sumElectronDoseNoCutOff = 0, sumPhotonDoseNoCutOff = 0;
+    double sumDose = 0, sumElectronDose = 0, sumPhotonDose = 0, sumElectronDoseSurrounding = 0;
+    double sumDoseNoCutOff = 0, sumElectronDoseNoCutOff = 0, sumPhotonDoseNoCutOff = 0, sumElectronDoseSurroundingNoCutOff = 0;
     for (int i = 0; i < dose.length; i++) {
       dose[i] = ((dose[i] * (numberOfPhotons/NUM_PHOTONS) * Beam.KEVTOJOULES) / sampleMass) /1E6; //in MGy
       electronDose[i] = ((electronDose[i] * (numberOfPhotons/NUM_PHOTONS) * Beam.KEVTOJOULES) / sampleMass) /1E6; //in MGy
       photonDose[i] = ((photonDose[i] * (numberOfPhotons/NUM_PHOTONS) * Beam.KEVTOJOULES) / sampleMass) /1E6; //in MGy
+      electronDoseSurrounding[i] = ((electronDoseSurrounding[i] * (numberOfPhotons/NUM_PHOTONS) * Beam.KEVTOJOULES) / sampleMass) /1E6; //in MGy
       //sums
       if (i*PULSE_BIN_LENGTH < lastTime-(1*PULSE_BIN_LENGTH)) {
         sumDose += dose[i];
         sumElectronDose += electronDose[i];
         sumPhotonDose += photonDose[i];
+        sumElectronDoseSurrounding += electronDoseSurrounding[i];
       }
       sumDoseNoCutOff += dose[i];
       sumElectronDoseNoCutOff += electronDose[i];
       sumPhotonDoseNoCutOff += photonDose[i];
+      sumElectronDoseSurroundingNoCutOff += electronDoseSurrounding[i];
     }
     raddoseStyleDose = ((raddoseStyleDose * (numberOfPhotons/NUM_PHOTONS) * Beam.KEVTOJOULES) / sampleMass) /1E6; //in MGy
+    raddoseStyleDoseCompton = ((raddoseStyleDoseCompton * (numberOfPhotons/NUM_PHOTONS) * Beam.KEVTOJOULES) / sampleMass) /1E6; //in MGy)
+    escapedEnergy = ((escapedEnergy * (numberOfPhotons/NUM_PHOTONS) * Beam.KEVTOJOULES) / sampleMass) /1E6; //in MGy
     System.out.println("Photon Dose: " + sumPhotonDose);
-    System.out.println("Electron Dose: " + sumElectronDose);
+    System.out.println("Electron Dose: " + sumElectronDose); 
     System.out.println("Dose: " + sumDose);
+    
+    //get diffraction efficiency
+    double numberElastic = numberOfPhotons * getFractionElasticallyScattered(coefCalc);
+    double diffractionEfficiency = numberElastic / sumDose;
+    System.out.println("Diffraction Efficiency: " + diffractionEfficiency);
+  }
+  
+  private double getFractionElasticallyScattered(CoefCalc coefCalc) {
+    double elasticCoef = coefCalc.getElasticCoefficient(); //per um
+    double fractionElastic = 1-Math.exp(-elasticCoef * (ZDimension/1000));
+    return fractionElastic;
   }
   
   private double getTimeToDistance(double electronEnergy, double s) {
@@ -228,12 +339,58 @@ public class XFEL {
     return timeTos;
   }
   
-  private void trackPhotoelectron(CoefCalc coefCalc, double startingTimeStamp, double startingEnergy, Element ionisedElement, int shellIndex,
-                                  double previousX, double previousY, double previousZ) {
-    //Choose an initial starting direction based on beam polarisation direction - currently all horizontal and I'm going to assume 100%
-    //If shell is not K then send it out randomly
-
-    double theta = 0, phi = 0, xNorm = 0, yNorm = 0, zNorm = 0;
+  private Element getIonisedElement(Map<Element, Double> elementAbsorptionProbs) {
+    double elementRND = Math.random();
+    Element ionisedElement = null;
+    for (Element e : elementAbsorptionProbs.keySet()) {
+      double elementProb =  elementAbsorptionProbs.get(e);
+      if (elementProb > elementRND) {
+        ionisedElement = e;
+        break;
+      }
+    }
+    return ionisedElement;
+  }
+  
+  private int getIonisedShell(Element ionisedElement, Map<Element, double[]> ionisationProbs) {
+    double[] shellProbs = ionisationProbs.get(ionisedElement);
+    double shellRND = Math.random();
+    int shellIndex = 0;
+    for (int j = 0; j < shellProbs.length; j++) {
+      if (shellProbs[j] > shellRND) {
+        shellIndex = j;
+        break;
+      }
+    }
+    return shellIndex;
+  }
+  
+  private void producePhotoElectron(Beam beam, CoefCalc coefCalc, Map<Element, Double> elementAbsorptionProbs, Map<Element, double[]> ionisationProbs,
+                                    double timeStamp, int doseTime, double xn, double yn, double zn, boolean surrounding) {
+  //work out the element that has been absorbed with and hence the shell binding energy and photoelectron energy
+    //element
+    Element ionisedElement = getIonisedElement(elementAbsorptionProbs);
+    //shell
+    int shellIndex = getIonisedShell(ionisedElement, ionisationProbs);
+    //get the shell binding energy
+    double shellBindingEnergy = getShellBindingEnergy(ionisedElement, shellIndex);
+    double photoelectronEnergy = beam.getPhotonEnergy() - shellBindingEnergy;
+    
+    if (doseTime < 0) {
+      doseTime = 0;
+    }
+    
+    //Add the dose (shell binding energy) to the appropriate time
+    if (surrounding == false) {
+      dose[doseTime] += shellBindingEnergy;
+      photonDose[doseTime] += shellBindingEnergy;
+      raddoseStyleDose += beam.getPhotonEnergy();
+    }
+    
+    //send out the photoelectron in with the same timestamp of the photon - I think I should have this timestamp as a double
+    
+    //get direction and angles assuming 100% polarisation in the X axi
+    double xNorm = 0, yNorm = 0, zNorm = 0, phi = 0, theta = 0;
     if (shellIndex == 0) { //then I want to send out in a biased direction
       xNorm = getCosAngleToX();
       //get yNorm and zNorm
@@ -250,10 +407,17 @@ public class XFEL {
       yNorm = Math.sin(theta) * Math.sin(phi);
       zNorm = Math.cos(theta);
     }
+    
+    trackPhotoelectron(coefCalc, timeStamp, photoelectronEnergy, xn, yn, zn, xNorm, yNorm, zNorm, theta, phi, surrounding);
+    
+  }
+  
+  private void trackPhotoelectron(CoefCalc coefCalc, double startingTimeStamp, double startingEnergy,
+                                  double previousX, double previousY, double previousZ,
+                                  double xNorm, double yNorm, double zNorm, double theta, double phi, boolean surrounding) {
     //do full Monte Carlo simulation the same way as in MicroED, but with a time stamp and adding dose every step
     //just do stopping power for now dw about surrounding and aUger and fluorescence and stuff
     
-    boolean surrounding = false;
     double energyLost = 0;
     double electronEnergy = startingEnergy;
     double timeStamp = startingTimeStamp;
@@ -273,7 +437,12 @@ public class XFEL {
     double yn = previousY + s * yNorm;
     double zn = previousZ + s * zNorm;
     
+    double lambdaEl = coefCalc.getElectronElasticMFPL(electronEnergy, surrounding);
+    
     boolean exited = false;
+    boolean entered = false;
+    
+    
     double previousTheta = 0, previousPhi = 0;
     
     if (startingEnergy < 0.05) {
@@ -281,13 +450,47 @@ public class XFEL {
     }
     while (exited == false) {
       if (isMicrocrystalAt(xn, yn, zn) == true) { //photoelectron still in the crystal
+        //here need to check if it has crossed a boundary to enter
+        if (surrounding == true) {
+          entered = true;
+          surrounding = false;
+          //need to check where it intersects
+          double intersectionDistance = 1000*getIntersectionDistance(previousX, previousY, previousZ, xNorm, yNorm, zNorm); //nm 
+          double[] intersectionPoint = getIntersectionPoint(intersectionDistance, previousX, previousY, previousZ, xNorm, yNorm, zNorm); 
+          //set this to previous positions
+          previousX = 1000*intersectionPoint[0];
+          previousY = 1000*intersectionPoint[1];
+          previousZ = 1000*intersectionPoint[2];
+          //update energy to this point and coefficients
+          electronEnergy -= intersectionDistance * stoppingPower;
+          stoppingPower = coefCalc.getStoppingPower(electronEnergy, surrounding);
+          lambdaT = coefCalc.getElectronElasticMFPL(electronEnergy, surrounding);
+          elasticProbs = coefCalc.getElasticProbs(surrounding);
+          //get a new s and xn, yn, zn
+          s = -lambdaT*Math.log(Math.random());
+          xn = previousX + s*xNorm;
+          yn = previousY + s*yNorm;
+          zn = previousZ + s*zNorm;
+        }
+      }
+      //Will need a second if microcrystal is at = to true here so that I can check the surrounding one again
+      if (isMicrocrystalAt(xn, yn, zn) == true) {
         energyLost = s * stoppingPower;
         //work out how long it took to travel this far 
         double timeToDistance = getTimeToDistance(electronEnergy, s);
         int doseTime = (int) ((timeStamp + (timeToDistance/2))/PULSE_BIN_LENGTH);
         timeStamp += timeToDistance;
-        dose[doseTime] += energyLost;  //still just adding keV
-        electronDose[doseTime] += energyLost;
+        double energyToAdd = energyLost;
+        if (doseTime < 0) {
+          doseTime = 0;
+        }
+        dose[doseTime] += energyToAdd;  //still just adding keV
+        if (entered == true) {
+          electronDoseSurrounding[doseTime] += energyToAdd;
+        }
+        else {
+          electronDose[doseTime] += energyToAdd;
+        }
        
         //update position and angle
         //update position and angle
@@ -298,30 +501,8 @@ public class XFEL {
         previousZ = zn;
         
         //update angle and stuff - for now it is always an elastic interaction
-        double elasticElementRND = Math.random();
-        ElementEM elasticElement = null;
-        for (ElementEM e : elasticProbs.keySet()) {
-          if (elasticProbs.get(e) > elasticElementRND) { //Then this element is the one that was ionised
-            elasticElement = e;
-            break;
-          }
-        }
-        
-        //get the angles
-        //ELSEPA stuff
-
-        theta = getPrimaryElasticScatteringAngle(electronEnergy, elasticElement.getAtomicNumber());
-
-        
-        theta = previousTheta + theta;
-        if (theta >= (2 * Math.PI)) {
-          theta -= 2*Math.PI;
-        }
-        phi = 2 * Math.PI * Math.random();
-        phi = previousPhi + phi;
-        if (phi >= (2 * Math.PI)) {
-          phi -= 2*Math.PI;
-        }
+        theta = getElectronElasticTheta(electronEnergy, elasticProbs, previousTheta);
+        phi = getElectronElasticPhi(previousPhi);
       //now further update the primary
         
         xNorm = Math.sin(theta) * Math.cos(phi);
@@ -332,7 +513,7 @@ public class XFEL {
         electronEnergy -= energyLost; 
         stoppingPower = coefCalc.getStoppingPower(electronEnergy, false);
         //get new lambdaT
-        double lambdaEl = coefCalc.getElectronElasticMFPL(electronEnergy, false);
+        lambdaEl = coefCalc.getElectronElasticMFPL(electronEnergy, false);
         lambdaT = lambdaEl;
         s = -lambdaT*Math.log(Math.random());
         elasticProbs = coefCalc.getElasticProbs(false);
@@ -342,39 +523,111 @@ public class XFEL {
         yn = previousY + s * yNorm;
         zn = previousZ + s * zNorm;
       }
-      else { //it's left the crystal
-        exited = true;
-        //get the energy deposited before it left the crystal. - when I slice need to also do timestamps 
-        double escapeDist = 1000 * getIntersectionDistance(previousX, previousY, previousZ, xNorm, yNorm, zNorm); //nm
-        double FSEStoppingPower = coefCalc.getStoppingPower(electronEnergy, false);
-        double energyToEdge = FSEStoppingPower * escapeDist;
-        if (energyToEdge < electronEnergy){ //the FSE has escaped
-          double energyLostStep = 0, totFSEenLostLastStep = 0;
-          double newEnergy = electronEnergy;
-          for (int j = 0; j < 10; j++) { //I will need to play around with the amount of slicing when I am writing up
-            energyLostStep = (escapeDist/10) * FSEStoppingPower;
-            //add dose to timeStamp
-            double timeToDistance = getTimeToDistance(newEnergy, escapeDist/10);
-            int doseTime = (int) ((timeStamp + (timeToDistance/2))/PULSE_BIN_LENGTH); // over 2 as adding it half way
-            timeStamp += timeToDistance;
-            dose[doseTime] += energyLostStep;  //still just adding keV
-            electronDose[doseTime] += energyLostStep;
-            
-            newEnergy -= energyLostStep;
-            FSEStoppingPower = coefCalc.getStoppingPower(newEnergy, false);
-            if (newEnergy < 0) {
-              break;
+      else { //it's left the crystal if surrounding = false
+        if (surrounding == false) {
+          exited = true;
+          //get the energy deposited before it left the crystal. - when I slice need to also do timestamps 
+          double escapeDist = 1000 * getIntersectionDistance(previousX, previousY, previousZ, xNorm, yNorm, zNorm); //nm
+          double FSEStoppingPower = coefCalc.getStoppingPower(electronEnergy, false);
+          double energyToEdge = FSEStoppingPower * escapeDist;
+          if (energyToEdge < electronEnergy){ //the FSE has escaped
+            double energyLostStep = 0, totFSEenLostLastStep = 0;
+            double newEnergy = electronEnergy;
+            for (int j = 0; j < 10; j++) { //I will need to play around with the amount of slicing when I am writing up
+              energyLostStep = (escapeDist/10) * FSEStoppingPower;
+              //add dose to timeStamp
+              double timeToDistance = getTimeToDistance(newEnergy, escapeDist/10);
+              int doseTime = (int) ((timeStamp + (timeToDistance/2))/PULSE_BIN_LENGTH); // over 2 as adding it half way
+              timeStamp += timeToDistance;
+              if (doseTime < 0) {
+                doseTime = 0;
+              }
+              dose[doseTime] += energyLostStep;  //still just adding keV
+              if (entered == false) {
+              electronDose[doseTime] += energyLostStep;
+              
+              }
+              else {
+                electronDoseSurrounding[doseTime] += energyLostStep;
+              }
+              newEnergy -= energyLostStep;
+              FSEStoppingPower = coefCalc.getStoppingPower(newEnergy, false);
+              if (newEnergy < 0.05) {
+                if (newEnergy > 0) {
+                  dose[doseTime] += newEnergy;
+                  if (entered == false) {
+                    electronDose[doseTime] += newEnergy;
+                    
+                    }
+                    else {
+                      electronDoseSurrounding[doseTime] += newEnergy;
+                    }
+                }
+                break;
+              }
+            } 
+            //calc escaped energy
+            if (entered == false) {
+              escapedEnergy += newEnergy;
             }
-          } 
-          
+          }
+          else {
+            //didn't quite escape, add the electron energy to the dose
+            double timeToDistance = getTimeToDistance(electronEnergy, s);
+            int doseTime = (int) ((timeStamp + (timeToDistance/2))/PULSE_BIN_LENGTH);
+            timeStamp += timeToDistance;
+            if (doseTime < 0) {
+              doseTime = 0;
+            }
+            dose[doseTime] += electronEnergy;  //still just adding keV
+            if (entered == false) {
+            electronDose[doseTime] += electronEnergy;
+            
+            }
+            else {
+              electronDoseSurrounding[doseTime] += electronEnergy;
+            }
+          }
         }
-        else {
-          //didn't quite escape, add the electron energy to the dose
-          double timeToDistance = getTimeToDistance(electronEnergy, s);
-          int doseTime = (int) ((timeStamp + (timeToDistance/2))/PULSE_BIN_LENGTH);
-          timeStamp += timeToDistance;
-          dose[doseTime] += electronEnergy;  //still just adding keV
-          electronDose[doseTime] += electronEnergy;
+        else { //it's one I'm tracking from the surrounding
+          //check if it's still worth tracking it form the surrounding anymore - i.e still in track range
+          double maxDistanceNM = (electronEnergy/coefCalc.getStoppingPower(electronEnergy, surrounding)); 
+          if (Math.abs(xn) > maxDistanceNM + XDimension/2 || Math.abs(yn) > maxDistanceNM + YDimension/2 || Math.abs(zn) > maxDistanceNM + ZDimension/2) {
+            exited = true;
+          }
+          else {
+             //if it is still worth tracking I need to do everything exactly the same as if it was in the crystal...
+          //update position and angle
+            //update position and angle
+            previousTheta = theta;
+            previousPhi = phi;
+            previousX = xn;
+            previousY = yn;
+            previousZ = zn;
+            
+            //update angle and stuff - for now it is always an elastic interaction
+            theta = getElectronElasticTheta(electronEnergy, elasticProbs, previousTheta);
+            phi = getElectronElasticPhi(previousPhi);
+          //now further update the primary
+            
+            xNorm = Math.sin(theta) * Math.cos(phi);
+            yNorm = Math.sin(theta) * Math.sin(phi);
+            zNorm = Math.cos(theta);
+            
+            //update the energy and stopping Power and stuff
+            electronEnergy -= energyLost; 
+            stoppingPower = coefCalc.getStoppingPower(electronEnergy, surrounding);
+            //get new lambdaT
+            lambdaEl = coefCalc.getElectronElasticMFPL(electronEnergy, surrounding);
+            lambdaT = lambdaEl;
+            s = -lambdaT*Math.log(Math.random());
+            elasticProbs = coefCalc.getElasticProbs(surrounding);
+            
+            //update to new position
+            xn = previousX + s * xNorm;
+            yn = previousY + s * yNorm;
+            zn = previousZ + s * zNorm;
+          }
         }
       }
       if (electronEnergy < 0.05) {
@@ -382,6 +635,58 @@ public class XFEL {
       }
     }
     
+  }
+  
+  private double getElectronElasticTheta(double electronEnergy, Map<ElementEM, Double> elasticProbs, double previousTheta) {
+    double elasticElementRND = Math.random();
+    ElementEM elasticElement = null;
+    for (ElementEM e : elasticProbs.keySet()) {
+      if (elasticProbs.get(e) > elasticElementRND) { //Then this element is the one that was ionised
+        elasticElement = e;
+        break;
+      }
+    }
+    //get the angles
+    //ELSEPA stuff
+    double theta = getPrimaryElasticScatteringAngle(electronEnergy, elasticElement.getAtomicNumber());
+    theta = previousTheta + theta;
+    if (theta >= (2 * Math.PI)) {
+      theta -= 2*Math.PI;
+    }
+    return theta;
+  }
+  
+  private double getElectronElasticPhi(double previousPhi) {
+    double phi = 2 * Math.PI * Math.random();
+    phi = previousPhi + phi;
+    if (phi >= (2 * Math.PI)) {
+      phi -= 2*Math.PI;
+    }
+    return phi;
+  }
+  
+  private void produceCompton(Beam beam, CoefCalc coefCalc, double timeStamp,
+                              double xn, double yn, double zn, boolean surrounding) {
+    //then the photon scattered by the compton effect
+    //pick an angle theta
+    double photonTheta = Math.PI * Math.random();
+    //now get the energy of the compton electron
+    double mcSquared = m * Math.pow(c, 2);
+    double incidentEnergy = beam.getPhotonEnergy() * Beam.KEVTOJOULES;
+    double Ecomp = ((Math.pow(incidentEnergy, 2) * (1-Math.cos(photonTheta))) / 
+                   (mcSquared * (1+((incidentEnergy/mcSquared)*(1-Math.cos(photonTheta))))))
+                    /Beam.KEVTOJOULES; //in keV
+    raddoseStyleDoseCompton += Ecomp;
+    //now get phi - this is the angle to Z
+    double electronPhi = Math.atan((1/Math.tan(photonTheta/2)) / (1 + (incidentEnergy/mcSquared)));
+    //now get the angles and direction
+    double zNorm = Math.cos(electronPhi);
+    double xNorm = PosOrNeg() * Math.random() * Math.pow(1-Math.pow(zNorm, 2), 0.5);
+    double yNorm = PosOrNeg() * Math.pow(1 - Math.pow(xNorm, 2) - Math.pow(zNorm, 2), 0.5);
+    double theta = Math.acos(zNorm);
+    double phi = Math.acos(xNorm / Math.sin(theta));
+    
+    trackPhotoelectron(coefCalc, timeStamp, Ecomp, xn, yn, zn, xNorm, yNorm, zNorm, theta, phi, surrounding);
   }
   
   private double getCosAngleToX() {
@@ -931,6 +1236,19 @@ return angleRadians;
     }
     return minIntersect;
   }
+  
+  private double[] getIntersectionPoint(double intersectionDistance, double x, double y, double z,
+      double ca, double cb, double cc) {
+      double[] directionVector = {ca, cb, cc}; //the actual direction vector
+      double[] origin = new double[3];
+      origin[0] = x/1000;
+      origin[1] = y/1000;
+      origin[2] = z/1000;
+      double distance = intersectionDistance / 1000;
+      double[] intersectionPoint = Vector.rayTraceToPointWithDistance(
+          directionVector, origin, distance);
+      return intersectionPoint;
+}
   
   /**
    * Calculates normal array from index and vertex arrays.

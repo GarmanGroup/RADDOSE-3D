@@ -565,6 +565,12 @@ public class CrystalPolyhedron extends Crystal {
       vertices[i][2] = -1 * y2 * Math.sin(l) + z2
           * Math.cos(l);
     }
+    
+    
+    //fudged for microED
+    xMinMax = this.minMaxVertices(0, vertices);
+    yMinMax = this.minMaxVertices(1, vertices);
+    zMinMax = this.minMaxVertices(2, vertices);
 
     Double xshift = -xMinMax[0];
     Double yshift = -yMinMax[0];
@@ -624,17 +630,24 @@ public class CrystalPolyhedron extends Crystal {
            * rotation in plane about [0 0 1] (P) Temporary variables needed
            * since we use all of the previous xyz's to set each of the new ones.
            */
+          /*
           double x2 = x * Math.cos(p) + y * Math.sin(p);
           double y2 = -1 * x * Math.sin(p) + y * Math.cos(p);
           double z2 = z;
-
+          */
           /*
            * rotation loop about [1 0 0] (L)
            */
+          /*
           tempCrystCoords[i][j][k][0] = x2;
           tempCrystCoords[i][j][k][1] = y2 * Math.cos(l) + z2 * Math.sin(l);
           tempCrystCoords[i][j][k][2] = -1 * y2 * Math.sin(l) + z2
               * Math.cos(l);
+          */
+          tempCrystCoords[i][j][k][0] = x;
+          tempCrystCoords[i][j][k][1] = y;
+          tempCrystCoords[i][j][k][2] = z;
+          
         }
       }
     }
