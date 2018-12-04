@@ -1152,6 +1152,9 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
   }
   if (electronEnergy < 0.05) {
     exited = true;
+    if (isMicrocrystalAt(previousX, previousY, previousZ) == true) {
+      MonteCarloDose += electronEnergy;
+    }
   }
   }
   if (timesScattered == 1) {

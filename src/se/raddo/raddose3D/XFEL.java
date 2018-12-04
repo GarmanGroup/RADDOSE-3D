@@ -58,7 +58,7 @@ public class XFEL {
   //cryo crystal stuff
   
   
-  protected static final long NUM_PHOTONS = 1000000;
+  protected static final long NUM_PHOTONS = 500000;
   protected static final long PULSE_LENGTH = 20; //length in fs
   protected static final double PULSE_BIN_LENGTH = 1; //length in fs
   protected static final double PULSE_ENERGY = 1.6E-3; //energy in J
@@ -170,17 +170,17 @@ public class XFEL {
       boolean track = false;
       if (coefCalc.isCryo()) {
         track = true;
-        if (surrounding == true) {
+        if (surrounding == true) { // if never going to hit the crystal
           //determine if it is worth tracking it or not
           if ((Math.abs(previousX) - distanceNM) > XDimension/2 || (Math.abs(previousY) - distanceNM) > YDimension/2){
             track = false;
           }
           if (track == true) {
-            photonMFPL = photonMFPLSurrounding;
+            s = -photonMFPLSurrounding*Math.log(Math.random());
             //update Z
             previousZ = previousZ - distanceNM;
             //give it a negative timestamp
-            timeStamp -= -1*((1/c) * ((distanceNM)/1E9));
+            timeStamp -= (1*((1/c) * ((distanceNM)/1E9))) * 1E15;
           }
           else {
             exited = false; //no point tracking it at all
@@ -188,8 +188,10 @@ public class XFEL {
         }
         else { // a photon that could hit the crystal
           s = -photonMFPLSurrounding*Math.log(Math.random());
-          if ((s < distanceNM) || (distanceNM + ZDimension < s && s < 2*distanceNM + ZDimension) ) { //then this photon will interact before or after hitting the crystal, I'm not going to track it after this
+        //  if ((s < distanceNM) || (distanceNM + ZDimension < s && s < 2*distanceNM + ZDimension) ) { //then this photon will interact before or after hitting the crystal
+            if ((s < distanceNM) ) { //photon interacts before hitting the crystal
             //need to give it a timestamp, I'm going to start it off with a negative one and if it is negative one put it on 0
+            surrounding = true;
             int beforeOrAfter = 1; 
             double distance = s - distanceNM;
             if ( s < distanceNM) {
@@ -214,7 +216,7 @@ public class XFEL {
             }
             else {
               //produce a photoelectron
-              producePhotoElectron(beam, coefCalc, elementAbsorptionProbs, ionisationProbs, timeStamp, doseTime, xn, yn, zn, surrounding);
+              producePhotoElectron(beam, coefCalc, elementAbsorptionProbsSurrounding, ionisationProbsSurrounding, timeStamp, doseTime, xn, yn, zn, surrounding);
             }           
             // set exited to true so this photon is no longer tracked 
             exited = true;
@@ -228,7 +230,9 @@ public class XFEL {
       
       
       //the next step is to work out the distance s
-      s = -photonMFPL*Math.log(Math.random());
+      if (surrounding == false) {
+        s = -photonMFPL*Math.log(Math.random());
+      }
 
       xn = previousX + s * xNorm;
       yn = previousY + s * yNorm;
@@ -257,24 +261,67 @@ public class XFEL {
           //photon is absorbed so don't need to keep track of it after this and update stuff
         }
         else {
-          //check if this point is in a trackable point in the surrounding
-          if (track == true) { // lazy way, but this is same as if user wants to track surrounding 
-            //check that the z is not ridiculuous
-            if (zn > -distanceNM - ZDimension/2 && zn < ZDimension/2 + distanceNM) {
-              double timeToPoint = (1/c) * (s/1E9); //in seconds
-              timeStamp += timeToPoint * 1E15; //time from start of pulse that this happened
-              int doseTime = (int) (timeStamp/PULSE_BIN_LENGTH); //rounding down so 0 = 0-0.99999, 1 - 1-1.99999 etc 
-              double RNDcompton = Math.random();
-              if (RNDcompton < probComptonSurrounding) {
-                //produce a compton electron
-                produceCompton(beam, coefCalc, timeStamp, xn, yn, zn, surrounding);
+          if (coefCalc.isCryo()) {
+            //check if this has passed through the crystal or around the edge
+            if (surrounding == true) {
+              //it's gone through the edge
+              //check if this point is in a trackable point in the surrounding
+              if (track == true) { // lazy way, but this is same as if user wants to track surrounding 
+                //check that the z is not ridiculuous
+                if (zn > -distanceNM - ZDimension/2 && zn < ZDimension/2 + distanceNM) { 
+                  //sort out the timeStamp
+                  int beforeOrAfter = 1; 
+                  double distance = s - distanceNM;
+                  if (s < distanceNM) {
+                    beforeOrAfter = -1; // -1 = before crystal, +1 = after crystal
+                    distance = distanceNM - s;
+                  }
+                  double timeToPoint = beforeOrAfter*((1/c) * (distance/1E9)); //in seconds
+                  timeStamp += timeToPoint * 1E15; //time from start of pulse that this happened
+                  int doseTime = (int) (timeStamp/PULSE_BIN_LENGTH); //rounding down so 0 = 0-0.99999, 1 - 1-1.99999 etc 
+                  double RNDcompton = Math.random();
+                  if (RNDcompton < probComptonSurrounding) {
+                    //produce a compton electron
+                    produceCompton(beam, coefCalc, timeStamp, xn, yn, zn, surrounding);
+                  }
+                  else {
+                    //produce a photoelectron
+                    producePhotoElectron(beam, coefCalc, elementAbsorptionProbsSurrounding, ionisationProbsSurrounding, timeStamp, doseTime, xn, yn, zn, surrounding);
+                  }           
+                }
               }
-              else {
-                //produce a photoelectron
-                producePhotoElectron(beam, coefCalc, elementAbsorptionProbs, ionisationProbs, timeStamp, doseTime, xn, yn, zn, surrounding);
-              }           
+            }
+            else {
+              //it's gone through the crystal and come out the back - check if it will interact with the behind surrounding
+              surrounding = true;
+              //update timeStamp
+              double timeToPoint = (1/c) * (ZDimension/1E9);
+              timeStamp += timeToPoint * 1E15;
+              s = -photonMFPLSurrounding*Math.log(Math.random());
+              previousZ = ZDimension/2;
+              xn = previousX + s * xNorm;
+              yn = previousY + s * yNorm;
+              zn = previousZ + s * zNorm;
+              if (zn < distanceNM + ZDimension/2) {
+                //then it has interacted with the surrounding behind the crystal
+                timeToPoint = (1/c) * (s/1E9);
+                timeStamp += timeToPoint * 1E15;
+                int doseTime = (int) (timeStamp/PULSE_BIN_LENGTH);
+                double RNDcompton = Math.random();
+                if (RNDcompton < probComptonSurrounding) {
+                  //produce a compton electron
+                  produceCompton(beam, coefCalc, timeStamp, xn, yn, zn, surrounding);
+                }
+                else {
+                  //produce a photoelectron
+                  producePhotoElectron(beam, coefCalc, elementAbsorptionProbsSurrounding, ionisationProbsSurrounding, timeStamp, doseTime, xn, yn, zn, surrounding);
+                }           
+              }
             }
           }
+
+          
+
         }
         exited = true; // because the photon is absorbed, also not tracking compton electrons after they scatter as unlikely to scatter again
       }
@@ -447,6 +494,12 @@ public class XFEL {
     
     if (startingEnergy < 0.05) {
       exited = true;
+      //I need to add to the dose here
+      if (isMicrocrystalAt(xn, yn, zn) == true) { 
+        int doseTime = (int) (timeStamp/PULSE_BIN_LENGTH);
+        dose[doseTime] += startingEnergy;
+        electronDose[doseTime] += startingEnergy;
+      }
     }
     while (exited == false) {
       if (isMicrocrystalAt(xn, yn, zn) == true) { //photoelectron still in the crystal
@@ -461,6 +514,8 @@ public class XFEL {
           previousX = 1000*intersectionPoint[0];
           previousY = 1000*intersectionPoint[1];
           previousZ = 1000*intersectionPoint[2];
+          //update timestamp
+          timeStamp += getTimeToDistance(electronEnergy, intersectionDistance);
           //update energy to this point and coefficients
           electronEnergy -= intersectionDistance * stoppingPower;
           stoppingPower = coefCalc.getStoppingPower(electronEnergy, surrounding);
@@ -483,6 +538,9 @@ public class XFEL {
         double energyToAdd = energyLost;
         if (doseTime < 0) {
           doseTime = 0;
+        }
+        if (energyToAdd < 0) {
+          System.out.print("Test");
         }
         dose[doseTime] += energyToAdd;  //still just adding keV
         if (entered == true) {
@@ -542,6 +600,9 @@ public class XFEL {
               if (doseTime < 0) {
                 doseTime = 0;
               }
+              if (energyLostStep < 0) {
+                System.out.print("Test");
+              }
               dose[doseTime] += energyLostStep;  //still just adding keV
               if (entered == false) {
               electronDose[doseTime] += energyLostStep;
@@ -579,6 +640,9 @@ public class XFEL {
             if (doseTime < 0) {
               doseTime = 0;
             }
+            if (electronEnergy < 0) {
+              System.out.print("Test");
+            }
             dose[doseTime] += electronEnergy;  //still just adding keV
             if (entered == false) {
             electronDose[doseTime] += electronEnergy;
@@ -597,6 +661,11 @@ public class XFEL {
           }
           else {
              //if it is still worth tracking I need to do everything exactly the same as if it was in the crystal...
+            //find energy lost
+            energyLost = s * stoppingPower;
+            //update timeStamp
+            double timeToDistance = getTimeToDistance(electronEnergy, s);
+            timeStamp += timeToDistance;
           //update position and angle
             //update position and angle
             previousTheta = theta;
@@ -632,6 +701,18 @@ public class XFEL {
       }
       if (electronEnergy < 0.05) {
         exited = true;
+        //add the dose if died in the crystal
+        if (isMicrocrystalAt(previousX, previousY, previousZ) == true) {
+          int doseTime = (int) timeStamp;
+          dose[doseTime] += electronEnergy;
+          if (entered == false) {
+          electronDose[doseTime] += electronEnergy;
+          
+          }
+          else {
+            electronDoseSurrounding[doseTime] += electronEnergy;
+          }
+        }
       }
     }
     
