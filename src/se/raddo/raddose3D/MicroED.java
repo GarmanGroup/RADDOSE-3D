@@ -936,7 +936,7 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
       else {
       //else produce an FSE
       triggered += 1;
-      theta = doPrimaryInelastic(coefCalc, previousX, previousY, previousZ, electronEnergy, ionisationProbs, false, beam, i);
+      theta = doPrimaryInelastic(coefCalc, previousX, previousY, previousZ, electronEnergy, ionisationProbs, false, beam, i, previousTheta, previousPhi);
       } //end if not plasmon
     } //end if inelastic scatter
     else { //else it stays false and the collision will be elastic
@@ -1058,7 +1058,7 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
         else {
         //else produce an FSE
         triggered += 1;
-        theta = doPrimaryInelastic(coefCalc, previousX, previousY, previousZ, electronEnergy, ionisationProbsSurrounding, true, beam, i);
+        theta = doPrimaryInelastic(coefCalc, previousX, previousY, previousZ, electronEnergy, ionisationProbsSurrounding, true, beam, i, previousTheta, previousPhi);
         } //end if not plasmon
       } //end if inelastic scatter
       else { //else it stays false and the collision will be elastic
@@ -1367,7 +1367,7 @@ private double getFSEXSection(double electronEnergy) {
   
   //numerical integral of this
   double energyCutOff;
-  energyCutOff = (14.0/1000.0)/electronEnergy; //correcponds to a 14eV cut off, the hydrogen K shell energy
+  energyCutOff = (14.0/1000.0)/electronEnergy; //corresponds to a 14eV cut off, the hydrogen K shell energy
   
   double restMassEnergy = 511; //keV
   double tau = electronEnergy/restMassEnergy;
@@ -1476,7 +1476,8 @@ private double getShellBindingEnergy(Element collidedElement, int collidedShell)
 }
 
 private double doPrimaryInelastic(CoefCalc coefCalc, double previousX, double previousY, double previousZ, 
-                                  double electronEnergy, Map<Element, double[]> ionisationProbs, boolean surrounding, Beam beam, int i) {
+                                  double electronEnergy, Map<Element, double[]> ionisationProbs, boolean surrounding, Beam beam, int i,
+                                  double previousTheta, double previousPhi) {
   double theta = 0;
   boolean innerShell = false;
   double shellBindingEnergy = 0;
@@ -1498,6 +1499,8 @@ private double doPrimaryInelastic(CoefCalc coefCalc, double previousX, double pr
     }        
     shellBindingEnergy = getShellBindingEnergy(collidedElement, collidedShell);
     double FSEtheta = 0, FSEphi = 0, FSEpreviousTheta = 0, FSEpreviousPhi = 0, FSExNorm = 0, FSEyNorm = 0, FSEzNorm = 0;
+    FSEpreviousTheta = previousTheta;
+    FSEpreviousPhi = previousPhi;
     //firstly calculate the FSE energy
     double epsilon = getFSEEnergy(electronEnergy, shellBindingEnergy);
     double FSEEnergy = epsilon * electronEnergy - shellBindingEnergy;
