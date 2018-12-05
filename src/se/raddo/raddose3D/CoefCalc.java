@@ -166,4 +166,6 @@ public abstract class CoefCalc {
   public abstract double getCryoInelasticCoefficient();
   
   public abstract Map<Element, Double> getPhotoElectricProbsElementSurrounding(double beamEnergy);
+  
+  public abstract double getTotalAtomsInCrystal(double crystalVolume);
 }

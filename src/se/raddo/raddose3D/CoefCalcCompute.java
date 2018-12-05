@@ -271,7 +271,6 @@ public class CoefCalcCompute extends CoefCalc {
   
   public  Map<String, Double> fractionElementEM;
   
-  
   public Map<Element, Double> betheXSections;
   
   public Map<Element, double[]> shellXSections;
@@ -1712,6 +1711,17 @@ public class CoefCalcCompute extends CoefCalc {
 
   public double totalAtoms(final Element element) {
     return getSolventOccurrence(element) + getMacromolecularOccurrence(element);
+  }
+  
+  @Override
+  public double getTotalAtomsInCrystal(double crystalVolume) {
+    double totalAtoms = 0;
+    for (Element e : this.presentElements) { //get total Atoms per unit cell
+      totalAtoms += totalAtoms(e);
+    }
+    //crystal volume is in cm^3, cell volume is in A^3
+    totalAtoms *= (crystalVolume*1E24)/cellVolume;
+    return totalAtoms;
   }
   
   public double totalAtomsEM(final ElementEM element) {

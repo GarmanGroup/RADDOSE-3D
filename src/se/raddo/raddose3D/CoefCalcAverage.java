@@ -289,5 +289,11 @@ public class CoefCalcAverage extends CoefCalc {
     // TODO Auto-generated method stub
     return null;
   }
+
+  @Override
+  public double getTotalAtomsInCrystal(double crystalVolume) {
+    // TODO Auto-generated method stub
+    return 0;
+  }
   
 }
