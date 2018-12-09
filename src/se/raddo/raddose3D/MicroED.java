@@ -331,8 +331,8 @@ return theDose;
 private double EMEquationWay(Beam beam, Wedge wedge, CoefCalc coefCalc, boolean useInelEqu) {
   double exposure = beam.getExposure();
  // double energyPerEvent = 0.02; //in keV
-//  double energyPerEvent = (7 * coefCalc.getZav())/1000; //in keV  //Change this to 7* Zav
-  double energyPerEvent = 0.042;
+  double energyPerEvent = (7 * coefCalc.getZav())/1000; //in keV  //Change this to 7* Zav
+  energyPerEvent = 0.025;
 
   //will need to edit when I add in circular
   double exposedArea = 0;
@@ -388,6 +388,12 @@ private double EMEquationWay(Beam beam, Wedge wedge, CoefCalc coefCalc, boolean 
     for (int i = 1; i <= numberSlices; i++) {
       inelasticProbOverT = coefCalc.getElectronInelastic(avgEnergy, exposedVolume);
       inelasticProb += inelasticProbOverT * (sampleThickness/numberSlices);
+      
+      //testing this
+      double startingLambda_el = coefCalc.getElectronElasticMFPL(avgEnergy, false);
+      inelasticProb = sampleThickness/coefCalc.getElectronInelasticMFPL(avgEnergy, false);
+      
+      
       //I need to update the electron energy, will do this with the stopping power for consistency
       double stoppingPower = coefCalc.getStoppingPower(avgEnergy, false); //send it electron energy
       double energyPerEl =  stoppingPower * (sampleThickness/numberSlices);
@@ -1367,7 +1373,7 @@ private double getFSEXSection(double electronEnergy) {
   
   //numerical integral of this
   double energyCutOff;
-  energyCutOff = (14.0/1000.0)/electronEnergy; //corresponds to a 14eV cut off, the hydrogen K shell energy
+  energyCutOff = (10.0/1000.0)/electronEnergy; //corresponds to a 14eV cut off, the hydrogen K shell energy
   
   double restMassEnergy = 511; //keV
   double tau = electronEnergy/restMassEnergy;

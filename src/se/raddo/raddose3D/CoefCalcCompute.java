@@ -1949,7 +1949,8 @@ public class CoefCalcCompute extends CoefCalc {
     double csquared = 3E8*3E8;  // (m/s)^2
     double Vo = avgEnergy * Beam.KEVTOJOULES;
     double betaSquared = 1- Math.pow(m*csquared/(Vo + m*csquared), 2);
-    double weirdLetter = (0.02*Beam.KEVTOJOULES)/(betaSquared*(Vo + m*csquared)); //assuming 0.02 keV per inellastic plasmon event  
+    double weirdLetter = (0.025*Beam.KEVTOJOULES)/(betaSquared*(Vo + m*csquared)); //assuming 0.02 keV per inelastic plasmon event  
+    //this is a big assumption no??? 
     double molWeight = 0;
     double inelasticAll = 0;
 
@@ -1977,6 +1978,7 @@ public class CoefCalcCompute extends CoefCalc {
   
   @Override
   public double getElectronInelasticMFPL(double electronEnergy, boolean surrounding) {
+    /*
     //Individual atom cross sections
     Set<Element> elementList = presentElements;
     if (surrounding == true) {
@@ -1989,7 +1991,7 @@ public class CoefCalcCompute extends CoefCalc {
     double csquared = 3E8*3E8;  // (m/s)^2
     double Vo = electronEnergy * Beam.KEVTOJOULES;
     double betaSquared = 1- Math.pow(m*csquared/(Vo + m*csquared), 2);
-    double weirdLetter = (0.02*Beam.KEVTOJOULES)/(betaSquared*(Vo + m*csquared)); //assuming 0.02 keV per inellastic plasmon event  
+    double weirdLetter = (0.025*Beam.KEVTOJOULES)/(betaSquared*(Vo + m*csquared)); //assuming 0.02 keV per inellasticevent  
     double molWeight = 0;
     double inelasticAll = 0;
 
@@ -2015,7 +2017,60 @@ public class CoefCalcCompute extends CoefCalc {
       counter +=1;
     }
     double lambda = 1/inelasticAll;
+    
+    double test = reimerElectronInelastic(surrounding);
     return lambda;
+  }
+  
+  //Reimer method for the inelastic cross section
+  public double reimerElectronInelastic(boolean surrounding) {
+    double inelasticMFPL = 0;
+    double inelastic_x_section = 0;
+    Set<ElementEM> elementList = presentElementsEM;
+    if (surrounding == true) {
+      elementList = cryoElementsEM;
+    }
+    for (ElementEM e : elementList) { 
+      int Z = e.getAtomicNumber();
+      double v = 20/Z;
+      double element_inel = v * elasticXSections.get(e);
+      inelastic_x_section += element_inel;
+      
+    }
+    inelasticMFPL = 1/inelastic_x_section;
+    return inelasticMFPL;
+    */
+    
+    
+    //Reimer way
+    double inelasticMFPL = 0;
+    double inelastic_x_section = 0;
+    Set<ElementEM> elementList = presentElementsEM;
+    if (surrounding == true) {
+      elementList = cryoElementsEM;
+    }
+    for (ElementEM e : elementList) { 
+      /*
+      double totalAtoms = totalAtoms(e);
+      if (surrounding == true) {
+        totalAtoms = getCryoOccurrence(e);
+      }
+      */
+      int Z = e.getAtomicNumber();
+      double v = 20/Z;
+      double element_inel = 0;
+      if (surrounding == false) {
+        element_inel = v * elasticXSections.get(e);
+      }
+      else {
+        element_inel = elasticXSectionsSurrounding.get(e);
+      }
+          
+      inelastic_x_section += element_inel;
+      
+    }
+    inelasticMFPL = 1/inelastic_x_section;
+    return inelasticMFPL;
   }
   
   /**
@@ -2365,13 +2420,13 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
         elXSection += shellSigma[i]; 
         shellSigma[i] *= NperVol; //converts to total cross section of elemental shell per nm
         
-        /*
+        
         //Remove hydrogen from the equation for now
         if (Z == 1) {
           elXSection = 0;
           shellSigma[i] = 0;
         }
-        */
+        
         
       }
       
@@ -2680,10 +2735,6 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     double h = 6.626070040E-34; //m^2 Kg/s
     double hbar = h/(2*Math.PI);
     double a0 = 5.291772106E-2; //nm
-    int sumZ = 0;  //sumA = molecularWeight
-    for (Element e : this.presentElements) {
-      sumZ += e.getAtomicNumber() * totalAtoms(e);
-    }
     double plasmaFrequency = getPlasmaFrequency();
     double fermiEnergy = 0.294 * Math.pow(plasmaFrequency, 4/3); //eV
     double kf = Math.pow(((fermiEnergy/1000)*Beam.KEVTOJOULES)*2*m/Math.pow(hbar, 2), 0.5);  //m^-1
@@ -2704,7 +2755,23 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
   public double getPlasmaFrequency() {
     int sumZ = 0;  //sumA = molecularWeight
     for (Element e : this.presentElements) {
-      sumZ += e.getAtomicNumber() * totalAtoms(e);
+      int Z = e.getAtomicNumber();
+      int valence = Z;
+      
+      if (Z > 2 && Z <= 10 ) {
+        valence -= 2;
+      }
+      else if (Z > 10 && Z <= 28) {
+        valence -= 10;
+      }
+      else if (Z > 28 && Z <= 60) {
+        valence -= 28;
+      }
+      else if (Z > 60) {
+        valence -= 60;
+      }
+      
+      sumZ += valence * totalAtoms(e);
     }
     double plasmaFrequency = 28.816 * Math.pow(density*(sumZ/molecularWeight), 0.5); //equals (h/2pi)*omegap //this is in eV
     return plasmaFrequency; //in eV

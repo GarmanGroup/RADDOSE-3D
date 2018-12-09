@@ -55,7 +55,21 @@ public class XFEL {
   private TreeMap<Double, double[]>[]  lowEnergyAngles;
   private TreeMap<Double, double[]>[]  highEnergyAngles;
   
-  //cryo crystal stuff
+  private HashMap<Integer, double[]> augerTransitionLinewidths;
+  private HashMap<Integer, double[]> augerTransitionProbabilities;
+  private HashMap<Integer, double[]> cumulativeTransitionProbabilities;
+  private HashMap<Integer, double[]> augerTransitionEnergies;
+  private int[] augerElements = {6, 7, 8, 16};
+  private HashMap<Integer, Double> totKAugerProb;
+  
+  //ionisationStuff
+  private long[] totalIonisationEvents;
+  private double[] totalIonisationEventsPerAtom;
+  private int ionisationsPerPhotoelectron;
+  private double totalShellBindingEnergy;
+  private TreeMap<Double, Double> energyPerInel;
+  private TreeMap<Double, Double> energyPerInelSurrounding;
+  private final int numInelEnBins = 100;
   
   
   protected static final long NUM_PHOTONS = 500000;
@@ -64,6 +78,7 @@ public class XFEL {
   protected static final double PULSE_ENERGY = 1.6E-3; //energy in J
   protected static final double c = 299792458; //m/s
   protected static final double m = 9.10938356E-31; // in Kg
+  protected static final double h = 6.62607004E-34; //J.s
   
   public XFEL(double vertices[][], int[][] indices, double[][][][] crystCoord, 
       double crystalPixPerUM, int[] crystSizeVoxels, boolean[][][][] crystOcc) {
@@ -86,9 +101,20 @@ public class XFEL {
     photonDose = new double[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (100/PULSE_BIN_LENGTH))];
     electronDose = new double[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (100/PULSE_BIN_LENGTH))];
     electronDoseSurrounding = new double[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (100/PULSE_BIN_LENGTH))];
+    totalIonisationEvents = new long[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (100/PULSE_BIN_LENGTH))];
+    totalIonisationEventsPerAtom = new double[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (100/PULSE_BIN_LENGTH))];
     
     lowEnergyAngles = new TreeMap[95];
     highEnergyAngles = new TreeMap[95];
+    
+    augerTransitionLinewidths = new HashMap();
+    augerTransitionProbabilities = new HashMap();
+    augerTransitionEnergies = new HashMap();
+    totKAugerProb = new HashMap();
+    cumulativeTransitionProbabilities = new HashMap();
+    
+    energyPerInel = new TreeMap();
+    energyPerInelSurrounding = new TreeMap();
   }
   
   public void CalculateXFEL(Beam beam, Wedge wedge, CoefCalc coefCalc) {
@@ -104,6 +130,17 @@ public class XFEL {
    * @param coefCalc
    */
   public void startMonteCarloXFEL(Beam beam, Wedge wedge, CoefCalc coefCalc) {
+    //populate augerLinewidths
+      try {
+        populateAugerLinewidths();
+      } catch (IOException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+      
+    //get how much the electron deposits oer inelastic interaction at several energies in this material
+    populateEnergyPerInel(beam, coefCalc);
+    
     //get absorption coefficient
     coefCalc.updateCoefficients(beam);
 
@@ -336,6 +373,7 @@ public class XFEL {
     //and also just take a whole cube for now
     double sampleVolume = XDimension * YDimension * ZDimension * 1E-21; //cm^3
     double sampleMass = ((coefCalc.getDensity() * sampleVolume) / 1000);  //in Kg 
+    double totalAtoms = coefCalc.getTotalAtomsInCrystal(sampleVolume);
     
     double energyPerPhoton = beam.getPhotonEnergy()*Beam.KEVTOJOULES;
     double numberOfPhotons = PULSE_ENERGY/energyPerPhoton;
@@ -346,6 +384,11 @@ public class XFEL {
       electronDose[i] = ((electronDose[i] * (numberOfPhotons/NUM_PHOTONS) * Beam.KEVTOJOULES) / sampleMass) /1E6; //in MGy
       photonDose[i] = ((photonDose[i] * (numberOfPhotons/NUM_PHOTONS) * Beam.KEVTOJOULES) / sampleMass) /1E6; //in MGy
       electronDoseSurrounding[i] = ((electronDoseSurrounding[i] * (numberOfPhotons/NUM_PHOTONS) * Beam.KEVTOJOULES) / sampleMass) /1E6; //in MGy
+      totalIonisationEvents[i] = (int) StrictMath.round(totalIonisationEvents[i] * (numberOfPhotons/NUM_PHOTONS));
+      if (i > 0) {
+        totalIonisationEvents[i] += totalIonisationEvents[i-1]; //make it cumulative
+      }
+      totalIonisationEventsPerAtom[i] = totalIonisationEvents[i]/totalAtoms;
       //sums
       if (i*PULSE_BIN_LENGTH < lastTime-(1*PULSE_BIN_LENGTH)) {
         sumDose += dose[i];
@@ -456,7 +499,59 @@ public class XFEL {
     }
     
     trackPhotoelectron(coefCalc, timeStamp, photoelectronEnergy, xn, yn, zn, xNorm, yNorm, zNorm, theta, phi, surrounding);
-    
+    /*
+    if (ionisationsPerPhotoelectron > 0) {
+      System.out.println(ionisationsPerPhotoelectron + " " + totalShellBindingEnergy);
+    }
+    */
+  //relax the atom and see if an auger electron was produced
+    if (surrounding == false) { //only want to track Auger if in the crystal for now
+      produceAugerElectron(coefCalc, timeStamp, shellIndex, ionisedElement, xn, yn, zn, surrounding);
+    }
+  }
+  
+  private void produceAugerElectron(CoefCalc coefCalc, double timeStamp, double shellIndex, Element ionisedElement,
+                                    double xn, double yn, double zn, boolean surrounding) {
+    //only do if from a K shell for now
+    if (shellIndex == 0) {
+      //only do for elements that are possible right now - C N O S
+      int Z = ionisedElement.getAtomicNumber();
+      if (Z == 6 || Z == 7 || Z == 8 || Z == 16) {
+        double shellFluorescenceYield = ionisedElement.getKShellFluorescenceYield();
+        double fluoresenceYieldKRND = Math.random();
+        if (fluoresenceYieldKRND > shellFluorescenceYield) { //then this will emit and Auger electron 
+          // determine which transition happened in the usual way from cumulative probs
+          double transitionRND = Math.random();
+          double[] transitionProbs = cumulativeTransitionProbabilities.get(Z);
+          double[] linewidths = augerTransitionLinewidths.get(Z);
+          double[] energies = augerTransitionEnergies.get(Z);
+          int transitionIndex = 0;
+          for (int i = 0; i < transitionProbs.length; i++) {
+            if (transitionRND < transitionProbs[i]) { // then it's this transition
+              transitionIndex = i;
+              break;
+            }
+          }
+          //could actually get a proper energy from this... Also get a linewidth and therefore lifetime 
+          double augerEnergy = energies[transitionIndex];
+          double augerLinewidth = linewidths[transitionIndex];
+          double augerLifetime = 1E15*((h/(2*Math.PI)) / ((augerLinewidth/1000)*Beam.KEVTOJOULES));
+          timeStamp += augerLifetime;
+          //add a charge 
+          
+          //account for this transition so cross sections can be adjusted
+          
+          //send out the Auger
+          //choose a random direction
+          double theta = Math.random() * 2 * Math.PI;
+          double phi = Math.random() * 2 * Math.PI;
+          double xNorm = Math.sin(theta) * Math.cos(phi);
+          double yNorm = Math.sin(theta) * Math.sin(phi);
+          double zNorm = Math.cos(theta);
+          trackPhotoelectron(coefCalc, timeStamp, augerEnergy, xn, yn, zn, xNorm, yNorm, zNorm, theta, phi, surrounding);
+        }
+      }
+    }
   }
   
   private void trackPhotoelectron(CoefCalc coefCalc, double startingTimeStamp, double startingEnergy,
@@ -464,7 +559,20 @@ public class XFEL {
                                   double xNorm, double yNorm, double zNorm, double theta, double phi, boolean surrounding) {
     //do full Monte Carlo simulation the same way as in MicroED, but with a time stamp and adding dose every step
     //just do stopping power for now dw about surrounding and aUger and fluorescence and stuff
-    
+    int ionisationTime = (int) (startingTimeStamp/PULSE_BIN_LENGTH);
+    if (ionisationTime < 0) {
+      ionisationTime = 0;
+    }
+    if (surrounding == false) {
+      totalIonisationEvents[ionisationTime] += 1;
+      
+      if (startingEnergy > 10) { //saying this is an actual PE
+        ionisationsPerPhotoelectron = 0;
+        totalShellBindingEnergy = 0;
+      }
+      
+    }
+
     double energyLost = 0;
     double electronEnergy = startingEnergy;
     double timeStamp = startingTimeStamp;
@@ -474,17 +582,35 @@ public class XFEL {
     double startingLambda_el = coefCalc.getElectronElasticMFPL(startingEnergy, surrounding);
     Map<ElementEM, Double> elasticProbs = coefCalc.getElasticProbs(surrounding);
     
+    //the FSE stuff 
+    double startingFSExSection = getFSEXSection(startingEnergy);
+    double startingFSELambda = coefCalc.getFSELambda(startingFSExSection, false);
+    
+    //Inner shell ionisation x section
+    coefCalc.populateCrossSectionCoefficients();
+    double startingInnerShellLambda = coefCalc.betheIonisationxSection(startingEnergy, false);
+    Map<Element, double[]> ionisationProbs = coefCalc.getAllShellProbs(false); //Really need to make sure that these are in the same order
+    
+    double startingPlasmonLambda = coefCalc.getPlasmaMFPL(startingEnergy);
+    double plasmaEnergy = coefCalc.getPlasmaFrequency()/1000.0; //in keV
+    
     double lambdaT = 0;
-    lambdaT = startingLambda_el;
-
+ //   lambdaT = startingLambda_el;
+    lambdaT = 1/ (1/startingLambda_el + 1/startingFSELambda);
+    
     double testRND = Math.random();
     double s = -lambdaT*Math.log(testRND);
- //   double Pinel = 1 - (lambdaT / startingLambda_el);
+    double Pinel = 1 - (lambdaT / startingLambda_el);
+    
+   // Pinel = 0; //quick way so it never activates the slow code
+    
     double xn = previousX + s * xNorm;
     double yn = previousY + s * yNorm;
     double zn = previousZ + s * zNorm;
     
     double lambdaEl = coefCalc.getElectronElasticMFPL(electronEnergy, surrounding);
+    double FSELambda = 0, FSExSection = 0, innerShellLamda = 0;;
+    
     
     boolean exited = false;
     boolean entered = false;
@@ -539,9 +665,11 @@ public class XFEL {
         if (doseTime < 0) {
           doseTime = 0;
         }
+        /*
         if (energyToAdd < 0) {
           System.out.print("Test");
         }
+        */
         dose[doseTime] += energyToAdd;  //still just adding keV
         if (entered == true) {
           electronDoseSurrounding[doseTime] += energyToAdd;
@@ -549,7 +677,7 @@ public class XFEL {
         else {
           electronDose[doseTime] += energyToAdd;
         }
-       
+        
         //update position and angle
         //update position and angle
         previousTheta = theta;
@@ -557,9 +685,83 @@ public class XFEL {
         previousX = xn;
         previousY = yn;
         previousZ = zn;
-        
+
+        //here would be where I check if elastic or inelastic collision
+        double RNDinelastic = Math.random();
+        if (RNDinelastic  < Pinel) {
+          //generate a charge if possible
+          
+          //determine which element was hit
+          double shellBindingEnergy = 0;
+          Element collidedElement = null;
+          int collidedShell = -1;
+          double elementRND = Math.random();
+          for (Element e : ionisationProbs.keySet()) {
+            collidedShell = findIfElementIonised(e, ionisationProbs, elementRND);
+            if (collidedShell >= 0) {
+              collidedElement = e;
+              break;
+            }
+          } 
+          shellBindingEnergy = getShellBindingEnergy(collidedElement, collidedShell);
+          double epsilon = getFSEEnergy(electronEnergy, shellBindingEnergy);
+          double FSEEnergy = epsilon * electronEnergy - shellBindingEnergy;
+          double sinSquaredAlpha = 0, sinSquaredGamma = 0;
+          double FSEtheta = 0, FSEphi = 0, FSEpreviousTheta = 0, FSEpreviousPhi = 0, FSExNorm = 0, FSEyNorm = 0, FSEzNorm = 0;
+          FSEpreviousTheta = previousTheta;
+          FSEpreviousPhi = previousPhi;
+          double minTrackEnergy = 0.05;  //this needs to be tested 
+      //    double minTrackEnergy = 0.00;  //this needs to be tested 
+          if (FSEEnergy > 0) {
+            ionisationsPerPhotoelectron += 1;
+            totalShellBindingEnergy += shellBindingEnergy;
+            if (FSEEnergy > minTrackEnergy) { // track a secondary electron if sufficient energy, this full cascade will be expensive but necessary for charge!!!!
+              double tPrimary = (electronEnergy-FSEEnergy)/511; //t is in rest mass units. Need to change to stopping power en
+              double tFSE = FSEEnergy/511;
+              //alpha = angle of primary electron
+              sinSquaredAlpha = (2 * epsilon) / (2 + tPrimary - tPrimary*epsilon);
+              //gamma - angle of secondary electron
+              sinSquaredGamma = 2*(1-epsilon) / (2 + tFSE*epsilon); 
+            
+              FSEtheta = Math.asin(Math.pow(sinSquaredGamma, 0.5));
+              FSEphi = 2 * Math.PI * Math.random();
+            
+            
+              FSEtheta = FSEpreviousTheta + FSEtheta;
+              if (FSEtheta >= (2 * Math.PI)) {
+                FSEtheta -= 2*Math.PI;
+              }
+              FSEphi = FSEpreviousPhi + FSEphi;
+              if (FSEphi >= (2 * Math.PI)) {
+                FSEphi -= 2*Math.PI;
+              }
+              FSExNorm = Math.sin(FSEtheta) * Math.cos(FSEphi);
+              FSEyNorm = Math.sin(FSEtheta) * Math.sin(FSEphi);
+              FSEzNorm = Math.cos(FSEtheta);
+              //recursive so slow!!!!!!!!!!!
+              trackPhotoelectron(coefCalc, timeStamp, FSEEnergy, xn, yn, zn, FSExNorm, FSEyNorm, FSEzNorm, FSEtheta, FSEphi, surrounding);
+            }
+            else { //0 to cutoff
+              totalIonisationEvents[doseTime] += 1;
+            }
+            //produce an Auger electron as well - only if it was a K shell for now. 
+            produceAugerElectron(coefCalc, timeStamp, collidedShell, collidedElement, xn, yn, zn, surrounding);
+          }
+
+          //update the angle deflection of the primary
+          theta = Math.asin(Math.pow(sinSquaredAlpha, 0.5));
+          theta = previousTheta + theta;
+          if (theta >= (2 * Math.PI)) {
+            theta -= 2*Math.PI;
+          }
+        }
+        else {
+          //do elastic
+          theta = getElectronElasticTheta(electronEnergy, elasticProbs, previousTheta);
+        }
+
         //update angle and stuff - for now it is always an elastic interaction
-        theta = getElectronElasticTheta(electronEnergy, elasticProbs, previousTheta);
+
         phi = getElectronElasticPhi(previousPhi);
       //now further update the primary
         
@@ -572,9 +774,14 @@ public class XFEL {
         stoppingPower = coefCalc.getStoppingPower(electronEnergy, false);
         //get new lambdaT
         lambdaEl = coefCalc.getElectronElasticMFPL(electronEnergy, false);
-        lambdaT = lambdaEl;
+        FSExSection = getFSEXSection(electronEnergy);
+        FSELambda = coefCalc.getFSELambda(FSExSection, false);
+        innerShellLamda = coefCalc.betheIonisationxSection(electronEnergy, false);
+        lambdaT = 1/(1/lambdaEl + 1/FSELambda);
         s = -lambdaT*Math.log(Math.random());
         elasticProbs = coefCalc.getElasticProbs(false);
+        ionisationProbs = coefCalc.getAllShellProbs(false);
+        Pinel = 1 - (lambdaT / lambdaEl);
         
         //update to new position
         xn = previousX + s * xNorm;
@@ -704,6 +911,9 @@ public class XFEL {
         //add the dose if died in the crystal
         if (isMicrocrystalAt(previousX, previousY, previousZ) == true) {
           int doseTime = (int) timeStamp;
+          if (doseTime < 0) {
+            doseTime = 0;
+          }
           dose[doseTime] += electronEnergy;
           if (entered == false) {
           electronDose[doseTime] += electronEnergy;
@@ -744,6 +954,61 @@ public class XFEL {
       phi -= 2*Math.PI;
     }
     return phi;
+  }
+  
+  private double getFSEXSection(double electronEnergy) {
+    double elementaryCharge = 4.80320425E-10; //units = esu = g^0.5 cm^1.5 s^-1
+    double m = 9.10938356E-28; // in g
+    double c = 29979245800.0;  //in cm
+
+    double csquared = Math.pow(c/100, 2);
+    double Vo = electronEnergy * Beam.KEVTOJOULES;
+    double betaSquared = 1- Math.pow((m/1000)*csquared/(Vo + (m/1000)*csquared), 2);
+    double vsquared = (betaSquared * csquared)*10000;
+
+    double constant = (2* Math.PI * Math.pow(elementaryCharge, 4)) / (m*vsquared * (Vo*1000*10000));
+
+    //numerical integral of this
+    double energyCutOff;
+    energyCutOff = (14.0/1000.0)/electronEnergy; //corresponds to a 14eV cut off, the hydrogen K shell energy
+    
+    double restMassEnergy = 511; //keV
+    double tau = electronEnergy/restMassEnergy;
+    double crossSection = (((2*tau+1)/Math.pow(tau+1, 2))*(Math.log((1/0.5)-1)) + Math.pow(tau/(tau+1), 2) - (1/0.5) - (1/(0.5-1))) -
+                          (((2*tau+1)/Math.pow(tau+1, 2))*(Math.log((1/energyCutOff)-1)) + Math.pow(tau/(tau+1), 2) - (1/energyCutOff) - (1/(energyCutOff-1))); 
+                          
+    crossSection*= constant;
+
+    return crossSection; 
+  }
+  
+  private int findIfElementIonised(Element e, Map<Element, double[]> ionisationProbs, double elementRND) {
+    double[] elementShellProbs = ionisationProbs.get(e);
+    int shell = -1;
+    for (int k = 0; k < elementShellProbs.length; k++) {
+      if (elementShellProbs[k] > elementRND) { //Then this element is the one that was ionised
+        shell = k;
+        break;
+      }
+    }
+    return shell;
+  }
+  
+  private double getFSEEnergy(double electronEnergy, double shellBindingEnergy) {
+    double RNDFSEEnergy = Math.random();
+    double energyCutOff = (14.0/1000.0)/electronEnergy;
+    
+    double tau = electronEnergy/511;
+    double alphaParam = Math.pow(tau/(tau+1), 2);
+    double betaParam = (2*tau + 1)/Math.pow(tau+1, 2);
+    double gammaParam = (1/energyCutOff)-(1/(1-energyCutOff))-(alphaParam*energyCutOff)-(betaParam*Math.log((1-energyCutOff)/((electronEnergy*energyCutOff)/511)));
+    double omegaParam = RNDFSEEnergy*(gammaParam + (alphaParam/2)) - gammaParam;
+    double epsilon = (omegaParam-2-betaParam+Math.pow(Math.pow(omegaParam-2-betaParam, 2) + 4*(omegaParam+alphaParam-2*betaParam), 0.5)) /
+                      (2*(omegaParam+alphaParam-2*betaParam));
+    
+    double omega = 1 / ((1/energyCutOff) - ((1/energyCutOff)-2)*RNDFSEEnergy);
+//      double omega = 1 / (100 - 98*Math.random());
+    return epsilon;
   }
   
   private void produceCompton(Beam beam, CoefCalc coefCalc, double timeStamp,
@@ -872,6 +1137,61 @@ public class XFEL {
       ionisationProbs.put(e, shellProbs);
     }
     return ionisationProbs;
+  }
+  
+  private void populateAugerLinewidths() throws IOException {
+    for (int i = 0; i < augerElements.length; i++) {
+      double[] transitionProbs = new double[21];
+      double[] cumulativeTransitionProbs = new double[21];
+      double sumProb = 0;
+      double[] transitionLinewidths = new double[21];
+      double[] transitionEnergies = new double[21];
+      String elementNum = String.valueOf(augerElements[i]) + ".csv";
+      String filePath = "constants/auger_linewidths/" + elementNum;
+      InputStreamReader isr = locateFile(filePath);
+      BufferedReader br = new BufferedReader(isr);
+      String line;
+      String[] components;
+      int count = -1;
+      while ((line = br.readLine()) != null) {
+        count += 1;
+        components = line.split(",");
+        transitionLinewidths[count] = Double.parseDouble(components[1]);
+        transitionProbs[count] = Double.parseDouble(components[2]);
+        transitionEnergies[count] = Double.parseDouble(components[3]);
+        sumProb += transitionProbs[count];
+        cumulativeTransitionProbs[count] = sumProb;
+      }
+      //scale cumulative probs to one 
+      for (int j = 0; j < cumulativeTransitionProbs.length; j++) {
+        cumulativeTransitionProbs[j] = cumulativeTransitionProbs[j] * (1/sumProb);
+      }
+      augerTransitionLinewidths.put(augerElements[i], transitionLinewidths);
+      augerTransitionProbabilities.put(augerElements[i], transitionProbs);
+      augerTransitionEnergies.put(augerElements[i], transitionEnergies);
+      totKAugerProb.put(augerElements[i], sumProb);
+      cumulativeTransitionProbabilities.put(augerElements[i], cumulativeTransitionProbs);
+    }
+  }
+  
+  private void populateEnergyPerInel(Beam beam, CoefCalc coefCalc) {
+    double maxEnergy = beam.getPhotonEnergy();
+    for (int i = 1; i <= numInelEnBins; i++ ){
+      double thisEnergy = i* (maxEnergy / numInelEnBins);
+      //need to get elastic for inel to work
+      double elasticMFPL = coefCalc.getElectronElasticMFPL(thisEnergy, false);
+      double stoppingPower = coefCalc.getStoppingPower(thisEnergy, false);
+      double inelMFPL = coefCalc.getElectronInelasticMFPL(thisEnergy, false);
+      double keVPerInteraction = inelMFPL*stoppingPower;
+      energyPerInel.put(thisEnergy, keVPerInteraction);
+      if (coefCalc.isCryo()) {
+        elasticMFPL = coefCalc.getElectronElasticMFPL(thisEnergy, true);
+        stoppingPower = coefCalc.getStoppingPower(thisEnergy, true);
+        inelMFPL = coefCalc.getElectronInelasticMFPL(thisEnergy, true);
+        keVPerInteraction = inelMFPL*stoppingPower;
+        energyPerInelSurrounding.put(thisEnergy, keVPerInteraction);
+      }
+    }
   }
   
   private void populateAngularEmissionProbs() {
