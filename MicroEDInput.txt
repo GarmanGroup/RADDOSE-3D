@@ -5,17 +5,17 @@
 
 Crystal
 
-Type Cylinder
+Type Cuboid
 
        # Crystal shape can be Cuboid or Spherical
 
-Dimensions 0.8 1
+Dimensions 0.2 0.2 0.2
        # Dimensions of the crystal in X,Y,Z in µm.
        # Z is the beam axis, Y the rotation axis and
        # X completes the right handed set
        #   (vertical if starting face-on).
 
-PixelsPerMicron 8           
+PixelsPerMicron 20           
        # This defines the coarseness of the simulation 
        # (i.e. how many voxels the crystal is divided into.)
        # Preferably set as high as possible, however for a higher
@@ -45,11 +45,11 @@ NumMonomers  24
 NumResidues  51                    
        # number of residues per monomer
 
-ProteinHeavyAtoms Zn 0.333 S 6         
+ProteinHeavyAtoms  S 6         
        # heavy atoms added to protein part of the
        # monomer, i.e. S, coordinated metals, Se in Se-Met
 
-SolventHeavyConc Na 1540 Cl 1540             
+#SolventHeavyConc Na 1540 Cl 1540             
        # concentration of elements in the solvent
        # in mmol/l. Oxygen and lighter elements
        # should not be specified
@@ -57,14 +57,14 @@ SolventHeavyConc Na 1540 Cl 1540
 SolventFraction 0.67
        # fraction of the unit cell occupied by solvent
 
-ANGLEL 90
+#ANGLEL 90
 
 ELECTRONS TRUE
 SIMELECTRONS 100000
 
 CALCULATEFLESCAPE FALSE
-CALCULATEPEESCAPE FALSE
-CALCSURROUNDING FALSE
+CALCULATEPEESCAPE TRUE
+CALCSURROUNDING TRUE
 #OILBASED TRUE
 #OILELEMENTS Ag 1
 #OILDENSITY 19
@@ -81,23 +81,23 @@ Beam
 
 Type TopHat
        # beam profile can be Gaussian or TopHat
-# Flux 1e12                
+Flux 1e26                
        # in photons per second (2e12 = 2 * 10^12)
 # FWHM 1 1                
        # in µm, horizontal by vertical for a Gaussian beam
-Energy 300           
+Energy 100           
        # photon energy in keV
 
-Collimation Rectangular 0.8 0.8
+Collimation Rectangular 1 1
        # Horizontal/Vertical collimation of the beam
        # For 'uncollimated' Gaussians, 3xFWHM recommended
 
 Exposure 10 # in e-/A^2
 
-IMAGEDIM 0.2 0.2
+#IMAGEDIM 0.4 0.4
 
-SEMIANGLE 0.00001
-APERTURERADIUS 1.00001
+#SEMIANGLE 0.00001
+#APERTURERADIUS 1.00001
 
 ##############################################################################
 #                                  Wedge Block                               #
@@ -106,7 +106,7 @@ APERTURERADIUS 1.00001
 Wedge 0 0
        # Start and End rotational angle of the crystal with Start < End
 
-ExposureTime 50           
+ExposureTime 20E-15           
        # Total time for entire angular range
 
 # AngularResolution 2     
