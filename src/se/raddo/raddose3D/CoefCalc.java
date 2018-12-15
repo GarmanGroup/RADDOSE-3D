@@ -168,4 +168,6 @@ public abstract class CoefCalc {
   public abstract Map<Element, Double> getPhotoElectricProbsElementSurrounding(double beamEnergy);
   
   public abstract double getTotalAtomsInCrystal(double crystalVolume);
+  
+  public abstract void getDifferentialInlasticxSection(double electronEnergy);
 }

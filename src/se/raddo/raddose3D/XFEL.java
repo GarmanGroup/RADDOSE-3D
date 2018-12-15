@@ -67,9 +67,12 @@ public class XFEL {
   private double[] totalIonisationEventsPerAtom;
   private int ionisationsPerPhotoelectron;
   private double totalShellBindingEnergy;
+  
   private TreeMap<Double, Double> energyPerInel;
   private TreeMap<Double, Double> energyPerInelSurrounding;
   private final int numInelEnBins = 100;
+  private TreeMap<Double, Double> stragglingPerInel;
+  private TreeMap<Double, Double> stragglingPerInelSurrounding;
   
   
   protected static final long NUM_PHOTONS = 500000;
@@ -107,17 +110,22 @@ public class XFEL {
     lowEnergyAngles = new TreeMap[95];
     highEnergyAngles = new TreeMap[95];
     
-    augerTransitionLinewidths = new HashMap();
-    augerTransitionProbabilities = new HashMap();
-    augerTransitionEnergies = new HashMap();
-    totKAugerProb = new HashMap();
-    cumulativeTransitionProbabilities = new HashMap();
+    augerTransitionLinewidths = new HashMap<Integer, double[]>();
+    augerTransitionProbabilities = new HashMap<Integer, double[]>();
+    augerTransitionEnergies = new HashMap<Integer, double[]>();
+    totKAugerProb = new HashMap<Integer, Double>();
+    cumulativeTransitionProbabilities = new HashMap<Integer, double[]>();
     
-    energyPerInel = new TreeMap();
-    energyPerInelSurrounding = new TreeMap();
+    energyPerInel = new TreeMap<Double, Double>();
+    energyPerInelSurrounding = new TreeMap<Double, Double>();
+    stragglingPerInel = new TreeMap<Double, Double>();
+    stragglingPerInelSurrounding = new TreeMap<Double, Double>();
   }
   
   public void CalculateXFEL(Beam beam, Wedge wedge, CoefCalc coefCalc) {
+    coefCalc.getDifferentialInlasticxSection(beam.getPhotonEnergy());
+    coefCalc.getStoppingPower(beam.getPhotonEnergy(), false);
+    
     startMonteCarloXFEL(beam, wedge, coefCalc);
     processDose(beam, coefCalc);
     System.out.println("XFEL done");
@@ -138,8 +146,10 @@ public class XFEL {
         e.printStackTrace();
       }
       
-    //get how much the electron deposits oer inelastic interaction at several energies in this material
+    //get how much the electron deposits per inelastic interaction at several energies in this material
     populateEnergyPerInel(beam, coefCalc);
+    //get the straggling for all of these
+    populateStraggling(beam, coefCalc);
     
     //get absorption coefficient
     coefCalc.updateCoefficients(beam);
@@ -1192,6 +1202,26 @@ public class XFEL {
         energyPerInelSurrounding.put(thisEnergy, keVPerInteraction);
       }
     }
+  }
+  
+  private void  populateStraggling(Beam beam, CoefCalc coefCalc) {
+    /*
+    //way 1 - non-relativistic but takes in thickness so probably better for lower energy
+    
+    
+    //way 2 - relativistic but assuming thin so probably better for higher energy
+  //  double m = 9.10938356E-31; // in Kg
+    double csquared = c*c;  // (m/s)^2   //update this to be precise
+    double maxEnergy = beam.getPhotonEnergy();
+    for (int i = 1; i <= numInelEnBins; i++ ){
+      double thisEnergy = i* (maxEnergy / numInelEnBins);
+      double Vo =  thisEnergy * Beam.KEVTOJOULES;
+      double betaSquared = 1- Math.pow(m*csquared/(Vo + m*csquared), 2); 
+      double Emax = (2*m*csquared*betaSquared / (1-betaSquared)) /Beam.KEVTOJOULES; 
+      double averageE = energyPerInel.get(thisEnergy);
+    }
+    */
+    
   }
   
   private void populateAngularEmissionProbs() {
