@@ -85,7 +85,7 @@ Flux 1e26
        # in photons per second (2e12 = 2 * 10^12)
 # FWHM 1 1                
        # in µm, horizontal by vertical for a Gaussian beam
-Energy 100           
+Energy 10           
        # photon energy in keV
 
 Collimation Rectangular 1 1
