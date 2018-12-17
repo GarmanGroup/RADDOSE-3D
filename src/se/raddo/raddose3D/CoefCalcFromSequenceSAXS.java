@@ -90,7 +90,7 @@ public class CoefCalcFromSequenceSAXS extends CoefCalcFromSequence {
     calculateHeavyAtomOccurrences(numMonomers, sf, heavyProteinAtomNames,
         heavyProteinAtomNums, heavySolutionConcNames, heavySolutionConcNums, numCarb);
     
-    multiplyAtoms(this.getNumMonomers());
+    multiplyAtoms(this.getNumMonomers()); //this is multiplying by the monomers
     
     
     

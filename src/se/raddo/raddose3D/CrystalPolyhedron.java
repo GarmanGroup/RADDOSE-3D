@@ -1181,7 +1181,7 @@ public class CrystalPolyhedron extends Crystal {
         //erring on side of caution
         peDistBins += 1;
         // ramping it up now it is quicker
-        peDistBins += 20;
+        peDistBins += 50;
       }
      }
  // Get PE distances
@@ -1278,7 +1278,7 @@ public class CrystalPolyhedron extends Crystal {
       }
     }
 
-    
+    maxDistance += 1;
     
     return maxDistance;
   }
@@ -1438,6 +1438,17 @@ public class CrystalPolyhedron extends Crystal {
      distanceWidths[pathCount] = PE_DISTANCES_TRAVELLED[l] - PE_DISTANCES_TRAVELLED[l-1]; //width of this electron length subset
      distanceHeights[pathCount] = (pathLengthDistn[l] + pathLengthDistn[l-1]) / 2;
    }
+   
+   // a way to get the mean
+   int thisCount = -1;
+   double sumWidth = 0, mean = 0;
+   for (int l = peDistBins-1; l > 0; l--) {  
+  // for (int l = 0; l < peDistBins; l++) {    
+     thisCount += 1;
+     sumWidth += distanceWidths[l];
+     mean += (sumWidth) * ((distanceWidths[l]*distanceHeights[l])/distnIntegral);
+   }
+   
    
    /*
     * Starting at the last bin, the population of photoelectron that stop here is calculated based
