@@ -1,11 +1,14 @@
 package se.raddo.raddose3D;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -50,7 +53,7 @@ public class XFEL {
   private double lastTime;
   
   private double[] angularEmissionProbs;
-  private final int numberAngularEmissionBins = 10;
+  private final int numberAngularEmissionBins = 50;
   
   private TreeMap<Double, double[]>[]  lowEnergyAngles;
   private TreeMap<Double, double[]>[]  highEnergyAngles;
@@ -75,7 +78,8 @@ public class XFEL {
   private TreeMap<Double, Double> stragglingPerInelSurrounding;
   
   
-  protected static final long NUM_PHOTONS = 500000;
+  private double numFluxPhotons;
+  protected static final long NUM_PHOTONS = 50000000;
   protected static final long PULSE_LENGTH = 20; //length in fs
   protected static final double PULSE_BIN_LENGTH = 1; //length in fs
   protected static final double PULSE_ENERGY = 1.6E-3; //energy in J
@@ -100,12 +104,12 @@ public class XFEL {
     ZDimension = 1000 * (zMinMax[1] - zMinMax[0]);
     
     //these break way way too easily so need a more permanent solution
-    dose = new double[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (100/PULSE_BIN_LENGTH))];
-    photonDose = new double[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (100/PULSE_BIN_LENGTH))];
-    electronDose = new double[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (100/PULSE_BIN_LENGTH))];
-    electronDoseSurrounding = new double[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (100/PULSE_BIN_LENGTH))];
-    totalIonisationEvents = new long[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (100/PULSE_BIN_LENGTH))];
-    totalIonisationEventsPerAtom = new double[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (100/PULSE_BIN_LENGTH))];
+    dose = new double[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (500/PULSE_BIN_LENGTH) + 10000000)];
+    photonDose = new double[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (500/PULSE_BIN_LENGTH) + 10000000)];
+    electronDose = new double[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (500/PULSE_BIN_LENGTH) + 10000000)];
+    electronDoseSurrounding = new double[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (500/PULSE_BIN_LENGTH) + 10000000)];
+    totalIonisationEvents = new long[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (500/PULSE_BIN_LENGTH) + 10000000)];
+    totalIonisationEventsPerAtom = new double[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (500/PULSE_BIN_LENGTH) + 10000000)];
     
     lowEnergyAngles = new TreeMap[95];
     highEnergyAngles = new TreeMap[95];
@@ -126,10 +130,15 @@ public class XFEL {
     coefCalc.getDifferentialInlasticxSection(beam.getPhotonEnergy());
     coefCalc.getStoppingPower(beam.getPhotonEnergy(), false);
     
+    // for testing
+    numFluxPhotons = beam.getPhotonsPerSec() * wedge.getTotSec();
+    
     startMonteCarloXFEL(beam, wedge, coefCalc);
     processDose(beam, coefCalc);
     System.out.println("XFEL done");
     
+    //terminate the program
+    System.exit(0);
   }
   
   /**
@@ -230,7 +239,7 @@ public class XFEL {
             timeStamp -= (1*((1/c) * ((distanceNM)/1E9))) * 1E15;
           }
           else {
-            exited = false; //no point tracking it at all
+            exited = true; //no point tracking it at all
           }
         }
         else { // a photon that could hit the crystal
@@ -387,6 +396,9 @@ public class XFEL {
     
     double energyPerPhoton = beam.getPhotonEnergy()*Beam.KEVTOJOULES;
     double numberOfPhotons = PULSE_ENERGY/energyPerPhoton;
+    
+    numberOfPhotons = numFluxPhotons;
+    
     double sumDose = 0, sumElectronDose = 0, sumPhotonDose = 0, sumElectronDoseSurrounding = 0;
     double sumDoseNoCutOff = 0, sumElectronDoseNoCutOff = 0, sumPhotonDoseNoCutOff = 0, sumElectronDoseSurroundingNoCutOff = 0;
     for (int i = 0; i < dose.length; i++) {
@@ -421,7 +433,38 @@ public class XFEL {
     //get diffraction efficiency
     double numberElastic = numberOfPhotons * getFractionElasticallyScattered(coefCalc);
     double diffractionEfficiency = numberElastic / sumDose;
+    double DEFull = numberElastic / sumDoseNoCutOff;
     System.out.println("Diffraction Efficiency: " + diffractionEfficiency);
+    
+    //write for RADDOSE-MC
+    try {
+      WriterFile("outputMC.CSV", sumDoseNoCutOff, DEFull, sumElectronDoseSurroundingNoCutOff);
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    
+  }
+  
+  private void WriterFile(final String filename, final double sumDoseNoCutOff, final double DEFull, final double sumElectronDoseSurroundingNoCutOff) throws IOException {
+    BufferedWriter outFile;
+    outFile = new BufferedWriter(new OutputStreamWriter(
+        new FileOutputStream(filename), "UTF-8"));
+    try {
+      outFile.write("totalDose,numSimulated,RADDOSEDose,Compton,Escaped,Entered,DE\n");
+      outFile.write(String.format(
+          " %f, %d, %f, %f, %f, %f, %f%n", sumDoseNoCutOff, NUM_PHOTONS, raddoseStyleDose, raddoseStyleDoseCompton, escapedEnergy, sumElectronDoseSurroundingNoCutOff, DEFull));
+    } catch (IOException e) {
+      e.printStackTrace();
+      System.err.println("WriterFile: Could not write to file " + filename);
+    }
+    
+    try {
+      outFile.close();
+    } catch (IOException e) {
+      e.printStackTrace();
+      System.err.println("WriterFile: Could not close file " + filename);
+    }
   }
   
   private double getFractionElasticallyScattered(CoefCalc coefCalc) {
@@ -499,6 +542,7 @@ public class XFEL {
       //get theta and phi
       theta = Math.acos(zNorm);
       phi = Math.acos(xNorm / Math.sin(theta));
+      
     }
     else { // send it out in a random direction
       theta = Math.random() * 2 * Math.PI;
@@ -655,7 +699,9 @@ public class XFEL {
           //update energy to this point and coefficients
           electronEnergy -= intersectionDistance * stoppingPower;
           stoppingPower = coefCalc.getStoppingPower(electronEnergy, surrounding);
-          lambdaT = coefCalc.getElectronElasticMFPL(electronEnergy, surrounding);
+          double newFSExSection = getFSEXSection(startingEnergy);
+          double newFSELambda = coefCalc.getFSELambda(startingFSExSection, false);
+          lambdaT = 1/(1/coefCalc.getElectronElasticMFPL(electronEnergy, surrounding) + 1/newFSELambda);
           elasticProbs = coefCalc.getElasticProbs(surrounding);
           //get a new s and xn, yn, zn
           s = -lambdaT*Math.log(Math.random());
@@ -699,6 +745,7 @@ public class XFEL {
         //here would be where I check if elastic or inelastic collision
         double RNDinelastic = Math.random();
         if (RNDinelastic  < Pinel) {
+          /*
           //generate a charge if possible
           
           //determine which element was hit
@@ -748,8 +795,23 @@ public class XFEL {
               FSExNorm = Math.sin(FSEtheta) * Math.cos(FSEphi);
               FSEyNorm = Math.sin(FSEtheta) * Math.sin(FSEphi);
               FSEzNorm = Math.cos(FSEtheta);
+              
+              
               //recursive so slow!!!!!!!!!!!
               trackPhotoelectron(coefCalc, timeStamp, FSEEnergy, xn, yn, zn, FSExNorm, FSEyNorm, FSEzNorm, FSEtheta, FSEphi, surrounding);
+              
+           //   if (surrounding == false) {
+           //     if (entered == true) {
+           //       electronDoseSurrounding[doseTime] += FSEEnergy;
+           //     }
+           //     else {
+           //       electronDose[doseTime] += FSEEnergy;
+           //     }
+           //   }
+              
+              
+              
+            
             }
             else { //0 to cutoff
               totalIonisationEvents[doseTime] += 1;
@@ -764,15 +826,24 @@ public class XFEL {
           if (theta >= (2 * Math.PI)) {
             theta -= 2*Math.PI;
           }
+          */
+          theta = previousTheta;
         }
         else {
           //do elastic
           theta = getElectronElasticTheta(electronEnergy, elasticProbs, previousTheta);
+          
+          
+          
+     //     theta = previousTheta;
+          
         }
 
         //update angle and stuff - for now it is always an elastic interaction
 
         phi = getElectronElasticPhi(previousPhi);
+        
+   //     phi = previousPhi;
       //now further update the primary
         
         xNorm = Math.sin(theta) * Math.cos(phi);
@@ -1032,7 +1103,9 @@ public class XFEL {
     double Ecomp = ((Math.pow(incidentEnergy, 2) * (1-Math.cos(photonTheta))) / 
                    (mcSquared * (1+((incidentEnergy/mcSquared)*(1-Math.cos(photonTheta))))))
                     /Beam.KEVTOJOULES; //in keV
-    raddoseStyleDoseCompton += Ecomp;
+    if (surrounding == false) {
+      raddoseStyleDoseCompton += Ecomp;
+    }
     //now get phi - this is the angle to Z
     double electronPhi = Math.atan((1/Math.tan(photonTheta/2)) / (1 + (incidentEnergy/mcSquared)));
     //now get the angles and direction

@@ -637,7 +637,7 @@ public abstract class Crystal {
   public void expose(final Beam beam, final Wedge wedge) {
     //start XFEL here, just comment and uncomment for now
     
-    startXFEL(XDim, YDim, ZDim, beam, wedge, coefCalc);
+   // startXFEL(XDim, YDim, ZDim, beam, wedge, coefCalc);
     
     if (useElectrons == true) {
       startMicroED(XDim, YDim, ZDim, beam, wedge, coefCalc, crystalType);
@@ -1058,7 +1058,7 @@ public abstract class Crystal {
           for (int k = 0; k < cryoCrystalSize[2]; k++) {
             //if this is an extra voxel
             
-            double iCryst = (i - extraVoxels) * ppmRatio;
+            double iCryst = (i - extraVoxels) * ppmRatio; 
             double jCryst = (j - extraVoxels) * ppmRatio;
             double kCryst = (k - extraVoxels) * ppmRatio;
             
@@ -1140,7 +1140,7 @@ public abstract class Crystal {
     for (int j = 0; j < crystalSize[1]; j++) {
       for (int k = 0; k < crystalSize[2]; k++) {
         if (isCrystalAt(i, j, k)) {
-          if (voxImageDose[i][j][k] > 0) {
+          if (voxImageFluence[i][j][k] > 0) {
             double totalVoxelDose = getDose(i, j, k); //how can this be done before the whole crystal???
             //This may need to change - ask what this is
             double interpolatedVoxelDose = totalVoxelDose + voxImageDose[i][j][k] / 2; // this needs to change for PE escape
@@ -1161,7 +1161,7 @@ public abstract class Crystal {
               eo.exposureObservation(anglenum, i, j, k, voxImageDose[i][j][k],   //voxImageDose should be added dose (doesn't do Compton or escape)
                   totalVoxelDose, voxImageFluence[i][j][k],
                   relativeDiffractionEfficiency, absorbedEnergy[i][j][k],
-                  voxElasticYield[i][j][k]);
+                  voxElasticYield[i][j][k], anglecount);
             }
           }
         }

@@ -51,6 +51,10 @@ public class ExposureSummary implements ExposeObserver {
   private Double                              usedVolumeFraction;
   private Double                              doseInefficiency;
   private Double                              doseInefficiencyPE;
+  private Double                              lastDWDTot;
+  private Double                              lastDWDNum;
+  private Double                              lastDWDDenom;
+  
 
   /**
    * Last requested dose quantile.
@@ -127,6 +131,9 @@ public class ExposureSummary implements ExposeObserver {
     diffDenom = 0d;
     wedgeElastic = 0d;
     imageExposedVoxels = 0;
+    lastDWDNum = 0d;
+    lastDWDDenom = 0d;
+    lastDWDTot = 0d;
     
     runningSumRDE = 0d;
     fluenceWeightedRunningSumRDE = 0d;
@@ -170,14 +177,18 @@ public class ExposureSummary implements ExposeObserver {
       final int i, final int j, final int k,
       final double addedDose, final double totalVoxDose,  final double fluence,
       final double doseDecay, final double absorbedEnergy,
-      final double elastic) {
+      final double elastic, final double anglecount) {
 
     // updating the diffracted intensity for this image/iteration equation
- //   diffNum += (totalVoxDose + addedDose / 2) * fluence * doseDecay;
+ //   diffNum += (totalVoxDose + addedDose) * fluence * 1;
  //   diffDenom += fluence * doseDecay;
     diffNum += (totalVoxDose + addedDose / 2) * fluence * 1;  //Why addedDose/2? Need to understand before changing
     diffDenom += fluence * 1;
       
+    if (wedgeImage == anglecount-1) {  //the last image
+      lastDWDNum += totalVoxDose * fluence * 1;
+      lastDWDDenom += fluence * 1;
+    }
     
     //for RDE
     if (fluence > 0) {
@@ -201,6 +212,10 @@ public class ExposureSummary implements ExposeObserver {
     if (diffDenom != 0) {
       runningSumDiffDose += diffNum / diffDenom;
     }
+    if (lastDWDDenom != 0) {
+      lastDWDTot += lastDWDNum / lastDWDDenom;
+    }
+    
     if (fluenceSum > 0) {
       averageRDE = runningSumRDE / imageExposedVoxels;
       fluenceWeightedAvgRDE = fluenceWeightedRunningSumRDE / fluenceSum;

@@ -344,6 +344,10 @@ public class CoefCalcCompute extends CoefCalc {
  //   System.out.println("Test");
     
     
+    //testing stuff
+    double one = getFnought(100000);
+    double two = FnoughtTwo(100000, 1.65);
+    System.out.println("Test");
   }
   
   /**
@@ -485,7 +489,11 @@ public class CoefCalcCompute extends CoefCalc {
     absCoeffs.put(ELASTIC, crossSectionCoherent);
     absCoeffs.put(COMPTON, crossSectionComptonAttenuation);
     absCoeffs.put(TOTAL, crossSectionTotal);
-
+    
+    if (element.getAtomicNumber() == 16) {
+  //    double test = cs.get(CrossSection.PHOTOELECTRIC);
+  //    System.out.println(test);
+    }
     return absCoeffs;
   }
   
@@ -1826,6 +1834,7 @@ public class CoefCalcCompute extends CoefCalc {
     
     for (ElementEM e : elementList) {
       double Z = e.getAtomicNumber();
+  //    Z = 7.22;
       elasticElement[counter] =  ((1.4E-6 * Math.pow(Z, 1.5))/betaSquared)*
                        ((1-(0.26*Z)/(137*Math.pow(betaSquared, 0.5))));
                    //    *1E06; // nm^2/atom
@@ -1848,6 +1857,7 @@ public class CoefCalcCompute extends CoefCalc {
       
       
       //Do ELSEPA
+      
       if ((electronEnergy <= 300) && (electronEnergy >= 0.05)) {
         /*
         ReadElasticFile rdEl = new ReadElasticFile();
@@ -1856,11 +1866,13 @@ public class CoefCalcCompute extends CoefCalc {
           elasticElement[counter] = x_section;
         }
         */
+      
         double x_section = e.getElasticCoefficient(electronEnergy);
         if (x_section > 0.0) {
           elasticElement[counter] = x_section;
         }
       }
+    
       
     //  double NperVol2 = molWeightFraction*(AVOGADRO_NUM * (density/1E21))/A; //Atoms per nm^3
       xSectionTotPerElement += elasticElement[counter] * NperVol; //nm^-1
@@ -1903,8 +1915,54 @@ public class CoefCalcCompute extends CoefCalc {
       ElasticxSectionTotPerElementSurrounding = xSectionTotPerElement;
     }
     
+    
+  //  double test = getPimblottElastic(electronEnergy);
+    
     return partLambda; //nm^2
   }
+  
+  //I am testing the Pimblott method for the elastic scattering cross section of water
+  private double getPimblottElastic(double avgEnergy) {
+    double elasticEl = 0;
+    double Z = 10;
+    double elementaryCharge = 4.80320425E-10; //units = esu = g^0.5 cm^1.5 s^-1
+    double e4 = (Math.pow(elementaryCharge, 4) / 1E6) / (1E12);
+    double m = 9.10938356E-31; // in Kg
+    double c = 299792458;
+    double csquared = c*c;  // (m/s)^2
+    double Vo = avgEnergy * Beam.KEVTOJOULES;
+    double betaSquared = 1- Math.pow(m*csquared/(Vo + m*csquared), 2);
+    double gamma = 1 / Math.pow(1-betaSquared, 0.5);
+    double vSquared = betaSquared*csquared;
+    double p = gamma * m * Math.pow(vSquared, 0.5);  
+    
+    double T = (gamma-1);                                     //kinetic energy in units mc^2
+    double nc = 1.64 - 0.0825 * Math.log(T*m*csquared);
+    nc = 1.13 + 3.76*Math.pow(Z/137*Math.pow(betaSquared, 0.5), 2);
+    double n = (Math.pow(Z,2/3)*nc)/(T*(T+2));
+    
+    //do the thing
+    int bins = 100;
+    int count = 0;
+    double step = Math.PI / bins;
+    double theta = 0;
+    double thisY = 0, previousY = 0, sum = 0;
+    while (theta <= Math.PI) {
+      double sigma = ((Math.pow(Z, 2) + Z)* e4) / (Math.pow(p, 2) * vSquared * Math.pow(1-Math.cos(theta)+2*n, 2));
+      thisY = sigma * Math.sin(theta);
+      if (count > 0) {
+        //then integrate this trapezium
+        sum += step * ((thisY + previousY)/2);
+      }
+      count += 1;
+      previousY = thisY;
+      theta += step;
+    }
+    sum *= 2*Math.PI; //m^2
+    sum = sum * 1E18; //nm^2
+    return sum;
+  }
+  
   
   @Override
   public double getElectronElasticMFPL(double electronEnergy, boolean surrounding) {
@@ -1955,7 +2013,7 @@ public class CoefCalcCompute extends CoefCalc {
     double csquared = 3E8*3E8;  // (m/s)^2
     double Vo = avgEnergy * Beam.KEVTOJOULES;
     double betaSquared = 1- Math.pow(m*csquared/(Vo + m*csquared), 2);
-    double weirdLetter = (0.025*Beam.KEVTOJOULES)/(betaSquared*(Vo + m*csquared)); //assuming 0.02 keV per inelastic plasmon event  
+    double weirdLetter = (0.02*Beam.KEVTOJOULES)/(betaSquared*(Vo + m*csquared)); //assuming 0.02 keV per inelastic plasmon event  
     //this is a big assumption no??? 
     double molWeight = 0;
     double inelasticAll = 0;
@@ -2257,6 +2315,8 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
    meanlnI = meanlnI/(sumZ/sumA); 
       double meanI = Math.exp(meanlnI);  //This is now right!!!
     double Fbeta = 0;
+    
+    
     meanJ = meanI; //eV  
     //modify meanJ for lower energy by Joy and Luo method - essential for FSEs
    // double k = 0.85; //test
@@ -2999,7 +3059,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     
     double lambda = 1/total_x_section;
     double otherLambda = 1/otherX;
-    System.out.println("test");
+ //   System.out.println("test");
     
     
     if (isCryo()) {
@@ -3315,6 +3375,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
   */
   
   //start again!!!!!
+  //I'll need to go through adjusting all the units and putting stuff in joules I think!!!
   
   public double FkQW(double Q, double W, double Wk, double Qk) {
     return diracDeltaFunction(W-Wk)*heavisideStepFunction(Qk-Q) + diracDeltaFunction(W-Q)*heavisideStepFunction(Q-Wk);
@@ -3437,7 +3498,80 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     double vSquared = betaSquared * csquared;
     double constant = 2*Math.PI*(Math.pow(elementaryCharge, 4)/1E18)/(m*vSquared);
     // do bound shells
-    double sumfcb = 0, sumDCS = 0;;
+    double sumfcb = 0, sumDCS = 0;
+    for (Element e: this.presentElements) {
+      sumfcb += getNumValenceElectrons(e)[0] * totalAtoms(e);
+      //get number of shells
+      int[] electrons = getNumValenceElectrons(e);
+      int numInnerShells = electrons[1];
+      for (int i = 0; i < numInnerShells; i++) {
+        int fk = shells[i];
+        double Wk = getWkMolecule(a, e, i);
+        double Uk = getShellBinding(i, e)*1000;
+        double Qk = getQak(E, Wk, Uk);
+        //the units below don't work
+        sumDCS += totalAtoms(e)*fk * (1/W)*((2*m*csquared)/(Q*(Q+2*m*csquared)))*getpDisW(E, W, a, e, i)*heavisideStepFunction(Qk-Q);
+      }
+    }
+    //and now the plasmon stuff
+    double Qk = 0;
+    double Wcb = getWcbAll();
+    //units below don't match up
+    sumDCS += sumfcb * (1/W)*((2*m*csquared)/(Q*(Q+2*m*csquared)))*diracDeltaFunction(W-Wcb)*heavisideStepFunction(Qk-Q);
+    sumDCS *= constant;
+    return sumDCS;
+  }
+  
+  public double transverseDCS(double W, double Q, double E, double a) {
+  //Qk = Uk for bound shells, Qk = 0 for the plasma
+    int[] shells = {2, 8, 18, 32};
+    double elementaryCharge = 4.80320425E-10; //units = esu = g^0.5 cm^1.5 s^-1
+    double m = 9.10938356E-31; // in Kg
+    double c = 299792458;
+    double csquared = c*c;  // (m/s)^2
+    double Vo = (E/1000) * Beam.KEVTOJOULES;
+    double betaSquared = 1- Math.pow(m*csquared/(Vo + m*csquared), 2);
+    double vSquared = betaSquared * csquared;
+    double constant = 2*Math.PI*(Math.pow(elementaryCharge, 4)/1E18)/(m*vSquared);
+    double deltaF = getDeltaF(E);
+    // do bound shells
+    double sumfcb = 0, sumDCS = 0;
+    for (Element e: this.presentElements) {
+      sumfcb += getNumValenceElectrons(e)[0] * totalAtoms(e);
+      //get number of shells
+      int[] electrons = getNumValenceElectrons(e);
+      int numInnerShells = electrons[1];
+      for (int i = 0; i < numInnerShells; i++) {
+        int fk = shells[i];
+        double Wk = getWkMolecule(a, e, i);
+        double Uk = getShellBinding(i, e)*1000;
+        double Qk = getQak(E, Wk, Uk);
+        double Wak = getWak(E, Wk, Uk);
+        //units don't work
+        sumDCS += totalAtoms(e)*fk * (1/W)*(Math.log(1/(1-betaSquared))-betaSquared-deltaF)*getpDisW(E, W, a, e, i)*heavisideStepFunction(Qk-Q)*diracDeltaFunction(Q-getQminusModified(E, Wak));
+      }
+    }
+    //and now the plasmon stuff
+    double Qk = 0;
+    double Wcb = getWcbAll();
+    //units don't work
+    sumDCS += sumfcb * (1/W)*(Math.log(1/(1-betaSquared))-betaSquared-deltaF)*diracDeltaFunction(W-Wcb)*heavisideStepFunction(Qk-Q)*diracDeltaFunction(Q-getQMinus(W, E, false));
+    sumDCS *= constant;
+    return sumDCS;
+  }
+  
+  public double closeDCS(double W, double Q, double E, double a) {
+    int[] shells = {2, 8, 18, 32};
+    double elementaryCharge = 4.80320425E-10; //units = esu = g^0.5 cm^1.5 s^-1
+    double m = 9.10938356E-31; // in Kg
+    double c = 299792458;
+    double csquared = c*c;  // (m/s)^2
+    double Vo = (E/1000) * Beam.KEVTOJOULES;
+    double betaSquared = 1- Math.pow(m*csquared/(Vo + m*csquared), 2);
+    double vSquared = betaSquared * csquared;
+    double constant = 2*Math.PI*(Math.pow(elementaryCharge, 4)/1E18)/(m*vSquared);
+    // do bound shells
+    double sumfcb = 0, sumDCS = 0;
     for (Element e: this.presentElements) {
       sumfcb += getNumValenceElectrons(e)[0] * totalAtoms(e);
       //get number of shells
@@ -3447,20 +3581,57 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
         int fk = shells[i];
         double Qk = getShellBinding(i, e)*1000;
         double Wk = getWkMolecule(a, e, i);
-        sumDCS += totalAtoms(e)*fk * (1/W)*((2*m*csquared)/(Q*(Q+2*m*csquared)))*diracDeltaFunction(W-Wk)*heavisideStepFunction(Qk-Q);
+        double Uk = getShellBinding(i, e)*1000;
+        double Qak = getQak(E, Wk, Uk);
+        double Fminus = getFMinusClose(E, W, Uk);
+        //units don't work
+        sumDCS += totalAtoms(e)*fk * (1/Math.pow(W, 2))*Fminus*diracDeltaFunction(W-Q)*heavisideStepFunction(Q-Qak);
       }
     }
     //and now the plasmon stuff
     double Qk = 0;
+    double Uk = 0;
     double Wcb = getWcbAll();
-    sumDCS += sumfcb * (1/W)*((2*m*csquared)/(Q*(Q+2*m*csquared)))*diracDeltaFunction(W-Wcb)*heavisideStepFunction(Qk-Q);
+    double Fminus = getFMinusClose(E, Wcb, Uk);
+    //units don't work
+    sumDCS += sumfcb * (1/Math.pow(W, 2))*Math.pow(W, 2)*diracDeltaFunction(W-Q)*heavisideStepFunction(Q-Qk);
     sumDCS *= constant;
     return sumDCS;
   }
   
- // public double transverseDCS() {
-    
- // }
+  public double getpDisW(double E, double W, double a, Element e, int i) {
+    double Uk = getShellBinding(i, e)*1000;
+    //get Wk
+    double Wk = getWkMolecule(a, e, i);
+    //modify Wk
+    double Wak = getWak(E, Wk, Uk);
+    double Qak = getQak(E, Wk, Uk);
+    double Wdis = 3*Wak - 2*Uk;
+    if (W >= Uk && W < Wdis) {
+      return 2/Math.pow(Wdis-Uk, 2);
+    }
+    else {
+      return 0;
+    }
+  }
+  
+  public double getQak(double E, double Wk, double Uk) {
+    if (E > 3*Wk - 2*Uk) {
+      return Uk;
+    }
+    else {
+      return Uk * (E/(3*Wk-2*Uk));
+    }
+  }
+  
+  public double getWak(double E, double Wk, double Uk) {
+    if (E > 3*Wk - 2*Uk) {
+      return Wk;
+    }
+    else {
+      return (E+2*Uk)/3;
+    }
+  }
   
   public double getFnought(double E) {
     //get sumZ
@@ -3470,7 +3641,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     }
     double plasmaEnergy = getPlasmaEnergyAll();
     //integrate
-    double Wmax = E/2;
+    double Wmax = E/2; //change
     double step = Wmax/Wbins;
     double previousY = 0, integralSum = 0;
     for (double i = 0; i <= Wmax; i += step) {
@@ -3487,9 +3658,30 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     return Fnought;
   }
   
-//  public double FnoughtTwo(double E) {
+  public double FnoughtTwo(double E, double a) {
+    //get sumZ
+    int[] shells = {2, 8, 18, 32};
+    double sumZ = 0;
+    for (Element e: this.presentElements) {
+      sumZ += e.getAtomicNumber()*totalAtoms(e);
+    }
+    double plasmaEnergy = getPlasmaEnergyAll();
     
-//  }
+    double sumfcb = 0, sumFnought = 0;
+    for (Element e: this.presentElements) {
+      sumfcb += getNumValenceElectrons(e)[0] * totalAtoms(e);
+      //get number of shells
+      int[] electrons = getNumValenceElectrons(e);
+      int numInnerShells = electrons[1];
+      for (int i = 0; i < numInnerShells; i++) {
+        int fk = shells[i];
+        double Wk = getWkMolecule(a, e, i);
+        sumFnought += fk/Math.pow(Wk,  2);
+      }
+    }
+    double Fnought2 = (1/sumZ)*Math.pow(plasmaEnergy, 2)*sumFnought;
+    return Fnought2;
+  }
   
   public double getTotalOOSMolecule(double W) {
     //get the OOS for the whole molecule for this W
@@ -3511,13 +3703,27 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     double Vo = electronEnergy * Beam.KEVTOJOULES;
     double betaSquared = 1- Math.pow(m*csquared/(Vo + m*csquared), 2);
     double L = 0;
-    if ((1-betaSquared) < getFnought(E)) {
-      //get L
-      L = Math.pow(1-betaSquared, 0.5);
-      deltaF = calcDeltaF(L, betaSquared, E);
+    
+    //add in the high B approximation
+    if (betaSquared > 0.95) {
+      //use high energy approximation
+      double sumZ = 0;
+      for (Element e: this.presentElements) {
+        sumZ += e.getAtomicNumber()*totalAtoms(e);
+      }
+      double plasmaEnergy = getPlasmaEnergyAll();
+      double I = Math.exp(getZlnI(electronEnergy)/sumZ);
+      deltaF = Math.log(Math.pow(plasmaEnergy,2)/((1-betaSquared)*Math.pow(I, 2)))-1;
     }
     else {
-      deltaF = 0;
+      if ((1-betaSquared) < getFnought(E)) {
+        //get L
+        L = Math.pow(1-betaSquared, 0.5);
+        deltaF = calcDeltaF(L, betaSquared, E);
+      }
+      else {
+        deltaF = 0;
+      }
     }
     return deltaF;
   }
@@ -3530,7 +3736,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     }
     double plasmaEnergy = getPlasmaEnergyAll();
     
-    double Wmax = E/2;
+    double Wmax = E/2; // need to change Wmax
     //get the integral
     double step = Wmax/Wbins;
     double previousY = 0, integralSum = 0;
@@ -3548,7 +3754,26 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     return deltaF;
   }
   
-  //get the delta F in the other way and make sure it is okay
-  //then get my transverse DCS, then the close DCS
+  public double getQminusModified(double E, double Wak) {
+    double m = 9.10938356E-31; // in Kg
+    double c = 299792458;
+    double csquared = c*c;  // (m/s)^2
+    double Qminus = Math.pow(Math.pow(Math.pow(E*(E+2*m*csquared), 0.5)-Math.pow((E-Wak)*(E-Wak+2*m*csquared), 0.5), 2)+Math.pow(m*csquared, 2)-m*csquared, 0.5);  
+    return Qminus;
+  }
   
+  public double getEdash(double E, double Uk) {
+    return E+Uk;
+  }
+  
+  public double getFMinusClose(double E, double W, double Uk) {
+    double Edash = getEdash(E, Uk);
+    double m = 9.10938356E-31; // in Kg
+    double c = 299792458;
+    double csquared = c*c;  // (m/s)^2
+    double Vo = (E/1000) * Beam.KEVTOJOULES;
+    double a = Math.pow(Vo/(Vo+m*csquared), 2);
+    double Fminus = 1+ Math.pow(W/(Edash-W), 2) - W/(Edash-W) + a*(W/(Edash-W) + Math.pow(W, 2)/Math.pow(E, 2));
+    return Fminus;
+  }
 }

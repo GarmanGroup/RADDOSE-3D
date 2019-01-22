@@ -190,9 +190,26 @@ public class MicroED {
     populateRegionVolumes();
   }
   
+  public void getCSDArange(CoefCalc coefCalc) {
+    double en = 100;
+    int divisions = 100;
+    double distance = 0;
+    double energyStep = en/divisions;
+    //get distance to lose the energy step
+    while (en > 0.05) {
+    double stoppingPower = coefCalc.getStoppingPower(en, false);
+    distance += energyStep/stoppingPower;
+    en -= energyStep;
+    }
+    distance = distance /1000;
+  }
+  
   public void CalculateEM(Beam beam, Wedge wedge, CoefCalc coefCalc) { // also pass in crystal dimensions
     // Just to be clear these are all dose of the exposed volume
  //   testingXFELQuick(beam, coefCalc);
+    
+    //get a CSDA range for any given electron energy
+ //   getCSDArange(coefCalc);
     
     
     double wavelength = getWavelength(beam);

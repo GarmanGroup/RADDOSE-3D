@@ -696,7 +696,7 @@ public class CrystalPolyhedron extends Crystal {
     double pixelsPerMicron = setCryoPPM(beam, maxPEDistance, xCryst, yCryst, zCryst);
 
     //test
-//    pixelsPerMicron = 1.6;
+//    pixelsPerMicron = 20;
     
     int extraVoxels = getExtraVoxels(maxPEDistance, pixelsPerMicron); // the extra voxels to add on each end
     
@@ -1965,6 +1965,8 @@ public class CrystalPolyhedron extends Crystal {
       point = solvePolarisationEquationForAngle(angle, 1, beta) / solvePolarisationEquationForAngle(0, 1, beta);
       sumPoint = point * weight * degreeOfPolarisation;
       weightedAveragePoint[i] = Math.round((1000 * sumPoint)) + (1000 * (1-(weight*degreeOfPolarisation))); //second part is the non-polarised parts
+      
+   //   weightedAveragePoint[i] = 1000;
       
     }
      return weightedAveragePoint;

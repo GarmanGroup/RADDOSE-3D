@@ -50,7 +50,7 @@ public class ExperimentYielder implements Output {
         final int j, final int k, final double addedDose,
         final double totalDose, final double fluence,
         final double relativeDiffractionEfficiency,
-        final double absorbedEnergy, final double elastic) {
+        final double absorbedEnergy, final double elastic, final double anglecount) {
       // Nothing to observe.
     }
 

@@ -52,7 +52,7 @@ public interface ExposeObserver {
   public void exposureObservation(int wedgeImage, int i, int j, int k,
       double addedDose, double totalDose, double fluence,
       double relativeDiffractionEfficiency,
-      double absorbedEnergy, double elastic);
+      double absorbedEnergy, double elastic, double anglecount);
 
   /**
    * Completion of an exposure at a particular angle.
