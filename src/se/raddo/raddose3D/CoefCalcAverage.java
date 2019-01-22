@@ -301,5 +301,11 @@ public class CoefCalcAverage extends CoefCalc {
     // TODO Auto-generated method stub
     
   }
+
+  @Override
+  public double getGOSInel() {
+    // TODO Auto-generated method stub
+    return 0;
+  }
   
 }

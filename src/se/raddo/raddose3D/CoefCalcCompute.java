@@ -343,11 +343,6 @@ public class CoefCalcCompute extends CoefCalc {
     density = mass * MASS_TO_CELL_VOLUME / (cellVolume * UNITSPERMILLIUNIT);
  //   System.out.println("Test");
     
-    
-    //testing stuff
-    double one = getFnought(100000);
-    double two = FnoughtTwo(100000, 1.65);
-    System.out.println("Test");
   }
   
   /**
@@ -3487,7 +3482,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
   }
   
   public double longitudinalDCS(double W, double Q, double E, double a) {
-    //Qk = Uk for bound shells, Qk = 0 for the plasma
+    //Qk = Uk for bound shells, Qk = 0 for the plasma - Actually I think Qk = Qcb = Wcb;
     int[] shells = {2, 8, 18, 32};
     double elementaryCharge = 4.80320425E-10; //units = esu = g^0.5 cm^1.5 s^-1
     double m = 9.10938356E-31; // in Kg
@@ -3599,21 +3594,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     return sumDCS;
   }
   
-  public double getpDisW(double E, double W, double a, Element e, int i) {
-    double Uk = getShellBinding(i, e)*1000;
-    //get Wk
-    double Wk = getWkMolecule(a, e, i);
-    //modify Wk
-    double Wak = getWak(E, Wk, Uk);
-    double Qak = getQak(E, Wk, Uk);
-    double Wdis = 3*Wak - 2*Uk;
-    if (W >= Uk && W < Wdis) {
-      return 2/Math.pow(Wdis-Uk, 2);
-    }
-    else {
-      return 0;
-    }
-  }
+
   
   public double getQak(double E, double Wk, double Uk) {
     if (E > 3*Wk - 2*Uk) {
@@ -3775,5 +3756,238 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     double a = Math.pow(Vo/(Vo+m*csquared), 2);
     double Fminus = 1+ Math.pow(W/(Edash-W), 2) - W/(Edash-W) + a*(W/(Edash-W) + Math.pow(W, 2)/Math.pow(E, 2));
     return Fminus;
+  }
+  
+  public double integrateSigmaLongn(double E, int n, double a) {
+    int[] shells = {2, 8, 18, 32};
+    double elementaryCharge = 4.80320425E-10; //units = esu = g^0.5 cm^1.5 s^-1
+    double m = 9.10938356E-31; // in Kg
+    double c = 299792458;
+    double csquared = c*c;  // (m/s)^2
+    double Vo = (E/1000) * Beam.KEVTOJOULES;
+    double betaSquared = 1- Math.pow(m*csquared/(Vo + m*csquared), 2);
+    double vSquared = betaSquared * csquared;
+    double constant = 2*Math.PI*(Math.pow(elementaryCharge, 4)/1E18)/(m*vSquared); //m^2
+    
+    
+    double sumfcb = 0, sumDCS = 0;
+    for (Element e: this.presentElements) {
+      sumfcb += getNumValenceElectrons(e)[0] * totalAtoms(e);
+      //get number of shells
+      int[] electrons = getNumValenceElectrons(e);
+      int numInnerShells = electrons[1];
+      for (int i = 0; i < numInnerShells; i++) {
+        int fk = shells[i];
+        double Wk = getWkMolecule(a, e, i);
+        double Uk = getShellBinding(i, e)*1000;
+        double Wak = getWak(E, Wk, Uk);
+        double Qak = getQak(E, Wk, Uk);
+        double Qminus = getQminusModified(E, Wak);
+        //do the integral here
+        double integral = integrateDist(E, Uk, n, i, e, a);
+        sumDCS += totalAtoms(e)*fk * Math.log((Qak/Qminus)*(((Qminus/1000)*Beam.KEVTOJOULES+2*m*csquared)/((Qak/1000)*Beam.KEVTOJOULES+2*m*csquared))) * integral;
+      }
+    }
+    //and now the plasmon stuff
+ //   double Qak = 0, Uk = 0;
+    double Wcb = getWcbAll();
+    double Qcb = Wcb;
+    double Qminus = getQminusModified(E, Wcb);
+   // double Wak = getWak(E, Wcb, Uk);
+    double integral = integrateDistPlasmon(E, n, Wcb);
+    //units below don't match up
+    sumDCS += sumfcb *  Math.log((Qcb/Qminus)*(((Qminus/1000)*Beam.KEVTOJOULES+2*m*csquared)/((Qcb/1000)*Beam.KEVTOJOULES+2*m*csquared))) * integral;
+    sumDCS *= constant;
+    return sumDCS;
+  }
+  
+  public double integrateSigmaTransn(double E, int n, double a) {
+    int[] shells = {2, 8, 18, 32};
+    double elementaryCharge = 4.80320425E-10; //units = esu = g^0.5 cm^1.5 s^-1
+    double m = 9.10938356E-31; // in Kg
+    double c = 299792458;
+    double csquared = c*c;  // (m/s)^2
+    double Vo = (E/1000) * Beam.KEVTOJOULES;
+    double betaSquared = 1- Math.pow(m*csquared/(Vo + m*csquared), 2);
+    double vSquared = betaSquared * csquared;
+    double constant = 2*Math.PI*(Math.pow(elementaryCharge, 4)/1E18)/(m*vSquared); //m^2
+    double deltaF = getDeltaF(E);
+    
+    double sumfcb = 0, sumDCS = 0;
+    for (Element e: this.presentElements) {
+      sumfcb += getNumValenceElectrons(e)[0] * totalAtoms(e);
+      //get number of shells
+      int[] electrons = getNumValenceElectrons(e);
+      int numInnerShells = electrons[1];
+      for (int i = 0; i < numInnerShells; i++) {
+        int fk = shells[i];
+        double Wk = getWkMolecule(a, e, i);
+        double Uk = getShellBinding(i, e)*1000;
+        double Wak = getWak(E, Wk, Uk);
+        //do the integral here
+        double integral = integrateDist(E, Uk, n, i, e, a);
+        sumDCS += totalAtoms(e)*fk * (Math.log(1/(1-betaSquared))-betaSquared-deltaF) * integral;
+      }
+    }
+    //and now the plasmon stuff
+ //   double Qak = 0, Uk = 0;
+    double Wcb = getWcbAll();
+   // double Wak = getWak(E, Wcb, Uk);
+    double integral = integrateDistPlasmon(E, n, Wcb);
+    //units below don't match up
+    sumDCS += sumfcb *  (Math.log(1/(1-betaSquared))-betaSquared-deltaF) * integral;
+    sumDCS *= constant;
+    return sumDCS;
+  }
+  
+  public double integrateSigmaClosen(double E, int n, double a) {
+    int[] shells = {2, 8, 18, 32};
+    double elementaryCharge = 4.80320425E-10; //units = esu = g^0.5 cm^1.5 s^-1
+    double m = 9.10938356E-31; // in Kg
+    double c = 299792458;
+    double csquared = c*c;  // (m/s)^2
+    double Vo = (E/1000) * Beam.KEVTOJOULES;
+    double betaSquared = 1- Math.pow(m*csquared/(Vo + m*csquared), 2);
+    double vSquared = betaSquared * csquared;
+    double constant = 2*Math.PI*(Math.pow(elementaryCharge, 4)/1E18)/(m*vSquared); //m^2
+    double deltaF = getDeltaF(E);
+    
+    double sumfcb = 0, sumDCS = 0;
+    for (Element e: this.presentElements) {
+      sumfcb += getNumValenceElectrons(e)[0] * totalAtoms(e);
+      //get number of shells
+      int[] electrons = getNumValenceElectrons(e);
+      int numInnerShells = electrons[1];
+      for (int i = 0; i < numInnerShells; i++) {
+        int fk = shells[i];
+        double Wk = getWkMolecule(a, e, i);
+        double Uk = getShellBinding(i, e)*1000;
+        double Wak = getWak(E, Wk, Uk);
+        double Qak = getQak(E, Wk, Uk);
+        //do the integral here
+        double integral = doCloseIntegral(E, n, Uk, Qak); // change this
+        sumDCS += totalAtoms(e)*fk * integral;
+      }
+    }
+    //and now the plasmon stuff
+ //   double Qak = 0, Uk = 0;
+    double Wcb = getWcbAll();
+    double Qcb = Wcb;
+    double Qminus = getQminusModified(E, Wcb);
+   // double Wak = getWak(E, Wcb, Uk);
+    double integral = doCloseIntegral(E, n, 0, Qcb); //do this properly 
+    sumDCS += sumfcb * integral;
+    sumDCS *= constant;
+    return sumDCS;
+  }
+  
+  public double integrateDist(double E, double Uk, int n, int i, Element e, double a) {
+    double Wmax = getEdash(E, Uk)/2;
+ //   int bins = 100;
+    double step = Wmax/Wbins;
+    double W = 0, previousY = 0, thisY = 0, sumIntegral = 0;
+    int count = 0;
+    while (W <= Wmax) {
+      thisY = Math.pow(W, n-1)*getpDisW(E, W, a, e, i);
+      if (count > 0) {
+        sumIntegral += step*((thisY+previousY)/2);
+      }
+      count += 1;
+      W += step;
+      previousY = thisY; 
+    }
+    
+    return sumIntegral;
+  }
+  
+  public double getpDisW(double E, double W, double a, Element e, int i) {
+    double Uk = getShellBinding(i, e)*1000;
+    //get Wk
+    double Wk = getWkMolecule(a, e, i);
+    //modify Wk
+    double Wak = getWak(E, Wk, Uk);
+    double Wdis = 3*Wak - 2*Uk;
+    if (W >= Uk && W < Wdis) {
+      return 2/Math.pow(Wdis-Uk, 2);
+    }
+    else {
+      return 0;
+    }
+  }
+  
+  public double integrateDistPlasmon(double E, double n, double Wcb) {
+    double Uk = 0;
+    double Wmax = getEdash(E, Uk)/2;
+ //   int bins = 100;
+    double step = Wmax/Wbins;
+    double W = 0, previousY = 0, thisY = 0, sumIntegral = 0;
+    int count = 0;
+    while (W <= Wmax) {
+      thisY = Math.pow(W, n-1)*getpDisWPlasmon(E, W, Wcb); //this should be Dirac delta function bit I'm going to keep this for now
+      if (count > 0) {
+        sumIntegral += step*((thisY+previousY)/2);
+      }
+      count += 1;
+      W += step;
+      previousY = thisY; 
+    }
+    
+    return sumIntegral;
+  }
+  
+  public double getpDisWPlasmon(double E,  double W, double Wcb) {
+    double Uk = 0;
+    double Wak = getWak(E, Wcb, Uk);
+    double Wdis = 3*Wak - 2*Uk;
+    if (W >= Uk && W < Wdis) {
+      return 2/Math.pow(Wdis-Uk, 2);
+    }
+    else {
+      return 0;
+    }
+  }
+  
+  public double doCloseIntegral(double E, double n, double Uk, double Qak) {
+    double Wmax = getEdash(E, Uk)/2;
+    double a = getClosea(E);
+    double W = Qak;  
+    double step = Wmax/Wbins;
+    double previousY = 0, thisY = 0, sumIntegral = 0;
+    int count = 0;
+    while (W <= Wmax) {
+      if (n == 0) {
+        thisY = -1/W + 1/(E-W) + (((1-a)/E)*Math.log((E-W)/W)) + a*W/Math.pow(E, 2);
+      }
+      else if (n == 1) {
+        thisY = Math.log(W) + E/(E-W) + ((2-a)*Math.log(E-W)) + (a*Math.pow(W,2))/(2*Math.pow(E, 2));
+      }
+      else if (n == 2) {
+        thisY = (2-a)*W + (2*Math.pow(E, 2)-Math.pow(W, 2))/(E-W) + ((3-a)*E*Math.log(E-W)) + (a*Math.pow(W,3))/(3*Math.pow(E, 2));
+      }
+      if (count > 0) {
+        sumIntegral += step*((thisY+previousY)/2);
+      }
+      count += 1;
+      W += step;
+      previousY = thisY; 
+    }
+    return sumIntegral;
+  }
+  
+  public double getClosea(double E) {
+    double m = 9.10938356E-31; // in Kg
+    double c = 299792458;
+    double csquared = c*c;  // (m/s)^2
+    double Vo = (E/1000) * Beam.KEVTOJOULES;
+    double a = Math.pow(Vo/(Vo+m*csquared), 2);
+    return a;
+  }
+  
+  @Override
+  public double getGOSInel() {
+    
+    //so this is going to return the inelastic cross section calcualted by the GOS model
+    //then test stopping power and straggling paramter
+    return 0;
   }
 }

@@ -211,6 +211,9 @@ public class MicroED {
     //get a CSDA range for any given electron energy
  //   getCSDArange(coefCalc);
     
+    //getGOSinel
+    double test = coefCalc.getGOSInel();
+    
     
     double wavelength = getWavelength(beam);
     double resRough = getResolutionRough(wavelength);

@@ -170,4 +170,6 @@ public abstract class CoefCalc {
   public abstract double getTotalAtomsInCrystal(double crystalVolume);
   
   public abstract void getDifferentialInlasticxSection(double electronEnergy);
+  
+  public abstract double getGOSInel();
 }
