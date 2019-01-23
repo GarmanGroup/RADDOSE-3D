@@ -3597,20 +3597,20 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
 
   
   public double getQak(double E, double Wk, double Uk) {
-    if (E > 3*Wk - 2*Uk) {
+    if (E*1000 > 3*Wk - 2*Uk) {
       return Uk;
     }
     else {
-      return Uk * (E/(3*Wk-2*Uk));
+      return Uk * (E*1000/(3*Wk-2*Uk));
     }
   }
   
   public double getWak(double E, double Wk, double Uk) {
-    if (E > 3*Wk - 2*Uk) {
+    if (E*1000 > 3*Wk - 2*Uk) {
       return Wk;
     }
     else {
-      return (E+2*Uk)/3;
+      return (E*1000+2*Uk)/3;
     }
   }
   
@@ -3735,16 +3735,19 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     return deltaF;
   }
   
-  public double getQminusModified(double E, double Wak) {
+  public double getQminusModified(double EkeV, double WakeV) {
     double m = 9.10938356E-31; // in Kg
     double c = 299792458;
     double csquared = c*c;  // (m/s)^2
-    double Qminus = Math.pow(Math.pow(Math.pow(E*(E+2*m*csquared), 0.5)-Math.pow((E-Wak)*(E-Wak+2*m*csquared), 0.5), 2)+Math.pow(m*csquared, 2)-m*csquared, 0.5);  
+    //sort out units here
+    double E = EkeV*Beam.KEVTOJOULES;
+    double Wak = (WakeV/1000)*Beam.KEVTOJOULES;
+    double Qminus = Math.pow(Math.pow(Math.pow(E*(E+2*m*csquared), 0.5)-Math.pow((E-Wak)*(E-Wak+2*m*csquared), 0.5), 2)+Math.pow(m*csquared, 2), 0.5)-m*csquared;  
     return Qminus;
   }
   
   public double getEdash(double E, double Uk) {
-    return E+Uk;
+    return E+Uk/1000; //get units right here
   }
   
   public double getFMinusClose(double E, double W, double Uk) {
@@ -3882,13 +3885,18 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
   }
   
   public double integrateDist(double E, double Uk, int n, int i, Element e, double a) {
-    double Wmax = getEdash(E, Uk)/2;
+    double Wmax = 1000*getEdash(E, Uk)/2;
  //   int bins = 100;
     double step = Wmax/Wbins;
     double W = 0, previousY = 0, thisY = 0, sumIntegral = 0;
     int count = 0;
     while (W <= Wmax) {
+      if (W == 0) {
+        thisY = 0;
+      }
+      else {
       thisY = Math.pow(W, n-1)*getpDisW(E, W, a, e, i);
+      }
       if (count > 0) {
         sumIntegral += step*((thisY+previousY)/2);
       }
@@ -3915,15 +3923,20 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     }
   }
   
-  public double integrateDistPlasmon(double E, double n, double Wcb) {
+  public double integrateDistPlasmon(double E, int n, double Wcb) {
     double Uk = 0;
-    double Wmax = getEdash(E, Uk)/2;
+    double Wmax = 1000*getEdash(E, Uk)/2;
  //   int bins = 100;
     double step = Wmax/Wbins;
     double W = 0, previousY = 0, thisY = 0, sumIntegral = 0;
     int count = 0;
     while (W <= Wmax) {
-      thisY = Math.pow(W, n-1)*getpDisWPlasmon(E, W, Wcb); //this should be Dirac delta function bit I'm going to keep this for now
+      if (W == 0) {
+        thisY = 0;
+      }
+      else {
+        thisY = Math.pow(W, n-1)*getpDisWPlasmon(E, W, Wcb); //this should be Dirac delta function bit I'm going to keep this for now
+      }
       if (count > 0) {
         sumIntegral += step*((thisY+previousY)/2);
       }
@@ -3947,47 +3960,53 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     }
   }
   
-  public double doCloseIntegral(double E, double n, double Uk, double Qak) {
-    double Wmax = getEdash(E, Uk)/2;
+  public double doCloseIntegral(double E, int n, double Uk, double Qak) {
+    double Wmax = 1000*getEdash(E, Uk)/2;
     double a = getClosea(E);
-    double W = Qak;  
-    double step = Wmax/Wbins;
-    double previousY = 0, thisY = 0, sumIntegral = 0;
-    int count = 0;
-    while (W <= Wmax) {
-      if (n == 0) {
-        thisY = -1/W + 1/(E-W) + (((1-a)/E)*Math.log((E-W)/W)) + a*W/Math.pow(E, 2);
-      }
-      else if (n == 1) {
-        thisY = Math.log(W) + E/(E-W) + ((2-a)*Math.log(E-W)) + (a*Math.pow(W,2))/(2*Math.pow(E, 2));
-      }
-      else if (n == 2) {
-        thisY = (2-a)*W + (2*Math.pow(E, 2)-Math.pow(W, 2))/(E-W) + ((3-a)*E*Math.log(E-W)) + (a*Math.pow(W,3))/(3*Math.pow(E, 2));
-      }
-      if (count > 0) {
-        sumIntegral += step*((thisY+previousY)/2);
-      }
-      count += 1;
-      W += step;
-      previousY = thisY; 
-    }
+    double sumIntegral = 0;
+    sumIntegral = solveCloseAnalytical(Wmax, 0, E, a) - solveCloseAnalytical(Qak, 0, E, a);
     return sumIntegral;
+  }
+  
+  public double solveCloseAnalytical(double Win, int n, double Energy, double a) {
+    double E = Energy*Beam.KEVTOJOULES;
+    double W = (Win/1000) * Beam.KEVTOJOULES;
+    double answer = 0;
+    if (n == 0) {
+      answer = -1/W + 1/(E-W) + (((1-a)/E)*Math.log((E-W)/W)) + a*W/Math.pow(E, 2);
+    }
+    else if (n == 1) {
+      answer = Math.log(W) + E/(E-W) + ((2-a)*Math.log(E-W)) + (a*Math.pow(W,2))/(2*Math.pow(E, 2));
+    }
+    else if (n == 2) {
+      answer = (2-a)*W + (2*Math.pow(E, 2)-Math.pow(W, 2))/(E-W) + ((3-a)*E*Math.log(E-W)) + (a*Math.pow(W,3))/(3*Math.pow(E, 2));
+    }
+    return answer;
   }
   
   public double getClosea(double E) {
     double m = 9.10938356E-31; // in Kg
     double c = 299792458;
     double csquared = c*c;  // (m/s)^2
-    double Vo = (E/1000) * Beam.KEVTOJOULES;
+    double Vo = (E) * Beam.KEVTOJOULES;
     double a = Math.pow(Vo/(Vo+m*csquared), 2);
     return a;
   }
   
   @Override
   public double getGOSInel() {
+    //so this is going to return the inelastic cross section calculated by the GOS model
+    double E = 100; //keV
+    double a = 1.65;  //this should be adjusted properly
+    int n = 0;
+    double sigmaTrans = integrateSigmaTransn(E, n, a);
+    double sigmaLong = integrateSigmaLongn(E, n, a);
+    double sigmaClose = integrateSigmaClosen(E, n, a);
+    double sigmaTot = (sigmaTrans + sigmaLong + sigmaClose)*1E18; //nm^2
     
-    //so this is going to return the inelastic cross section calcualted by the GOS model
-    //then test stopping power and straggling paramter
-    return 0;
+    double sigmaInel = (sigmaTot + (density/1E21) * AVOGADRO_NUM) / molecularWeight;
+    double lambda = 1/sigmaInel; //nm
+    //then test stopping power and straggling parameter
+    return lambda;
   }
 }
