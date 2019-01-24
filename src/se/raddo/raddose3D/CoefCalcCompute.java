@@ -2824,6 +2824,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     double plasmaFrequency = 28.816 * Math.pow(density*(sumZ/molecularWeight), 0.5); //equals (h/2pi)*omegap //this is in eV
     return plasmaFrequency; //in eV
     */
+    
     double hbarSqaured = Math.pow(6.62607004E-34/(2*Math.PI), 2); // m^4 kg^2  s^-2
     double m = 9.10938356E-31; //kg
     double eSquared = Math.pow(4.80320425E-10,2)/1000; //units = esu = Kg^1 cm^3 s^-2
@@ -2838,6 +2839,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     plasmaEnergy = (plasmaEnergy/Beam.KEVTOJOULES)*1000;
     double Wcb = Math.pow(sumfcb/sumZ, 0.5) * plasmaEnergy;
     return Wcb; //eV
+    
   }
   
   public int[] getNumValenceElectrons(Element e) {
@@ -3080,10 +3082,12 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     for (Element e: this.presentElements) {
       NZ += (e.getAtomicNumber()*totalAtoms(e)) / (cellVolume/1E24) ; //electrons. cm^-3
       sumZ += e.getAtomicNumber() * totalAtoms(e);
+     // if (e.getAtomicNumber() != 1) {
       sumfcb += getNumValenceElectrons(e)[0] * totalAtoms(e);
+    //  }
     }
       plasmaEnergy =  Math.pow(4*Math.PI*hbarSqaured*NZ*eSquared/m,0.5); //J;
-    
+     // plasmaEnergy = getPlasmaFrequency();
     plasmaEnergy = (plasmaEnergy/Beam.KEVTOJOULES)*1000;
     double Wcb = Math.pow(sumfcb/sumZ, 0.5) * plasmaEnergy;
     return Wcb; //eV
@@ -3767,7 +3771,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     double m = 9.10938356E-31; // in Kg
     double c = 299792458;
     double csquared = c*c;  // (m/s)^2
-    double Vo = (E/1000) * Beam.KEVTOJOULES;
+    double Vo = E * Beam.KEVTOJOULES;
     double betaSquared = 1- Math.pow(m*csquared/(Vo + m*csquared), 2);
     double vSquared = betaSquared * csquared;
     double constant = 2*Math.PI*(Math.pow(elementaryCharge, 4)/1E18)/(m*vSquared); //m^2
@@ -3775,12 +3779,20 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     
     double sumfcb = 0, sumDCS = 0;
     for (Element e: this.presentElements) {
-      sumfcb += getNumValenceElectrons(e)[0] * totalAtoms(e);
+   //   if (e.getAtomicNumber() != 1) {
+        sumfcb += getNumValenceElectrons(e)[0] * totalAtoms(e);
+   //   }
       //get number of shells
       int[] electrons = getNumValenceElectrons(e);
       int numInnerShells = electrons[1];
+   //   if (e.getAtomicNumber() == 1) {
+   //     numInnerShells = 1;
+   //   }
       for (int i = 0; i < numInnerShells; i++) {
         int fk = shells[i];
+    //    if (e.getAtomicNumber() == 1) {
+    //      fk = 1;
+    //    }
         double Wk = getWkMolecule(a, e, i);
         double Uk = getShellBinding(i, e)*1000;
         double Wak = getWak(E, Wk, Uk);
@@ -3788,7 +3800,8 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
         double Qminus = getQminusModified(E, Wak);
         //do the integral here
         double integral = integrateDist(E, Uk, n, i, e, a);
-        sumDCS += totalAtoms(e)*fk * Math.log((Qak/Qminus)*(((Qminus/1000)*Beam.KEVTOJOULES+2*m*csquared)/((Qak/1000)*Beam.KEVTOJOULES+2*m*csquared))) * integral;
+     //   fk = 0;
+        sumDCS += totalAtoms(e)*fk * Math.log(((Qak/1000)*Beam.KEVTOJOULES/Qminus)*((Qminus+2*m*csquared)/((Qak/1000)*Beam.KEVTOJOULES+2*m*csquared))) * integral;
       }
     }
     //and now the plasmon stuff
@@ -3799,7 +3812,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
    // double Wak = getWak(E, Wcb, Uk);
     double integral = integrateDistPlasmon(E, n, Wcb);
     //units below don't match up
-    sumDCS += sumfcb *  Math.log((Qcb/Qminus)*(((Qminus/1000)*Beam.KEVTOJOULES+2*m*csquared)/((Qcb/1000)*Beam.KEVTOJOULES+2*m*csquared))) * integral;
+    sumDCS += sumfcb *  Math.log(((Qcb/1000)*Beam.KEVTOJOULES/Qminus)*((Qminus+2*m*csquared)/((Qcb/1000)*Beam.KEVTOJOULES+2*m*csquared))) * integral;
     sumDCS *= constant;
     return sumDCS;
   }
@@ -3810,7 +3823,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     double m = 9.10938356E-31; // in Kg
     double c = 299792458;
     double csquared = c*c;  // (m/s)^2
-    double Vo = (E/1000) * Beam.KEVTOJOULES;
+    double Vo = E * Beam.KEVTOJOULES;
     double betaSquared = 1- Math.pow(m*csquared/(Vo + m*csquared), 2);
     double vSquared = betaSquared * csquared;
     double constant = 2*Math.PI*(Math.pow(elementaryCharge, 4)/1E18)/(m*vSquared); //m^2
@@ -3829,7 +3842,8 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
         double Wak = getWak(E, Wk, Uk);
         //do the integral here
         double integral = integrateDist(E, Uk, n, i, e, a);
-        sumDCS += totalAtoms(e)*fk * (Math.log(1/(1-betaSquared))-betaSquared-deltaF) * integral;
+        fk = 0;
+        sumDCS += totalAtoms(e)* fk * (Math.log(1/(1-betaSquared))-betaSquared-deltaF) * integral;
       }
     }
     //and now the plasmon stuff
@@ -3849,10 +3863,10 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     double m = 9.10938356E-31; // in Kg
     double c = 299792458;
     double csquared = c*c;  // (m/s)^2
-    double Vo = (E/1000) * Beam.KEVTOJOULES;
+    double Vo = E * Beam.KEVTOJOULES;
     double betaSquared = 1- Math.pow(m*csquared/(Vo + m*csquared), 2);
     double vSquared = betaSquared * csquared;
-    double constant = 2*Math.PI*(Math.pow(elementaryCharge, 4)/1E18)/(m*vSquared); //m^2
+    double constant = 2*Math.PI*(Math.pow(elementaryCharge, 4)/1E18)/(m*vSquared); //Kg m^4 s^-2
     double deltaF = getDeltaF(E);
     
     double sumfcb = 0, sumDCS = 0;
@@ -3869,6 +3883,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
         double Qak = getQak(E, Wk, Uk);
         //do the integral here
         double integral = doCloseIntegral(E, n, Uk, Qak); // change this
+        fk = 0;
         sumDCS += totalAtoms(e)*fk * integral;
       }
     }
@@ -3885,9 +3900,9 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
   }
   
   public double integrateDist(double E, double Uk, int n, int i, Element e, double a) {
-    double Wmax = 1000*getEdash(E, Uk)/2;
+    double Wmax = (getEdash(E, Uk)/2)*Beam.KEVTOJOULES;
  //   int bins = 100;
-    double step = Wmax/Wbins;
+    double step = Wmax/(Wbins*10);
     double W = 0, previousY = 0, thisY = 0, sumIntegral = 0;
     int count = 0;
     while (W <= Wmax) {
@@ -3915,8 +3930,12 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     //modify Wk
     double Wak = getWak(E, Wk, Uk);
     double Wdis = 3*Wak - 2*Uk;
+    //change values to J here
+    Uk = (Uk/1000)*Beam.KEVTOJOULES;
+    Wdis = (Wdis/1000)*Beam.KEVTOJOULES;
+   // double W = (Win/1000)*Beam.KEVTOJOULES;
     if (W >= Uk && W < Wdis) {
-      return 2/Math.pow(Wdis-Uk, 2);
+      return (2/Math.pow(Wdis-Uk, 2)) * (Wdis-W);
     }
     else {
       return 0;
@@ -3925,11 +3944,13 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
   
   public double integrateDistPlasmon(double E, int n, double Wcb) {
     double Uk = 0;
-    double Wmax = 1000*getEdash(E, Uk)/2;
+    double Wmax = (getEdash(E, Uk)/2)*Beam.KEVTOJOULES;
  //   int bins = 100;
-    double step = Wmax/Wbins;
-    double W = 0, previousY = 0, thisY = 0, sumIntegral = 0;
-    int count = 0;
+ //   double step = Wmax/Wbins;
+    double previousY = 0, thisY = 0, sumIntegral = 0;
+ //   int count = 0;
+    double W = (Wcb/1000) * Beam.KEVTOJOULES;
+    /*
     while (W <= Wmax) {
       if (W == 0) {
         thisY = 0;
@@ -3944,6 +3965,13 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
       W += step;
       previousY = thisY; 
     }
+    */
+    if (W > 0 && W < Wmax) {
+      sumIntegral = Math.pow(W, n-1);
+    }
+    else {
+      sumIntegral = 0;
+    }
     
     return sumIntegral;
   }
@@ -3952,6 +3980,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     double Uk = 0;
     double Wak = getWak(E, Wcb, Uk);
     double Wdis = 3*Wak - 2*Uk;
+    Wdis = (Wdis/1000)*Beam.KEVTOJOULES;
     if (W >= Uk && W < Wdis) {
       return 2/Math.pow(Wdis-Uk, 2);
     }
@@ -4001,10 +4030,11 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     int n = 0;
     double sigmaTrans = integrateSigmaTransn(E, n, a);
     double sigmaLong = integrateSigmaLongn(E, n, a);
+   // sigmaLong= 0;
     double sigmaClose = integrateSigmaClosen(E, n, a);
     double sigmaTot = (sigmaTrans + sigmaLong + sigmaClose)*1E18; //nm^2
-    
-    double sigmaInel = (sigmaTot + (density/1E21) * AVOGADRO_NUM) / molecularWeight;
+    double sigmaInel = sigmaTot / (cellVolume/1000); //nm^-1
+ //   double sigmaInel = (sigmaTot * (density/1E21) * AVOGADRO_NUM) / molecularWeight;
     double lambda = 1/sigmaInel; //nm
     //then test stopping power and straggling parameter
     return lambda;
