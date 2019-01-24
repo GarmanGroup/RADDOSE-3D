@@ -288,6 +288,7 @@ public class CoefCalcCompute extends CoefCalc {
   
   public TreeMap<Double, Double> dsimgaOverdW;
   public final int Wbins = 1000;
+  public final double fcbCutoff = 0.0;
   
   public boolean isEM;
 
@@ -2882,7 +2883,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
   @Override
   public void getDifferentialInlasticxSection(double electronEnergy){
  // public void getDifferentialInlasticxSection(double electronEnergy){
-    double[] test = checkMeanI(electronEnergy);
+  //  double[] test = checkMeanI(electronEnergy);
     
     
     
@@ -3082,9 +3083,18 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     for (Element e: this.presentElements) {
       NZ += (e.getAtomicNumber()*totalAtoms(e)) / (cellVolume/1E24) ; //electrons. cm^-3
       sumZ += e.getAtomicNumber() * totalAtoms(e);
-     // if (e.getAtomicNumber() != 1) {
-      sumfcb += getNumValenceElectrons(e)[0] * totalAtoms(e);
-    //  }
+      if (e.getAtomicNumber() != 8) {
+   //     sumfcb += getNumValenceElectrons(e)[0] * totalAtoms(e);
+      }
+      int[] electrons = getNumValenceElectrons(e);
+      int numInnerShells = electrons[1];
+      for (int i = 0; i <= numInnerShells; i++) {
+        double Uk = getShellBinding(i, e)*1000;
+        if (Uk < fcbCutoff) {
+          sumfcb += electrons[0] * totalAtoms(e);
+        }
+      }
+      
     }
       plasmaEnergy =  Math.pow(4*Math.PI*hbarSqaured*NZ*eSquared/m,0.5); //J;
      // plasmaEnergy = getPlasmaFrequency();
@@ -3373,6 +3383,18 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
   }
   */
   
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   //start again!!!!!
   //I'll need to go through adjusting all the units and putting stuff in joules I think!!!
   
@@ -3429,31 +3451,67 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
         sumZ += elem.getAtomicNumber() * totalAtoms(elem);
     }
     int fk = shells[shellIndex];
+  //  if (e.getAtomicNumber() == 8 && shellIndex == 1) {
+   //   fk = 6;
+   // }
+    int[] electrons = getNumValenceElectrons(e);
+    if (shellIndex == electrons[1]) { //if the shell is a valence shell
+      fk = electrons[0];
+    }
     double plasmaEnergy = getPlasmaEnergyAll();
     double Wk = Math.pow(Math.pow(a * getShellBinding(shellIndex, e)*1000,2) + (2/3)*((fk*totalAtoms(e))/(sumZ))*Math.pow(plasmaEnergy, 2), 0.5);
     //I am really guessing the Lorenz Lorentz sumFk sum Z but just a hunch
     return Wk;
   }
   
-  public double[] checkMeanI(double electronEnergy) {
+  public double[] checkMeanI(double electronEnergy, double a) {
     int[] shells = {2, 8, 18, 32};
-    double a = 1.65; //just a start for a test
+    //just a start for a test
     double ZlnI = getZlnI(electronEnergy);
     double sumfcb = 0;
     //get sumfk*ln(Wk)
     double sumfklnWk = 0;
     for (Element e: this.presentElements) {
-      sumfcb += getNumValenceElectrons(e)[0] * totalAtoms(e);
+      if (e.getAtomicNumber() != 8) {
+ //       sumfcb += getNumValenceElectrons(e)[0] * totalAtoms(e);
+      }
       //get number of shells
       int[] electrons = getNumValenceElectrons(e);
       int numInnerShells = electrons[1];
-      for (int i = 0; i < numInnerShells; i++) {
+      if (e.getAtomicNumber() == 8) {
+   //     numInnerShells = 2;
+      }
+   //   for (int i = 0; i < numInnerShells; i++) {
+      for (int i = 0; i <= numInnerShells; i++) {
         int fk = shells[i];
-        sumfklnWk += totalAtoms(e)*fk * Math.log(getWkMolecule(a, e, i)); //total atoms as my unit cell is one molecule
+        /*
+        if (e.getAtomicNumber() == 8 && i == 1) {
+          fk = 6;
+        }
+        */
+        
+        if (i == numInnerShells) { //then this is the valence shell
+          double Uk = getShellBinding(i, e)*1000;
+          if (Uk > fcbCutoff) {
+            fk = electrons[0];
+          }
+          else {
+            sumfcb += electrons[0]; //if below the cutoff energy then consider it in the conduction band
+            fk = 0;
+          }
+        }
+        double Wk = getWkMolecule(a, e, i);
+        if (Wk > 0) {
+          sumfklnWk += totalAtoms(e)*fk * Math.log(Wk); //total atoms as my unit cell is one molecule
+        }
       }
     }
     //get fcb*ln(Wcb)
-    double fcblnWcb = sumfcb * Math.log(getWcbAll());
+    double fcblnWcb = 0;
+    double Wcb = getWcbAll();
+    if (Wcb > 0.0) {
+      fcblnWcb = sumfcb * Math.log(Wcb);
+    }
     double RHS = fcblnWcb + sumfklnWk;
     double[] both = {ZlnI, RHS};
     return both;
@@ -3482,6 +3540,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
       meanlnI +=  molWeightFraction * (Z/A) * Math.log(Jstar);
     }
     meanlnI = meanlnI/(sumZ/sumA); 
+    double I = Math.exp(meanlnI);
     return (sumZ * meanlnI);
   }
   
@@ -3779,29 +3838,39 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     
     double sumfcb = 0, sumDCS = 0;
     for (Element e: this.presentElements) {
-   //   if (e.getAtomicNumber() != 1) {
-        sumfcb += getNumValenceElectrons(e)[0] * totalAtoms(e);
-   //   }
+      if (e.getAtomicNumber() != 8) {
+    //    sumfcb += getNumValenceElectrons(e)[0] * totalAtoms(e);
+      }
       //get number of shells
       int[] electrons = getNumValenceElectrons(e);
       int numInnerShells = electrons[1];
-   //   if (e.getAtomicNumber() == 1) {
-   //     numInnerShells = 1;
-   //   }
-      for (int i = 0; i < numInnerShells; i++) {
+      if (e.getAtomicNumber() == 8) {
+     //   numInnerShells = 2;
+      }
+     // for (int i = 0; i < numInnerShells; i++) {
+      for (int i = 0; i <= numInnerShells; i++) {
         int fk = shells[i];
-    //    if (e.getAtomicNumber() == 1) {
-    //      fk = 1;
-    //    }
+        if (e.getAtomicNumber() == 1 && i == 1) {
+      //    fk = 6;
+        }
+        if (i == numInnerShells) { // this is a valence
+          fk = electrons[0];
+        }
         double Wk = getWkMolecule(a, e, i);
-        double Uk = getShellBinding(i, e)*1000;
-        double Wak = getWak(E, Wk, Uk);
-        double Qak = getQak(E, Wk, Uk);
-        double Qminus = getQminusModified(E, Wak);
-        //do the integral here
-        double integral = integrateDist(E, Uk, n, i, e, a);
-     //   fk = 0;
-        sumDCS += totalAtoms(e)*fk * Math.log(((Qak/1000)*Beam.KEVTOJOULES/Qminus)*((Qminus+2*m*csquared)/((Qak/1000)*Beam.KEVTOJOULES+2*m*csquared))) * integral;
+        if (Wk > 0) {
+          double Uk = getShellBinding(i, e)*1000;
+          if (Uk < fcbCutoff) {
+            sumfcb += fk * totalAtoms(e);
+            fk = 0;
+          }
+          double Wak = getWak(E, Wk, Uk);
+          double Qak = getQak(E, Wk, Uk);
+          double Qminus = getQminusModified(E, Wak);
+          //do the integral here
+          double integral = integrateDist(E, Uk, n, i, e, a);
+       //   fk = 0;
+          sumDCS += totalAtoms(e)*fk * Math.log(((Qak/1000)*Beam.KEVTOJOULES/Qminus)*((Qminus+2*m*csquared)/((Qak/1000)*Beam.KEVTOJOULES+2*m*csquared))) * integral;
+        }
       }
     }
     //and now the plasmon stuff
@@ -3812,7 +3881,9 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
    // double Wak = getWak(E, Wcb, Uk);
     double integral = integrateDistPlasmon(E, n, Wcb);
     //units below don't match up
-    sumDCS += sumfcb *  Math.log(((Qcb/1000)*Beam.KEVTOJOULES/Qminus)*((Qminus+2*m*csquared)/((Qcb/1000)*Beam.KEVTOJOULES+2*m*csquared))) * integral;
+    if (Wcb > 0) {
+      sumDCS += sumfcb *  Math.log(((Qcb/1000)*Beam.KEVTOJOULES/Qminus)*((Qminus+2*m*csquared)/((Qcb/1000)*Beam.KEVTOJOULES+2*m*csquared))) * integral;
+    }
     sumDCS *= constant;
     return sumDCS;
   }
@@ -3831,20 +3902,39 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     
     double sumfcb = 0, sumDCS = 0;
     for (Element e: this.presentElements) {
-      sumfcb += getNumValenceElectrons(e)[0] * totalAtoms(e);
-      //get number of shells
-      int[] electrons = getNumValenceElectrons(e);
-      int numInnerShells = electrons[1];
-      for (int i = 0; i < numInnerShells; i++) {
-        int fk = shells[i];
-        double Wk = getWkMolecule(a, e, i);
+         if (e.getAtomicNumber() != 8) {
+   //   sumfcb += getNumValenceElectrons(e)[0] * totalAtoms(e);
+    }
+    //get number of shells
+    int[] electrons = getNumValenceElectrons(e);
+    int numInnerShells = electrons[1];
+    if (e.getAtomicNumber() == 8) {
+   //   numInnerShells = 2;
+    }
+  //  for (int i = 0; i < numInnerShells; i++) {
+    for (int i = 0; i <= numInnerShells; i++) {
+      int fk = shells[i];
+      if (e.getAtomicNumber() == 1 && i == 1) {
+ //       fk = 6;
+      }
+      if (i == numInnerShells) { // this is a valence
+        fk = electrons[0];
+      }
+      double Wk = getWkMolecule(a, e, i);
+      if (Wk > 0) {
         double Uk = getShellBinding(i, e)*1000;
+        if (Uk < fcbCutoff) {
+          sumfcb += fk * totalAtoms(e);
+          fk = 0;
+        }
         double Wak = getWak(E, Wk, Uk);
         //do the integral here
         double integral = integrateDist(E, Uk, n, i, e, a);
-        fk = 0;
+    //    fk = 0;
+        deltaF = 0;
         sumDCS += totalAtoms(e)* fk * (Math.log(1/(1-betaSquared))-betaSquared-deltaF) * integral;
       }
+    }
     }
     //and now the plasmon stuff
  //   double Qak = 0, Uk = 0;
@@ -3852,7 +3942,9 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
    // double Wak = getWak(E, Wcb, Uk);
     double integral = integrateDistPlasmon(E, n, Wcb);
     //units below don't match up
-    sumDCS += sumfcb *  (Math.log(1/(1-betaSquared))-betaSquared-deltaF) * integral;
+    if (Wcb > 0) {
+      sumDCS += sumfcb *  (Math.log(1/(1-betaSquared))-betaSquared-deltaF) * integral;
+    }
     sumDCS *= constant;
     return sumDCS;
   }
@@ -3867,25 +3959,42 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     double betaSquared = 1- Math.pow(m*csquared/(Vo + m*csquared), 2);
     double vSquared = betaSquared * csquared;
     double constant = 2*Math.PI*(Math.pow(elementaryCharge, 4)/1E18)/(m*vSquared); //Kg m^4 s^-2
-    double deltaF = getDeltaF(E);
     
     double sumfcb = 0, sumDCS = 0;
     for (Element e: this.presentElements) {
-      sumfcb += getNumValenceElectrons(e)[0] * totalAtoms(e);
-      //get number of shells
-      int[] electrons = getNumValenceElectrons(e);
-      int numInnerShells = electrons[1];
-      for (int i = 0; i < numInnerShells; i++) {
-        int fk = shells[i];
+         if (e.getAtomicNumber() != 8) {
+    //  sumfcb += getNumValenceElectrons(e)[0] * totalAtoms(e);
+    }
+    //get number of shells
+    int[] electrons = getNumValenceElectrons(e);
+    int numInnerShells = electrons[1];
+    if (e.getAtomicNumber() == 8) {
+    //  numInnerShells = 2;
+    }
+//    for (int i = 0; i < numInnerShells; i++) {
+    for (int i = 0; i <= numInnerShells; i++) {
+      int fk = shells[i];
+      if (e.getAtomicNumber() == 1 && i == 1) {
+   //     fk = 6;
+      }
+      if (i == numInnerShells) { // this is a valence
+        fk = electrons[0];
+      }
         double Wk = getWkMolecule(a, e, i);
+      if (Wk > 0) {
         double Uk = getShellBinding(i, e)*1000;
+        if (Uk < fcbCutoff) {
+          sumfcb += fk * totalAtoms(e);
+          fk = 0;
+        }
         double Wak = getWak(E, Wk, Uk);
         double Qak = getQak(E, Wk, Uk);
         //do the integral here
         double integral = doCloseIntegral(E, n, Uk, Qak); // change this
-        fk = 0;
+     //   fk = 0;
         sumDCS += totalAtoms(e)*fk * integral;
       }
+    }
     }
     //and now the plasmon stuff
  //   double Qak = 0, Uk = 0;
@@ -3894,7 +4003,9 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     double Qminus = getQminusModified(E, Wcb);
    // double Wak = getWak(E, Wcb, Uk);
     double integral = doCloseIntegral(E, n, 0, Qcb); //do this properly 
-    sumDCS += sumfcb * integral;
+    if (Wcb > 0) {
+      sumDCS += sumfcb * integral;
+    }
     sumDCS *= constant;
     return sumDCS;
   }
@@ -4022,11 +4133,43 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     return a;
   }
   
+  public double getSturnheimera(double E) {
+    double a = 1.5;
+    boolean tooHigh = false;
+    double[] checkEqu = checkMeanI(E, a);
+    double[] lastcheckEqu = checkMeanI(E, a);
+    if (checkEqu[1] > checkEqu[0]) {
+      a = 1.5;
+    }
+    else {
+      //loop until it is higher
+      while (checkEqu[1] < checkEqu[0]) {
+        if (a == 3) {
+          tooHigh = true;
+          break;
+        }
+        lastcheckEqu = checkEqu;
+        a += 0.1;
+        checkEqu = checkMeanI(E, a);
+      }
+    }
+    if (tooHigh == false) {
+      //interpolate
+      double fractionBack = (checkEqu[1] - checkEqu[0]) / (checkEqu[1] - lastcheckEqu[1]);
+      a -= 0.1*fractionBack;
+    }
+    return a;
+  }
+  
   @Override
   public double getGOSInel() {
     //so this is going to return the inelastic cross section calculated by the GOS model
     double E = 100; //keV
-    double a = 1.65;  //this should be adjusted properly
+    double a = 1.5;  //this should be adjusted properly
+    //adjust a value
+ //   double[] test = checkMeanI(E, a);
+    a = getSturnheimera(E);
+   // double getSturnheimera
     int n = 0;
     double sigmaTrans = integrateSigmaTransn(E, n, a);
     double sigmaLong = integrateSigmaLongn(E, n, a);
