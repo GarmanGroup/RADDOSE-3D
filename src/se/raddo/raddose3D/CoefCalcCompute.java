@@ -3591,7 +3591,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     double betaSquared = 1- Math.pow(m*csquared/(Vo + m*csquared), 2);
     double vSquared = betaSquared * csquared;
     double constant = 2*Math.PI*(Math.pow(elementaryCharge, 4)/1E18)/(m*vSquared);
-    double deltaF = getDeltaF(E);
+    double deltaF = getDeltaF(E, a);
     // do bound shells
     double sumfcb = 0, sumDCS = 0;
     for (Element e: this.presentElements) {
@@ -3702,17 +3702,15 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     return Fnought;
   }
   
-  public double FnoughtTwo(double E, double a) {
+  public double FnoughtTwo(double E, double a, double L) {
     //get sumZ
     int[] shells = {2, 8, 18, 32};
     double sumZ = 0;
-    for (Element e: this.presentElements) {
-      sumZ += e.getAtomicNumber()*totalAtoms(e);
-    }
-    double plasmaEnergy = getPlasmaEnergyAll();
+    double plasmaEnergy = (getPlasmaEnergyAll()/1000) * Beam.KEVTOJOULES;
     
     double sumfcb = 0, sumFnought = 0;
     for (Element e: this.presentElements) {
+      /*
       sumfcb += getNumValenceElectrons(e)[0] * totalAtoms(e);
       //get number of shells
       int[] electrons = getNumValenceElectrons(e);
@@ -3722,7 +3720,32 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
         double Wk = getWkMolecule(a, e, i);
         sumFnought += fk/Math.pow(Wk,  2);
       }
+      */
+      sumZ += e.getAtomicNumber() * totalAtoms(e);
+      int[] electrons = getNumValenceElectrons(e);
+      int numInnerShells = electrons[1];
+      for (int i = 0; i <= numInnerShells; i++) {
+        int fk = shells[i];
+        if (i == numInnerShells) { // this is a valence
+          fk = electrons[0];
+        }
+        double Wk = getWkMolecule(a, e, i);
+        if (Wk > 0) {
+          double Uk = getShellBinding(i, e)*1000;
+          if (Uk < fcbCutoff) {
+            sumfcb += fk * totalAtoms(e);
+            fk = 0;
+          }
+          sumFnought += fk / (Math.pow((Wk/1000)*Beam.KEVTOJOULES,  2) + Math.pow(L, 2));
+        }
+      }
+      
     }
+    double Wcb = getWcbAll();
+    if (Wcb > 0) {
+      sumFnought += sumfcb / (Math.pow((Wcb/1000)*Beam.KEVTOJOULES,  2) + Math.pow(L, 2));
+    }
+    
     double Fnought2 = (1/sumZ)*Math.pow(plasmaEnergy, 2)*sumFnought;
     return Fnought2;
   }
@@ -3738,7 +3761,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     return sumOOS;
   }
   
-  public double getDeltaF(double electronEnergy) {
+  public double getDeltaF(double electronEnergy, double a) {
     double deltaF = 0;
     double E = electronEnergy*1000;
     double m = 9.10938356E-31; // in Kg
@@ -3760,10 +3783,18 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
       deltaF = Math.log(Math.pow(plasmaEnergy,2)/((1-betaSquared)*Math.pow(I, 2)))-1;
     }
     else {
-      if ((1-betaSquared) < getFnought(E)) {
+      double LHS = 1-betaSquared;
+      double RHS = FnoughtTwo(E, a, 0);
+      if (LHS < RHS) {
         //get L
-        L = Math.pow(1-betaSquared, 0.5);
+        L = Math.pow(1-betaSquared, 0.5); 
+        // get L properly
+        //not too critical for now as it's always 0 in this range
+        /*
         deltaF = calcDeltaF(L, betaSquared, E);
+        deltaF = calcDeltaF2(L, betaSquared, E, a);
+        */
+        deltaF = 0;
       }
       else {
         deltaF = 0;
@@ -3795,6 +3826,39 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
       previousY = y;
     }
     double deltaF = (1/sumZ)*integralSum - ((Math.pow(L, 2)/Math.pow(plasmaEnergy, 2))*(1-betaSquared));
+    return deltaF;
+  }
+  
+  public double calcDeltaF2(double L, double betaSquared, double E, double a) {
+    double deltaF = 0, sumfcb = 0, sumZ = 0, sumDeltaF = 0;
+    int[] shells = {2, 8, 18, 32};
+    for (Element e: this.presentElements) {
+      sumZ += e.getAtomicNumber() * totalAtoms(e);
+      int[] electrons = getNumValenceElectrons(e);
+      int numInnerShells = electrons[1];
+      for (int i = 0; i <= numInnerShells; i++) {
+        int fk = shells[i];
+        if (i == numInnerShells) { // this is a valence
+          fk = electrons[0];
+        }
+        double Wk = getWkMolecule(a, e, i);
+        if (Wk > 0) {
+          double Uk = getShellBinding(i, e)*1000;
+          if (Uk < fcbCutoff) {
+            sumfcb += fk * totalAtoms(e);
+            fk = 0;
+          }
+          sumDeltaF += fk * Math.log(1+Math.pow(L, 2)/Math.pow((Wk/1000)*Beam.KEVTOJOULES, 2));
+        }
+      }
+    }
+    double Wcb = getWcbAll();
+    if (Wcb > 0) {
+      sumDeltaF += sumfcb * Math.log(1+Math.pow(L, 2)/Math.pow((Wcb/1000)*Beam.KEVTOJOULES, 2));
+    }
+    sumDeltaF *= 1/sumZ;
+    double plasmaEnergy = (getPlasmaEnergyAll()/1000) * Beam.KEVTOJOULES;
+    deltaF = sumDeltaF - (Math.pow(L, 2)/Math.pow(plasmaEnergy, 2)) * (1-betaSquared);
     return deltaF;
   }
   
@@ -3898,7 +3962,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     double betaSquared = 1- Math.pow(m*csquared/(Vo + m*csquared), 2);
     double vSquared = betaSquared * csquared;
     double constant = 2*Math.PI*(Math.pow(elementaryCharge, 4)/1E18)/(m*vSquared); //m^2
-    double deltaF = getDeltaF(E);
+    double deltaF = getDeltaF(E, a);
     
     double sumfcb = 0, sumDCS = 0;
     for (Element e: this.presentElements) {
@@ -4104,7 +4168,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     double Wmax = 1000*getEdash(E, Uk)/2;
     double a = getClosea(E);
     double sumIntegral = 0;
-    sumIntegral = solveCloseAnalytical(Wmax, 0, E, a) - solveCloseAnalytical(Qak, 0, E, a);
+    sumIntegral = solveCloseAnalytical(Wmax, n, E, a) - solveCloseAnalytical(Qak, n, E, a);
     return sumIntegral;
   }
   
@@ -4179,7 +4243,22 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     double sigmaInel = sigmaTot / (cellVolume/1000); //nm^-1
  //   double sigmaInel = (sigmaTot * (density/1E21) * AVOGADRO_NUM) / molecularWeight;
     double lambda = 1/sigmaInel; //nm
-    //then test stopping power and straggling parameter
+    
+    
+    //then test stopping power
+    n = 1;
+    double stoppingPower = (integrateSigmaLongn(E, n, a) + integrateSigmaTransn(E, n, a) + integrateSigmaClosen(E, n, a))*1E18; // units J nm^2
+    stoppingPower = stoppingPower / (cellVolume/1000); //J/nm
+    stoppingPower = stoppingPower / Beam.KEVTOJOULES; //keV/nm
+    //and now straggling parameter
+    n = 2;
+    double stragglingParam = (integrateSigmaLongn(E, n, a) + integrateSigmaTransn(E, n, a) + integrateSigmaClosen(E, n, a))*1E18; // units J^2 nm^2
+    stragglingParam /= (cellVolume/1000); //J^2/nm
+    stragglingParam = stragglingParam / Math.pow(Beam.KEVTOJOULES, 2); //keV^2/nm
+        
+    //also get average energy per deposition event 
+    double avgEnergy = (lambda* stoppingPower) * 1000; //eV  - tis high but stopping power agrees so no plasmon cchosen for now
+    
     return lambda;
   }
 }
