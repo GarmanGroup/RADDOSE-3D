@@ -289,6 +289,9 @@ public class CoefCalcCompute extends CoefCalc {
   public TreeMap<Double, Double> dsimgaOverdW;
   public final int Wbins = 1000;
   public final double fcbCutoff = 0.0;
+  public final double Wcc = 0.0;
+  public Map<Element, double[][]> GOSinelastic; //double is shell : 0 = longitudinal, 1 - transverse, 2 = close
+  public double[] cbInel;
   
   public boolean isEM;
 
@@ -3919,6 +3922,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
         }
         if (i == numInnerShells) { // this is a valence
           fk = electrons[0];
+          
         }
         double Wk = getWkMolecule(a, e, i);
         if (Wk > 0) {
@@ -3933,7 +3937,8 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
           //do the integral here
           double integral = integrateDist(E, Uk, n, i, e, a);
        //   fk = 0;
-          sumDCS += totalAtoms(e)*fk * Math.log(((Qak/1000)*Beam.KEVTOJOULES/Qminus)*((Qminus+2*m*csquared)/((Qak/1000)*Beam.KEVTOJOULES+2*m*csquared))) * integral;
+          double DCS = totalAtoms(e)*fk * Math.log(((Qak/1000)*Beam.KEVTOJOULES/Qminus)*((Qminus+2*m*csquared)/((Qak/1000)*Beam.KEVTOJOULES+2*m*csquared))) * integral;
+          sumDCS += DCS;
         }
       }
     }
@@ -4227,13 +4232,17 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
   
   @Override
   public double getGOSInel() {
+
     //so this is going to return the inelastic cross section calculated by the GOS model
     double E = 100; //keV
     double a = 1.5;  //this should be adjusted properly
     //adjust a value
  //   double[] test = checkMeanI(E, a);
     a = getSturnheimera(E);
+    
+    double lambda = populateGOSInel(E, 0, a);
    // double getSturnheimera
+    /*
     int n = 0;
     double sigmaTrans = integrateSigmaTransn(E, n, a);
     double sigmaLong = integrateSigmaLongn(E, n, a);
@@ -4243,8 +4252,8 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     double sigmaInel = sigmaTot / (cellVolume/1000); //nm^-1
  //   double sigmaInel = (sigmaTot * (density/1E21) * AVOGADRO_NUM) / molecularWeight;
     double lambda = 1/sigmaInel; //nm
-    
-    
+    */
+    /*
     //then test stopping power
     n = 1;
     double stoppingPower = (integrateSigmaLongn(E, n, a) + integrateSigmaTransn(E, n, a) + integrateSigmaClosen(E, n, a))*1E18; // units J nm^2
@@ -4258,7 +4267,117 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
         
     //also get average energy per deposition event 
     double avgEnergy = (lambda* stoppingPower) * 1000; //eV  - tis high but stopping power agrees so no plasmon cchosen for now
-    
+    */
     return lambda;
+  }
+  
+  public double populateGOSInel(double E, int n, double a) {
+    GOSinelastic = new HashMap<Element, double[][]>();
+    int[] shells = {2, 8, 18, 32};
+    double elementaryCharge = 4.80320425E-10; //units = esu = g^0.5 cm^1.5 s^-1
+    double m = 9.10938356E-31; // in Kg
+    double c = 299792458;
+    double csquared = c*c;  // (m/s)^2
+    double Vo = E * Beam.KEVTOJOULES;
+    double betaSquared = 1- Math.pow(m*csquared/(Vo + m*csquared), 2);
+    double vSquared = betaSquared * csquared;
+    double constant = 2*Math.PI*(Math.pow(elementaryCharge, 4)/1E18)/(m*vSquared); //m^2
+    double deltaF = 0;
+    double sumfcb = 0, checkSum = 0;
+    int maxShells = 9;
+    for (Element e: this.presentElements) {
+      double[][] inelasticShell = new double[maxShells][4];
+      //get number of shells
+      int[] electrons = getNumValenceElectrons(e);
+      int numInnerShells = electrons[1];
+      for (int i = 0; i <= numInnerShells; i++) {
+        int fk = shells[i];
+        if (i == numInnerShells) { // this is a valence
+          fk = electrons[0];
+          
+        }
+        double Wk = getWkMolecule(a, e, i);
+        if (Wk > 0) {
+          double Uk = getShellBinding(i, e)*1000;
+          if (Uk < fcbCutoff) {
+            sumfcb += fk * totalAtoms(e);
+            fk = 0;
+          }
+          double Wak = getWak(E, Wk, Uk);
+          double Qak = getQak(E, Wk, Uk); //actually Qak should only be used fgor inner shell not outer shell!!!
+      //    if (i == numInnerShells) { //valence shell
+      //      Qak = Uk;
+      //    }
+          double Qminus = getQminusModified(E, Wak);
+          //do the integral here
+          double integral = integrateDist(E, Uk, n, i, e, a);
+       //   fk = 0;
+          inelasticShell[i][0] = (1E18 * constant *(totalAtoms(e)*fk * Math.log(((Qak/1000)*Beam.KEVTOJOULES/Qminus)*((Qminus+2*m*csquared)/((Qak/1000)*Beam.KEVTOJOULES+2*m*csquared))) * integral))
+                              /(cellVolume/1000); //nm^-1  //long
+
+          inelasticShell[i][1] = (1E18 * constant * (totalAtoms(e)* fk * (Math.log(1/(1-betaSquared))-betaSquared-deltaF) * integral))
+                               /(cellVolume/1000); //nm^-1;  //trans
+          integral = doCloseIntegral(E, n, Uk, Qak);
+          inelasticShell[i][2] = (1E18 * constant * (totalAtoms(e)*fk * integral)) / (cellVolume/1000); //nm^-1; //close
+          inelasticShell[i][3] = inelasticShell[i][0]+inelasticShell[i][1]+inelasticShell[i][2]; //tot
+          checkSum += inelasticShell[i][3];
+          //could be summing total inel here as well but okay for now
+        }
+      }
+      GOSinelastic.put(e, inelasticShell);
+    }
+    //and now the plasmon stuff
+    cbInel = new double[4];
+ //   double Qak = 0, Uk = 0;
+    double Wcb = getWcbAll();
+    double Qcb = Wcb;
+    double Qminus = getQminusModified(E, Wcb);
+   // double Wak = getWak(E, Wcb, Uk);
+    double integral = integrateDistPlasmon(E, n, Wcb);
+    //units below don't match up
+    if (Wcb > 0) {
+      cbInel[0] = (1E18 * constant * (sumfcb *  Math.log(((Qcb/1000)*Beam.KEVTOJOULES/Qminus)*((Qminus+2*m*csquared)/((Qcb/1000)*Beam.KEVTOJOULES+2*m*csquared))) * integral))
+                   /(cellVolume/1000); //nm^-1  //long
+      cbInel[1] =  (1E18 * constant * (sumfcb *  (Math.log(1/(1-betaSquared))-betaSquared-deltaF) * integral))
+                    /(cellVolume/1000); //nm^-1  //trans
+      integral = doCloseIntegral(E, n, 0, Qcb);
+      cbInel[2] = (1E18 * constant * (sumfcb*integral)) /(cellVolume/1000);  //nm^-1 //close
+      cbInel[3] = cbInel[0] + cbInel[1] + cbInel[2];
+      checkSum += cbInel[3];
+    }
+  double testLamda = 1/checkSum;
+  return testLamda;
+  }
+  
+  public double getEnergyLossDistant(double Wdis, double Uk){ 
+    double RND = Math.random();
+    double W = Wdis - Math.pow(RND*Math.pow(Wdis-Uk, 2), 0.5);
+    return W;
+  }
+  
+  public double getRecoilEnergyDistant(double EkeV, double WakeV, double Qak) {
+    double m = 9.10938356E-31; // in Kg
+    double c = 299792458;
+    double csquared = c*c;  // (m/s)^2
+    
+    double Qminus = getQminusModified(EkeV, WakeV);
+    double Qs = Qminus / (1+Qminus/(2*m*csquared));
+    double RND = Math.random();
+    //gotta make sure all these units are changed to Joules to be correct when I do it properly
+    double Q = Qs * 1/(Math.pow((Qs/Qak)*(1+(Qak/(2*m*csquared))), RND) - (Qs/(2*m*csquared)));
+    return Q;
+  }
+  
+  public double getPrimaryThetaLong(double E, double Q, double Wak) {
+    double m = 9.10938356E-31; // in Kg
+    double c = 299792458;
+    double csquared = c*c;  // (m/s)^2
+    double theta = 0;
+    //again make sure I sort out units in here
+    double numerator = E*(E+2*m*csquared) + (E-Wak)*(E-Wak+2*m*csquared) - Q*(Q+2*m*csquared);
+    double denominator = 2*Math.pow(E*(E+2*m*csquared)*(E-Wak)*(E-Wak+2*m*csquared), 0.5);
+    double cosTheta = numerator/denominator;
+    theta = Math.acos(cosTheta);
+    return theta;
   }
 }
