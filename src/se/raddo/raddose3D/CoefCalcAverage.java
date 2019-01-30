@@ -303,7 +303,50 @@ public class CoefCalcAverage extends CoefCalc {
   }
 
   @Override
-  public double getGOSInel() {
+  public double getGOSInel(boolean surrounding) {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+
+  @Override
+  public Map<Element, double[]> getGOSShellProbs(boolean surrounding,
+      double totLambda) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public Map<Element, double[][]> getGOSVariable(boolean surrounding) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public double[] getPlasmonVariable(boolean surrounding) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public double returnAdjustment() {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+
+  @Override
+  public double getWkMolecule(double a, Element e, int shellIndex) {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+
+  @Override
+  public double getWcbAll() {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+
+  @Override
+  public double getRecoilEnergyDistant(double EkeV, double WakeV, double Qak) {
     // TODO Auto-generated method stub
     return 0;
   }

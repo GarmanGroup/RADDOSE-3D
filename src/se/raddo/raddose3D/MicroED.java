@@ -212,7 +212,7 @@ public class MicroED {
  //   getCSDArange(coefCalc);
     
     //getGOSinel
-    double test = coefCalc.getGOSInel();
+    double test = coefCalc.getGOSInel(false);
     
     
     double wavelength = getWavelength(beam);

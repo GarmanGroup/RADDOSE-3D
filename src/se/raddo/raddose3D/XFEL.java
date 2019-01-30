@@ -77,6 +77,8 @@ public class XFEL {
   private TreeMap<Double, Double> stragglingPerInel;
   private TreeMap<Double, Double> stragglingPerInelSurrounding;
   
+  public final double Wcc = 0.0;
+  
   
   private double numFluxPhotons;
   protected static final long NUM_PHOTONS = 50000000;
@@ -624,10 +626,10 @@ public class XFEL {
         ionisationsPerPhotoelectron = 0;
         totalShellBindingEnergy = 0;
       }
-      
     }
 
     double energyLost = 0;
+    double W = 0;
     double electronEnergy = startingEnergy;
     double timeStamp = startingTimeStamp;
     double startingStoppingPower = coefCalc.getStoppingPower(startingEnergy, surrounding);
@@ -638,19 +640,26 @@ public class XFEL {
     
     //the FSE stuff 
     double startingFSExSection = getFSEXSection(startingEnergy);
-    double startingFSELambda = coefCalc.getFSELambda(startingFSExSection, false);
+    double startingFSELambda = coefCalc.getFSELambda(startingFSExSection, surrounding); //should be surrounding not false
+    
+    
+    //inelastic lamdaFromGOS to go in here
+    double gosInelasticLambda = coefCalc.getGOSInel(surrounding);
+    Map<Element, double[]> gosIonisationProbs = coefCalc.getGOSShellProbs(surrounding, gosInelasticLambda);
+    //some sort of GOS ionisation probs
     
     //Inner shell ionisation x section
     coefCalc.populateCrossSectionCoefficients();
-    double startingInnerShellLambda = coefCalc.betheIonisationxSection(startingEnergy, false);
-    Map<Element, double[]> ionisationProbs = coefCalc.getAllShellProbs(false); //Really need to make sure that these are in the same order
+    double startingInnerShellLambda = coefCalc.betheIonisationxSection(startingEnergy, surrounding);
+    Map<Element, double[]> ionisationProbs = coefCalc.getAllShellProbs(surrounding); //Really need to make sure that these are in the same order
     
     double startingPlasmonLambda = coefCalc.getPlasmaMFPL(startingEnergy);
     double plasmaEnergy = coefCalc.getPlasmaFrequency()/1000.0; //in keV
     
     double lambdaT = 0;
  //   lambdaT = startingLambda_el;
-    lambdaT = 1/ (1/startingLambda_el + 1/startingFSELambda);
+ //   lambdaT = 1/ (1/startingLambda_el + 1/startingFSELambda);
+    lambdaT = 1 / (1/startingLambda_el + 1/gosInelasticLambda);
     
     double testRND = Math.random();
     double s = -lambdaT*Math.log(testRND);
@@ -746,7 +755,7 @@ public class XFEL {
         double RNDinelastic = Math.random();
         if (RNDinelastic  < Pinel) {
           /*
-          //generate a charge if possible
+          //generate a charge if possible //this below is the FSE model
           
           //determine which element was hit
           double shellBindingEnergy = 0;
@@ -827,7 +836,123 @@ public class XFEL {
             theta -= 2*Math.PI;
           }
           */
-          theta = previousTheta;
+     //     theta = previousTheta;
+          
+          //here I am going to do the GOS model
+          //determine which element and shell was hit
+          double shellBindingEnergy = 0;
+          boolean plasmon = false;
+          Element collidedElement = null;
+          int collidedShell = -1;
+          double elementRND = Math.random();
+          for (Element e : gosIonisationProbs.keySet()) {
+            collidedShell = findIfElementIonised(e, gosIonisationProbs, elementRND); //will need to adjust this for if plasmon
+            if (collidedShell >= 0) {
+              collidedElement = e;
+              break;
+            }
+          } 
+          if (collidedShell == -1) {
+            //then this is a collision with the conduction band 
+            plasmon = true;
+          }
+          else {
+            shellBindingEnergy = getShellBindingEnergy(collidedElement, collidedShell);
+          }
+          //get the type of collision
+          int type = 0;
+          if (plasmon == false) {
+            type = getGOSInelasticType(coefCalc.getGOSVariable(surrounding).get(collidedElement), collidedShell);
+          }
+          else {
+            type = getGOSInelasticTypePlasmon(coefCalc.getPlasmonVariable(surrounding));
+          }
+          
+          //get energy loss
+          double a = coefCalc.returnAdjustment();
+          double Uk = 0;
+         // double Uk = shellBindingEnergy*1000;
+          double Wk = 0, Qak = 0, Q = 0;
+          if (plasmon == false) {
+            Uk = shellBindingEnergy*1000;
+            Wk = coefCalc.getWkMolecule(a, collidedElement, collidedShell);
+            Qak = getQak(electronEnergy, Wk, Uk);
+          }
+          else {
+            Uk = 0;
+            Wk = coefCalc.getWcbAll();
+            Qak = Wk;
+          }
+          double Wak = WkToWak(electronEnergy, Wk, Uk); //eV
+          double Wdis = 3*Wak - 2*Uk;
+          if (type == 0 || type == 1) {
+            //then this was a distant collision
+            W = getEnergyLossDistant(Wdis, Uk)/1000; //in keV   
+            //get recoil energy
+            Q = coefCalc.getRecoilEnergyDistant(electronEnergy, Wak, Qak); //J
+            //get theta (new to add on to previous)
+            if (type == 1) {
+              //transverse
+              theta = previousTheta;
+            }
+            else {
+              //longitudinal
+             theta = getGOSPrimaryThetaLong(electronEnergy, Q, Wak, previousTheta);
+            }
+          }
+          else {
+            //a close collision
+            double k = samplek(electronEnergy, Qak);
+            W = k*(electronEnergy+Uk/1000); //keV
+            theta = getGOSPrimaryThetaClose(electronEnergy, W, previousTheta);
+          }
+          //now I need to send out the secondary electron
+          //get an angle and energy then recursively call ofc
+          double minTrackEnergy = 0.05;
+          double SEPreviousTheta = previousTheta;
+          double SEPreviousPhi = previousPhi;
+          double SEEnergy = W - Uk/1000;
+          double SETheta = 0, SEPhi = 0, SExNorm = 0, SEyNorm = 0, SEzNorm = 0;
+          if (SEEnergy > 0) {
+            ionisationsPerPhotoelectron += 1;
+            totalIonisationEvents[doseTime] += 1; //is this right??? need to sort this as well!!!
+            totalShellBindingEnergy += shellBindingEnergy;
+            if (SEEnergy > minTrackEnergy) {
+              //get theta
+              if (type == 0 || type == 1) { //distant
+                SETheta = secondaryThetaDistant(electronEnergy, Wak, Q, previousTheta);
+              }
+              else { //close
+                SETheta = secondaryThetaClose(electronEnergy, W, SEPreviousTheta);
+              }
+              //get phi
+              SEPhi = 2 * Math.PI * Math.random();
+              SEPhi = SEPreviousPhi + SEPhi;
+              if (SEPhi >= (2 * Math.PI)) {
+                SEPhi -= 2*Math.PI;
+              }
+              //now get normals
+              SExNorm = Math.sin(SETheta) * Math.cos(SEPhi);
+              SEyNorm = Math.sin(SETheta) * Math.sin(SEPhi);
+              
+              SEzNorm = Math.cos(SETheta);
+              //send it out with the correct timestamp
+              trackPhotoelectron(coefCalc, timeStamp, SEEnergy, xn, yn, zn, SExNorm, SEyNorm, SEzNorm, SETheta, SEPhi, surrounding);
+            }
+            else { //too low energy to track - work out what exactly I'm doing with dose! - need an SP way and a W way
+             //  if (surrounding == false) {
+           //      if (entered == true) {
+           //        electronDoseSurrounding[doseTime] += SEEnergy;
+           //      }
+           //      else {
+           //        electronDose[doseTime] += SEEnergy;
+           //      }
+           //    }
+            }
+            produceAugerElectron(coefCalc, timeStamp, collidedShell, collidedElement, xn, yn, zn, surrounding);
+          }
+            
+          //I still need to add a cutoff in here and do dose time and ionisations
         }
         else {
           //do elastic
@@ -1581,6 +1706,192 @@ System.out.println("test");
 
 return angleRadians;
 }
+  
+
+  private int getGOSInelasticType(double[][] shellProbs, int shellIndex) {
+    double runningSum = 0;
+    double RND = Math.random();
+    int type = 0;
+    for (int i = 0; i < 3; i++) {
+      runningSum += shellProbs[shellIndex][i]/shellProbs[shellIndex][3];
+      if (runningSum > RND) { //then this type of collision
+        type = i;
+        break;
+      }
+    }
+    return type;
+  }
+  
+  private int getGOSInelasticTypePlasmon(double[] plasmonProbs) {
+    double runningSum = 0;
+    double RND = Math.random();
+    int type = 0;
+    for (int i = 0; i < 3; i++) {
+      runningSum += plasmonProbs[i]/plasmonProbs[3];
+      if (runningSum > RND) { //then this type of collision
+        type = i;
+        break;
+      }
+    }
+    return type;
+  }
+  
+  public double WkToWak(double E, double Wk, double Uk) {
+    if (E*1000 > 3*Wk - 2*Uk) {
+      return Wk;
+    }
+    else {
+      return (E*1000+2*Uk)/3;
+    }
+  }
+  
+  public double getQak(double E, double Wk, double Uk) {
+    if (E*1000 > 3*Wk - 2*Uk) {
+      return Uk;
+    }
+    else {
+      return Uk * (E*1000/(3*Wk-2*Uk));
+    }
+  }
+  
+  public double getEnergyLossDistant(double Wdis, double Uk){ 
+    double RND = Math.random();
+    double W = Wdis - Math.pow(RND*Math.pow(Wdis-Uk, 2), 0.5);
+    return W; //returning eV
+  }
+  
+  public double getClosea(double E) { // E in keV
+    double m = 9.10938356E-31; // in Kg
+    double c = 299792458;
+    double csquared = c*c;  // (m/s)^2
+    double Vo = (E) * Beam.KEVTOJOULES;
+    double a = Math.pow(Vo/(Vo+m*csquared), 2);
+    return a;
+  }
+  
+  public double getGOSPrimaryThetaLong(double EkeV, double Q, double WakeV, double previousTheta) {
+    double m = 9.10938356E-31; // in Kg
+    double c = 299792458;
+    double csquared = c*c;  // (m/s)^2
+    double theta = 0;
+    //again make sure I sort out units in here
+    double E = EkeV * Beam.KEVTOJOULES;
+    double Wak = (WakeV/1000)*Beam.KEVTOJOULES;
+    double numerator = E*(E+2*m*csquared) + (E-Wak)*(E-Wak+2*m*csquared) - Q*(Q+2*m*csquared);
+    double denominator = 2*Math.pow(E*(E+2*m*csquared)*(E-Wak)*(E-Wak+2*m*csquared), 0.5);
+    double cosTheta = numerator/denominator;
+    theta = Math.acos(cosTheta);
+    theta = previousTheta + theta;
+    if (theta >= (2 * Math.PI)) {
+      theta -= 2*Math.PI;
+    }
+    return theta;
+  }
+  
+  public double getRandomk(double E, double Qk) { //E in keV and Qk in eV
+    double kc = Math.max(Qk, Wcc) / (E*1000);  //get units right ofc
+    double k = 0;
+    double a = getClosea(E);
+    double RND = Math.random();
+    double zeta = RND * (1+5*a*kc/2);
+    if (zeta < 1) {
+      k = kc / (1-zeta*(1-2*kc));
+    }
+    else {
+      k = kc + (zeta-1)*(1-2*kc)/(5*a*kc);
+    }
+    return k; //dimensionless
+  }
+  
+  public double getPDFk(double E, double k, double Qk) {
+    double kc = Math.max(Qk, Wcc) / (E*1000);  //get units right ofc
+    double a = getClosea(E);   //assume this is the gamma one not sturnheimer one
+    double PDF = (Math.pow(k, -2) + Math.pow(1-k, -2) - 1/(k*(1-k)) + a*(1+1/(k*(1-k))))
+                  * heavisideStepFunction(k-kc) * heavisideStepFunction(0.5-k);
+    return PDF;
+  }
+  
+//now do the rejection algorithm
+  public double samplek(double E, double Qk) {
+    double a = getClosea(E);
+    boolean exit = false;
+    double k = 0;
+    int count = 0;
+    while (exit == false) {
+      k = getRandomk(E, Qk);
+      double RND = Math.random();
+      double LHS = RND * (1 + 5*a*Math.pow(k, 2));
+      double RHS = Math.pow(k, 2) * getPDFk(E, k, Qk);
+      if (LHS < RHS) {
+        exit = true;
+      }
+      // testing clause
+      count += 1;
+      if (count > 100000) {
+        System.out.println("the random sampling of k is always being rejected");
+        break;
+      }
+    }
+    return k;
+  }
+  
+  private int heavisideStepFunction(double x) {
+    if (x >= 0) {
+      return 1;
+    }
+    else {
+      return 0;
+    }
+  }
+  
+  private double getGOSPrimaryThetaClose(double EkeV, double WkeV, double previousTheta) {
+    double m = 9.10938356E-31; // in Kg
+    double c = 299792458;
+    double csquared = c*c;  // (m/s)^2
+    double E = EkeV*Beam.KEVTOJOULES;
+    double W = WkeV*Beam.KEVTOJOULES;
+    
+    double cosTheta = Math.pow(((E-W)/E) * ((E+ 2*m*csquared)/ (E-W+2*m*csquared)),0.5);
+    double theta = Math.acos(cosTheta);
+    theta = previousTheta + theta;
+    if (theta >= (2 * Math.PI)) {
+      theta -= 2*Math.PI;
+    }
+    return theta;
+  }
+  
+  public double secondaryThetaClose(double EkeV, double WkeV, double previousTheta) {
+    double m = 9.10938356E-31; // in Kg
+    double c = 299792458;
+    double csquared = c*c;  // (m/s)^2
+    double W = WkeV * Beam.KEVTOJOULES;
+    double E = EkeV * Beam.KEVTOJOULES;
+    double cosTheta = Math.pow((W/E)*((E+2*m*csquared)/(W+2*m*csquared)), 0.5);
+    double theta = Math.acos(cosTheta);
+    theta = previousTheta + theta;
+    if (theta >= (2 * Math.PI)) {
+      theta -= 2*Math.PI;
+    }
+    return theta;
+  }
+  
+  public double secondaryThetaDistant(double E, double WakeV, double Q, double previousTheta) {
+    double m = 9.10938356E-31; // in Kg
+    double c = 299792458;
+    double csquared = c*c;  // (m/s)^2
+    double Vo = E * Beam.KEVTOJOULES;
+    double betaSquared = 1- Math.pow(m*csquared/(Vo + m*csquared), 2);
+    
+    double Wak = (WakeV/1000)*Beam.KEVTOJOULES;
+    double cosTheta = Math.pow(((Math.pow(Wak, 2)/betaSquared)/(Q*(Q+2*m*csquared)))
+                      *Math.pow(1+(Q*(Q+2*m*csquared)-Math.pow(Wak, 2))/(2*Wak*(Vo+m*csquared)), 2),0.5);
+    double theta = Math.acos(cosTheta);
+    theta = previousTheta + theta;
+    if (theta >= (2 * Math.PI)) {
+      theta -= 2*Math.PI;
+    }
+    return theta;
+  }
   
   private boolean isMicrocrystalAt(final double x, final double y, final double z) {
     //Note that this is absolutely only right for a cuboid at the moment

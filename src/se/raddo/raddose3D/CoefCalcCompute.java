@@ -286,12 +286,16 @@ public class CoefCalcCompute extends CoefCalc {
   public Map<ElementEM, Double> elasticXSectionsSurrounding;
   public double ElasticxSectionTotPerElementSurrounding;
   
+  public double sturnheimerAdjustment;
   public TreeMap<Double, Double> dsimgaOverdW;
   public final int Wbins = 1000;
   public final double fcbCutoff = 0.0;
   public final double Wcc = 0.0;
   public Map<Element, double[][]> GOSinelastic; //double is shell : 0 = longitudinal, 1 - transverse, 2 = close
   public double[] cbInel;
+  //surrounding
+  public Map<Element, double[][]> GOSinelasticSurrounding; //double is shell : 0 = longitudinal, 1 - transverse, 2 = close
+  public double[] cbInelSurrounding;
   
   public boolean isEM;
 
@@ -3078,6 +3082,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     return plasmaEnergy; //eV
   }
   
+  @Override
   public double getWcbAll() {
     double hbarSqaured = Math.pow(6.62607004E-34/(2*Math.PI), 2); // m^4 kg^2  s^-2
     double m = 9.10938356E-31; //kg
@@ -3446,6 +3451,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     return OOS;
   }
   
+  @Override
   public double getWkMolecule(double a, Element e, int shellIndex) {
     int[] shells = {2, 8, 18, 32};
     int Z = e.getAtomicNumber();
@@ -4231,7 +4237,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
   }
   
   @Override
-  public double getGOSInel() {
+  public double getGOSInel(boolean surrounding) {
 
     //so this is going to return the inelastic cross section calculated by the GOS model
     double E = 100; //keV
@@ -4239,8 +4245,14 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     //adjust a value
  //   double[] test = checkMeanI(E, a);
     a = getSturnheimera(E);
-    
-    double lambda = populateGOSInel(E, 0, a);
+    sturnheimerAdjustment = a;
+    double lambda = 0;
+    if (surrounding == false) {
+      lambda = populateGOSInel(E, 0, a, surrounding);
+    }
+    else {
+      
+    }
    // double getSturnheimera
     /*
     int n = 0;
@@ -4271,8 +4283,9 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     return lambda;
   }
   
-  public double populateGOSInel(double E, int n, double a) {
+  public double populateGOSInel(double E, int n, double a, boolean surrounding) {
     GOSinelastic = new HashMap<Element, double[][]>();
+    GOSinelasticSurrounding = new HashMap<Element, double[][]>();
     int[] shells = {2, 8, 18, 32};
     double elementaryCharge = 4.80320425E-10; //units = esu = g^0.5 cm^1.5 s^-1
     double m = 9.10938356E-31; // in Kg
@@ -4285,7 +4298,12 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     double deltaF = 0;
     double sumfcb = 0, checkSum = 0;
     int maxShells = 9;
-    for (Element e: this.presentElements) {
+    
+    Set<Element> elementList = presentElements;
+    if (surrounding == true) {
+      elementList = cryoElements;
+    }
+    for (Element e: elementList) {
       double[][] inelasticShell = new double[maxShells][4];
       //get number of shells
       int[] electrons = getNumValenceElectrons(e);
@@ -4317,17 +4335,23 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
 
           inelasticShell[i][1] = (1E18 * constant * (totalAtoms(e)* fk * (Math.log(1/(1-betaSquared))-betaSquared-deltaF) * integral))
                                /(cellVolume/1000); //nm^-1;  //trans
-          integral = doCloseIntegral(E, n, Uk, Qak);
+          integral = doCloseIntegral(E, n, Uk, Qak); 
           inelasticShell[i][2] = (1E18 * constant * (totalAtoms(e)*fk * integral)) / (cellVolume/1000); //nm^-1; //close
           inelasticShell[i][3] = inelasticShell[i][0]+inelasticShell[i][1]+inelasticShell[i][2]; //tot
           checkSum += inelasticShell[i][3];
           //could be summing total inel here as well but okay for now
         }
       }
-      GOSinelastic.put(e, inelasticShell);
+      if (surrounding == false) {
+        GOSinelastic.put(e, inelasticShell);
+      }
+      else {
+        GOSinelasticSurrounding.put(e, inelasticShell);
+      }
     }
     //and now the plasmon stuff
     cbInel = new double[4];
+    cbInelSurrounding = new double[4];
  //   double Qak = 0, Uk = 0;
     double Wcb = getWcbAll();
     double Qcb = Wcb;
@@ -4336,14 +4360,26 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     double integral = integrateDistPlasmon(E, n, Wcb);
     //units below don't match up
     if (Wcb > 0) {
-      cbInel[0] = (1E18 * constant * (sumfcb *  Math.log(((Qcb/1000)*Beam.KEVTOJOULES/Qminus)*((Qminus+2*m*csquared)/((Qcb/1000)*Beam.KEVTOJOULES+2*m*csquared))) * integral))
-                   /(cellVolume/1000); //nm^-1  //long
-      cbInel[1] =  (1E18 * constant * (sumfcb *  (Math.log(1/(1-betaSquared))-betaSquared-deltaF) * integral))
-                    /(cellVolume/1000); //nm^-1  //trans
-      integral = doCloseIntegral(E, n, 0, Qcb);
-      cbInel[2] = (1E18 * constant * (sumfcb*integral)) /(cellVolume/1000);  //nm^-1 //close
-      cbInel[3] = cbInel[0] + cbInel[1] + cbInel[2];
-      checkSum += cbInel[3];
+      if (surrounding == false) {
+        cbInel[0] = (1E18 * constant * (sumfcb *  Math.log(((Qcb/1000)*Beam.KEVTOJOULES/Qminus)*((Qminus+2*m*csquared)/((Qcb/1000)*Beam.KEVTOJOULES+2*m*csquared))) * integral))
+                     /(cellVolume/1000); //nm^-1  //long
+        cbInel[1] =  (1E18 * constant * (sumfcb *  (Math.log(1/(1-betaSquared))-betaSquared-deltaF) * integral))
+                      /(cellVolume/1000); //nm^-1  //trans
+        integral = doCloseIntegral(E, n, 0, Qcb);
+        cbInel[2] = (1E18 * constant * (sumfcb*integral)) /(cellVolume/1000);  //nm^-1 //close
+        cbInel[3] = cbInel[0] + cbInel[1] + cbInel[2];
+        checkSum += cbInel[3];
+      }
+      else {
+        cbInelSurrounding[0] = (1E18 * constant * (sumfcb *  Math.log(((Qcb/1000)*Beam.KEVTOJOULES/Qminus)*((Qminus+2*m*csquared)/((Qcb/1000)*Beam.KEVTOJOULES+2*m*csquared))) * integral))
+                     /(cellVolume/1000); //nm^-1  //long
+        cbInelSurrounding[1] = (1E18 * constant * (sumfcb *  (Math.log(1/(1-betaSquared))-betaSquared-deltaF) * integral))
+                     /(cellVolume/1000); //nm^-1  //trans
+        integral = doCloseIntegral(E, n, 0, Qcb);
+        cbInelSurrounding[2] = (1E18 * constant * (sumfcb*integral)) /(cellVolume/1000);  //nm^-1 //close
+        cbInelSurrounding[3] = cbInelSurrounding[0] + cbInelSurrounding[1] + cbInelSurrounding[2];
+        checkSum += cbInelSurrounding[3];
+      }
     }
   double testLamda = 1/checkSum;
   return testLamda;
@@ -4355,6 +4391,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     return W;
   }
   
+  @Override
   public double getRecoilEnergyDistant(double EkeV, double WakeV, double Qak) {
     double m = 9.10938356E-31; // in Kg
     double c = 299792458;
@@ -4364,7 +4401,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     double Qs = Qminus / (1+Qminus/(2*m*csquared));
     double RND = Math.random();
     //gotta make sure all these units are changed to Joules to be correct when I do it properly
-    double Q = Qs * 1/(Math.pow((Qs/Qak)*(1+(Qak/(2*m*csquared))), RND) - (Qs/(2*m*csquared)));
+    double Q = Qs * 1/(Math.pow((Qs/((Qak/1000)*Beam.KEVTOJOULES))*(1+(((Qak/1000)*Beam.KEVTOJOULES)/(2*m*csquared))), RND) - (Qs/(2*m*csquared)));
     return Q;
   }
   
@@ -4380,4 +4417,160 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     theta = Math.acos(cosTheta);
     return theta;
   }
+  
+  public double getPDFk(double E, double k, double Qk) {
+    double kc = Math.max(Qk, Wcc) / (E*1000);  //get units right ofc
+    double a = getClosea(E);   //assume this is the gamma one not sturnheimer one
+    double PDF = (Math.pow(k, -2) + Math.pow(1-k, -2) - 1/(k*(1-k)) + a*(1+1/(k*(1-k))))
+                  * heavisideStepFunction(k-kc) * heavisideStepFunction(0.5-k);
+    return PDF;
+  }
+  
+  public double getRandomk(double E, double Qk) { //E in keV and Qk in eV
+    double kc = Math.max(Qk, Wcc) / (E*1000);  //get units right ofc
+    double k = 0;
+    double a = getClosea(E);
+    double RND = Math.random();
+    double zeta = RND * (1+5*a*kc/2);
+    if (zeta < 1) {
+      k = kc / (1-zeta*(1-2*kc));
+    }
+    else {
+      k = kc + (zeta-1)*(1-2*kc)/(5*a*kc);
+    }
+    return k; //dimensionless
+  }
+  
+  //now do the rejection algorithm
+  public double samplek(double E, double Qk) {
+    double a = getClosea(E);
+    boolean exit = false;
+    double k = 0;
+    int count = 0;
+    while (exit == false) {
+      k = getRandomk(E, Qk);
+      double RND = Math.random();
+      double LHS = RND * (1 + 5*a*Math.pow(k, 2));
+      double RHS = Math.pow(k, 2) * getPDFk(E, k, Qk);
+      if (LHS < RHS) {
+        exit = true;
+      }
+      // testing clause
+      count += 1;
+      if (count > 100000) {
+        System.out.println("the random sampling of k is always being rejected");
+        break;
+      }
+    }
+    return k;
+  }
+  
+  public double getPrimaryThetaClose(double E, double Uk, double Qk) {
+    double m = 9.10938356E-31; // in Kg
+    double c = 299792458;
+    double csquared = c*c;  // (m/s)^2
+    
+    double k = samplek(E, Qk);
+    double W = k*(E+Uk);
+    double cosTheta = Math.pow(((E-W)/E) * ((E+ 2*m*csquared)/ (E-W+2*m*csquared)),0.5);
+    double theta = Math.acos(cosTheta);
+    return theta;
+  }
+  
+  //next I have to do secondary emission of electrons
+  public double secondaryThetaDistant(double E, double Wak, double Q) {
+    double m = 9.10938356E-31; // in Kg
+    double c = 299792458;
+    double csquared = c*c;  // (m/s)^2
+    double Vo = E * Beam.KEVTOJOULES;
+    double betaSquared = 1- Math.pow(m*csquared/(Vo + m*csquared), 2);
+    
+    double cosTheta = Math.pow(((Math.pow(Wak, 2)/betaSquared)/(Q*(Q+2*m*csquared)))
+                      *Math.pow(1+(Q*(Q+2*m*csquared)-Math.pow(Wak, 2))/(2*Wak*(E+m*csquared)), 2),0.5);
+    double theta = Math.acos(cosTheta);
+    return theta;
+  }
+  
+  public double seondaryThetaClose(double E, double W) {
+    double m = 9.10938356E-31; // in Kg
+    double c = 299792458;
+    double csquared = c*c;  // (m/s)^2
+    
+    double cosTheta = Math.pow((W/E)*((E+2*m*csquared)/(W+2*m*csquared)), 0.5);
+    double theta = Math.acos(cosTheta);
+    return theta;
+  }
+  
+  //Then properly integrate the Monte carlo and cross section sampling stuff
+  @Override
+  public Map<Element, double[]> getGOSShellProbs(boolean surrounding, double totLambda){
+    double totInel = 1/totLambda;  //nm^-1
+    Map<Element, double[]> ionisationProbs = new HashMap<Element, double[]>();
+    double runningSumFraction = 0;  //should equal 1 by the end
+    if (surrounding == false) {
+      for (Element e : GOSinelastic.keySet()) {
+        double[][] elementShells = GOSinelastic.get(e);
+   //     double[] shellProbs = new double[4];
+        double[] shellProbs = new double[9];
+     //   for (int i = 0; i < elementShells.length; i++) {]
+     //   for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 9; i++) {
+          double lambdaFraction = elementShells[i][3]/totInel;
+          runningSumFraction += lambdaFraction;
+          shellProbs[i] = runningSumFraction;
+        }
+        ionisationProbs.put(e, shellProbs);
+      }
+    }
+    else {
+      for (Element e : GOSinelasticSurrounding.keySet()) {
+        double[][] elementShells = GOSinelasticSurrounding.get(e);
+   //     double[] shellProbs = new double[4];
+        double[] shellProbs = new double[9];
+     //   for (int i = 0; i < elementShells.length; i++) {]
+     //   for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 9; i++) {
+          double lambdaFraction = elementShells[i][3]/totInel;
+          runningSumFraction += lambdaFraction;
+          shellProbs[i] = runningSumFraction;
+        }
+        ionisationProbs.put(e, shellProbs);
+      }
+    }
+    
+    return ionisationProbs;
+  }
+  
+  @Override
+  public  Map<Element, double[][]> getGOSVariable(boolean surrounding){
+    if (surrounding == false) {
+      return GOSinelastic;
+    }
+    else {
+      return GOSinelasticSurrounding;
+    }
+  }
+  
+  @Override
+  public double[] getPlasmonVariable (boolean surrounding) {
+    if (surrounding == false) {
+      return cbInel;
+    }
+    else {
+      return cbInelSurrounding;
+    }
+  }
+  
+  @Override
+  public double returnAdjustment() {
+    return sturnheimerAdjustment;
+  }
+  
+  //inner shell cross sections I could sum into a sigma and then compare with the actual rigorous one and multiply this
+  //up or down somehow to get actual number of ionisations. 
+  
+  
+  //be careful with my recoil energies to take into account the binding energy of the shell.  PENELOPE does this strangely 
+  //start with Q=W and then remember to test changing it later and seeing what happens 
+  
 }

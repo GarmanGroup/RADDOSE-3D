@@ -171,5 +171,20 @@ public abstract class CoefCalc {
   
   public abstract void getDifferentialInlasticxSection(double electronEnergy);
   
-  public abstract double getGOSInel();
+  public abstract double getGOSInel(boolean surrounding);
+  
+  public abstract Map<Element, double[]> getGOSShellProbs(boolean surrounding, double totLambda);
+  
+  public abstract Map<Element, double[][]> getGOSVariable(boolean surrounding);
+  
+  public abstract double[] getPlasmonVariable (boolean surrounding);
+  
+  public abstract double returnAdjustment();
+  
+  public abstract double getWkMolecule(double a, Element e, int shellIndex);
+  
+  public abstract double getWcbAll();
+  
+  public abstract double getRecoilEnergyDistant(double EkeV, double WakeV, double Qak);
 }
+
