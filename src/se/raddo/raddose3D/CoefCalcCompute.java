@@ -289,7 +289,7 @@ public class CoefCalcCompute extends CoefCalc {
   public double sturnheimerAdjustment;
   public TreeMap<Double, Double> dsimgaOverdW;
   public final int Wbins = 1000;
-  public final double fcbCutoff = 50.0;
+  public final double fcbCutoff = 0.0;
   public final double Wcc = 0.0;
   public Map<Element, double[][]> GOSinelastic; //double is shell : 0 = longitudinal, 1 - transverse, 2 = close
   public double[] cbInel;
@@ -3141,7 +3141,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
       return e.getM1Edge();
     }
     else {
-      return e.getM1Edge();
+      return 0;
     }
   }
   public double getAdjustmentFactor(Element e, int fcb, double Wcb, double sumfilnU) {
@@ -3962,7 +3962,9 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
           if (Qminus > 0 && Qak > 0) {
             DCS = totalAtoms(e)*fk * Math.log(((Qak/1000)*Beam.KEVTOJOULES/Qminus)*((Qminus+2*m*csquared)/((Qak/1000)*Beam.KEVTOJOULES+2*m*csquared))) * integral;
           }
-          sumDCS += DCS;
+          if (E*1000 > Uk) {
+            sumDCS += DCS;
+          }
         }
       }
     }
@@ -3974,7 +3976,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
    // double Wak = getWak(E, Wcb, Uk);
     double integral = integrateDistPlasmon(E, n, Wcb);
     //units below don't match up
-    if (Wcb > 0) {
+    if (Wcb > 0 && E*1000 > Wcb) {
       sumDCS += sumfcb *  Math.log(((Qcb/1000)*Beam.KEVTOJOULES/Qminus)*((Qminus+2*m*csquared)/((Qcb/1000)*Beam.KEVTOJOULES+2*m*csquared))) * integral;
     }
     sumDCS *= constant;
@@ -4025,7 +4027,9 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
         double integral = integrateDist(E, Uk, n, i, e, a);
     //    fk = 0;
         deltaF = 0;
-        sumDCS += totalAtoms(e)* fk * (Math.log(1/(1-betaSquared))-betaSquared-deltaF) * integral;
+        if (E*1000 > Uk) {
+          sumDCS += totalAtoms(e)* fk * (Math.log(1/(1-betaSquared))-betaSquared-deltaF) * integral;
+        }
       }
     }
     }
@@ -4035,7 +4039,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
    // double Wak = getWak(E, Wcb, Uk);
     double integral = integrateDistPlasmon(E, n, Wcb);
     //units below don't match up
-    if (Wcb > 0) {
+    if (Wcb > 0 && E* 1000 > Wcb) {
       sumDCS += sumfcb *  (Math.log(1/(1-betaSquared))-betaSquared-deltaF) * integral;
     }
     sumDCS *= constant;
@@ -4085,7 +4089,9 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
         //do the integral here
         double integral = doCloseIntegral(E, n, Uk, Qak); // change this
      //   fk = 0;
-        sumDCS += totalAtoms(e)*fk * integral;
+        if (E*1000 > Uk) {
+          sumDCS += totalAtoms(e)*fk * integral;
+        }
       }
     }
     }
@@ -4096,7 +4102,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     double Qminus = getQminusModified(E, Wcb);
    // double Wak = getWak(E, Wcb, Uk);
     double integral = doCloseIntegral(E, n, 0, Qcb); //do this properly 
-    if (Wcb > 0) {
+    if (Wcb > 0 && E*1000 > Wcb) {
       sumDCS += sumfcb * integral;
     }
     sumDCS *= constant;
@@ -4304,6 +4310,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
         double test = 0.0;
       }
       /*
+      if (E < 0.1) { 
     int n = 1;
     double longIntegral = integrateSigmaLongn(E, n, a);
     double transIntegral = integrateSigmaTransn(E, n, a);
@@ -4320,10 +4327,11 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     //also get average energy per deposition event 
     double avgEnergy = (lambda* stoppingPower) * 1000; //eV  - tis high but stopping power agrees so no plasmon cchosen for now
     
-    if (E < 0.1) {
+    
       double test = 0.0;
+      double test2 = test;
     }
-    */
+   */
     return lambda;
   }
   
@@ -4348,7 +4356,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     stoppingPower = stoppingPower / Beam.KEVTOJOULES; //keV/nm
     double avgEnergy = (lambda* stoppingPower); //keV
     */
-    double avgEnergy = 21.0/1000;
+    double avgEnergy = 21.0/1000;  //very rough could change to test just akes things slow
     return avgEnergy;
   }
   
@@ -4400,16 +4408,23 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
           //do the integral here
           double integral = integrateDist(E, Uk, n, i, e, a);
        //   fk = 0;
-          if (Qak >0 && Qminus > 0) {
-            inelasticShell[i][0] = (1E18 * constant *(totalAtoms(e)*fk * Math.log(((Qak/1000)*Beam.KEVTOJOULES/Qminus)*((Qminus+2*m*csquared)/((Qak/1000)*Beam.KEVTOJOULES+2*m*csquared))) * integral))
-                                /(cellVolume/1000); //nm^-1  //long
+          if(E*1000 > Uk && Uk >= fcbCutoff) {
+            if (Qak >0 && Qminus > 0) {
+              inelasticShell[i][0] = (1E18 * constant *(totalAtoms(e)*fk * Math.log(((Qak/1000)*Beam.KEVTOJOULES/Qminus)*((Qminus+2*m*csquared)/((Qak/1000)*Beam.KEVTOJOULES+2*m*csquared))) * integral))
+                                  /(cellVolume/1000); //nm^-1  //long
+            }
+            inelasticShell[i][1] = (1E18 * constant * (totalAtoms(e)* fk * (Math.log(1/(1-betaSquared))-betaSquared-deltaF) * integral))
+                                 /(cellVolume/1000); //nm^-1;  //trans
+            integral = doCloseIntegral(E, n, Uk, Qak); 
+            inelasticShell[i][2] = (1E18 * constant * (totalAtoms(e)*fk * integral)) / (cellVolume/1000); //nm^-1; //close
+            inelasticShell[i][3] = inelasticShell[i][0]+inelasticShell[i][1]+inelasticShell[i][2]; //tot
+            checkSum += inelasticShell[i][3];
           }
-          inelasticShell[i][1] = (1E18 * constant * (totalAtoms(e)* fk * (Math.log(1/(1-betaSquared))-betaSquared-deltaF) * integral))
-                               /(cellVolume/1000); //nm^-1;  //trans
-          integral = doCloseIntegral(E, n, Uk, Qak); 
-          inelasticShell[i][2] = (1E18 * constant * (totalAtoms(e)*fk * integral)) / (cellVolume/1000); //nm^-1; //close
-          inelasticShell[i][3] = inelasticShell[i][0]+inelasticShell[i][1]+inelasticShell[i][2]; //tot
-          checkSum += inelasticShell[i][3];
+          else {
+            if (E < 0.1) {
+              double test = 0.0;
+            }
+          }
           //could be summing total inel here as well but okay for now
         }
       }
@@ -4432,7 +4447,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
    // double Wak = getWak(E, Wcb, Uk);
     double integral = integrateDistPlasmon(E, n, Wcb);
     //units below don't match up
-    if (Wcb > 0) {
+    if (Wcb > 0 && E*1000 > Wcb) {
       if (surrounding == false) {
         cbInel[0] = (1E18 * constant * (sumfcb *  Math.log(((Qcb/1000)*Beam.KEVTOJOULES/Qminus)*((Qminus+2*m*csquared)/((Qcb/1000)*Beam.KEVTOJOULES+2*m*csquared))) * integral))
                      /(cellVolume/1000); //nm^-1  //long

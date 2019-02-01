@@ -87,10 +87,10 @@ public class XFEL {
   
   
   private double numFluxPhotons;
-  protected static final long NUM_PHOTONS = 1000000;
-  protected static final long PULSE_LENGTH = 80; //length in fs
+  protected static final long NUM_PHOTONS = 10000;
+  protected static final long PULSE_LENGTH = 30; //length in fs
   protected static final double PULSE_BIN_LENGTH = 1; //length in fs
-  protected static final double PULSE_ENERGY = 1.4E-3; //energy in J
+  protected static final double PULSE_ENERGY = 1.3E-3; //energy in J
   protected static final double c = 299792458; //m/s
   protected static final double m = 9.10938356E-31; // in Kg
   protected static final double h = 6.62607004E-34; //J.s
@@ -640,7 +640,7 @@ public class XFEL {
     //do full Monte Carlo simulation the same way as in MicroED, but with a time stamp and adding dose every step
     //just do stopping power for now dw about surrounding and aUger and fluorescence and stuff
     
-    double energyLossToUpdate = 0.2; //keV
+    double energyLossToUpdate = 0.0; //keV
     double lossSinceLastUpdate = 0;
     
     int ionisationTime = (int) (startingTimeStamp/PULSE_BIN_LENGTH);
@@ -916,7 +916,7 @@ public class XFEL {
             plasmon = true;
           }
           else {
-            shellBindingEnergy = getShellBindingEnergy(collidedElement, collidedShell);
+            shellBindingEnergy = getShellBindingEnergyGOS(collidedElement, collidedShell);
           }
           //get the type of collision
           int type = 0;
@@ -946,10 +946,13 @@ public class XFEL {
           double Wdis = 3*Wak - 2*Uk;
           if (type == 0 || type == 1) {
             //then this was a distant collision
-            W = getEnergyLossDistant(Wdis, Uk)/1000; //in keV   
+             
             //get recoil energy
             if (plasmon == true) {
               W = Wk/1000;
+            }
+            else {
+              W = getEnergyLossDistant(Wdis, Uk)/1000; //in keV  
             }
             Q = coefCalc.getRecoilEnergyDistant(electronEnergy, Wak, Qak); //J
             //get theta (new to add on to previous)
@@ -964,10 +967,13 @@ public class XFEL {
           }
           else {
             //a close collision
-            double k = samplek(electronEnergy, Qak);
-            W = k*(electronEnergy+Uk/1000); //keV
             if (plasmon == true) {
               W = Wk/1000;
+            }
+            else {
+         //     double k = samplek(electronEnergy, Qak);
+              double k = samplek(electronEnergy, Uk);
+              W = k*(electronEnergy+Uk/1000); //keV
             }
             theta = getGOSPrimaryThetaClose(electronEnergy, W, previousTheta);
           }
@@ -1593,6 +1599,20 @@ public class XFEL {
     return shellBindingEnergy;
   }
   
+  private double getShellBindingEnergyGOS(Element collidedElement, int collidedShell) {
+    //I just haven't put all the shells in properly yet
+    double shellBindingEnergy = 0;
+    switch (collidedShell) {
+      case 0: shellBindingEnergy = collidedElement.getKEdge();
+              break;
+      case 1: shellBindingEnergy = collidedElement.getL1Edge();
+              break;
+      case 2: shellBindingEnergy = collidedElement.getM1Edge();
+              break;
+    }
+    return shellBindingEnergy;
+  }
+  
   private double getPrimaryElasticScatteringAngle(double electronEnergy, int atomicNumber){
     boolean highEnergy = false;
     if (electronEnergy > 20) {
@@ -1897,11 +1917,11 @@ return angleRadians;
   }
   
   public double getRandomk(double E, double Qk) { //E in keV and Qk in eV
-    double kc = Math.max(Qk, Wcc) / (E*1000);  //get units right ofc
+    double kc = Math.max(Qk, Wcc) / (E*1000 + Qk);  //get units right ofc
     double k = 0;
     double a = getClosea(E);
     double RND = Math.random();
-    double zeta = RND * (1+5*a*kc/2);
+    double zeta = RND * (1.0+5.0*a*kc/2.0);
     if (zeta < 1) {
       k = kc / (1-zeta*(1-2*kc));
     }
@@ -1912,7 +1932,7 @@ return angleRadians;
   }
   
   public double getPDFk(double E, double k, double Qk) {
-    double kc = Math.max(Qk, Wcc) / (E*1000);  //get units right ofc
+    double kc = Math.max(Qk, Wcc) / (E*1000 + Qk);  //get units right ofc
     double a = getClosea(E);   //assume this is the gamma one not sturnheimer one
     double PDF = (Math.pow(k, -2) + Math.pow(1-k, -2) - 1/(k*(1-k)) + a*(1+1/(k*(1-k))))
                   * heavisideStepFunction(k-kc) * heavisideStepFunction(0.5-k);
@@ -1935,7 +1955,8 @@ return angleRadians;
       }
       // testing clause
       count += 1;
-      if (count > 100000) {
+      if (count > 10000) {
+
         System.out.println("the random sampling of k is always being rejected");
         break;
       }
