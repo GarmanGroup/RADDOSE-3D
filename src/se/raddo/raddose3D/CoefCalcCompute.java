@@ -289,7 +289,7 @@ public class CoefCalcCompute extends CoefCalc {
   public double sturnheimerAdjustment;
   public TreeMap<Double, Double> dsimgaOverdW;
   public final int Wbins = 1000;
-  public final double fcbCutoff = 0.0;
+  public final double fcbCutoff = 50.0;
   public final double Wcc = 0.0;
   public Map<Element, double[][]> GOSinelastic; //double is shell : 0 = longitudinal, 1 - transverse, 2 = close
   public double[] cbInel;
@@ -2333,6 +2333,10 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     stoppingPower = (0.153536/betaSquared)*(sumZ/sumA)*(Fbeta - 2*Math.log(meanJ));
     stoppingPower = stoppingPower * 1000 * passedDensity /1E7;
     
+    if (avgEnergy < 0.1) {
+      double test = 0.0;
+    }
+    
     return stoppingPower;
   }
   
@@ -3545,6 +3549,8 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
       }
       k = 0.7344 * Math.pow(Z, 0.0367);
       Jstar = J / (1+ k*(J/(electronEnergy*1000)));
+      
+   //   Jstar = J;
       meanJ += (Jstar * molWeightFraction);  //eV
       meanlnI +=  molWeightFraction * (Z/A) * Math.log(Jstar);
     }
@@ -3678,6 +3684,12 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
   }
   
   public double getWak(double E, double Wk, double Uk) {
+    if (E < 0.1) {
+      double test = 0.0;
+    }
+//    if (E*1000 < Uk) {
+//      return 0;
+//    }
     if (E*1000 > 3*Wk - 2*Uk) {
       return Wk;
     }
@@ -3879,6 +3891,9 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     double E = EkeV*Beam.KEVTOJOULES;
     double Wak = (WakeV/1000)*Beam.KEVTOJOULES;
     double Qminus = Math.pow(Math.pow(Math.pow(E*(E+2*m*csquared), 0.5)-Math.pow((E-Wak)*(E-Wak+2*m*csquared), 0.5), 2)+Math.pow(m*csquared, 2), 0.5)-m*csquared;  
+    if (Wak > E) {
+      Qminus = 0;
+    }
     return Qminus;
   }
   
@@ -3943,7 +3958,10 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
           //do the integral here
           double integral = integrateDist(E, Uk, n, i, e, a);
        //   fk = 0;
-          double DCS = totalAtoms(e)*fk * Math.log(((Qak/1000)*Beam.KEVTOJOULES/Qminus)*((Qminus+2*m*csquared)/((Qak/1000)*Beam.KEVTOJOULES+2*m*csquared))) * integral;
+          double DCS = 0;
+          if (Qminus > 0 && Qak > 0) {
+            DCS = totalAtoms(e)*fk * Math.log(((Qak/1000)*Beam.KEVTOJOULES/Qminus)*((Qminus+2*m*csquared)/((Qak/1000)*Beam.KEVTOJOULES+2*m*csquared))) * integral;
+          }
           sumDCS += DCS;
         }
       }
@@ -4196,6 +4214,9 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     else if (n == 2) {
       answer = (2-a)*W + (2*Math.pow(E, 2)-Math.pow(W, 2))/(E-W) + ((3-a)*E*Math.log(E-W)) + (a*Math.pow(W,3))/(3*Math.pow(E, 2));
     }
+    if (E < W) {
+      answer = 0;
+    }
     return answer;
   }
   
@@ -4211,15 +4232,27 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
   public double getSturnheimera(double E) {
     double a = 1.5;
     boolean tooHigh = false;
+    if (E < 0.1) {
+      double test = 0.0;
+    }
     double[] checkEqu = checkMeanI(E, a);
     double[] lastcheckEqu = checkMeanI(E, a);
     if (checkEqu[1] > checkEqu[0]) {
-      a = 1.5;
+      a = 1.5; //actually I'm going to go down!!!
+      while (checkEqu[1] > checkEqu[0]) {
+        if (a == 0.1) {
+          tooHigh = true;
+          break;
+        }
+        lastcheckEqu = checkEqu;
+        a -= 0.1;
+        checkEqu = checkMeanI(E, a);
+      }
     }
     else {
       //loop until it is higher
       while (checkEqu[1] < checkEqu[0]) {
-        if (a == 3) {
+        if (a >= 3) {
           tooHigh = true;
           break;
         }
@@ -4228,7 +4261,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
         checkEqu = checkMeanI(E, a);
       }
     }
-    if (tooHigh == false) {
+    if (tooHigh == false && a > 1.5) {
       //interpolate
       double fractionBack = (checkEqu[1] - checkEqu[0]) / (checkEqu[1] - lastcheckEqu[1]);
       a -= 0.1*fractionBack;
@@ -4237,22 +4270,22 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
   }
   
   @Override
-  public double getGOSInel(boolean surrounding) {
+  public double getGOSInel(boolean surrounding, double E) {
 
     //so this is going to return the inelastic cross section calculated by the GOS model
-    double E = 100; //keV
+ //   double E = 100; //keV
     double a = 1.5;  //this should be adjusted properly
     //adjust a value
  //   double[] test = checkMeanI(E, a);
     a = getSturnheimera(E);
     sturnheimerAdjustment = a;
     double lambda = 0;
-    if (surrounding == false) {
+  //  if (surrounding == false) {
       lambda = populateGOSInel(E, 0, a, surrounding);
-    }
-    else {
+   // }
+   // else {
       
-    }
+   // }
    // double getSturnheimera
     /*
     int n = 0;
@@ -4265,10 +4298,17 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
  //   double sigmaInel = (sigmaTot * (density/1E21) * AVOGADRO_NUM) / molecularWeight;
     double lambda = 1/sigmaInel; //nm
     */
-    /*
+    
     //then test stopping power
-    n = 1;
-    double stoppingPower = (integrateSigmaLongn(E, n, a) + integrateSigmaTransn(E, n, a) + integrateSigmaClosen(E, n, a))*1E18; // units J nm^2
+      if (E < 0.1) {
+        double test = 0.0;
+      }
+      /*
+    int n = 1;
+    double longIntegral = integrateSigmaLongn(E, n, a);
+    double transIntegral = integrateSigmaTransn(E, n, a);
+    double closeintegral = integrateSigmaClosen(E, n, a);
+    double stoppingPower = (longIntegral + transIntegral + closeintegral)*1E18; // units J nm^2
     stoppingPower = stoppingPower / (cellVolume/1000); //J/nm
     stoppingPower = stoppingPower / Beam.KEVTOJOULES; //keV/nm
     //and now straggling parameter
@@ -4279,8 +4319,37 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
         
     //also get average energy per deposition event 
     double avgEnergy = (lambda* stoppingPower) * 1000; //eV  - tis high but stopping power agrees so no plasmon cchosen for now
+    
+    if (E < 0.1) {
+      double test = 0.0;
+    }
     */
     return lambda;
+  }
+  
+  @Override
+  public double getAvgInelasticEnergy(double E) {
+    //this isn't working at the low energies...maybe cos a is way off
+    /*
+    double a = 1.5;
+    a = getSturnheimera(E);
+    int n = 0;
+    double sigmaTrans = integrateSigmaTransn(E, n, a);
+    double sigmaLong = integrateSigmaLongn(E, n, a);
+   // sigmaLong= 0;
+    double sigmaClose = integrateSigmaClosen(E, n, a);
+    double sigmaTot = (sigmaTrans + sigmaLong + sigmaClose)*1E18; //nm^2
+    double sigmaInel = sigmaTot / (cellVolume/1000); //nm^-1
+ //   double sigmaInel = (sigmaTot * (density/1E21) * AVOGADRO_NUM) / molecularWeight;
+    double lambda = 1/sigmaInel; //nm
+    n = 1;
+    double stoppingPower = (integrateSigmaLongn(E, n, a) + integrateSigmaTransn(E, n, a) + integrateSigmaClosen(E, n, a))*1E18; // units J nm^2
+    stoppingPower = stoppingPower / (cellVolume/1000); //J/nm
+    stoppingPower = stoppingPower / Beam.KEVTOJOULES; //keV/nm
+    double avgEnergy = (lambda* stoppingPower); //keV
+    */
+    double avgEnergy = 21.0/1000;
+    return avgEnergy;
   }
   
   public double populateGOSInel(double E, int n, double a, boolean surrounding) {
@@ -4304,6 +4373,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
       elementList = cryoElements;
     }
     for (Element e: elementList) {
+      if (totalAtoms(e) > 0) {
       double[][] inelasticShell = new double[maxShells][4];
       //get number of shells
       int[] electrons = getNumValenceElectrons(e);
@@ -4330,9 +4400,10 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
           //do the integral here
           double integral = integrateDist(E, Uk, n, i, e, a);
        //   fk = 0;
-          inelasticShell[i][0] = (1E18 * constant *(totalAtoms(e)*fk * Math.log(((Qak/1000)*Beam.KEVTOJOULES/Qminus)*((Qminus+2*m*csquared)/((Qak/1000)*Beam.KEVTOJOULES+2*m*csquared))) * integral))
-                              /(cellVolume/1000); //nm^-1  //long
-
+          if (Qak >0 && Qminus > 0) {
+            inelasticShell[i][0] = (1E18 * constant *(totalAtoms(e)*fk * Math.log(((Qak/1000)*Beam.KEVTOJOULES/Qminus)*((Qminus+2*m*csquared)/((Qak/1000)*Beam.KEVTOJOULES+2*m*csquared))) * integral))
+                                /(cellVolume/1000); //nm^-1  //long
+          }
           inelasticShell[i][1] = (1E18 * constant * (totalAtoms(e)* fk * (Math.log(1/(1-betaSquared))-betaSquared-deltaF) * integral))
                                /(cellVolume/1000); //nm^-1;  //trans
           integral = doCloseIntegral(E, n, Uk, Qak); 
@@ -4348,6 +4419,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
       else {
         GOSinelasticSurrounding.put(e, inelasticShell);
       }
+      }
     }
     //and now the plasmon stuff
     cbInel = new double[4];
@@ -4356,6 +4428,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     double Wcb = getWcbAll();
     double Qcb = Wcb;
     double Qminus = getQminusModified(E, Wcb);
+  //  Qminus = getQMinus(Wcb, E*1000, false);
    // double Wak = getWak(E, Wcb, Uk);
     double integral = integrateDistPlasmon(E, n, Wcb);
     //units below don't match up

@@ -567,7 +567,7 @@ public class CoefCalcRaddose extends CoefCalc {
   }
 
   @Override
-  public double getGOSInel(boolean surrounding) {
+  public double getGOSInel(boolean surrounding, double E) {
     // TODO Auto-generated method stub
     return 0;
   }
@@ -611,6 +611,12 @@ public class CoefCalcRaddose extends CoefCalc {
 
   @Override
   public double getRecoilEnergyDistant(double EkeV, double WakeV, double Qak) {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+
+  @Override
+  public double getAvgInelasticEnergy(double E) {
     // TODO Auto-generated method stub
     return 0;
   }
