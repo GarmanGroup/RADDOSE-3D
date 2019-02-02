@@ -72,6 +72,7 @@ public class XFEL {
   private double[] totalIonisationEventsPerAtom;
   private int ionisationsPerPhotoelectron;
   private double totalShellBindingEnergy;
+  private double ionisationsOld;
   
   private TreeMap<Double, Double> energyPerInel;
   private TreeMap<Double, Double> energyPerInelSurrounding;
@@ -88,7 +89,7 @@ public class XFEL {
   
   private double numFluxPhotons;
   protected static final long NUM_PHOTONS = 100000;
-  protected static final long PULSE_LENGTH = 5; //length in fs
+  protected static final long PULSE_LENGTH = 30; //length in fs
   protected static final double PULSE_BIN_LENGTH = 0.1; //length in fs
   protected static final double PULSE_ENERGY = 1.4E-3; //energy in J
   protected static final double c = 299792458; //m/s
@@ -136,8 +137,8 @@ public class XFEL {
   }
   
   public void CalculateXFEL(Beam beam, Wedge wedge, CoefCalc coefCalc) {
-    coefCalc.getDifferentialInlasticxSection(beam.getPhotonEnergy());
-    coefCalc.getStoppingPower(beam.getPhotonEnergy(), false);
+  //  coefCalc.getDifferentialInlasticxSection(beam.getPhotonEnergy());
+  //  coefCalc.getStoppingPower(beam.getPhotonEnergy(), false);
     
     // for testing
     numFluxPhotons = beam.getPhotonsPerSec() * wedge.getTotSec();
@@ -322,10 +323,12 @@ public class XFEL {
           //determine if this was Compton scattering or photoelectric absorption
           double RNDcompton = Math.random();
           if (RNDcompton < probCompton) {
+            ionisationsOld += 1;
             produceCompton(beam, coefCalc, timeStamp, xn, yn, zn, surrounding);
           }
           else {
             //this was a photoelectric absorption
+            ionisationsOld += 1;
             producePhotoElectron(beam, coefCalc, elementAbsorptionProbs, ionisationProbs, timeStamp, doseTime, xn, yn, zn, surrounding);
           }
           //photon is absorbed so don't need to keep track of it after this and update stuff
@@ -450,11 +453,14 @@ public class XFEL {
     
     gosTot = sumGOSDose + sumPhotonDose;
     gosTotNoCutoff = sumGOSDoseNoCutOff + sumPhotonDoseNoCutOff;
-    double ionisationsPerAtomCutoff = ionisationsCutoff/totalAtoms;
+    double ionisationsPerAtomCutoff = totalIonisationEventsPerAtom[countCutoff];
+    double ionsiationPerAtomAll = totalIonisationEventsPerAtom[dose.length - 1];
+    
     
     raddoseStyleDose = ((raddoseStyleDose * (numberOfPhotons/NUM_PHOTONS) * Beam.KEVTOJOULES) / sampleMass) /1E6; //in MGy
     raddoseStyleDoseCompton = ((raddoseStyleDoseCompton * (numberOfPhotons/NUM_PHOTONS) * Beam.KEVTOJOULES) / sampleMass) /1E6; //in MGy)
     escapedEnergy = ((escapedEnergy * (numberOfPhotons/NUM_PHOTONS) * Beam.KEVTOJOULES) / sampleMass) /1E6; //in MGy
+    ionisationsOld = ionisationsOld * (numberOfPhotons/NUM_PHOTONS) / totalAtoms;
     System.out.println("Photon Dose: " + sumPhotonDose);
     System.out.println("Electron Dose: " + sumElectronDose); 
     System.out.println("Dose: " + sumDose);
@@ -469,8 +475,16 @@ public class XFEL {
     System.out.println("Diffraction Efficiency: " + diffractionEfficiency);
     
     //write for RADDOSE-MC
+    /*
     try {
       WriterFile("outputMC.CSV", sumDoseNoCutOff, DEFull, sumElectronDoseSurroundingNoCutOff);
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    */
+    try {
+      WriterFile("outputXFEL.CSV", gosTotNoCutoff, gosTot, ionsiationPerAtomAll, ionisationsPerAtomCutoff);
     } catch (IOException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
@@ -478,14 +492,14 @@ public class XFEL {
     
   }
   
-  private void WriterFile(final String filename, final double sumDoseNoCutOff, final double DEFull, final double sumElectronDoseSurroundingNoCutOff) throws IOException {
+  private void WriterFile(final String filename, final double gosTotNoCutoff, final double gosTot, final double ionsiationPerAtomAll, final double ionisationsPerAtomCutoff) throws IOException {
     BufferedWriter outFile;
     outFile = new BufferedWriter(new OutputStreamWriter(
         new FileOutputStream(filename), "UTF-8"));
     try {
-      outFile.write("totalDose,numSimulated,RADDOSEDose,Compton,Escaped,Entered,DE\n");
+      outFile.write("totalDose,numSimulated,RADDOSEDose,cutoffDose,AllIonisations,IonksationsCutoff,IonisationsOld\n");
       outFile.write(String.format(
-          " %f, %d, %f, %f, %f, %f, %f%n", sumDoseNoCutOff, NUM_PHOTONS, raddoseStyleDose, raddoseStyleDoseCompton, escapedEnergy, sumElectronDoseSurroundingNoCutOff, DEFull));
+          " %f, %d, %f, %f, %f, %f, %f%n", gosTotNoCutoff, NUM_PHOTONS, raddoseStyleDose + raddoseStyleDoseCompton, gosTot, ionsiationPerAtomAll, ionisationsPerAtomCutoff, ionisationsOld));
     } catch (IOException e) {
       e.printStackTrace();
       System.err.println("WriterFile: Could not write to file " + filename);
@@ -585,6 +599,9 @@ public class XFEL {
     }
     
     trackPhotoelectron(coefCalc, timeStamp, photoelectronEnergy, xn, yn, zn, xNorm, yNorm, zNorm, theta, phi, surrounding, true);
+    if (surrounding == false) {
+      ionisationsOld += (int) ((photoelectronEnergy*1000) / 21.0);
+    }
     /*
     if (ionisationsPerPhotoelectron > 0) {
       System.out.println(ionisationsPerPhotoelectron + " " + totalShellBindingEnergy);
@@ -637,6 +654,9 @@ public class XFEL {
           int ionisationTime = (int) (timeStamp/PULSE_BIN_LENGTH);
      //     totalIonisationEvents[ionisationTime] += 1;
           trackPhotoelectron(coefCalc, timeStamp, augerEnergy, xn, yn, zn, xNorm, yNorm, zNorm, theta, phi, surrounding, false);
+          if (surrounding == false) {
+            ionisationsOld += 1;
+          }
         }
       }
     }
@@ -1376,6 +1396,9 @@ public class XFEL {
     double phi = Math.acos(xNorm / Math.sin(theta));
     
     trackPhotoelectron(coefCalc, timeStamp, Ecomp, xn, yn, zn, xNorm, yNorm, zNorm, theta, phi, surrounding, true);
+    if (surrounding == false) {
+      ionisationsOld += (int) ((Ecomp*1000) / 21.0);
+    }
   }
   
   private double getCosAngleToX() {
