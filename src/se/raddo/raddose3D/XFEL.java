@@ -87,10 +87,10 @@ public class XFEL {
   
   
   private double numFluxPhotons;
-  protected static final long NUM_PHOTONS = 10000;
-  protected static final long PULSE_LENGTH = 30; //length in fs
-  protected static final double PULSE_BIN_LENGTH = 1; //length in fs
-  protected static final double PULSE_ENERGY = 1.3E-3; //energy in J
+  protected static final long NUM_PHOTONS = 100000;
+  protected static final long PULSE_LENGTH = 5; //length in fs
+  protected static final double PULSE_BIN_LENGTH = 0.1; //length in fs
+  protected static final double PULSE_ENERGY = 1.4E-3; //energy in J
   protected static final double c = 299792458; //m/s
   protected static final double m = 9.10938356E-31; // in Kg
   protected static final double h = 6.62607004E-34; //J.s
@@ -412,8 +412,9 @@ public class XFEL {
     double numberOfPhotons = PULSE_ENERGY/energyPerPhoton;
     
 //    numberOfPhotons = numFluxPhotons;
-    
-    double sumDose = 0, sumElectronDose = 0, sumPhotonDose = 0, sumElectronDoseSurrounding = 0, sumGOSDose = 0, gosTot = 0, gosTotNoCutoff = 0;;
+    int ionisationsCutoff = 0;
+    int countCutoff = 0;
+    double sumDose = 0, sumElectronDose = 0, sumPhotonDose = 0, sumElectronDoseSurrounding = 0, sumGOSDose = 0, gosTot = 0, gosTotNoCutoff = 0;
     double sumDoseNoCutOff = 0, sumElectronDoseNoCutOff = 0, sumPhotonDoseNoCutOff = 0, sumElectronDoseSurroundingNoCutOff = 0, sumGOSDoseNoCutOff = 0;
     for (int i = 0; i < dose.length; i++) {
       dose[i] = ((dose[i] * (numberOfPhotons/NUM_PHOTONS) * Beam.KEVTOJOULES) / sampleMass) /1E6; //in MGy
@@ -425,6 +426,10 @@ public class XFEL {
       totalIonisationEvents[i] = (int) StrictMath.round(totalIonisationEvents[i] * (numberOfPhotons/NUM_PHOTONS));
       if (i > 0) {
         totalIonisationEvents[i] += totalIonisationEvents[i-1]; //make it cumulative
+        if (i*PULSE_BIN_LENGTH < lastTime-(1*PULSE_BIN_LENGTH)) {
+          ionisationsCutoff += totalIonisationEvents[i];
+          countCutoff += 1;
+        }
       }
       totalIonisationEventsPerAtom[i] = totalIonisationEvents[i]/totalAtoms;
       //sums
@@ -434,6 +439,7 @@ public class XFEL {
         sumGOSDose += gosElectronDose[i];
         sumPhotonDose += photonDose[i];
         sumElectronDoseSurrounding += electronDoseSurrounding[i];
+        
       }
       sumDoseNoCutOff += dose[i];
       sumElectronDoseNoCutOff += electronDose[i];
@@ -441,8 +447,11 @@ public class XFEL {
       sumPhotonDoseNoCutOff += photonDose[i];
       sumElectronDoseSurroundingNoCutOff += electronDoseSurrounding[i];
     }
+    
     gosTot = sumGOSDose + sumPhotonDose;
     gosTotNoCutoff = sumGOSDoseNoCutOff + sumPhotonDoseNoCutOff;
+    double ionisationsPerAtomCutoff = ionisationsCutoff/totalAtoms;
+    
     raddoseStyleDose = ((raddoseStyleDose * (numberOfPhotons/NUM_PHOTONS) * Beam.KEVTOJOULES) / sampleMass) /1E6; //in MGy
     raddoseStyleDoseCompton = ((raddoseStyleDoseCompton * (numberOfPhotons/NUM_PHOTONS) * Beam.KEVTOJOULES) / sampleMass) /1E6; //in MGy)
     escapedEnergy = ((escapedEnergy * (numberOfPhotons/NUM_PHOTONS) * Beam.KEVTOJOULES) / sampleMass) /1E6; //in MGy
@@ -640,7 +649,7 @@ public class XFEL {
     //do full Monte Carlo simulation the same way as in MicroED, but with a time stamp and adding dose every step
     //just do stopping power for now dw about surrounding and aUger and fluorescence and stuff
     
-    double energyLossToUpdate = 0.0; //keV
+    double energyLossToUpdate = 0.2; //keV
     double lossSinceLastUpdate = 0;
     
     int ionisationTime = (int) (startingTimeStamp/PULSE_BIN_LENGTH);
@@ -899,6 +908,7 @@ public class XFEL {
           
           //here I am going to do the GOS model
           //determine which element and shell was hit
+          int doseTimeGOS = (int) (timeStamp/PULSE_BIN_LENGTH);
           double shellBindingEnergy = 0;
           boolean plasmon = false;
           Element collidedElement = null;
@@ -1017,24 +1027,24 @@ public class XFEL {
               //send it out with the correct timestamp
               trackPhotoelectron(coefCalc, timeStamp, SEEnergy, xn, yn, zn, SExNorm, SEyNorm, SEzNorm, SETheta, SEPhi, surrounding, false);
               if (primaryElectron == true) { //only doing dose from the primary
-                gosElectronDose[doseTime] += W;
+                gosElectronDose[doseTimeGOS] += W;
                 avgW += W;
                 avgWNum += 1;
               }
             }
             else { //too low energy to track - work out what exactly I'm doing with dose! - need an SP way and a W way
               if (primaryElectron == true) { //only doing dose from the primary
-                totalIonisationEvents[doseTime] += 1;
-                gosElectronDose[doseTime] += W;
+                totalIonisationEvents[doseTimeGOS] += 1;
+                gosElectronDose[doseTimeGOS] += W;
               }
               //sort out how many extra ionisations this will cause
               double avgEnergy = coefCalc.getAvgInelasticEnergy(SEEnergy);
               if (avgEnergy > 0) {
                 int numIonisation = (int) (SEEnergy/avgEnergy);
-                totalIonisationEvents[doseTime] += numIonisation;
+                totalIonisationEvents[doseTimeGOS] += numIonisation;
               }
             }
-            electronEnergy -= W; 
+          //  electronEnergy -= W; 
             lossSinceLastUpdate += W;
             //produce Auger electon should only be if it is from an inner shell of an element more than 2
             produceAugerElectron(coefCalc, timeStamp, collidedShell, collidedElement, xn, yn, zn, surrounding);
@@ -1066,19 +1076,30 @@ public class XFEL {
         //update the energy and stopping Power and stuff
      //   electronEnergy -= energyLost; 
      //   lossSinceLastUpdate += energyLost;
+        
+        //GOS lambda
+        if (electronEnergy > 0.5) {  //this will make it not quite behave right at edges :/
+          if (lossSinceLastUpdate > energyLossToUpdate) {
+            electronEnergy -= lossSinceLastUpdate;
+            gosInelasticLambda = coefCalc.getGOSInel(false, electronEnergy);
+            gosIonisationProbs = coefCalc.getGOSShellProbs(false, gosInelasticLambda);
+            lossSinceLastUpdate = 0;
+          }
+        }
+        else {
+          electronEnergy -= lossSinceLastUpdate;
+          gosInelasticLambda = coefCalc.getGOSInel(false, electronEnergy);
+          gosIonisationProbs = coefCalc.getGOSShellProbs(false, gosInelasticLambda);
+          lossSinceLastUpdate = 0;
+        }
+        
         stoppingPower = coefCalc.getStoppingPower(electronEnergy, false);
         //get new lambdaT
         lambdaEl = coefCalc.getElectronElasticMFPL(electronEnergy, false);
         FSExSection = getFSEXSection(electronEnergy);
         FSELambda = coefCalc.getFSELambda(FSExSection, false);
         innerShellLamda = coefCalc.betheIonisationxSection(electronEnergy, false);
-        //GOS lambda
-        
-        if (lossSinceLastUpdate > energyLossToUpdate) {
-          gosInelasticLambda = coefCalc.getGOSInel(false, electronEnergy);
-          gosIonisationProbs = coefCalc.getGOSShellProbs(false, gosInelasticLambda);
-          lossSinceLastUpdate = 0;
-        }
+
         
       //  lambdaT = 1/(1/lambdaEl + 1/FSELambda);
         lambdaT = 1/(1/lambdaEl + 1/gosInelasticLambda);
