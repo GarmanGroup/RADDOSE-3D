@@ -484,7 +484,7 @@ public class XFEL {
     }
     */
     try {
-      WriterFile("outputXFEL.CSV", gosTotNoCutoff, gosTot, ionsiationPerAtomAll, ionisationsPerAtomCutoff);
+      WriterFile("outputXFEL.CSV", gosTotNoCutoff, gosTot, ionsiationPerAtomAll, ionisationsPerAtomCutoff, numberElastic);
     } catch (IOException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
@@ -492,14 +492,15 @@ public class XFEL {
     
   }
   
-  private void WriterFile(final String filename, final double gosTotNoCutoff, final double gosTot, final double ionsiationPerAtomAll, final double ionisationsPerAtomCutoff) throws IOException {
+  private void WriterFile(final String filename, final double gosTotNoCutoff, final double gosTot, final double ionsiationPerAtomAll, final double ionisationsPerAtomCutoff
+                          ,final double numberElastic) throws IOException {
     BufferedWriter outFile;
     outFile = new BufferedWriter(new OutputStreamWriter(
         new FileOutputStream(filename), "UTF-8"));
     try {
       outFile.write("totalDose,numSimulated,RADDOSEDose,cutoffDose,AllIonisations,IonksationsCutoff,IonisationsOld\n");
       outFile.write(String.format(
-          " %f, %d, %f, %f, %f, %f, %f%n", gosTotNoCutoff, NUM_PHOTONS, raddoseStyleDose + raddoseStyleDoseCompton, gosTot, ionsiationPerAtomAll, ionisationsPerAtomCutoff, ionisationsOld));
+          " %f, %d, %f, %f, %f, %f, %f, %f%n", gosTotNoCutoff, NUM_PHOTONS, raddoseStyleDose + raddoseStyleDoseCompton, gosTot, ionsiationPerAtomAll, ionisationsPerAtomCutoff, ionisationsOld, numberElastic));
     } catch (IOException e) {
       e.printStackTrace();
       System.err.println("WriterFile: Could not write to file " + filename);
