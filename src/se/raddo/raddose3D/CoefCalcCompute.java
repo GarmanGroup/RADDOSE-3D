@@ -1741,6 +1741,13 @@ public class CoefCalcCompute extends CoefCalc {
     return totalAtoms;
   }
   
+  @Override
+  public  double getTotalAtomsInCrystalElement(double crystalVolume, Element elem) {
+    double totalAtoms = totalAtoms(elem);
+    totalAtoms *= (crystalVolume*1E24)/cellVolume;
+    return totalAtoms;   
+  }
+  
   public double totalAtomsEM(final ElementEM element) {
     return getSolventOccurrenceEM(element) + getMacromolecularOccurrenceEM(element);
   }

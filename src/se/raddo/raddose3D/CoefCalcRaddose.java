@@ -620,4 +620,11 @@ public class CoefCalcRaddose extends CoefCalc {
     // TODO Auto-generated method stub
     return 0;
   }
+
+  @Override
+  public double getTotalAtomsInCrystalElement(double crystalVolume,
+      Element elem) {
+    // TODO Auto-generated method stub
+    return 0;
+  }
 }
