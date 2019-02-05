@@ -117,7 +117,7 @@ public class OutputSummaryText implements ExposeObserver, Output,
   }
 
   @Override
-  public void imageComplete(final int image, final double angle) {
+  public void imageComplete(final int image, final double angle, final double lastAngle) {
     // No implementation required
   }
 
@@ -139,6 +139,9 @@ public class OutputSummaryText implements ExposeObserver, Output,
     w.write(String.format("%-42s: %.6f MGy%n",
         "Average Diffraction Weighted Dose",
         expSummary.getAvgDiffractedDose()));
+    w.write(String.format("%-42s: %.6f MGy%n",
+        "Last Diffraction Weighted Dose",
+        expSummary.getLastDWD()));
     w.write(String.format("%-42s: %.2e photons%n",
         "Elastic Yield",
         expSummary.getWedgeElastic()));

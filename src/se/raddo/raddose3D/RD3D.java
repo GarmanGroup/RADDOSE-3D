@@ -298,6 +298,13 @@ public final class RD3D {
       e.printStackTrace();
       System.err.println("Could not initialize RDECSV");
     }
+    try {
+      Writer w = new WriterFile(prefix + "DWDs.csv");
+      outputs.add(of.createOutputSimple("DWDs", w));
+    } catch (IOException e) {
+      e.printStackTrace();
+      System.err.println("Could not initialize DWDs");
+    }
 
     Writer w = new WriterConsole();
     outputs.add(of.createOutputSimple("ProgressIndicator", w));

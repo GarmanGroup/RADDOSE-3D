@@ -684,7 +684,11 @@ public abstract class Crystal {
                   augerEnergy, cryoAugerEnergy, cryoFluorescenceEnergyRelease, feFactors, cryoFeFactors);
 
       for (ExposeObserver eo : exposureObservers) {
-        eo.imageComplete(n, angles[n]);
+        double lastAngle = 0;
+        if (n > 0) {
+          lastAngle = angles[n-1];
+        }
+        eo.imageComplete(n, angles[n], lastAngle);
       }
 
     } // end of looping over angles

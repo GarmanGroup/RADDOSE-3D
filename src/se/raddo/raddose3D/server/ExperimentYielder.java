@@ -55,7 +55,7 @@ public class ExperimentYielder implements Output {
     }
 
     @Override
-    public void imageComplete(final int image, final double angle) {
+    public void imageComplete(final int image, final double angle, final double lastAngle) {
       Thread.yield();
     }
 

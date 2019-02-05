@@ -52,7 +52,7 @@ public class OutputSummaryCSV implements Output {
         "absorbed energy threshold is not a double");
     absEnThreshold = (Double) mProp.get(Output.OUTPUT_ABS_ENERGY_THRESH);
 
-    w.write("Wedge Number, DWD, Elastic Yield (wedge), Diffraction Efficiency, "
+    w.write("Wedge Number, Average DWD, Last DWD,Elastic Yield (wedge), Diffraction Efficiency, "
         + "AD-WC, AD-ExpRegion, Max Dose, Dose Threshold, Abs En Threshold, "
         + "TAD, Dose Contrast, Used Volume, Wedge Absorbed Energy, "
         + "Dose Inefficiency, Dose Inefficiency PE\n");
@@ -74,9 +74,10 @@ public class OutputSummaryCSV implements Output {
     wedgeCounter++;
 
     w.write(String.format(
-        "%d, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f%n",
+        "%d, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f%n",
         wedgeCounter,
         expSummary.getAvgDiffractedDose(),
+        expSummary.getLastDWD(),
         expSummary.getWedgeElastic(),
         expSummary.getWedgeElastic() / expSummary.getAvgDiffractedDose(),
         expSummary.getAvgDoseWholeCrystal(),

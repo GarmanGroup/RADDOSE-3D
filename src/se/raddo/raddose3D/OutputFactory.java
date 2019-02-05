@@ -54,6 +54,8 @@ public class OutputFactory extends ClassFactory {
       revisedOutputName = "se.raddo.raddose3D.OutputSummaryText";
     } else if ("rdecsv".equalsIgnoreCase(outputName)) {
       revisedOutputName = "se.raddo.raddose3D.OutputRDECSV";
+    }else if ("dwds".equalsIgnoreCase(outputName)) {
+      revisedOutputName = "se.raddo.raddose3D.OutputDWDs";
     }else {
       revisedOutputName = outputName;
     }

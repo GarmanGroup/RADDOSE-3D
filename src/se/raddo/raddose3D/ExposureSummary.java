@@ -98,6 +98,10 @@ public class ExposureSummary implements ExposeObserver {
   
   private double[][] fluenceWeightedRDEArray;
   
+  private double[] imageDWD;
+  private double[] angleDWD;
+  private double lastDWD;
+  
   /**
    * A boolean to say whether the RDE drops below 0.5 for any image 
    */
@@ -138,6 +142,8 @@ public class ExposureSummary implements ExposeObserver {
     images = 0;
     fluenceWeightedRDEArray = new double[imageCount][2];
     minRDEArray = new double[imageCount][2];
+    imageDWD = new double[imageCount];
+    angleDWD = new double[imageCount];
     
     averageRDE = 0d;
     fluenceWeightedAvgRDE = 0d;
@@ -177,7 +183,7 @@ public class ExposureSummary implements ExposeObserver {
  //   diffDenom += fluence * doseDecay;
     diffNum += (totalVoxDose + addedDose / 2) * fluence * 1;  //Why addedDose/2? Need to understand before changing
     diffDenom += fluence * 1;
-      
+     
     
     //for RDE
     if (fluence > 0) {
@@ -197,10 +203,13 @@ public class ExposureSummary implements ExposeObserver {
   }
 
   @Override
-  public void imageComplete(final int image, final double angle) {
+  public void imageComplete(final int image, final double angle, final double lastAngle) {
     if (diffDenom != 0) {
       runningSumDiffDose += diffNum / diffDenom;
+      imageDWD[image] = diffNum / diffDenom;
     }
+   //angleDWD[image] = lastAngle + (angle-lastAngle)/2;
+    angleDWD[image] = angle;
     if (fluenceSum > 0) {
       averageRDE = runningSumRDE / imageExposedVoxels;
       fluenceWeightedAvgRDE = fluenceWeightedRunningSumRDE / fluenceSum;
@@ -265,6 +274,8 @@ public class ExposureSummary implements ExposeObserver {
     doseInefficiencyPE = getMaxDose() / (1000 * totalEnergy);
 
     avgDoseWholeCrystal = totalDose / occupiedVoxels;
+    
+    lastDWD = imageDWD[images - 1];
   }
 
   public Double getAvgDiffractedDose() {
@@ -402,6 +413,18 @@ public class ExposureSummary implements ExposeObserver {
   
   public double[][] getMinRDEArray(){
     return minRDEArray;
+  }
+  
+  public double[] getDWDs() {
+    return imageDWD;
+  }
+  
+  public double[] getAngleDWDs() {
+    return angleDWD;
+  }
+  
+  public double getLastDWD() {
+    return lastDWD;
   }
   
 }

@@ -85,7 +85,7 @@ public class OutputProgressIndicator implements Output, ExposeObserver {
   }
 
   @Override
-  public void imageComplete(final int image, final double angle) {
+  public void imageComplete(final int image, final double angle, final double lastAngle) {
     while (PERCENT_100 * (image + 1) / imageCount > wedgeProgress) {
       wedgeProgress++;
 
