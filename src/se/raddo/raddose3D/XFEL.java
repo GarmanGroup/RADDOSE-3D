@@ -70,6 +70,7 @@ public class XFEL {
   //ionisationStuff
   private long[] totalIonisationEvents;
   private double[] totalIonisationEventsPerAtom;
+  private double[] totalIonisationEventsPerNonHAtom;
   private int ionisationsPerPhotoelectron;
   private double totalShellBindingEnergy;
   private double ionisationsOld;
@@ -91,7 +92,7 @@ public class XFEL {
   
   
   private double numFluxPhotons;
-  protected static final long NUM_PHOTONS = 500000;
+  protected static final long NUM_PHOTONS = 10000;
   protected  long PULSE_LENGTH = 30; //length in fs
   protected static final double PULSE_BIN_LENGTH = 0.1; //length in fs
   protected static final double PULSE_ENERGY = 1.4E-3; //energy in J
@@ -116,14 +117,15 @@ public class XFEL {
     ZDimension = 1000 * (zMinMax[1] - zMinMax[0]);
     
     //these break way way too easily so need a more permanent solution
-    dose = new double[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (500/PULSE_BIN_LENGTH) + 10000000)];
-    photonDose = new double[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (500/PULSE_BIN_LENGTH) + 10000000)];
-    electronDose = new double[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (500/PULSE_BIN_LENGTH) + 10000000)];
-    gosElectronDose = new double[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (500/PULSE_BIN_LENGTH) + 10000000)];
-    electronDoseSurrounding = new double[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (500/PULSE_BIN_LENGTH) + 10000000)];
-    totalIonisationEvents = new long[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (500/PULSE_BIN_LENGTH) + 10000000)];
-    lowEnergyIonisations = new long[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (500/PULSE_BIN_LENGTH) + 10000000)];
-    totalIonisationEventsPerAtom = new double[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (500/PULSE_BIN_LENGTH) + 10000000)];
+    dose = new double[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (500/PULSE_BIN_LENGTH) + 1000000)];
+    photonDose = new double[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (500/PULSE_BIN_LENGTH) + 1000000)];
+    electronDose = new double[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (500/PULSE_BIN_LENGTH) + 1000000)];
+    gosElectronDose = new double[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (500/PULSE_BIN_LENGTH) + 1000000)];
+    electronDoseSurrounding = new double[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (500/PULSE_BIN_LENGTH) + 1000000)];
+    totalIonisationEvents = new long[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (500/PULSE_BIN_LENGTH) + 1000000)];
+    lowEnergyIonisations = new long[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (500/PULSE_BIN_LENGTH) + 1000000)];
+    totalIonisationEventsPerAtom = new double[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (500/PULSE_BIN_LENGTH) + 1000000)];
+    totalIonisationEventsPerNonHAtom = new double[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (500/PULSE_BIN_LENGTH) + 1000000)];
     atomicIonisations = new HashMap<Element, Long>();
     atomicIonisationsPerAtom = new HashMap<Element, Double>();
     
@@ -466,14 +468,19 @@ public class XFEL {
       sumElectronDoseSurroundingNoCutOff += electronDoseSurrounding[i];
     }
     double fractionLow = (double)lowIonisationsCutOff / (double)ionisationsCutoff;
+    double totalNonHAtoms = 0, sumIonisations = 0;
     for (Element e: atomicIonisations.keySet()) {
       long temp = StrictMath.round(atomicIonisations.get(e) * (numberOfPhotons/NUM_PHOTONS));
       temp += temp*fractionLow;     
       double totalAtomsElem = coefCalc.getTotalAtomsInCrystalElement(sampleVolume, e);
       double ionsPerAtom = (double)temp / totalAtomsElem;
       atomicIonisationsPerAtom.put(e, ionsPerAtom);
+      if (e.getAtomicNumber() != 1) {
+        totalNonHAtoms += totalAtomsElem;
+        sumIonisations += temp;
+      }
     }
-    
+    double ionisationsPerNonH = sumIonisations/totalNonHAtoms;
     
     gosTot = sumGOSDose + sumPhotonDose;
     gosTotNoCutoff = sumGOSDoseNoCutOff + sumPhotonDoseNoCutOff;
@@ -508,7 +515,7 @@ public class XFEL {
     }
     */
     try {
-      WriterFile("outputXFEL.CSV", gosTotNoCutoff, gosTot, ionsiationPerAtomAll, ionisationsPerAtomCutoff, numberElastic);
+      WriterFile("outputXFEL.CSV", gosTotNoCutoff, gosTot, ionsiationPerAtomAll, ionisationsPerAtomCutoff, numberElastic, ionisationsPerNonH);
     } catch (IOException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
@@ -519,11 +526,11 @@ public class XFEL {
   }
   
   private void WriterFile(final String filename, final double gosTotNoCutoff, final double gosTot, final double ionsiationPerAtomAll, final double ionisationsPerAtomCutoff
-                          ,final double numberElastic) throws IOException {
+                          ,final double numberElastic, final double ionisationsPerNonH) throws IOException {
     String elements = "";
     for (Element e: atomicIonisationsPerAtom.keySet()) {
       int Z = e.getAtomicNumber();
-      elements = elements + String.valueOf(Z) + " " + atomicIonisationsPerAtom.get(e) + ","; 
+      elements = elements + String.valueOf(Z) + " " + atomicIonisationsPerAtom.get(e) + "  "; 
     }
     BufferedWriter outFile;
     outFile = new BufferedWriter(new OutputStreamWriter(
@@ -531,7 +538,7 @@ public class XFEL {
     try {
       outFile.write("totalDose,numSimulated,RADDOSEDose,cutoffDose,AllIonisations,IonksationsCutoff,IonisationsOld\n");
       outFile.write(String.format(
-          " %f, %d, %f, %f, %f, %f, %f, %f, %s%n", gosTotNoCutoff, NUM_PHOTONS, raddoseStyleDose + raddoseStyleDoseCompton, gosTot, ionsiationPerAtomAll, ionisationsPerAtomCutoff, ionisationsOld, numberElastic, elements));
+          " %f, %d, %f, %f, %f, %f, %f, %f, %f, %s%n", gosTotNoCutoff, NUM_PHOTONS, raddoseStyleDose + raddoseStyleDoseCompton, gosTot, ionsiationPerAtomAll, ionisationsPerAtomCutoff, ionisationsOld, numberElastic, ionisationsPerNonH, elements));
     } catch (IOException e) {
       e.printStackTrace();
       System.err.println("WriterFile: Could not write to file " + filename);
