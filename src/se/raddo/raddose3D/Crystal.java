@@ -118,6 +118,8 @@ public abstract class Crystal {
    */
   public final boolean fluorescentEscape;
   
+  public boolean firstWedge;
+  
   /**
    * Goniometer Orientation
    */
@@ -139,6 +141,8 @@ public abstract class Crystal {
    */
  // public double[][] fluorescenceProportionEvent;
   public double[] fluorescenceProportionEvent;
+  
+  double[][][] voxImageDoseLast;
   /**
    * List of registered exposureObservers. Registered objects will be notified
    * of individual voxel exposure events and can also inspect the Crystal object
@@ -210,6 +214,7 @@ public abstract class Crystal {
         CRYSTAL_RESOLUTION_DEF = 10 / ((double) properties.get(CRYSTAL_DIM_X));
         }  
     }
+    firstWedge = true;
   }
   
   /**
@@ -579,6 +584,12 @@ public abstract class Crystal {
    *          translational and rotational information.
    */
   public void expose(final Beam beam, final Wedge wedge) {
+    //initialise previous voxel dose for DWD
+    if (firstWedge == true) {
+      final int[] crystalSize = getCrystSizeVoxels();
+      voxImageDoseLast = new double[crystalSize[0]][crystalSize[1]][crystalSize[2]];
+      firstWedge = false;
+    }
     double fluorescenceEnergyRelease = 0;
     double augerEnergy = 0;   
     double cryoAugerEnergy = 0;
@@ -1029,7 +1040,7 @@ public abstract class Crystal {
       }  //end i
     } // end if pe true
   }//end if there is a surface
-  
+ 
   //loop through all again for DWD - needs to go after cryo as well!!!
   for (int i = 0; i < crystalSize[0]; i++) {
     for (int j = 0; j < crystalSize[1]; j++) {
@@ -1054,10 +1065,11 @@ public abstract class Crystal {
          //   relativeDiffractionEfficiency = 1;
             for (ExposeObserver eo : exposureObservers) {
               eo.exposureObservation(anglenum, i, j, k, voxImageDose[i][j][k],   //voxImageDose should be added dose (doesn't do Compton or escape)
-                  totalVoxelDose, voxImageFluence[i][j][k],
+                  voxImageDoseLast[i][j][k], voxImageFluence[i][j][k],
                   relativeDiffractionEfficiency, absorbedEnergy[i][j][k],
                   voxElasticYield[i][j][k]);
             }
+            voxImageDoseLast[i][j][k] = totalVoxelDose;
           }
         }
       }
