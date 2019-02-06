@@ -292,9 +292,13 @@ public class CoefCalcCompute extends CoefCalc {
   public final double fcbCutoff = 0.0;
   public final double Wcc = 0.0;
   public Map<Element, double[][]> GOSinelastic; //double is shell : 0 = longitudinal, 1 - transverse, 2 = close
+  public Map<Element, double[][]> GOSinelasticInner; //double is shell : 0 = longitudinal, 1 - transverse, 2 = close
+  public Map<Element, double[][]> GOSinelasticOuter; //double is shell : 0 = longitudinal, 1 - transverse, 2 = close
   public double[] cbInel;
   //surrounding
   public Map<Element, double[][]> GOSinelasticSurrounding; //double is shell : 0 = longitudinal, 1 - transverse, 2 = close
+  public Map<Element, double[][]> GOSinelasticSurroundingInner; //double is shell : 0 = longitudinal, 1 - transverse, 2 = close
+  public Map<Element, double[][]> GOSinelasticSurroundingOuter; //double is shell : 0 = longitudinal, 1 - transverse, 2 = close
   public double[] cbInelSurrounding;
   
   public boolean isEM;
@@ -2463,6 +2467,9 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
       //look at doing this using the table
       //get number of shells with cross sections
       int Z = e.getAtomicNumber();
+      if (Z == 6) {
+        double test = 0;
+      }
       int numShells = getNumberOfShells(Z);
   //    double[] shellSigma = new double[numShells];
   //    double[] shellSigma = new double[4];
@@ -2483,6 +2490,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
         //work out overvoltage
         double bindingEnergy = lowOvervoltages[Z][i][0]/1000; //binding energy in keV
         double U = electronEnergy / bindingEnergy;
+        if (U >= 1) {
         if (U < 16) {
           //low overVoltage calculation
           shellSigma[i] = 4*Math.PI*Math.pow(a0, 2)*((U-1)/Math.pow(U, 2)) *
@@ -2504,11 +2512,12 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
         
         
         //Remove hydrogen from the equation for now
+        
         if (Z == 1) {
           elXSection = 0;
           shellSigma[i] = 0;
         }
-        
+        }
         
       }
       
@@ -2884,6 +2893,44 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     int[] numElectrons = {valence, numInnerShells};
     return numElectrons;
   }
+  
+  //with subShells
+  @Override
+  public int[] getNumValenceElectronsSubshells(Element e) {
+    int Z = e.getAtomicNumber();
+    int valence = Z;
+    int numInnerShells = 0;
+    if (Z > 2 && Z <= 10 ) {
+      valence -= 2;
+      numInnerShells = 1; //just K
+    }
+    else if (Z == 11) {
+      numInnerShells = 2;
+      valence -= 4;
+    }
+    else if (Z >= 12 && Z <= 19) {
+      valence -= 10;
+      numInnerShells = 4;
+    }
+    else if (Z >= 20 && Z <= 22) {
+      numInnerShells = 5;
+      valence -= 12;
+    }
+    else if (Z == 23) {
+      numInnerShells = 6;
+      valence -= 14;
+    }
+    else if (Z >= 24 && Z <= 32) {
+      numInnerShells = 7;
+      valence -= 18;
+    }
+//    else {
+ //     numInnerShells = 9;
+ //   }
+    int[] numElectrons = {valence, numInnerShells};
+    return numElectrons;
+  }
+  
   public void setNumberSimulatedElectrons(long numSim) {
     numSimulatedElectrons = numSim;
   }
@@ -3151,6 +3198,27 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
       return 0;
     }
   }
+  public double getShellBindingSubshell(int shellIndex, Element e) {
+    if (shellIndex == 0) {
+      return e.getKEdge();
+    }
+    else if (shellIndex == 1){
+      return e.getL1Binding();
+    }
+    else if (shellIndex == 2) {
+      return e.getL2Edge();
+    }
+    else if (shellIndex == 3) {
+      return e.getL3Edge();
+    }
+    else if (shellIndex == 4) {
+      return e.getM1Edge();
+    }
+    else {
+      return 0;
+    }
+  }
+  
   public double getAdjustmentFactor(Element e, int fcb, double Wcb, double sumfilnU) {
     int Z = e.getAtomicNumber();
     double I = e.getI();
@@ -3465,27 +3533,32 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
   @Override
   public double getWkMolecule(double a, Element e, int shellIndex) {
     int[] shells = {2, 8, 18, 32};
+    int[] subshells = {2, 2, 2, 4, 18, 32};
     int Z = e.getAtomicNumber();
     int sumZ = 0;
     for (Element elem: this.presentElements) {
         sumZ += elem.getAtomicNumber() * totalAtoms(elem);
     }
-    int fk = shells[shellIndex];
+  //  int fk = shells[shellIndex];
+    int fk = subshells[shellIndex];
   //  if (e.getAtomicNumber() == 8 && shellIndex == 1) {
    //   fk = 6;
    // }
-    int[] electrons = getNumValenceElectrons(e);
+  //  int[] electrons = getNumValenceElectrons(e);
+    int[] electrons = getNumValenceElectronsSubshells(e);
     if (shellIndex == electrons[1]) { //if the shell is a valence shell
       fk = electrons[0];
     }
     double plasmaEnergy = getPlasmaEnergyAll();
-    double Wk = Math.pow(Math.pow(a * getShellBinding(shellIndex, e)*1000,2) + (2/3)*((fk*totalAtoms(e))/(sumZ))*Math.pow(plasmaEnergy, 2), 0.5);
+  //  double Wk = Math.pow(Math.pow(a * getShellBinding(shellIndex, e)*1000,2) + (2/3)*((fk*totalAtoms(e))/(sumZ))*Math.pow(plasmaEnergy, 2), 0.5);
+    double Wk = Math.pow(Math.pow(a * getShellBindingSubshell(shellIndex, e)*1000,2) + (2/3)*((fk*totalAtoms(e))/(sumZ))*Math.pow(plasmaEnergy, 2), 0.5);
     //I am really guessing the Lorenz Lorentz sumFk sum Z but just a hunch
     return Wk;
   }
   
   public double[] checkMeanI(double electronEnergy, double a) {
     int[] shells = {2, 8, 18, 32};
+    int[] subshells = {2, 2, 2, 4, 18, 32};
     //just a start for a test
     double ZlnI = getZlnI(electronEnergy);
     double sumfcb = 0;
@@ -3496,14 +3569,16 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
  //       sumfcb += getNumValenceElectrons(e)[0] * totalAtoms(e);
       }
       //get number of shells
-      int[] electrons = getNumValenceElectrons(e);
+   //   int[] electrons = getNumValenceElectrons(e);
+      int[] electrons = getNumValenceElectronsSubshells(e);
       int numInnerShells = electrons[1];
       if (e.getAtomicNumber() == 8) {
    //     numInnerShells = 2;
       }
    //   for (int i = 0; i < numInnerShells; i++) {
       for (int i = 0; i <= numInnerShells; i++) {
-        int fk = shells[i];
+     //   int fk = shells[i];
+        int fk = subshells[i];
         /*
         if (e.getAtomicNumber() == 8 && i == 1) {
           fk = 6;
@@ -3511,7 +3586,8 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
         */
         
         if (i == numInnerShells) { //then this is the valence shell
-          double Uk = getShellBinding(i, e)*1000;
+         // double Uk = getShellBinding(i, e)*1000;
+          double Uk = getShellBindingSubshell(i, e)*1000;
           if (Uk > fcbCutoff) {
             fk = electrons[0];
           }
@@ -4295,6 +4371,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     double lambda = 0;
   //  if (surrounding == false) {
       lambda = populateGOSInel(E, 0, a, surrounding);
+      
    // }
    // else {
       
@@ -4371,6 +4448,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     GOSinelastic = new HashMap<Element, double[][]>();
     GOSinelasticSurrounding = new HashMap<Element, double[][]>();
     int[] shells = {2, 8, 18, 32};
+    int[] subshells = {2, 2, 2, 4, 18, 32};
     double elementaryCharge = 4.80320425E-10; //units = esu = g^0.5 cm^1.5 s^-1
     double m = 9.10938356E-31; // in Kg
     double c = 299792458;
@@ -4391,17 +4469,19 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
       if (totalAtoms(e) > 0) {
       double[][] inelasticShell = new double[maxShells][4];
       //get number of shells
-      int[] electrons = getNumValenceElectrons(e);
+   //   int[] electrons = getNumValenceElectrons(e);
+      int[] electrons = getNumValenceElectronsSubshells(e);
       int numInnerShells = electrons[1];
       for (int i = 0; i <= numInnerShells; i++) {
-        int fk = shells[i];
+      //  int fk = shells[i];
+        int fk = subshells[i];
         if (i == numInnerShells) { // this is a valence
-          fk = electrons[0];
-          
+          fk = electrons[0];    
         }
         double Wk = getWkMolecule(a, e, i);
         if (Wk > 0) {
-          double Uk = getShellBinding(i, e)*1000;
+        //  double Uk = getShellBinding(i, e)*1000;
+          double Uk = getShellBindingSubshell(i, e)*1000;
           if (Uk < fcbCutoff) {
             sumfcb += fk * totalAtoms(e);
             fk = 0;
@@ -4478,6 +4558,55 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     }
   double testLamda = 1/checkSum;
   return testLamda;
+  }
+  
+  @Override
+  public double getGOSInnerLambda(boolean surrounding) {
+    double lambda = 0;
+    if (surrounding == false) {
+      for (Element e : GOSinelastic.keySet()) {
+        int[] electrons = getNumValenceElectronsSubshells(e);
+        int numInnerShells = electrons[1];
+        double[][] elementShells = GOSinelastic.get(e);
+        for (int i = 0; i < numInnerShells; i++) {
+          lambda += elementShells[i][3];
+        }
+      }
+    }
+    else {
+      for (Element e : GOSinelasticSurrounding.keySet()) {
+        int[] electrons = getNumValenceElectronsSubshells(e);
+        int numInnerShells = electrons[1];
+        double[][] elementShells = GOSinelasticSurrounding.get(e);
+        for (int i = 0; i < numInnerShells; i++) {
+          lambda += elementShells[i][3];
+        }
+      }
+    }
+    return 1/lambda;
+  }
+  
+  @Override
+  public double getGOSOuterLambda(boolean surrounding) {
+    double lambda = 0;
+    if (surrounding == false) {
+      for (Element e : GOSinelastic.keySet()) {
+        int[] electrons = getNumValenceElectronsSubshells(e);
+        int numInnerShells = electrons[1];
+        double[][] elementShells = GOSinelastic.get(e);
+        lambda += elementShells[numInnerShells][3];
+        
+      }
+    }
+    else {
+      for (Element e : GOSinelasticSurrounding.keySet()) {
+        int[] electrons = getNumValenceElectronsSubshells(e);
+        int numInnerShells = electrons[1];
+        double[][] elementShells = GOSinelasticSurrounding.get(e);
+        lambda += elementShells[numInnerShells][3];
+      }
+    }
+    return 1/lambda;
   }
   
   public double getEnergyLossDistant(double Wdis, double Uk){ 
@@ -4633,6 +4762,38 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
       }
     }
     
+    return ionisationProbs;
+  }
+  
+  @Override
+  public Map<Element, Double> getGOSOuterShellProbs(boolean surrounding, double totLambda){
+    double totInel = 1/totLambda;  //nm^-1
+    Map<Element, Double> ionisationProbs = new HashMap<Element, Double>();
+    double runningSumFraction = 0;  //should equal 1 by the end
+    if (surrounding == false) {
+      for (Element e : GOSinelastic.keySet()) {
+        double[][] elementShells = GOSinelastic.get(e);
+        int[] electrons = getNumValenceElectronsSubshells(e);
+        int numInnerShells = electrons[1];
+        double lambdaFraction = elementShells[numInnerShells][3]/totInel;
+        runningSumFraction += lambdaFraction;
+        double shellProbs = runningSumFraction;
+        
+        ionisationProbs.put(e, shellProbs);
+      }
+    }
+    else {
+      for (Element e : GOSinelasticSurrounding.keySet()) {
+        double[][] elementShells = GOSinelasticSurrounding.get(e);
+        int[] electrons = getNumValenceElectronsSubshells(e);
+        int numInnerShells = electrons[1];
+        double lambdaFraction = elementShells[numInnerShells][3]/totInel;
+        runningSumFraction += lambdaFraction;
+        double shellProbs = runningSumFraction;
+        
+        ionisationProbs.put(e, shellProbs);
+      }
+    }
     return ionisationProbs;
   }
   

@@ -804,24 +804,37 @@ public class XFEL {
    // double gosInelasticLambda = coefCalc.getGOSInel(surrounding, electronEnergy);
    // Map<Element, double[]> gosIonisationProbs = coefCalc.getGOSShellProbs(surrounding, gosInelasticLambda);
     
-    double gosInelasticLambda = 0;
-    Map<Element, double[]> gosIonisationProbs = null;
-    if (surrounding == false) {
-      gosInelasticLambda = coefCalc.getGOSInel(surrounding, electronEnergy);
-      gosIonisationProbs = coefCalc.getGOSShellProbs(surrounding, gosInelasticLambda);
-    }
-    
-    //some sort of GOS ionisation probs
     
     //Inner shell ionisation x section
     coefCalc.populateCrossSectionCoefficients();
     double startingInnerShellLambda = coefCalc.betheIonisationxSection(startingEnergy, surrounding);
     Map<Element, double[]> ionisationProbs = coefCalc.getAllShellProbs(surrounding); //Really need to make sure that these are in the same order
     
+    double gosInelasticLambda = 0, gosInnerLambda = 0, gosOuterLambda = 0;
+    Map<Element, double[]> gosIonisationProbs = null;
+    Map<Element, Double> gosOuterIonisationProbs = null;
+    if (surrounding == false) {
+      gosInelasticLambda = coefCalc.getGOSInel(surrounding, electronEnergy);
+      gosInnerLambda = coefCalc.getGOSInnerLambda(surrounding);
+      gosOuterLambda = coefCalc.getGOSOuterLambda(surrounding);
+      gosOuterIonisationProbs = coefCalc.getGOSOuterShellProbs(surrounding, gosOuterLambda); //note atm this does not work with plasma in this way
+      gosIonisationProbs = coefCalc.getGOSShellProbs(surrounding, gosInelasticLambda);
+      if (startingInnerShellLambda > 0) {
+        gosInelasticLambda = 1/(1/gosOuterLambda + 1/startingInnerShellLambda);
+      }
+      else {
+        gosInelasticLambda = 1/gosOuterLambda;
+      }
+     
+    }
+    
+    //some sort of GOS ionisation probs
+    
     double startingPlasmonLambda = coefCalc.getPlasmaMFPL(startingEnergy);
     double plasmaEnergy = coefCalc.getPlasmaFrequency()/1000.0; //in keV
     
     double lambdaT = 0;
+    double Pinner = 0;
  //   lambdaT = startingLambda_el;
  //   lambdaT = 1/ (1/startingLambda_el + 1/startingFSELambda);
     
@@ -831,10 +844,15 @@ public class XFEL {
     else {
       lambdaT = startingLambda_el;
     }
+    if (startingInnerShellLambda > 0) {
+      Pinner = (gosInelasticLambda/startingInnerShellLambda);
+    }
     
     double testRND = Math.random();
     double s = -lambdaT*Math.log(testRND);
     double Pinel = 1 - (lambdaT / startingLambda_el);
+    
+     
     
    // Pinel = 0; //quick way so it never activates the slow code
     
@@ -1030,6 +1048,9 @@ public class XFEL {
           
           
           //here I am going to do the GOS model
+          
+
+          
           //determine which element and shell was hit
           int doseTimeGOS = (int) (timeStamp/PULSE_BIN_LENGTH);
           if (doseTimeGOS < 0) {
@@ -1039,7 +1060,35 @@ public class XFEL {
           boolean plasmon = false;
           Element collidedElement = null;
           int collidedShell = -1;
+          
+          //I want to check if it's an inner shell ionisation and if it is use the proper inner shell cross sections
+          //determine if the interaction was inner shell or outer shell
+          double RNDInner = Math.random();
           double elementRND = Math.random();
+          if (RNDInner < Pinner) {
+            //then this hit an inner shell
+            for (Element e : ionisationProbs.keySet()) {
+              collidedShell = findIfElementIonised(e, ionisationProbs, elementRND);
+              if (collidedShell >= 0) {
+                collidedElement = e;
+                break;
+              }
+            } 
+          }
+          else {
+            //hit an outer shell
+            for (Element e : gosOuterIonisationProbs.keySet()) {
+              int[] electrons = coefCalc.getNumValenceElectronsSubshells(e);
+              int numInnerShells = electrons[1];
+              collidedShell = numInnerShells;
+              if (findIfOuterShellIonised(e, gosOuterIonisationProbs, elementRND) == true){
+                collidedElement = e;
+                break;
+              }
+            } 
+          }
+          
+          /*
           for (Element e : gosIonisationProbs.keySet()) {
             collidedShell = findIfElementIonised(e, gosIonisationProbs, elementRND); //will need to adjust this for if plasmon
             if (collidedShell >= 0) {
@@ -1047,13 +1096,18 @@ public class XFEL {
               break;
             }
           } 
+          */
+          
           if (collidedShell == -1) {
             //then this is a collision with the conduction band 
             plasmon = true;
           }
           else {
-            shellBindingEnergy = getShellBindingEnergyGOS(collidedElement, collidedShell);
+            //shellBindingEnergy = getShellBindingEnergyGOS(collidedElement, collidedShell);
+            shellBindingEnergy = getShellBindingEnergy(collidedElement, collidedShell);
           }
+          
+          
           //get the type of collision
           int type = 0;
           if (plasmon == false) {
@@ -1219,14 +1273,32 @@ public class XFEL {
           if (lossSinceLastUpdate > energyLossToUpdate) {
             electronEnergy -= lossSinceLastUpdate;
             gosInelasticLambda = coefCalc.getGOSInel(false, electronEnergy);
+            innerShellLamda = coefCalc.betheIonisationxSection(electronEnergy, false);
+            gosOuterLambda = coefCalc.getGOSOuterLambda(surrounding);
+            gosOuterIonisationProbs = coefCalc.getGOSOuterShellProbs(surrounding, gosOuterLambda);
             gosIonisationProbs = coefCalc.getGOSShellProbs(false, gosInelasticLambda);
+            if (startingInnerShellLambda > 0) {
+              gosInelasticLambda = 1/(1/gosOuterLambda + 1/startingInnerShellLambda);
+            }
+            else {
+              gosInelasticLambda = 1/gosOuterLambda;
+            }
             lossSinceLastUpdate = 0;
           }
         }
         else {
           electronEnergy -= lossSinceLastUpdate;
           gosInelasticLambda = coefCalc.getGOSInel(false, electronEnergy);
+          innerShellLamda = coefCalc.betheIonisationxSection(electronEnergy, false);
+          gosOuterLambda = coefCalc.getGOSOuterLambda(surrounding);
+          gosOuterIonisationProbs = coefCalc.getGOSOuterShellProbs(surrounding, gosOuterLambda);
           gosIonisationProbs = coefCalc.getGOSShellProbs(false, gosInelasticLambda);
+          if (startingInnerShellLambda > 0) {
+            gosInelasticLambda = 1/(1/gosOuterLambda + 1/startingInnerShellLambda);
+          }
+          else {
+            gosInelasticLambda = 1/gosOuterLambda;
+          }
           lossSinceLastUpdate = 0;
         }
         
@@ -1235,7 +1307,7 @@ public class XFEL {
         lambdaEl = coefCalc.getElectronElasticMFPL(electronEnergy, false);
         FSExSection = getFSEXSection(electronEnergy);
         FSELambda = coefCalc.getFSELambda(FSExSection, false);
-        innerShellLamda = coefCalc.betheIonisationxSection(electronEnergy, false);
+        
 
         
       //  lambdaT = 1/(1/lambdaEl + 1/FSELambda);
@@ -1245,7 +1317,9 @@ public class XFEL {
         ionisationProbs = coefCalc.getAllShellProbs(false);
         //GOS ionisation probs
         Pinel = 1 - (lambdaT / lambdaEl);
-        
+        if (innerShellLamda > 0) {
+          Pinner = gosInelasticLambda / innerShellLamda;
+        }
         //update to new position
         xn = previousX + s * xNorm;
         yn = previousY + s * yNorm;
@@ -1473,6 +1547,15 @@ public class XFEL {
       }
     }
     return shell;
+  }
+  
+  private boolean findIfOuterShellIonised(Element e, Map<Element, Double> ionisationProbs, double elementRND) {
+    boolean hit = false;
+    double elementShellProbs = ionisationProbs.get(e);
+      if (elementShellProbs > elementRND) { //Then this element is the one that was ionised
+        hit = true;
+      }
+    return hit;
   }
   
   private double getFSEEnergy(double electronEnergy, double shellBindingEnergy) {
@@ -1748,7 +1831,7 @@ public class XFEL {
     switch (collidedShell) {
       case 0: shellBindingEnergy = collidedElement.getKEdge();
               break;
-      case 1: shellBindingEnergy = collidedElement.getL1Edge();
+      case 1: shellBindingEnergy = collidedElement.getL1Binding();
               break;
       case 2: shellBindingEnergy = collidedElement.getL2Edge();
               break;
@@ -1781,6 +1864,8 @@ public class XFEL {
     }
     return shellBindingEnergy;
   }
+  
+  
   
   private double getPrimaryElasticScatteringAngle(double electronEnergy, int atomicNumber){
     boolean highEnergy = false;

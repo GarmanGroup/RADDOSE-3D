@@ -363,5 +363,30 @@ public class CoefCalcAverage extends CoefCalc {
     // TODO Auto-generated method stub
     return 0;
   }
+
+  @Override
+  public double getGOSOuterLambda(boolean surrounding) {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+
+  @Override
+  public double getGOSInnerLambda(boolean surrounding) {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+
+  @Override
+  public Map<Element, Double> getGOSOuterShellProbs(boolean surrounding,
+      double totLambda) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public int[] getNumValenceElectronsSubshells(Element e) {
+    // TODO Auto-generated method stub
+    return null;
+  }
   
 }

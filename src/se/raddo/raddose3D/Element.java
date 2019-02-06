@@ -463,6 +463,10 @@ public class Element {
     return elementData.get(DatabaseFields.L3);
   }
   
+  public Double getL1Binding() {
+    return elementData.get(DatabaseFields.L1);
+  }
+  
   /**
    * Return the M1 edge energy in keV of the element
    * 

@@ -177,6 +177,8 @@ public abstract class CoefCalc {
   
   public abstract Map<Element, double[]> getGOSShellProbs(boolean surrounding, double totLambda);
   
+  public abstract Map<Element, Double> getGOSOuterShellProbs(boolean surrounding, double totLambda);
+  
   public abstract Map<Element, double[][]> getGOSVariable(boolean surrounding);
   
   public abstract double[] getPlasmonVariable (boolean surrounding);
@@ -190,6 +192,12 @@ public abstract class CoefCalc {
   public abstract double getRecoilEnergyDistant(double EkeV, double WakeV, double Qak);
   
   public abstract double getAvgInelasticEnergy(double E);
+  
+  public abstract double getGOSOuterLambda(boolean surrounding);
+  
+  public abstract double getGOSInnerLambda(boolean surrounding);
+  
+  public abstract int[] getNumValenceElectronsSubshells(Element e);
 
 }
 
