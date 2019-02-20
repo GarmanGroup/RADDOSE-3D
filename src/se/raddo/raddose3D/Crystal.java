@@ -688,7 +688,7 @@ public abstract class Crystal {
         if (n > 0) {
           lastAngle = angles[n-1];
         }
-        eo.imageComplete(n, angles[n], lastAngle);
+        eo.imageComplete(n, angles[n], lastAngle, Math.pow(getCrystalPixPerUM(), -3));
       }
 
     } // end of looping over angles

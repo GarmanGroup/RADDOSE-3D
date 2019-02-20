@@ -64,7 +64,7 @@ public interface ExposeObserver {
    * @param angrad
    *          phi angle of the exposure, in radians.
    */
-  public void imageComplete(int image, double angrad, double lastAngle);
+  public void imageComplete(int image, double angrad, double lastAngle, double voxVol);
 
   /**
    * Voxel exposure summary. Called for every occupied voxel after each

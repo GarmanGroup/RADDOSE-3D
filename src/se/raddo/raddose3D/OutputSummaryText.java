@@ -117,7 +117,7 @@ public class OutputSummaryText implements ExposeObserver, Output,
   }
 
   @Override
-  public void imageComplete(final int image, final double angle, final double lastAngle) {
+  public void imageComplete(final int image, final double angle, final double lastAngle, final double voxVol) {
     // No implementation required
   }
 

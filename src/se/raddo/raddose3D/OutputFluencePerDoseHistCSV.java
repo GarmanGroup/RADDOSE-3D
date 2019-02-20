@@ -144,7 +144,7 @@ public class OutputFluencePerDoseHistCSV implements Output, ExposeObserver {
   }
 
   @Override
-  public void imageComplete(final int image, final double angle, final double lastAngle) {
+  public void imageComplete(final int image, final double angle, final double lastAngle, final double voxVol) {
     double avgDiffDose;
     if (diffractedIntensityDenom == 0) {
       avgDiffDose = 0;

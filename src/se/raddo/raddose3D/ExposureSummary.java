@@ -37,6 +37,7 @@ public class ExposureSummary implements ExposeObserver {
   private int                                 exposedVoxels;
   /** Total number of exposed voxels in a particular image */
   private int                                 imageExposedVoxels;
+  private double[] imageVol;
   /** Total number of occupied (= non-empty) voxels in the crystal. */
   private int                                 occupiedVoxels;
 
@@ -131,6 +132,7 @@ public class ExposureSummary implements ExposeObserver {
     diffDenom = 0d;
     wedgeElastic = 0d;
     imageExposedVoxels = 0;
+    imageVol= new double[imageCount];
     
     runningSumRDE = 0d;
     fluenceWeightedRunningSumRDE = 0d;
@@ -203,13 +205,14 @@ public class ExposureSummary implements ExposeObserver {
   }
 
   @Override
-  public void imageComplete(final int image, final double angle, final double lastAngle) {
+  public void imageComplete(final int image, final double angle, final double lastAngle, final double voxVol) {
     if (diffDenom != 0) {
       runningSumDiffDose += diffNum / diffDenom;
       imageDWD[image] = diffNum / diffDenom;
     }
    //angleDWD[image] = lastAngle + (angle-lastAngle)/2;
     angleDWD[image] = angle;
+    imageVol[image] = imageExposedVoxels*voxVol;
     if (fluenceSum > 0) {
       averageRDE = runningSumRDE / imageExposedVoxels;
       fluenceWeightedAvgRDE = fluenceWeightedRunningSumRDE / fluenceSum;
@@ -425,6 +428,9 @@ public class ExposureSummary implements ExposeObserver {
   
   public double getLastDWD() {
     return lastDWD;
+  }
+  public double[] getImageVol() {
+    return imageVol;
   }
   
 }
