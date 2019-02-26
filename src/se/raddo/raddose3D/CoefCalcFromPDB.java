@@ -368,6 +368,31 @@ public class CoefCalcFromPDB extends CoefCalcCompute {
       
       sequenceOnly = sequenceOnly.substring(SEQRES_RESI_LENGTH + 1,
           sequenceOnly.length());
+      
+      //repeat atom preparation for EM
+      ElementEM hydrogenEM = this.getParserEM().getElement("H");
+      ElementEM oxygenEM = this.getParserEM().getElement("O");
+      ElementEM carbonEM = this.getParserEM().getElement("C");
+      ElementEM nitrogenEM = this.getParserEM().getElement("N");
+      ElementEM phosphorusEM = this.getParserEM().getElement("P");
+      ElementEM sulphursEM = this.getParserEM().getElement("S");
+      ElementEM seleniumsEM = this.getParserEM().getElement("SE");  
+      
+      setMacromolecularOccurrenceEM(hydrogenEM, residue.getHydrogens()
+          + getMacromolecularOccurrenceEM(hydrogenEM));
+      setMacromolecularOccurrenceEM(oxygenEM, residue.getOxygens()
+          + getMacromolecularOccurrenceEM(oxygenEM));
+      setMacromolecularOccurrenceEM(carbonEM, residue.getCarbons()
+          + getMacromolecularOccurrenceEM(carbonEM));
+      setMacromolecularOccurrenceEM(nitrogenEM, residue.getNitrogens()
+          + getMacromolecularOccurrenceEM(nitrogenEM));
+      setMacromolecularOccurrenceEM(phosphorusEM, residue.getPhosphoruses()
+          + getMacromolecularOccurrenceEM(phosphorusEM));
+      setMacromolecularOccurrenceEM(sulphursEM, residue.getSulphurs()
+          + getMacromolecularOccurrenceEM(sulphursEM));
+      setMacromolecularOccurrenceEM(seleniumsEM, residue.getSeleniums()
+          + getMacromolecularOccurrenceEM(seleniumsEM));
+      
     }
   }
 

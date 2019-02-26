@@ -762,6 +762,37 @@ public class XFEL {
     }
   }
   
+  private void produceCompton(Beam beam, CoefCalc coefCalc, double timeStamp, double xn, double yn, double zn, boolean surrounding) {
+    //then the photon scattered by the compton effect
+    //pick an angle theta
+    double photonTheta = Math.PI * Math.random();
+    //now get the energy of the compton electron
+    double mcSquared = m * Math.pow(c, 2);
+    double incidentEnergy = beam.getPhotonEnergy() * Beam.KEVTOJOULES;
+    double Ecomp = ((Math.pow(incidentEnergy, 2) * (1-Math.cos(photonTheta))) / 
+                   (mcSquared * (1+((incidentEnergy/mcSquared)*(1-Math.cos(photonTheta))))))
+                    /Beam.KEVTOJOULES; //in keV
+    if (surrounding == false) {
+      raddoseStyleDoseCompton += Ecomp;
+    }
+    //now get phi - this is the angle to Z
+    double electronPhi = Math.atan((1/Math.tan(photonTheta/2)) / (1 + (incidentEnergy/mcSquared)));
+    //now get the angles and direction
+    double zNorm = Math.cos(electronPhi);
+    double xNorm = PosOrNeg() * Math.random() * Math.pow(1-Math.pow(zNorm, 2), 0.5);
+    double yNorm = PosOrNeg() * Math.pow(1 - Math.pow(xNorm, 2) - Math.pow(zNorm, 2), 0.5);
+    double theta = Math.acos(zNorm);
+    double phi = Math.acos(xNorm / Math.sin(theta));
+
+    trackPhotoelectron(coefCalc, timeStamp, Ecomp, xn, yn, zn, xNorm, yNorm, zNorm, theta, phi, surrounding, true);
+    if (surrounding == false) {
+      ionisationsOld += (int) ((Ecomp*1000) / 21.0);
+    }
+    
+    //i'm noot doing the atomic ionisations here and really need to sort out what's going on. - at least need to do what element it's from even if not shell. 
+  }
+
+  
   private void trackPhotoelectron(CoefCalc coefCalc, double startingTimeStamp, double startingEnergy,
                                   double previousX, double previousY, double previousZ,
                                   double xNorm, double yNorm, double zNorm, double theta, double phi, boolean surrounding,
@@ -882,6 +913,7 @@ public class XFEL {
         }
         //get avg energy and add on ionisation
         double avgEnergy = coefCalc.getAvgInelasticEnergy(startingEnergy);
+        avgEnergy = coefCalc.getPlasmaEnergy(surrounding);
         if (avgEnergy > 0) {
           int numIonisation = (int) (startingEnergy/avgEnergy);
           if (numIonisation > 0) {
@@ -1124,7 +1156,7 @@ public class XFEL {
           double Wk = 0, Qak = 0, Q = 0;
           if (plasmon == false) {
             Uk = shellBindingEnergy*1000;
-            Wk = coefCalc.getWkMolecule(a, collidedElement, collidedShell);
+            Wk = coefCalc.getWkMolecule(a, collidedElement, collidedShell, surrounding);
             Qak = getQak(electronEnergy, Wk, Uk);
           }
           else {
@@ -1227,6 +1259,7 @@ public class XFEL {
               totalIonisationEvents[doseTimeGOS] += 1;
               //sort out how many extra ionisations this will cause
               double avgEnergy = coefCalc.getAvgInelasticEnergy(SEEnergy);
+              avgEnergy = coefCalc.getPlasmaEnergy(surrounding);
               if (avgEnergy > 0) {
                 int numIonisation = (int) (SEEnergy/avgEnergy);
                 if (numIonisation > 0) {
@@ -1469,13 +1502,14 @@ public class XFEL {
               electronDoseSurrounding[doseTime] += electronEnergy;
             }
           }
-          double avgEnergy = coefCalc.getAvgInelasticEnergy(electronEnergy);
+          double avgEnergy = coefCalc.getAvgInelasticEnergy(electronEnergy); //can make this plasmon energy
+          avgEnergy = coefCalc.getPlasmaEnergy(surrounding);
           if (avgEnergy > 0) {
             int numIonisation = (int) (electronEnergy/avgEnergy);
             if (numIonisation > 0) {
               totalIonisationEvents[doseTime] += numIonisation;
               lowEnergyIonisations[doseTime] += numIonisation;
-            }
+            } //omg i'm not adding ionisations to specific elements at the moment!!!
           }
         }
       }
@@ -1575,35 +1609,7 @@ public class XFEL {
     return epsilon;
   }
   
-  private void produceCompton(Beam beam, CoefCalc coefCalc, double timeStamp,
-                              double xn, double yn, double zn, boolean surrounding) {
-    //then the photon scattered by the compton effect
-    //pick an angle theta
-    double photonTheta = Math.PI * Math.random();
-    //now get the energy of the compton electron
-    double mcSquared = m * Math.pow(c, 2);
-    double incidentEnergy = beam.getPhotonEnergy() * Beam.KEVTOJOULES;
-    double Ecomp = ((Math.pow(incidentEnergy, 2) * (1-Math.cos(photonTheta))) / 
-                   (mcSquared * (1+((incidentEnergy/mcSquared)*(1-Math.cos(photonTheta))))))
-                    /Beam.KEVTOJOULES; //in keV
-    if (surrounding == false) {
-      raddoseStyleDoseCompton += Ecomp;
-    }
-    //now get phi - this is the angle to Z
-    double electronPhi = Math.atan((1/Math.tan(photonTheta/2)) / (1 + (incidentEnergy/mcSquared)));
-    //now get the angles and direction
-    double zNorm = Math.cos(electronPhi);
-    double xNorm = PosOrNeg() * Math.random() * Math.pow(1-Math.pow(zNorm, 2), 0.5);
-    double yNorm = PosOrNeg() * Math.pow(1 - Math.pow(xNorm, 2) - Math.pow(zNorm, 2), 0.5);
-    double theta = Math.acos(zNorm);
-    double phi = Math.acos(xNorm / Math.sin(theta));
-    
-    trackPhotoelectron(coefCalc, timeStamp, Ecomp, xn, yn, zn, xNorm, yNorm, zNorm, theta, phi, surrounding, true);
-    if (surrounding == false) {
-      ionisationsOld += (int) ((Ecomp*1000) / 21.0);
-    }
-  }
-  
+
   private double getCosAngleToX() {
     double RNDangle = Math.random();
     double lastProb = 0;

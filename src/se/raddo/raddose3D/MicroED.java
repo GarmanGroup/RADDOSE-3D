@@ -1258,6 +1258,7 @@ private double[] processMonteCarloDose(Beam beam, CoefCalc coefCalc) {
   MonteCarloImageDose = (MonteCarloImageDose * (electronNumber / numSimulatedElectrons)) * Beam.KEVTOJOULES;
   newMonteCarloFSEEscape = (newMonteCarloFSEEscape * (electronNumber / numSimulatedElectrons)) * Beam.KEVTOJOULES;
   MonteCarloFSEEntry = (MonteCarloFSEEntry * (electronNumber / numSimulatedElectrons)) * Beam.KEVTOJOULES;
+  elasticEnergyTot = (elasticEnergyTot * (electronNumber / numSimulatedElectrons)) * Beam.KEVTOJOULES;
   
   double exposedMass = (((coefCalc.getDensity()*1000) * exposedVolume) / 1000);  //in Kg 
   double dose = (MonteCarloDose/exposedMass) / 1E06; //dose in MGy 
@@ -1674,11 +1675,11 @@ private double doPrimaryElastic(double electronEnergy, Map<ElementEM, Double> el
   
   //Impart elastic knock-on energy???
   if (surrounding == false) {
-    double Emax = electronEnergy * ((1 + electronEnergy)/1022)/(456*elasticElement.getAtomicWeight());
+    double Emax = electronEnergy * (1 + electronEnergy/1022)/(456*elasticElement.getAtomicWeight());
     double m = 9.10938356E-28; //kg
     double u = 1.660539040E-27; //kg/(g/mol)
     double restEnergy = 511;
-    Emax = (2/elasticElement.getAtomicWeight())*(m/u)*electronEnergy*((2+electronEnergy)/(restEnergy));
+    Emax = (2/elasticElement.getAtomicWeight())*(m/u)*electronEnergy*(2+electronEnergy/(restEnergy));
     double Ed = 35;
   /*
   double nuclearMass = elasticElement.getAtomicWeight() * 1.660539040E-27;
@@ -1755,6 +1756,7 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
     System.out.println("test");
   }
   
+
   boolean track = true;
   boolean entered = false;
   double entryEnergy = 0;
@@ -1782,6 +1784,7 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
         previousZ = intersectionPoint[2]*1000;
         //update the stopping power and stuff
         stoppingPower = coefCalc.getStoppingPower(startingEnergy, surrounding);
+
         startingLambda_el = coefCalc.getElectronElasticMFPL(startingEnergy, surrounding);
         elasticProbs = coefCalc.getElasticProbs(surrounding);
         startingInnerShellLambda = coefCalc.betheIonisationxSection(startingEnergy, surrounding);
@@ -1853,7 +1856,7 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
             chargePosition = convertToCartesianCoordinates(i, j, k);
             newVelocityVector = adjustVelocityVectorByCharge(electronPosition, chargePosition, s, electronEnergy, xNorm, yNorm, zNorm, coefCalc);
             for (int m = 0; m < 3; m++) {
-              newTotalVelocityVector[m] += newVelocityVector[m];
+              newTotalVelocityVector[m] += newVelocityVector[m]; //is this even right??? don't I want to some charge not velocity vectors
             }
           }
         }
@@ -2031,13 +2034,13 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
       
       //get the angles
  //     double phi = 0, cosPhi = 1, psi = 0, AN = 0, AM = 0, V1 = 0, V2 = 0, V3 = 0, V4 = 0;
-      double alpha = getRutherfordScreeningElement(elasticElement, electronEnergy);
+ //     double alpha = getRutherfordScreeningElement(elasticElement, electronEnergy);
       double RND = Math.random();
       /*
       cosPhi = 1 - ((2*alpha * Math.pow(RND, 2))/(1+alpha-RND));
       phi = Math.acos(cosPhi);
     */
-      theta = Math.acos(1 - ((2*alpha * Math.pow(RND, 2))/(1+alpha-RND)));
+ //     theta = Math.acos(1 - ((2*alpha * Math.pow(RND, 2))/(1+alpha-RND)));
       
       //ELSEPA stuff
 
@@ -2093,6 +2096,7 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
       s = -lambdaT*Math.log(Math.random());
       elasticProbs = coefCalc.getElasticProbs(false);
       ionisationProbs = coefCalc.getAllShellProbs(false);
+      Pinel = 1 - (lambdaT / lambdaEl); 
       
       //update the position and kinetic energy from the charge 
       if (electronEnergy >= 0.05) {
@@ -3309,20 +3313,39 @@ private double[] adjustVelocityVectorByCharge(double[] electronPosition, double[
   double[] accelerationVector = new double[3];
   double[] chargeVelocityVector = new double[3];
   double[] totalVelocityVector = new double[3];
+  int bins  = 100; //need this to update mass
+  double interval = seconds/bins;
+  double relativisticMass = (electronEnergy * Beam.KEVTOJOULES + m*csquared) / csquared;
+  totalVelocityVector = electronVelocityVector;
   for (int j = 0; j < 3; j++) {
     forceVector[j] = forceVectorConstant * normalisedVectorToCharge[j]; //N or J/m
-    double relativisticMass = (electronEnergy * Beam.KEVTOJOULES + m*csquared) / csquared;
-    accelerationVector[j] = forceVector[j] / relativisticMass; // m/s^2 
-    //i think I need an increase in mass here //yeah this mass should be (kinetic energy of electron + m0c^2)/c^2 
+    for (int i = 1; i <= bins; i++) {
+      accelerationVector[j] = forceVector[j] / relativisticMass; // m/s^2 
+      //i think I need an increase in mass here //yeah this mass should be (kinetic energy of electron + m0c^2)/c^2 
     
-    chargeVelocityVector[j] = accelerationVector[j] * seconds * 1E9; // nm/s
-    totalVelocityVector[j] = chargeVelocityVector[j] + electronVelocityVector[j];
+      chargeVelocityVector[j] = accelerationVector[j] * interval * 1E9; // nm/s
+      totalVelocityVector[j] += chargeVelocityVector[j];
+      //update mass
+      betaSquared = Math.pow(Vector.vectorMagnitude(totalVelocityVector)/1E9,2)/csquared;
+      double gamma = 1/Math.pow((1-betaSquared), 0.5);
+      electronEnergy = (gamma-1)*m*csquared;
+      relativisticMass = (electronEnergy + m*csquared) / csquared;
+    }
   }
   /*
   if (MonteCarloCharge > 1E-14  && vectorToChargeMagnitude < 150) {
     System.out.println("test");
   }
   */
+  
+  //error fixer
+  double velocity = Vector.vectorMagnitude(totalVelocityVector)/1E9;
+  if(velocity > c) {
+    double multiple = velocity/c;
+    for (int j = 0; j < 3; j++) {
+      totalVelocityVector[j] = (totalVelocityVector[j]/multiple)-1;
+    }
+  }
   return totalVelocityVector;
 }
 

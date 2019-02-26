@@ -598,7 +598,7 @@ public class CoefCalcRaddose extends CoefCalc {
   }
 
   @Override
-  public double getWkMolecule(double a, Element e, int shellIndex) {
+  public double getWkMolecule(double a, Element e, int shellIndex, boolean surrounding) {
     // TODO Auto-generated method stub
     return 0;
   }
@@ -651,5 +651,11 @@ public class CoefCalcRaddose extends CoefCalc {
   public int[] getNumValenceElectronsSubshells(Element e) {
     // TODO Auto-generated method stub
     return null;
+  }
+
+  @Override
+  public double getPlasmaEnergy(boolean surrounding) {
+    // TODO Auto-generated method stub
+    return 0;
   }
 }

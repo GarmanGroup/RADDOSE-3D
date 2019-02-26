@@ -422,6 +422,7 @@ public class CoefCalcCompute extends CoefCalc {
     Map<Element.CrossSection, Double> cs;
     for (Element e : this.presentElements) {
       cs = e.getAbsCoefficients(energy);
+      
       crossSectionPhotoElectric += totalAtoms(e)
           * cs.get(CrossSection.PHOTOELECTRIC) / cellVolume
           / UNITSPERDECIUNIT;
@@ -434,6 +435,21 @@ public class CoefCalcCompute extends CoefCalc {
       crossSectionComptonAttenuation += totalAtoms(e) 
           * cs.get(CrossSection.COMPTON) / cellVolume
           / UNITSPERDECIUNIT;  
+      
+      /*
+      crossSectionPhotoElectric += getMacromolecularOccurrence(e)
+          * cs.get(CrossSection.PHOTOELECTRIC) / cellVolume
+          / UNITSPERDECIUNIT;
+      crossSectionCoherent += getMacromolecularOccurrence(e)
+          * cs.get(CrossSection.COHERENT) / cellVolume
+          / UNITSPERDECIUNIT;
+      crossSectionTotal += getMacromolecularOccurrence(e)
+          * cs.get(CrossSection.TOTAL) / cellVolume
+          / UNITSPERDECIUNIT;
+      crossSectionComptonAttenuation += getMacromolecularOccurrence(e) 
+          * cs.get(CrossSection.COMPTON) / cellVolume
+          / UNITSPERDECIUNIT;        
+      */
     }
     crossSectionPhotoElectric = crossSectionPhotoElectric / UNITSPERMILLIUNIT;
     crossSectionTotal = crossSectionTotal / UNITSPERMILLIUNIT;
@@ -474,6 +490,7 @@ public class CoefCalcCompute extends CoefCalc {
     // weighted by the cell volume
     Map<Element.CrossSection, Double> cs;
     cs = element.getAbsCoefficients(energy);
+    
     crossSectionPhotoElectric += totalAtoms(element)
         * cs.get(CrossSection.PHOTOELECTRIC) / cellVolume
         / UNITSPERDECIUNIT;
@@ -487,6 +504,20 @@ public class CoefCalcCompute extends CoefCalc {
         * cs.get(CrossSection.COMPTON) / cellVolume
         / UNITSPERDECIUNIT;    
     
+    /*
+    crossSectionPhotoElectric += getMacromolecularOccurrence(element)
+        * cs.get(CrossSection.PHOTOELECTRIC) / cellVolume
+        / UNITSPERDECIUNIT;
+    crossSectionCoherent += getMacromolecularOccurrence(element)
+        * cs.get(CrossSection.COHERENT) / cellVolume
+        / UNITSPERDECIUNIT;
+    crossSectionTotal += getMacromolecularOccurrence(element)
+        * cs.get(CrossSection.TOTAL) / cellVolume
+        / UNITSPERDECIUNIT;
+    crossSectionComptonAttenuation += getMacromolecularOccurrence(element)  
+        * cs.get(CrossSection.COMPTON) / cellVolume
+        / UNITSPERDECIUNIT;   
+    */
     crossSectionPhotoElectric = crossSectionPhotoElectric / UNITSPERMILLIUNIT;
     crossSectionTotal = crossSectionTotal / UNITSPERMILLIUNIT;
     crossSectionCoherent = crossSectionCoherent / UNITSPERMILLIUNIT;
@@ -496,11 +527,12 @@ public class CoefCalcCompute extends CoefCalc {
     absCoeffs.put(ELASTIC, crossSectionCoherent);
     absCoeffs.put(COMPTON, crossSectionComptonAttenuation);
     absCoeffs.put(TOTAL, crossSectionTotal);
-    
-    if (element.getAtomicNumber() == 16) {
-  //    double test = cs.get(CrossSection.PHOTOELECTRIC);
-  //    System.out.println(test);
+    /*
+    if (element.getAtomicNumber() == 15) {
+      double test = cs.get(CrossSection.PHOTOELECTRIC);
+      System.out.println(test);
     }
+    */
     return absCoeffs;
   }
   
@@ -1849,8 +1881,15 @@ public class CoefCalcCompute extends CoefCalc {
     for (ElementEM e : elementList) {
       double Z = e.getAtomicNumber();
   //    Z = 7.22;
+      //Newbury and Myklebust
+      double alpha = (3.4E-3)*(Math.pow(Z, 0.67)/electronEnergy);
+      double sigmaNM = 1E14*((5.21E-21)*(Math.pow(Z, 2)/Math.pow(electronEnergy, 2))*(4*Math.PI/(alpha*(1+alpha)))*Math.pow((electronEnergy+511)/(electronEnergy+1024), 2)); //nm^2
+      //Mott
+      double u = Math.log10(8*electronEnergy*Math.pow(Z, -1.33));
+      double MottSigma=(1E14)*(4.7E-18)*((Math.pow(Z, 1.33)+0.032*Math.pow(Z, 2))/(electronEnergy+0.0155*Math.pow(Z, 1.33)*Math.pow(electronEnergy, 0.5)))*(1/(1-0.02*Math.pow(Z, 0.5)*Math.exp(-Math.pow(u, 2))));
+      
       elasticElement[counter] =  ((1.4E-6 * Math.pow(Z, 1.5))/betaSquared)*
-                       ((1-(0.26*Z)/(137*Math.pow(betaSquared, 0.5))));
+                       ((1-(0.26*Z)/(137*Math.pow(betaSquared, 0.5)))); //Langmore and Smith
                    //    *1E06; // nm^2/atom
       double A = e.getAtomicWeight();
       double molWeightFraction = 0;
@@ -2337,11 +2376,12 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
    // meanJ = meanJ / (1 + 0.85*meanJ/(avgEnergy*1000));
     
     meanJ = (meanJ/1000) * Beam.KEVTOJOULES;
+    double delta = 0.1832;
     double energy = avgEnergy * Beam.KEVTOJOULES;
     Fbeta = Math.log((m*csquared*(energy)* betaSquared) / (2*(1-betaSquared))) 
             - (2*Math.pow((1-betaSquared),0.5) - 1 + betaSquared)
             * Math.log(2) + 1 - betaSquared + (1/8)*(1-Math.pow(1-betaSquared,0.5));
-    stoppingPower = (0.153536/betaSquared)*(sumZ/sumA)*(Fbeta - 2*Math.log(meanJ));
+    stoppingPower = (0.153536/betaSquared)*(sumZ/sumA)*(Fbeta - 2*Math.log(meanJ) - delta);
     stoppingPower = stoppingPower * 1000 * passedDensity /1E7;
     
     if (avgEnergy < 0.1) {
@@ -3169,18 +3209,28 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     return Wcb; //eV
   }
   
-  public double getPlasmaEnergyAll() {
+  public double getPlasmaEnergyAll(boolean surrounding) {
     double hbarSqaured = Math.pow(6.62607004E-34/(2*Math.PI), 2); // m^4 kg^2  s^-2
     double m = 9.10938356E-31; //kg
     double eSquared = Math.pow(4.80320425E-10,2)/1000; //units = esu = Kg^1 cm^3 s^-2
     double plasmaEnergy = 0, sumZ = 0, sumfcb = 0, NZ = 0;
-    for (Element e: this.presentElements) {
+    Set<Element> elementList = presentElements;
+    if (surrounding == true) {
+      elementList = cryoElements;
+    }
+    for (Element e: elementList) {
       NZ += (e.getAtomicNumber()*totalAtoms(e)) / (cellVolume/1E24) ; //electrons. cm^-3
       sumZ += e.getAtomicNumber() * totalAtoms(e);
       sumfcb += getNumValenceElectrons(e)[0] * totalAtoms(e);
     }
     plasmaEnergy =  Math.pow(4*Math.PI*hbarSqaured*NZ*eSquared/m,0.5); //J;
     plasmaEnergy = (plasmaEnergy/Beam.KEVTOJOULES)*1000;
+    return plasmaEnergy;
+  }
+  
+  @Override
+  public double getPlasmaEnergy(boolean surrounding) {
+    double plasmaEnergy = getPlasmaEnergyAll(surrounding);
     return plasmaEnergy;
   }
   
@@ -3503,7 +3553,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     return GOS;
   }
   
-  public double getOOSElement(double W, Element e) {
+  public double getOOSElement(double W, Element e, boolean surrounding) {
     double OOS = 0;
     double a = 1.65;
     int[] shells = {2, 8, 18, 32};
@@ -3512,7 +3562,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     int[] electrons = getNumValenceElectrons(e);
     int numInnerShells = electrons[1];
     for (int i = 0; i < numInnerShells; i++) {
-      double Wk = getWkMolecule(a, e, i);
+      double Wk = getWkMolecule(a, e, i, surrounding);
       int fk = shells[i];
       OOS += totalAtoms(e)*fk*diracDeltaFunction(W-Wk);
     }
@@ -3531,12 +3581,16 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
   }
   
   @Override
-  public double getWkMolecule(double a, Element e, int shellIndex) {
+  public double getWkMolecule(double a, Element e, int shellIndex, boolean surrounding) {
     int[] shells = {2, 8, 18, 32};
     int[] subshells = {2, 2, 2, 4, 18, 32};
     int Z = e.getAtomicNumber();
     int sumZ = 0;
-    for (Element elem: this.presentElements) {
+    Set<Element> elementList = presentElements;
+    if (surrounding == true) {
+      elementList = cryoElements;
+    }
+    for (Element elem: elementList) {
         sumZ += elem.getAtomicNumber() * totalAtoms(elem);
     }
   //  int fk = shells[shellIndex];
@@ -3549,22 +3603,26 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     if (shellIndex == electrons[1]) { //if the shell is a valence shell
       fk = electrons[0];
     }
-    double plasmaEnergy = getPlasmaEnergyAll();
+    double plasmaEnergy = getPlasmaEnergyAll(surrounding);
   //  double Wk = Math.pow(Math.pow(a * getShellBinding(shellIndex, e)*1000,2) + (2/3)*((fk*totalAtoms(e))/(sumZ))*Math.pow(plasmaEnergy, 2), 0.5);
     double Wk = Math.pow(Math.pow(a * getShellBindingSubshell(shellIndex, e)*1000,2) + (2/3)*((fk*totalAtoms(e))/(sumZ))*Math.pow(plasmaEnergy, 2), 0.5);
     //I am really guessing the Lorenz Lorentz sumFk sum Z but just a hunch
     return Wk;
   }
   
-  public double[] checkMeanI(double electronEnergy, double a) {
+  public double[] checkMeanI(double electronEnergy, double a, boolean surrounding) {
     int[] shells = {2, 8, 18, 32};
     int[] subshells = {2, 2, 2, 4, 18, 32};
     //just a start for a test
-    double ZlnI = getZlnI(electronEnergy);
+    double ZlnI = getZlnI(electronEnergy, surrounding);
     double sumfcb = 0;
     //get sumfk*ln(Wk)
     double sumfklnWk = 0;
-    for (Element e: this.presentElements) {
+    Set<Element> elementList = presentElements;
+    if (surrounding == true) {
+      elementList = cryoElements;
+    }
+    for (Element e: elementList) {
       if (e.getAtomicNumber() != 8) {
  //       sumfcb += getNumValenceElectrons(e)[0] * totalAtoms(e);
       }
@@ -3596,7 +3654,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
             fk = 0;
           }
         }
-        double Wk = getWkMolecule(a, e, i);
+        double Wk = getWkMolecule(a, e, i, surrounding);
         if (Wk > 0) {
           sumfklnWk += totalAtoms(e)*fk * Math.log(Wk); //total atoms as my unit cell is one molecule
         }
@@ -3614,9 +3672,13 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     //so I may need to adjust a and b here to get these to match up like I did before, not a million miles away for now though
   }
   
-  public double getZlnI(double electronEnergy) {
+  public double getZlnI(double electronEnergy, boolean surrounding) {
     double sumZ = 0, sumA = 0, meanJ = 0, meanlnI = 0;
-    for (Element e : this.presentElements) { 
+    Set<Element> elementList = presentElements;
+    if (surrounding == true) {
+      elementList = cryoElements;
+    }
+    for (Element e : elementList) { 
       //calculate meanJ (mean excitation energy) for this material
       //molWeight fraction
       double A = e.getAtomicWeight();
@@ -3642,7 +3704,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     return (sumZ * meanlnI);
   }
   
-  public double longitudinalDCS(double W, double Q, double E, double a) {
+  public double longitudinalDCS(double W, double Q, double E, double a, boolean surrounding) {
     //Qk = Uk for bound shells, Qk = 0 for the plasma - Actually I think Qk = Qcb = Wcb;
     int[] shells = {2, 8, 18, 32};
     double elementaryCharge = 4.80320425E-10; //units = esu = g^0.5 cm^1.5 s^-1
@@ -3655,18 +3717,22 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     double constant = 2*Math.PI*(Math.pow(elementaryCharge, 4)/1E18)/(m*vSquared);
     // do bound shells
     double sumfcb = 0, sumDCS = 0;
-    for (Element e: this.presentElements) {
+    Set<Element> elementList = presentElements;
+    if (surrounding == true) {
+      elementList = cryoElements;
+    }
+    for (Element e: elementList) {
       sumfcb += getNumValenceElectrons(e)[0] * totalAtoms(e);
       //get number of shells
       int[] electrons = getNumValenceElectrons(e);
       int numInnerShells = electrons[1];
       for (int i = 0; i < numInnerShells; i++) {
         int fk = shells[i];
-        double Wk = getWkMolecule(a, e, i);
+        double Wk = getWkMolecule(a, e, i, surrounding);
         double Uk = getShellBinding(i, e)*1000;
         double Qk = getQak(E, Wk, Uk);
         //the units below don't work
-        sumDCS += totalAtoms(e)*fk * (1/W)*((2*m*csquared)/(Q*(Q+2*m*csquared)))*getpDisW(E, W, a, e, i)*heavisideStepFunction(Qk-Q);
+        sumDCS += totalAtoms(e)*fk * (1/W)*((2*m*csquared)/(Q*(Q+2*m*csquared)))*getpDisW(E, W, a, e, i, surrounding)*heavisideStepFunction(Qk-Q);
       }
     }
     //and now the plasmon stuff
@@ -3678,7 +3744,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     return sumDCS;
   }
   
-  public double transverseDCS(double W, double Q, double E, double a) {
+  public double transverseDCS(double W, double Q, double E, double a, boolean surrounding) {
   //Qk = Uk for bound shells, Qk = 0 for the plasma
     int[] shells = {2, 8, 18, 32};
     double elementaryCharge = 4.80320425E-10; //units = esu = g^0.5 cm^1.5 s^-1
@@ -3689,22 +3755,26 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     double betaSquared = 1- Math.pow(m*csquared/(Vo + m*csquared), 2);
     double vSquared = betaSquared * csquared;
     double constant = 2*Math.PI*(Math.pow(elementaryCharge, 4)/1E18)/(m*vSquared);
-    double deltaF = getDeltaF(E, a);
+    double deltaF = getDeltaF(E, a, surrounding);
     // do bound shells
     double sumfcb = 0, sumDCS = 0;
-    for (Element e: this.presentElements) {
+    Set<Element> elementList = presentElements;
+    if (surrounding == true) {
+      elementList = cryoElements;
+    }
+    for (Element e: elementList) {
       sumfcb += getNumValenceElectrons(e)[0] * totalAtoms(e);
       //get number of shells
       int[] electrons = getNumValenceElectrons(e);
       int numInnerShells = electrons[1];
       for (int i = 0; i < numInnerShells; i++) {
         int fk = shells[i];
-        double Wk = getWkMolecule(a, e, i);
+        double Wk = getWkMolecule(a, e, i, surrounding);
         double Uk = getShellBinding(i, e)*1000;
         double Qk = getQak(E, Wk, Uk);
         double Wak = getWak(E, Wk, Uk);
         //units don't work
-        sumDCS += totalAtoms(e)*fk * (1/W)*(Math.log(1/(1-betaSquared))-betaSquared-deltaF)*getpDisW(E, W, a, e, i)*heavisideStepFunction(Qk-Q)*diracDeltaFunction(Q-getQminusModified(E, Wak));
+        sumDCS += totalAtoms(e)*fk * (1/W)*(Math.log(1/(1-betaSquared))-betaSquared-deltaF)*getpDisW(E, W, a, e, i, surrounding)*heavisideStepFunction(Qk-Q)*diracDeltaFunction(Q-getQminusModified(E, Wak));
       }
     }
     //and now the plasmon stuff
@@ -3716,7 +3786,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     return sumDCS;
   }
   
-  public double closeDCS(double W, double Q, double E, double a) {
+  public double closeDCS(double W, double Q, double E, double a, boolean surrounding) {
     int[] shells = {2, 8, 18, 32};
     double elementaryCharge = 4.80320425E-10; //units = esu = g^0.5 cm^1.5 s^-1
     double m = 9.10938356E-31; // in Kg
@@ -3728,7 +3798,11 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     double constant = 2*Math.PI*(Math.pow(elementaryCharge, 4)/1E18)/(m*vSquared);
     // do bound shells
     double sumfcb = 0, sumDCS = 0;
-    for (Element e: this.presentElements) {
+    Set<Element> elementList = presentElements;
+    if (surrounding == true) {
+      elementList = cryoElements;
+    }
+    for (Element e: elementList) {
       sumfcb += getNumValenceElectrons(e)[0] * totalAtoms(e);
       //get number of shells
       int[] electrons = getNumValenceElectrons(e);
@@ -3736,7 +3810,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
       for (int i = 0; i < numInnerShells; i++) {
         int fk = shells[i];
         double Qk = getShellBinding(i, e)*1000;
-        double Wk = getWkMolecule(a, e, i);
+        double Wk = getWkMolecule(a, e, i, surrounding);
         double Uk = getShellBinding(i, e)*1000;
         double Qak = getQak(E, Wk, Uk);
         double Fminus = getFMinusClose(E, W, Uk);
@@ -3781,20 +3855,24 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     }
   }
   
-  public double getFnought(double E) {
+  public double getFnought(double E, boolean surrounding) {
     //get sumZ
     double sumZ = 0;
-    for (Element e: this.presentElements) {
+    Set<Element> elementList = presentElements;
+    if (surrounding == true) {
+      elementList = cryoElements;
+    }
+    for (Element e: elementList) {
       sumZ += e.getAtomicNumber()*totalAtoms(e);
     }
-    double plasmaEnergy = getPlasmaEnergyAll();
+    double plasmaEnergy = getPlasmaEnergyAll(surrounding);
     //integrate
     double Wmax = E/2; //change
     double step = Wmax/Wbins;
     double previousY = 0, integralSum = 0;
     for (double i = 0; i <= Wmax; i += step) {
       double W = i;
-      double OOS = getTotalOOSMolecule(W);
+      double OOS = getTotalOOSMolecule(W, surrounding);
       double y = Math.pow(W, -2) * OOS;
       if (i > 0) {
         //then integrate
@@ -3806,14 +3884,18 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     return Fnought;
   }
   
-  public double FnoughtTwo(double E, double a, double L) {
+  public double FnoughtTwo(double E, double a, double L, boolean surrounding) {
     //get sumZ
     int[] shells = {2, 8, 18, 32};
     double sumZ = 0;
-    double plasmaEnergy = (getPlasmaEnergyAll()/1000) * Beam.KEVTOJOULES;
+    double plasmaEnergy = (getPlasmaEnergyAll(surrounding)/1000) * Beam.KEVTOJOULES;
     
     double sumfcb = 0, sumFnought = 0;
-    for (Element e: this.presentElements) {
+    Set<Element> elementList = presentElements;
+    if (surrounding == true) {
+      elementList = cryoElements;
+    }
+    for (Element e: elementList) {
       /*
       sumfcb += getNumValenceElectrons(e)[0] * totalAtoms(e);
       //get number of shells
@@ -3833,7 +3915,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
         if (i == numInnerShells) { // this is a valence
           fk = electrons[0];
         }
-        double Wk = getWkMolecule(a, e, i);
+        double Wk = getWkMolecule(a, e, i, surrounding);
         if (Wk > 0) {
           double Uk = getShellBinding(i, e)*1000;
           if (Uk < fcbCutoff) {
@@ -3854,18 +3936,22 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     return Fnought2;
   }
   
-  public double getTotalOOSMolecule(double W) {
+  public double getTotalOOSMolecule(double W, boolean surrounding) {
     //get the OOS for the whole molecule for this W
     double sumOOS = 0;
-    for (Element e: this.presentElements) {
-      sumOOS += getOOSElement(W, e);
+    Set<Element> elementList = presentElements;
+    if (surrounding == true) {
+      elementList = cryoElements;
+    }
+    for (Element e: elementList) {
+      sumOOS += getOOSElement(W, e, surrounding);
     }
     //add on the plasmon for this OOS
     sumOOS += getOOSPlasmon(W);
     return sumOOS;
   }
   
-  public double getDeltaF(double electronEnergy, double a) {
+  public double getDeltaF(double electronEnergy, double a, boolean surrounding) {
     double deltaF = 0;
     double E = electronEnergy*1000;
     double m = 9.10938356E-31; // in Kg
@@ -3879,16 +3965,20 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     if (betaSquared > 0.95) {
       //use high energy approximation
       double sumZ = 0;
-      for (Element e: this.presentElements) {
+      Set<Element> elementList = presentElements;
+      if (surrounding == true) {
+        elementList = cryoElements;
+      }
+      for (Element e: elementList) {
         sumZ += e.getAtomicNumber()*totalAtoms(e);
       }
-      double plasmaEnergy = getPlasmaEnergyAll();
-      double I = Math.exp(getZlnI(electronEnergy)/sumZ);
+      double plasmaEnergy = getPlasmaEnergyAll(surrounding);
+      double I = Math.exp(getZlnI(electronEnergy, surrounding)/sumZ);
       deltaF = Math.log(Math.pow(plasmaEnergy,2)/((1-betaSquared)*Math.pow(I, 2)))-1;
     }
     else {
       double LHS = 1-betaSquared;
-      double RHS = FnoughtTwo(E, a, 0);
+      double RHS = FnoughtTwo(E, a, 0, surrounding);
       if (LHS < RHS) {
         //get L
         L = Math.pow(1-betaSquared, 0.5); 
@@ -3907,13 +3997,17 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     return deltaF;
   }
   
-  public double calcDeltaF(double L, double betaSquared, double E) {
+  public double calcDeltaF(double L, double betaSquared, double E, boolean surrounding) {
     //get sumZ
     double sumZ = 0;
-    for (Element e: this.presentElements) {
+    Set<Element> elementList = presentElements;
+    if (surrounding == true) {
+      elementList = cryoElements;
+    }
+    for (Element e: elementList) {
       sumZ += e.getAtomicNumber()*totalAtoms(e);
     }
-    double plasmaEnergy = getPlasmaEnergyAll();
+    double plasmaEnergy = getPlasmaEnergyAll(surrounding);
     
     double Wmax = E/2; // need to change Wmax
     //get the integral
@@ -3921,7 +4015,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     double previousY = 0, integralSum = 0;
     for (double i = 0; i <= Wmax; i += step) {
       double W = i;
-      double OOS = getTotalOOSMolecule(W);
+      double OOS = getTotalOOSMolecule(W, surrounding);
       double y = OOS * Math.log(1 + Math.pow(L, 2)/Math.pow(W, 2));
       if (i > 0) {
         //then integrate
@@ -3933,10 +4027,14 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     return deltaF;
   }
   
-  public double calcDeltaF2(double L, double betaSquared, double E, double a) {
+  public double calcDeltaF2(double L, double betaSquared, double E, double a, boolean surrounding) {
     double deltaF = 0, sumfcb = 0, sumZ = 0, sumDeltaF = 0;
     int[] shells = {2, 8, 18, 32};
-    for (Element e: this.presentElements) {
+    Set<Element> elementList = presentElements;
+    if (surrounding == true) {
+      elementList = cryoElements;
+    }
+    for (Element e: elementList) {
       sumZ += e.getAtomicNumber() * totalAtoms(e);
       int[] electrons = getNumValenceElectrons(e);
       int numInnerShells = electrons[1];
@@ -3945,7 +4043,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
         if (i == numInnerShells) { // this is a valence
           fk = electrons[0];
         }
-        double Wk = getWkMolecule(a, e, i);
+        double Wk = getWkMolecule(a, e, i, surrounding);
         if (Wk > 0) {
           double Uk = getShellBinding(i, e)*1000;
           if (Uk < fcbCutoff) {
@@ -3961,7 +4059,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
       sumDeltaF += sumfcb * Math.log(1+Math.pow(L, 2)/Math.pow((Wcb/1000)*Beam.KEVTOJOULES, 2));
     }
     sumDeltaF *= 1/sumZ;
-    double plasmaEnergy = (getPlasmaEnergyAll()/1000) * Beam.KEVTOJOULES;
+    double plasmaEnergy = (getPlasmaEnergyAll(surrounding)/1000) * Beam.KEVTOJOULES;
     deltaF = sumDeltaF - (Math.pow(L, 2)/Math.pow(plasmaEnergy, 2)) * (1-betaSquared);
     return deltaF;
   }
@@ -3995,7 +4093,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     return Fminus;
   }
   
-  public double integrateSigmaLongn(double E, int n, double a) {
+  public double integrateSigmaLongn(double E, int n, double a, boolean surrounding) {
     int[] shells = {2, 8, 18, 32};
     double elementaryCharge = 4.80320425E-10; //units = esu = g^0.5 cm^1.5 s^-1
     double m = 9.10938356E-31; // in Kg
@@ -4008,7 +4106,11 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     
     
     double sumfcb = 0, sumDCS = 0;
-    for (Element e: this.presentElements) {
+    Set<Element> elementList = presentElements;
+    if (surrounding == true) {
+      elementList = cryoElements;
+    }
+    for (Element e: elementList) {
       if (e.getAtomicNumber() != 8) {
     //    sumfcb += getNumValenceElectrons(e)[0] * totalAtoms(e);
       }
@@ -4028,7 +4130,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
           fk = electrons[0];
           
         }
-        double Wk = getWkMolecule(a, e, i);
+        double Wk = getWkMolecule(a, e, i, surrounding);
         if (Wk > 0) {
           double Uk = getShellBinding(i, e)*1000;
           if (Uk < fcbCutoff) {
@@ -4039,7 +4141,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
           double Qak = getQak(E, Wk, Uk);
           double Qminus = getQminusModified(E, Wak);
           //do the integral here
-          double integral = integrateDist(E, Uk, n, i, e, a);
+          double integral = integrateDist(E, Uk, n, i, e, a, surrounding);
        //   fk = 0;
           double DCS = 0;
           if (Qminus > 0 && Qak > 0) {
@@ -4066,7 +4168,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     return sumDCS;
   }
   
-  public double integrateSigmaTransn(double E, int n, double a) {
+  public double integrateSigmaTransn(double E, int n, double a, boolean surrounding) {
     int[] shells = {2, 8, 18, 32};
     double elementaryCharge = 4.80320425E-10; //units = esu = g^0.5 cm^1.5 s^-1
     double m = 9.10938356E-31; // in Kg
@@ -4076,10 +4178,14 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     double betaSquared = 1- Math.pow(m*csquared/(Vo + m*csquared), 2);
     double vSquared = betaSquared * csquared;
     double constant = 2*Math.PI*(Math.pow(elementaryCharge, 4)/1E18)/(m*vSquared); //m^2
-    double deltaF = getDeltaF(E, a);
+    double deltaF = getDeltaF(E, a, surrounding);
     
     double sumfcb = 0, sumDCS = 0;
-    for (Element e: this.presentElements) {
+    Set<Element> elementList = presentElements;
+    if (surrounding == true) {
+      elementList = cryoElements;
+    }
+    for (Element e: elementList) {
          if (e.getAtomicNumber() != 8) {
    //   sumfcb += getNumValenceElectrons(e)[0] * totalAtoms(e);
     }
@@ -4098,7 +4204,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
       if (i == numInnerShells) { // this is a valence
         fk = electrons[0];
       }
-      double Wk = getWkMolecule(a, e, i);
+      double Wk = getWkMolecule(a, e, i, surrounding);
       if (Wk > 0) {
         double Uk = getShellBinding(i, e)*1000;
         if (Uk < fcbCutoff) {
@@ -4107,7 +4213,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
         }
         double Wak = getWak(E, Wk, Uk);
         //do the integral here
-        double integral = integrateDist(E, Uk, n, i, e, a);
+        double integral = integrateDist(E, Uk, n, i, e, a, surrounding);
     //    fk = 0;
         deltaF = 0;
         if (E*1000 > Uk) {
@@ -4129,7 +4235,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     return sumDCS;
   }
   
-  public double integrateSigmaClosen(double E, int n, double a) {
+  public double integrateSigmaClosen(double E, int n, double a, boolean surrounding) {
     int[] shells = {2, 8, 18, 32};
     double elementaryCharge = 4.80320425E-10; //units = esu = g^0.5 cm^1.5 s^-1
     double m = 9.10938356E-31; // in Kg
@@ -4141,7 +4247,11 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     double constant = 2*Math.PI*(Math.pow(elementaryCharge, 4)/1E18)/(m*vSquared); //Kg m^4 s^-2
     
     double sumfcb = 0, sumDCS = 0;
-    for (Element e: this.presentElements) {
+    Set<Element> elementList = presentElements;
+    if (surrounding == true) {
+      elementList = cryoElements;
+    }
+    for (Element e: elementList) {
          if (e.getAtomicNumber() != 8) {
     //  sumfcb += getNumValenceElectrons(e)[0] * totalAtoms(e);
     }
@@ -4160,7 +4270,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
       if (i == numInnerShells) { // this is a valence
         fk = electrons[0];
       }
-        double Wk = getWkMolecule(a, e, i);
+        double Wk = getWkMolecule(a, e, i, surrounding);
       if (Wk > 0) {
         double Uk = getShellBinding(i, e)*1000;
         if (Uk < fcbCutoff) {
@@ -4192,7 +4302,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     return sumDCS;
   }
   
-  public double integrateDist(double E, double Uk, int n, int i, Element e, double a) {
+  public double integrateDist(double E, double Uk, int n, int i, Element e, double a, boolean surrounding) {
     double Wmax = (getEdash(E, Uk)/2)*Beam.KEVTOJOULES;
  //   int bins = 100;
     double step = Wmax/(Wbins*10);
@@ -4203,7 +4313,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
         thisY = 0;
       }
       else {
-      thisY = Math.pow(W, n-1)*getpDisW(E, W, a, e, i);
+      thisY = Math.pow(W, n-1)*getpDisW(E, W, a, e, i, surrounding);
       }
       if (count > 0) {
         sumIntegral += step*((thisY+previousY)/2);
@@ -4216,10 +4326,10 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     return sumIntegral;
   }
   
-  public double getpDisW(double E, double W, double a, Element e, int i) {
+  public double getpDisW(double E, double W, double a, Element e, int i, boolean surrounding) {
     double Uk = getShellBinding(i, e)*1000;
     //get Wk
-    double Wk = getWkMolecule(a, e, i);
+    double Wk = getWkMolecule(a, e, i, surrounding);
     //modify Wk
     double Wak = getWak(E, Wk, Uk);
     double Wdis = 3*Wak - 2*Uk;
@@ -4318,14 +4428,14 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     return a;
   }
   
-  public double getSturnheimera(double E) {
+  public double getSturnheimera(double E, boolean surrounding) {
     double a = 1.5;
     boolean tooHigh = false;
     if (E < 0.1) {
       double test = 0.0;
     }
-    double[] checkEqu = checkMeanI(E, a);
-    double[] lastcheckEqu = checkMeanI(E, a);
+    double[] checkEqu = checkMeanI(E, a, surrounding);
+    double[] lastcheckEqu = checkMeanI(E, a, surrounding);
     if (checkEqu[1] > checkEqu[0]) {
       a = 1.5; //actually I'm going to go down!!!
       while (checkEqu[1] > checkEqu[0]) {
@@ -4335,7 +4445,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
         }
         lastcheckEqu = checkEqu;
         a -= 0.1;
-        checkEqu = checkMeanI(E, a);
+        checkEqu = checkMeanI(E, a, surrounding);
       }
     }
     else {
@@ -4347,7 +4457,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
         }
         lastcheckEqu = checkEqu;
         a += 0.1;
-        checkEqu = checkMeanI(E, a);
+        checkEqu = checkMeanI(E, a, surrounding);
       }
     }
     if (tooHigh == false && a > 1.5) {
@@ -4366,7 +4476,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     double a = 1.5;  //this should be adjusted properly
     //adjust a value
  //   double[] test = checkMeanI(E, a);
-    a = getSturnheimera(E);
+    a = getSturnheimera(E, surrounding);
     sturnheimerAdjustment = a;
     double lambda = 0;
   //  if (surrounding == false) {
@@ -4478,7 +4588,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
         if (i == numInnerShells) { // this is a valence
           fk = electrons[0];    
         }
-        double Wk = getWkMolecule(a, e, i);
+        double Wk = getWkMolecule(a, e, i, surrounding);
         if (Wk > 0) {
         //  double Uk = getShellBinding(i, e)*1000;
           double Uk = getShellBindingSubshell(i, e)*1000;
@@ -4493,7 +4603,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
       //    }
           double Qminus = getQminusModified(E, Wak);
           //do the integral here
-          double integral = integrateDist(E, Uk, n, i, e, a);
+          double integral = integrateDist(E, Uk, n, i, e, a, surrounding);
        //   fk = 0;
           if(E*1000 > Uk && Uk >= fcbCutoff) {
             if (Qak >0 && Qminus > 0) {

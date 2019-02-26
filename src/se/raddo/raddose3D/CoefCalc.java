@@ -185,7 +185,7 @@ public abstract class CoefCalc {
   
   public abstract double returnAdjustment();
   
-  public abstract double getWkMolecule(double a, Element e, int shellIndex);
+  public abstract double getWkMolecule(double a, Element e, int shellIndex, boolean surrounding);
   
   public abstract double getWcbAll();
   
@@ -199,5 +199,6 @@ public abstract class CoefCalc {
   
   public abstract int[] getNumValenceElectronsSubshells(Element e);
 
+  public abstract double getPlasmaEnergy(boolean surrounding);
 }
 
