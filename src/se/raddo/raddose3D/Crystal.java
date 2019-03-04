@@ -637,7 +637,7 @@ public abstract class Crystal {
   public void expose(final Beam beam, final Wedge wedge) {
     //start XFEL here, just comment and uncomment for now
     coefCalc.updateCoefficients(beam);
-//    startXFEL(XDim, YDim, ZDim, beam, wedge, coefCalc);
+    startXFEL(XDim, YDim, ZDim, beam, wedge, coefCalc);
     
     if (useElectrons == true) {
       startMicroED(XDim, YDim, ZDim, beam, wedge, coefCalc, crystalType);

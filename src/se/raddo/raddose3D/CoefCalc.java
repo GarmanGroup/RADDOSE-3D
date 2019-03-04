@@ -149,9 +149,9 @@ public abstract class CoefCalc {
   
   public abstract void populateCrossSectionCoefficients();
   
-  public abstract double getPlasmaMFPL(double electronEnergy);
+  public abstract double getPlasmaMFPL(double electronEnergy, boolean surrounding);
   
-  public abstract double getPlasmaFrequency();
+  public abstract double getPlasmaFrequency(boolean surrounding);
   
   public abstract double getElectronInelasticMFPL(double electronEnergy, boolean surrounding);
   
@@ -171,7 +171,7 @@ public abstract class CoefCalc {
   
   public abstract double getTotalAtomsInCrystalElement(double crystalVolume, Element elem);
   
-  public abstract void getDifferentialInlasticxSection(double electronEnergy);
+  public abstract void getDifferentialInlasticxSection(double electronEnergy, boolean surrounding);
   
   public abstract double getGOSInel(boolean surrounding, double E);
   
@@ -187,7 +187,7 @@ public abstract class CoefCalc {
   
   public abstract double getWkMolecule(double a, Element e, int shellIndex, boolean surrounding);
   
-  public abstract double getWcbAll();
+  public abstract double getWcbAll(boolean surrounding);
   
   public abstract double getRecoilEnergyDistant(double EkeV, double WakeV, double Qak);
   

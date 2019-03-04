@@ -1766,6 +1766,10 @@ public class CoefCalcCompute extends CoefCalc {
     return getSolventOccurrence(element) + getMacromolecularOccurrence(element);
   }
   
+  public double totalAtomsSurr(final Element element) {
+    return getCryoOccurrence(element);
+  }
+  
   @Override
   public double getTotalAtomsInCrystal(double crystalVolume) {
     double totalAtoms = 0;
@@ -2095,7 +2099,7 @@ public class CoefCalcCompute extends CoefCalc {
   
   @Override
   public double getElectronInelasticMFPL(double electronEnergy, boolean surrounding) {
-    /*
+    
     //Individual atom cross sections
     Set<Element> elementList = presentElements;
     if (surrounding == true) {
@@ -2108,7 +2112,7 @@ public class CoefCalcCompute extends CoefCalc {
     double csquared = 3E8*3E8;  // (m/s)^2
     double Vo = electronEnergy * Beam.KEVTOJOULES;
     double betaSquared = 1- Math.pow(m*csquared/(Vo + m*csquared), 2);
-    double weirdLetter = (0.025*Beam.KEVTOJOULES)/(betaSquared*(Vo + m*csquared)); //assuming 0.02 keV per inellasticevent  
+    double weirdLetter = (0.020*Beam.KEVTOJOULES)/(betaSquared*(Vo + m*csquared)); //assuming 0.02 keV per inellasticevent  
     double molWeight = 0;
     double inelasticAll = 0;
 
@@ -2135,10 +2139,11 @@ public class CoefCalcCompute extends CoefCalc {
     }
     double lambda = 1/inelasticAll;
     
-    double test = reimerElectronInelastic(surrounding);
-    return lambda;
-  }
+   // double test = reimerElectronInelastic(surrounding);
+ //   return lambda;
+//  }
   
+  /*
   //Reimer method for the inelastic cross section
   public double reimerElectronInelastic(boolean surrounding) {
     double inelasticMFPL = 0;
@@ -2162,11 +2167,11 @@ public class CoefCalcCompute extends CoefCalc {
     //Reimer way
     double inelasticMFPL = 0;
     double inelastic_x_section = 0;
-    Set<ElementEM> elementList = presentElementsEM;
+    Set<ElementEM> elementListEM = presentElementsEM;
     if (surrounding == true) {
-      elementList = cryoElementsEM;
+      elementListEM = cryoElementsEM;
     }
-    for (ElementEM e : elementList) { 
+    for (ElementEM e : elementListEM) { 
       /*
       double totalAtoms = totalAtoms(e);
       if (surrounding == true) {
@@ -2263,6 +2268,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     double sumA = 0, meanZoverA = 0;
     int sumZ = 0;
     for (Element e : elements) { 
+      
       //calculate meanJ (mean excitation energy) for this material
       //molWeight fraction
       double A = e.getAtomicWeight();
@@ -2860,13 +2866,13 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
   }
   
   @Override
-  public double getPlasmaMFPL(double electronEnergy) {  //non-relativistic at the moment
+  public double getPlasmaMFPL(double electronEnergy, boolean surrounding) {  //non-relativistic at the moment
     double lambda = 0;
     double m = 9.10938356E-31;
     double h = 6.626070040E-34; //m^2 Kg/s
     double hbar = h/(2*Math.PI);
     double a0 = 5.291772106E-2; //nm
-    double plasmaFrequency = getPlasmaFrequency();
+    double plasmaFrequency = getPlasmaFrequency(surrounding);
     double fermiEnergy = 0.294 * Math.pow(plasmaFrequency, 4/3); //eV
     double kf = Math.pow(((fermiEnergy/1000)*Beam.KEVTOJOULES)*2*m/Math.pow(hbar, 2), 0.5);  //m^-1
     double kMinus = Math.pow(2*m, 0.5) *
@@ -2883,7 +2889,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
   }
   
   @Override
-  public double getPlasmaFrequency() {
+  public double getPlasmaFrequency(boolean surrounding) {
     /*
     int sumZ = 0;  //sumA = molecularWeight
     for (Element e : this.presentElements) {
@@ -2898,9 +2904,16 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     double eSquared = Math.pow(4.80320425E-10,2)/1000; //units = esu = Kg^1 cm^3 s^-2
     double plasmaEnergy = 0, sumZ = 0, sumfcb = 0, NZ = 0;
     for (Element e: this.presentElements) {
-      NZ += (e.getAtomicNumber()*totalAtoms(e)) / (cellVolume/1E24) ; //electrons. cm^-3
-      sumZ += e.getAtomicNumber() * totalAtoms(e);
-      sumfcb += getNumValenceElectrons(e)[0] * totalAtoms(e);
+      double atomNum = 0;
+      if (surrounding == true) {
+        atomNum = totalAtomsSurr(e);
+      }
+      else {
+        atomNum = totalAtoms(e);
+      }
+      NZ += (e.getAtomicNumber()*atomNum) / (cellVolume/1E24) ; //electrons. cm^-3
+      sumZ += e.getAtomicNumber() * atomNum;
+      sumfcb += getNumValenceElectrons(e)[0] * atomNum;
     }
       plasmaEnergy =  Math.pow(4*Math.PI*hbarSqaured*NZ*eSquared/m,0.5); //J;
     
@@ -2986,7 +2999,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
   
   
   @Override
-  public void getDifferentialInlasticxSection(double electronEnergy){
+  public void getDifferentialInlasticxSection(double electronEnergy, boolean surrounding){
  // public void getDifferentialInlasticxSection(double electronEnergy){
   //  double[] test = checkMeanI(electronEnergy);
     
@@ -2994,11 +3007,18 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     
     double E = electronEnergy * 1000; //in eV
     
-    double Wcb = getWcbAll();
+    double Wcb = getWcbAll(surrounding);
     double Wmax = E/2;
     int sumfcb = 0, sumAtoms = 0;
     for (Element e: this.presentElements) {
-      sumfcb += getNumValenceElectrons(e)[0] * totalAtoms(e);
+      double atomNum = 0;
+      if (surrounding == true) {
+        atomNum = totalAtomsSurr(e);
+      }
+      else {
+        atomNum = totalAtoms(e);
+      }
+      sumfcb += getNumValenceElectrons(e)[0] * atomNum;
       sumAtoms += totalAtoms(e);
     }
     
@@ -3062,7 +3082,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
           double Ui = getShellBinding(j, e)*1000; //in eV
           sumfilnU += shells[j] * Math.log(Ui);
         }
-        double plasmaEnergy = getElementPlasmaFrequency(e);
+        double plasmaEnergy = getElementPlasmaFrequency(e, surrounding);
   //      double a = 0;
   //      double b = 1;
    //     double Wcb = b * plasmaEnergy * Math.pow((double)(fcb)/Z, 0.5);
@@ -3169,10 +3189,17 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
       //repeat for surrounding as well
     }
   }
-  public double getElementPlasmaFrequency(Element e) {
+  public double getElementPlasmaFrequency(Element e, boolean surrounding) {
     //J = Kg m^2 s^-2
+    double atomNum = 0;
+    if (surrounding == true) {
+      atomNum = totalAtomsSurr(e);
+    }
+    else {
+      atomNum = totalAtoms(e);
+    }
     double hbarSqaured = Math.pow(6.62607004E-34/(2*Math.PI), 2); // m^4 kg^2  s^-2
-    double NZ = (e.getAtomicNumber()*totalAtoms(e)) / (cellVolume/1E24) ; //electrons. cm^-3
+    double NZ = (e.getAtomicNumber()*atomNum) / (cellVolume/1E24) ; //electrons. cm^-3
     double eSquared = Math.pow(4.80320425E-10,2)/1000; //units = esu = Kg^1 cm^3 s^-2
     double m = 9.10938356E-31; //kg
     double plasmaEnergy = Math.pow(4*Math.PI*hbarSqaured*NZ*eSquared/m,0.5); //J
@@ -3181,14 +3208,21 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
   }
   
   @Override
-  public double getWcbAll() {
+  public double getWcbAll(boolean surrounding) {
     double hbarSqaured = Math.pow(6.62607004E-34/(2*Math.PI), 2); // m^4 kg^2  s^-2
     double m = 9.10938356E-31; //kg
     double eSquared = Math.pow(4.80320425E-10,2)/1000; //units = esu = Kg^1 cm^3 s^-2
     double plasmaEnergy = 0, sumZ = 0, sumfcb = 0, NZ = 0;
     for (Element e: this.presentElements) {
-      NZ += (e.getAtomicNumber()*totalAtoms(e)) / (cellVolume/1E24) ; //electrons. cm^-3
-      sumZ += e.getAtomicNumber() * totalAtoms(e);
+      double atomNum = 0;
+      if (surrounding == true) {
+        atomNum = totalAtomsSurr(e);
+      }
+      else {
+        atomNum = totalAtoms(e);
+      }
+      NZ += (e.getAtomicNumber()*atomNum) / (cellVolume/1E24) ; //electrons. cm^-3
+      sumZ += e.getAtomicNumber() * atomNum;
       if (e.getAtomicNumber() != 8) {
    //     sumfcb += getNumValenceElectrons(e)[0] * totalAtoms(e);
       }
@@ -3197,7 +3231,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
       for (int i = 0; i <= numInnerShells; i++) {
         double Uk = getShellBinding(i, e)*1000;
         if (Uk < fcbCutoff) {
-          sumfcb += electrons[0] * totalAtoms(e);
+          sumfcb += electrons[0] * atomNum;
         }
       }
       
@@ -3219,9 +3253,16 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
       elementList = cryoElements;
     }
     for (Element e: elementList) {
-      NZ += (e.getAtomicNumber()*totalAtoms(e)) / (cellVolume/1E24) ; //electrons. cm^-3
-      sumZ += e.getAtomicNumber() * totalAtoms(e);
-      sumfcb += getNumValenceElectrons(e)[0] * totalAtoms(e);
+      double atomNum = 0;
+      if (surrounding == true) {
+        atomNum = totalAtomsSurr(e);
+      }
+      else {
+        atomNum = totalAtoms(e);
+      }
+      NZ += (e.getAtomicNumber()*atomNum) / (cellVolume/1E24) ; //electrons. cm^-3
+      sumZ += e.getAtomicNumber() * atomNum;
+      sumfcb += getNumValenceElectrons(e)[0] * atomNum;
     }
     plasmaEnergy =  Math.pow(4*Math.PI*hbarSqaured*NZ*eSquared/m,0.5); //J;
     plasmaEnergy = (plasmaEnergy/Beam.KEVTOJOULES)*1000;
@@ -3569,9 +3610,9 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     return OOS;
   }
   
-  public double getOOSPlasmon(double W) {
+  public double getOOSPlasmon(double W, boolean surrounding) {
     double OOS = 0;
-    double Wcb = getWcbAll();
+    double Wcb = getWcbAll(surrounding);
     double sumfcb = 0;
     for (Element e: this.presentElements) {
       sumfcb += getNumValenceElectrons(e)[0] * totalAtoms(e);
@@ -3585,13 +3626,23 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     int[] shells = {2, 8, 18, 32};
     int[] subshells = {2, 2, 2, 4, 18, 32};
     int Z = e.getAtomicNumber();
+    
     int sumZ = 0;
     Set<Element> elementList = presentElements;
+    double totNum = totalAtoms(e);
     if (surrounding == true) {
       elementList = cryoElements;
+      totNum = totalAtomsSurr(e);
     }
     for (Element elem: elementList) {
-        sumZ += elem.getAtomicNumber() * totalAtoms(elem);
+      double atomNum = 0;
+      if (surrounding == true) {
+        atomNum = totalAtomsSurr(elem);
+      }
+      else {
+        atomNum = totalAtoms(elem);
+      }
+        sumZ += elem.getAtomicNumber() * atomNum;
     }
   //  int fk = shells[shellIndex];
     int fk = subshells[shellIndex];
@@ -3604,8 +3655,8 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
       fk = electrons[0];
     }
     double plasmaEnergy = getPlasmaEnergyAll(surrounding);
-  //  double Wk = Math.pow(Math.pow(a * getShellBinding(shellIndex, e)*1000,2) + (2/3)*((fk*totalAtoms(e))/(sumZ))*Math.pow(plasmaEnergy, 2), 0.5);
-    double Wk = Math.pow(Math.pow(a * getShellBindingSubshell(shellIndex, e)*1000,2) + (2/3)*((fk*totalAtoms(e))/(sumZ))*Math.pow(plasmaEnergy, 2), 0.5);
+  //  double Wk = Math.pow(Math.pow(a * getShellBinding(shellIndex, e)*1000,2) + (2/3)*((fk*totNum)/(sumZ))*Math.pow(plasmaEnergy, 2), 0.5);
+    double Wk = Math.pow(Math.pow(a * getShellBindingSubshell(shellIndex, e)*1000,2) + (2/3)*((fk*totNum)/(sumZ))*Math.pow(plasmaEnergy, 2), 0.5);
     //I am really guessing the Lorenz Lorentz sumFk sum Z but just a hunch
     return Wk;
   }
@@ -3623,8 +3674,15 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
       elementList = cryoElements;
     }
     for (Element e: elementList) {
+      double atomNum = 0;
+      if (surrounding == true) {
+        atomNum = totalAtomsSurr(e);
+      }
+      else {
+        atomNum = totalAtoms(e);
+      }
       if (e.getAtomicNumber() != 8) {
- //       sumfcb += getNumValenceElectrons(e)[0] * totalAtoms(e);
+ //       sumfcb += getNumValenceElectrons(e)[0] * atomNum;
       }
       //get number of shells
    //   int[] electrons = getNumValenceElectrons(e);
@@ -3656,13 +3714,13 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
         }
         double Wk = getWkMolecule(a, e, i, surrounding);
         if (Wk > 0) {
-          sumfklnWk += totalAtoms(e)*fk * Math.log(Wk); //total atoms as my unit cell is one molecule
+          sumfklnWk += atomNum*fk * Math.log(Wk); //total atoms as my unit cell is one molecule
         }
       }
     }
     //get fcb*ln(Wcb)
     double fcblnWcb = 0;
-    double Wcb = getWcbAll();
+    double Wcb = getWcbAll(surrounding);
     if (Wcb > 0.0) {
       fcblnWcb = sumfcb * Math.log(Wcb);
     }
@@ -3679,23 +3737,30 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
       elementList = cryoElements;
     }
     for (Element e : elementList) { 
+      double atomNum = 0;
+      if (surrounding == true) {
+        atomNum = totalAtomsSurr(e);
+      }
+      else {
+        atomNum = totalAtoms(e);
+      }
       //calculate meanJ (mean excitation energy) for this material
       //molWeight fraction
       double A = e.getAtomicWeight();
       double molWeightFraction = 0;
       int Z = e.getAtomicNumber();
-      molWeightFraction = (totalAtoms(e) * A) / molecularWeight;
-      sumZ += Z * totalAtoms(e);
-      sumA += A * totalAtoms(e);
+      molWeightFraction = (atomNum * A) / molecularWeight; //issue with surr here!!!
+      sumZ += Z * atomNum;
+      sumA += A * atomNum;
       double J = 0, Jstar = 0, k = 0;
       J = e.getI();
       if ((Z != 1) && (Z != 6) && (Z != 7) && (Z != 8) && (Z!= 9) && (Z != 17)) { //already modified in table
         J *= 1.13; //modified from gas to liquid/solid phase
       }
       k = 0.7344 * Math.pow(Z, 0.0367);
-      Jstar = J / (1+ k*(J/(electronEnergy*1000)));
+   //   Jstar = J / (1+ k*(J/(electronEnergy*1000)));
       
-   //   Jstar = J;
+      Jstar = J;
       meanJ += (Jstar * molWeightFraction);  //eV
       meanlnI +=  molWeightFraction * (Z/A) * Math.log(Jstar);
     }
@@ -3722,7 +3787,14 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
       elementList = cryoElements;
     }
     for (Element e: elementList) {
-      sumfcb += getNumValenceElectrons(e)[0] * totalAtoms(e);
+      double atomNum = 0;
+      if (surrounding == true) {
+        atomNum = totalAtomsSurr(e);
+      }
+      else {
+        atomNum = totalAtoms(e);
+      }
+      sumfcb += getNumValenceElectrons(e)[0] * atomNum;
       //get number of shells
       int[] electrons = getNumValenceElectrons(e);
       int numInnerShells = electrons[1];
@@ -3732,12 +3804,12 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
         double Uk = getShellBinding(i, e)*1000;
         double Qk = getQak(E, Wk, Uk);
         //the units below don't work
-        sumDCS += totalAtoms(e)*fk * (1/W)*((2*m*csquared)/(Q*(Q+2*m*csquared)))*getpDisW(E, W, a, e, i, surrounding)*heavisideStepFunction(Qk-Q);
+        sumDCS += atomNum*fk * (1/W)*((2*m*csquared)/(Q*(Q+2*m*csquared)))*getpDisW(E, W, a, e, i, surrounding)*heavisideStepFunction(Qk-Q);
       }
     }
     //and now the plasmon stuff
     double Qk = 0;
-    double Wcb = getWcbAll();
+    double Wcb = getWcbAll(surrounding);
     //units below don't match up
     sumDCS += sumfcb * (1/W)*((2*m*csquared)/(Q*(Q+2*m*csquared)))*diracDeltaFunction(W-Wcb)*heavisideStepFunction(Qk-Q);
     sumDCS *= constant;
@@ -3762,8 +3834,16 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     if (surrounding == true) {
       elementList = cryoElements;
     }
+    
     for (Element e: elementList) {
-      sumfcb += getNumValenceElectrons(e)[0] * totalAtoms(e);
+      double atomNum = 0;
+      if (surrounding == true) {
+        atomNum = totalAtomsSurr(e);
+      }
+      else {
+        atomNum = totalAtoms(e);
+      }
+      sumfcb += getNumValenceElectrons(e)[0] * atomNum;
       //get number of shells
       int[] electrons = getNumValenceElectrons(e);
       int numInnerShells = electrons[1];
@@ -3774,12 +3854,12 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
         double Qk = getQak(E, Wk, Uk);
         double Wak = getWak(E, Wk, Uk);
         //units don't work
-        sumDCS += totalAtoms(e)*fk * (1/W)*(Math.log(1/(1-betaSquared))-betaSquared-deltaF)*getpDisW(E, W, a, e, i, surrounding)*heavisideStepFunction(Qk-Q)*diracDeltaFunction(Q-getQminusModified(E, Wak));
+        sumDCS += atomNum*fk * (1/W)*(Math.log(1/(1-betaSquared))-betaSquared-deltaF)*getpDisW(E, W, a, e, i, surrounding)*heavisideStepFunction(Qk-Q)*diracDeltaFunction(Q-getQminusModified(E, Wak));
       }
     }
     //and now the plasmon stuff
     double Qk = 0;
-    double Wcb = getWcbAll();
+    double Wcb = getWcbAll(surrounding);
     //units don't work
     sumDCS += sumfcb * (1/W)*(Math.log(1/(1-betaSquared))-betaSquared-deltaF)*diracDeltaFunction(W-Wcb)*heavisideStepFunction(Qk-Q)*diracDeltaFunction(Q-getQMinus(W, E, false));
     sumDCS *= constant;
@@ -3803,7 +3883,14 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
       elementList = cryoElements;
     }
     for (Element e: elementList) {
-      sumfcb += getNumValenceElectrons(e)[0] * totalAtoms(e);
+      double atomNum = 0;
+      if (surrounding == true) {
+        atomNum = totalAtomsSurr(e);
+      }
+      else {
+        atomNum = totalAtoms(e);
+      }
+      sumfcb += getNumValenceElectrons(e)[0] * atomNum;
       //get number of shells
       int[] electrons = getNumValenceElectrons(e);
       int numInnerShells = electrons[1];
@@ -3815,13 +3902,13 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
         double Qak = getQak(E, Wk, Uk);
         double Fminus = getFMinusClose(E, W, Uk);
         //units don't work
-        sumDCS += totalAtoms(e)*fk * (1/Math.pow(W, 2))*Fminus*diracDeltaFunction(W-Q)*heavisideStepFunction(Q-Qak);
+        sumDCS += atomNum*fk * (1/Math.pow(W, 2))*Fminus*diracDeltaFunction(W-Q)*heavisideStepFunction(Q-Qak);
       }
     }
     //and now the plasmon stuff
     double Qk = 0;
     double Uk = 0;
-    double Wcb = getWcbAll();
+    double Wcb = getWcbAll(surrounding);
     double Fminus = getFMinusClose(E, Wcb, Uk);
     //units don't work
     sumDCS += sumfcb * (1/Math.pow(W, 2))*Math.pow(W, 2)*diracDeltaFunction(W-Q)*heavisideStepFunction(Q-Qk);
@@ -3863,7 +3950,14 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
       elementList = cryoElements;
     }
     for (Element e: elementList) {
-      sumZ += e.getAtomicNumber()*totalAtoms(e);
+      double atomNum = 0;
+      if (surrounding == true) {
+        atomNum = totalAtomsSurr(e);
+      }
+      else {
+        atomNum = totalAtoms(e);
+      }
+      sumZ += e.getAtomicNumber()*atomNum;
     }
     double plasmaEnergy = getPlasmaEnergyAll(surrounding);
     //integrate
@@ -3896,8 +3990,15 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
       elementList = cryoElements;
     }
     for (Element e: elementList) {
+      double atomNum = 0;
+      if (surrounding == true) {
+        atomNum = totalAtomsSurr(e);
+      }
+      else {
+        atomNum = totalAtoms(e);
+      }
       /*
-      sumfcb += getNumValenceElectrons(e)[0] * totalAtoms(e);
+      sumfcb += getNumValenceElectrons(e)[0] * atomNum;
       //get number of shells
       int[] electrons = getNumValenceElectrons(e);
       int numInnerShells = electrons[1];
@@ -3907,7 +4008,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
         sumFnought += fk/Math.pow(Wk,  2);
       }
       */
-      sumZ += e.getAtomicNumber() * totalAtoms(e);
+      sumZ += e.getAtomicNumber() * atomNum;
       int[] electrons = getNumValenceElectrons(e);
       int numInnerShells = electrons[1];
       for (int i = 0; i <= numInnerShells; i++) {
@@ -3919,7 +4020,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
         if (Wk > 0) {
           double Uk = getShellBinding(i, e)*1000;
           if (Uk < fcbCutoff) {
-            sumfcb += fk * totalAtoms(e);
+            sumfcb += fk * atomNum;
             fk = 0;
           }
           sumFnought += fk / (Math.pow((Wk/1000)*Beam.KEVTOJOULES,  2) + Math.pow(L, 2));
@@ -3927,7 +4028,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
       }
       
     }
-    double Wcb = getWcbAll();
+    double Wcb = getWcbAll(surrounding);
     if (Wcb > 0) {
       sumFnought += sumfcb / (Math.pow((Wcb/1000)*Beam.KEVTOJOULES,  2) + Math.pow(L, 2));
     }
@@ -3947,7 +4048,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
       sumOOS += getOOSElement(W, e, surrounding);
     }
     //add on the plasmon for this OOS
-    sumOOS += getOOSPlasmon(W);
+    sumOOS += getOOSPlasmon(W, surrounding);
     return sumOOS;
   }
   
@@ -3970,7 +4071,14 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
         elementList = cryoElements;
       }
       for (Element e: elementList) {
-        sumZ += e.getAtomicNumber()*totalAtoms(e);
+        double atomNum = 0;
+        if (surrounding == true) {
+          atomNum = totalAtomsSurr(e);
+        }
+        else {
+          atomNum = totalAtoms(e);
+        }
+        sumZ += e.getAtomicNumber()*atomNum;
       }
       double plasmaEnergy = getPlasmaEnergyAll(surrounding);
       double I = Math.exp(getZlnI(electronEnergy, surrounding)/sumZ);
@@ -4005,7 +4113,14 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
       elementList = cryoElements;
     }
     for (Element e: elementList) {
-      sumZ += e.getAtomicNumber()*totalAtoms(e);
+      double atomNum = 0;
+      if (surrounding == true) {
+        atomNum = totalAtomsSurr(e);
+      }
+      else {
+        atomNum = totalAtoms(e);
+      }
+      sumZ += e.getAtomicNumber()*atomNum;
     }
     double plasmaEnergy = getPlasmaEnergyAll(surrounding);
     
@@ -4035,7 +4150,14 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
       elementList = cryoElements;
     }
     for (Element e: elementList) {
-      sumZ += e.getAtomicNumber() * totalAtoms(e);
+      double atomNum = 0;
+      if (surrounding == true) {
+        atomNum = totalAtomsSurr(e);
+      }
+      else {
+        atomNum = totalAtoms(e);
+      }
+      sumZ += e.getAtomicNumber() * atomNum;
       int[] electrons = getNumValenceElectrons(e);
       int numInnerShells = electrons[1];
       for (int i = 0; i <= numInnerShells; i++) {
@@ -4047,14 +4169,14 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
         if (Wk > 0) {
           double Uk = getShellBinding(i, e)*1000;
           if (Uk < fcbCutoff) {
-            sumfcb += fk * totalAtoms(e);
+            sumfcb += fk * atomNum;
             fk = 0;
           }
           sumDeltaF += fk * Math.log(1+Math.pow(L, 2)/Math.pow((Wk/1000)*Beam.KEVTOJOULES, 2));
         }
       }
     }
-    double Wcb = getWcbAll();
+    double Wcb = getWcbAll(surrounding);
     if (Wcb > 0) {
       sumDeltaF += sumfcb * Math.log(1+Math.pow(L, 2)/Math.pow((Wcb/1000)*Beam.KEVTOJOULES, 2));
     }
@@ -4111,8 +4233,15 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
       elementList = cryoElements;
     }
     for (Element e: elementList) {
+      double atomNum = 0;
+      if (surrounding == true) {
+        atomNum = totalAtomsSurr(e);
+      }
+      else {
+        atomNum = totalAtoms(e);
+      }
       if (e.getAtomicNumber() != 8) {
-    //    sumfcb += getNumValenceElectrons(e)[0] * totalAtoms(e);
+    //    sumfcb += getNumValenceElectrons(e)[0] * atomNum);
       }
       //get number of shells
       int[] electrons = getNumValenceElectrons(e);
@@ -4134,7 +4263,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
         if (Wk > 0) {
           double Uk = getShellBinding(i, e)*1000;
           if (Uk < fcbCutoff) {
-            sumfcb += fk * totalAtoms(e);
+            sumfcb += fk * atomNum;
             fk = 0;
           }
           double Wak = getWak(E, Wk, Uk);
@@ -4145,7 +4274,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
        //   fk = 0;
           double DCS = 0;
           if (Qminus > 0 && Qak > 0) {
-            DCS = totalAtoms(e)*fk * Math.log(((Qak/1000)*Beam.KEVTOJOULES/Qminus)*((Qminus+2*m*csquared)/((Qak/1000)*Beam.KEVTOJOULES+2*m*csquared))) * integral;
+            DCS = atomNum*fk * Math.log(((Qak/1000)*Beam.KEVTOJOULES/Qminus)*((Qminus+2*m*csquared)/((Qak/1000)*Beam.KEVTOJOULES+2*m*csquared))) * integral;
           }
           if (E*1000 > Uk) {
             sumDCS += DCS;
@@ -4155,7 +4284,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     }
     //and now the plasmon stuff
  //   double Qak = 0, Uk = 0;
-    double Wcb = getWcbAll();
+    double Wcb = getWcbAll(surrounding);
     double Qcb = Wcb;
     double Qminus = getQminusModified(E, Wcb);
    // double Wak = getWak(E, Wcb, Uk);
@@ -4186,8 +4315,15 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
       elementList = cryoElements;
     }
     for (Element e: elementList) {
+      double atomNum = 0;
+      if (surrounding == true) {
+        atomNum = totalAtomsSurr(e);
+      }
+      else {
+        atomNum = totalAtoms(e);
+      }
          if (e.getAtomicNumber() != 8) {
-   //   sumfcb += getNumValenceElectrons(e)[0] * totalAtoms(e);
+   //   sumfcb += getNumValenceElectrons(e)[0] * atomNum;
     }
     //get number of shells
     int[] electrons = getNumValenceElectrons(e);
@@ -4208,7 +4344,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
       if (Wk > 0) {
         double Uk = getShellBinding(i, e)*1000;
         if (Uk < fcbCutoff) {
-          sumfcb += fk * totalAtoms(e);
+          sumfcb += fk * atomNum;
           fk = 0;
         }
         double Wak = getWak(E, Wk, Uk);
@@ -4217,14 +4353,14 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     //    fk = 0;
         deltaF = 0;
         if (E*1000 > Uk) {
-          sumDCS += totalAtoms(e)* fk * (Math.log(1/(1-betaSquared))-betaSquared-deltaF) * integral;
+          sumDCS += atomNum* fk * (Math.log(1/(1-betaSquared))-betaSquared-deltaF) * integral;
         }
       }
     }
     }
     //and now the plasmon stuff
  //   double Qak = 0, Uk = 0;
-    double Wcb = getWcbAll();
+    double Wcb = getWcbAll(surrounding);
    // double Wak = getWak(E, Wcb, Uk);
     double integral = integrateDistPlasmon(E, n, Wcb);
     //units below don't match up
@@ -4252,8 +4388,15 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
       elementList = cryoElements;
     }
     for (Element e: elementList) {
+      double atomNum = 0;
+      if (surrounding == true) {
+        atomNum = totalAtomsSurr(e);
+      }
+      else {
+        atomNum = totalAtoms(e);
+      }
          if (e.getAtomicNumber() != 8) {
-    //  sumfcb += getNumValenceElectrons(e)[0] * totalAtoms(e);
+    //  sumfcb += getNumValenceElectrons(e)[0] * atomNum;
     }
     //get number of shells
     int[] electrons = getNumValenceElectrons(e);
@@ -4274,7 +4417,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
       if (Wk > 0) {
         double Uk = getShellBinding(i, e)*1000;
         if (Uk < fcbCutoff) {
-          sumfcb += fk * totalAtoms(e);
+          sumfcb += fk * atomNum;
           fk = 0;
         }
         double Wak = getWak(E, Wk, Uk);
@@ -4283,14 +4426,14 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
         double integral = doCloseIntegral(E, n, Uk, Qak); // change this
      //   fk = 0;
         if (E*1000 > Uk) {
-          sumDCS += totalAtoms(e)*fk * integral;
+          sumDCS += atomNum*fk * integral;
         }
       }
     }
     }
     //and now the plasmon stuff
  //   double Qak = 0, Uk = 0;
-    double Wcb = getWcbAll();
+    double Wcb = getWcbAll(surrounding);
     double Qcb = Wcb;
     double Qminus = getQminusModified(E, Wcb);
    // double Wak = getWak(E, Wcb, Uk);
@@ -4393,7 +4536,8 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
   }
   
   public double doCloseIntegral(double E, int n, double Uk, double Qak) {
-    double Wmax = 1000*getEdash(E, Uk)/2;
+    E = getEdash(E, Uk);
+    double Wmax = 1000*E/2;
     double a = getClosea(E);
     double sumIntegral = 0;
     sumIntegral = solveCloseAnalytical(Wmax, n, E, a) - solveCloseAnalytical(Qak, n, E, a);
@@ -4479,7 +4623,15 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     a = getSturnheimera(E, surrounding);
     sturnheimerAdjustment = a;
     double lambda = 0;
-  //  if (surrounding == false) {
+  //  if (surrounding == true) {
+    /*
+    double stoppingPower = populateGOSInel(E, 1, a, surrounding);
+    stoppingPower = 1/stoppingPower;
+   // stoppingPower = stoppingPower / (cellVolume/1000); //J/nm
+    stoppingPower = stoppingPower / Beam.KEVTOJOULES; //keV/nm
+    double testing = 0;
+    */
+  //  }
       lambda = populateGOSInel(E, 0, a, surrounding);
       
    // }
@@ -4503,15 +4655,17 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
       if (E < 0.1) {
         double test = 0.0;
       }
+
       /*
-      if (E < 0.1) { 
     int n = 1;
-    double longIntegral = integrateSigmaLongn(E, n, a);
-    double transIntegral = integrateSigmaTransn(E, n, a);
-    double closeintegral = integrateSigmaClosen(E, n, a);
+    double longIntegral = integrateSigmaLongn(E, n, a, false);
+    double transIntegral = integrateSigmaTransn(E, n, a, false);
+    double closeintegral = integrateSigmaClosen(E, n, a, false);
     double stoppingPower = (longIntegral + transIntegral + closeintegral)*1E18; // units J nm^2
     stoppingPower = stoppingPower / (cellVolume/1000); //J/nm
     stoppingPower = stoppingPower / Beam.KEVTOJOULES; //keV/nm
+    */
+      /*
     //and now straggling parameter
     n = 2;
     double stragglingParam = (integrateSigmaLongn(E, n, a) + integrateSigmaTransn(E, n, a) + integrateSigmaClosen(E, n, a))*1E18; // units J^2 nm^2
@@ -4576,7 +4730,14 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
       elementList = cryoElements;
     }
     for (Element e: elementList) {
-      if (totalAtoms(e) > 0) {
+      double atomNum = 0;
+      if (surrounding == true) {
+        atomNum = totalAtomsSurr(e);
+      }
+      else {
+        atomNum = totalAtoms(e);
+      }
+      if (atomNum > 0) {
       double[][] inelasticShell = new double[maxShells][4];
       //get number of shells
    //   int[] electrons = getNumValenceElectrons(e);
@@ -4593,7 +4754,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
         //  double Uk = getShellBinding(i, e)*1000;
           double Uk = getShellBindingSubshell(i, e)*1000;
           if (Uk < fcbCutoff) {
-            sumfcb += fk * totalAtoms(e);
+            sumfcb += fk * atomNum;
             fk = 0;
           }
           double Wak = getWak(E, Wk, Uk);
@@ -4607,13 +4768,13 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
        //   fk = 0;
           if(E*1000 > Uk && Uk >= fcbCutoff) {
             if (Qak >0 && Qminus > 0) {
-              inelasticShell[i][0] = (1E18 * constant *(totalAtoms(e)*fk * Math.log(((Qak/1000)*Beam.KEVTOJOULES/Qminus)*((Qminus+2*m*csquared)/((Qak/1000)*Beam.KEVTOJOULES+2*m*csquared))) * integral))
+              inelasticShell[i][0] = (1E18 * constant *(atomNum*fk * Math.log(((Qak/1000)*Beam.KEVTOJOULES/Qminus)*((Qminus+2*m*csquared)/((Qak/1000)*Beam.KEVTOJOULES+2*m*csquared))) * integral))
                                   /(cellVolume/1000); //nm^-1  //long
             }
-            inelasticShell[i][1] = (1E18 * constant * (totalAtoms(e)* fk * (Math.log(1/(1-betaSquared))-betaSquared-deltaF) * integral))
+            inelasticShell[i][1] = (1E18 * constant * (atomNum* fk * (Math.log(1/(1-betaSquared))-betaSquared-deltaF) * integral))
                                  /(cellVolume/1000); //nm^-1;  //trans
             integral = doCloseIntegral(E, n, Uk, Qak); 
-            inelasticShell[i][2] = (1E18 * constant * (totalAtoms(e)*fk * integral)) / (cellVolume/1000); //nm^-1; //close
+            inelasticShell[i][2] = (1E18 * constant * (atomNum*fk * integral)) / (cellVolume/1000); //nm^-1; //close
             inelasticShell[i][3] = inelasticShell[i][0]+inelasticShell[i][1]+inelasticShell[i][2]; //tot
             checkSum += inelasticShell[i][3];
           }
@@ -4637,7 +4798,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     cbInel = new double[4];
     cbInelSurrounding = new double[4];
  //   double Qak = 0, Uk = 0;
-    double Wcb = getWcbAll();
+    double Wcb = getWcbAll(surrounding);
     double Qcb = Wcb;
     double Qminus = getQminusModified(E, Wcb);
   //  Qminus = getQMinus(Wcb, E*1000, false);

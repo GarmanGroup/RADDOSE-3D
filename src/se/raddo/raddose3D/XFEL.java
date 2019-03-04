@@ -60,10 +60,11 @@ public class XFEL {
   private TreeMap<Double, double[]>[]  lowEnergyAngles;
   private TreeMap<Double, double[]>[]  highEnergyAngles;
   
-  private HashMap<Integer, double[]> augerTransitionLinewidths;
-  private HashMap<Integer, double[]> augerTransitionProbabilities;
-  private HashMap<Integer, double[]> cumulativeTransitionProbabilities;
-  private HashMap<Integer, double[]> augerTransitionEnergies;
+  private HashMap<Integer, HashMap<Integer, double[]>> augerTransitionLinewidths;
+  private HashMap<Integer, HashMap<Integer, double[]>> augerTransitionProbabilities;
+  private HashMap<Integer, HashMap<Integer, double[]>> cumulativeTransitionProbabilities;
+  private HashMap<Integer, HashMap<Integer, double[]>> augerTransitionEnergies;
+  private HashMap<Integer, HashMap<Integer, double[]>> augerExitIndex;
   private int[] augerElements = {6, 7, 8, 16};
   private HashMap<Integer, Double> totKAugerProb;
   
@@ -132,11 +133,12 @@ public class XFEL {
     lowEnergyAngles = new TreeMap[95];
     highEnergyAngles = new TreeMap[95];
     
-    augerTransitionLinewidths = new HashMap<Integer, double[]>();
-    augerTransitionProbabilities = new HashMap<Integer, double[]>();
-    augerTransitionEnergies = new HashMap<Integer, double[]>();
+    augerTransitionLinewidths = new HashMap<Integer, HashMap<Integer, double[]>>();
+    augerTransitionProbabilities = new HashMap<Integer, HashMap<Integer, double[]>>();
+    augerTransitionEnergies = new HashMap<Integer, HashMap<Integer, double[]>>();
     totKAugerProb = new HashMap<Integer, Double>();
-    cumulativeTransitionProbabilities = new HashMap<Integer, double[]>();
+    cumulativeTransitionProbabilities = new HashMap<Integer, HashMap<Integer, double[]>>();
+    augerExitIndex = new HashMap<Integer, HashMap<Integer, double[]>>();
     
     energyPerInel = new TreeMap<Double, Double>();
     energyPerInelSurrounding = new TreeMap<Double, Double>();
@@ -685,18 +687,21 @@ public class XFEL {
   private void produceAugerElectron(CoefCalc coefCalc, double timeStamp, double shellIndex, Element ionisedElement,
                                     double xn, double yn, double zn, boolean surrounding) {
     //only do if from a K shell for now
-    if (shellIndex == 0) {
+    int shell = (int) shellIndex;
+    int Z = ionisedElement.getAtomicNumber();
+    if (Z == 6 || Z == 7 || Z == 8 || Z == 16) {
+    if (shellIndex == 0 || (shellIndex < 4 && Z==16)) {
       //only do for elements that are possible right now - C N O S
-      int Z = ionisedElement.getAtomicNumber();
-      if (Z == 6 || Z == 7 || Z == 8 || Z == 16) {
         double shellFluorescenceYield = ionisedElement.getKShellFluorescenceYield();
         double fluoresenceYieldKRND = Math.random();
         if (fluoresenceYieldKRND > shellFluorescenceYield) { //then this will emit and Auger electron 
           // determine which transition happened in the usual way from cumulative probs
           double transitionRND = Math.random();
-          double[] transitionProbs = cumulativeTransitionProbabilities.get(Z);
-          double[] linewidths = augerTransitionLinewidths.get(Z);
-          double[] energies = augerTransitionEnergies.get(Z);
+          
+          double[] transitionProbs = cumulativeTransitionProbabilities.get(Z).get(shell);
+          double[] linewidths = augerTransitionLinewidths.get(Z).get(shell);
+          double[] energies = augerTransitionEnergies.get(Z).get(shell);
+          double[] exitIndexes = augerExitIndex.get(Z).get(shell);
           int transitionIndex = 0;
           for (int i = 0; i < transitionProbs.length; i++) {
             if (transitionRND < transitionProbs[i]) { // then it's this transition
@@ -709,6 +714,7 @@ public class XFEL {
           double augerLinewidth = linewidths[transitionIndex];
           double augerLifetime = 1E15*((h/(2*Math.PI)) / ((augerLinewidth/1000)*Beam.KEVTOJOULES));
           timeStamp += augerLifetime;
+          int exitIndex = (int) exitIndexes[transitionIndex];
           //add a charge 
           
           //account for this transition so cross sections can be adjusted
@@ -734,8 +740,11 @@ public class XFEL {
           if (surrounding == false) {
             ionisationsOld += 1;
           }
+          //produce another Auger from the leftover hole - only will happen if possible
+          produceAugerElectron(coefCalc, timeStamp, exitIndex, ionisedElement, xn, yn, zn, surrounding);
         }
       }
+    /*
       else if (Z == 26) {
         double augerEnergy = 6.5;
         double augerLifetime = 1E15*((h/(2*Math.PI)) / ((0.55/1000)*Beam.KEVTOJOULES));
@@ -758,7 +767,7 @@ public class XFEL {
           ionisationsOld += 1;
         }
       }
-      
+      */
     }
   }
   
@@ -790,6 +799,7 @@ public class XFEL {
     }
     
     //i'm noot doing the atomic ionisations here and really need to sort out what's going on. - at least need to do what element it's from even if not shell. 
+    
   }
 
   
@@ -800,7 +810,8 @@ public class XFEL {
     //do full Monte Carlo simulation the same way as in MicroED, but with a time stamp and adding dose every step
     //just do stopping power for now dw about surrounding and aUger and fluorescence and stuff
     
-    double energyLossToUpdate = 0.2; //keV
+  //  double energyLossToUpdate = 0.2; //keV
+    double energyLossToUpdate = 0.0; //keV
     double lossSinceLastUpdate = 0;
     
     int ionisationTime = (int) (startingTimeStamp/PULSE_BIN_LENGTH);
@@ -861,8 +872,8 @@ public class XFEL {
     
     //some sort of GOS ionisation probs
     
-    double startingPlasmonLambda = coefCalc.getPlasmaMFPL(startingEnergy);
-    double plasmaEnergy = coefCalc.getPlasmaFrequency()/1000.0; //in keV
+    double startingPlasmonLambda = coefCalc.getPlasmaMFPL(startingEnergy, surrounding);
+    double plasmaEnergy = coefCalc.getPlasmaFrequency(surrounding)/1000.0; //in keV
     
     double lambdaT = 0;
     double Pinner = 0;
@@ -943,11 +954,35 @@ public class XFEL {
           stoppingPower = coefCalc.getStoppingPower(electronEnergy, surrounding);
           double newFSExSection = getFSEXSection(startingEnergy);
           double newFSELambda = coefCalc.getFSELambda(startingFSExSection, false);
+          startingInnerShellLambda = coefCalc.betheIonisationxSection(startingEnergy, surrounding);
+          ionisationProbs = coefCalc.getAllShellProbs(surrounding);
           gosInelasticLambda = coefCalc.getGOSInel(surrounding, electronEnergy);
+          gosInnerLambda = coefCalc.getGOSInnerLambda(surrounding);
+          gosOuterLambda = coefCalc.getGOSOuterLambda(surrounding);
+          gosOuterIonisationProbs = coefCalc.getGOSOuterShellProbs(surrounding, gosOuterLambda); //note atm this does not work with plasma in this way
+          if (startingInnerShellLambda > 0) {
+            gosInelasticLambda = 1/(1/gosOuterLambda + 1/startingInnerShellLambda);
+          }
+          else {
+            gosInelasticLambda = 1/gosOuterLambda;
+          }
         //  lambdaT = 1/(1/coefCalc.getElectronElasticMFPL(electronEnergy, surrounding) + 1/newFSELambda);
-          lambdaT = 1/(1/coefCalc.getElectronElasticMFPL(electronEnergy, surrounding) + 1/gosInelasticLambda);
+          startingLambda_el = coefCalc.getElectronElasticMFPL(electronEnergy, surrounding);
+          if (gosInelasticLambda > 0) {
+            lambdaT = 1 / (1/startingLambda_el + 1/gosInelasticLambda);
+          }
+          else {
+            lambdaT = startingLambda_el;
+          }
           elasticProbs = coefCalc.getElasticProbs(surrounding);
           gosIonisationProbs = coefCalc.getGOSShellProbs(surrounding, gosInelasticLambda);
+          Pinel = 1 - (lambdaT / startingLambda_el);
+          if (startingInnerShellLambda > 0) {
+            Pinner = (gosInelasticLambda/startingInnerShellLambda);
+          }
+          else {
+            Pinner = 0;
+          }
           //get a new s and xn, yn, zn
           s = -lambdaT*Math.log(Math.random());
           xn = previousX + s*xNorm;
@@ -1161,7 +1196,7 @@ public class XFEL {
           }
           else {
             Uk = 0;
-            Wk = coefCalc.getWcbAll();
+            Wk = coefCalc.getWcbAll(surrounding);
             Qak = Wk;
           }
           double Wak = WkToWak(electronEnergy, Wk, Uk); //eV
@@ -1303,6 +1338,8 @@ public class XFEL {
         
         //GOS lambda
         if (electronEnergy > 0.5) {  //this will make it not quite behave right at edges :/
+          //need to change the 0.5 to if it crosses an ionisation boundary  or just higher than highest binding energy shell
+          //put in a get maxUk thing in coefCalc
           if (lossSinceLastUpdate > energyLossToUpdate) {
             electronEnergy -= lossSinceLastUpdate;
             gosInelasticLambda = coefCalc.getGOSInel(false, electronEnergy);
@@ -1716,13 +1753,24 @@ public class XFEL {
   
   private void populateAugerLinewidths() throws IOException {
     for (int i = 0; i < augerElements.length; i++) {
+      int shell = 0;
+      HashMap<Integer, double[]> shellLinewidths = new HashMap<Integer, double[]>();
+      HashMap<Integer, double[]> shellTransitionProbs = new HashMap<Integer, double[]>();
+      HashMap<Integer, double[]> shellTransitionEnergies = new HashMap<Integer, double[]>();
+      HashMap<Integer, double[]> shellCumulativeProbs = new HashMap<Integer, double[]>();
+      HashMap<Integer, double[]> leftShellIndexes = new HashMap<Integer, double[]>();
+      if (augerElements[i] == 16) {
+        shell = 3;
+      }
+      for (int j =0; j <= shell; j++) {
     //  if (augerElements[i] != 26) {
       double[] transitionProbs = new double[21];
+      double[] leftShellIndex = new double[21];
       double[] cumulativeTransitionProbs = new double[21];
       double sumProb = 0;
       double[] transitionLinewidths = new double[21];
       double[] transitionEnergies = new double[21];
-      String elementNum = String.valueOf(augerElements[i]) + ".csv";
+      String elementNum = String.valueOf(augerElements[i]) + "-" + j + ".csv";
       String filePath = "constants/auger_linewidths/" + elementNum;
       InputStreamReader isr = locateFile(filePath);
       BufferedReader br = new BufferedReader(isr);
@@ -1735,18 +1783,30 @@ public class XFEL {
         transitionLinewidths[count] = Double.parseDouble(components[1]);
         transitionProbs[count] = Double.parseDouble(components[2]);
         transitionEnergies[count] = Double.parseDouble(components[3]);
+        leftShellIndex[count] = Double.parseDouble(components[4]);
         sumProb += transitionProbs[count];
         cumulativeTransitionProbs[count] = sumProb;
       }
       //scale cumulative probs to one 
-      for (int j = 0; j < cumulativeTransitionProbs.length; j++) {
-        cumulativeTransitionProbs[j] = cumulativeTransitionProbs[j] * (1/sumProb);
+      for (int k = 0; k < cumulativeTransitionProbs.length; k++) {
+        cumulativeTransitionProbs[k] = cumulativeTransitionProbs[k] * (1/sumProb);
       }
-      augerTransitionLinewidths.put(augerElements[i], transitionLinewidths);
-      augerTransitionProbabilities.put(augerElements[i], transitionProbs);
-      augerTransitionEnergies.put(augerElements[i], transitionEnergies);
-      totKAugerProb.put(augerElements[i], sumProb);
-      cumulativeTransitionProbabilities.put(augerElements[i], cumulativeTransitionProbs);
+      if (j == 0) {
+        totKAugerProb.put(augerElements[i], sumProb);
+      }
+      shellLinewidths.put(j, transitionLinewidths);
+      shellTransitionProbs.put(j, transitionProbs);
+      shellTransitionEnergies.put(j, transitionEnergies);
+      shellCumulativeProbs.put(j, cumulativeTransitionProbs);
+      leftShellIndexes.put(j,  leftShellIndex);
+      }
+
+      
+      augerTransitionLinewidths.put(augerElements[i], shellLinewidths);
+      augerTransitionProbabilities.put(augerElements[i], shellTransitionProbs);
+      augerTransitionEnergies.put(augerElements[i], shellTransitionEnergies);
+      augerExitIndex.put(augerElements[i], leftShellIndexes);
+      cumulativeTransitionProbabilities.put(augerElements[i], shellCumulativeProbs);
     //  }
     //  else {
         

@@ -236,7 +236,7 @@ public class CoefCalcAverage extends CoefCalc {
   }
 
   @Override
-  public double getPlasmaMFPL(double electronEnergy) {
+  public double getPlasmaMFPL(double electronEnergy, boolean surrounding) {
     // TODO Auto-generated method stub
     return 0;
   }
@@ -248,7 +248,7 @@ public class CoefCalcAverage extends CoefCalc {
   }
 
   @Override
-  public double getPlasmaFrequency() {
+  public double getPlasmaFrequency(boolean surrounding) {
     // TODO Auto-generated method stub
     return 0;
   }
@@ -297,7 +297,7 @@ public class CoefCalcAverage extends CoefCalc {
   }
 
   @Override
-  public void getDifferentialInlasticxSection(double electronEnergy) {
+  public void getDifferentialInlasticxSection(double electronEnergy, boolean surrounding) {
     // TODO Auto-generated method stub
     
   }
@@ -340,7 +340,7 @@ public class CoefCalcAverage extends CoefCalc {
   }
 
   @Override
-  public double getWcbAll() {
+  public double getWcbAll(boolean surrounding) {
     // TODO Auto-generated method stub
     return 0;
   }
