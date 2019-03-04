@@ -4709,8 +4709,12 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
   }
   
   public double populateGOSInel(double E, int n, double a, boolean surrounding) {
-    GOSinelastic = new HashMap<Element, double[][]>();
-    GOSinelasticSurrounding = new HashMap<Element, double[][]>();
+    if (surrounding == false) {
+      GOSinelastic = new HashMap<Element, double[][]>();
+    }
+    else {
+      GOSinelasticSurrounding = new HashMap<Element, double[][]>();
+    }
     int[] shells = {2, 8, 18, 32};
     int[] subshells = {2, 2, 2, 4, 18, 32};
     double elementaryCharge = 4.80320425E-10; //units = esu = g^0.5 cm^1.5 s^-1

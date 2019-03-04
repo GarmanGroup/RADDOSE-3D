@@ -1367,7 +1367,7 @@ public class XFEL {
             gosInelasticLambda = 1/(1/gosOuterLambda + 1/startingInnerShellLambda);
           }
           else {
-            gosInelasticLambda = 1/gosOuterLambda;
+            gosInelasticLambda = gosOuterLambda;
           }
           lossSinceLastUpdate = 0;
         }
@@ -1546,7 +1546,9 @@ public class XFEL {
             if (numIonisation > 0) {
               totalIonisationEvents[doseTime] += numIonisation;
               lowEnergyIonisations[doseTime] += numIonisation;
-            } //omg i'm not adding ionisations to specific elements at the moment!!!
+              //decide what elements to add this to
+              
+            } 
           }
         }
       }
@@ -2155,6 +2157,35 @@ System.out.println("test");
 return angleRadians;
 }
   
+private Element chooseLowEnElement(CoefCalc coefCalc, double Pinner, Map<Element, Double> gosOuterIonisationProbs, Map<Element, double[]> ionisationProbs) {
+  Element collidedElement = null;
+  int collidedShell = -1;
+  double RNDInner = Math.random();
+  double elementRND = Math.random();
+  if (RNDInner < Pinner) {
+    //then this hit an inner shell
+    for (Element e : ionisationProbs.keySet()) {
+      collidedShell = findIfElementIonised(e, ionisationProbs, elementRND);
+      if (collidedShell >= 0) {
+        collidedElement = e;
+        break;
+      }
+    } 
+  }
+  else {
+    //hit an outer shell
+    for (Element e : gosOuterIonisationProbs.keySet()) {
+      int[] electrons = coefCalc.getNumValenceElectronsSubshells(e);
+      int numInnerShells = electrons[1];
+      collidedShell = numInnerShells;
+      if (findIfOuterShellIonised(e, gosOuterIonisationProbs, elementRND) == true){
+        collidedElement = e;
+        break;
+      }
+    } 
+  }
+  return collidedElement;
+}
 
   private int getGOSInelasticType(double[][] shellProbs, int shellIndex) {
     double runningSum = 0;
