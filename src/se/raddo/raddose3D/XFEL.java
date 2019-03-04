@@ -930,6 +930,14 @@ public class XFEL {
           if (numIonisation > 0) {
             totalIonisationEvents[doseTime] += numIonisation;
             lowEnergyIonisations[doseTime] += numIonisation;
+            //decide what elements to add this to
+            Element hitElem = chooseLowEnElement(coefCalc, Pinner, gosOuterIonisationProbs, ionisationProbs);
+            if (atomicIonisations.containsKey(hitElem)) {
+              atomicIonisations.put(hitElem, atomicIonisations.get(hitElem)+numIonisation);
+            }
+            else {
+              atomicIonisations.put(hitElem, (long)numIonisation);
+            }
           }
         }
       }
@@ -1300,6 +1308,15 @@ public class XFEL {
                 if (numIonisation > 0) {
                   totalIonisationEvents[doseTimeGOS] += numIonisation;
                   lowEnergyIonisations[doseTimeGOS] += numIonisation;
+                  //decide what elements to add this to
+                  Element hitElem = chooseLowEnElement(coefCalc, Pinner, gosOuterIonisationProbs, ionisationProbs);
+                  if (atomicIonisations.containsKey(hitElem)) {
+                    atomicIonisations.put(hitElem, atomicIonisations.get(hitElem)+numIonisation);
+                  }
+                  else {
+                    atomicIonisations.put(hitElem, (long)numIonisation);
+                  }
+                  
                 }
               }
             }
@@ -1547,7 +1564,13 @@ public class XFEL {
               totalIonisationEvents[doseTime] += numIonisation;
               lowEnergyIonisations[doseTime] += numIonisation;
               //decide what elements to add this to
-              
+              Element hitElem = chooseLowEnElement(coefCalc, Pinner, gosOuterIonisationProbs, ionisationProbs);
+              if (atomicIonisations.containsKey(hitElem)) {
+                atomicIonisations.put(hitElem, atomicIonisations.get(hitElem)+numIonisation);
+              }
+              else {
+                atomicIonisations.put(hitElem, (long)numIonisation);
+              }
             } 
           }
         }
