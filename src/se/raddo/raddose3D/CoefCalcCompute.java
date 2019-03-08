@@ -146,7 +146,9 @@ public class CoefCalcCompute extends CoefCalc {
    * Water concentration in mM.
    */
   protected static final double      WATER_CONCENTRATION          = 55555;    // Density of 1 g/cm^3
+// protected static final double      WATER_CONCENTRATION          = 51666;    // Density of 0.93 g/cm^3
 
+  
   /**
    * Units per milli-unit.
    */
@@ -2375,11 +2377,12 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
       double meanI = Math.exp(meanlnI);  //This is now right!!!
     double Fbeta = 0;
     
-    
+   // meanI = 78;
     meanJ = meanI; //eV  
     //modify meanJ for lower energy by Joy and Luo method - essential for FSEs
    // double k = 0.85; //test
    // meanJ = meanJ / (1 + 0.85*meanJ/(avgEnergy*1000));
+  //  passedDensity = 0.998;
     
     meanJ = (meanJ/1000) * Beam.KEVTOJOULES;
     double delta = 0.1832;

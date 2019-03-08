@@ -103,6 +103,7 @@ public class MicroED {
   private double newMonteCarloFSEEscape;
   private double FSEsum;
   private int FSEcount;
+  private double lowEnDose;
   
   private double MonteCarloElectronsExited;
   private double MonteCarloElectronsEntered;
@@ -138,6 +139,11 @@ public class MicroED {
   private double MonteCarloGOSDose;
   private double MonteCarloGOSEscape;
   private double energyLostGOS;
+  private double avgW;
+  private double Wcount;
+  private double avgShell;
+  
+  private boolean GOS = true;
   
   
   protected static final int NUM_REGIONS = 10;
@@ -711,6 +717,7 @@ private double getESTARDose(CoefCalc coefCalc, Beam beam) {
 
 // Everything below will be the Monte Carlo section of the code
 private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
+ // boolean GOS = true;
   int triggered = 0; //testing
   int thisTriggered = 0; //testing
   
@@ -753,6 +760,7 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
   Map<Element, double[]> gosIonisationProbs = null;
   Map<Element, Double> gosOuterIonisationProbs = null;
  // if (surrounding == false) {
+  if (GOS == true) {
     gosInelasticLambda = coefCalc.getGOSInel(false, startingEnergy);
     gosInnerLambda = coefCalc.getGOSInnerLambda(false);
     gosOuterLambda = coefCalc.getGOSOuterLambda(false);
@@ -764,7 +772,7 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
     else {
       gosInelasticLambda = gosOuterLambda;
     }
-   
+  }
   //}
   
   
@@ -790,7 +798,7 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
     //inner shell ionisation
     startingInnershellLambdaSurrounding = coefCalc.betheIonisationxSection(startingEnergy, true);
     ionisationProbsSurrounding = coefCalc.getAllShellProbs(true);
-    
+    if (GOS == true) {
     gosInelasticLambdaSur = coefCalc.getGOSInel(true, startingEnergy);
     gosInnerLambdaSur  = coefCalc.getGOSInnerLambda(true);
     gosOuterLambdaSur  = coefCalc.getGOSOuterLambda(true);
@@ -802,7 +810,7 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
     else {
       gosInelasticLambdaSur = gosOuterLambdaSur;
     }
-    
+    }
   }
   
   
@@ -898,17 +906,21 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
     stoppingPower = startingStoppingPowerSurrounding;
  //   lambdaT = 1 / (1/startingLambda_elSurrounding + 1/startingInelasticLambdaSurrounding);
   //  lambdaT = 1 / (1/startingLambda_elSurrounding + 1/gosInelasticLambdaSur);
- //   lambdaT = 1 / (1/startingLambda_elSurrounding + 1/startingFSELambdaSurrounding);
+    lambdaT = 1 / (1/startingLambda_elSurrounding + 1/startingInelasticLambdaSurrounding);
+    if (GOS == true) {
     if (gosInelasticLambdaSur > 0) {
       lambdaT = 1 / (1/startingLambda_elSurrounding + 1/gosInelasticLambdaSur);
     }
     else {
       lambdaT = startingLambda_elSurrounding;
     }
+    }
     PEL = lambdaT / startingLambda_elSurrounding;
     Pinel = 1 - (lambdaT / startingLambda_elSurrounding);
+    if (GOS == true) {
     if (startingInnershellLambdaSurrounding > 0) {
       Pinner = (gosInelasticLambdaSur/startingInnershellLambdaSurrounding);
+    }
     }
     Pfse = startingInelasticLambdaSurrounding/startingFSELambdaSurrounding;
     double testRND = Math.random();
@@ -921,9 +933,9 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
       surrounding = false;
       entered = true;
       
-      
-   //   electronEnergy -= intersectionDistance * stoppingPower; //taken out for GOS
-      
+      if (GOS == false) {
+        electronEnergy -= intersectionDistance * stoppingPower; //taken out for GOS
+      }
       
       previousX = intersectionPoint[0]*1000;
       previousY = intersectionPoint[1]*1000;
@@ -945,11 +957,11 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
    // double lambdaT = 1 / (1/startingLambda_el + 1/startingFSELambda); //FSE one
   //  double lambdaT = 1 / (1/startingLambda_el + 1/startingFSELambda + 1/startingPlasmonLambda);
    // double lambdaT = 1 / (1/startingLambda_el + 1/startingInnerShellLambda + 1/startingFSELambda);
- //   lambdaT = 1 / (1/startingLambda_el + 1/startingInelasticLambda);
+    lambdaT = 1 / (1/startingLambda_el + 1/startingInelasticLambda);
  //   lambdaT = 1 / (1/startingLambda_el + 1/gosInelasticLambda);
  //   lambdaT = 1 / (1/startingLambda_el + 1/startingFSELambda);
 
-    
+if (GOS == true) {
     if (gosInelasticLambda > 0) {
       lambdaT = 1 / (1/startingLambda_el + 1/gosInelasticLambda);
     }
@@ -959,6 +971,7 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
     if (startingInnerShellLambda > 0) {
       Pinner = (gosInelasticLambda/startingInnerShellLambda);
     }
+}
     
     PEL = lambdaT / startingLambda_el;
     Pinel = 1 - (lambdaT / startingLambda_el);
@@ -1048,7 +1061,9 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
       //else produce an FSE
       triggered += 1;
       theta = doPrimaryInelastic(coefCalc, previousX, previousY, previousZ, electronEnergy, ionisationProbs, false, beam, i, previousTheta, previousPhi, Pinner, gosOuterIonisationProbs);
-      electronEnergy -= energyLostGOS;
+      if (GOS == true) {
+        electronEnergy -= energyLostGOS;
+      }
     //  } //end if not plasmon
     } //end if inelastic scatter
     else { //else it stays false and the collision will be elastic
@@ -1096,7 +1111,8 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
   //    lambdaT = 1 / (1/lambdaEl + 1/FSELambda + 1/plasmonLambda);
  //     lambdaT =  1 / (1/lambdaEl + 1/innerShellLambda + 1/FSELambda);
  //     lambdaT =  1 / (1/lambdaEl);
-      //lambdaT = 1 / (1/lambdaEl + 1/lambdaInel);
+      lambdaT = 1 / (1/lambdaEl + 1/lambdaInel);
+      if (GOS == true) {
       gosInelasticLambda = coefCalc.getGOSInel(false, electronEnergy);
       gosOuterLambda = coefCalc.getGOSOuterLambda(false);
       gosOuterIonisationProbs = coefCalc.getGOSOuterShellProbs(false, gosOuterLambda);
@@ -1110,13 +1126,16 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
       
       
       lambdaT = 1 / (1/lambdaEl + 1/gosInelasticLambda);
+      }
       s = -lambdaT*Math.log(Math.random());
       PEL = lambdaT / lambdaEl;
       Pinel = 1 - (lambdaT / lambdaEl);
      // Pfse = lambdaInel / FSELambda;
       Pfse = 1;
+      if (GOS == true) {
       if (innerShellLambda > 0) {
         Pinner = gosInelasticLambda / innerShellLambda;
+      }
       }
  //     Pplasmon = plasmonLambda/ (FSELambda + plasmonLambda); 
  //     PinnerShell = FSELambda/(innerShellLambda + FSELambda);
@@ -1192,7 +1211,9 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
         //else produce an FSE
         triggered += 1;
         theta = doPrimaryInelastic(coefCalc, previousX, previousY, previousZ, electronEnergy, ionisationProbsSurrounding, true, beam, i, previousTheta, previousPhi, Pinner, gosOuterIonisationProbsSur);
-        electronEnergy -= energyLostGOS;
+        if (GOS == true) {
+          electronEnergy -= energyLostGOS;
+        }
     //    } //end if not plasmon
       } //end if inelastic scatter
       else { //else it stays false and the collision will be elastic
@@ -1222,9 +1243,9 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
         //update stopping powers
         //get new stoppingPower
       
-      
-      //  electronEnergy -= energyLost; //not here for the GOS
-        
+      if (GOS == false) {
+        electronEnergy -= energyLost; //not here for the GOS
+      }
         
         stoppingPower = coefCalc.getStoppingPower(electronEnergy, true);
         //get new lambdaT
@@ -1234,7 +1255,8 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
         double lambdaInel = coefCalc.getElectronInelasticMFPL(electronEnergy, true);
         double innerShellLambdaSurrounding = coefCalc.betheIonisationxSection(electronEnergy, true);
         double plasmonLambda = coefCalc.getPlasmaMFPL(electronEnergy, true);
-       
+      lambdaT = 1 / (1/lambdaEl + 1/lambdaInel);
+        if (GOS == true) {
         gosInelasticLambdaSur = coefCalc.getGOSInel(true, electronEnergy);
         gosOuterLambdaSur = coefCalc.getGOSOuterLambda(true);
         gosOuterIonisationProbsSur = coefCalc.getGOSOuterShellProbs(true, gosOuterLambdaSur);
@@ -1247,12 +1269,13 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
         }
         
         lambdaT =  1 / (1/lambdaEl + 1/gosInelasticLambdaSur);
+        }
       //  lambdaT =  1 / (1/lambdaEl + 1/FSELambda);
         
     //    lambdaT = 1 / (1/lambdaEl + 1/FSELambda + 1/plasmonLambda);
    //     lambdaT =  1 / (1/lambdaEl + 1/innerShellLambda + 1/FSELambda);
    //     lambdaT =  1 / (1/lambdaEl);
-      //  lambdaT = 1 / (1/lambdaEl + 1/lambdaInel);
+      
         s = -lambdaT*Math.log(Math.random());
 
    //     Pplasmon = plasmonLambda/ (FSELambda + plasmonLambda); 
@@ -1260,8 +1283,10 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
         
         ionisationProbsSurrounding = coefCalc.getAllShellProbs(true);
         elasticProbsSurrounding = coefCalc.getElasticProbs(true);
+        if (GOS == true) {
         if (innerShellLambdaSurrounding > 0) {
           Pinner = gosInelasticLambdaSur / innerShellLambdaSurrounding;
+        }
         }
         //need to check if it crosses before it reaches s again and if it does update to this point
         double intersectionDistance = 1000*getIntersectionDistance(previousX, previousY, previousZ, xNorm, yNorm, zNorm);
@@ -1275,6 +1300,7 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
           
           
           double innerShellLambda = coefCalc.betheIonisationxSection(electronEnergy, false);
+          if (GOS == true) {
           gosInelasticLambda = coefCalc.getGOSInel(false, electronEnergy);
           gosOuterLambda = coefCalc.getGOSOuterLambda(false);
           gosOuterIonisationProbs = coefCalc.getGOSOuterShellProbs(false, gosOuterLambda);
@@ -1285,7 +1311,7 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
           else {
             gosInelasticLambda = gosOuterLambda;
           }
-          
+          }
           previousX = intersectionPoint[0]*1000;
           previousY = intersectionPoint[1]*1000;
           previousZ = intersectionPoint[2]*1000;
@@ -1294,15 +1320,17 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
           FSELambda = coefCalc.getFSELambda(FSExSection, false);
           lambdaEl = coefCalc.getElectronElasticMFPL(electronEnergy, false);
           lambdaInel = coefCalc.getElectronInelasticMFPL(electronEnergy, false);
-         // lambdaT = 1 / (1/lambdaEl + 1/lambdaInel);
+          lambdaT = 1 / (1/lambdaEl + 1/lambdaInel);
           //lambdaT =  1 / (1/lambdaEl + 1/FSELambda);
+          if (GOS == true) {
           lambdaT = 1 / (1/lambdaEl + 1/gosInelasticLambda);
+          }
           s = -lambdaT*Math.log(Math.random());
-          
+          if (GOS == true) {
           if (innerShellLambda > 0) {
             Pinner = gosInelasticLambda / innerShellLambda;
           }
-          
+          }
           ionisationProbs = coefCalc.getAllShellProbs(false);
           elasticProbs = coefCalc.getElasticProbs(false);
           
@@ -1329,6 +1357,7 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
     exited = true;
     if (isMicrocrystalAt(previousX, previousY, previousZ) == true) {
       MonteCarloDose += electronEnergy;
+     // lowEnDose += electronEnergy;
     }
   }
   }
@@ -1406,6 +1435,7 @@ private double[] processMonteCarloDose(Beam beam, CoefCalc coefCalc) {
   MonteCarloProductive = MonteCarloProductive * (electronNumber/ numSimulatedElectrons);
   
   
+  MonteCarloGOSDose= (MonteCarloGOSDose * (electronNumber / numSimulatedElectrons)) * Beam.KEVTOJOULES;
   MonteCarloDose = (MonteCarloDose * (electronNumber / numSimulatedElectrons)) * Beam.KEVTOJOULES;
   MonteCarloImageDose = (MonteCarloImageDose * (electronNumber / numSimulatedElectrons)) * Beam.KEVTOJOULES;
   newMonteCarloFSEEscape = (newMonteCarloFSEEscape * (electronNumber / numSimulatedElectrons)) * Beam.KEVTOJOULES;
@@ -1416,7 +1446,11 @@ private double[] processMonteCarloDose(Beam beam, CoefCalc coefCalc) {
   
   double exposedMass = (((coefCalc.getDensity()*1000) * exposedVolume) / 1000);  //in Kg 
   double dose = (MonteCarloDose/exposedMass) / 1E06; //dose in MGy 
+  double gosDose = (MonteCarloGOSDose/exposedMass) / 1E06; //dose in MGy 
   double totFSEDose = (totFSEEnergy/exposedMass) / 1E06; //dose in MGy 
+  
+  avgW = avgW / Wcount;
+  avgShell = avgShell / Wcount;
   
   
   double imageMass = (((coefCalc.getDensity()*1000) * imageVolume) / 1000);  //in Kg 
@@ -1677,7 +1711,7 @@ private double doPrimaryInelastic(CoefCalc coefCalc, double previousX, double pr
     //determine which elemental shell it came from
     double elementRND = Math.random();
     boolean plasmon = false;
-    
+    if (GOS == true) {
     if (RNDinnerShell < Pinner) {
       for (Element e : ionisationProbs.keySet()) {
         collidedShell = findIfElementIonised(e, ionisationProbs, elementRND);
@@ -1798,6 +1832,9 @@ private double doPrimaryInelastic(CoefCalc coefCalc, double previousX, double pr
         //send it out with the correct timestamp
         if (surrounding == false) {
           MonteCarloGOSDose += W;
+          avgW += W;
+          Wcount += 1;
+          avgShell += shellBindingEnergy;
         }
         MonteCarloSecondaryElastic(coefCalc, SEEnergy, previousX, previousY, previousZ, SETheta, SEPhi, surrounding, beam, i);
           
@@ -1805,6 +1842,9 @@ private double doPrimaryInelastic(CoefCalc coefCalc, double previousX, double pr
       else { //too low energy to track - work out what exactly I'm doing with dose! - need an SP way and a W way
         if (surrounding == false) {
           MonteCarloGOSDose += W;
+          avgW += W;
+          Wcount += 1;
+          avgShell += shellBindingEnergy;
         }
         if (collidedElement.getAtomicNumber() > 2 && collidedShell < 4) { //only do fl or Auger if K or L shell and not H or He K shells
           FlAugerMonteCarlo(collidedElement, previousX, previousY, previousZ, collidedShell, coefCalc, surrounding, beam);
@@ -1819,7 +1859,7 @@ private double doPrimaryInelastic(CoefCalc coefCalc, double previousX, double pr
 
     }
     
-    
+    } //end if GOS == true
     
     
     
@@ -1948,8 +1988,9 @@ private double doPrimaryInelastic(CoefCalc coefCalc, double previousX, double pr
   }
   */
 //  } 
-    
-    energyLostGOS = W;
+    if (GOS == true) {
+      energyLostGOS = W;
+    }
   return theta;
 }
 
@@ -2203,6 +2244,7 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
   
   if (electronEnergy < 0.05) {
     exited = true;
+    lowEnDose -= electronEnergy;
   }
   while (exited == false) {
     if (isMicrocrystalAt(xn, yn, zn) == true) {
@@ -2515,6 +2557,7 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
             if (newEnergy < 0.05) {
               if (newEnergy > 0) {
                 totFSEenLostLastStep += newEnergy;
+                lowEnDose -= newEnergy;
               }
               break;
             }
@@ -2770,7 +2813,7 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
     if (electronEnergy < 0.05) { // play with this and maybe graph it
       exited = true;
       thisPixel = convertToPixelCoordinates(previousX, previousY, previousZ);
-      
+      lowEnDose -= electronEnergy;
       if (surrounding == false && entered == false) { //the FSE was from the sample and never left
         //redistribute it's charge within the sample
         if (thisPixel != startingPixel) {
