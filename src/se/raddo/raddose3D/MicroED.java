@@ -2167,10 +2167,10 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
   double[] newVelocityVector = new double[3];
   double[] newVelocityUnitVector = new double[3];
   MonteCarloCharge = (MonteCarloElectronsExited - MonteCarloElectronsEntered) * (electronNumber / numSimulatedElectrons)  * ((double)numSimSoFar/numSimulatedElectrons) * Beam.ELEMENTARYCHARGE;
-  if (considerCharge == false) {
-    MonteCarloCharge = 0;
-  }
+  if (considerCharge == true) {
+  //  MonteCarloCharge = 0;
   
+  /*
   if (MonteCarloCharge != 0) {
     newVelocityVector = adjustVelocityVectorByCharge(electronPosition, chargePosition, s, electronEnergy, xNorm, yNorm, zNorm, coefCalc);
     newVelocityMagnitude = Vector.vectorMagnitude(newVelocityVector) /1E9; //m/s
@@ -2196,10 +2196,13 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
     newKineticEnergy = (gamma - 1) * m * Math.pow(c, 2)/Beam.KEVTOJOULES; // in keV
     kineticEnergyLossByCharge = electronEnergy - newKineticEnergy; //in keV
   }
-  
-  /*
-  //now do the voxel charge here
+  */
+  }
   double[] newTotalVelocityVector = new double[3];
+  if (considerCharge == true) {
+  
+  //now do the voxel charge here
+  
   for (int i = 0; i < maxX; i++) {
     for (int j = 0; j < maxY; j++) {
       for (int k = 0; k < maxZ; k++) {
@@ -2234,8 +2237,8 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
  //   kineticEnergyLossByCharge = ((electronEnergy*Beam.KEVTOJOULES) - newKineticEnergy)/Beam.KEVTOJOULES; //in keV
     kineticEnergyLossByCharge = electronEnergy - newKineticEnergy;
   }
-  */
   
+  }
   double xn = previousX + s * xNorm;
   double yn = previousY + s * yNorm;
   double zn = previousZ + s * zNorm;
@@ -2457,10 +2460,11 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
       if (electronEnergy >= 0.05) {
         
       MonteCarloCharge = (MonteCarloElectronsExited - MonteCarloElectronsEntered) * (electronNumber / numSimulatedElectrons)  * ((double)numSimSoFar/numSimulatedElectrons) * Beam.ELEMENTARYCHARGE;
-      if (considerCharge == false) {
-        MonteCarloCharge = 0;
-      }
-      
+   //   if (considerCharge == false) {
+   //     MonteCarloCharge = 0;
+   //   }
+      if (considerCharge == true) {
+        /*
       if (MonteCarloCharge != 0) {
         electronPosition[0] = previousX;
         electronPosition[1] = previousY;
@@ -2490,8 +2494,10 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
       else {
         kineticEnergyLossByCharge = 0;
       }
-      
-       /*
+      */
+      }
+      if (considerCharge == true) {
+       
         for (int i = 0; i < maxX; i++) {
           for (int j = 0; j < maxY; j++) {
             for (int k = 0; k < maxZ; k++) {
@@ -2529,7 +2535,8 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
         else {
           kineticEnergyLossByCharge = 0;
         }
-        */
+        
+      }
       }
       
       //update to new position
@@ -2718,10 +2725,11 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
           if (electronEnergy >= 0.05) {
             
           MonteCarloCharge = (MonteCarloElectronsExited - MonteCarloElectronsEntered) * (electronNumber / numSimulatedElectrons)  * ((double)numSimSoFar/numSimulatedElectrons) * Beam.ELEMENTARYCHARGE;
-          if (considerCharge == false) {
-            MonteCarloCharge = 0;
-          }
-          
+     //     if (considerCharge == false) {
+     //       MonteCarloCharge = 0;
+     //     }
+          if (considerCharge == true) {
+            /*
           if (MonteCarloCharge != 0) {
             electronPosition[0] = previousX;
             electronPosition[1] = previousY;
@@ -2751,8 +2759,10 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
           else {
             kineticEnergyLossByCharge = 0;
           }
-          
-            /*
+          */
+          }
+          if (considerCharge == true) {
+            
             for (int i = 0; i < maxX; i++) {
               for (int j = 0; j < maxY; j++) {
                 for (int k = 0; k < maxZ; k++) {
@@ -2790,9 +2800,9 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
             else {
               kineticEnergyLossByCharge = 0;
             }
-            */
+            
           }
-          
+          }
           //update to new position
           xn = previousX + s * xNorm;
           yn = previousY + s * yNorm;
