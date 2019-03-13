@@ -832,7 +832,13 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
     double previousX = 0, previousY = 0; //atm starting going straight 
     double xNorm = 0.0000, yNorm = 0.0000, zNorm = 1.0; //direction cosine are such that just going down in one
     double theta = 0, phi = 0, previousTheta = 0, previousPhi = 0, thisTheta = 0;
-    double previousZ = -ZDimension/2;  //dodgy if specimen not flat - change for concave holes
+    
+    double aboveThickness = 0;
+    if (coefCalc.isCryo()){
+      aboveThickness = 10;
+    }
+    
+    double previousZ = (-ZDimension/2)-aboveThickness;  //dodgy if specimen not flat - change for concave holes
     
     //position
     double RNDx = Math.random();
