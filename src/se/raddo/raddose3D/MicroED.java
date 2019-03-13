@@ -157,7 +157,7 @@ public class MicroED {
   
   protected static final double CUTOFF = 0.0001;
   public double energyCUTOFF = 3;
-  public final boolean considerCharge = false;
+  public final boolean considerCharge = true;
   
   
   protected static final int BIN_DIVISION = 2; //how many bins to divide the dose deposition into 
@@ -1385,7 +1385,7 @@ if (GOS == true) {
    //MonteCarloDose -= MonteCarloAugerEscape;
    //MonteCarloDose -= MonteCarloFlEscape;
    //MonteCarloDose += MonteCarloAugerEntry;
-   MonteCarloDose += MonteCarloFSEEntry;
+  // MonteCarloDose += MonteCarloFSEEntry;
    
    
 }
@@ -1435,8 +1435,15 @@ private double[] processMonteCarloDose(Beam beam, CoefCalc coefCalc) {
   MonteCarloProductive = MonteCarloProductive * (electronNumber/ numSimulatedElectrons);
   
   
-  MonteCarloGOSDose= (MonteCarloGOSDose * (electronNumber / numSimulatedElectrons)) * Beam.KEVTOJOULES;
+  MonteCarloGOSDose = (MonteCarloGOSDose * (electronNumber / numSimulatedElectrons)) * Beam.KEVTOJOULES;
   MonteCarloDose = (MonteCarloDose * (electronNumber / numSimulatedElectrons)) * Beam.KEVTOJOULES;
+  MonteCarloFSEEscape = (MonteCarloFSEEscape * (electronNumber / numSimulatedElectrons)) * Beam.KEVTOJOULES;
+ // newMonteCarloFSEEscape = (newMonteCarloFSEEscape * (electronNumber / numSimulatedElectrons)) * Beam.KEVTOJOULES;
+  MonteCarloAugerEscape = (MonteCarloAugerEscape * (electronNumber / numSimulatedElectrons)) * Beam.KEVTOJOULES;
+  MonteCarloFlEscape = (MonteCarloFlEscape * (electronNumber / numSimulatedElectrons)) * Beam.KEVTOJOULES;
+  MonteCarloAugerEntry = (MonteCarloAugerEntry * (electronNumber / numSimulatedElectrons)) * Beam.KEVTOJOULES;
+  
+  
   MonteCarloImageDose = (MonteCarloImageDose * (electronNumber / numSimulatedElectrons)) * Beam.KEVTOJOULES;
   newMonteCarloFSEEscape = (newMonteCarloFSEEscape * (electronNumber / numSimulatedElectrons)) * Beam.KEVTOJOULES;
   MonteCarloFSEEntry = (MonteCarloFSEEntry * (electronNumber / numSimulatedElectrons)) * Beam.KEVTOJOULES;
@@ -2236,6 +2243,7 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
     newKineticEnergy = ((gamma - 1) * m * Math.pow(c, 2))/Beam.KEVTOJOULES; // in keV
  //   kineticEnergyLossByCharge = ((electronEnergy*Beam.KEVTOJOULES) - newKineticEnergy)/Beam.KEVTOJOULES; //in keV
     kineticEnergyLossByCharge = electronEnergy - newKineticEnergy;
+   
   }
   
   }
@@ -2535,7 +2543,7 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
         else {
           kineticEnergyLossByCharge = 0;
         }
-        
+       
       }
       }
       
