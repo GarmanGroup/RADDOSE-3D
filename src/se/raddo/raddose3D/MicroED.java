@@ -2082,6 +2082,7 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
   int[] thisPixel = startingPixel;
   
   double energyLost = 0;
+  double KELostByChargeInSample = 0;
   double theta = FSEtheta;
   double phi = FSEphi;
   double electronEnergy = FSEenergy;
@@ -2249,6 +2250,8 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
     newKineticEnergy = ((gamma - 1) * m * Math.pow(c, 2))/Beam.KEVTOJOULES; // in keV
  //   kineticEnergyLossByCharge = ((electronEnergy*Beam.KEVTOJOULES) - newKineticEnergy)/Beam.KEVTOJOULES; //in keV
     kineticEnergyLossByCharge = electronEnergy - newKineticEnergy;
+  
+     KELostByChargeInSample += kineticEnergyLossByCharge;
    
   }
   
@@ -2269,6 +2272,7 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
       if (surrounding == true) {
         entered = true;
         entryEnergy = electronEnergy;
+        KELostByChargeInSample=0;
       }
       surrounding = false;
       scattered = true;
@@ -2545,6 +2549,9 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
           newKineticEnergy = ((gamma - 1) * m * Math.pow(c, 2))/Beam.KEVTOJOULES; // in keV
        //   kineticEnergyLossByCharge = ((electronEnergy*Beam.KEVTOJOULES) - newKineticEnergy)/Beam.KEVTOJOULES; //in keV
           kineticEnergyLossByCharge = electronEnergy - newKineticEnergy;
+          
+            KELostByChargeInSample += kineticEnergyLossByCharge;
+          
         }
         else {
           kineticEnergyLossByCharge = 0;
@@ -2586,7 +2593,7 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
           if (newEnergy > 0) {
            // MonteCarloFSEEscape += newEnergy;
             if (entered == false) { //it started here
-              newMonteCarloFSEEscape += newEnergy;
+              newMonteCarloFSEEscape += newEnergy+KELostByChargeInSample;
               MonteCarloElectronsExited += 1;
               //add this charge to the pixel it came from
               voxelCharge[startingPixel[0]][startingPixel[1]][startingPixel[2]] += Beam.ELEMENTARYCHARGE * (electronNumber / numSimulatedElectrons);
@@ -2596,7 +2603,9 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
               addDoseToImagedRegion(escapeDist, xNorm, yNorm, zNorm, previousX, previousY, previousZ, totFSEenLostLastStep, beam);
             }
             else {
-              MonteCarloFSEEntry += entryEnergy - newEnergy;  //here the entered FSE has escaped again
+              
+              MonteCarloFSEEntry += entryEnergy - (newEnergy+KELostByChargeInSample);  //here the entered FSE has escaped again
+              
               //split the dose up into voxels
         //      addDoseToVoxels(escapeDist, xNorm, yNorm, zNorm, previousX, previousY, previousZ, totFSEenLostLastStep, beam, coefCalc);
               addDoseToRegion(escapeDist, xNorm, yNorm, zNorm, previousX, previousY, previousZ, totFSEenLostLastStep);
