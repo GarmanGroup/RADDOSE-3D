@@ -249,6 +249,7 @@ public class MicroED {
     //getGOSinel
    // double test = coefCalc.getGOSInel(false);
     
+    System.out.println(String.format("The density is: %.2e", coefCalc.getDensity()));
     
     double wavelength = getWavelength(beam);
     double resRough = getResolutionRough(wavelength);
@@ -860,7 +861,7 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
     double RNDx = Math.random();
     double beamX = beam.getBeamX()*1000;
     previousX = (RNDx * XDimension) - (XDimension/2); //places on sample
-    previousX = (RNDx * beamX) - (beamX/2); //places in beam area
+    previousX = (0.99*RNDx * beamX) - (beamX/2); //places in beam area
     
     double RNDy = Math.random();
     double beamY = beam.getBeamY()*1000;
@@ -868,7 +869,7 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
     if (beam.getIsCircular()) {   //reduce Y limits so you can't put it out of the circle / ellipse
   //    double fractionLimit = 1 - Math.pow(Math.pow(previousX/(beamX/2), 2), 0.5);
   //    RNDy *= fractionLimit;
-      previousY = RNDy*Math.pow(Math.pow(beamY/2, 2)*(1-(Math.pow(previousX, 2)/Math.pow(beamX/2, 2))), 0.5);
+      previousY = 0.99*RNDy*Math.pow(Math.pow(beamY/2, 2)*(0.99-(Math.pow(previousX, 2)/Math.pow(beamX/2, 2))), 0.5);
     }
     else {
       previousY = (RNDy * beamY) - (beamY/2);
@@ -3630,7 +3631,7 @@ private void addDoseToRegion(double s, double xNorm, double yNorm, double zNorm,
   }
   }
   else {
-    System.out.println("Test");
+ //   System.out.println("Test");
   }
 }
 
