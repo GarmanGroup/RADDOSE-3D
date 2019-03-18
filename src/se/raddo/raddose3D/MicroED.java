@@ -46,6 +46,15 @@ public class MicroED {
   public int[] crystalSizeVoxelsEM;
   public boolean[][][][] crystOccEM;
   /**
+   * Vertices which have been rotated for a given wedge angle.
+   */
+  private double[][]            rotatedVertices;
+  /**
+   * Similar in style to the index array, except each index is replaced
+   * by the corresponding rotatedVertex.
+   */
+  private double[][][]          expandedRotatedVertices;
+  /**
    * Normal array holding normalised direction vectors for
    * each triangle specified by the index array.
    * Contains an i, j, k vector per triangle.
@@ -163,6 +172,10 @@ public class MicroED {
   
   protected static final int BIN_DIVISION = 2; //how many bins to divide the dose deposition into 
   
+  //for cylinder
+  public boolean rotated;
+  
+  
   
   
   @SuppressWarnings("unchecked")
@@ -186,7 +199,8 @@ public class MicroED {
     
     crystalSurfaceArea = XDimension * YDimension * 1E02; //convert from nm^2 to A^2
     if (crystalTypeEM == "CYLINDER") {
-      crystalSurfaceArea = (Math.PI * (XDimension/2) * (YDimension/2)) * 1E02; 
+      crystalSurfaceArea = (Math.PI * (XDimension/2) * (YDimension/2)) * 1E02;
+      ZDimension = 99.99999;
     }
     sampleThickness = ZDimension; //nm
     crystalVolume = (crystalSurfaceArea * (sampleThickness * 10) * 1E-27);    //A^3 to dm^3
@@ -837,7 +851,7 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
     
     double aboveThickness = 0;
     if (coefCalc.isCryo()){
-      aboveThickness = 10;
+      aboveThickness = 0;
     }
     
     double previousZ = (-ZDimension/2)-aboveThickness;  //dodgy if specimen not flat - change for concave holes
@@ -852,11 +866,13 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
     double beamY = beam.getBeamY()*1000;
     previousY = (RNDy * YDimension) - (YDimension/2);
     if (beam.getIsCircular()) {   //reduce Y limits so you can't put it out of the circle / ellipse
-      double fractionLimit = Math.pow(1 - Math.pow(previousX/beamX, 2), 0.5);
-      RNDy *= fractionLimit;
+  //    double fractionLimit = 1 - Math.pow(Math.pow(previousX/(beamX/2), 2), 0.5);
+  //    RNDy *= fractionLimit;
+      previousY = RNDy*Math.pow(Math.pow(beamY/2, 2)*(1-(Math.pow(previousX, 2)/Math.pow(beamX/2, 2))), 0.5);
     }
-    previousY = (RNDy * beamY) - (beamY/2);
-
+    else {
+      previousY = (RNDy * beamY) - (beamY/2);
+    }
     
     //direction 
     double[] directionVector = getElectronStartingDirection(beam, previousX, previousY, previousZ);
