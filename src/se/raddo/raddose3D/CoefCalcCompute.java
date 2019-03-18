@@ -147,7 +147,7 @@ public class CoefCalcCompute extends CoefCalc {
    */
 //  protected static final double      WATER_CONCENTRATION          = 55555;    // Density of 1 g/cm^3
  protected static final double      WATER_CONCENTRATION          = 51666;    // Density of 0.93 g/cm^3
-
+ // protected static final double      WATER_CONCENTRATION          = 74999.25;  
   
   /**
    * Units per milli-unit.
@@ -3627,7 +3627,8 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
   @Override
   public double getWkMolecule(double a, Element e, int shellIndex, boolean surrounding) {
     int[] shells = {2, 8, 18, 32};
-    int[] subshells = {2, 2, 2, 4, 18, 32};
+  //  int[] subshells = {2, 2, 2, 4, 18, 32};
+    int[] subshells = {2, 2, 2, 4, 2, 2, 4, 10, 32};
     int Z = e.getAtomicNumber();
     
     int sumZ = 0;
@@ -3666,7 +3667,8 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
   
   public double[] checkMeanI(double electronEnergy, double a, boolean surrounding) {
     int[] shells = {2, 8, 18, 32};
-    int[] subshells = {2, 2, 2, 4, 18, 32};
+   // int[] subshells = {2, 2, 2, 4, 18, 32};
+    int[] subshells = {2, 2, 2, 4, 2, 2, 4, 10, 32};
     //just a start for a test
     double ZlnI = getZlnI(electronEnergy, surrounding);
     double sumfcb = 0;
@@ -4719,7 +4721,8 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
       GOSinelasticSurrounding = new HashMap<Element, double[][]>();
     }
     int[] shells = {2, 8, 18, 32};
-    int[] subshells = {2, 2, 2, 4, 18, 32};
+ //   int[] subshells = {2, 2, 2, 4, 18, 32};
+    int[] subshells = {2, 2, 2, 4, 2, 2, 4, 10, 32};
     double elementaryCharge = 4.80320425E-10; //units = esu = g^0.5 cm^1.5 s^-1
     double m = 9.10938356E-31; // in Kg
     double c = 299792458;
