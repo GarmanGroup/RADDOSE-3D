@@ -149,6 +149,12 @@ public class MicroED {
   private double MonteCarloGOSDose;
   private double MonteCarloGOSEscape;
   private double energyLostGOS;
+  
+  private double GOSImageDose;
+  private double totImageSecEnergy;
+  private double imageSecDeposited;
+  private double imageEntry;
+  
   private double avgW;
   private double Wcount;
   private double avgShell;
@@ -1047,7 +1053,7 @@ if (GOS == true) {
     //split the dose up into voxels
   //  addDoseToVoxels(s, xNorm, yNorm, zNorm, previousX, previousY, previousZ, energyLost, beam, coefCalc);
     addDoseToRegion(s, xNorm, yNorm, zNorm, previousX, previousY, previousZ, energyLost);
-    addDoseToImagedRegion(s, xNorm, yNorm, zNorm, previousX, previousY, previousZ, energyLost, beam);
+ //   addDoseToImagedRegion(s, xNorm, yNorm, zNorm, previousX, previousY, previousZ, energyLost, beam);
     
     //reset
     previousTheta = theta;
@@ -1187,7 +1193,7 @@ if (GOS == true) {
       //split the dose up into voxels
      // addDoseToVoxels(s, xNorm, yNorm, zNorm, previousX, previousY, previousZ, energyLost, beam, coefCalc);
       addDoseToRegion(s, xNorm, yNorm, zNorm, previousX, previousY, previousZ, energyLost);
-      addDoseToImagedRegion(s, xNorm, yNorm, zNorm, previousX, previousY, previousZ, energyLost, beam);
+ //     addDoseToImagedRegion(s, xNorm, yNorm, zNorm, previousX, previousY, previousZ, energyLost, beam);
       if (1000*intersectionPoint[2] == -ZDimension/2 || zNorm < 0) {
         numberBackscattered += 1;
         backscattered = true;
@@ -1458,13 +1464,16 @@ private double[] processMonteCarloDose(Beam beam, CoefCalc coefCalc) {
   MonteCarloFlEscape = (MonteCarloFlEscape * (electronNumber / numSimulatedElectrons)) * Beam.KEVTOJOULES;
   MonteCarloAugerEntry = (MonteCarloAugerEntry * (electronNumber / numSimulatedElectrons)) * Beam.KEVTOJOULES;
   
-  
+ // GOSImageDose = (GOSImageDose * (electronNumber / numSimulatedElectrons)) * Beam.KEVTOJOULES; 
   MonteCarloImageDose = (MonteCarloImageDose * (electronNumber / numSimulatedElectrons)) * Beam.KEVTOJOULES;
   newMonteCarloFSEEscape = (newMonteCarloFSEEscape * (electronNumber / numSimulatedElectrons)) * Beam.KEVTOJOULES;
   MonteCarloFSEEntry = (MonteCarloFSEEntry * (electronNumber / numSimulatedElectrons)) * Beam.KEVTOJOULES;
   elasticEnergyTot = (elasticEnergyTot * (electronNumber / numSimulatedElectrons)) * Beam.KEVTOJOULES;
   
   totFSEEnergy = (totFSEEnergy * (electronNumber / numSimulatedElectrons)) * Beam.KEVTOJOULES;
+  
+  double gostotImageEn = GOSImageDose + imageEntry - (totImageSecEnergy-imageSecDeposited);
+  gostotImageEn = (gostotImageEn * (electronNumber / numSimulatedElectrons)) * Beam.KEVTOJOULES; 
   
   double exposedMass = (((coefCalc.getDensity()*1000) * exposedVolume) / 1000);  //in Kg 
   double dose = (MonteCarloDose/exposedMass) / 1E06; //dose in MGy 
@@ -1477,9 +1486,16 @@ private double[] processMonteCarloDose(Beam beam, CoefCalc coefCalc) {
   
   double imageMass = (((coefCalc.getDensity()*1000) * imageVolume) / 1000);  //in Kg 
   double imageDose = (MonteCarloImageDose/imageMass) / 1E06; //dose in MGy 
+  double gosImageDose = (gostotImageEn/imageMass) / 1E06; //dose in MGy 
   
   double doseExited = (newMonteCarloFSEEscape/exposedMass) / 1E06; //dose in MGy 
+  double augerExited = (MonteCarloAugerEscape/exposedMass) / 1E06; //dose in MGy 
+  double flExited = (MonteCarloFlEscape/exposedMass) / 1E06; //dose in MGy 
+  double augerEntry = (MonteCarloAugerEntry/exposedMass) / 1E06; //dose in MGy 
   double doseEntered = (MonteCarloFSEEntry/exposedMass) / 1E06; //dose in MGy 
+  
+  double totEntered = doseEntered + augerEntry;
+  double totExited = doseExited + augerExited + flExited;
   
   //charge stuff
   MonteCarloCharge = (MonteCarloElectronsExited - MonteCarloElectronsEntered) * (electronNumber / numSimulatedElectrons) * Beam.ELEMENTARYCHARGE; //need to add in Auger to these
@@ -1868,9 +1884,15 @@ private double doPrimaryInelastic(CoefCalc coefCalc, double previousX, double pr
         //send it out with the correct timestamp
         if (surrounding == false) {
           MonteCarloGOSDose += W;
+          if (Math.abs(previousX)/1000 <= beam.getImageX()/2 && Math.abs(previousY)/1000 <= beam.getImageY()/2) { //then in imaged region
+            GOSImageDose += W;
+          }
           avgW += W;
           Wcount += 1;
           avgShell += shellBindingEnergy;
+        }
+        if (Math.abs(previousX)/1000 <= beam.getImageX()/2 && Math.abs(previousY)/1000 <= beam.getImageY()/2) { //then in imaged region
+        totImageSecEnergy += W;
         }
         MonteCarloSecondaryElastic(coefCalc, SEEnergy, previousX, previousY, previousZ, SETheta, SEPhi, surrounding, beam, i);
           
@@ -1878,6 +1900,9 @@ private double doPrimaryInelastic(CoefCalc coefCalc, double previousX, double pr
       else { //too low energy to track - work out what exactly I'm doing with dose! - need an SP way and a W way
         if (surrounding == false) {
           MonteCarloGOSDose += W;
+          if (Math.abs(previousX)/1000 <= beam.getImageX()/2 && Math.abs(previousY)/1000 <= beam.getImageY()/2) { //then in imaged region
+            GOSImageDose += W;
+          }
           avgW += W;
           Wcount += 1;
           avgShell += shellBindingEnergy;
@@ -2336,7 +2361,7 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
       //split the dose up into voxels
  //     addDoseToVoxels(s, xNorm, yNorm, zNorm, previousX, previousY, previousZ, energyLost, beam, coefCalc);
       addDoseToRegion(s, xNorm, yNorm, zNorm, previousX, previousY, previousZ, energyLost);
-      addDoseToImagedRegion(s, xNorm, yNorm, zNorm, previousX, previousY, previousZ, energyLost, beam);
+      addDoseToImagedRegion(s, xNorm, yNorm, zNorm, previousX, previousY, previousZ, energyLost, beam, entered);
       
       //energy lost from charge - charge energy not appropriate to count towards dose or get negative dose
       energyLost += kineticEnergyLossByCharge;
@@ -2413,7 +2438,7 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
           double energyRemained = 1- (escapeFraction * flauEnergy);
    //       addDoseToVoxels(flEscapeDist, SExNorm, SEyNorm, SEzNorm, previousX, previousY, previousZ, energyRemained, beam, coefCalc);
           addDoseToRegion(flEscapeDist, SExNorm, SEyNorm, SEzNorm, previousX, previousY, previousZ, energyRemained);
-          addDoseToImagedRegion(flEscapeDist, SExNorm, SEyNorm, SEzNorm, previousX, previousY, previousZ, energyRemained, beam);
+      //    addDoseToImagedRegion(flEscapeDist, SExNorm, SEyNorm, SEzNorm, previousX, previousY, previousZ, energyRemained, beam);
         }
         else {
           //need to do Auger electrons
@@ -2445,9 +2470,12 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
             augerEnergyLoss = augerEnergyToEdge;
             trackDistance = augerEscapeDist;
           }
+          if (Math.abs(previousX)/1000 <= beam.getImageX()/2 && Math.abs(previousY)/1000 <= beam.getImageY()/2) { //then in imaged region
+          totImageSecEnergy += flauEnergy;
+          }
   //        addDoseToVoxels(trackDistance, SExNorm, SEyNorm, SEzNorm, previousX, previousY, previousZ, augerEnergyLoss, beam, coefCalc);
           addDoseToRegion(trackDistance, SExNorm, SEyNorm, SEzNorm, previousX, previousY, previousZ, augerEnergyLoss);
-          addDoseToImagedRegion(trackDistance, SExNorm, SEyNorm, SEzNorm, previousX, previousY, previousZ, augerEnergyLoss, beam);
+          addDoseToImagedRegion(trackDistance, SExNorm, SEyNorm, SEzNorm, previousX, previousY, previousZ, augerEnergyLoss, beam, false);
         }
       }  
       }
@@ -2655,7 +2683,7 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
             //split the dose up into voxels
          //     addDoseToVoxels(escapeDist, xNorm, yNorm, zNorm, previousX, previousY, previousZ, totFSEenLostLastStep, beam, coefCalc);
               addDoseToRegion(escapeDist, xNorm, yNorm, zNorm, previousX, previousY, previousZ, totFSEenLostLastStep);
-              addDoseToImagedRegion(escapeDist, xNorm, yNorm, zNorm, previousX, previousY, previousZ, totFSEenLostLastStep, beam);
+              addDoseToImagedRegion(escapeDist, xNorm, yNorm, zNorm, previousX, previousY, previousZ, totFSEenLostLastStep, beam, entered);
             }
             else {
               
@@ -2664,7 +2692,7 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
               //split the dose up into voxels
         //      addDoseToVoxels(escapeDist, xNorm, yNorm, zNorm, previousX, previousY, previousZ, totFSEenLostLastStep, beam, coefCalc);
               addDoseToRegion(escapeDist, xNorm, yNorm, zNorm, previousX, previousY, previousZ, totFSEenLostLastStep);
-              addDoseToImagedRegion(escapeDist, xNorm, yNorm, zNorm, previousX, previousY, previousZ, totFSEenLostLastStep, beam);
+              addDoseToImagedRegion(escapeDist, xNorm, yNorm, zNorm, previousX, previousY, previousZ, totFSEenLostLastStep, beam, entered);
             }
           }
         }
@@ -3085,7 +3113,7 @@ private void FlAugerMonteCarlo(Element collidedElement, double previousX, double
         double energyRemained = flauEnergy- (escapeFraction * flauEnergy);
     //    addDoseToVoxels(flEscapeDist, SExNorm, SEyNorm, SEzNorm, previousX, previousY, previousZ, energyRemained, beam, coefCalc);
         addDoseToRegion(flEscapeDist, SExNorm, SEyNorm, SEzNorm, previousX, previousY, previousZ, energyRemained);
-        addDoseToImagedRegion(flEscapeDist, SExNorm, SEyNorm, SEzNorm, previousX, previousY, previousZ, energyRemained, beam);
+  //      addDoseToImagedRegion(flEscapeDist, SExNorm, SEyNorm, SEzNorm, previousX, previousY, previousZ, energyRemained, beam);
       }
       //if it's in the surrounding don't bother with fluorescence
     }
@@ -3095,6 +3123,9 @@ private void FlAugerMonteCarlo(Element collidedElement, double previousX, double
       //for now ignore the shell binding energy so overestimating their significance
    //   double augerEnergy = collidedElement.getKFluorescenceAverage();
       totAugerEnergy += flauEnergy;
+      if (Math.abs(previousX)/1000 <= beam.getImageX()/2 && Math.abs(previousY)/1000 <= beam.getImageY()/2) { //then in imaged region
+      totImageSecEnergy += flauEnergy;
+      }
       numAuger += 1;
       //get a random direction vector
       double SExNorm = Math.random();
@@ -3122,7 +3153,7 @@ private void FlAugerMonteCarlo(Element collidedElement, double previousX, double
         }
     //    addDoseToVoxels(trackDistance, SExNorm, SEyNorm, SEzNorm, previousX, previousY, previousZ, augerEnergyLoss, beam, coefCalc);
         addDoseToRegion(trackDistance, SExNorm, SEyNorm, SEzNorm, previousX, previousY, previousZ, augerEnergyLoss);
-        addDoseToImagedRegion(trackDistance, SExNorm, SEyNorm, SEzNorm, previousX, previousY, previousZ, augerEnergyLoss, beam);
+        addDoseToImagedRegion(trackDistance, SExNorm, SEyNorm, SEzNorm, previousX, previousY, previousZ, augerEnergyLoss, beam, false);
       }
       else { //surrounding = true
         Double augerEntryDist = 1000* getIntersectionDistance(previousX, previousY, previousZ, SExNorm, SEyNorm, SEzNorm); //um
@@ -3636,7 +3667,7 @@ private void addDoseToRegion(double s, double xNorm, double yNorm, double zNorm,
 }
 
 private void addDoseToImagedRegion(double s, double xNorm, double yNorm, double zNorm, double previousX, double previousY, double previousZ
-                                    , double energyLost, Beam beam) {
+                                    , double energyLost, Beam beam, boolean entered) {
   int numBins = 10;
   double xPos, yPos;
   if (energyLost > 0) {
@@ -3653,6 +3684,12 @@ private void addDoseToImagedRegion(double s, double xNorm, double yNorm, double 
       double y = beam.getImageY();
       if (Math.abs(xPos)/1000 <= beam.getImageX()/2 && Math.abs(yPos)/1000 <= beam.getImageY()/2) { //then in imaged region
         MonteCarloImageDose += energyLostBin;
+        if (entered == true) {
+          imageEntry += energyLostBin;
+        }
+        else {
+          imageSecDeposited += energyLostBin;
+        }
       }
     }
   }
