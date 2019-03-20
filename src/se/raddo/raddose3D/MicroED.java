@@ -37,7 +37,7 @@ import java.util.TreeMap;
 
 
 public class MicroED {
-  
+  private int hit;
   //polyhderon variables
   public double[][] verticesEM;
   public int[][] indicesEM;
@@ -876,10 +876,30 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
   //    double fractionLimit = 1 - Math.pow(Math.pow(previousX/(beamX/2), 2), 0.5);
   //    RNDy *= fractionLimit;
       previousY = 0.99*RNDy*Math.pow(Math.pow(beamY/2, 2)*(0.99-(Math.pow(previousX, 2)/Math.pow(beamX/2, 2))), 0.5);
+      previousY *= PosOrNeg();
     }
     else {
       previousY = (RNDy * beamY) - (beamY/2);
     }
+    
+    
+    //so the circle/ellipse is currently wrong as it is overly biasing the x towards the edges of the circle
+    if (beam.getIsCircular()) { 
+      //just do for a circle for now, choose polar coordinates and convert to cartesian
+      double r = (beamX/2);
+      double u = Math.random()+Math.random();
+      if (u > 1) {
+        r = r* (2-u);
+      }
+      else {
+        r = r*u;
+      }
+      double polarAngle = Math.random()*2*Math.PI;
+      previousX = r*Math.cos(polarAngle);
+      previousY = r*Math.sin(polarAngle);
+    }
+    
+    
     
     //direction 
     double[] directionVector = getElectronStartingDirection(beam, previousX, previousY, previousZ);
@@ -908,7 +928,10 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
    
     //determine if the electron is incident on the sample or not - 
     boolean surrounding = !isMicrocrystalAt(previousX, previousY, 0); //Z = 0 as just looking at x and y
-
+    if (surrounding == false) {
+      hit +=1;
+    }
+    
     // if it is a certain distance away from the sample ignore it entirely - if it is times 2?
     boolean track = false;
     if (surrounding == true) {
@@ -3732,6 +3755,13 @@ private void addDoseToImagedRegion(double s, double xNorm, double yNorm, double 
   }
 }
 
+private double PosOrNeg() {
+  double sign = 1;
+  if (Math.random() < 0.5) {
+    sign = -1;
+  }
+  return sign;
+}
 
 private void addDoseToPosition(double x, double y, double z, double keV, Beam beam, CoefCalc coefCalc) {
   int[] voxCoord = convertToPixelCoordinates(x, y, z);
