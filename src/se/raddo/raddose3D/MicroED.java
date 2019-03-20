@@ -1892,7 +1892,7 @@ private double doPrimaryInelastic(CoefCalc coefCalc, double previousX, double pr
           avgShell += shellBindingEnergy;
         }
         if (Math.abs(previousX)/1000 <= beam.getImageX()/2 && Math.abs(previousY)/1000 <= beam.getImageY()/2) { //then in imaged region
-        totImageSecEnergy += W;
+        totImageSecEnergy += SEEnergy;
         }
         MonteCarloSecondaryElastic(coefCalc, SEEnergy, previousX, previousY, previousZ, SETheta, SEPhi, surrounding, beam, i);
           
@@ -2125,7 +2125,10 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
   else {
     numFSEFromSample += 1;
   }
-  
+  boolean outsideImage = true;
+  if (Math.abs(previousX)/1000 <= beam.getImageX()/2 && Math.abs(previousY)/1000 <= beam.getImageY()/2) { //then in imaged region
+    outsideImage = false;
+  }
   //get the exposure up to this point for charge
   double exposure = beam.getExposure();
   double exposedArea = getExposedArea(beam);
@@ -2344,6 +2347,14 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
   if (electronEnergy < 0.05) {
     exited = true;
     lowEnDose -= electronEnergy;
+    if (Math.abs(previousX)/1000 <= beam.getImageX()/2 && Math.abs(previousY)/1000 <= beam.getImageY()/2) { //then in imaged region
+      if (outsideImage == false) {
+        imageSecDeposited += electronEnergy;
+      }
+      else {
+        imageEntry += electronEnergy;
+      }
+    }
   }
   while (exited == false) {
     if (isMicrocrystalAt(xn, yn, zn) == true) {
@@ -2361,7 +2372,7 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
       //split the dose up into voxels
  //     addDoseToVoxels(s, xNorm, yNorm, zNorm, previousX, previousY, previousZ, energyLost, beam, coefCalc);
       addDoseToRegion(s, xNorm, yNorm, zNorm, previousX, previousY, previousZ, energyLost);
-      addDoseToImagedRegion(s, xNorm, yNorm, zNorm, previousX, previousY, previousZ, energyLost, beam, entered);
+      addDoseToImagedRegion(s, xNorm, yNorm, zNorm, previousX, previousY, previousZ, energyLost, beam, outsideImage);
       
       //energy lost from charge - charge energy not appropriate to count towards dose or get negative dose
       energyLost += kineticEnergyLossByCharge;
@@ -2475,7 +2486,11 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
           }
   //        addDoseToVoxels(trackDistance, SExNorm, SEyNorm, SEzNorm, previousX, previousY, previousZ, augerEnergyLoss, beam, coefCalc);
           addDoseToRegion(trackDistance, SExNorm, SEyNorm, SEzNorm, previousX, previousY, previousZ, augerEnergyLoss);
-          addDoseToImagedRegion(trackDistance, SExNorm, SEyNorm, SEzNorm, previousX, previousY, previousZ, augerEnergyLoss, beam, false);
+          boolean augerOutsideImage = true;
+          if (Math.abs(previousX)/1000 <= beam.getImageX()/2 && Math.abs(previousY)/1000 <= beam.getImageY()/2) { //then in imaged region
+            augerOutsideImage = false;
+          }
+          addDoseToImagedRegion(trackDistance, SExNorm, SEyNorm, SEzNorm, previousX, previousY, previousZ, augerEnergyLoss, beam, augerOutsideImage);
         }
       }  
       }
@@ -2669,6 +2684,14 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
               if (newEnergy > 0) {
                 totFSEenLostLastStep += newEnergy;
                 lowEnDose -= newEnergy;
+                if (Math.abs(previousX)/1000 <= beam.getImageX()/2 && Math.abs(previousY)/1000 <= beam.getImageY()/2) { //then in imaged region
+                  if (outsideImage == false) {
+                    imageSecDeposited += electronEnergy-newEnergy; //n ope
+                  }
+                  else {
+                    imageEntry += electronEnergy-newEnergy; //nope
+                  }
+                }
               }
               break;
             }
@@ -2683,7 +2706,7 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
             //split the dose up into voxels
          //     addDoseToVoxels(escapeDist, xNorm, yNorm, zNorm, previousX, previousY, previousZ, totFSEenLostLastStep, beam, coefCalc);
               addDoseToRegion(escapeDist, xNorm, yNorm, zNorm, previousX, previousY, previousZ, totFSEenLostLastStep);
-              addDoseToImagedRegion(escapeDist, xNorm, yNorm, zNorm, previousX, previousY, previousZ, totFSEenLostLastStep, beam, entered);
+              addDoseToImagedRegion(escapeDist, xNorm, yNorm, zNorm, previousX, previousY, previousZ, totFSEenLostLastStep, beam, outsideImage);
             }
             else {
               
@@ -2692,7 +2715,7 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
               //split the dose up into voxels
         //      addDoseToVoxels(escapeDist, xNorm, yNorm, zNorm, previousX, previousY, previousZ, totFSEenLostLastStep, beam, coefCalc);
               addDoseToRegion(escapeDist, xNorm, yNorm, zNorm, previousX, previousY, previousZ, totFSEenLostLastStep);
-              addDoseToImagedRegion(escapeDist, xNorm, yNorm, zNorm, previousX, previousY, previousZ, totFSEenLostLastStep, beam, entered);
+              addDoseToImagedRegion(escapeDist, xNorm, yNorm, zNorm, previousX, previousY, previousZ, totFSEenLostLastStep, beam, outsideImage);
             }
           }
         }
@@ -2930,6 +2953,15 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
       exited = true;
       thisPixel = convertToPixelCoordinates(previousX, previousY, previousZ);
       lowEnDose -= electronEnergy;
+      if (Math.abs(previousX)/1000 <= beam.getImageX()/2 && Math.abs(previousY)/1000 <= beam.getImageY()/2) { //then in imaged region
+        if (outsideImage == false) {
+          imageSecDeposited += electronEnergy;
+        }
+        else {
+          imageEntry += electronEnergy;
+        }
+      }
+      
       if (surrounding == false && entered == false) { //the FSE was from the sample and never left
         //redistribute it's charge within the sample
         if (thisPixel != startingPixel) {
@@ -2950,6 +2982,7 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
       if (surrounding == false && entered == true) {  // here the entered FSE has stopped in the sample so all energy stays in sample
         MonteCarloFSEEntry += entryEnergy;
         MonteCarloElectronsEntered += 1;
+        
         //add negative charge to this pixel
         voxelCharge[thisPixel[0]][thisPixel[1]][thisPixel[2]] += Beam.ELEMENTARYCHARGE * (electronNumber / numSimulatedElectrons);
         if (Double.isNaN(electronEnergy)) {
@@ -3065,6 +3098,10 @@ private double getFSEEnergy(double electronEnergy, double shellBindingEnergy) {
 
 private void FlAugerMonteCarlo(Element collidedElement, double previousX, double previousY, double previousZ, 
                                 int collidedShell, CoefCalc coefCalc, boolean surrounding, Beam beam) {
+  boolean outsideImage = true;
+  if (Math.abs(previousX)/1000 <= beam.getImageX()/2 && Math.abs(previousY)/1000 <= beam.getImageY()/2) { //then in imaged region
+    outsideImage = false;
+  }
   double shellFluorescenceYield = 0;
   double flauEnergy = 0;
   if (collidedShell == 0) {
@@ -3153,7 +3190,7 @@ private void FlAugerMonteCarlo(Element collidedElement, double previousX, double
         }
     //    addDoseToVoxels(trackDistance, SExNorm, SEyNorm, SEzNorm, previousX, previousY, previousZ, augerEnergyLoss, beam, coefCalc);
         addDoseToRegion(trackDistance, SExNorm, SEyNorm, SEzNorm, previousX, previousY, previousZ, augerEnergyLoss);
-        addDoseToImagedRegion(trackDistance, SExNorm, SEyNorm, SEzNorm, previousX, previousY, previousZ, augerEnergyLoss, beam, false);
+        addDoseToImagedRegion(trackDistance, SExNorm, SEyNorm, SEzNorm, previousX, previousY, previousZ, augerEnergyLoss, beam, outsideImage);
       }
       else { //surrounding = true
         Double augerEntryDist = 1000* getIntersectionDistance(previousX, previousY, previousZ, SExNorm, SEyNorm, SEzNorm); //um
