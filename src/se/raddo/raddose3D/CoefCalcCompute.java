@@ -4907,6 +4907,9 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     double RND = Math.random();
     //gotta make sure all these units are changed to Joules to be correct when I do it properly
     double Q = Qs * 1/(Math.pow((Qs/((Qak/1000)*Beam.KEVTOJOULES))*(1+(((Qak/1000)*Beam.KEVTOJOULES)/(2*m*csquared))), RND) - (Qs/(2*m*csquared)));
+    if (Qak == 0) {
+      Q = 0;
+    }
     return Q;
   }
   

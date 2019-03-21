@@ -154,6 +154,8 @@ public class MicroED {
   private double totImageSecEnergy;
   private double imageSecDeposited;
   private double imageEntry;
+  private double gosSurroundingElastic;
+  private double gosSurroundingElasticImage;
   
   private double avgW;
   private double Wcount;
@@ -1114,7 +1116,7 @@ if (GOS == true) {
     //  else {
       //else produce an FSE
       triggered += 1;
-      theta = doPrimaryInelastic(coefCalc, previousX, previousY, previousZ, electronEnergy, ionisationProbs, false, beam, i, previousTheta, previousPhi, Pinner, gosOuterIonisationProbs);
+      theta = doPrimaryInelastic(coefCalc, previousX, previousY, previousZ, electronEnergy, ionisationProbs, false, beam, i, previousTheta, previousPhi, Pinner, gosOuterIonisationProbs, entered);
       if (GOS == true) {
         electronEnergy -= energyLostGOS;
       }
@@ -1264,7 +1266,7 @@ if (GOS == true) {
      //   else {
         //else produce an FSE
         triggered += 1;
-        theta = doPrimaryInelastic(coefCalc, previousX, previousY, previousZ, electronEnergy, ionisationProbsSurrounding, true, beam, i, previousTheta, previousPhi, Pinner, gosOuterIonisationProbsSur);
+        theta = doPrimaryInelastic(coefCalc, previousX, previousY, previousZ, electronEnergy, ionisationProbsSurrounding, true, beam, i, previousTheta, previousPhi, Pinner, gosOuterIonisationProbsSur, entered);
         if (GOS == true) {
           electronEnergy -= energyLostGOS;
         }
@@ -1486,6 +1488,9 @@ private double[] processMonteCarloDose(Beam beam, CoefCalc coefCalc) {
   MonteCarloAugerEscape = (MonteCarloAugerEscape * (electronNumber / numSimulatedElectrons)) * Beam.KEVTOJOULES;
   MonteCarloFlEscape = (MonteCarloFlEscape * (electronNumber / numSimulatedElectrons)) * Beam.KEVTOJOULES;
   MonteCarloAugerEntry = (MonteCarloAugerEntry * (electronNumber / numSimulatedElectrons)) * Beam.KEVTOJOULES;
+  
+  gosSurroundingElastic = (gosSurroundingElastic * (electronNumber / numSimulatedElectrons)) * Beam.KEVTOJOULES;
+  gosSurroundingElasticImage = (gosSurroundingElasticImage * (electronNumber / numSimulatedElectrons)) * Beam.KEVTOJOULES;
   
  // GOSImageDose = (GOSImageDose * (electronNumber / numSimulatedElectrons)) * Beam.KEVTOJOULES; 
   MonteCarloImageDose = (MonteCarloImageDose * (electronNumber / numSimulatedElectrons)) * Beam.KEVTOJOULES;
@@ -1769,7 +1774,7 @@ private double getShellBindingEnergy(Element collidedElement, int collidedShell)
 
 private double doPrimaryInelastic(CoefCalc coefCalc, double previousX, double previousY, double previousZ, 
                                   double electronEnergy, Map<Element, double[]> ionisationProbs, boolean surrounding, Beam beam, int i,
-                                  double previousTheta, double previousPhi, double Pinner,  Map<Element, Double> gosOuterIonisationProbs) {
+                                  double previousTheta, double previousPhi, double Pinner,  Map<Element, Double> gosOuterIonisationProbs, boolean entered) {
  //I'm now going to change thi for the GOS model
   
   double theta = 0;
@@ -1907,8 +1912,14 @@ private double doPrimaryInelastic(CoefCalc coefCalc, double previousX, double pr
         //send it out with the correct timestamp
         if (surrounding == false) {
           MonteCarloGOSDose += W;
+          if (entered == true) {
+            gosSurroundingElastic += W;
+          }
           if (Math.abs(previousX)/1000 <= beam.getImageX()/2 && Math.abs(previousY)/1000 <= beam.getImageY()/2) { //then in imaged region
             GOSImageDose += W;
+            if (entered == true) {
+              gosSurroundingElasticImage += W;
+            }
           }
           avgW += W;
           Wcount += 1;
@@ -1923,8 +1934,14 @@ private double doPrimaryInelastic(CoefCalc coefCalc, double previousX, double pr
       else { //too low energy to track - work out what exactly I'm doing with dose! - need an SP way and a W way
         if (surrounding == false) {
           MonteCarloGOSDose += W;
+          if (entered == true) {
+            gosSurroundingElastic += W;
+          }
           if (Math.abs(previousX)/1000 <= beam.getImageX()/2 && Math.abs(previousY)/1000 <= beam.getImageY()/2) { //then in imaged region
             GOSImageDose += W;
+            if (entered == true) {
+              gosSurroundingElasticImage += W;
+            }
           }
           avgW += W;
           Wcount += 1;
@@ -2732,9 +2749,10 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
               addDoseToImagedRegion(escapeDist, xNorm, yNorm, zNorm, previousX, previousY, previousZ, totFSEenLostLastStep, beam, outsideImage);
             }
             else {
-              
-              MonteCarloFSEEntry += entryEnergy - (newEnergy+KELostByChargeInSample);  //here the entered FSE has escaped again
-              
+              double energyDep = entryEnergy - (newEnergy+KELostByChargeInSample);
+              if (energyDep > 0) {
+                MonteCarloFSEEntry += entryEnergy - (newEnergy+KELostByChargeInSample);  //here the entered FSE has escaped again
+              }
               //split the dose up into voxels
         //      addDoseToVoxels(escapeDist, xNorm, yNorm, zNorm, previousX, previousY, previousZ, totFSEenLostLastStep, beam, coefCalc);
               addDoseToRegion(escapeDist, xNorm, yNorm, zNorm, previousX, previousY, previousZ, totFSEenLostLastStep);
@@ -3003,7 +3021,9 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
         }
       }
       if (surrounding == false && entered == true) {  // here the entered FSE has stopped in the sample so all energy stays in sample
-        MonteCarloFSEEntry += entryEnergy;
+        if (entryEnergy > 0) {
+          MonteCarloFSEEntry += entryEnergy;
+        }
         MonteCarloElectronsEntered += 1;
         
         //add negative charge to this pixel
