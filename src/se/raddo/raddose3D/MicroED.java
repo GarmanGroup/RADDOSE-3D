@@ -108,6 +108,7 @@ public class MicroED {
   private double MonteCarloAugerEntry;
   private double MonteCarloProductive;
   private double MonteCarloUnproductive;
+  private double MonteCarloUnproductiveMicroED;
   private double MonteCarloProductiveImage;
   private double extraFlEscape;
   private double extraAugerEscape;
@@ -209,7 +210,7 @@ public class MicroED {
     crystalSurfaceArea = XDimension * YDimension * 1E02; //convert from nm^2 to A^2
     if (crystalTypeEM == "CYLINDER") {
       crystalSurfaceArea = (Math.PI * (XDimension/2) * (YDimension/2)) * 1E02;
-      ZDimension = 99.99999;
+      ZDimension = 199.99999;
     }
     sampleThickness = ZDimension; //nm
     crystalVolume = (crystalSurfaceArea * (sampleThickness * 10) * 1E-27);    //A^3 to dm^3
@@ -1430,6 +1431,9 @@ if (GOS == true) {
     MonteCarloUnproductive += 1;
   }
   
+  if (elasticCount > 1 && inelastic == false) {
+    MonteCarloUnproductiveMicroED += 1;
+  }
   
   } //end looping through electrons
   
@@ -1485,6 +1489,7 @@ private double[] processMonteCarloDose(Beam beam, CoefCalc coefCalc) {
   MonteCarloProductiveImage = ((electronNumber/ numSimulatedElectrons) * (imageArea/beamArea)) * MonteCarloProductive;
   MonteCarloProductive = MonteCarloProductive * (electronNumber/ numSimulatedElectrons);
   MonteCarloUnproductive = MonteCarloUnproductive * (electronNumber/ numSimulatedElectrons);
+  MonteCarloUnproductiveMicroED = MonteCarloUnproductiveMicroED * (electronNumber/ numSimulatedElectrons);
   // unproductive is multiple elastic and not scattered 
   
   MonteCarloGOSDose = (MonteCarloGOSDose * (electronNumber / numSimulatedElectrons)) * Beam.KEVTOJOULES;
