@@ -107,6 +107,7 @@ public class MicroED {
   private double MonteCarloAugerEscape;
   private double MonteCarloAugerEntry;
   private double MonteCarloProductive;
+  private double MonteCarloUnproductive;
   private double MonteCarloProductiveImage;
   private double extraFlEscape;
   private double extraAugerEscape;
@@ -1425,6 +1426,10 @@ if (GOS == true) {
   if (elasticCount == 1 && backscattered == false && inelastic == false && surrounding == false && entered == false) {
     MonteCarloProductive += 1;
   }
+  if (elasticCount != 1 && inelastic == false) {
+    MonteCarloUnproductive += 1;
+  }
+  
   
   } //end looping through electrons
   
@@ -1479,7 +1484,8 @@ private double[] processMonteCarloDose(Beam beam, CoefCalc coefCalc) {
   MonteCarloSingleElasticCount = MonteCarloSingleElasticCount * (electronNumber / numSimulatedElectrons);
   MonteCarloProductiveImage = ((electronNumber/ numSimulatedElectrons) * (imageArea/beamArea)) * MonteCarloProductive;
   MonteCarloProductive = MonteCarloProductive * (electronNumber/ numSimulatedElectrons);
-  
+  MonteCarloUnproductive = MonteCarloUnproductive * (electronNumber/ numSimulatedElectrons);
+  // unproductive is multiple elastic and not scattered 
   
   MonteCarloGOSDose = (MonteCarloGOSDose * (electronNumber / numSimulatedElectrons)) * Beam.KEVTOJOULES;
   MonteCarloDose = (MonteCarloDose * (electronNumber / numSimulatedElectrons)) * Beam.KEVTOJOULES;
