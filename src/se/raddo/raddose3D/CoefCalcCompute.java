@@ -2268,7 +2268,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     double meanJ = 0, meanlnI = 0;
     double stoppingPower = 0;
     double sumA = 0, meanZoverA = 0;
-    int sumZ = 0;
+    long sumZ = 0;
     for (Element e : elements) { 
       
       //calculate meanJ (mean excitation energy) for this material
@@ -2566,6 +2566,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
           elXSection = 0;
           shellSigma[i] = 0;
         }
+        
         }
         
       }
@@ -4452,11 +4453,20 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
   
   public double integrateDist(double E, double Uk, int n, int i, Element e, double a, boolean surrounding) {
     double Wmax = (getEdash(E, Uk)/2)*Beam.KEVTOJOULES;
+    double binding = getShellBinding(i, e)*Beam.KEVTOJOULES;
  //   int bins = 100;
-    double step = Wmax/(Wbins*10);
+    
     double W = 0, previousY = 0, thisY = 0, sumIntegral = 0;
     int count = 0;
-    while (W <= Wmax) {
+    //this needs to change so it starts at Uk and ends at Wdis
+    W = binding;
+    double Wk = getWkMolecule(a, e, i, surrounding);
+    double Wak = getWak(E, Wk, Uk);
+    double Wdis = 3*Wak - 2*Uk; //need to check Wbins...
+    Wdis = (Wdis/1000)*Beam.KEVTOJOULES;
+    double step = Wdis/(Wbins);
+    
+    while (W <= Wdis) {
       if (W == 0) {
         thisY = 0;
       }
@@ -4480,7 +4490,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     double Wk = getWkMolecule(a, e, i, surrounding);
     //modify Wk
     double Wak = getWak(E, Wk, Uk);
-    double Wdis = 3*Wak - 2*Uk;
+    double Wdis = 3*Wak - 2*Uk; //need to check Wbins...
     //change values to J here
     Uk = (Uk/1000)*Beam.KEVTOJOULES;
     Wdis = (Wdis/1000)*Beam.KEVTOJOULES;
@@ -4747,6 +4757,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
       else {
         atomNum = totalAtoms(e);
       }
+
       if (atomNum > 0) {
       double[][] inelasticShell = new double[maxShells][4];
       //get number of shells

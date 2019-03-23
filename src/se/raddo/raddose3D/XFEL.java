@@ -96,7 +96,7 @@ public class XFEL {
   
   
   private double numFluxPhotons;
-  protected static final long NUM_PHOTONS = 20000;
+  protected static final long NUM_PHOTONS = 10000;
   protected  long PULSE_LENGTH = 30; //length in fs
   protected static final double PULSE_BIN_LENGTH = 0.5; //length in fs
   protected static final double PULSE_ENERGY = 1.4E-3; //energy in J
@@ -495,7 +495,7 @@ public class XFEL {
           for (int c = 0; c < maxVoxel[2]; c++) {
             double[] cartesian = convertToCartesianCoordinates(a,b,c);
             double flux = beam.beamIntensity(cartesian[0]/1000, cartesian[1]/1000, 0);
-            voxelEnergy[a][b][c][i] = ((voxelEnergy[a][b][c][i] * (numberOfPhotons/NUM_PHOTONS) * Beam.KEVTOJOULES) / voxelMass) /1E6; //in MGy
+            voxelEnergy[a][b][c][i] = ((voxelEnergy[a][b][c][i] * (numberOfPhotons/NUM_PHOTONS) * Beam.KEVTOJOULES));// / voxelMass) /1E6; //in MGy
             if (i == 0) {
               voxelCount += 1;
             }
@@ -517,6 +517,10 @@ public class XFEL {
         }
       }
     }
+    
+    voxDoseNoCutoff = (voxDoseNoCutoff / sampleMass)/1E6;
+    voxDose = (voxDose / sampleMass)/1E6;
+    
     double fractionLow = (double)lowIonisationsCutOff / (double)ionisationsCutoff;
     double totalNonHAtoms = 0, sumIonisations = 0;
     for (Element e: atomicIonisations.keySet()) {
@@ -537,8 +541,8 @@ public class XFEL {
     double ionisationsPerAtomCutoff = totalIonisationEventsPerAtom[countCutoff];
     double ionsiationPerAtomAll = totalIonisationEventsPerAtom[dose.length - 1];
     
-    voxDose = voxDose / voxelCount;
-    voxDoseNoCutoff = voxDoseNoCutoff / voxelCount;
+    voxDose = voxDose;// / voxelCount;
+    voxDoseNoCutoff = voxDoseNoCutoff;// / voxelCount;
     voxDoseExposed = voxDoseExposed / voxelCountExposed;
     voxDoseExposedNoCutoff = voxDoseExposedNoCutoff / voxelCountExposed;
     
