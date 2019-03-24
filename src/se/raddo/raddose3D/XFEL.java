@@ -68,7 +68,7 @@ public class XFEL {
   private HashMap<Integer, HashMap<Integer, double[]>> cumulativeTransitionProbabilities;
   private HashMap<Integer, HashMap<Integer, double[]>> augerTransitionEnergies;
   private HashMap<Integer, HashMap<Integer, double[]>> augerExitIndex;
-  private int[] augerElements = {6, 7, 8, 16};
+  private int[] augerElements = {6, 7, 8, 16, 26};
   private HashMap<Integer, Double> totKAugerProb;
   
   //ionisationStuff
@@ -101,7 +101,7 @@ public class XFEL {
   
   
   private double numFluxPhotons;
-  protected static final long NUM_PHOTONS = 100000;
+  protected static final long NUM_PHOTONS = 10000;
   protected  long PULSE_LENGTH = 30; //length in fs
   protected static final double PULSE_BIN_LENGTH = 0.5; //length in fs
   protected static final double PULSE_ENERGY = 1.4E-3; //energy in J
@@ -790,8 +790,8 @@ public class XFEL {
     int[] pixelCoord = convertToPixelCoordinates(xn, yn, zn);
     int shell = (int) shellIndex;
     int Z = ionisedElement.getAtomicNumber();
-    if (Z == 6 || Z == 7 || Z == 8 || Z == 16) {
-    if (shellIndex == 0 || (shellIndex < 4 && Z==16)) {
+    if (Z == 6 || Z == 7 || Z == 8 || Z == 16 || Z == 26) {
+    if (shellIndex == 0 || (shellIndex < 4 && Z==16) || (shellIndex < 7 && Z==26)) {
       //only do for elements that are possible right now - C N O S
         double shellFluorescenceYield = ionisedElement.getKShellFluorescenceYield();
         double fluoresenceYieldKRND = Math.random();
@@ -1927,14 +1927,17 @@ public class XFEL {
       if (augerElements[i] == 16) {
         shell = 3;
       }
+      if (augerElements[i] == 26) {
+        shell = 6;
+      }
       for (int j =0; j <= shell; j++) {
     //  if (augerElements[i] != 26) {
-      double[] transitionProbs = new double[21];
-      double[] leftShellIndex = new double[21];
-      double[] cumulativeTransitionProbs = new double[21];
+      double[] transitionProbs = new double[42];
+      double[] leftShellIndex = new double[42];
+      double[] cumulativeTransitionProbs = new double[42];
       double sumProb = 0;
-      double[] transitionLinewidths = new double[21];
-      double[] transitionEnergies = new double[21];
+      double[] transitionLinewidths = new double[42];
+      double[] transitionEnergies = new double[42];
       String elementNum = String.valueOf(augerElements[i]) + "-" + j + ".csv";
       String filePath = "constants/auger_linewidths/" + elementNum;
       InputStreamReader isr = locateFile(filePath);

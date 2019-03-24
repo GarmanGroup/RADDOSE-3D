@@ -2981,6 +2981,9 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
       numInnerShells = 7;
       valence -= 18;
     }
+    if (Z == 26) {
+   //   numInnerShells = 8; //might not want this
+    }
 //    else {
  //     numInnerShells = 9;
  //   }
