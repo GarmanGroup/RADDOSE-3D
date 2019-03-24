@@ -46,6 +46,8 @@ public class XFEL {
   public double[] photonDose;
   public double[] electronDose;
   public double[] gosElectronDose;
+  public double[] photonDosevResolved;
+  public double[] gosElectronDosevResolved;
   
   public double[] electronDoseSurrounding;
   public double raddoseStyleDose;
@@ -93,10 +95,13 @@ public class XFEL {
   private int avgUkNum;
   
   private double[][][][] voxelEnergy;
+  private double[][][][] voxelEnergyvResolved;
+  public double[][][] voxelElastic;
+  private double totElastic;
   
   
   private double numFluxPhotons;
-  protected static final long NUM_PHOTONS = 10000;
+  protected static final long NUM_PHOTONS = 100000;
   protected  long PULSE_LENGTH = 30; //length in fs
   protected static final double PULSE_BIN_LENGTH = 0.5; //length in fs
   protected static final double PULSE_ENERGY = 1.4E-3; //energy in J
@@ -122,7 +127,9 @@ public class XFEL {
     
     
     int[] maxVoxel = getMaxPixelCoordinates();
-    voxelEnergy = new double[maxVoxel[0]][maxVoxel[1]][maxVoxel[2]][(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (500/PULSE_BIN_LENGTH) + 1000)];
+  //  voxelEnergy = new double[maxVoxel[0]][maxVoxel[1]][maxVoxel[2]][(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (500/PULSE_BIN_LENGTH) + 1000)];
+    voxelEnergyvResolved = new double[maxVoxel[0]][maxVoxel[1]][maxVoxel[2]][(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (500/PULSE_BIN_LENGTH) + 1000)];
+    voxelElastic = new double[maxVoxel[0]][maxVoxel[1]][maxVoxel[2]];
     lastTimeVox = new double[maxVoxel[2]];
     
     //these break way way too easily so need a more permanent solution
@@ -130,6 +137,9 @@ public class XFEL {
     photonDose = new double[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (500/PULSE_BIN_LENGTH) + 1000)];
     electronDose = new double[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (500/PULSE_BIN_LENGTH) + 1000)];
     gosElectronDose = new double[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (500/PULSE_BIN_LENGTH) + 1000)];
+    photonDosevResolved = new double[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (500/PULSE_BIN_LENGTH) + 1000)];
+    gosElectronDosevResolved = new double[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (500/PULSE_BIN_LENGTH) + 1000)];
+    
     electronDoseSurrounding = new double[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (500/PULSE_BIN_LENGTH) + 1000)];
     totalIonisationEvents = new long[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (500/PULSE_BIN_LENGTH) + 1000)];
     lowEnergyIonisations = new long[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (500/PULSE_BIN_LENGTH) + 1000)];
@@ -203,11 +213,13 @@ public class XFEL {
 
     double absCoef = coefCalc.getAbsorptionCoefficient(); //um-1
     double comptonCoef = coefCalc.getInelasticCoefficient(); //um-1
-    
+    double elasticCoef = coefCalc.getElasticCoefficient(); //um^-1
     
  //   double photonMFPL = (1/absCoef)*1000; //just photoelectric absorption for now can put in Compton later
     double photonMFPL = (1/(absCoef + comptonCoef))*1000; //including Compton
     double probCompton = 1 - (photonMFPL/((1/absCoef)*1000));
+    double totalMFPL = (1/(absCoef + comptonCoef + elasticCoef))*1000;
+    double elasticProb = elasticCoef / (absCoef + comptonCoef);
     
     //populate the relative element cross sections here 
     Map<Element, Double> elementAbsorptionProbs = coefCalc.getPhotoElectricProbsElement(beam.getPhotonEnergy());
@@ -330,7 +342,8 @@ public class XFEL {
       
       //the next step is to work out the distance s
       if (surrounding == false) {
-        s = -photonMFPL*Math.log(Math.random());
+     //   s = -photonMFPL*Math.log(Math.random());
+        s = -totalMFPL*Math.log(Math.random());
       }
 
       xn = previousX + s * xNorm;
@@ -348,6 +361,15 @@ public class XFEL {
           timeStamp += timeToPoint * 1E15; //time from start of pulse that this happened
           int doseTime = (int) (timeStamp/PULSE_BIN_LENGTH); //rounding down so 0 = 0-0.99999, 1 - 1-1.99999 etc 
           
+          //determine if elastic or inel
+          double RNDel = Math.random();
+          if (RNDel < elasticProb) {
+            //do elastic
+            int[] pixelCoord = convertToPixelCoordinates(xn, yn, zn);
+            voxelElastic[pixelCoord[0]][pixelCoord[1]][pixelCoord[2]] += 1;
+            totElastic += 1;
+          }
+          else {
           //determine if this was Compton scattering or photoelectric absorption
           double RNDcompton = Math.random();
           if (RNDcompton < probCompton) {
@@ -358,6 +380,7 @@ public class XFEL {
             //this was a photoelectric absorption
             ionisationsOld += 1;
             producePhotoElectron(beam, coefCalc, elementAbsorptionProbs, ionisationProbs, timeStamp, doseTime, xn, yn, zn, surrounding);
+          }
           }
           //photon is absorbed so don't need to keep track of it after this and update stuff
         }
@@ -451,15 +474,18 @@ public class XFEL {
     int[] maxVoxel = getMaxPixelCoordinates();
     int voxelCount = 0, voxelCountExposed = 0;
     double voxDoseNoCutoff = 0, voxDose = 0, voxDoseExposed = 0, voxDoseExposedNoCutoff = 0;
+    double voxDosevResolved = 0, voxDoseNoCutoffvResolved = 0, DWD = 0, DWDNoCutoff = 0;
     long ionisationsCutoff = 0, lowIonisationsCutOff = 0;
     int countCutoff = 0;
     double sumDose = 0, sumElectronDose = 0, sumPhotonDose = 0, sumElectronDoseSurrounding = 0, sumGOSDose = 0, gosTot = 0, gosTotNoCutoff = 0;
     double sumDoseNoCutOff = 0, sumElectronDoseNoCutOff = 0, sumPhotonDoseNoCutOff = 0, sumElectronDoseSurroundingNoCutOff = 0, sumGOSDoseNoCutOff = 0;
+    double sumGOSvResolved = 0, sumGOSvResolvedNoCutoff = 0;
     for (int i = 0; i < dose.length; i++) {
       dose[i] = ((dose[i] * (numberOfPhotons/NUM_PHOTONS) * Beam.KEVTOJOULES) / sampleMass) /1E6; //in MGy
       electronDose[i] = ((electronDose[i] * (numberOfPhotons/NUM_PHOTONS) * Beam.KEVTOJOULES) / sampleMass) /1E6; //in MGy
       gosElectronDose[i] = ((gosElectronDose[i] * (numberOfPhotons/NUM_PHOTONS) * Beam.KEVTOJOULES) / sampleMass) /1E6; //in MGy
       photonDose[i] = ((photonDose[i] * (numberOfPhotons/NUM_PHOTONS) * Beam.KEVTOJOULES) / sampleMass) /1E6; //in MGy
+      gosElectronDosevResolved[i] = ((gosElectronDosevResolved[i] * (numberOfPhotons/NUM_PHOTONS) * Beam.KEVTOJOULES) / sampleMass) /1E6; //in MGy
       
       electronDoseSurrounding[i] = ((electronDoseSurrounding[i] * (numberOfPhotons/NUM_PHOTONS) * Beam.KEVTOJOULES) / sampleMass) /1E6; //in MGy
       totalIonisationEvents[i] = StrictMath.round(totalIonisationEvents[i] * (numberOfPhotons/NUM_PHOTONS));
@@ -481,13 +507,14 @@ public class XFEL {
         sumGOSDose += gosElectronDose[i];
         sumPhotonDose += photonDose[i];
         sumElectronDoseSurrounding += electronDoseSurrounding[i];
-        
+        sumGOSvResolved += gosElectronDosevResolved[i];
       }
       sumDoseNoCutOff += dose[i];
       sumElectronDoseNoCutOff += electronDose[i];
       sumGOSDoseNoCutOff += gosElectronDose[i];
       sumPhotonDoseNoCutOff += photonDose[i];
       sumElectronDoseSurroundingNoCutOff += electronDoseSurrounding[i];
+      sumGOSvResolvedNoCutoff += gosElectronDosevResolved[i];
       
       //now process the voxel dose
       for (int a = 0; a < maxVoxel[0]; a++) {
@@ -495,20 +522,25 @@ public class XFEL {
           for (int c = 0; c < maxVoxel[2]; c++) {
             double[] cartesian = convertToCartesianCoordinates(a,b,c);
             double flux = beam.beamIntensity(cartesian[0]/1000, cartesian[1]/1000, 0);
-            voxelEnergy[a][b][c][i] = ((voxelEnergy[a][b][c][i] * (numberOfPhotons/NUM_PHOTONS) * Beam.KEVTOJOULES));// / voxelMass) /1E6; //in MGy
+         //   voxelEnergy[a][b][c][i] = ((voxelEnergy[a][b][c][i] * (numberOfPhotons/NUM_PHOTONS) * Beam.KEVTOJOULES));// / voxelMass) /1E6; //in MGy
+            voxelEnergyvResolved[a][b][c][i] = ((voxelEnergyvResolved[a][b][c][i] * (numberOfPhotons/NUM_PHOTONS) * Beam.KEVTOJOULES));
             if (i == 0) {
               voxelCount += 1;
+              voxelElastic[a][b][c] = voxelElastic[a][b][c] * (numberOfPhotons/NUM_PHOTONS);
             }
             if (i*PULSE_BIN_LENGTH < lastTimeVox[c]-(1*PULSE_BIN_LENGTH)) {
-              voxDose += voxelEnergy[a][b][c][i];
-              if ( flux> 0) { //change later to wedge.getoffAxisUM
-                voxDoseExposed += voxelEnergy[a][b][c][i];
+        //      voxDose += voxelEnergy[a][b][c][i];
+              voxDosevResolved += voxelEnergyvResolved[a][b][c][i];
+              if ( voxelElastic[a][b][c]> 0) { //change later to wedge.getoffAxisUM
+                voxDoseExposed += voxelEnergyvResolved[a][b][c][i];
+                DWD += voxelEnergyvResolved[a][b][c][i] * (voxelElastic[a][b][c]/totElastic);
               }
             }
-            voxDoseNoCutoff += voxelEnergy[a][b][c][i];
-            
-            if (flux > 0) { //change later to wedge.getoffAxisUM
-              voxDoseExposedNoCutoff += voxelEnergy[a][b][c][i];
+        //    voxDoseNoCutoff += voxelEnergy[a][b][c][i];
+            voxDoseNoCutoffvResolved += voxelEnergyvResolved[a][b][c][i];
+            if (voxelElastic[a][b][c] > 0) { //change later to wedge.getoffAxisUM
+                voxDoseExposedNoCutoff += voxelEnergyvResolved[a][b][c][i];
+                DWDNoCutoff += voxelEnergyvResolved[a][b][c][i] * (voxelElastic[a][b][c]/totElastic);
               if (i == 0) {
                 voxelCountExposed += 1;
               }
@@ -520,6 +552,8 @@ public class XFEL {
     
     voxDoseNoCutoff = (voxDoseNoCutoff / sampleMass)/1E6;
     voxDose = (voxDose / sampleMass)/1E6;
+    voxDoseNoCutoffvResolved = (voxDoseNoCutoffvResolved / sampleMass)/1E6;
+    voxDosevResolved = (voxDosevResolved / sampleMass)/1E6;
     
     double fractionLow = (double)lowIonisationsCutOff / (double)ionisationsCutoff;
     double totalNonHAtoms = 0, sumIonisations = 0;
@@ -541,10 +575,13 @@ public class XFEL {
     double ionisationsPerAtomCutoff = totalIonisationEventsPerAtom[countCutoff];
     double ionsiationPerAtomAll = totalIonisationEventsPerAtom[dose.length - 1];
     
-    voxDose = voxDose;// / voxelCount;
-    voxDoseNoCutoff = voxDoseNoCutoff;// / voxelCount;
-    voxDoseExposed = voxDoseExposed / voxelCountExposed;
-    voxDoseExposedNoCutoff = voxDoseExposedNoCutoff / voxelCountExposed;
+
+    //exposed volume and mass
+    double exposedMass = voxelCountExposed * voxelMass;
+    voxDoseExposed = (voxDoseExposed / exposedMass)/1E6;
+    voxDoseExposedNoCutoff = (voxDoseExposedNoCutoff / exposedMass)/1E6;
+    DWD = (DWD / voxelMass)/1E6;
+    DWDNoCutoff = (DWDNoCutoff / voxelMass)/1E6;
     
     raddoseStyleDose = ((raddoseStyleDose * (numberOfPhotons/NUM_PHOTONS) * Beam.KEVTOJOULES) / sampleMass) /1E6; //in MGy
     raddoseStyleDoseCompton = ((raddoseStyleDoseCompton * (numberOfPhotons/NUM_PHOTONS) * Beam.KEVTOJOULES) / sampleMass) /1E6; //in MGy)
@@ -703,8 +740,9 @@ public class XFEL {
       raddoseStyleDose += beam.getPhotonEnergy();
       //add to voxel
       int[] pixelCoord = convertToPixelCoordinates(xn, yn, zn);
-      voxelEnergy[pixelCoord[0]][pixelCoord[1]][pixelCoord[2]][doseTime] += shellBindingEnergy;
+    //  voxelEnergy[pixelCoord[0]][pixelCoord[1]][pixelCoord[2]][doseTime] += shellBindingEnergy;
     }
+    //change this here to do the relaxation first and then 
     
     //send out the photoelectron in with the same timestamp of the photon - I think I should have this timestamp as a double
     
@@ -737,15 +775,19 @@ public class XFEL {
       System.out.println(ionisationsPerPhotoelectron + " " + totalShellBindingEnergy);
     }
     */
-  //relax the atom and see if an auger electron was produced
+    //relax the atom and see if an auger electron was produced
     if (surrounding == false) { //only want to track Auger if in the crystal for now
       produceAugerElectron(coefCalc, timeStamp, shellIndex, ionisedElement, xn, yn, zn, surrounding);
     }
+    
   }
   
   private void produceAugerElectron(CoefCalc coefCalc, double timeStamp, double shellIndex, Element ionisedElement,
                                     double xn, double yn, double zn, boolean surrounding) {
     //only do if from a K shell for now
+    double shellBindingEnergy = getShellBindingEnergy(ionisedElement, (int)shellIndex);
+    int doseTime = (int) (timeStamp/PULSE_BIN_LENGTH);
+    int[] pixelCoord = convertToPixelCoordinates(xn, yn, zn);
     int shell = (int) shellIndex;
     int Z = ionisedElement.getAtomicNumber();
     if (Z == 6 || Z == 7 || Z == 8 || Z == 16) {
@@ -770,6 +812,10 @@ public class XFEL {
           }
           //could actually get a proper energy from this... Also get a linewidth and therefore lifetime 
           double augerEnergy = energies[transitionIndex];
+          //can add the energy difference to the dose here
+          gosElectronDosevResolved[doseTime] += shellBindingEnergy - augerEnergy; 
+          voxelEnergyvResolved[pixelCoord[0]][pixelCoord[1]][pixelCoord[2]][doseTime] += shellBindingEnergy - augerEnergy;
+          
           double augerLinewidth = linewidths[transitionIndex];
           double augerLifetime = 1E15*((h/(2*Math.PI)) / ((augerLinewidth/1000)*Beam.KEVTOJOULES));
           timeStamp += augerLifetime;
@@ -803,6 +849,10 @@ public class XFEL {
           produceAugerElectron(coefCalc, timeStamp, exitIndex, ionisedElement, xn, yn, zn, surrounding);
         }
       }
+    else {
+      gosElectronDosevResolved[doseTime] += shellBindingEnergy;
+      voxelEnergyvResolved[pixelCoord[0]][pixelCoord[1]][pixelCoord[2]][doseTime] += shellBindingEnergy;
+    }
     /*
       else if (Z == 26) {
         double augerEnergy = 6.5;
@@ -827,6 +877,10 @@ public class XFEL {
         }
       }
       */
+    }
+    else {
+      gosElectronDosevResolved[doseTime] += shellBindingEnergy;
+      voxelEnergyvResolved[pixelCoord[0]][pixelCoord[1]][pixelCoord[2]][doseTime] += shellBindingEnergy;
     }
   }
   
@@ -980,9 +1034,11 @@ public class XFEL {
           dose[doseTime] += startingEnergy;
           electronDose[doseTime] += startingEnergy;
           gosElectronDose[doseTime] += startingEnergy;
+          gosElectronDosevResolved[doseTime] += startingEnergy;
         //add to voxel
           int[] pixelCoord = convertToPixelCoordinates(previousX, previousY, previousZ);
-          voxelEnergy[pixelCoord[0]][pixelCoord[1]][pixelCoord[2]][doseTime] += startingEnergy;
+      //    voxelEnergy[pixelCoord[0]][pixelCoord[1]][pixelCoord[2]][doseTime] += startingEnergy;
+          voxelEnergyvResolved[pixelCoord[0]][pixelCoord[1]][pixelCoord[2]][doseTime] += startingEnergy;
           
         }
         //get avg energy and add on ionisation
@@ -1354,6 +1410,7 @@ public class XFEL {
               
               SEzNorm = Math.cos(SETheta);
               //send it out with the correct timestamp
+              
               trackPhotoelectron(coefCalc, timeStamp, SEEnergy, xn, yn, zn, SExNorm, SEyNorm, SEzNorm, SETheta, SEPhi, surrounding, false);
               if (primaryElectron == true) { //only doing dose from the primary
                 gosElectronDose[doseTimeGOS] += W;
@@ -1361,16 +1418,20 @@ public class XFEL {
                 avgWNum += 1;
                 //add to voxel
                 int[] pixelCoord = convertToPixelCoordinates(xn, yn, zn);
-                voxelEnergy[pixelCoord[0]][pixelCoord[1]][pixelCoord[2]][doseTimeGOS] += W;
+           //     voxelEnergy[pixelCoord[0]][pixelCoord[1]][pixelCoord[2]][doseTimeGOS] += W;
               }
+              
             }
             else { //too low energy to track - work out what exactly I'm doing with dose! - need an SP way and a W way
               if (primaryElectron == true) { //only doing dose from the primary
                 gosElectronDose[doseTimeGOS] += W;
                 //add to voxel
                 int[] pixelCoord = convertToPixelCoordinates(xn, yn, zn);
-                voxelEnergy[pixelCoord[0]][pixelCoord[1]][pixelCoord[2]][doseTimeGOS] += W;
+         //       voxelEnergy[pixelCoord[0]][pixelCoord[1]][pixelCoord[2]][doseTimeGOS] += W;
               }
+              gosElectronDosevResolved[doseTimeGOS] += SEEnergy;
+              int[] pixelCoord = convertToPixelCoordinates(xn, yn, zn);
+              voxelEnergyvResolved[pixelCoord[0]][pixelCoord[1]][pixelCoord[2]][doseTimeGOS] += SEEnergy;
               totalIonisationEvents[doseTimeGOS] += 1;
               //sort out how many extra ionisations this will cause
               double avgEnergy = coefCalc.getAvgInelasticEnergy(SEEnergy);
@@ -1629,8 +1690,11 @@ public class XFEL {
             }
             //add to voxel
             int[] pixelCoord = convertToPixelCoordinates(previousX, previousY, previousZ);
-            voxelEnergy[pixelCoord[0]][pixelCoord[1]][pixelCoord[2]][doseTime] += electronEnergy;
+        //    voxelEnergy[pixelCoord[0]][pixelCoord[1]][pixelCoord[2]][doseTime] += electronEnergy;
           }
+          gosElectronDosevResolved[doseTime] += electronEnergy;
+          int[] pixelCoord = convertToPixelCoordinates(previousX, previousY, previousZ);
+          voxelEnergyvResolved[pixelCoord[0]][pixelCoord[1]][pixelCoord[2]][doseTime] += electronEnergy;
           double avgEnergy = coefCalc.getAvgInelasticEnergy(electronEnergy); //can make this plasmon energy
           avgEnergy = coefCalc.getPlasmaEnergy(surrounding);
           if (avgEnergy > 0) {
@@ -1789,7 +1853,8 @@ public class XFEL {
       RNDy *= fractionLimit;
     }
     xyPos[1] = (RNDy * beamY) - (beamY/2);
-    
+    //the circular beam is wrong and needs to change to the same as the MicroED
+    //Although this way is pretty much a gaussian!!!! - might keep a bit then
     return xyPos;
   }
   
