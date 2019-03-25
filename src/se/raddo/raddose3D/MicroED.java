@@ -107,8 +107,10 @@ public class MicroED {
   private double MonteCarloAugerEscape;
   private double MonteCarloAugerEntry;
   private double MonteCarloProductive;
+  private double MonteCarloProductiveSolvent;
   private double MonteCarloUnproductive;
   private double MonteCarloUnproductiveMicroED;
+  private double MonteCarloUnproductiveMicroEDSolvent;
   private double MonteCarloProductiveImage;
   private double extraFlEscape;
   private double extraAugerEscape;
@@ -165,6 +167,7 @@ public class MicroED {
   
   private boolean GOS = true;
   
+  private boolean scatteredSolvent = false;
   
   protected static final int NUM_REGIONS = 10;
   
@@ -1059,7 +1062,7 @@ if (GOS == true) {
   boolean scattered = false;
   
   
-  int timesScattered = 0;
+  long timesScattered = 0, scatteredSol = 0, scatteredMacro = 0;
   //check if the electron has left the sample, if it has just do the dose of Z
   //if it has not left move onto the loop
   while (exited == false) {
@@ -1133,7 +1136,13 @@ if (GOS == true) {
       //reupdate elastic probs because Monte carlo seconadry may have messed it up
       double fix = coefCalc.getElectronElasticMFPL(electronEnergy, false);
       elasticProbs = coefCalc.getElasticProbs(false);
-      theta = doPrimaryElastic(electronEnergy, elasticProbs, false);
+      theta = doPrimaryElastic(electronEnergy, elasticProbs, false, coefCalc);
+      if (scatteredSolvent == false) {
+        scatteredMacro += 1;
+      }
+      else {
+        scatteredSol += 1;
+      }
     }
     //now further update the primary
     phi =  2 * Math.PI * Math.random();
@@ -1281,7 +1290,8 @@ if (GOS == true) {
         MonteCarloTotElasticCount += 1;
         double fix = coefCalc.getElectronElasticMFPL(electronEnergy, true);
         elasticProbsSurrounding = coefCalc.getElasticProbs(true);
-        theta = doPrimaryElastic(electronEnergy, elasticProbsSurrounding, true);
+        theta = doPrimaryElastic(electronEnergy, elasticProbsSurrounding, true, coefCalc);
+        scatteredSol += 1;
       }
       //now further update the primary
       phi =  2 * Math.PI * Math.random();
@@ -1428,12 +1438,19 @@ if (GOS == true) {
   if (elasticCount == 1 && backscattered == false && inelastic == false && surrounding == false && entered == false) {
     MonteCarloProductive += 1;
   }
+  if (scatteredMacro == 1 && backscattered == false && inelastic == false && surrounding == false && entered == false && scatteredSol == 0) {
+    MonteCarloProductiveSolvent += 1;
+  }
+  
   if (elasticCount != 1 && inelastic == false) {
     MonteCarloUnproductive += 1;
   }
   
   if (elasticCount > 1 && inelastic == false) {
     MonteCarloUnproductiveMicroED += 1;
+  }
+  if (scatteredMacro > 1 && inelastic == false && scatteredSol > 0) {
+    MonteCarloUnproductiveMicroEDSolvent += 1;
   }
   
   } //end looping through electrons
@@ -2107,7 +2124,7 @@ private double doPrimaryInelastic(CoefCalc coefCalc, double previousX, double pr
   return theta;
 }
 
-private double doPrimaryElastic(double electronEnergy, Map<ElementEM, Double> elasticProbs, boolean surrounding) {
+private double doPrimaryElastic(double electronEnergy, Map<ElementEM, Double> elasticProbs, boolean surrounding, CoefCalc coefCalc) {
 //now start the loop - clean up the first iteration into this later 
   //Determine what element elastically scattered the electron so can choose an alpha correctly
 
@@ -2165,6 +2182,22 @@ private double doPrimaryElastic(double electronEnergy, Map<ElementEM, Double> el
     if (Emax > Ed) {
       displacementEnergy += en;
     }
+    
+    // I need to determine of elastic from solvent or macromolecule
+    //to do this get number of element in macromolecule and number in solvent and see which one it is from 
+    double atomSolvent = coefCalc.getSolventAtoms(elasticElement);
+    double atomProtein = coefCalc.getProteinAtoms(elasticElement);
+    double proteinProb = atomProtein / (atomProtein+atomSolvent);
+    double typeRND = Math.random();
+    if (typeRND < proteinProb) {
+      scatteredSolvent = false;
+    }
+    else {
+      scatteredSolvent = true;
+    }
+  }
+  else {
+    scatteredSolvent = true;
   }
   return theta;
 }

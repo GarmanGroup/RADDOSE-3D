@@ -532,18 +532,24 @@ public class XFEL {
         //      voxDose += voxelEnergy[a][b][c][i];
               voxDosevResolved += voxelEnergyvResolved[a][b][c][i];
               if ( voxelElastic[a][b][c]> 0) { //change later to wedge.getoffAxisUM
-                voxDoseExposed += voxelEnergyvResolved[a][b][c][i];
+               // voxDoseExposed += voxelEnergyvResolved[a][b][c][i];
                 DWD += voxelEnergyvResolved[a][b][c][i] * (voxelElastic[a][b][c]/totElastic);
+              }
+              if (Math.abs(cartesian[0])/1000 <= beam.getBeamX()/2 && Math.abs(cartesian[1])/1000 <= beam.getBeamY()/2) { 
+                voxDoseExposed += voxelEnergyvResolved[a][b][c][i];
               }
             }
         //    voxDoseNoCutoff += voxelEnergy[a][b][c][i];
             voxDoseNoCutoffvResolved += voxelEnergyvResolved[a][b][c][i];
             if (voxelElastic[a][b][c] > 0) { //change later to wedge.getoffAxisUM
-                voxDoseExposedNoCutoff += voxelEnergyvResolved[a][b][c][i];
+              //  voxDoseExposedNoCutoff += voxelEnergyvResolved[a][b][c][i];
                 DWDNoCutoff += voxelEnergyvResolved[a][b][c][i] * (voxelElastic[a][b][c]/totElastic);
               if (i == 0) {
                 voxelCountExposed += 1;
               }
+            }
+            if (Math.abs(cartesian[0])/1000 <= beam.getBeamX()/2 && Math.abs(cartesian[1])/1000 <= beam.getBeamY()/2) { 
+              voxDoseExposedNoCutoff += voxelEnergyvResolved[a][b][c][i];
             }
           }
         }
@@ -578,6 +584,8 @@ public class XFEL {
 
     //exposed volume and mass
     double exposedMass = voxelCountExposed * voxelMass;
+    double exposedVolume = beam.getBeamX()*1000 * beam.getBeamY()*1000 * ZDimension * 1E-21;
+    exposedMass = ((coefCalc.getDensity() * exposedVolume) / 1000);  //in Kg
     voxDoseExposed = (voxDoseExposed / exposedMass)/1E6;
     voxDoseExposedNoCutoff = (voxDoseExposedNoCutoff / exposedMass)/1E6;
     DWD = (DWD / voxelMass)/1E6;
@@ -595,7 +603,12 @@ public class XFEL {
     avgUk = avgUk/avgUkNum;
     
     //get diffraction efficiency
-    double numberElastic = numberOfPhotons * getFractionElasticallyScattered(coefCalc);
+    double fractionElastic = getFractionElasticallyScattered(coefCalc);
+    double numberElastic = numberOfPhotons * fractionElastic;
+    
+    double elasticMolecule = numberOfPhotons * getFractionElasticallyScatteredMacro(coefCalc);
+    double elasticSolvent = numberElastic = elasticMolecule;
+    
     double diffractionEfficiency = numberElastic / sumDose;
     double DEFull = numberElastic / sumDoseNoCutOff;
     System.out.println("Diffraction Efficiency: " + diffractionEfficiency);
@@ -671,6 +684,11 @@ public class XFEL {
   */
   private double getFractionElasticallyScattered(CoefCalc coefCalc) {
     double elasticCoef = coefCalc.getElasticCoefficient(); //per um
+    double fractionElastic = 1-Math.exp(-elasticCoef * (ZDimension/1000));
+    return fractionElastic;
+  }
+  private double getFractionElasticallyScatteredMacro(CoefCalc coefCalc) {
+    double elasticCoef = coefCalc.getElasticCoefficientMacro(); //per um
     double fractionElastic = 1-Math.exp(-elasticCoef * (ZDimension/1000));
     return fractionElastic;
   }

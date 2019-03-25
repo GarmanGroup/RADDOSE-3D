@@ -41,6 +41,7 @@ public abstract class CoefCalc {
    *         elastic scattering coefficient in units m^-1 (tbc)
    */
   public abstract double getElasticCoefficient();
+  public abstract double getElasticCoefficientMacro();
 
   /**
    * Returns the current inelastic X-ray (compton, incoherent) scattering
@@ -200,5 +201,8 @@ public abstract class CoefCalc {
   public abstract int[] getNumValenceElectronsSubshells(Element e);
 
   public abstract double getPlasmaEnergy(boolean surrounding);
+  
+  public abstract Double getProteinAtoms(final ElementEM element); 
+  public abstract Double getSolventAtoms(final ElementEM element); 
 }
 

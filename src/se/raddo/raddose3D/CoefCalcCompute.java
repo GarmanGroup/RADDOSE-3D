@@ -20,7 +20,7 @@ public class CoefCalcCompute extends CoefCalc {
   /**
    * Identified coefficients and density from last program run. Final variables.
    */
-  private double                     absCoeffcomp, absCoeffphoto, attCoeff, elasCoeff, density, molecularWeight, molecularWeightSurrounding;
+  private double                     absCoeffcomp, absCoeffphoto, attCoeff, elasCoeff, elasCoeffMacro, density, molecularWeight, molecularWeightSurrounding;
   
   private long numSimulatedElectrons;
   
@@ -389,6 +389,8 @@ public class CoefCalcCompute extends CoefCalc {
     elasCoeff = absCoefficients.get(ELASTIC);
     absCoeffcomp = absCoefficients.get(COMPTON);
     absCoeffphoto = absCoefficients.get(PHOTOELECTRIC);
+    absCoefficients = calculateCoefficientsMacro(b.getPhotonEnergy());
+    elasCoeffMacro = absCoefficients.get(ELASTIC);
   }
   
   @Override
@@ -452,6 +454,46 @@ public class CoefCalcCompute extends CoefCalc {
           * cs.get(CrossSection.COMPTON) / cellVolume
           / UNITSPERDECIUNIT;        
       */
+    }
+    crossSectionPhotoElectric = crossSectionPhotoElectric / UNITSPERMILLIUNIT;
+    crossSectionTotal = crossSectionTotal / UNITSPERMILLIUNIT;
+    crossSectionCoherent = crossSectionCoherent / UNITSPERMILLIUNIT;
+    crossSectionComptonAttenuation = crossSectionComptonAttenuation/ UNITSPERMILLIUNIT;
+    
+    absCoeffs.put(PHOTOELECTRIC, crossSectionPhotoElectric);
+    absCoeffs.put(ELASTIC, crossSectionCoherent);
+    absCoeffs.put(COMPTON, crossSectionComptonAttenuation);
+    absCoeffs.put(TOTAL, crossSectionTotal);
+
+    return absCoeffs;
+  }
+  
+ private Map<String, Double> calculateCoefficientsMacro(final double energy) {
+    
+    Map<String, Double> absCoeffs = new HashMap<String, Double>();
+    double crossSectionPhotoElectric = 0;
+    double crossSectionCoherent = 0;
+    double crossSectionTotal = 0;
+    double crossSectionComptonAttenuation = 0;
+
+    // take cross section contributions from each individual atom
+    // weighted by the cell volume
+    Map<Element.CrossSection, Double> cs;
+    for (Element e : this.presentElements) {
+      cs = e.getAbsCoefficients(energy); 
+
+      crossSectionPhotoElectric += getMacromolecularOccurrence(e)
+          * cs.get(CrossSection.PHOTOELECTRIC) / cellVolume
+          / UNITSPERDECIUNIT;
+      crossSectionCoherent += getMacromolecularOccurrence(e)
+          * cs.get(CrossSection.COHERENT) / cellVolume
+          / UNITSPERDECIUNIT;
+      crossSectionTotal += getMacromolecularOccurrence(e)
+          * cs.get(CrossSection.TOTAL) / cellVolume
+          / UNITSPERDECIUNIT;
+      crossSectionComptonAttenuation += getMacromolecularOccurrence(e) 
+          * cs.get(CrossSection.COMPTON) / cellVolume
+          / UNITSPERDECIUNIT;        
     }
     crossSectionPhotoElectric = crossSectionPhotoElectric / UNITSPERMILLIUNIT;
     crossSectionTotal = crossSectionTotal / UNITSPERMILLIUNIT;
@@ -1033,6 +1075,11 @@ public class CoefCalcCompute extends CoefCalc {
   public double getElasticCoefficient() {
     return elasCoeff;
   }
+  
+  @Override
+  public double getElasticCoefficientMacro() {
+    return elasCoeffMacro;
+  }
 
   @Override
   public double getDensity() {
@@ -1548,6 +1595,15 @@ public class CoefCalcCompute extends CoefCalc {
     }
   }
   
+  @Override
+  public Double getSolventAtoms(final ElementEM element) {
+    if (solventOccurrenceEM.containsKey(element)) {
+      return solventOccurrenceEM.get(element);
+    } else {
+      return 0.;
+    }
+  }
+  
   public Double getSolventOccurrenceEM(final ElementEM element) {
     if (solventOccurrenceEM.containsKey(element)) {
       return solventOccurrenceEM.get(element);
@@ -1682,6 +1738,15 @@ public class CoefCalcCompute extends CoefCalc {
   public Double getMacromolecularOccurrence(final Element element) {
     if (macromolecularOccurrence.containsKey(element)) {
       return macromolecularOccurrence.get(element);
+    } else {
+      return 0.;
+    }
+  }
+  
+  @Override
+  public Double getProteinAtoms(final ElementEM element) {
+    if (macromolecularOccurrenceEM.containsKey(element)) {
+      return macromolecularOccurrenceEM.get(element);
     } else {
       return 0.;
     }
