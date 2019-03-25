@@ -173,7 +173,7 @@ public class MicroED {
   
   
   
-  protected static final long NUM_MONTE_CARLO_ELECTRONS = 10000;
+  protected static final long NUM_MONTE_CARLO_ELECTRONS = 2000;
   
   protected static final double c = 299792458; //m/s
   protected static final double m =  9.10938356E-31; //Kg
@@ -1449,7 +1449,7 @@ if (GOS == true) {
   if (elasticCount > 1 && inelastic == false) {
     MonteCarloUnproductiveMicroED += 1;
   }
-  if (scatteredMacro > 1 && inelastic == false && scatteredSol > 0) {
+  if ((scatteredMacro > 1 && inelastic == false) || (scatteredSol > 0 && inelastic == false)) {
     MonteCarloUnproductiveMicroEDSolvent += 1;
   }
   
@@ -1508,7 +1508,10 @@ private double[] processMonteCarloDose(Beam beam, CoefCalc coefCalc) {
   MonteCarloProductive = MonteCarloProductive * (electronNumber/ numSimulatedElectrons);
   MonteCarloUnproductive = MonteCarloUnproductive * (electronNumber/ numSimulatedElectrons);
   MonteCarloUnproductiveMicroED = MonteCarloUnproductiveMicroED * (electronNumber/ numSimulatedElectrons);
-  // unproductive is multiple elastic and not scattered 
+  // solvent
+  MonteCarloProductiveSolvent = MonteCarloProductiveSolvent * (electronNumber/ numSimulatedElectrons);
+  MonteCarloUnproductiveMicroEDSolvent = MonteCarloUnproductiveMicroEDSolvent * (electronNumber/ numSimulatedElectrons);
+  
   
   MonteCarloGOSDose = (MonteCarloGOSDose * (electronNumber / numSimulatedElectrons)) * Beam.KEVTOJOULES;
   MonteCarloDose = (MonteCarloDose * (electronNumber / numSimulatedElectrons)) * Beam.KEVTOJOULES;

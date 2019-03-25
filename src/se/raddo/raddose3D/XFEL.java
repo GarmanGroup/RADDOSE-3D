@@ -101,7 +101,7 @@ public class XFEL {
   
   
   private double numFluxPhotons;
-  protected static final long NUM_PHOTONS = 10000;
+  protected static final long NUM_PHOTONS = 100000;
   protected  long PULSE_LENGTH = 30; //length in fs
   protected static final double PULSE_BIN_LENGTH = 0.5; //length in fs
   protected static final double PULSE_ENERGY = 1.4E-3; //energy in J
@@ -297,7 +297,7 @@ public class XFEL {
             exited = true; //no point tracking it at all
           }
         }
-        else { // a photon that could hit the crystal
+        else { // a photon that could interact before the crystal
           s = -photonMFPLSurrounding*Math.log(Math.random());
         //  if ((s < distanceNM) || (distanceNM + ZDimension < s && s < 2*distanceNM + ZDimension) ) { //then this photon will interact before or after hitting the crystal
             if ((s < distanceNM) ) { //photon interacts before hitting the crystal
@@ -394,13 +394,16 @@ public class XFEL {
                 //check that the z is not ridiculuous
                 if (zn > -distanceNM - ZDimension/2 && zn < ZDimension/2 + distanceNM) { 
                   //sort out the timeStamp
+                  /*
                   int beforeOrAfter = 1; 
                   double distance = s - distanceNM;
                   if (s < distanceNM) {
                     beforeOrAfter = -1; // -1 = before crystal, +1 = after crystal
                     distance = distanceNM - s;
                   }
-                  double timeToPoint = beforeOrAfter*((1/c) * (distance/1E9)); //in seconds
+                  */
+                 // double timeToPoint = beforeOrAfter*((1/c) * (distance/1E9)); //in seconds
+                  double timeToPoint = ((1/c) * (s/1E9)); //in seconds
                   timeStamp += timeToPoint * 1E15; //time from start of pulse that this happened
                   int doseTime = (int) (timeStamp/PULSE_BIN_LENGTH); //rounding down so 0 = 0-0.99999, 1 - 1-1.99999 etc 
                   double RNDcompton = Math.random();
@@ -602,12 +605,15 @@ public class XFEL {
     avgW = 1000*(avgW/avgWNum);
     avgUk = avgUk/avgUkNum;
     
+    raddoseStyleDose = (raddoseStyleDose * sampleMass)/exposedMass;
+    
     //get diffraction efficiency
     double fractionElastic = getFractionElasticallyScattered(coefCalc);
     double numberElastic = numberOfPhotons * fractionElastic;
+    double numberInelastic = numberOfPhotons * getFractionComptonScattered(coefCalc);
     
     double elasticMolecule = numberOfPhotons * getFractionElasticallyScatteredMacro(coefCalc);
-    double elasticSolvent = numberElastic = elasticMolecule;
+    double elasticSolvent = numberElastic - elasticMolecule;
     
     double diffractionEfficiency = numberElastic / sumDose;
     double DEFull = numberElastic / sumDoseNoCutOff;
@@ -690,6 +696,12 @@ public class XFEL {
   private double getFractionElasticallyScatteredMacro(CoefCalc coefCalc) {
     double elasticCoef = coefCalc.getElasticCoefficientMacro(); //per um
     double fractionElastic = 1-Math.exp(-elasticCoef * (ZDimension/1000));
+    return fractionElastic;
+  }
+  
+  private double getFractionComptonScattered(CoefCalc coefCalc) {
+    double comptonCoef = coefCalc.getInelasticCoefficient(); //per um
+    double fractionElastic = 1-Math.exp(-comptonCoef * (ZDimension/1000));
     return fractionElastic;
   }
   
