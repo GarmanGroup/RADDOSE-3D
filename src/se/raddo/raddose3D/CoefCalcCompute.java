@@ -3312,8 +3312,17 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     else if (shellIndex == 4) {
       return e.getM1Edge();
     }
+    else if (shellIndex == 5) {
+      return e.getM2Edge();
+    }
+    else if (shellIndex == 6) {
+      return e.getM3Edge();
+    }
+    else if (shellIndex == 7) {
+      return e.getM4Edge();
+    }
     else {
-      return 0;
+      return 0;     //I need to add in more for iron here!
     }
   }
   
