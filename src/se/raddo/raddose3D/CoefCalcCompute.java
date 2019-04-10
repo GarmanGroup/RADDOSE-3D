@@ -147,7 +147,7 @@ public class CoefCalcCompute extends CoefCalc {
    */
 //  protected static final double      WATER_CONCENTRATION          = 55555;    // Density of 1 g/cm^3
  protected static final double      WATER_CONCENTRATION          = 51666;    // Density of 0.93 g/cm^3
- // protected static final double      WATER_CONCENTRATION          = 74999.25;  
+//  protected static final double      WATER_CONCENTRATION          = 83332.5;  
   
   /**
    * Units per milli-unit.
@@ -3019,6 +3019,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
   //with subShells
   @Override
   public int[] getNumValenceElectronsSubshells(Element e) {
+    int[] subshells = {2, 2, 2, 4, 2, 2, 4, 10, 32};
     int Z = e.getAtomicNumber();
     int valence = Z;
     int numInnerShells = 0;
@@ -3052,6 +3053,16 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
 //    else {
  //     numInnerShells = 9;
  //   }
+    /*
+    if (Z == 6 ) {
+      valence -= 2;
+      numInnerShells = 2; //just K
+    }
+    if (Z > 6 && Z <= 8 ) {
+      valence -= 4;
+      numInnerShells = 3; //just K
+    }
+    */
     int[] numElectrons = {valence, numInnerShells};
     return numElectrons;
   }

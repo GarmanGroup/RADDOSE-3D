@@ -87,6 +87,9 @@ public class MicroED {
   private double numElectrons;
   private long simNumber;
   
+  private double doseOutput;
+  private double gosDoseOutput;
+  
   private double numberElastic;
   private double numberSingleElastic;
   private double numberNotInelasticEqu;
@@ -133,7 +136,7 @@ public class MicroED {
   private double totPlasmonEnergy;
   private double totBreakdownEnergy;
   
-  
+  private double avgDist;
   
   private int numAuger;
   private int numFL;
@@ -173,7 +176,7 @@ public class MicroED {
   
   
   
-  protected static final long NUM_MONTE_CARLO_ELECTRONS = 2000;
+  protected static final long NUM_MONTE_CARLO_ELECTRONS = 500;
   
   protected static final double c = 299792458; //m/s
   protected static final double m =  9.10938356E-31; //Kg
@@ -213,7 +216,7 @@ public class MicroED {
     crystalSurfaceArea = XDimension * YDimension * 1E02; //convert from nm^2 to A^2
     if (crystalTypeEM == "CYLINDER") {
       crystalSurfaceArea = (Math.PI * (XDimension/2) * (YDimension/2)) * 1E02;
-      ZDimension = 99.99999;
+      ZDimension = 9.99999;
     }
     sampleThickness = ZDimension; //nm
     crystalVolume = (crystalSurfaceArea * (sampleThickness * 10) * 1E-27);    //A^3 to dm^3
@@ -321,11 +324,12 @@ public class MicroED {
     System.out.println("Charge density " + MonteCarloChargeDensity);
     
     try {
-      WriterFile("outputMicroED.CSV", dose4[0]);
+      WriterFile("outputMicroED.CSV", dose4[0], beam);
     } catch (IOException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
+    System.exit(0);
   }
   
   private double getWavelength(Beam beam) {
@@ -563,14 +567,14 @@ private double getExposedY(Beam beam) {
   return exposedAreaY;
 }
 
-private void WriterFile(final String filename, final double dose4) throws IOException {
+private void WriterFile(final String filename, final double dose4, Beam beam) throws IOException {
   BufferedWriter outFile;
   outFile = new BufferedWriter(new OutputStreamWriter(
       new FileOutputStream(filename), "UTF-8"));
   try {
-    outFile.write("dose, numSimulated, runtime, total electrons, total elastic, single elastic, productive\n");
+    outFile.write("beam_en, numSimulated, dose, gosDose, productive, unproductive\n");
     outFile.write(String.format(
-        " %f, %d, %f, %f, %f, %f, %f%n", dose4, numSimulatedElectrons, MonteCarloRuntime, numElectrons, MonteCarloTotElasticCount, MonteCarloSingleElasticCount, MonteCarloProductive));
+        " %f, %d, %f, %f, %f, %f%n", beam.getPhotonEnergy(), numSimulatedElectrons, doseOutput, gosDoseOutput, MonteCarloProductive, MonteCarloUnproductiveMicroED));
   } catch (IOException e) {
     e.printStackTrace();
     System.err.println("WriterFile: Could not write to file " + filename);
@@ -1078,7 +1082,7 @@ if (GOS == true) {
     //update dose and energy and stoppingPower
     energyLost = s * stoppingPower;
     //will need to split this energy lost up to get the full spatially resolved dose model
-    
+    avgDist += s;
     MonteCarloDose += energyLost;   //keV
     
     //split the dose up into voxels
@@ -1226,6 +1230,7 @@ if (GOS == true) {
       //It's also useful for backscattering!!!!
       double[] intersectionPoint = getIntersectionPoint(s, previousX, previousY, previousZ, xNorm, yNorm, zNorm);
       energyLost = s * stoppingPower;
+      avgDist += s;
       MonteCarloDose += energyLost;   //keV
       //split the dose up into voxels
      // addDoseToVoxels(s, xNorm, yNorm, zNorm, previousX, previousY, previousZ, energyLost, beam, coefCalc);
@@ -1543,6 +1548,7 @@ private double[] processMonteCarloDose(Beam beam, CoefCalc coefCalc) {
   avgW = avgW / Wcount;
   avgShell = avgShell / Wcount;
   
+  avgDist = avgDist / numSimulatedElectrons;
   
   double imageMass = (((coefCalc.getDensity()*1000) * imageVolume) / 1000);  //in Kg 
   double imageDose = (MonteCarloImageDose/imageMass) / 1E06; //dose in MGy 
@@ -1556,6 +1562,9 @@ private double[] processMonteCarloDose(Beam beam, CoefCalc coefCalc) {
   
   double totEntered = doseEntered + augerEntry;
   double totExited = doseExited + augerExited + flExited;
+  
+  doseOutput = dose;
+  gosDoseOutput = gosDose - totExited;
   
   //charge stuff
   MonteCarloCharge = (MonteCarloElectronsExited - MonteCarloElectronsEntered) * (electronNumber / numSimulatedElectrons) * Beam.ELEMENTARYCHARGE; //need to add in Auger to these

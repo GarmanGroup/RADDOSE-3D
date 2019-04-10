@@ -75,6 +75,11 @@ public class XFEL {
   private long[] totalIonisationEvents;
   private double[] totalIonisationEventsPerAtom;
   private double[] totalIonisationEventsPerNonHAtom;
+  private long[] totalIonisationEventsvResolved;
+  private double[] totalIonisationEventsPerAtomvResolved;
+  private double[] totalIonisationEventsPerNonHAtomvResolved;
+  
+  
   private int ionisationsPerPhotoelectron;
   private double totalShellBindingEnergy;
   private double ionisationsOld;
@@ -101,9 +106,9 @@ public class XFEL {
   
   
   private double numFluxPhotons;
-  protected static final long NUM_PHOTONS = 100000;
+  protected static final long NUM_PHOTONS = 1000000;
   protected  long PULSE_LENGTH = 30; //length in fs
-  protected static final double PULSE_BIN_LENGTH = 0.5; //length in fs
+  protected static final double PULSE_BIN_LENGTH = 0.1; //length in fs
   protected static final double PULSE_ENERGY = 1.4E-3; //energy in J
   protected static final double c = 299792458; //m/s
   protected static final double m = 9.10938356E-31; // in Kg
@@ -145,6 +150,11 @@ public class XFEL {
     lowEnergyIonisations = new long[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (500/PULSE_BIN_LENGTH) + 1000)];
     totalIonisationEventsPerAtom = new double[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (500/PULSE_BIN_LENGTH) + 1000)];
     totalIonisationEventsPerNonHAtom = new double[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (500/PULSE_BIN_LENGTH) + 1000)];
+    
+    totalIonisationEventsvResolved = new long[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (500/PULSE_BIN_LENGTH) + 1000)];
+    totalIonisationEventsPerAtomvResolved = new double[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (500/PULSE_BIN_LENGTH) + 1000)];
+    totalIonisationEventsPerNonHAtomvResolved = new double[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (500/PULSE_BIN_LENGTH) + 1000)];
+    
     atomicIonisations = new HashMap<Element, Long>();
     atomicIonisationsPerAtom = new HashMap<Element, Double>();
     
@@ -469,6 +479,8 @@ public class XFEL {
     double sampleVolume = XDimension * YDimension * ZDimension * 1E-21; //cm^3
     double sampleMass = ((coefCalc.getDensity() * sampleVolume) / 1000);  //in Kg 
     double totalAtoms = coefCalc.getTotalAtomsInCrystal(sampleVolume);
+    double exposedVolume = beam.getBeamX()*1000 * beam.getBeamY()*1000 * ZDimension * 1E-21;
+    double volFraction = exposedVolume/sampleVolume;
     
     double energyPerPhoton = beam.getPhotonEnergy()*Beam.KEVTOJOULES;
     double numberOfPhotons = PULSE_ENERGY/energyPerPhoton;
@@ -492,10 +504,12 @@ public class XFEL {
       
       electronDoseSurrounding[i] = ((electronDoseSurrounding[i] * (numberOfPhotons/NUM_PHOTONS) * Beam.KEVTOJOULES) / sampleMass) /1E6; //in MGy
       totalIonisationEvents[i] = StrictMath.round(totalIonisationEvents[i] * (numberOfPhotons/NUM_PHOTONS));
-      lowEnergyIonisations[i] = StrictMath.round(lowEnergyIonisations[i] * (numberOfPhotons/NUM_PHOTONS));;
+      totalIonisationEventsvResolved[i] = StrictMath.round(totalIonisationEventsvResolved[i] * (numberOfPhotons/NUM_PHOTONS));
+      lowEnergyIonisations[i] = StrictMath.round(lowEnergyIonisations[i] * (numberOfPhotons/NUM_PHOTONS));
       if (i > 0) {
         totalIonisationEvents[i] += totalIonisationEvents[i-1]; //make it cumulative
         lowEnergyIonisations[i] += lowEnergyIonisations[i-1];
+        totalIonisationEventsvResolved[i] += totalIonisationEventsvResolved[i-1]; 
         if (i*PULSE_BIN_LENGTH < lastTime-(1*PULSE_BIN_LENGTH)) {
           ionisationsCutoff += totalIonisationEvents[i];
           lowIonisationsCutOff += lowEnergyIonisations[i];
@@ -503,6 +517,7 @@ public class XFEL {
         }
       }
       totalIonisationEventsPerAtom[i] = totalIonisationEvents[i]/totalAtoms;
+      totalIonisationEventsPerAtomvResolved[i] = totalIonisationEventsvResolved[i]/totalAtoms;
       //sums
       if (i*PULSE_BIN_LENGTH < lastTime-(1*PULSE_BIN_LENGTH)) {
         sumDose += dose[i];
@@ -566,28 +581,34 @@ public class XFEL {
     
     double fractionLow = (double)lowIonisationsCutOff / (double)ionisationsCutoff;
     double totalNonHAtoms = 0, sumIonisations = 0;
+    double[] ions = new double[99];
     for (Element e: atomicIonisations.keySet()) {
       long temp = StrictMath.round(atomicIonisations.get(e) * (numberOfPhotons/NUM_PHOTONS));
       temp += temp*fractionLow;     
       double totalAtomsElem = coefCalc.getTotalAtomsInCrystalElement(sampleVolume, e);
       double ionsPerAtom = (double)temp / totalAtomsElem;
+      double ionsPerAtomExposed = (double)temp / (totalAtomsElem*volFraction);
       atomicIonisationsPerAtom.put(e, ionsPerAtom);
+      ions[e.getAtomicNumber()] = ionsPerAtom;
       if (e.getAtomicNumber() != 1) {
         totalNonHAtoms += totalAtomsElem;
         sumIonisations += temp;
       }
     }
     double ionisationsPerNonH = sumIonisations/totalNonHAtoms;
+    double ionisationsPerNonHExposed = sumIonisations/(totalNonHAtoms*volFraction);
     
     gosTot = sumGOSDose + sumPhotonDose;
     gosTotNoCutoff = sumGOSDoseNoCutOff + sumPhotonDoseNoCutOff;
     double ionisationsPerAtomCutoff = totalIonisationEventsPerAtom[countCutoff];
     double ionsiationPerAtomAll = totalIonisationEventsPerAtom[dose.length - 1];
+    double ionisationsPerAtomvResolved = totalIonisationEventsPerAtomvResolved[dose.length - 1];
+    double ionisationsPerAtomvResolvedExposed = totalIonisationEventsPerAtomvResolved[dose.length - 1]/volFraction;
     
 
     //exposed volume and mass
     double exposedMass = voxelCountExposed * voxelMass;
-    double exposedVolume = beam.getBeamX()*1000 * beam.getBeamY()*1000 * ZDimension * 1E-21;
+    
     exposedMass = ((coefCalc.getDensity() * exposedVolume) / 1000);  //in Kg
     voxDoseExposed = (voxDoseExposed / exposedMass)/1E6;
     voxDoseExposedNoCutoff = (voxDoseExposedNoCutoff / exposedMass)/1E6;
@@ -605,7 +626,7 @@ public class XFEL {
     avgW = 1000*(avgW/avgWNum);
     avgUk = avgUk/avgUkNum;
     
-    raddoseStyleDose = (raddoseStyleDose * sampleMass)/exposedMass;
+  //  raddoseStyleDose = (raddoseStyleDose * sampleMass)/exposedMass;
     
     //get diffraction efficiency
     double fractionElastic = getFractionElasticallyScattered(coefCalc);
@@ -744,14 +765,25 @@ public class XFEL {
                                     double timeStamp, int doseTime, double xn, double yn, double zn, boolean surrounding) {
   //work out the element that has been absorbed with and hence the shell binding energy and photoelectron energy
     //element
+    int[] pixelCoord = convertToPixelCoordinates(xn, yn, zn);
     Element ionisedElement = getIonisedElement(elementAbsorptionProbs);
-    if (timeStamp <lastTime-(1*PULSE_BIN_LENGTH) && surrounding == false) {
+   // if (timeStamp <lastTime-(1*PULSE_BIN_LENGTH) && surrounding == false) {
+    int ionisationTime = (int) (timeStamp/PULSE_BIN_LENGTH);
+    if (ionisationTime < 0) {
+      ionisationTime = 0;
+    }
+    if (surrounding == false) {
+      totalIonisationEvents[ionisationTime] += 1;
+    
+    if (timeStamp <lastTimeVox[pixelCoord[2]]-(1*PULSE_BIN_LENGTH) && surrounding == false) {
+      totalIonisationEventsvResolved[ionisationTime] += 1;
       if (atomicIonisations.containsKey(ionisedElement)) {
         atomicIonisations.put(ionisedElement, atomicIonisations.get(ionisedElement)+1);
       }
       else {
         atomicIonisations.put(ionisedElement, (long)1);
       }
+    }
     }
     //shell
     int shellIndex = getIonisedShell(ionisedElement, ionisationProbs);
@@ -769,7 +801,7 @@ public class XFEL {
       photonDose[doseTime] += shellBindingEnergy;
       raddoseStyleDose += beam.getPhotonEnergy();
       //add to voxel
-      int[] pixelCoord = convertToPixelCoordinates(xn, yn, zn);
+  //    int[] pixelCoord = convertToPixelCoordinates(xn, yn, zn);
     //  voxelEnergy[pixelCoord[0]][pixelCoord[1]][pixelCoord[2]][doseTime] += shellBindingEnergy;
     }
     //change this here to do the relaxation first and then 
@@ -862,14 +894,20 @@ public class XFEL {
           double yNorm = Math.sin(theta) * Math.sin(phi);
           double zNorm = Math.cos(theta);
           int ionisationTime = (int) (timeStamp/PULSE_BIN_LENGTH);
-     //     totalIonisationEvents[ionisationTime] += 1;
-          if (timeStamp <lastTime-(1*PULSE_BIN_LENGTH) && surrounding == false) {
+          
+          
+          totalIonisationEvents[ionisationTime] += 1;
+      //    if (timeStamp <lastTime-(1*PULSE_BIN_LENGTH) && surrounding == false) {
+          if (surrounding == false) {
+          if (timeStamp <lastTimeVox[pixelCoord[2]]-(1*PULSE_BIN_LENGTH)) {
+            totalIonisationEventsvResolved[ionisationTime] += 1;
             if (atomicIonisations.containsKey(ionisedElement)) {
               atomicIonisations.put(ionisedElement, atomicIonisations.get(ionisedElement)+1);
             }
             else {
               atomicIonisations.put(ionisedElement, (long)1);
             }
+          }
           }
           trackPhotoelectron(coefCalc, timeStamp, augerEnergy, xn, yn, zn, xNorm, yNorm, zNorm, theta, phi, surrounding, false);
           if (surrounding == false) {
@@ -917,6 +955,7 @@ public class XFEL {
   private void produceCompton(Beam beam, CoefCalc coefCalc, double timeStamp, double xn, double yn, double zn, boolean surrounding) {
     //then the photon scattered by the compton effect
     //pick an angle theta
+    int[] pixelCoord = convertToPixelCoordinates(xn, yn, zn);
     double photonTheta = Math.PI * Math.random();
     //now get the energy of the compton electron
     double mcSquared = m * Math.pow(c, 2);
@@ -936,12 +975,23 @@ public class XFEL {
     double theta = Math.acos(zNorm);
     double phi = Math.acos(xNorm / Math.sin(theta));
 
+    int ionisationTime = (int) (timeStamp/PULSE_BIN_LENGTH);
+    if (ionisationTime < 0) {
+      ionisationTime = 0;
+    }
+    if (surrounding == false) {
+      totalIonisationEvents[ionisationTime] += 1;
+      if (timeStamp <lastTimeVox[pixelCoord[2]]-(1*PULSE_BIN_LENGTH)) {
+        totalIonisationEventsvResolved[ionisationTime] += 1;
+      }
+    }
+    
     trackPhotoelectron(coefCalc, timeStamp, Ecomp, xn, yn, zn, xNorm, yNorm, zNorm, theta, phi, surrounding, true);
     if (surrounding == false) {
       ionisationsOld += (int) ((Ecomp*1000) / 21.0);
     }
     
-    //i'm noot doing the atomic ionisations here and really need to sort out what's going on. - at least need to do what element it's from even if not shell. 
+    //i'm not doing the atomic ionisations here and really need to sort out what's going on. - at least need to do what element it's from even if not shell. 
     
   }
 
@@ -957,12 +1007,13 @@ public class XFEL {
     double energyLossToUpdate = 0.0; //keV
     double lossSinceLastUpdate = 0;
     
+    
     int ionisationTime = (int) (startingTimeStamp/PULSE_BIN_LENGTH);
     if (ionisationTime < 0) {
       ionisationTime = 0;
     }
     if (surrounding == false) {
-      totalIonisationEvents[ionisationTime] += 1;
+  //    totalIonisationEvents[ionisationTime] += 1;
       
       if (startingEnergy > 10) { //saying this is an actual PE
         ionisationsPerPhotoelectron = 0;
@@ -1056,6 +1107,7 @@ public class XFEL {
     double previousTheta = 0, previousPhi = 0;
     
     if (startingEnergy < 0.05) {
+      int[] pixelCoord = convertToPixelCoordinates(previousX, previousY, previousZ);
       exited = true;
       //I need to add to the dose here
       if (isMicrocrystalAt(previousX, previousY, previousZ) == true) { 
@@ -1066,7 +1118,7 @@ public class XFEL {
           gosElectronDose[doseTime] += startingEnergy;
           gosElectronDosevResolved[doseTime] += startingEnergy;
         //add to voxel
-          int[] pixelCoord = convertToPixelCoordinates(previousX, previousY, previousZ);
+          
       //    voxelEnergy[pixelCoord[0]][pixelCoord[1]][pixelCoord[2]][doseTime] += startingEnergy;
           voxelEnergyvResolved[pixelCoord[0]][pixelCoord[1]][pixelCoord[2]][doseTime] += startingEnergy;
           
@@ -1076,16 +1128,19 @@ public class XFEL {
         avgEnergy = coefCalc.getPlasmaEnergy(surrounding);
         if (avgEnergy > 0) {
           int numIonisation = (int) (startingEnergy/avgEnergy);
-          if (numIonisation > 0) {
+          if (numIonisation > 0 && surrounding == false) {
             totalIonisationEvents[doseTime] += numIonisation;
             lowEnergyIonisations[doseTime] += numIonisation;
             //decide what elements to add this to
             Element hitElem = chooseLowEnElement(coefCalc, Pinner, gosOuterIonisationProbs, ionisationProbs);
-            if (atomicIonisations.containsKey(hitElem)) {
-              atomicIonisations.put(hitElem, atomicIonisations.get(hitElem)+numIonisation);
-            }
-            else {
-              atomicIonisations.put(hitElem, (long)numIonisation);
+            if (timeStamp <lastTimeVox[pixelCoord[2]]-(1*PULSE_BIN_LENGTH)) {
+              totalIonisationEventsvResolved[doseTime] += numIonisation;
+              if (atomicIonisations.containsKey(hitElem)) {
+                atomicIonisations.put(hitElem, atomicIonisations.get(hitElem)+numIonisation);
+              }
+              else {
+                atomicIonisations.put(hitElem, (long)numIonisation);
+              }
             }
           }
         }
@@ -1401,14 +1456,21 @@ public class XFEL {
           double SEPreviousPhi = previousPhi;
           double SEEnergy = W - Uk/1000;
           double SETheta = 0, SEPhi = 0, SExNorm = 0, SEyNorm = 0, SEzNorm = 0;
+          int[] pixelCoord = convertToPixelCoordinates(xn, yn, zn);
           if (SEEnergy > 0) {
-            if (timeStamp <lastTime-(1*PULSE_BIN_LENGTH) & surrounding == false) {
+      //      if (timeStamp <lastTime-(1*PULSE_BIN_LENGTH) & surrounding == false) {
+            if (surrounding == false) {
+            totalIonisationEvents[doseTimeGOS] += 1;
+            if (timeStamp <lastTimeVox[pixelCoord[2]]-(1*PULSE_BIN_LENGTH)) { 
+              
+              totalIonisationEventsvResolved[doseTimeGOS] += 1;
               if (atomicIonisations.containsKey(collidedElement)) {
                 atomicIonisations.put(collidedElement, atomicIonisations.get(collidedElement)+1);
               }
               else {
                 atomicIonisations.put(collidedElement, (long)1);
               }
+            }
             }
             ionisationsPerPhotoelectron += 1;
             avgUk += Uk;
@@ -1447,7 +1509,6 @@ public class XFEL {
                 avgW += W;
                 avgWNum += 1;
                 //add to voxel
-                int[] pixelCoord = convertToPixelCoordinates(xn, yn, zn);
            //     voxelEnergy[pixelCoord[0]][pixelCoord[1]][pixelCoord[2]][doseTimeGOS] += W;
               }
               
@@ -1456,30 +1517,30 @@ public class XFEL {
               if (primaryElectron == true) { //only doing dose from the primary
                 gosElectronDose[doseTimeGOS] += W;
                 //add to voxel
-                int[] pixelCoord = convertToPixelCoordinates(xn, yn, zn);
          //       voxelEnergy[pixelCoord[0]][pixelCoord[1]][pixelCoord[2]][doseTimeGOS] += W;
               }
               gosElectronDosevResolved[doseTimeGOS] += SEEnergy;
-              int[] pixelCoord = convertToPixelCoordinates(xn, yn, zn);
               voxelEnergyvResolved[pixelCoord[0]][pixelCoord[1]][pixelCoord[2]][doseTimeGOS] += SEEnergy;
-              totalIonisationEvents[doseTimeGOS] += 1;
+           //   totalIonisationEvents[doseTimeGOS] += 1;
               //sort out how many extra ionisations this will cause
               double avgEnergy = coefCalc.getAvgInelasticEnergy(SEEnergy);
               avgEnergy = coefCalc.getPlasmaEnergy(surrounding);
-              if (avgEnergy > 0) {
+              if (avgEnergy > 0 && surrounding == false) {
                 int numIonisation = (int) (SEEnergy/avgEnergy);
                 if (numIonisation > 0) {
                   totalIonisationEvents[doseTimeGOS] += numIonisation;
                   lowEnergyIonisations[doseTimeGOS] += numIonisation;
                   //decide what elements to add this to
                   Element hitElem = chooseLowEnElement(coefCalc, Pinner, gosOuterIonisationProbs, ionisationProbs);
-                  if (atomicIonisations.containsKey(hitElem)) {
-                    atomicIonisations.put(hitElem, atomicIonisations.get(hitElem)+numIonisation);
+                  if (timeStamp <lastTimeVox[pixelCoord[2]]-(1*PULSE_BIN_LENGTH)) {
+                    totalIonisationEventsvResolved[doseTimeGOS] += numIonisation;
+                    if (atomicIonisations.containsKey(hitElem)) {
+                      atomicIonisations.put(hitElem, atomicIonisations.get(hitElem)+numIonisation);
+                    }
+                    else {
+                      atomicIonisations.put(hitElem, (long)numIonisation);
+                    }
                   }
-                  else {
-                    atomicIonisations.put(hitElem, (long)numIonisation);
-                  }
-                  
                 }
               }
             }
@@ -1734,11 +1795,14 @@ public class XFEL {
               lowEnergyIonisations[doseTime] += numIonisation;
               //decide what elements to add this to
               Element hitElem = chooseLowEnElement(coefCalc, Pinner, gosOuterIonisationProbs, ionisationProbs);
-              if (atomicIonisations.containsKey(hitElem)) {
-                atomicIonisations.put(hitElem, atomicIonisations.get(hitElem)+numIonisation);
-              }
-              else {
-                atomicIonisations.put(hitElem, (long)numIonisation);
+              if (timeStamp <lastTimeVox[pixelCoord[2]]-(1*PULSE_BIN_LENGTH)) {
+                totalIonisationEventsvResolved[doseTime] += numIonisation;
+                if (atomicIonisations.containsKey(hitElem)) {
+                  atomicIonisations.put(hitElem, atomicIonisations.get(hitElem)+numIonisation);
+                }
+                else {
+                  atomicIonisations.put(hitElem, (long)numIonisation);
+                }
               }
             } 
           }
