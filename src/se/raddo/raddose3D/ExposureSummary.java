@@ -183,8 +183,10 @@ public class ExposureSummary implements ExposeObserver {
     // updating the diffracted intensity for this image/iteration equation
  //   diffNum += (totalVoxDose + addedDose / 2) * fluence * doseDecay;
  //   diffDenom += fluence * doseDecay;
-    diffNum += (totalVoxDose + addedDose / 2) * fluence * 1;  //Why addedDose/2? Need to understand before changing
-    diffDenom += fluence * 1;
+    double decay = getRTDecay(totalVoxDose, addedDose);
+    decay = 1;
+    diffNum += (totalVoxDose + addedDose / 2) * fluence * decay;  //Why addedDose/2? Need to understand before changing
+    diffDenom += fluence * decay;
      
     
     //for RDE
@@ -431,6 +433,15 @@ public class ExposureSummary implements ExposeObserver {
   }
   public double[] getImageVol() {
     return imageVol;
+  }
+  
+  public double getRTDecay(double totalVoxelDose, double addedDose) {
+    double decay = 0;
+    double decayHalf = 0.2; //200 kGy
+    double dose = totalVoxelDose + addedDose/2;
+  //  decay = Math.exp((dose/decayHalf)*(-Math.log(2)));
+    decay = 0.88*Math.exp(-3.26*dose)+0.09686*Math.exp(-0.24875*dose);
+    return decay;
   }
   
 }
