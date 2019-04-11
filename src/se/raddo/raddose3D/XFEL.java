@@ -86,6 +86,7 @@ public class XFEL {
   private HashMap<Element, Long> atomicIonisations;
   private HashMap<Element, Double> atomicIonisationsPerAtom;
   private long[] lowEnergyIonisations;
+  private double[] lowEnergyIonisationsPerAtom;
   
   private TreeMap<Double, Double> energyPerInel;
   private TreeMap<Double, Double> energyPerInelSurrounding;
@@ -106,7 +107,7 @@ public class XFEL {
   
   
   private double numFluxPhotons;
-  protected static final long NUM_PHOTONS = 1000000;
+  protected static final long NUM_PHOTONS = 10000;
   protected  long PULSE_LENGTH = 30; //length in fs
   protected static final double PULSE_BIN_LENGTH = 0.1; //length in fs
   protected static final double PULSE_ENERGY = 1.4E-3; //energy in J
@@ -149,6 +150,7 @@ public class XFEL {
     totalIonisationEvents = new long[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (500/PULSE_BIN_LENGTH) + 1000)];
     lowEnergyIonisations = new long[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (500/PULSE_BIN_LENGTH) + 1000)];
     totalIonisationEventsPerAtom = new double[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (500/PULSE_BIN_LENGTH) + 1000)];
+    lowEnergyIonisationsPerAtom = new double[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (500/PULSE_BIN_LENGTH) + 1000)];
     totalIonisationEventsPerNonHAtom = new double[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (500/PULSE_BIN_LENGTH) + 1000)];
     
     totalIonisationEventsvResolved = new long[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (500/PULSE_BIN_LENGTH) + 1000)];
@@ -517,6 +519,7 @@ public class XFEL {
         }
       }
       totalIonisationEventsPerAtom[i] = totalIonisationEvents[i]/totalAtoms;
+      lowEnergyIonisationsPerAtom[i] = lowEnergyIonisations[i]/totalAtoms;
       totalIonisationEventsPerAtomvResolved[i] = totalIonisationEventsvResolved[i]/totalAtoms;
       //sums
       if (i*PULSE_BIN_LENGTH < lastTime-(1*PULSE_BIN_LENGTH)) {
@@ -601,6 +604,7 @@ public class XFEL {
     gosTot = sumGOSDose + sumPhotonDose;
     gosTotNoCutoff = sumGOSDoseNoCutOff + sumPhotonDoseNoCutOff;
     double ionisationsPerAtomCutoff = totalIonisationEventsPerAtom[countCutoff];
+    double lowEnIonisationsPerAtomCutoff = lowEnergyIonisationsPerAtom[countCutoff];
     double ionsiationPerAtomAll = totalIonisationEventsPerAtom[dose.length - 1];
     double ionisationsPerAtomvResolved = totalIonisationEventsPerAtomvResolved[dose.length - 1];
     double ionisationsPerAtomvResolvedExposed = totalIonisationEventsPerAtomvResolved[dose.length - 1]/volFraction;
@@ -649,8 +653,9 @@ public class XFEL {
       e.printStackTrace();
     }
     */
+    double voxFrac = voxDosevResolved/gosTot;
     try {
-      WriterFile("outputXFEL.CSV", gosTotNoCutoff, gosTot, ionsiationPerAtomAll, ionisationsPerAtomCutoff, numberElastic, ionisationsPerNonH);
+      WriterFile("outputXFEL.CSV", gosTotNoCutoff, gosTot, ionsiationPerAtomAll, ionisationsPerAtomCutoff, numberElastic, ionisationsPerNonH, voxDosevResolved, voxFrac);
     } catch (IOException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
@@ -661,7 +666,7 @@ public class XFEL {
   }
   
   private void WriterFile(final String filename, final double gosTotNoCutoff, final double gosTot, final double ionsiationPerAtomAll, final double ionisationsPerAtomCutoff
-                          ,final double numberElastic, final double ionisationsPerNonH) throws IOException {
+                          ,final double numberElastic, final double ionisationsPerNonH, final double voxelDose, final double voxFrac) throws IOException {
     String elements = "";
     for (Element e: atomicIonisationsPerAtom.keySet()) {
       int Z = e.getAtomicNumber();
@@ -671,9 +676,9 @@ public class XFEL {
     outFile = new BufferedWriter(new OutputStreamWriter(
         new FileOutputStream(filename), "UTF-8"));
     try {
-      outFile.write("totalDose,numSimulated,RADDOSEDose,cutoffDose,AllIonisations,IonksationsCutoff,IonisationsOld\n");
+      outFile.write("gosTot,voxDose,voxFrac\n");
       outFile.write(String.format(
-          " %f, %d, %f, %f, %f, %f, %f, %f, %f, %s%n", gosTotNoCutoff, NUM_PHOTONS, raddoseStyleDose + raddoseStyleDoseCompton, gosTot, ionsiationPerAtomAll, ionisationsPerAtomCutoff, ionisationsOld, numberElastic, ionisationsPerNonH, elements));
+          " %f, %f, %f%n", gosTot, voxelDose, voxFrac));
     } catch (IOException e) {
       e.printStackTrace();
       System.err.println("WriterFile: Could not write to file " + filename);
@@ -1125,7 +1130,7 @@ public class XFEL {
         }
         //get avg energy and add on ionisation
         double avgEnergy = coefCalc.getAvgInelasticEnergy(startingEnergy);
-        avgEnergy = coefCalc.getPlasmaEnergy(surrounding);
+        avgEnergy = coefCalc.getPlasmaEnergy(surrounding)/1000;
         if (avgEnergy > 0) {
           int numIonisation = (int) (startingEnergy/avgEnergy);
           if (numIonisation > 0 && surrounding == false) {
@@ -1524,7 +1529,7 @@ public class XFEL {
            //   totalIonisationEvents[doseTimeGOS] += 1;
               //sort out how many extra ionisations this will cause
               double avgEnergy = coefCalc.getAvgInelasticEnergy(SEEnergy);
-              avgEnergy = coefCalc.getPlasmaEnergy(surrounding);
+              avgEnergy = coefCalc.getPlasmaEnergy(surrounding)/1000;
               if (avgEnergy > 0 && surrounding == false) {
                 int numIonisation = (int) (SEEnergy/avgEnergy);
                 if (numIonisation > 0) {
@@ -1787,7 +1792,7 @@ public class XFEL {
           int[] pixelCoord = convertToPixelCoordinates(previousX, previousY, previousZ);
           voxelEnergyvResolved[pixelCoord[0]][pixelCoord[1]][pixelCoord[2]][doseTime] += electronEnergy;
           double avgEnergy = coefCalc.getAvgInelasticEnergy(electronEnergy); //can make this plasmon energy
-          avgEnergy = coefCalc.getPlasmaEnergy(surrounding);
+          avgEnergy = coefCalc.getPlasmaEnergy(surrounding)/1000;
           if (avgEnergy > 0) {
             int numIonisation = (int) (electronEnergy/avgEnergy);
             if (numIonisation > 0) {
