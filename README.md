@@ -66,12 +66,18 @@ Beam
 
 Type Gaussian             # Gaussian profile beam
 Flux 2e12                 # in photons per second (2e12 = 2 * 10^12)
-FWHM 20 70                # in µm, vertical by horizontal for a Gaussian beam
+FWHM 20 70                # in µm, X and Y for a Gaussian beam
+						  # X=vertical and Y = horizontal for a 
+						  # horizontal goniometer
+						  # Opposite for a vertical goniometer
+
 Energy 12.1               # in keV
 
-Collimation Rectangular 100 100 # Vertical/Horizontal collimation of the beam
-                                # For 'uncollimated' Gaussians, 3xFWHM
-                                # recommended
+Collimation Rectangular 100 100 # X/Y collimation of the beam in µm
+								# X = vertical and Y = horizontal for a
+								# horizontal goniometer
+								# Opposite for a vertical goniometer
+
 
 
 ##############################################################################

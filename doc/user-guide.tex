@@ -594,8 +594,8 @@ Currently three distinct beam implementations exist:\SB
 \label{beamfwhm}
 \noindent \Keyword{FWHM \textit{X Y}}
 
-The FWHM of the beam (vertical), (horizontal). Not needed if a Top-Hat beam is used.
-This defines the \textit{X} and \textit{Y} FWHM of the beam respectively in the RADDOSE coordinate system.
+This defines the \textit{X} and \textit{Y} FWHM of the beam respectively in the RADDOSE-3D coordinate system. 
+For a horizontal goniometer, \textit{X} = vertical and \textit{Y} = horizontal, with it being the opposite for a vertical goniometer. FWHM is not needed if a Top-Hat beam is used.
 
 
 \subsection{\Keyword{ENERGY}}
@@ -624,18 +624,14 @@ specifies the location of the .pgm file that describes the beam profile. NOTE: t
 
 \noindent \Keyword{COLLIMATION RECTANGULAR \textit{X Y}}
 
-specifies the horizontal and vertical collimation of the beam.
-Delimits where the beam has non-zero intensity.
-This is defined by the slits.
-For an uncollimated Gaussian beam, set to $\approx 3 \times$ FWHM. \SB
+specifies the \textit{X} and \textit{Y} collimation of the beam respectively in the RADDOSE-3D coordinate system. 
+For a horizontal goniometer, \textit{X} = vertical and \textit{Y} = horizontal, with it being the opposite for a vertical goniometer.  Collimation delimits where the beam has non-zero intensity.
 
 
 \noindent \Keyword{COLLIMATION CIRCULAR \textit{X Y}}
 
-specifies the horizontal and vertical collimation of a circular or elliptical beam.
-X and Y are the diameter of the circle/ellipse in the X and Y dimension
-Delimits where the beam has non-zero intensity.
-This is defined by the slits.
+specifies the \textit{X} and \textit{Y} collimation of a circular or elliptical beam respectively in the RADDOSE-3D coordinate system. 
+\textit{X} and \textit{Y} are the diameter of the circle/ellipse defined by the slits. For a horizontal goniometer, \textit{X} = vertical and \textit{Y} = horizontal, with it being the opposite for a vertical goniometer. 
 
 %\noindent \Keyword{COLLIMATION HORIZONTAL \textit{F}}
 %(not supported!)
