@@ -1,2 +1,2 @@
-dose, numSimulated, runtime, total electrons, total elastic, single elastic, productive
- 346.629184, 100000, 20.254727, 40000000.000000, 2764470000.000000, 17030000.000000, 60000.000000
+beam_en, numSimulated, dose, gosDose, avgDist
+ 300.000000, 10000, 37.174067, 27.128694, 99.770631

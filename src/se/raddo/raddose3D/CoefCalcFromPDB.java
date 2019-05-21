@@ -564,7 +564,7 @@ public class CoefCalcFromPDB extends CoefCalcCompute {
   public CoefCalcFromPDB(final String pdbCode,
       final List<String> cryoSolutionMolecule,
       final List<Double> cryoSolutionConc, final String oilBased, String calcSurrounding,
-      final List<String> oilElementNames, final List<Double> oilElementsNums, final double oilDensity) {
+      final List<String> oilElementNames, final List<Double> oilElementsNums, final double oilDensity, final long numSimElectrons) {
     
 
     
@@ -577,7 +577,8 @@ public class CoefCalcFromPDB extends CoefCalcCompute {
       String pdbName = pdbCode.toUpperCase();
       downloadPDB(pdbName);
     }
-    
+  //set number of simulated electrons
+    setNumberSimulatedElectrons(numSimElectrons);
     super.calculateDensity();
     
   //check whether a surrounding should be calculated 
@@ -606,10 +607,11 @@ public class CoefCalcFromPDB extends CoefCalcCompute {
       final List<Double> heavySolvConcNums,
       final List<String> cryoSolutionMolecule,
       final List<Double> cryoSolutionConc, final String oilBased, String calcSurrounding,
-      final List<String> oilElementNames, final List<Double> oilElementsNums, final double oilDensity) {
+      final List<String> oilElementNames, final List<Double> oilElementsNums, final double oilDensity, final long numSimElectrons) {
 
     this.addSolventConcentrations(heavySolvConcNames, heavySolvConcNums);
-
+  //set number of simulated electrons
+    setNumberSimulatedElectrons(numSimElectrons);
     if(isFile(pdbName)) {
       // Get info form PDB file
       try {

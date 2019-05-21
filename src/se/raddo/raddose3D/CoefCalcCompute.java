@@ -1338,7 +1338,7 @@ public class CoefCalcCompute extends CoefCalc {
     // Calculating number of water molecules.
     // NOTE: using updated value for concentration of water,
     // 55.555M instead of the 55M in Fortran.
-
+   // WATER_CONCENTRATION = oilDensity;
     double waterMolecules = WATER_CONCENTRATION * AVOGADRO_NUM
         / UNITSPERMILLIUNIT
         * cellVolume * (1 / MASS_TO_CELL_VOLUME) * solventFraction
@@ -2667,7 +2667,6 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
         }
       }
       //this didn't work so using the one from Joy 1995 with relativistic correction
-
       if (calculate == true){
         //relativistic
         elXSection = ((2*Math.PI * Math.pow(elementaryCharge, 4) * numEl * bi) / (((m*1000)*(vsquared*10000)) * (shellBindingEnergy*Beam.KEVTOJOULES*1000*10000)))

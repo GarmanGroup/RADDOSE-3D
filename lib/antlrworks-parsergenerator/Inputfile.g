@@ -132,9 +132,9 @@ if ($crystal::crystalCoefCalc == 4)
       $crystal::oilDensity = 0.0 ;
    }
   if ($crystal::heavySolutionConcNames != null)
-  	$crystal::crystalCoefCalcClass = new CoefCalcFromPDB($crystal::pdb, $crystal::heavySolutionConcNames, $crystal::heavySolutionConcNums, $crystal::cryoSolutionMolecule, $crystal::cryoSolutionConc, $crystal::oilBased, 	$crystal::calcSurrounding, $crystal::oilNames, $crystal::oilNums, $crystal::oilDensity);
+  	$crystal::crystalCoefCalcClass = new CoefCalcFromPDB($crystal::pdb, $crystal::heavySolutionConcNames, $crystal::heavySolutionConcNums, $crystal::cryoSolutionMolecule, $crystal::cryoSolutionConc, $crystal::oilBased, 	$crystal::calcSurrounding, $crystal::oilNames, $crystal::oilNums, $crystal::oilDensity, $crystal::simElectrons);
   else
-	$crystal::crystalCoefCalcClass = new CoefCalcFromPDB($crystal::pdb, $crystal::cryoSolutionMolecule, $crystal::cryoSolutionConc, $crystal::oilBased, 	$crystal::calcSurrounding, $crystal::oilNames, $crystal::oilNums, $crystal::oilDensity);
+	$crystal::crystalCoefCalcClass = new CoefCalcFromPDB($crystal::pdb, $crystal::cryoSolutionMolecule, $crystal::cryoSolutionConc, $crystal::oilBased, 	$crystal::calcSurrounding, $crystal::oilNames, $crystal::oilNums, $crystal::oilDensity, $crystal::simElectrons);
   													  													
 }
 

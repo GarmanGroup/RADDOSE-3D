@@ -176,7 +176,7 @@ public class MicroED {
   
   
   
-  protected static final long NUM_MONTE_CARLO_ELECTRONS = 500;
+  protected static final long NUM_MONTE_CARLO_ELECTRONS = 10000;
   
   protected static final double c = 299792458; //m/s
   protected static final double m =  9.10938356E-31; //Kg
@@ -216,7 +216,8 @@ public class MicroED {
     crystalSurfaceArea = XDimension * YDimension * 1E02; //convert from nm^2 to A^2
     if (crystalTypeEM == "CYLINDER") {
       crystalSurfaceArea = (Math.PI * (XDimension/2) * (YDimension/2)) * 1E02;
-      ZDimension = 9.99999;
+     // ZDimension = 99.99999;
+      ZDimension -= 0.001;
     }
     sampleThickness = ZDimension; //nm
     crystalVolume = (crystalSurfaceArea * (sampleThickness * 10) * 1E-27);    //A^3 to dm^3
@@ -572,7 +573,7 @@ private void WriterFile(final String filename, final double dose4, Beam beam) th
   outFile = new BufferedWriter(new OutputStreamWriter(
       new FileOutputStream(filename), "UTF-8"));
   try {
-    outFile.write("beam_en, numSimulated, dose, gosDose, productive, unproductive\n");
+    outFile.write("beam_en, numSimulated, dose, gosDose, Productive, Unproductive\n");
     outFile.write(String.format(
         " %f, %d, %f, %f, %f, %f%n", beam.getPhotonEnergy(), numSimulatedElectrons, doseOutput, gosDoseOutput, MonteCarloProductive, MonteCarloUnproductiveMicroED));
   } catch (IOException e) {

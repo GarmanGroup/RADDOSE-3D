@@ -20,7 +20,7 @@ public class CoefCalcCompute extends CoefCalc {
   /**
    * Identified coefficients and density from last program run. Final variables.
    */
-  private double                     absCoeffcomp, absCoeffphoto, attCoeff, elasCoeff, density, molecularWeight, molecularWeightSurrounding;
+  private double                     absCoeffcomp, absCoeffphoto, attCoeff, elasCoeff, elasCoeffMacro, density, molecularWeight, molecularWeightSurrounding;
   
   private long numSimulatedElectrons;
   
@@ -147,7 +147,7 @@ public class CoefCalcCompute extends CoefCalc {
    */
 //  protected static final double      WATER_CONCENTRATION          = 55555;    // Density of 1 g/cm^3
  protected static final double      WATER_CONCENTRATION          = 51666;    // Density of 0.93 g/cm^3
- // protected static final double      WATER_CONCENTRATION          = 74999.25;  
+//  protected static final double      WATER_CONCENTRATION          = 83332.5;  
   
   /**
    * Units per milli-unit.
@@ -389,6 +389,8 @@ public class CoefCalcCompute extends CoefCalc {
     elasCoeff = absCoefficients.get(ELASTIC);
     absCoeffcomp = absCoefficients.get(COMPTON);
     absCoeffphoto = absCoefficients.get(PHOTOELECTRIC);
+    absCoefficients = calculateCoefficientsMacro(b.getPhotonEnergy());
+    elasCoeffMacro = absCoefficients.get(ELASTIC);
   }
   
   @Override
@@ -452,6 +454,46 @@ public class CoefCalcCompute extends CoefCalc {
           * cs.get(CrossSection.COMPTON) / cellVolume
           / UNITSPERDECIUNIT;        
       */
+    }
+    crossSectionPhotoElectric = crossSectionPhotoElectric / UNITSPERMILLIUNIT;
+    crossSectionTotal = crossSectionTotal / UNITSPERMILLIUNIT;
+    crossSectionCoherent = crossSectionCoherent / UNITSPERMILLIUNIT;
+    crossSectionComptonAttenuation = crossSectionComptonAttenuation/ UNITSPERMILLIUNIT;
+    
+    absCoeffs.put(PHOTOELECTRIC, crossSectionPhotoElectric);
+    absCoeffs.put(ELASTIC, crossSectionCoherent);
+    absCoeffs.put(COMPTON, crossSectionComptonAttenuation);
+    absCoeffs.put(TOTAL, crossSectionTotal);
+
+    return absCoeffs;
+  }
+  
+ private Map<String, Double> calculateCoefficientsMacro(final double energy) {
+    
+    Map<String, Double> absCoeffs = new HashMap<String, Double>();
+    double crossSectionPhotoElectric = 0;
+    double crossSectionCoherent = 0;
+    double crossSectionTotal = 0;
+    double crossSectionComptonAttenuation = 0;
+
+    // take cross section contributions from each individual atom
+    // weighted by the cell volume
+    Map<Element.CrossSection, Double> cs;
+    for (Element e : this.presentElements) {
+      cs = e.getAbsCoefficients(energy); 
+
+      crossSectionPhotoElectric += getMacromolecularOccurrence(e)
+          * cs.get(CrossSection.PHOTOELECTRIC) / cellVolume
+          / UNITSPERDECIUNIT;
+      crossSectionCoherent += getMacromolecularOccurrence(e)
+          * cs.get(CrossSection.COHERENT) / cellVolume
+          / UNITSPERDECIUNIT;
+      crossSectionTotal += getMacromolecularOccurrence(e)
+          * cs.get(CrossSection.TOTAL) / cellVolume
+          / UNITSPERDECIUNIT;
+      crossSectionComptonAttenuation += getMacromolecularOccurrence(e) 
+          * cs.get(CrossSection.COMPTON) / cellVolume
+          / UNITSPERDECIUNIT;        
     }
     crossSectionPhotoElectric = crossSectionPhotoElectric / UNITSPERMILLIUNIT;
     crossSectionTotal = crossSectionTotal / UNITSPERMILLIUNIT;
@@ -1033,6 +1075,11 @@ public class CoefCalcCompute extends CoefCalc {
   public double getElasticCoefficient() {
     return elasCoeff;
   }
+  
+  @Override
+  public double getElasticCoefficientMacro() {
+    return elasCoeffMacro;
+  }
 
   @Override
   public double getDensity() {
@@ -1291,7 +1338,7 @@ public class CoefCalcCompute extends CoefCalc {
     // Calculating number of water molecules.
     // NOTE: using updated value for concentration of water,
     // 55.555M instead of the 55M in Fortran.
-
+   // WATER_CONCENTRATION = oilDensity;
     double waterMolecules = WATER_CONCENTRATION * AVOGADRO_NUM
         / UNITSPERMILLIUNIT
         * cellVolume * (1 / MASS_TO_CELL_VOLUME) * solventFraction
@@ -1548,6 +1595,15 @@ public class CoefCalcCompute extends CoefCalc {
     }
   }
   
+  @Override
+  public Double getSolventAtoms(final ElementEM element) {
+    if (solventOccurrenceEM.containsKey(element)) {
+      return solventOccurrenceEM.get(element);
+    } else {
+      return 0.;
+    }
+  }
+  
   public Double getSolventOccurrenceEM(final ElementEM element) {
     if (solventOccurrenceEM.containsKey(element)) {
       return solventOccurrenceEM.get(element);
@@ -1682,6 +1738,15 @@ public class CoefCalcCompute extends CoefCalc {
   public Double getMacromolecularOccurrence(final Element element) {
     if (macromolecularOccurrence.containsKey(element)) {
       return macromolecularOccurrence.get(element);
+    } else {
+      return 0.;
+    }
+  }
+  
+  @Override
+  public Double getProteinAtoms(final ElementEM element) {
+    if (macromolecularOccurrenceEM.containsKey(element)) {
+      return macromolecularOccurrenceEM.get(element);
     } else {
       return 0.;
     }
@@ -2268,7 +2333,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     double meanJ = 0, meanlnI = 0;
     double stoppingPower = 0;
     double sumA = 0, meanZoverA = 0;
-    int sumZ = 0;
+    long sumZ = 0;
     for (Element e : elements) { 
       
       //calculate meanJ (mean excitation energy) for this material
@@ -2566,6 +2631,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
           elXSection = 0;
           shellSigma[i] = 0;
         }
+        
         }
         
       }
@@ -2601,7 +2667,6 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
         }
       }
       //this didn't work so using the one from Joy 1995 with relativistic correction
-
       if (calculate == true){
         //relativistic
         elXSection = ((2*Math.PI * Math.pow(elementaryCharge, 4) * numEl * bi) / (((m*1000)*(vsquared*10000)) * (shellBindingEnergy*Beam.KEVTOJOULES*1000*10000)))
@@ -2953,6 +3018,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
   //with subShells
   @Override
   public int[] getNumValenceElectronsSubshells(Element e) {
+    int[] subshells = {2, 2, 2, 4, 2, 2, 4, 10, 32};
     int Z = e.getAtomicNumber();
     int valence = Z;
     int numInnerShells = 0;
@@ -2980,9 +3046,22 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
       numInnerShells = 7;
       valence -= 18;
     }
+    if (Z == 26) {
+   //   numInnerShells = 8; //might not want this
+    }
 //    else {
  //     numInnerShells = 9;
  //   }
+    /*
+    if (Z == 6 ) {
+      valence -= 2;
+      numInnerShells = 2; //just K
+    }
+    if (Z > 6 && Z <= 8 ) {
+      valence -= 4;
+      numInnerShells = 3; //just K
+    }
+    */
     int[] numElectrons = {valence, numInnerShells};
     return numElectrons;
   }
@@ -3308,8 +3387,17 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     else if (shellIndex == 4) {
       return e.getM1Edge();
     }
+    else if (shellIndex == 5) {
+      return e.getM2Edge();
+    }
+    else if (shellIndex == 6) {
+      return e.getM3Edge();
+    }
+    else if (shellIndex == 7) {
+      return e.getM4Edge();
+    }
     else {
-      return 0;
+      return 0;     //I need to add in more for iron here!
     }
   }
   
@@ -4452,11 +4540,20 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
   
   public double integrateDist(double E, double Uk, int n, int i, Element e, double a, boolean surrounding) {
     double Wmax = (getEdash(E, Uk)/2)*Beam.KEVTOJOULES;
+    double binding = getShellBinding(i, e)*Beam.KEVTOJOULES;
  //   int bins = 100;
-    double step = Wmax/(Wbins*10);
+    
     double W = 0, previousY = 0, thisY = 0, sumIntegral = 0;
     int count = 0;
-    while (W <= Wmax) {
+    //this needs to change so it starts at Uk and ends at Wdis
+    W = binding;
+    double Wk = getWkMolecule(a, e, i, surrounding);
+    double Wak = getWak(E, Wk, Uk);
+    double Wdis = 3*Wak - 2*Uk; //need to check Wbins...
+    Wdis = (Wdis/1000)*Beam.KEVTOJOULES;
+    double step = Wdis/(Wbins);
+    
+    while (W <= Wdis) {
       if (W == 0) {
         thisY = 0;
       }
@@ -4480,7 +4577,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     double Wk = getWkMolecule(a, e, i, surrounding);
     //modify Wk
     double Wak = getWak(E, Wk, Uk);
-    double Wdis = 3*Wak - 2*Uk;
+    double Wdis = 3*Wak - 2*Uk; //need to check Wbins...
     //change values to J here
     Uk = (Uk/1000)*Beam.KEVTOJOULES;
     Wdis = (Wdis/1000)*Beam.KEVTOJOULES;
@@ -4747,6 +4844,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
       else {
         atomNum = totalAtoms(e);
       }
+
       if (atomNum > 0) {
       double[][] inelasticShell = new double[maxShells][4];
       //get number of shells
@@ -4907,6 +5005,9 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     double RND = Math.random();
     //gotta make sure all these units are changed to Joules to be correct when I do it properly
     double Q = Qs * 1/(Math.pow((Qs/((Qak/1000)*Beam.KEVTOJOULES))*(1+(((Qak/1000)*Beam.KEVTOJOULES)/(2*m*csquared))), RND) - (Qs/(2*m*csquared)));
+    if (Qak == 0) {
+      Q = 0;
+    }
     return Q;
   }
   
