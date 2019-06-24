@@ -102,6 +102,12 @@ public class ExposureSummary implements ExposeObserver {
   private double[] imageDWD;
   private double[] angleDWD;
   private double lastDWD;
+  private double[] imageRDE;
+  
+  private double[] q = {0, 2*Math.PI, Math.PI, (2/3)*Math.PI, 0.5*Math.PI}; //blank, 1A, 2A, 3A, 4A
+  private final double alpha = 1.7;
+  private final double K = 81.3;
+  private double[] De;
   
   /**
    * A boolean to say whether the RDE drops below 0.5 for any image 
@@ -146,7 +152,13 @@ public class ExposureSummary implements ExposeObserver {
     minRDEArray = new double[imageCount][2];
     imageDWD = new double[imageCount];
     angleDWD = new double[imageCount];
+    imageRDE = new double[imageCount];
     
+    De = new double[5];
+    for (int i = 1; i < 5; i++) {
+      De[i] = K/Math.pow(q[i], alpha);
+    }
+     
     averageRDE = 0d;
     fluenceWeightedAvgRDE = 0d;
     lowAvgRDE = false;
@@ -211,6 +223,7 @@ public class ExposureSummary implements ExposeObserver {
     if (diffDenom != 0) {
       runningSumDiffDose += diffNum / diffDenom;
       imageDWD[image] = diffNum / diffDenom;
+      imageRDE[image] = Math.exp(a)
     }
    //angleDWD[image] = lastAngle + (angle-lastAngle)/2;
     angleDWD[image] = angle;
