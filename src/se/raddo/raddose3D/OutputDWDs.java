@@ -17,7 +17,7 @@ public class OutputDWDs implements Output{
         "no writer class given");
     w = (Writer) properties.get(Output.OUTPUT_WRITER);
     
-    w.write("RADDOSE Image Number, DWD Angle, DWD, Vol\n");
+    w.write("RADDOSE Image Number, DWD Angle, DWD, Vol, 1A RDE, 2A RDE, 3A RDE, 4A RDE\n");
   }
   
   
@@ -45,13 +45,18 @@ public class OutputDWDs implements Output{
     double[] imageDWD = expSummary.getDWDs();
     double[] angleDWD = expSummary.getAngleDWDs();
     double[] imageVol = expSummary.getImageVol();
+    double[][] imageRDE = expSummary.getRDEs();
     for(int i = 0; i < angleDWD.length; i++) {
       double image = i+1;
       double angle = angleDWD[i] * (180/Math.PI);
       w.write(image + ",");
       w.write(angle + ",");
       w.write(imageDWD[i] + ",");
-      w.write(imageVol[i] + "\n");
+      w.write(imageVol[i] + ",");
+      w.write(imageRDE[i][1] + ",");
+      w.write(imageRDE[i][2] + ",");
+      w.write(imageRDE[i][3] + ",");
+      w.write(imageRDE[i][4] + "\n");
     }
     expSummary = null;
     w.close();

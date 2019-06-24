@@ -102,9 +102,10 @@ public class ExposureSummary implements ExposeObserver {
   private double[] imageDWD;
   private double[] angleDWD;
   private double lastDWD;
-  private double[] imageRDE;
+  private double[][] imageRDE;
+  private boolean[] lowImageRDE;
   
-  private double[] q = {0, 2*Math.PI, Math.PI, (2/3)*Math.PI, 0.5*Math.PI}; //blank, 1A, 2A, 3A, 4A
+  private double[] q = {0, 2*Math.PI, Math.PI, 2*Math.PI/3, 0.5*Math.PI}; //blank, 1A, 2A, 3A, 4A
   private final double alpha = 1.7;
   private final double K = 81.3;
   private double[] De;
@@ -152,7 +153,7 @@ public class ExposureSummary implements ExposeObserver {
     minRDEArray = new double[imageCount][2];
     imageDWD = new double[imageCount];
     angleDWD = new double[imageCount];
-    imageRDE = new double[imageCount];
+    imageRDE = new double[imageCount][5];
     
     De = new double[5];
     for (int i = 1; i < 5; i++) {
@@ -223,7 +224,9 @@ public class ExposureSummary implements ExposeObserver {
     if (diffDenom != 0) {
       runningSumDiffDose += diffNum / diffDenom;
       imageDWD[image] = diffNum / diffDenom;
-      imageRDE[image] = Math.exp(a)
+      for (int i = 1; i < 5; i++) {
+        imageRDE[image][i] = Math.exp((-imageDWD[image])/De[i]);
+      }
     }
    //angleDWD[image] = lastAngle + (angle-lastAngle)/2;
     angleDWD[image] = angle;
@@ -435,6 +438,10 @@ public class ExposureSummary implements ExposeObserver {
   
   public double[] getDWDs() {
     return imageDWD;
+  }
+  
+  public double[][] getRDEs(){
+    return imageRDE;
   }
   
   public double[] getAngleDWDs() {
