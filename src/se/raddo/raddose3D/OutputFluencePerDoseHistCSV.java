@@ -173,7 +173,7 @@ public class OutputFluencePerDoseHistCSV implements Output, ExposeObserver {
   }
 
   @Override
-  public void exposureStart(final int imageCount) {
+  public void exposureStart(final int imageCount, Wedge wedge) {
     // Implementation not required.
   }
 

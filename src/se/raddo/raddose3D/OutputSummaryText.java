@@ -213,7 +213,7 @@ public class OutputSummaryText implements ExposeObserver, Output,
   }
 
   @Override
-  public void exposureStart(final int imageCount) {
+  public void exposureStart(final int imageCount, Wedge wedge) {
     // No implementation required
   }
 

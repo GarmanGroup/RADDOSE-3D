@@ -31,7 +31,7 @@ public class CrystalPolyhedronTests {
 
     Crystal c = new CrystalPolyhedron(properties);
     Crystal cub = new CrystalCuboid(properties);
-    Wedge w = new Wedge(0d, 0d, 0d, 100d, 0d, 0d, 0d, 0d, 0d, 0d, 0d);
+    Wedge w = new Wedge(0d, 0d, 0d, 100d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 2d);
 
     double[] crystCoords, crystCoordsCub;
     // this coordinate is in voxel coordinates.
@@ -131,7 +131,7 @@ public class CrystalPolyhedronTests {
 
     Crystal c = new CrystalPolyhedron(properties);
 
-    Wedge w = new Wedge(0d, 0d, 0d, 100d, 0d, 0d, 0d, 0d, 0d, 0d, 0d);
+    Wedge w = new Wedge(0d, 0d, 0d, 100d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 2d);
 
     // this is where the beam should be going through the thickest
     // part of the crystal (pre-determined)

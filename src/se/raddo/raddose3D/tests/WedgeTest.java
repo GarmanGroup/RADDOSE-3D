@@ -16,14 +16,14 @@ public class WedgeTest {
   @Test(expectedExceptions = RuntimeException.class)
   /** Instantiation should fail if required parameters are missing. */
   public void testInstantiationShouldFailWithoutRequiredParameters() {
-    new Wedge(null, null, null, null, null, null, null, null, null, null, null);
+    new Wedge(null, null, null, null, null, null, null, null, null, null, null, null);
   }
 
   @Test
   /** Instantiation should work with optional parameters missing. */
   public void testInstantiationDefaults() {
     Wedge w = new Wedge(null, 0d, 90d, 120d, null, null, null, null, null,
-        null, null);
+        null, null, null);
 
     Assertion.isNotNull(w.getAngRes(), "angular resolution");
     Assertion.equals(w.getStartAng(), Math.toRadians(0), "start angle");

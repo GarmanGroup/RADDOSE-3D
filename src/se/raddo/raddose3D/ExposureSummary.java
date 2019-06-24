@@ -130,7 +130,7 @@ public class ExposureSummary implements ExposeObserver {
   }
 
   @Override
-  public void exposureStart(final int imageCount) {
+  public void exposureStart(final int imageCount, Wedge wedge) {
     // Resets the global crystal metrics for each new exposure.
 
     // per voxel exposure variables exposureObservation()
@@ -156,7 +156,10 @@ public class ExposureSummary implements ExposeObserver {
     imageRDE = new double[imageCount][5];
     
     De = new double[5];
-    for (int i = 1; i < 5; i++) {
+    //q0 needs to equal max res from wedge
+    double maxRes = wedge.getMaxRes();
+    q[0] = 2*Math.PI/maxRes;
+    for (int i = 0; i < 5; i++) {
       De[i] = K/Math.pow(q[i], alpha);
     }
      
@@ -224,7 +227,7 @@ public class ExposureSummary implements ExposeObserver {
     if (diffDenom != 0) {
       runningSumDiffDose += diffNum / diffDenom;
       imageDWD[image] = diffNum / diffDenom;
-      for (int i = 1; i < 5; i++) {
+      for (int i = 0; i < 5; i++) {
         imageRDE[image][i] = Math.exp((-imageDWD[image])/De[i]);
       }
     }

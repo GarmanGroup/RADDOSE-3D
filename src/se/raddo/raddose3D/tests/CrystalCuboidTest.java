@@ -126,7 +126,7 @@ public class CrystalCuboidTest {
     properties.put(Crystal.CRYSTAL_ANGLE_L, 0d);
     Crystal c = new CrystalCuboid(properties);
 
-    Wedge w = new Wedge(2d, 0d, 90d, 100d, 0d, 0d, 0d, 0d, 0d, 0d, 0d);
+    Wedge w = new Wedge(2d, 0d, 90d, 100d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 2d);
 
     /* Some random test coordinates to work on */
     double[] testCoords = { 0, 0, 0 };//{ 12.23, 21.56, -44.32}; 
@@ -206,7 +206,7 @@ public class CrystalCuboidTest {
 
     // create a new wedge with no rotation at 100 seconds' exposure
     // (doesn't matter)
-    Wedge w = new Wedge(0d, 0d, 0d, 100d, 0d, 0d, 0d, 0d, 0d, 0d, 0d);
+    Wedge w = new Wedge(0d, 0d, 0d, 100d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 2d);
 
     // beam is along z axis. So when the crystal is not rotated, the 
     // maximum depth along the z axis should be zdim um (length of crystal).

@@ -674,7 +674,7 @@ public abstract class Crystal {
     }
 
     for (ExposeObserver eo : exposureObservers) {
-      eo.exposureStart(angles.length);
+      eo.exposureStart(angles.length, wedge);
     }
 
     // The main meat of it:

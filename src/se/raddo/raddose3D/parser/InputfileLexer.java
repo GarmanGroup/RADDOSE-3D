@@ -1,4 +1,4 @@
-// $ANTLR 3.4 C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g 2018-08-22 13:04:13
+// $ANTLR 3.4 C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g 2019-06-24 17:34:19
 
 package se.raddo.raddose3D.parser;
 
@@ -55,49 +55,50 @@ public class InputfileLexer extends Lexer {
     public static final int MATERIALELEMENTS=45;
     public static final int MATERIALMIXTURE=46;
     public static final int MATERIALTYPE=47;
-    public static final int MIXTURE=48;
-    public static final int MODELFILE=49;
-    public static final int NONE=50;
-    public static final int NUMCARB=51;
-    public static final int NUMDNA=52;
-    public static final int NUMMONOMERS=53;
-    public static final int NUMRESIDUES=54;
-    public static final int NUMRNA=55;
-    public static final int OILBASED=56;
-    public static final int OILDENSITY=57;
-    public static final int OILELEMENTS=58;
-    public static final int PDB=59;
-    public static final int PDBNAME=60;
-    public static final int PERESOLUTION=61;
-    public static final int PIXELSIZE=62;
-    public static final int PIXELSPERMICRON=63;
-    public static final int PROTEINCONC=64;
-    public static final int PROTEINCONCENTRATION=65;
-    public static final int PROTEINHEAVYATOMS=66;
-    public static final int RDFORTAN=67;
-    public static final int RDJAVA=68;
-    public static final int RECTANGULAR=69;
-    public static final int ROTAXBEAMOFFSET=70;
-    public static final int SAXS=71;
-    public static final int SAXSSEQ=72;
-    public static final int SEQFILE=73;
-    public static final int SEQUENCE=74;
-    public static final int SEQUENCEFILE=75;
-    public static final int SIMPLE=76;
-    public static final int SMALLMOLE=77;
-    public static final int SMALLMOLEATOMS=78;
-    public static final int SOLVENTFRACTION=79;
-    public static final int SOLVENTHEAVYCONC=80;
-    public static final int STARTOFFSET=81;
-    public static final int STRING=82;
-    public static final int SURROUNDINGHEAVYCONC=83;
-    public static final int TRANSLATEPERDEGREE=84;
-    public static final int TYPE=85;
-    public static final int UNITCELL=86;
-    public static final int VERTICAL=87;
-    public static final int WEDGE=88;
-    public static final int WIREFRAMETYPE=89;
-    public static final int WS=90;
+    public static final int MAXRESOLUTION=48;
+    public static final int MIXTURE=49;
+    public static final int MODELFILE=50;
+    public static final int NONE=51;
+    public static final int NUMCARB=52;
+    public static final int NUMDNA=53;
+    public static final int NUMMONOMERS=54;
+    public static final int NUMRESIDUES=55;
+    public static final int NUMRNA=56;
+    public static final int OILBASED=57;
+    public static final int OILDENSITY=58;
+    public static final int OILELEMENTS=59;
+    public static final int PDB=60;
+    public static final int PDBNAME=61;
+    public static final int PERESOLUTION=62;
+    public static final int PIXELSIZE=63;
+    public static final int PIXELSPERMICRON=64;
+    public static final int PROTEINCONC=65;
+    public static final int PROTEINCONCENTRATION=66;
+    public static final int PROTEINHEAVYATOMS=67;
+    public static final int RDFORTAN=68;
+    public static final int RDJAVA=69;
+    public static final int RECTANGULAR=70;
+    public static final int ROTAXBEAMOFFSET=71;
+    public static final int SAXS=72;
+    public static final int SAXSSEQ=73;
+    public static final int SEQFILE=74;
+    public static final int SEQUENCE=75;
+    public static final int SEQUENCEFILE=76;
+    public static final int SIMPLE=77;
+    public static final int SMALLMOLE=78;
+    public static final int SMALLMOLEATOMS=79;
+    public static final int SOLVENTFRACTION=80;
+    public static final int SOLVENTHEAVYCONC=81;
+    public static final int STARTOFFSET=82;
+    public static final int STRING=83;
+    public static final int SURROUNDINGHEAVYCONC=84;
+    public static final int TRANSLATEPERDEGREE=85;
+    public static final int TYPE=86;
+    public static final int UNITCELL=87;
+    public static final int VERTICAL=88;
+    public static final int WEDGE=89;
+    public static final int WIREFRAMETYPE=90;
+    public static final int WS=91;
 
     // delegates
     // delegators
@@ -198,7 +199,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "CRYSTAL"
@@ -257,7 +258,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "TYPE"
@@ -486,7 +487,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "DIFFRACTIONDECAYMODEL"
@@ -535,7 +536,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "DDM"
@@ -614,7 +615,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "SIMPLE"
@@ -693,7 +694,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "LINEAR"
@@ -752,7 +753,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "LEAL"
@@ -871,7 +872,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "DECAYPARAM"
@@ -1017,7 +1018,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "ABSCOEFCALC"
@@ -1086,7 +1087,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "DUMMY"
@@ -1175,7 +1176,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "DEFAULT"
@@ -1264,7 +1265,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "AVERAGE"
@@ -1340,7 +1341,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "RDFORTAN"
@@ -1414,7 +1415,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "RDJAVA"
@@ -1463,7 +1464,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "PDB"
@@ -1522,7 +1523,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "SAXS"
@@ -1621,7 +1622,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "SEQUENCE"
@@ -1710,7 +1711,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "SAXSSEQ"
@@ -1819,7 +1820,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "SMALLMOLE"
@@ -1888,7 +1889,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "CIF"
@@ -2024,7 +2025,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "DIMENSION"
@@ -2103,7 +2104,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "ANGLEP"
@@ -2182,7 +2183,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "ANGLEL"
@@ -2351,7 +2352,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "PIXELSPERMICRON"
@@ -2450,7 +2451,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "UNITCELL"
@@ -2579,7 +2580,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "PROTEINCONC"
@@ -2798,7 +2799,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "PROTEINCONCENTRATION"
@@ -2927,7 +2928,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "NUMMONOMERS"
@@ -3056,7 +3057,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "NUMRESIDUES"
@@ -3135,7 +3136,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "NUMRNA"
@@ -3214,7 +3215,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "NUMDNA"
@@ -3303,7 +3304,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "NUMCARB"
@@ -3492,7 +3493,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "PROTEINHEAVYATOMS"
@@ -3548,7 +3549,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "ELEMENT"
@@ -3707,7 +3708,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "SMALLMOLEATOMS"
@@ -3886,7 +3887,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "SOLVENTHEAVYCONC"
@@ -4055,7 +4056,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "SOLVENTFRACTION"
@@ -4104,7 +4105,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "PDBNAME"
@@ -4153,7 +4154,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "CIFNAME"
@@ -4343,7 +4344,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "WIREFRAMETYPE"
@@ -4452,7 +4453,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "MODELFILE"
@@ -4641,7 +4642,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "CALCULATEPEESCAPE"
@@ -4800,7 +4801,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "GONIOMETERAXIS"
@@ -5029,7 +5030,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "CONTAINERMATERIALTYPE"
@@ -5168,7 +5169,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "MATERIALTYPE"
@@ -5227,7 +5228,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "NONE"
@@ -5316,7 +5317,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "MIXTURE"
@@ -5425,7 +5426,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "ELEMENTAL"
@@ -5624,7 +5625,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "CONTAINERTHICKNESS"
@@ -5883,7 +5884,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "CONTAINERMATERIALMIXTURE"
@@ -6052,7 +6053,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "MATERIALMIXTURE"
@@ -6321,7 +6322,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "CONTAINERMATERIALELEMENTS"
@@ -6500,7 +6501,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "MATERIALELEMENTS"
@@ -6679,7 +6680,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "CONTAINERDENSITY"
@@ -6818,7 +6819,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "SEQUENCEFILE"
@@ -6907,7 +6908,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "SEQFILE"
@@ -7096,7 +7097,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "CALCULATEFLESCAPE"
@@ -7235,7 +7236,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "FLRESOLUTION"
@@ -7374,7 +7375,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "PERESOLUTION"
@@ -7593,7 +7594,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "SURROUNDINGHEAVYCONC"
@@ -7692,7 +7693,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "OILBASED"
@@ -7861,7 +7862,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "CALCSURROUNDING"
@@ -7990,7 +7991,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "OILELEMENTS"
@@ -8109,7 +8110,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "OILDENSITY"
@@ -8168,7 +8169,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "BEAM"
@@ -8227,7 +8228,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "FLUX"
@@ -8286,7 +8287,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "FWHM"
@@ -8365,7 +8366,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "ENERGY"
@@ -8414,7 +8415,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "KEV"
@@ -8473,7 +8474,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "FILE"
@@ -8582,7 +8583,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "PIXELSIZE"
@@ -8711,7 +8712,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "COLLIMATION"
@@ -8840,7 +8841,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "RECTANGULAR"
@@ -8939,7 +8940,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "CIRCULAR"
@@ -9058,7 +9059,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "HORIZONTAL"
@@ -9157,7 +9158,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "VERTICAL"
@@ -9167,8 +9168,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = WEDGE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:651:7: ( ( 'W' | 'w' ) ( 'E' | 'e' ) ( 'D' | 'd' ) ( 'G' | 'g' ) ( 'E' | 'e' ) )
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:651:9: ( 'W' | 'w' ) ( 'E' | 'e' ) ( 'D' | 'd' ) ( 'G' | 'g' ) ( 'E' | 'e' )
+            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:652:7: ( ( 'W' | 'w' ) ( 'E' | 'e' ) ( 'D' | 'd' ) ( 'G' | 'g' ) ( 'E' | 'e' ) )
+            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:652:9: ( 'W' | 'w' ) ( 'E' | 'e' ) ( 'D' | 'd' ) ( 'G' | 'g' ) ( 'E' | 'e' )
             {
             if ( input.LA(1)=='W'||input.LA(1)=='w' ) {
                 input.consume();
@@ -9226,7 +9227,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "WEDGE"
@@ -9236,8 +9237,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = EXPOSURETIME;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:667:14: ( ( 'E' | 'e' ) ( 'X' | 'x' ) ( 'P' | 'p' ) ( 'O' | 'o' ) ( 'S' | 's' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'M' | 'm' ) ( 'E' | 'e' ) )
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:667:16: ( 'E' | 'e' ) ( 'X' | 'x' ) ( 'P' | 'p' ) ( 'O' | 'o' ) ( 'S' | 's' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'M' | 'm' ) ( 'E' | 'e' )
+            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:669:14: ( ( 'E' | 'e' ) ( 'X' | 'x' ) ( 'P' | 'p' ) ( 'O' | 'o' ) ( 'S' | 's' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'M' | 'm' ) ( 'E' | 'e' ) )
+            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:669:16: ( 'E' | 'e' ) ( 'X' | 'x' ) ( 'P' | 'p' ) ( 'O' | 'o' ) ( 'S' | 's' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'M' | 'm' ) ( 'E' | 'e' )
             {
             if ( input.LA(1)=='E'||input.LA(1)=='e' ) {
                 input.consume();
@@ -9365,7 +9366,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "EXPOSURETIME"
@@ -9375,8 +9376,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = ANGULARRESOLUTION;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:671:19: ( ( 'A' | 'a' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'A' | 'a' ) ( 'R' | 'r' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'U' | 'u' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' ) )
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:671:21: ( 'A' | 'a' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'A' | 'a' ) ( 'R' | 'r' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'U' | 'u' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' )
+            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:673:19: ( ( 'A' | 'a' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'A' | 'a' ) ( 'R' | 'r' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'U' | 'u' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' ) )
+            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:673:21: ( 'A' | 'a' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'A' | 'a' ) ( 'R' | 'r' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'U' | 'u' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' )
             {
             if ( input.LA(1)=='A'||input.LA(1)=='a' ) {
                 input.consume();
@@ -9554,7 +9555,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "ANGULARRESOLUTION"
@@ -9564,8 +9565,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = STARTOFFSET;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:677:13: ( ( 'S' | 's' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'R' | 'r' ) ( 'T' | 't' ) ( 'O' | 'o' ) ( 'F' | 'f' ) ( 'F' | 'f' ) ( 'S' | 's' ) ( 'E' | 'e' ) ( 'T' | 't' ) )
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:677:15: ( 'S' | 's' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'R' | 'r' ) ( 'T' | 't' ) ( 'O' | 'o' ) ( 'F' | 'f' ) ( 'F' | 'f' ) ( 'S' | 's' ) ( 'E' | 'e' ) ( 'T' | 't' )
+            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:679:13: ( ( 'S' | 's' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'R' | 'r' ) ( 'T' | 't' ) ( 'O' | 'o' ) ( 'F' | 'f' ) ( 'F' | 'f' ) ( 'S' | 's' ) ( 'E' | 'e' ) ( 'T' | 't' ) )
+            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:679:15: ( 'S' | 's' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'R' | 'r' ) ( 'T' | 't' ) ( 'O' | 'o' ) ( 'F' | 'f' ) ( 'F' | 'f' ) ( 'S' | 's' ) ( 'E' | 'e' ) ( 'T' | 't' )
             {
             if ( input.LA(1)=='S'||input.LA(1)=='s' ) {
                 input.consume();
@@ -9683,7 +9684,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "STARTOFFSET"
@@ -9693,8 +9694,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = TRANSLATEPERDEGREE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:683:20: ( ( 'T' | 't' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'N' | 'n' ) ( 'S' | 's' ) ( 'L' | 'l' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'P' | 'p' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'G' | 'g' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'E' | 'e' ) )
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:683:22: ( 'T' | 't' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'N' | 'n' ) ( 'S' | 's' ) ( 'L' | 'l' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'P' | 'p' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'G' | 'g' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'E' | 'e' )
+            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:685:20: ( ( 'T' | 't' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'N' | 'n' ) ( 'S' | 's' ) ( 'L' | 'l' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'P' | 'p' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'G' | 'g' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'E' | 'e' ) )
+            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:685:22: ( 'T' | 't' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'N' | 'n' ) ( 'S' | 's' ) ( 'L' | 'l' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'P' | 'p' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'G' | 'g' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'E' | 'e' )
             {
             if ( input.LA(1)=='T'||input.LA(1)=='t' ) {
                 input.consume();
@@ -9882,7 +9883,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "TRANSLATEPERDEGREE"
@@ -9892,8 +9893,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = ROTAXBEAMOFFSET;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:687:17: ( ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'X' | 'x' ) ( 'B' | 'b' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'M' | 'm' ) ( 'O' | 'o' ) ( 'F' | 'f' ) ( 'F' | 'f' ) ( 'S' | 's' ) ( 'E' | 'e' ) ( 'T' | 't' ) )
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:687:19: ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'X' | 'x' ) ( 'B' | 'b' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'M' | 'm' ) ( 'O' | 'o' ) ( 'F' | 'f' ) ( 'F' | 'f' ) ( 'S' | 's' ) ( 'E' | 'e' ) ( 'T' | 't' )
+            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:689:17: ( ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'X' | 'x' ) ( 'B' | 'b' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'M' | 'm' ) ( 'O' | 'o' ) ( 'F' | 'f' ) ( 'F' | 'f' ) ( 'S' | 's' ) ( 'E' | 'e' ) ( 'T' | 't' ) )
+            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:689:19: ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'X' | 'x' ) ( 'B' | 'b' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'M' | 'm' ) ( 'O' | 'o' ) ( 'F' | 'f' ) ( 'F' | 'f' ) ( 'S' | 's' ) ( 'E' | 'e' ) ( 'T' | 't' )
             {
             if ( input.LA(1)=='R'||input.LA(1)=='r' ) {
                 input.consume();
@@ -10051,20 +10052,169 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "ROTAXBEAMOFFSET"
+
+    // $ANTLR start "MAXRESOLUTION"
+    public final void mMAXRESOLUTION() throws RecognitionException {
+        try {
+            int _type = MAXRESOLUTION;
+            int _channel = DEFAULT_TOKEN_CHANNEL;
+            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:693:15: ( ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'X' | 'x' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'U' | 'u' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' ) )
+            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:693:17: ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'X' | 'x' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'U' | 'u' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' )
+            {
+            if ( input.LA(1)=='M'||input.LA(1)=='m' ) {
+                input.consume();
+            }
+            else {
+                MismatchedSetException mse = new MismatchedSetException(null,input);
+                recover(mse);
+                throw mse;
+            }
+
+
+            if ( input.LA(1)=='A'||input.LA(1)=='a' ) {
+                input.consume();
+            }
+            else {
+                MismatchedSetException mse = new MismatchedSetException(null,input);
+                recover(mse);
+                throw mse;
+            }
+
+
+            if ( input.LA(1)=='X'||input.LA(1)=='x' ) {
+                input.consume();
+            }
+            else {
+                MismatchedSetException mse = new MismatchedSetException(null,input);
+                recover(mse);
+                throw mse;
+            }
+
+
+            if ( input.LA(1)=='R'||input.LA(1)=='r' ) {
+                input.consume();
+            }
+            else {
+                MismatchedSetException mse = new MismatchedSetException(null,input);
+                recover(mse);
+                throw mse;
+            }
+
+
+            if ( input.LA(1)=='E'||input.LA(1)=='e' ) {
+                input.consume();
+            }
+            else {
+                MismatchedSetException mse = new MismatchedSetException(null,input);
+                recover(mse);
+                throw mse;
+            }
+
+
+            if ( input.LA(1)=='S'||input.LA(1)=='s' ) {
+                input.consume();
+            }
+            else {
+                MismatchedSetException mse = new MismatchedSetException(null,input);
+                recover(mse);
+                throw mse;
+            }
+
+
+            if ( input.LA(1)=='O'||input.LA(1)=='o' ) {
+                input.consume();
+            }
+            else {
+                MismatchedSetException mse = new MismatchedSetException(null,input);
+                recover(mse);
+                throw mse;
+            }
+
+
+            if ( input.LA(1)=='L'||input.LA(1)=='l' ) {
+                input.consume();
+            }
+            else {
+                MismatchedSetException mse = new MismatchedSetException(null,input);
+                recover(mse);
+                throw mse;
+            }
+
+
+            if ( input.LA(1)=='U'||input.LA(1)=='u' ) {
+                input.consume();
+            }
+            else {
+                MismatchedSetException mse = new MismatchedSetException(null,input);
+                recover(mse);
+                throw mse;
+            }
+
+
+            if ( input.LA(1)=='T'||input.LA(1)=='t' ) {
+                input.consume();
+            }
+            else {
+                MismatchedSetException mse = new MismatchedSetException(null,input);
+                recover(mse);
+                throw mse;
+            }
+
+
+            if ( input.LA(1)=='I'||input.LA(1)=='i' ) {
+                input.consume();
+            }
+            else {
+                MismatchedSetException mse = new MismatchedSetException(null,input);
+                recover(mse);
+                throw mse;
+            }
+
+
+            if ( input.LA(1)=='O'||input.LA(1)=='o' ) {
+                input.consume();
+            }
+            else {
+                MismatchedSetException mse = new MismatchedSetException(null,input);
+                recover(mse);
+                throw mse;
+            }
+
+
+            if ( input.LA(1)=='N'||input.LA(1)=='n' ) {
+                input.consume();
+            }
+            else {
+                MismatchedSetException mse = new MismatchedSetException(null,input);
+                recover(mse);
+                throw mse;
+            }
+
+
+            }
+
+            state.type = _type;
+            state.channel = _channel;
+        }
+        finally {
+        	// do for sure before leaving
+        }
+    }
+    // $ANTLR end "MAXRESOLUTION"
 
     // $ANTLR start "FLOAT"
     public final void mFLOAT() throws RecognitionException {
         try {
             int _type = FLOAT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:692:5: ( ( '+' | '-' )? ( ( '0' .. '9' )+ | ( '0' .. '9' )+ '.' ( '0' .. '9' )* | '.' ( '0' .. '9' )+ ) ( EXPONENT )? )
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:692:7: ( '+' | '-' )? ( ( '0' .. '9' )+ | ( '0' .. '9' )+ '.' ( '0' .. '9' )* | '.' ( '0' .. '9' )+ ) ( EXPONENT )?
+            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:698:5: ( ( '+' | '-' )? ( ( '0' .. '9' )+ | ( '0' .. '9' )+ '.' ( '0' .. '9' )* | '.' ( '0' .. '9' )+ ) ( EXPONENT )? )
+            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:698:7: ( '+' | '-' )? ( ( '0' .. '9' )+ | ( '0' .. '9' )+ '.' ( '0' .. '9' )* | '.' ( '0' .. '9' )+ ) ( EXPONENT )?
             {
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:692:7: ( '+' | '-' )?
+            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:698:7: ( '+' | '-' )?
             int alt7=2;
             int LA7_0 = input.LA(1);
 
@@ -10091,14 +10241,14 @@ public class InputfileLexer extends Lexer {
             }
 
 
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:693:5: ( ( '0' .. '9' )+ | ( '0' .. '9' )+ '.' ( '0' .. '9' )* | '.' ( '0' .. '9' )+ )
+            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:699:5: ( ( '0' .. '9' )+ | ( '0' .. '9' )+ '.' ( '0' .. '9' )* | '.' ( '0' .. '9' )+ )
             int alt12=3;
             alt12 = dfa12.predict(input);
             switch (alt12) {
                 case 1 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:693:7: ( '0' .. '9' )+
+                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:699:7: ( '0' .. '9' )+
                     {
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:693:7: ( '0' .. '9' )+
+                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:699:7: ( '0' .. '9' )+
                     int cnt8=0;
                     loop8:
                     do {
@@ -10111,24 +10261,24 @@ public class InputfileLexer extends Lexer {
 
 
                         switch (alt8) {
-                        case 1 :
-                            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:
-                            {
-                            if ( (input.LA(1) >= '0' && input.LA(1) <= '9') ) {
-                                input.consume();
-                            }
-                            else {
-                                MismatchedSetException mse = new MismatchedSetException(null,input);
-                                recover(mse);
-                                throw mse;
-                            }
+                    	case 1 :
+                    	    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:
+                    	    {
+                    	    if ( (input.LA(1) >= '0' && input.LA(1) <= '9') ) {
+                    	        input.consume();
+                    	    }
+                    	    else {
+                    	        MismatchedSetException mse = new MismatchedSetException(null,input);
+                    	        recover(mse);
+                    	        throw mse;
+                    	    }
 
 
-                            }
-                            break;
+                    	    }
+                    	    break;
 
-                        default :
-                            if ( cnt8 >= 1 ) break loop8;
+                    	default :
+                    	    if ( cnt8 >= 1 ) break loop8;
                                 EarlyExitException eee =
                                     new EarlyExitException(8, input);
                                 throw eee;
@@ -10140,9 +10290,9 @@ public class InputfileLexer extends Lexer {
                     }
                     break;
                 case 2 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:694:7: ( '0' .. '9' )+ '.' ( '0' .. '9' )*
+                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:700:7: ( '0' .. '9' )+ '.' ( '0' .. '9' )*
                     {
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:694:7: ( '0' .. '9' )+
+                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:700:7: ( '0' .. '9' )+
                     int cnt9=0;
                     loop9:
                     do {
@@ -10155,24 +10305,24 @@ public class InputfileLexer extends Lexer {
 
 
                         switch (alt9) {
-                        case 1 :
-                            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:
-                            {
-                            if ( (input.LA(1) >= '0' && input.LA(1) <= '9') ) {
-                                input.consume();
-                            }
-                            else {
-                                MismatchedSetException mse = new MismatchedSetException(null,input);
-                                recover(mse);
-                                throw mse;
-                            }
+                    	case 1 :
+                    	    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:
+                    	    {
+                    	    if ( (input.LA(1) >= '0' && input.LA(1) <= '9') ) {
+                    	        input.consume();
+                    	    }
+                    	    else {
+                    	        MismatchedSetException mse = new MismatchedSetException(null,input);
+                    	        recover(mse);
+                    	        throw mse;
+                    	    }
 
 
-                            }
-                            break;
+                    	    }
+                    	    break;
 
-                        default :
-                            if ( cnt9 >= 1 ) break loop9;
+                    	default :
+                    	    if ( cnt9 >= 1 ) break loop9;
                                 EarlyExitException eee =
                                     new EarlyExitException(9, input);
                                 throw eee;
@@ -10183,7 +10333,7 @@ public class InputfileLexer extends Lexer {
 
                     match('.'); 
 
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:694:23: ( '0' .. '9' )*
+                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:700:23: ( '0' .. '9' )*
                     loop10:
                     do {
                         int alt10=2;
@@ -10195,24 +10345,24 @@ public class InputfileLexer extends Lexer {
 
 
                         switch (alt10) {
-                        case 1 :
-                            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:
-                            {
-                            if ( (input.LA(1) >= '0' && input.LA(1) <= '9') ) {
-                                input.consume();
-                            }
-                            else {
-                                MismatchedSetException mse = new MismatchedSetException(null,input);
-                                recover(mse);
-                                throw mse;
-                            }
+                    	case 1 :
+                    	    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:
+                    	    {
+                    	    if ( (input.LA(1) >= '0' && input.LA(1) <= '9') ) {
+                    	        input.consume();
+                    	    }
+                    	    else {
+                    	        MismatchedSetException mse = new MismatchedSetException(null,input);
+                    	        recover(mse);
+                    	        throw mse;
+                    	    }
 
 
-                            }
-                            break;
+                    	    }
+                    	    break;
 
-                        default :
-                            break loop10;
+                    	default :
+                    	    break loop10;
                         }
                     } while (true);
 
@@ -10220,11 +10370,11 @@ public class InputfileLexer extends Lexer {
                     }
                     break;
                 case 3 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:695:19: '.' ( '0' .. '9' )+
+                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:701:19: '.' ( '0' .. '9' )+
                     {
                     match('.'); 
 
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:695:23: ( '0' .. '9' )+
+                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:701:23: ( '0' .. '9' )+
                     int cnt11=0;
                     loop11:
                     do {
@@ -10237,24 +10387,24 @@ public class InputfileLexer extends Lexer {
 
 
                         switch (alt11) {
-                        case 1 :
-                            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:
-                            {
-                            if ( (input.LA(1) >= '0' && input.LA(1) <= '9') ) {
-                                input.consume();
-                            }
-                            else {
-                                MismatchedSetException mse = new MismatchedSetException(null,input);
-                                recover(mse);
-                                throw mse;
-                            }
+                    	case 1 :
+                    	    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:
+                    	    {
+                    	    if ( (input.LA(1) >= '0' && input.LA(1) <= '9') ) {
+                    	        input.consume();
+                    	    }
+                    	    else {
+                    	        MismatchedSetException mse = new MismatchedSetException(null,input);
+                    	        recover(mse);
+                    	        throw mse;
+                    	    }
 
 
-                            }
-                            break;
+                    	    }
+                    	    break;
 
-                        default :
-                            if ( cnt11 >= 1 ) break loop11;
+                    	default :
+                    	    if ( cnt11 >= 1 ) break loop11;
                                 EarlyExitException eee =
                                     new EarlyExitException(11, input);
                                 throw eee;
@@ -10269,7 +10419,7 @@ public class InputfileLexer extends Lexer {
             }
 
 
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:696:7: ( EXPONENT )?
+            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:702:7: ( EXPONENT )?
             int alt13=2;
             int LA13_0 = input.LA(1);
 
@@ -10278,7 +10428,7 @@ public class InputfileLexer extends Lexer {
             }
             switch (alt13) {
                 case 1 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:696:7: EXPONENT
+                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:702:7: EXPONENT
                     {
                     mEXPONENT(); 
 
@@ -10295,7 +10445,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "FLOAT"
@@ -10303,8 +10453,8 @@ public class InputfileLexer extends Lexer {
     // $ANTLR start "EXPONENT"
     public final void mEXPONENT() throws RecognitionException {
         try {
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:700:10: ( ( 'e' | 'E' ) ( '+' | '-' )? ( '0' .. '9' )+ )
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:700:12: ( 'e' | 'E' ) ( '+' | '-' )? ( '0' .. '9' )+
+            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:706:10: ( ( 'e' | 'E' ) ( '+' | '-' )? ( '0' .. '9' )+ )
+            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:706:12: ( 'e' | 'E' ) ( '+' | '-' )? ( '0' .. '9' )+
             {
             if ( input.LA(1)=='E'||input.LA(1)=='e' ) {
                 input.consume();
@@ -10316,7 +10466,7 @@ public class InputfileLexer extends Lexer {
             }
 
 
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:700:22: ( '+' | '-' )?
+            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:706:22: ( '+' | '-' )?
             int alt14=2;
             int LA14_0 = input.LA(1);
 
@@ -10343,7 +10493,7 @@ public class InputfileLexer extends Lexer {
             }
 
 
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:700:33: ( '0' .. '9' )+
+            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:706:33: ( '0' .. '9' )+
             int cnt15=0;
             loop15:
             do {
@@ -10356,24 +10506,24 @@ public class InputfileLexer extends Lexer {
 
 
                 switch (alt15) {
-                case 1 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:
-                    {
-                    if ( (input.LA(1) >= '0' && input.LA(1) <= '9') ) {
-                        input.consume();
-                    }
-                    else {
-                        MismatchedSetException mse = new MismatchedSetException(null,input);
-                        recover(mse);
-                        throw mse;
-                    }
+            	case 1 :
+            	    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:
+            	    {
+            	    if ( (input.LA(1) >= '0' && input.LA(1) <= '9') ) {
+            	        input.consume();
+            	    }
+            	    else {
+            	        MismatchedSetException mse = new MismatchedSetException(null,input);
+            	        recover(mse);
+            	        throw mse;
+            	    }
 
 
-                    }
-                    break;
+            	    }
+            	    break;
 
-                default :
-                    if ( cnt15 >= 1 ) break loop15;
+            	default :
+            	    if ( cnt15 >= 1 ) break loop15;
                         EarlyExitException eee =
                             new EarlyExitException(15, input);
                         throw eee;
@@ -10387,7 +10537,7 @@ public class InputfileLexer extends Lexer {
 
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "EXPONENT"
@@ -10397,10 +10547,10 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = COMMENT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:702:5: ( ( '#' | '//' | '!' ) (~ ( '\\n' | '\\r' ) )* ( '\\r' )? '\\n' )
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:702:9: ( '#' | '//' | '!' ) (~ ( '\\n' | '\\r' ) )* ( '\\r' )? '\\n'
+            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:708:5: ( ( '#' | '//' | '!' ) (~ ( '\\n' | '\\r' ) )* ( '\\r' )? '\\n' )
+            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:708:9: ( '#' | '//' | '!' ) (~ ( '\\n' | '\\r' ) )* ( '\\r' )? '\\n'
             {
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:702:9: ( '#' | '//' | '!' )
+            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:708:9: ( '#' | '//' | '!' )
             int alt16=3;
             switch ( input.LA(1) ) {
             case '#':
@@ -10428,14 +10578,14 @@ public class InputfileLexer extends Lexer {
 
             switch (alt16) {
                 case 1 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:702:10: '#'
+                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:708:10: '#'
                     {
                     match('#'); 
 
                     }
                     break;
                 case 2 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:702:16: '//'
+                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:708:16: '//'
                     {
                     match("//"); 
 
@@ -10444,7 +10594,7 @@ public class InputfileLexer extends Lexer {
                     }
                     break;
                 case 3 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:702:23: '!'
+                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:708:23: '!'
                     {
                     match('!'); 
 
@@ -10454,7 +10604,7 @@ public class InputfileLexer extends Lexer {
             }
 
 
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:702:28: (~ ( '\\n' | '\\r' ) )*
+            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:708:28: (~ ( '\\n' | '\\r' ) )*
             loop17:
             do {
                 int alt17=2;
@@ -10466,29 +10616,29 @@ public class InputfileLexer extends Lexer {
 
 
                 switch (alt17) {
-                case 1 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:
-                    {
-                    if ( (input.LA(1) >= '\u0000' && input.LA(1) <= '\t')||(input.LA(1) >= '\u000B' && input.LA(1) <= '\f')||(input.LA(1) >= '\u000E' && input.LA(1) <= '\uFFFF') ) {
-                        input.consume();
-                    }
-                    else {
-                        MismatchedSetException mse = new MismatchedSetException(null,input);
-                        recover(mse);
-                        throw mse;
-                    }
+            	case 1 :
+            	    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:
+            	    {
+            	    if ( (input.LA(1) >= '\u0000' && input.LA(1) <= '\t')||(input.LA(1) >= '\u000B' && input.LA(1) <= '\f')||(input.LA(1) >= '\u000E' && input.LA(1) <= '\uFFFF') ) {
+            	        input.consume();
+            	    }
+            	    else {
+            	        MismatchedSetException mse = new MismatchedSetException(null,input);
+            	        recover(mse);
+            	        throw mse;
+            	    }
 
 
-                    }
-                    break;
+            	    }
+            	    break;
 
-                default :
-                    break loop17;
+            	default :
+            	    break loop17;
                 }
             } while (true);
 
 
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:702:42: ( '\\r' )?
+            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:708:42: ( '\\r' )?
             int alt18=2;
             int LA18_0 = input.LA(1);
 
@@ -10497,7 +10647,7 @@ public class InputfileLexer extends Lexer {
             }
             switch (alt18) {
                 case 1 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:702:42: '\\r'
+                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:708:42: '\\r'
                     {
                     match('\r'); 
 
@@ -10517,7 +10667,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "COMMENT"
@@ -10527,8 +10677,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = WS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:705:5: ( ( ' ' | '\\t' | '\\r' | '\\n' ) )
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:705:9: ( ' ' | '\\t' | '\\r' | '\\n' )
+            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:711:5: ( ( ' ' | '\\t' | '\\r' | '\\n' ) )
+            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:711:9: ( ' ' | '\\t' | '\\r' | '\\n' )
             {
             if ( (input.LA(1) >= '\t' && input.LA(1) <= '\n')||input.LA(1)=='\r'||input.LA(1)==' ' ) {
                 input.consume();
@@ -10548,7 +10698,7 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "WS"
@@ -10558,10 +10708,10 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = STRING;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:720:2: ( ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '.' | '$' | '-' | '_' | ':' | '\\\\' )+ )
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:720:4: ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '.' | '$' | '-' | '_' | ':' | '\\\\' )+
+            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:726:2: ( ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '.' | '$' | '-' | '_' | ':' | '\\\\' )+ )
+            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:726:4: ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '.' | '$' | '-' | '_' | ':' | '\\\\' )+
             {
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:720:4: ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '.' | '$' | '-' | '_' | ':' | '\\\\' )+
+            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:726:4: ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '.' | '$' | '-' | '_' | ':' | '\\\\' )+
             int cnt19=0;
             loop19:
             do {
@@ -10574,24 +10724,24 @@ public class InputfileLexer extends Lexer {
 
 
                 switch (alt19) {
-                case 1 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:
-                    {
-                    if ( input.LA(1)=='$'||(input.LA(1) >= '-' && input.LA(1) <= '.')||(input.LA(1) >= '0' && input.LA(1) <= ':')||(input.LA(1) >= 'A' && input.LA(1) <= 'Z')||input.LA(1)=='\\'||input.LA(1)=='_'||(input.LA(1) >= 'a' && input.LA(1) <= 'z') ) {
-                        input.consume();
-                    }
-                    else {
-                        MismatchedSetException mse = new MismatchedSetException(null,input);
-                        recover(mse);
-                        throw mse;
-                    }
+            	case 1 :
+            	    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:
+            	    {
+            	    if ( input.LA(1)=='$'||(input.LA(1) >= '-' && input.LA(1) <= '.')||(input.LA(1) >= '0' && input.LA(1) <= ':')||(input.LA(1) >= 'A' && input.LA(1) <= 'Z')||input.LA(1)=='\\'||input.LA(1)=='_'||(input.LA(1) >= 'a' && input.LA(1) <= 'z') ) {
+            	        input.consume();
+            	    }
+            	    else {
+            	        MismatchedSetException mse = new MismatchedSetException(null,input);
+            	        recover(mse);
+            	        throw mse;
+            	    }
 
 
-                    }
-                    break;
+            	    }
+            	    break;
 
-                default :
-                    if ( cnt19 >= 1 ) break loop19;
+            	default :
+            	    if ( cnt19 >= 1 ) break loop19;
                         EarlyExitException eee =
                             new EarlyExitException(19, input);
                         throw eee;
@@ -10606,14 +10756,14 @@ public class InputfileLexer extends Lexer {
             state.channel = _channel;
         }
         finally {
-            // do for sure before leaving
+        	// do for sure before leaving
         }
     }
     // $ANTLR end "STRING"
 
     public void mTokens() throws RecognitionException {
-        // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:1:8: ( CRYSTAL | TYPE | DIFFRACTIONDECAYMODEL | DDM | SIMPLE | LINEAR | LEAL | DECAYPARAM | ABSCOEFCALC | DUMMY | DEFAULT | AVERAGE | RDFORTAN | RDJAVA | PDB | SAXS | SEQUENCE | SAXSSEQ | SMALLMOLE | CIF | DIMENSION | ANGLEP | ANGLEL | PIXELSPERMICRON | UNITCELL | PROTEINCONC | PROTEINCONCENTRATION | NUMMONOMERS | NUMRESIDUES | NUMRNA | NUMDNA | NUMCARB | PROTEINHEAVYATOMS | ELEMENT | SMALLMOLEATOMS | SOLVENTHEAVYCONC | SOLVENTFRACTION | PDBNAME | CIFNAME | WIREFRAMETYPE | MODELFILE | CALCULATEPEESCAPE | GONIOMETERAXIS | CONTAINERMATERIALTYPE | MATERIALTYPE | NONE | MIXTURE | ELEMENTAL | CONTAINERTHICKNESS | CONTAINERMATERIALMIXTURE | MATERIALMIXTURE | CONTAINERMATERIALELEMENTS | MATERIALELEMENTS | CONTAINERDENSITY | SEQUENCEFILE | SEQFILE | CALCULATEFLESCAPE | FLRESOLUTION | PERESOLUTION | SURROUNDINGHEAVYCONC | OILBASED | CALCSURROUNDING | OILELEMENTS | OILDENSITY | BEAM | FLUX | FWHM | ENERGY | KEV | FILE | PIXELSIZE | COLLIMATION | RECTANGULAR | CIRCULAR | HORIZONTAL | VERTICAL | WEDGE | EXPOSURETIME | ANGULARRESOLUTION | STARTOFFSET | TRANSLATEPERDEGREE | ROTAXBEAMOFFSET | FLOAT | COMMENT | WS | STRING )
-        int alt20=86;
+        // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:1:8: ( CRYSTAL | TYPE | DIFFRACTIONDECAYMODEL | DDM | SIMPLE | LINEAR | LEAL | DECAYPARAM | ABSCOEFCALC | DUMMY | DEFAULT | AVERAGE | RDFORTAN | RDJAVA | PDB | SAXS | SEQUENCE | SAXSSEQ | SMALLMOLE | CIF | DIMENSION | ANGLEP | ANGLEL | PIXELSPERMICRON | UNITCELL | PROTEINCONC | PROTEINCONCENTRATION | NUMMONOMERS | NUMRESIDUES | NUMRNA | NUMDNA | NUMCARB | PROTEINHEAVYATOMS | ELEMENT | SMALLMOLEATOMS | SOLVENTHEAVYCONC | SOLVENTFRACTION | PDBNAME | CIFNAME | WIREFRAMETYPE | MODELFILE | CALCULATEPEESCAPE | GONIOMETERAXIS | CONTAINERMATERIALTYPE | MATERIALTYPE | NONE | MIXTURE | ELEMENTAL | CONTAINERTHICKNESS | CONTAINERMATERIALMIXTURE | MATERIALMIXTURE | CONTAINERMATERIALELEMENTS | MATERIALELEMENTS | CONTAINERDENSITY | SEQUENCEFILE | SEQFILE | CALCULATEFLESCAPE | FLRESOLUTION | PERESOLUTION | SURROUNDINGHEAVYCONC | OILBASED | CALCSURROUNDING | OILELEMENTS | OILDENSITY | BEAM | FLUX | FWHM | ENERGY | KEV | FILE | PIXELSIZE | COLLIMATION | RECTANGULAR | CIRCULAR | HORIZONTAL | VERTICAL | WEDGE | EXPOSURETIME | ANGULARRESOLUTION | STARTOFFSET | TRANSLATEPERDEGREE | ROTAXBEAMOFFSET | MAXRESOLUTION | FLOAT | COMMENT | WS | STRING )
+        int alt20=87;
         alt20 = dfa20.predict(input);
         switch (alt20) {
             case 1 :
@@ -11273,31 +11423,39 @@ public class InputfileLexer extends Lexer {
                 }
                 break;
             case 83 :
-                // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:1:934: FLOAT
+                // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:1:934: MAXRESOLUTION
+                {
+                mMAXRESOLUTION(); 
+
+
+                }
+                break;
+            case 84 :
+                // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:1:948: FLOAT
                 {
                 mFLOAT(); 
 
 
                 }
                 break;
-            case 84 :
-                // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:1:940: COMMENT
+            case 85 :
+                // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:1:954: COMMENT
                 {
                 mCOMMENT(); 
 
 
                 }
                 break;
-            case 85 :
-                // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:1:948: WS
+            case 86 :
+                // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:1:962: WS
                 {
                 mWS(); 
 
 
                 }
                 break;
-            case 86 :
-                // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:1:951: STRING
+            case 87 :
+                // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:1:965: STRING
                 {
                 mSTRING(); 
 
@@ -11362,95 +11520,96 @@ public class InputfileLexer extends Lexer {
             this.transition = DFA12_transition;
         }
         public String getDescription() {
-            return "693:5: ( ( '0' .. '9' )+ | ( '0' .. '9' )+ '.' ( '0' .. '9' )* | '.' ( '0' .. '9' )+ )";
+            return "699:5: ( ( '0' .. '9' )+ | ( '0' .. '9' )+ '.' ( '0' .. '9' )* | '.' ( '0' .. '9' )+ )";
         }
     }
     static final String DFA20_eotS =
         "\1\uffff\25\42\1\34\1\33\1\34\4\uffff\5\42\1\uffff\55\42\1\34\2"+
-        "\33\4\34\1\u0092\6\34\1\u0099\17\34\1\u00ac\1\u00ae\2\34\1\u00b3"+
-        "\4\34\1\u00b8\20\34\1\u00ce\3\34\2\33\4\34\1\uffff\2\34\1\u00d8"+
-        "\3\34\1\uffff\4\34\1\u00e1\7\34\1\u00e9\4\34\1\u00ac\1\uffff\1\u00ae"+
-        "\1\uffff\4\34\1\uffff\4\34\1\uffff\6\34\1\u00fd\7\34\1\u0105\1\u0106"+
-        "\1\u0107\3\34\1\u010b\1\uffff\11\34\1\uffff\5\34\1\u011a\2\34\1"+
-        "\uffff\7\34\1\uffff\6\34\1\u012a\14\34\1\uffff\1\34\1\u0138\5\34"+
-        "\3\uffff\3\34\1\uffff\16\34\1\uffff\1\u014f\7\34\1\u0157\1\34\1"+
-        "\u0159\1\u015a\3\34\1\uffff\2\34\1\u0160\6\34\1\u0168\1\u0169\2"+
-        "\34\1\uffff\12\34\1\u0176\12\34\1\u0181\1\uffff\1\u0182\1\34\1\u0184"+
-        "\4\34\1\uffff\1\u018a\2\uffff\5\34\1\uffff\7\34\2\uffff\1\u0198"+
-        "\3\34\1\u019c\7\34\1\uffff\1\u01a4\2\34\1\u01a7\6\34\2\uffff\1\u01af"+
-        "\1\uffff\5\34\1\uffff\12\34\1\u01bf\2\34\1\uffff\3\34\1\uffff\2"+
-        "\34\1\u01c9\3\34\1\u01cd\1\uffff\2\34\1\uffff\4\34\1\u01d8\2\34"+
-        "\1\uffff\1\u01dc\10\34\1\u01e5\1\34\1\u01e7\3\34\1\uffff\3\34\1"+
-        "\u01ee\5\34\1\uffff\3\34\1\uffff\11\34\1\u01d8\1\uffff\1\u0200\2"+
-        "\34\1\uffff\10\34\1\uffff\1\34\1\uffff\6\34\1\uffff\6\34\1\u021a"+
-        "\1\u021b\3\34\1\u021f\5\34\1\uffff\5\34\1\u022a\1\34\1\u022c\3\34"+
-        "\1\u0231\2\34\1\u0234\1\u0235\10\34\1\u023c\2\uffff\3\34\1\uffff"+
-        "\5\34\1\u0245\4\34\1\uffff\1\34\1\uffff\1\34\1\u024c\2\34\1\uffff"+
-        "\1\34\1\u0250\2\uffff\1\u0251\1\u0252\3\34\1\u0256\1\uffff\10\34"+
-        "\1\uffff\6\34\1\uffff\3\34\3\uffff\3\34\1\uffff\10\34\1\u0273\12"+
-        "\34\1\u027e\5\34\1\u0284\2\34\1\uffff\1\34\1\u0288\2\34\1\u028b"+
-        "\1\u028c\2\34\1\u028f\1\34\1\uffff\2\34\1\u0293\2\34\1\uffff\2\34"+
-        "\1\u0298\1\uffff\2\34\2\uffff\2\34\1\uffff\1\u029d\2\34\1\uffff"+
-        "\1\u02a2\1\u02a3\2\34\1\uffff\1\34\1\u02a7\1\34\1\u02a9\1\uffff"+
-        "\3\34\1\u02ad\2\uffff\1\u02ae\2\34\1\uffff\1\34\1\uffff\3\34\2\uffff"+
-        "\7\34\1\u02bc\1\u02bd\1\u02be\2\34\1\u02c1\3\uffff\2\34\1\uffff"+
-        "\2\34\1\u02c6\1\34\1\uffff\1\u02c8\1\uffff";
+        "\33\4\34\1\u0093\6\34\1\u009a\17\34\1\u00ad\1\u00af\2\34\1\u00b4"+
+        "\4\34\1\u00b9\21\34\1\u00d0\3\34\2\33\4\34\1\uffff\2\34\1\u00da"+
+        "\3\34\1\uffff\4\34\1\u00e3\7\34\1\u00eb\4\34\1\u00ad\1\uffff\1\u00af"+
+        "\1\uffff\4\34\1\uffff\4\34\1\uffff\6\34\1\u00ff\10\34\1\u0108\1"+
+        "\u0109\1\u010a\3\34\1\u010e\1\uffff\11\34\1\uffff\5\34\1\u011d\2"+
+        "\34\1\uffff\7\34\1\uffff\6\34\1\u012d\14\34\1\uffff\1\34\1\u013b"+
+        "\6\34\3\uffff\3\34\1\uffff\16\34\1\uffff\1\u0153\7\34\1\u015b\1"+
+        "\34\1\u015d\1\u015e\3\34\1\uffff\2\34\1\u0164\6\34\1\u016c\1\u016d"+
+        "\2\34\1\uffff\13\34\1\u017b\12\34\1\u0186\1\uffff\1\u0187\1\34\1"+
+        "\u0189\4\34\1\uffff\1\u018f\2\uffff\5\34\1\uffff\7\34\2\uffff\1"+
+        "\u019d\4\34\1\u01a2\7\34\1\uffff\1\u01aa\2\34\1\u01ad\6\34\2\uffff"+
+        "\1\u01b5\1\uffff\5\34\1\uffff\12\34\1\u01c5\2\34\1\uffff\4\34\1"+
+        "\uffff\2\34\1\u01d0\3\34\1\u01d4\1\uffff\2\34\1\uffff\4\34\1\u01df"+
+        "\2\34\1\uffff\1\u01e3\10\34\1\u01ec\1\34\1\u01ee\3\34\1\uffff\3"+
+        "\34\1\u01f5\6\34\1\uffff\3\34\1\uffff\11\34\1\u01df\1\uffff\1\u0208"+
+        "\2\34\1\uffff\10\34\1\uffff\1\34\1\uffff\6\34\1\uffff\7\34\1\u0223"+
+        "\1\u0224\3\34\1\u0228\5\34\1\uffff\5\34\1\u0233\1\34\1\u0235\3\34"+
+        "\1\u023a\2\34\1\u023d\1\u023e\11\34\1\u0246\2\uffff\3\34\1\uffff"+
+        "\5\34\1\u024f\4\34\1\uffff\1\34\1\uffff\1\34\1\u0256\2\34\1\uffff"+
+        "\1\34\1\u025a\2\uffff\1\u025b\1\u025c\4\34\1\u0261\1\uffff\10\34"+
+        "\1\uffff\6\34\1\uffff\3\34\3\uffff\2\34\1\u0275\1\34\1\uffff\10"+
+        "\34\1\u027f\12\34\1\uffff\1\u028a\5\34\1\u0290\2\34\1\uffff\1\34"+
+        "\1\u0294\2\34\1\u0297\1\u0298\2\34\1\u029b\1\34\1\uffff\2\34\1\u029f"+
+        "\2\34\1\uffff\2\34\1\u02a4\1\uffff\2\34\2\uffff\2\34\1\uffff\1\u02a9"+
+        "\2\34\1\uffff\1\u02ae\1\u02af\2\34\1\uffff\1\34\1\u02b3\1\34\1\u02b5"+
+        "\1\uffff\3\34\1\u02b9\2\uffff\1\u02ba\2\34\1\uffff\1\34\1\uffff"+
+        "\3\34\2\uffff\7\34\1\u02c8\1\u02c9\1\u02ca\2\34\1\u02cd\3\uffff"+
+        "\2\34\1\uffff\2\34\1\u02d2\1\34\1\uffff\1\u02d4\1\uffff";
     static final String DFA20_eofS =
-        "\u02c9\uffff";
+        "\u02d5\uffff";
     static final String DFA20_minS =
         "\1\11\25\44\1\56\1\44\1\60\4\uffff\5\44\1\uffff\55\44\1\53\2\44"+
         "\1\123\1\106\1\124\1\114\1\44\2\103\1\105\1\116\1\106\1\105\1\44"+
         "\2\101\1\115\1\120\1\123\1\106\1\114\1\126\2\122\1\105\1\114\1\103"+
         "\1\122\1\114\2\44\1\124\1\101\1\44\1\115\1\122\1\105\1\124\1\44"+
-        "\1\105\1\124\1\103\2\105\1\107\2\105\1\124\1\111\1\105\1\130\1\115"+
-        "\1\105\1\102\1\115\1\44\1\111\1\124\1\60\2\44\1\124\1\103\1\101"+
-        "\1\111\1\uffff\1\125\1\123\1\44\1\123\1\122\1\116\1\uffff\1\131"+
-        "\1\125\1\131\1\114\1\44\1\105\1\111\1\114\1\105\1\117\1\124\1\101"+
-        "\1\44\1\117\1\101\1\105\1\114\1\44\1\uffff\1\44\1\uffff\1\101\1"+
-        "\130\1\115\1\123\1\uffff\1\105\1\107\1\114\1\105\1\uffff\1\123\1"+
-        "\103\1\117\1\105\1\116\1\101\1\44\1\106\1\105\1\114\1\122\1\125"+
-        "\1\117\1\123\3\44\1\101\1\114\1\105\1\44\1\uffff\1\132\1\111\2\101"+
-        "\1\111\1\115\2\114\1\125\1\uffff\1\114\1\101\1\123\1\120\1\114\1"+
-        "\44\2\105\1\uffff\1\116\1\114\1\115\1\116\1\125\1\117\1\122\1\uffff"+
-        "\1\105\1\107\1\114\1\101\1\116\1\102\1\44\1\125\1\116\1\131\1\123"+
-        "\1\111\1\117\1\105\1\116\1\123\2\101\1\122\1\uffff\1\122\1\44\1"+
-        "\106\1\111\1\122\1\115\1\117\3\uffff\1\123\1\105\1\116\1\uffff\1"+
-        "\117\1\103\2\114\1\116\3\101\1\122\1\101\1\103\1\111\1\101\1\124"+
-        "\1\uffff\1\44\1\121\1\103\1\105\1\117\1\124\1\116\1\106\1\44\1\105"+
-        "\2\44\1\122\1\107\1\105\1\uffff\1\122\1\124\1\44\1\111\1\116\2\114"+
-        "\1\117\1\111\2\44\1\102\1\101\1\uffff\1\111\1\101\2\105\1\114\1"+
-        "\105\1\115\1\123\1\116\1\101\1\44\1\103\1\105\1\124\1\122\1\124"+
-        "\1\122\2\124\1\117\1\122\1\44\1\uffff\1\44\1\105\1\44\1\114\1\106"+
-        "\1\104\1\106\1\uffff\1\44\2\uffff\1\122\1\125\1\101\1\105\1\101"+
-        "\1\uffff\1\105\1\132\1\103\1\125\1\114\1\115\1\104\2\uffff\1\44"+
-        "\1\115\2\114\1\44\1\124\1\125\1\104\1\105\1\111\1\124\1\114\1\uffff"+
-        "\1\44\1\122\1\111\1\44\1\105\1\117\1\105\1\111\1\116\1\101\2\uffff"+
-        "\1\44\1\uffff\2\105\1\122\1\111\1\123\1\uffff\1\105\1\114\1\115"+
-        "\1\124\1\114\1\122\1\105\1\117\1\105\1\124\1\44\1\105\1\125\1\uffff"+
-        "\3\105\1\uffff\1\105\1\124\1\44\1\116\1\124\1\101\1\44\1\uffff\1"+
-        "\104\1\117\1\uffff\1\106\1\125\1\120\1\117\1\44\1\115\1\111\1\uffff"+
-        "\1\44\2\101\1\116\1\105\1\123\1\101\1\117\1\111\1\44\1\115\1\44"+
-        "\1\116\1\101\1\111\1\uffff\1\122\1\105\1\124\1\44\1\131\1\111\1"+
-        "\114\1\122\1\111\1\uffff\1\124\1\131\1\114\1\uffff\1\101\1\110\1"+
-        "\105\1\116\1\105\1\114\1\116\1\105\1\116\1\44\1\uffff\1\44\1\114"+
-        "\1\124\1\uffff\1\126\1\103\1\107\1\124\1\117\1\122\1\106\1\115\1"+
-        "\uffff\1\111\1\uffff\1\103\1\126\1\117\2\123\1\120\1\uffff\1\120"+
-        "\1\130\1\105\1\101\1\117\1\123\2\44\1\124\1\111\1\116\1\44\2\105"+
-        "\1\104\1\122\1\104\1\uffff\1\105\1\117\1\131\1\124\1\110\1\44\1"+
-        "\114\1\44\1\106\1\105\1\103\1\44\1\131\1\116\2\44\2\120\2\105\1"+
-        "\124\1\115\1\130\1\116\1\44\2\uffff\1\105\1\103\1\123\1\uffff\2"+
-        "\123\1\111\1\104\1\105\1\44\1\115\1\103\1\111\1\105\1\uffff\1\125"+
-        "\1\uffff\1\123\1\44\1\122\1\116\1\uffff\1\101\1\44\2\uffff\2\44"+
-        "\1\125\1\105\1\111\1\44\1\uffff\1\122\1\113\1\111\2\103\1\116\1"+
-        "\105\1\103\1\uffff\1\123\2\117\1\101\1\124\1\105\1\uffff\1\117\2"+
-        "\124\3\uffff\1\122\1\116\1\123\1\uffff\1\111\1\116\1\124\2\101\2"+
-        "\107\1\101\1\44\2\116\1\126\1\111\1\124\1\116\1\122\1\117\1\105"+
-        "\1\124\1\44\1\101\1\105\1\131\2\120\1\44\1\122\1\131\1\uffff\1\103"+
-        "\1\44\1\131\1\117\2\44\1\101\1\115\1\44\1\123\1\uffff\1\114\1\123"+
-        "\1\44\2\105\1\uffff\1\105\1\115\1\44\1\uffff\1\103\1\116\2\uffff"+
-        "\1\124\1\123\1\uffff\1\44\1\105\1\123\1\uffff\2\44\1\105\1\117\1"+
-        "\uffff\1\117\1\44\1\111\1\44\1\uffff\1\131\1\111\1\114\1\44\2\uffff"+
-        "\1\44\1\104\1\116\1\uffff\1\117\1\uffff\1\120\1\130\1\105\2\uffff"+
+        "\1\105\1\124\1\103\2\105\1\107\2\105\1\122\1\124\1\111\1\105\1\130"+
+        "\1\115\1\105\1\102\1\115\1\44\1\111\1\124\1\60\2\44\1\124\1\103"+
+        "\1\101\1\111\1\uffff\1\125\1\123\1\44\1\123\1\122\1\116\1\uffff"+
+        "\1\131\1\125\1\131\1\114\1\44\1\105\1\111\1\114\1\105\1\117\1\124"+
+        "\1\101\1\44\1\117\1\101\1\105\1\114\1\44\1\uffff\1\44\1\uffff\1"+
+        "\101\1\130\1\115\1\123\1\uffff\1\105\1\107\1\114\1\105\1\uffff\1"+
+        "\123\1\103\1\117\1\105\1\116\1\101\1\44\1\106\1\105\1\114\1\122"+
+        "\1\105\1\125\1\117\1\123\3\44\1\101\1\114\1\105\1\44\1\uffff\1\132"+
+        "\1\111\2\101\1\111\1\115\2\114\1\125\1\uffff\1\114\1\101\1\123\1"+
+        "\120\1\114\1\44\2\105\1\uffff\1\116\1\114\1\115\1\116\1\125\1\117"+
+        "\1\122\1\uffff\1\105\1\107\1\114\1\101\1\116\1\102\1\44\1\125\1"+
+        "\116\1\131\1\123\1\111\1\117\1\105\1\116\1\123\2\101\1\122\1\uffff"+
+        "\1\122\1\44\1\106\1\111\1\123\1\122\1\115\1\117\3\uffff\1\123\1"+
+        "\105\1\116\1\uffff\1\117\1\103\2\114\1\116\3\101\1\122\1\101\1\103"+
+        "\1\111\1\101\1\124\1\uffff\1\44\1\121\1\103\1\105\1\117\1\124\1"+
+        "\116\1\106\1\44\1\105\2\44\1\122\1\107\1\105\1\uffff\1\122\1\124"+
+        "\1\44\1\111\1\116\2\114\1\117\1\111\2\44\1\102\1\101\1\uffff\1\111"+
+        "\1\101\1\117\2\105\1\114\1\105\1\115\1\123\1\116\1\101\1\44\1\103"+
+        "\1\105\1\124\1\122\1\124\1\122\2\124\1\117\1\122\1\44\1\uffff\1"+
+        "\44\1\105\1\44\1\114\1\106\1\104\1\106\1\uffff\1\44\2\uffff\1\122"+
+        "\1\125\1\101\1\105\1\101\1\uffff\1\105\1\132\1\103\1\125\1\114\1"+
+        "\115\1\104\2\uffff\1\44\1\115\3\114\1\44\1\124\1\125\1\104\1\105"+
+        "\1\111\1\124\1\114\1\uffff\1\44\1\122\1\111\1\44\1\105\1\117\1\105"+
+        "\1\111\1\116\1\101\2\uffff\1\44\1\uffff\2\105\1\122\1\111\1\123"+
+        "\1\uffff\1\105\1\114\1\115\1\124\1\114\1\122\1\105\1\117\1\105\1"+
+        "\124\1\44\1\105\1\125\1\uffff\3\105\1\125\1\uffff\1\105\1\124\1"+
+        "\44\1\116\1\124\1\101\1\44\1\uffff\1\104\1\117\1\uffff\1\106\1\125"+
+        "\1\120\1\117\1\44\1\115\1\111\1\uffff\1\44\2\101\1\116\1\105\1\123"+
+        "\1\101\1\117\1\111\1\44\1\115\1\44\1\116\1\101\1\111\1\uffff\1\122"+
+        "\1\105\1\124\1\44\1\131\1\111\1\114\1\124\1\122\1\111\1\uffff\1"+
+        "\124\1\131\1\114\1\uffff\1\101\1\110\1\105\1\116\1\105\1\114\1\116"+
+        "\1\105\1\116\1\44\1\uffff\1\44\1\114\1\124\1\uffff\1\126\1\103\1"+
+        "\107\1\124\1\117\1\122\1\106\1\115\1\uffff\1\111\1\uffff\1\103\1"+
+        "\126\1\117\2\123\1\120\1\uffff\1\120\1\130\1\105\1\111\1\101\1\117"+
+        "\1\123\2\44\1\124\1\111\1\116\1\44\2\105\1\104\1\122\1\104\1\uffff"+
+        "\1\105\1\117\1\131\1\124\1\110\1\44\1\114\1\44\1\106\1\105\1\103"+
+        "\1\44\1\131\1\116\2\44\2\120\2\105\1\124\1\115\1\117\1\130\1\116"+
+        "\1\44\2\uffff\1\105\1\103\1\123\1\uffff\2\123\1\111\1\104\1\105"+
+        "\1\44\1\115\1\103\1\111\1\105\1\uffff\1\125\1\uffff\1\123\1\44\1"+
+        "\122\1\116\1\uffff\1\101\1\44\2\uffff\2\44\1\125\1\105\1\116\1\111"+
+        "\1\44\1\uffff\1\122\1\113\1\111\2\103\1\116\1\105\1\103\1\uffff"+
+        "\1\123\2\117\1\101\1\124\1\105\1\uffff\1\117\2\124\3\uffff\1\122"+
+        "\1\116\1\44\1\123\1\uffff\1\111\1\116\1\124\2\101\2\107\1\101\1"+
+        "\44\2\116\1\126\1\111\1\124\1\116\1\122\1\117\1\105\1\124\1\uffff"+
+        "\1\44\1\101\1\105\1\131\2\120\1\44\1\122\1\131\1\uffff\1\103\1\44"+
+        "\1\131\1\117\2\44\1\101\1\115\1\44\1\123\1\uffff\1\114\1\123\1\44"+
+        "\2\105\1\uffff\1\105\1\115\1\44\1\uffff\1\103\1\116\2\uffff\1\124"+
+        "\1\123\1\uffff\1\44\1\105\1\123\1\uffff\2\44\1\105\1\117\1\uffff"+
+        "\1\117\1\44\1\111\1\44\1\uffff\1\131\1\111\1\114\1\44\2\uffff\1"+
+        "\44\1\104\1\116\1\uffff\1\117\1\uffff\1\120\1\130\1\105\2\uffff"+
         "\1\105\1\103\1\116\1\105\1\124\1\115\1\114\3\44\1\125\1\105\1\44"+
         "\3\uffff\1\122\1\116\1\uffff\1\105\1\124\1\44\1\123\1\uffff\1\44"+
         "\1\uffff";
@@ -11459,52 +11618,53 @@ public class InputfileLexer extends Lexer {
         "\1\163\1\146\1\164\1\154\1\172\2\143\1\145\1\156\1\146\1\145\1\172"+
         "\2\141\1\155\1\160\1\163\1\165\1\154\1\166\2\162\1\145\1\154\1\143"+
         "\1\162\1\165\2\172\1\164\1\141\1\172\1\155\1\162\1\145\1\164\1\172"+
-        "\1\145\1\164\1\162\2\145\1\147\2\145\1\164\1\151\1\145\1\170\1\155"+
-        "\2\145\1\155\1\172\1\151\1\164\1\71\2\172\1\164\1\143\1\141\1\151"+
-        "\1\uffff\2\165\1\172\1\163\1\162\1\156\1\uffff\1\171\1\165\1\171"+
-        "\1\154\1\172\1\145\1\151\1\154\1\145\1\157\1\164\1\141\1\172\1\157"+
-        "\1\141\1\145\1\154\1\172\1\uffff\1\172\1\uffff\1\141\1\170\1\155"+
-        "\1\163\1\uffff\1\145\1\147\1\154\1\145\1\uffff\1\163\1\143\1\157"+
-        "\2\156\1\141\1\172\1\146\1\145\1\154\1\162\1\165\1\157\1\163\3\172"+
-        "\1\141\1\154\1\145\1\172\1\uffff\1\172\1\151\2\141\1\151\1\155\2"+
-        "\154\1\165\1\uffff\1\154\1\141\1\163\1\160\1\154\1\172\2\145\1\uffff"+
-        "\1\156\1\154\1\155\1\156\1\165\1\157\1\162\1\uffff\1\145\1\147\1"+
-        "\160\1\141\1\156\1\142\1\172\1\165\1\156\1\171\1\163\1\151\1\157"+
-        "\1\145\1\156\1\163\2\141\1\162\1\uffff\1\162\1\172\1\146\1\151\1"+
-        "\162\1\155\1\157\3\uffff\1\163\1\145\1\156\1\uffff\1\157\1\143\2"+
-        "\154\1\156\3\141\1\162\1\141\1\143\1\151\1\141\1\164\1\uffff\1\172"+
-        "\1\161\1\143\1\145\1\157\1\164\1\156\1\146\1\172\1\145\2\172\1\162"+
-        "\1\147\1\145\1\uffff\1\162\1\164\1\172\1\160\1\156\2\154\1\157\1"+
-        "\151\2\172\1\142\1\141\1\uffff\1\151\1\141\2\145\1\154\1\145\1\155"+
-        "\1\163\1\156\1\141\1\172\1\143\1\145\1\164\1\162\1\164\1\162\2\164"+
-        "\1\157\1\162\1\172\1\uffff\1\172\1\145\1\172\1\154\1\150\1\144\1"+
-        "\146\1\uffff\1\172\2\uffff\1\162\1\165\1\141\1\145\1\141\1\uffff"+
-        "\1\145\1\172\1\150\1\165\1\154\1\155\1\144\2\uffff\1\172\1\155\2"+
-        "\154\1\172\1\164\1\165\1\144\1\145\1\151\1\164\1\154\1\uffff\1\172"+
-        "\1\162\1\151\1\172\1\145\1\157\1\145\1\151\1\156\1\141\2\uffff\1"+
-        "\172\1\uffff\2\145\1\162\1\151\1\163\1\uffff\1\145\1\154\1\155\1"+
-        "\164\1\154\1\162\1\145\1\157\1\145\1\164\1\172\1\145\1\165\1\uffff"+
-        "\2\145\1\164\1\uffff\1\145\1\164\1\172\1\156\1\164\1\141\1\172\1"+
-        "\uffff\1\164\1\157\1\uffff\1\160\1\165\1\160\1\157\1\172\1\155\1"+
-        "\151\1\uffff\1\172\2\141\1\156\1\145\1\163\1\141\1\157\1\151\1\172"+
-        "\1\155\1\172\1\156\1\141\1\151\1\uffff\1\162\1\145\1\164\1\172\1"+
-        "\171\1\151\1\154\1\162\1\151\1\uffff\1\164\1\171\1\154\1\uffff\1"+
-        "\141\1\150\1\145\1\156\1\145\1\154\1\156\1\145\1\156\1\172\1\uffff"+
-        "\1\172\1\154\1\164\1\uffff\1\166\1\143\1\147\1\164\1\157\1\162\1"+
-        "\146\1\155\1\uffff\1\151\1\uffff\1\143\1\166\1\157\2\163\1\171\1"+
-        "\uffff\1\160\1\170\1\145\1\141\1\157\1\163\2\172\1\164\1\151\1\156"+
-        "\1\172\2\145\1\144\1\162\1\144\1\uffff\1\145\1\157\1\171\1\164\1"+
-        "\150\1\172\1\154\1\172\1\146\1\145\1\143\1\172\1\171\1\156\2\172"+
-        "\2\160\2\145\1\164\1\155\1\170\1\156\1\172\2\uffff\1\145\1\143\1"+
-        "\163\1\uffff\2\163\1\151\1\144\1\145\1\172\1\155\1\143\1\151\1\145"+
-        "\1\uffff\1\165\1\uffff\1\163\1\172\1\162\1\156\1\uffff\1\141\1\172"+
-        "\2\uffff\2\172\1\165\1\145\1\151\1\172\1\uffff\1\162\1\153\1\151"+
-        "\2\143\1\156\1\145\1\143\1\uffff\1\163\2\157\1\141\1\164\1\145\1"+
-        "\uffff\1\157\2\164\3\uffff\1\162\1\156\1\163\1\uffff\1\151\1\156"+
-        "\1\164\2\141\2\147\1\141\1\172\2\156\1\166\1\151\1\164\1\156\1\162"+
-        "\1\157\1\145\1\164\1\172\1\141\1\145\1\171\2\160\1\172\1\162\1\171"+
-        "\1\uffff\1\143\1\172\1\171\1\157\2\172\1\141\1\155\1\172\1\163\1"+
-        "\uffff\1\154\1\163\1\172\2\145\1\uffff\1\145\1\155\1\172\1\uffff"+
+        "\1\145\1\164\1\162\2\145\1\147\2\145\1\162\1\164\1\151\1\145\1\170"+
+        "\1\155\2\145\1\155\1\172\1\151\1\164\1\71\2\172\1\164\1\143\1\141"+
+        "\1\151\1\uffff\2\165\1\172\1\163\1\162\1\156\1\uffff\1\171\1\165"+
+        "\1\171\1\154\1\172\1\145\1\151\1\154\1\145\1\157\1\164\1\141\1\172"+
+        "\1\157\1\141\1\145\1\154\1\172\1\uffff\1\172\1\uffff\1\141\1\170"+
+        "\1\155\1\163\1\uffff\1\145\1\147\1\154\1\145\1\uffff\1\163\1\143"+
+        "\1\157\2\156\1\141\1\172\1\146\1\145\1\154\1\162\1\145\1\165\1\157"+
+        "\1\163\3\172\1\141\1\154\1\145\1\172\1\uffff\1\172\1\151\2\141\1"+
+        "\151\1\155\2\154\1\165\1\uffff\1\154\1\141\1\163\1\160\1\154\1\172"+
+        "\2\145\1\uffff\1\156\1\154\1\155\1\156\1\165\1\157\1\162\1\uffff"+
+        "\1\145\1\147\1\160\1\141\1\156\1\142\1\172\1\165\1\156\1\171\1\163"+
+        "\1\151\1\157\1\145\1\156\1\163\2\141\1\162\1\uffff\1\162\1\172\1"+
+        "\146\1\151\1\163\1\162\1\155\1\157\3\uffff\1\163\1\145\1\156\1\uffff"+
+        "\1\157\1\143\2\154\1\156\3\141\1\162\1\141\1\143\1\151\1\141\1\164"+
+        "\1\uffff\1\172\1\161\1\143\1\145\1\157\1\164\1\156\1\146\1\172\1"+
+        "\145\2\172\1\162\1\147\1\145\1\uffff\1\162\1\164\1\172\1\160\1\156"+
+        "\2\154\1\157\1\151\2\172\1\142\1\141\1\uffff\1\151\1\141\1\157\2"+
+        "\145\1\154\1\145\1\155\1\163\1\156\1\141\1\172\1\143\1\145\1\164"+
+        "\1\162\1\164\1\162\2\164\1\157\1\162\1\172\1\uffff\1\172\1\145\1"+
+        "\172\1\154\1\150\1\144\1\146\1\uffff\1\172\2\uffff\1\162\1\165\1"+
+        "\141\1\145\1\141\1\uffff\1\145\1\172\1\150\1\165\1\154\1\155\1\144"+
+        "\2\uffff\1\172\1\155\3\154\1\172\1\164\1\165\1\144\1\145\1\151\1"+
+        "\164\1\154\1\uffff\1\172\1\162\1\151\1\172\1\145\1\157\1\145\1\151"+
+        "\1\156\1\141\2\uffff\1\172\1\uffff\2\145\1\162\1\151\1\163\1\uffff"+
+        "\1\145\1\154\1\155\1\164\1\154\1\162\1\145\1\157\1\145\1\164\1\172"+
+        "\1\145\1\165\1\uffff\2\145\1\164\1\165\1\uffff\1\145\1\164\1\172"+
+        "\1\156\1\164\1\141\1\172\1\uffff\1\164\1\157\1\uffff\1\160\1\165"+
+        "\1\160\1\157\1\172\1\155\1\151\1\uffff\1\172\2\141\1\156\1\145\1"+
+        "\163\1\141\1\157\1\151\1\172\1\155\1\172\1\156\1\141\1\151\1\uffff"+
+        "\1\162\1\145\1\164\1\172\1\171\1\151\1\154\1\164\1\162\1\151\1\uffff"+
+        "\1\164\1\171\1\154\1\uffff\1\141\1\150\1\145\1\156\1\145\1\154\1"+
+        "\156\1\145\1\156\1\172\1\uffff\1\172\1\154\1\164\1\uffff\1\166\1"+
+        "\143\1\147\1\164\1\157\1\162\1\146\1\155\1\uffff\1\151\1\uffff\1"+
+        "\143\1\166\1\157\2\163\1\171\1\uffff\1\160\1\170\1\145\1\151\1\141"+
+        "\1\157\1\163\2\172\1\164\1\151\1\156\1\172\2\145\1\144\1\162\1\144"+
+        "\1\uffff\1\145\1\157\1\171\1\164\1\150\1\172\1\154\1\172\1\146\1"+
+        "\145\1\143\1\172\1\171\1\156\2\172\2\160\2\145\1\164\1\155\1\157"+
+        "\1\170\1\156\1\172\2\uffff\1\145\1\143\1\163\1\uffff\2\163\1\151"+
+        "\1\144\1\145\1\172\1\155\1\143\1\151\1\145\1\uffff\1\165\1\uffff"+
+        "\1\163\1\172\1\162\1\156\1\uffff\1\141\1\172\2\uffff\2\172\1\165"+
+        "\1\145\1\156\1\151\1\172\1\uffff\1\162\1\153\1\151\2\143\1\156\1"+
+        "\145\1\143\1\uffff\1\163\2\157\1\141\1\164\1\145\1\uffff\1\157\2"+
+        "\164\3\uffff\1\162\1\156\1\172\1\163\1\uffff\1\151\1\156\1\164\2"+
+        "\141\2\147\1\141\1\172\2\156\1\166\1\151\1\164\1\156\1\162\1\157"+
+        "\1\145\1\164\1\uffff\1\172\1\141\1\145\1\171\2\160\1\172\1\162\1"+
+        "\171\1\uffff\1\143\1\172\1\171\1\157\2\172\1\141\1\155\1\172\1\163"+
+        "\1\uffff\1\154\1\163\1\172\2\145\1\uffff\1\145\1\155\1\172\1\uffff"+
         "\1\143\1\156\2\uffff\1\164\1\163\1\uffff\1\172\1\164\1\163\1\uffff"+
         "\2\172\1\145\1\157\1\uffff\1\157\1\172\1\151\1\172\1\uffff\1\171"+
         "\1\151\1\154\1\172\2\uffff\1\172\1\144\1\156\1\uffff\1\157\1\uffff"+
@@ -11512,24 +11672,25 @@ public class InputfileLexer extends Lexer {
         "\154\3\172\1\165\1\145\1\172\3\uffff\1\162\1\156\1\uffff\1\145\1"+
         "\164\1\172\1\163\1\uffff\1\172\1\uffff";
     static final String DFA20_acceptS =
-        "\31\uffff\1\124\1\125\1\123\1\126\5\uffff\1\42\157\uffff\1\47\6"+
+        "\31\uffff\1\125\1\126\1\124\1\127\5\uffff\1\42\160\uffff\1\47\6"+
         "\uffff\1\4\22\uffff\1\15\1\uffff\1\16\4\uffff\1\17\4\uffff\1\46"+
-        "\25\uffff\1\105\11\uffff\1\2\10\uffff\1\20\7\uffff\1\7\23\uffff"+
-        "\1\56\7\uffff\1\102\1\103\1\106\3\uffff\1\101\16\uffff\1\12\17\uffff"+
-        "\1\24\15\uffff\1\115\26\uffff\1\5\7\uffff\1\6\1\uffff\1\26\1\27"+
-        "\5\uffff\1\104\7\uffff\1\36\1\37\14\uffff\1\1\12\uffff\1\13\1\22"+
-        "\1\uffff\1\70\5\uffff\1\14\15\uffff\1\40\3\uffff\1\57\7\uffff\1"+
-        "\11\2\uffff\1\112\7\uffff\1\21\17\uffff\1\31\11\uffff\1\75\3\uffff"+
+        "\26\uffff\1\105\11\uffff\1\2\10\uffff\1\20\7\uffff\1\7\23\uffff"+
+        "\1\56\10\uffff\1\102\1\103\1\106\3\uffff\1\101\16\uffff\1\12\17"+
+        "\uffff\1\24\15\uffff\1\115\27\uffff\1\5\7\uffff\1\6\1\uffff\1\26"+
+        "\1\27\5\uffff\1\104\7\uffff\1\36\1\37\15\uffff\1\1\12\uffff\1\13"+
+        "\1\22\1\uffff\1\70\5\uffff\1\14\15\uffff\1\40\4\uffff\1\57\7\uffff"+
+        "\1\11\2\uffff\1\112\7\uffff\1\21\17\uffff\1\31\12\uffff\1\75\3\uffff"+
         "\1\114\12\uffff\1\25\3\uffff\1\23\10\uffff\1\60\1\uffff\1\107\6"+
-        "\uffff\1\51\21\uffff\1\10\31\uffff\1\100\1\113\3\uffff\1\110\12"+
-        "\uffff\1\120\1\uffff\1\111\4\uffff\1\32\2\uffff\1\34\1\35\6\uffff"+
-        "\1\77\10\uffff\1\67\6\uffff\1\116\3\uffff\1\73\1\50\1\55\3\uffff"+
-        "\1\72\34\uffff\1\43\12\uffff\1\53\5\uffff\1\76\3\uffff\1\45\2\uffff"+
-        "\1\122\1\30\2\uffff\1\63\3\uffff\1\66\4\uffff\1\44\4\uffff\1\65"+
-        "\4\uffff\1\52\1\71\3\uffff\1\117\1\uffff\1\41\3\uffff\1\61\1\121"+
-        "\15\uffff\1\74\1\33\1\54\2\uffff\1\3\4\uffff\1\62\1\uffff\1\64";
+        "\uffff\1\51\22\uffff\1\10\32\uffff\1\100\1\113\3\uffff\1\110\12"+
+        "\uffff\1\120\1\uffff\1\111\4\uffff\1\32\2\uffff\1\34\1\35\7\uffff"+
+        "\1\77\10\uffff\1\67\6\uffff\1\116\3\uffff\1\73\1\50\1\55\4\uffff"+
+        "\1\72\23\uffff\1\123\11\uffff\1\43\12\uffff\1\53\5\uffff\1\76\3"+
+        "\uffff\1\45\2\uffff\1\122\1\30\2\uffff\1\63\3\uffff\1\66\4\uffff"+
+        "\1\44\4\uffff\1\65\4\uffff\1\52\1\71\3\uffff\1\117\1\uffff\1\41"+
+        "\3\uffff\1\61\1\121\15\uffff\1\74\1\33\1\54\2\uffff\1\3\4\uffff"+
+        "\1\62\1\uffff\1\64";
     static final String DFA20_specialS =
-        "\u02c9\uffff}>";
+        "\u02d5\uffff}>";
     static final String[] DFA20_transitionS = {
             "\2\32\2\uffff\1\32\22\uffff\1\32\1\31\1\uffff\1\31\1\34\6\uffff"+
             "\1\33\1\uffff\1\26\1\30\1\31\12\27\1\34\6\uffff\1\6\1\21\1\1"+
@@ -11684,55 +11845,55 @@ public class InputfileLexer extends Lexer {
             "\1\uffff\1\34\2\uffff\1\34\1\uffff\3\34\1\175\26\34",
             "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\3\34\1\176\26\34"+
             "\1\uffff\1\34\2\uffff\1\34\1\uffff\3\34\1\176\26\34",
-            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\23\34\1\177\6\34"+
-            "\1\uffff\1\34\2\uffff\1\34\1\uffff\23\34\1\177\6\34",
-            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\27\34\1\u0080\2\34"+
-            "\1\uffff\1\34\2\uffff\1\34\1\uffff\27\34\1\u0080\2\34",
-            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\15\34\1\u0081\14"+
-            "\34\1\uffff\1\34\2\uffff\1\34\1\uffff\15\34\1\u0081\14\34",
-            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\21\34\1\u0082\2\34"+
-            "\1\u0083\5\34\1\uffff\1\34\2\uffff\1\34\1\uffff\21\34\1\u0082"+
-            "\2\34\1\u0083\5\34",
-            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\7\34\1\u0084\22\34"+
-            "\1\uffff\1\34\2\uffff\1\34\1\uffff\7\34\1\u0084\22\34",
-            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\13\34\1\u0085\16"+
-            "\34\1\uffff\1\34\2\uffff\1\34\1\uffff\13\34\1\u0085\16\34",
+            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\23\34\1\177\3\34"+
+            "\1\u0080\2\34\1\uffff\1\34\2\uffff\1\34\1\uffff\23\34\1\177"+
+            "\3\34\1\u0080\2\34",
+            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\27\34\1\u0081\2\34"+
+            "\1\uffff\1\34\2\uffff\1\34\1\uffff\27\34\1\u0081\2\34",
+            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\15\34\1\u0082\14"+
+            "\34\1\uffff\1\34\2\uffff\1\34\1\uffff\15\34\1\u0082\14\34",
+            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\21\34\1\u0083\2\34"+
+            "\1\u0084\5\34\1\uffff\1\34\2\uffff\1\34\1\uffff\21\34\1\u0083"+
+            "\2\34\1\u0084\5\34",
+            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\7\34\1\u0085\22\34"+
+            "\1\uffff\1\34\2\uffff\1\34\1\uffff\7\34\1\u0085\22\34",
             "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\13\34\1\u0086\16"+
             "\34\1\uffff\1\34\2\uffff\1\34\1\uffff\13\34\1\u0086\16\34",
-            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\1\u0087\31\34\1\uffff"+
-            "\1\34\2\uffff\1\34\1\uffff\1\u0087\31\34",
-            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\25\34\1\u0088\4\34"+
-            "\1\uffff\1\34\2\uffff\1\34\1\uffff\25\34\1\u0088\4\34",
-            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\21\34\1\u0089\10"+
-            "\34\1\uffff\1\34\2\uffff\1\34\1\uffff\21\34\1\u0089\10\34",
+            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\13\34\1\u0087\16"+
+            "\34\1\uffff\1\34\2\uffff\1\34\1\uffff\13\34\1\u0087\16\34",
+            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\1\u0088\31\34\1\uffff"+
+            "\1\34\2\uffff\1\34\1\uffff\1\u0088\31\34",
+            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\25\34\1\u0089\4\34"+
+            "\1\uffff\1\34\2\uffff\1\34\1\uffff\25\34\1\u0089\4\34",
             "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\21\34\1\u008a\10"+
             "\34\1\uffff\1\34\2\uffff\1\34\1\uffff\21\34\1\u008a\10\34",
-            "\1\33\1\uffff\1\u008b\2\uffff\12\u008c",
-            "\1\34\10\uffff\2\34\1\uffff\12\u008d\1\34\6\uffff\4\34\1\120"+
+            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\21\34\1\u008b\10"+
+            "\34\1\uffff\1\34\2\uffff\1\34\1\uffff\21\34\1\u008b\10\34",
+            "\1\33\1\uffff\1\u008c\2\uffff\12\u008d",
+            "\1\34\10\uffff\2\34\1\uffff\12\u008e\1\34\6\uffff\4\34\1\120"+
             "\25\34\1\uffff\1\34\2\uffff\1\34\1\uffff\4\34\1\120\25\34",
             "\1\34\10\uffff\2\34\1\uffff\12\122\1\34\6\uffff\4\34\1\120"+
             "\25\34\1\uffff\1\34\2\uffff\1\34\1\uffff\4\34\1\120\25\34",
-            "\1\u008e\37\uffff\1\u008e",
             "\1\u008f\37\uffff\1\u008f",
             "\1\u0090\37\uffff\1\u0090",
             "\1\u0091\37\uffff\1\u0091",
+            "\1\u0092\37\uffff\1\u0092",
             "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
             "\2\uffff\1\34\1\uffff\32\34",
-            "\1\u0093\37\uffff\1\u0093",
             "\1\u0094\37\uffff\1\u0094",
             "\1\u0095\37\uffff\1\u0095",
             "\1\u0096\37\uffff\1\u0096",
             "\1\u0097\37\uffff\1\u0097",
             "\1\u0098\37\uffff\1\u0098",
+            "\1\u0099\37\uffff\1\u0099",
             "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
             "\2\uffff\1\34\1\uffff\32\34",
-            "\1\u009a\37\uffff\1\u009a",
             "\1\u009b\37\uffff\1\u009b",
             "\1\u009c\37\uffff\1\u009c",
             "\1\u009d\37\uffff\1\u009d",
             "\1\u009e\37\uffff\1\u009e",
-            "\1\u00a0\16\uffff\1\u009f\20\uffff\1\u00a0\16\uffff\1\u009f",
-            "\1\u00a1\37\uffff\1\u00a1",
+            "\1\u009f\37\uffff\1\u009f",
+            "\1\u00a1\16\uffff\1\u00a0\20\uffff\1\u00a1\16\uffff\1\u00a0",
             "\1\u00a2\37\uffff\1\u00a2",
             "\1\u00a3\37\uffff\1\u00a3",
             "\1\u00a4\37\uffff\1\u00a4",
@@ -11740,27 +11901,27 @@ public class InputfileLexer extends Lexer {
             "\1\u00a6\37\uffff\1\u00a6",
             "\1\u00a7\37\uffff\1\u00a7",
             "\1\u00a8\37\uffff\1\u00a8",
-            "\1\u00a9\10\uffff\1\u00aa\26\uffff\1\u00a9\10\uffff\1\u00aa",
-            "\1\34\10\uffff\2\34\1\uffff\2\34\2\u00ab\7\34\6\uffff\32\34"+
+            "\1\u00a9\37\uffff\1\u00a9",
+            "\1\u00aa\10\uffff\1\u00ab\26\uffff\1\u00aa\10\uffff\1\u00ab",
+            "\1\34\10\uffff\2\34\1\uffff\2\34\2\u00ac\7\34\6\uffff\32\34"+
             "\1\uffff\1\34\2\uffff\1\34\1\uffff\32\34",
-            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\3\34\1\u00ad\26\34"+
-            "\1\uffff\1\34\2\uffff\1\34\1\uffff\3\34\1\u00ad\26\34",
-            "\1\u00af\37\uffff\1\u00af",
+            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\3\34\1\u00ae\26\34"+
+            "\1\uffff\1\34\2\uffff\1\34\1\uffff\3\34\1\u00ae\26\34",
             "\1\u00b0\37\uffff\1\u00b0",
-            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\16\34\1\u00b2\3\34"+
-            "\1\u00b1\7\34\1\uffff\1\34\2\uffff\1\34\1\uffff\16\34\1\u00b2"+
-            "\3\34\1\u00b1\7\34",
-            "\1\u00b4\37\uffff\1\u00b4",
+            "\1\u00b1\37\uffff\1\u00b1",
+            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\16\34\1\u00b3\3\34"+
+            "\1\u00b2\7\34\1\uffff\1\34\2\uffff\1\34\1\uffff\16\34\1\u00b3"+
+            "\3\34\1\u00b2\7\34",
             "\1\u00b5\37\uffff\1\u00b5",
             "\1\u00b6\37\uffff\1\u00b6",
             "\1\u00b7\37\uffff\1\u00b7",
+            "\1\u00b8\37\uffff\1\u00b8",
             "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
             "\2\uffff\1\34\1\uffff\32\34",
-            "\1\u00b9\37\uffff\1\u00b9",
             "\1\u00ba\37\uffff\1\u00ba",
-            "\1\u00be\1\u00bd\10\uffff\1\u00bb\4\uffff\1\u00bc\20\uffff"+
-            "\1\u00be\1\u00bd\10\uffff\1\u00bb\4\uffff\1\u00bc",
-            "\1\u00bf\37\uffff\1\u00bf",
+            "\1\u00bb\37\uffff\1\u00bb",
+            "\1\u00bf\1\u00be\10\uffff\1\u00bc\4\uffff\1\u00bd\20\uffff"+
+            "\1\u00bf\1\u00be\10\uffff\1\u00bc\4\uffff\1\u00bd",
             "\1\u00c0\37\uffff\1\u00c0",
             "\1\u00c1\37\uffff\1\u00c1",
             "\1\u00c2\37\uffff\1\u00c2",
@@ -11771,132 +11932,132 @@ public class InputfileLexer extends Lexer {
             "\1\u00c7\37\uffff\1\u00c7",
             "\1\u00c8\37\uffff\1\u00c8",
             "\1\u00c9\37\uffff\1\u00c9",
-            "\1\u00ca\1\uffff\1\u00cc\1\u00cb\34\uffff\1\u00ca\1\uffff\1"+
-            "\u00cc\1\u00cb",
-            "\1\u00cd\37\uffff\1\u00cd",
+            "\1\u00ca\37\uffff\1\u00ca",
+            "\1\u00cb\37\uffff\1\u00cb",
+            "\1\u00cc\1\uffff\1\u00ce\1\u00cd\34\uffff\1\u00cc\1\uffff\1"+
+            "\u00ce\1\u00cd",
+            "\1\u00cf\37\uffff\1\u00cf",
             "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
             "\2\uffff\1\34\1\uffff\32\34",
-            "\1\u00cf\37\uffff\1\u00cf",
-            "\1\u00d0\37\uffff\1\u00d0",
-            "\12\u008c",
-            "\1\34\10\uffff\2\34\1\uffff\12\u008c\1\34\6\uffff\32\34\1\uffff"+
-            "\1\34\2\uffff\1\34\1\uffff\32\34",
-            "\1\34\10\uffff\2\34\1\uffff\12\u008d\1\34\6\uffff\4\34\1\120"+
-            "\25\34\1\uffff\1\34\2\uffff\1\34\1\uffff\4\34\1\120\25\34",
             "\1\u00d1\37\uffff\1\u00d1",
             "\1\u00d2\37\uffff\1\u00d2",
+            "\12\u008d",
+            "\1\34\10\uffff\2\34\1\uffff\12\u008d\1\34\6\uffff\32\34\1\uffff"+
+            "\1\34\2\uffff\1\34\1\uffff\32\34",
+            "\1\34\10\uffff\2\34\1\uffff\12\u008e\1\34\6\uffff\4\34\1\120"+
+            "\25\34\1\uffff\1\34\2\uffff\1\34\1\uffff\4\34\1\120\25\34",
             "\1\u00d3\37\uffff\1\u00d3",
             "\1\u00d4\37\uffff\1\u00d4",
-            "",
             "\1\u00d5\37\uffff\1\u00d5",
-            "\1\u00d7\1\uffff\1\u00d6\35\uffff\1\u00d7\1\uffff\1\u00d6",
+            "\1\u00d6\37\uffff\1\u00d6",
+            "",
+            "\1\u00d7\37\uffff\1\u00d7",
+            "\1\u00d9\1\uffff\1\u00d8\35\uffff\1\u00d9\1\uffff\1\u00d8",
             "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
             "\2\uffff\1\34\1\uffff\32\34",
-            "\1\u00d9\37\uffff\1\u00d9",
-            "\1\u00da\37\uffff\1\u00da",
             "\1\u00db\37\uffff\1\u00db",
-            "",
             "\1\u00dc\37\uffff\1\u00dc",
             "\1\u00dd\37\uffff\1\u00dd",
+            "",
             "\1\u00de\37\uffff\1\u00de",
             "\1\u00df\37\uffff\1\u00df",
-            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\22\34\1\u00e0\7\34"+
-            "\1\uffff\1\34\2\uffff\1\34\1\uffff\22\34\1\u00e0\7\34",
-            "\1\u00e2\37\uffff\1\u00e2",
-            "\1\u00e3\37\uffff\1\u00e3",
+            "\1\u00e0\37\uffff\1\u00e0",
+            "\1\u00e1\37\uffff\1\u00e1",
+            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\22\34\1\u00e2\7\34"+
+            "\1\uffff\1\34\2\uffff\1\34\1\uffff\22\34\1\u00e2\7\34",
             "\1\u00e4\37\uffff\1\u00e4",
             "\1\u00e5\37\uffff\1\u00e5",
             "\1\u00e6\37\uffff\1\u00e6",
             "\1\u00e7\37\uffff\1\u00e7",
             "\1\u00e8\37\uffff\1\u00e8",
+            "\1\u00e9\37\uffff\1\u00e9",
+            "\1\u00ea\37\uffff\1\u00ea",
             "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
             "\2\uffff\1\34\1\uffff\32\34",
-            "\1\u00ea\37\uffff\1\u00ea",
-            "\1\u00eb\37\uffff\1\u00eb",
             "\1\u00ec\37\uffff\1\u00ec",
             "\1\u00ed\37\uffff\1\u00ed",
-            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
-            "\2\uffff\1\34\1\uffff\32\34",
-            "",
-            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
-            "\2\uffff\1\34\1\uffff\32\34",
-            "",
             "\1\u00ee\37\uffff\1\u00ee",
             "\1\u00ef\37\uffff\1\u00ef",
-            "\1\u00f0\37\uffff\1\u00f0",
-            "\1\u00f1\37\uffff\1\u00f1",
-            "",
-            "\1\u00f2\37\uffff\1\u00f2",
-            "\1\u00f3\37\uffff\1\u00f3",
-            "\1\u00f4\37\uffff\1\u00f4",
-            "\1\u00f5\37\uffff\1\u00f5",
-            "",
-            "\1\u00f6\37\uffff\1\u00f6",
-            "\1\u00f7\37\uffff\1\u00f7",
-            "\1\u00f8\37\uffff\1\u00f8",
-            "\1\u00f9\10\uffff\1\u00fa\26\uffff\1\u00f9\10\uffff\1\u00fa",
-            "\1\u00fb\37\uffff\1\u00fb",
-            "\1\u00fc\37\uffff\1\u00fc",
             "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
             "\2\uffff\1\34\1\uffff\32\34",
+            "",
+            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
+            "\2\uffff\1\34\1\uffff\32\34",
+            "",
+            "\1\u00f0\37\uffff\1\u00f0",
+            "\1\u00f1\37\uffff\1\u00f1",
+            "\1\u00f2\37\uffff\1\u00f2",
+            "\1\u00f3\37\uffff\1\u00f3",
+            "",
+            "\1\u00f4\37\uffff\1\u00f4",
+            "\1\u00f5\37\uffff\1\u00f5",
+            "\1\u00f6\37\uffff\1\u00f6",
+            "\1\u00f7\37\uffff\1\u00f7",
+            "",
+            "\1\u00f8\37\uffff\1\u00f8",
+            "\1\u00f9\37\uffff\1\u00f9",
+            "\1\u00fa\37\uffff\1\u00fa",
+            "\1\u00fb\10\uffff\1\u00fc\26\uffff\1\u00fb\10\uffff\1\u00fc",
+            "\1\u00fd\37\uffff\1\u00fd",
             "\1\u00fe\37\uffff\1\u00fe",
-            "\1\u00ff\37\uffff\1\u00ff",
+            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
+            "\2\uffff\1\34\1\uffff\32\34",
             "\1\u0100\37\uffff\1\u0100",
             "\1\u0101\37\uffff\1\u0101",
             "\1\u0102\37\uffff\1\u0102",
             "\1\u0103\37\uffff\1\u0103",
             "\1\u0104\37\uffff\1\u0104",
+            "\1\u0105\37\uffff\1\u0105",
+            "\1\u0106\37\uffff\1\u0106",
+            "\1\u0107\37\uffff\1\u0107",
             "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
             "\2\uffff\1\34\1\uffff\32\34",
             "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
             "\2\uffff\1\34\1\uffff\32\34",
             "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
             "\2\uffff\1\34\1\uffff\32\34",
-            "\1\u0108\37\uffff\1\u0108",
-            "\1\u0109\37\uffff\1\u0109",
-            "\1\u010a\37\uffff\1\u010a",
+            "\1\u010b\37\uffff\1\u010b",
+            "\1\u010c\37\uffff\1\u010c",
+            "\1\u010d\37\uffff\1\u010d",
             "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
             "\2\uffff\1\34\1\uffff\32\34",
             "",
-            "\1\u010c\37\uffff\1\u010c",
-            "\1\u010d\37\uffff\1\u010d",
-            "\1\u010e\37\uffff\1\u010e",
             "\1\u010f\37\uffff\1\u010f",
             "\1\u0110\37\uffff\1\u0110",
             "\1\u0111\37\uffff\1\u0111",
             "\1\u0112\37\uffff\1\u0112",
             "\1\u0113\37\uffff\1\u0113",
             "\1\u0114\37\uffff\1\u0114",
-            "",
             "\1\u0115\37\uffff\1\u0115",
             "\1\u0116\37\uffff\1\u0116",
             "\1\u0117\37\uffff\1\u0117",
+            "",
             "\1\u0118\37\uffff\1\u0118",
             "\1\u0119\37\uffff\1\u0119",
-            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
-            "\2\uffff\1\34\1\uffff\32\34",
+            "\1\u011a\37\uffff\1\u011a",
             "\1\u011b\37\uffff\1\u011b",
             "\1\u011c\37\uffff\1\u011c",
-            "",
-            "\1\u011d\37\uffff\1\u011d",
+            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
+            "\2\uffff\1\34\1\uffff\32\34",
             "\1\u011e\37\uffff\1\u011e",
             "\1\u011f\37\uffff\1\u011f",
+            "",
             "\1\u0120\37\uffff\1\u0120",
             "\1\u0121\37\uffff\1\u0121",
             "\1\u0122\37\uffff\1\u0122",
             "\1\u0123\37\uffff\1\u0123",
+            "\1\u0124\37\uffff\1\u0124",
+            "\1\u0125\37\uffff\1\u0125",
+            "\1\u0126\37\uffff\1\u0126",
             "",
             "\1\124\37\uffff\1\124",
-            "\1\u0124\37\uffff\1\u0124",
-            "\1\u0126\3\uffff\1\u0125\33\uffff\1\u0126\3\uffff\1\u0125",
             "\1\u0127\37\uffff\1\u0127",
-            "\1\u0128\37\uffff\1\u0128",
-            "\1\u0129\37\uffff\1\u0129",
-            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
-            "\2\uffff\1\34\1\uffff\32\34",
+            "\1\u0129\3\uffff\1\u0128\33\uffff\1\u0129\3\uffff\1\u0128",
+            "\1\u012a\37\uffff\1\u012a",
             "\1\u012b\37\uffff\1\u012b",
             "\1\u012c\37\uffff\1\u012c",
-            "\1\u012d\37\uffff\1\u012d",
+            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
+            "\2\uffff\1\34\1\uffff\32\34",
             "\1\u012e\37\uffff\1\u012e",
             "\1\u012f\37\uffff\1\u012f",
             "\1\u0130\37\uffff\1\u0130",
@@ -11906,26 +12067,26 @@ public class InputfileLexer extends Lexer {
             "\1\u0134\37\uffff\1\u0134",
             "\1\u0135\37\uffff\1\u0135",
             "\1\u0136\37\uffff\1\u0136",
-            "",
             "\1\u0137\37\uffff\1\u0137",
+            "\1\u0138\37\uffff\1\u0138",
+            "\1\u0139\37\uffff\1\u0139",
+            "",
+            "\1\u013a\37\uffff\1\u013a",
             "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
             "\2\uffff\1\34\1\uffff\32\34",
-            "\1\u0139\37\uffff\1\u0139",
-            "\1\u013a\37\uffff\1\u013a",
-            "\1\u013b\37\uffff\1\u013b",
             "\1\u013c\37\uffff\1\u013c",
             "\1\u013d\37\uffff\1\u013d",
-            "",
-            "",
-            "",
             "\1\u013e\37\uffff\1\u013e",
             "\1\u013f\37\uffff\1\u013f",
             "\1\u0140\37\uffff\1\u0140",
-            "",
             "\1\u0141\37\uffff\1\u0141",
+            "",
+            "",
+            "",
             "\1\u0142\37\uffff\1\u0142",
             "\1\u0143\37\uffff\1\u0143",
             "\1\u0144\37\uffff\1\u0144",
+            "",
             "\1\u0145\37\uffff\1\u0145",
             "\1\u0146\37\uffff\1\u0146",
             "\1\u0147\37\uffff\1\u0147",
@@ -11936,380 +12097,380 @@ public class InputfileLexer extends Lexer {
             "\1\u014c\37\uffff\1\u014c",
             "\1\u014d\37\uffff\1\u014d",
             "\1\u014e\37\uffff\1\u014e",
-            "",
-            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
-            "\2\uffff\1\34\1\uffff\32\34",
+            "\1\u014f\37\uffff\1\u014f",
             "\1\u0150\37\uffff\1\u0150",
             "\1\u0151\37\uffff\1\u0151",
             "\1\u0152\37\uffff\1\u0152",
-            "\1\u0153\37\uffff\1\u0153",
+            "",
+            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
+            "\2\uffff\1\34\1\uffff\32\34",
             "\1\u0154\37\uffff\1\u0154",
             "\1\u0155\37\uffff\1\u0155",
             "\1\u0156\37\uffff\1\u0156",
-            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
-            "\2\uffff\1\34\1\uffff\32\34",
+            "\1\u0157\37\uffff\1\u0157",
             "\1\u0158\37\uffff\1\u0158",
+            "\1\u0159\37\uffff\1\u0159",
+            "\1\u015a\37\uffff\1\u015a",
             "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
             "\2\uffff\1\34\1\uffff\32\34",
-            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
-            "\2\uffff\1\34\1\uffff\32\34",
-            "\1\u015b\37\uffff\1\u015b",
             "\1\u015c\37\uffff\1\u015c",
-            "\1\u015d\37\uffff\1\u015d",
-            "",
-            "\1\u015e\37\uffff\1\u015e",
+            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
+            "\2\uffff\1\34\1\uffff\32\34",
+            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
+            "\2\uffff\1\34\1\uffff\32\34",
             "\1\u015f\37\uffff\1\u015f",
-            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
-            "\2\uffff\1\34\1\uffff\32\34",
-            "\1\u0162\6\uffff\1\u0161\30\uffff\1\u0162\6\uffff\1\u0161",
+            "\1\u0160\37\uffff\1\u0160",
+            "\1\u0161\37\uffff\1\u0161",
+            "",
+            "\1\u0162\37\uffff\1\u0162",
             "\1\u0163\37\uffff\1\u0163",
-            "\1\u0164\37\uffff\1\u0164",
-            "\1\u0165\37\uffff\1\u0165",
-            "\1\u0166\37\uffff\1\u0166",
+            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
+            "\2\uffff\1\34\1\uffff\32\34",
+            "\1\u0166\6\uffff\1\u0165\30\uffff\1\u0166\6\uffff\1\u0165",
             "\1\u0167\37\uffff\1\u0167",
-            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
-            "\2\uffff\1\34\1\uffff\32\34",
-            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
-            "\2\uffff\1\34\1\uffff\32\34",
+            "\1\u0168\37\uffff\1\u0168",
+            "\1\u0169\37\uffff\1\u0169",
             "\1\u016a\37\uffff\1\u016a",
             "\1\u016b\37\uffff\1\u016b",
-            "",
-            "\1\u016c\37\uffff\1\u016c",
-            "\1\u016d\37\uffff\1\u016d",
+            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
+            "\2\uffff\1\34\1\uffff\32\34",
+            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
+            "\2\uffff\1\34\1\uffff\32\34",
             "\1\u016e\37\uffff\1\u016e",
             "\1\u016f\37\uffff\1\u016f",
+            "",
             "\1\u0170\37\uffff\1\u0170",
             "\1\u0171\37\uffff\1\u0171",
             "\1\u0172\37\uffff\1\u0172",
             "\1\u0173\37\uffff\1\u0173",
             "\1\u0174\37\uffff\1\u0174",
             "\1\u0175\37\uffff\1\u0175",
-            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
-            "\2\uffff\1\34\1\uffff\32\34",
+            "\1\u0176\37\uffff\1\u0176",
             "\1\u0177\37\uffff\1\u0177",
             "\1\u0178\37\uffff\1\u0178",
             "\1\u0179\37\uffff\1\u0179",
             "\1\u017a\37\uffff\1\u017a",
-            "\1\u017b\37\uffff\1\u017b",
+            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
+            "\2\uffff\1\34\1\uffff\32\34",
             "\1\u017c\37\uffff\1\u017c",
             "\1\u017d\37\uffff\1\u017d",
             "\1\u017e\37\uffff\1\u017e",
             "\1\u017f\37\uffff\1\u017f",
             "\1\u0180\37\uffff\1\u0180",
-            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
-            "\2\uffff\1\34\1\uffff\32\34",
-            "",
-            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
-            "\2\uffff\1\34\1\uffff\32\34",
+            "\1\u0181\37\uffff\1\u0181",
+            "\1\u0182\37\uffff\1\u0182",
             "\1\u0183\37\uffff\1\u0183",
-            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
-            "\2\uffff\1\34\1\uffff\32\34",
+            "\1\u0184\37\uffff\1\u0184",
             "\1\u0185\37\uffff\1\u0185",
-            "\1\u0187\1\uffff\1\u0186\35\uffff\1\u0187\1\uffff\1\u0186",
-            "\1\u0188\37\uffff\1\u0188",
-            "\1\u0189\37\uffff\1\u0189",
-            "",
             "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
             "\2\uffff\1\34\1\uffff\32\34",
             "",
-            "",
-            "\1\u018b\37\uffff\1\u018b",
-            "\1\u018c\37\uffff\1\u018c",
+            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
+            "\2\uffff\1\34\1\uffff\32\34",
+            "\1\u0188\37\uffff\1\u0188",
+            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
+            "\2\uffff\1\34\1\uffff\32\34",
+            "\1\u018a\37\uffff\1\u018a",
+            "\1\u018c\1\uffff\1\u018b\35\uffff\1\u018c\1\uffff\1\u018b",
             "\1\u018d\37\uffff\1\u018d",
             "\1\u018e\37\uffff\1\u018e",
-            "\1\u018f\37\uffff\1\u018f",
+            "",
+            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
+            "\2\uffff\1\34\1\uffff\32\34",
+            "",
             "",
             "\1\u0190\37\uffff\1\u0190",
             "\1\u0191\37\uffff\1\u0191",
-            "\1\u0192\4\uffff\1\u0193\32\uffff\1\u0192\4\uffff\1\u0193",
+            "\1\u0192\37\uffff\1\u0192",
+            "\1\u0193\37\uffff\1\u0193",
             "\1\u0194\37\uffff\1\u0194",
+            "",
             "\1\u0195\37\uffff\1\u0195",
             "\1\u0196\37\uffff\1\u0196",
-            "\1\u0197\37\uffff\1\u0197",
-            "",
-            "",
-            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
-            "\2\uffff\1\34\1\uffff\32\34",
+            "\1\u0197\4\uffff\1\u0198\32\uffff\1\u0197\4\uffff\1\u0198",
             "\1\u0199\37\uffff\1\u0199",
             "\1\u019a\37\uffff\1\u019a",
             "\1\u019b\37\uffff\1\u019b",
+            "\1\u019c\37\uffff\1\u019c",
+            "",
+            "",
             "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
             "\2\uffff\1\34\1\uffff\32\34",
-            "\1\u019d\37\uffff\1\u019d",
             "\1\u019e\37\uffff\1\u019e",
             "\1\u019f\37\uffff\1\u019f",
             "\1\u01a0\37\uffff\1\u01a0",
             "\1\u01a1\37\uffff\1\u01a1",
-            "\1\u01a2\37\uffff\1\u01a2",
-            "\1\u01a3\37\uffff\1\u01a3",
-            "",
             "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
             "\2\uffff\1\34\1\uffff\32\34",
+            "\1\u01a3\37\uffff\1\u01a3",
+            "\1\u01a4\37\uffff\1\u01a4",
             "\1\u01a5\37\uffff\1\u01a5",
             "\1\u01a6\37\uffff\1\u01a6",
-            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
-            "\2\uffff\1\34\1\uffff\32\34",
+            "\1\u01a7\37\uffff\1\u01a7",
             "\1\u01a8\37\uffff\1\u01a8",
             "\1\u01a9\37\uffff\1\u01a9",
-            "\1\u01aa\37\uffff\1\u01aa",
+            "",
+            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
+            "\2\uffff\1\34\1\uffff\32\34",
             "\1\u01ab\37\uffff\1\u01ab",
             "\1\u01ac\37\uffff\1\u01ac",
-            "\1\u01ad\37\uffff\1\u01ad",
-            "",
-            "",
-            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\5\34\1\u01ae\24\34"+
-            "\1\uffff\1\34\2\uffff\1\34\1\uffff\5\34\1\u01ae\24\34",
-            "",
+            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
+            "\2\uffff\1\34\1\uffff\32\34",
+            "\1\u01ae\37\uffff\1\u01ae",
+            "\1\u01af\37\uffff\1\u01af",
             "\1\u01b0\37\uffff\1\u01b0",
             "\1\u01b1\37\uffff\1\u01b1",
             "\1\u01b2\37\uffff\1\u01b2",
             "\1\u01b3\37\uffff\1\u01b3",
-            "\1\u01b4\37\uffff\1\u01b4",
             "",
-            "\1\u01b5\37\uffff\1\u01b5",
+            "",
+            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\5\34\1\u01b4\24\34"+
+            "\1\uffff\1\34\2\uffff\1\34\1\uffff\5\34\1\u01b4\24\34",
+            "",
             "\1\u01b6\37\uffff\1\u01b6",
             "\1\u01b7\37\uffff\1\u01b7",
             "\1\u01b8\37\uffff\1\u01b8",
             "\1\u01b9\37\uffff\1\u01b9",
             "\1\u01ba\37\uffff\1\u01ba",
+            "",
             "\1\u01bb\37\uffff\1\u01bb",
             "\1\u01bc\37\uffff\1\u01bc",
             "\1\u01bd\37\uffff\1\u01bd",
             "\1\u01be\37\uffff\1\u01be",
-            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
-            "\2\uffff\1\34\1\uffff\32\34",
+            "\1\u01bf\37\uffff\1\u01bf",
             "\1\u01c0\37\uffff\1\u01c0",
             "\1\u01c1\37\uffff\1\u01c1",
-            "",
             "\1\u01c2\37\uffff\1\u01c2",
             "\1\u01c3\37\uffff\1\u01c3",
-            "\1\u01c6\7\uffff\1\u01c5\6\uffff\1\u01c4\20\uffff\1\u01c6\7"+
-            "\uffff\1\u01c5\6\uffff\1\u01c4",
-            "",
+            "\1\u01c4\37\uffff\1\u01c4",
+            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
+            "\2\uffff\1\34\1\uffff\32\34",
+            "\1\u01c6\37\uffff\1\u01c6",
             "\1\u01c7\37\uffff\1\u01c7",
+            "",
             "\1\u01c8\37\uffff\1\u01c8",
-            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
-            "\2\uffff\1\34\1\uffff\32\34",
-            "\1\u01ca\37\uffff\1\u01ca",
-            "\1\u01cb\37\uffff\1\u01cb",
-            "\1\u01cc\37\uffff\1\u01cc",
-            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
-            "\2\uffff\1\34\1\uffff\32\34",
+            "\1\u01c9\37\uffff\1\u01c9",
+            "\1\u01cc\7\uffff\1\u01cb\6\uffff\1\u01ca\20\uffff\1\u01cc\7"+
+            "\uffff\1\u01cb\6\uffff\1\u01ca",
+            "\1\u01cd\37\uffff\1\u01cd",
             "",
-            "\1\u01d0\10\uffff\1\u01ce\6\uffff\1\u01cf\17\uffff\1\u01d0"+
-            "\10\uffff\1\u01ce\6\uffff\1\u01cf",
+            "\1\u01ce\37\uffff\1\u01ce",
+            "\1\u01cf\37\uffff\1\u01cf",
+            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
+            "\2\uffff\1\34\1\uffff\32\34",
             "\1\u01d1\37\uffff\1\u01d1",
+            "\1\u01d2\37\uffff\1\u01d2",
+            "\1\u01d3\37\uffff\1\u01d3",
+            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
+            "\2\uffff\1\34\1\uffff\32\34",
             "",
-            "\1\u01d3\11\uffff\1\u01d2\25\uffff\1\u01d3\11\uffff\1\u01d2",
-            "\1\u01d4\37\uffff\1\u01d4",
-            "\1\u01d5\37\uffff\1\u01d5",
-            "\1\u01d6\37\uffff\1\u01d6",
-            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\22\34\1\u01d7\7\34"+
-            "\1\uffff\1\34\2\uffff\1\34\1\uffff\22\34\1\u01d7\7\34",
-            "\1\u01d9\37\uffff\1\u01d9",
-            "\1\u01da\37\uffff\1\u01da",
+            "\1\u01d7\10\uffff\1\u01d5\6\uffff\1\u01d6\17\uffff\1\u01d7"+
+            "\10\uffff\1\u01d5\6\uffff\1\u01d6",
+            "\1\u01d8\37\uffff\1\u01d8",
             "",
-            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\1\u01db\31\34\1\uffff"+
-            "\1\34\2\uffff\1\34\1\uffff\1\u01db\31\34",
+            "\1\u01da\11\uffff\1\u01d9\25\uffff\1\u01da\11\uffff\1\u01d9",
+            "\1\u01db\37\uffff\1\u01db",
+            "\1\u01dc\37\uffff\1\u01dc",
             "\1\u01dd\37\uffff\1\u01dd",
-            "\1\u01de\37\uffff\1\u01de",
-            "\1\u01df\37\uffff\1\u01df",
+            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\22\34\1\u01de\7\34"+
+            "\1\uffff\1\34\2\uffff\1\34\1\uffff\22\34\1\u01de\7\34",
             "\1\u01e0\37\uffff\1\u01e0",
             "\1\u01e1\37\uffff\1\u01e1",
-            "\1\u01e2\37\uffff\1\u01e2",
-            "\1\u01e3\37\uffff\1\u01e3",
+            "",
+            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\1\u01e2\31\34\1\uffff"+
+            "\1\34\2\uffff\1\34\1\uffff\1\u01e2\31\34",
             "\1\u01e4\37\uffff\1\u01e4",
-            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
-            "\2\uffff\1\34\1\uffff\32\34",
+            "\1\u01e5\37\uffff\1\u01e5",
             "\1\u01e6\37\uffff\1\u01e6",
-            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
-            "\2\uffff\1\34\1\uffff\32\34",
+            "\1\u01e7\37\uffff\1\u01e7",
             "\1\u01e8\37\uffff\1\u01e8",
             "\1\u01e9\37\uffff\1\u01e9",
             "\1\u01ea\37\uffff\1\u01ea",
-            "",
             "\1\u01eb\37\uffff\1\u01eb",
-            "\1\u01ec\37\uffff\1\u01ec",
+            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
+            "\2\uffff\1\34\1\uffff\32\34",
             "\1\u01ed\37\uffff\1\u01ed",
             "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
             "\2\uffff\1\34\1\uffff\32\34",
             "\1\u01ef\37\uffff\1\u01ef",
             "\1\u01f0\37\uffff\1\u01f0",
             "\1\u01f1\37\uffff\1\u01f1",
+            "",
             "\1\u01f2\37\uffff\1\u01f2",
             "\1\u01f3\37\uffff\1\u01f3",
-            "",
             "\1\u01f4\37\uffff\1\u01f4",
-            "\1\u01f5\37\uffff\1\u01f5",
+            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
+            "\2\uffff\1\34\1\uffff\32\34",
             "\1\u01f6\37\uffff\1\u01f6",
-            "",
             "\1\u01f7\37\uffff\1\u01f7",
             "\1\u01f8\37\uffff\1\u01f8",
             "\1\u01f9\37\uffff\1\u01f9",
             "\1\u01fa\37\uffff\1\u01fa",
             "\1\u01fb\37\uffff\1\u01fb",
+            "",
             "\1\u01fc\37\uffff\1\u01fc",
             "\1\u01fd\37\uffff\1\u01fd",
             "\1\u01fe\37\uffff\1\u01fe",
-            "\1\u01ff\37\uffff\1\u01ff",
-            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
-            "\2\uffff\1\34\1\uffff\32\34",
             "",
-            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
-            "\2\uffff\1\34\1\uffff\32\34",
+            "\1\u01ff\37\uffff\1\u01ff",
+            "\1\u0200\37\uffff\1\u0200",
             "\1\u0201\37\uffff\1\u0201",
             "\1\u0202\37\uffff\1\u0202",
-            "",
             "\1\u0203\37\uffff\1\u0203",
             "\1\u0204\37\uffff\1\u0204",
             "\1\u0205\37\uffff\1\u0205",
             "\1\u0206\37\uffff\1\u0206",
             "\1\u0207\37\uffff\1\u0207",
-            "\1\u0208\37\uffff\1\u0208",
+            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
+            "\2\uffff\1\34\1\uffff\32\34",
+            "",
+            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
+            "\2\uffff\1\34\1\uffff\32\34",
             "\1\u0209\37\uffff\1\u0209",
             "\1\u020a\37\uffff\1\u020a",
             "",
             "\1\u020b\37\uffff\1\u020b",
-            "",
             "\1\u020c\37\uffff\1\u020c",
             "\1\u020d\37\uffff\1\u020d",
             "\1\u020e\37\uffff\1\u020e",
             "\1\u020f\37\uffff\1\u020f",
             "\1\u0210\37\uffff\1\u0210",
-            "\1\u0213\10\uffff\1\u0211\26\uffff\1\u0213\10\uffff\1\u0212",
+            "\1\u0211\37\uffff\1\u0211",
+            "\1\u0212\37\uffff\1\u0212",
+            "",
+            "\1\u0213\37\uffff\1\u0213",
             "",
             "\1\u0214\37\uffff\1\u0214",
             "\1\u0215\37\uffff\1\u0215",
             "\1\u0216\37\uffff\1\u0216",
             "\1\u0217\37\uffff\1\u0217",
             "\1\u0218\37\uffff\1\u0218",
-            "\1\u0219\37\uffff\1\u0219",
-            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
-            "\2\uffff\1\34\1\uffff\32\34",
-            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
-            "\2\uffff\1\34\1\uffff\32\34",
+            "\1\u021b\10\uffff\1\u0219\26\uffff\1\u021b\10\uffff\1\u021a",
+            "",
             "\1\u021c\37\uffff\1\u021c",
             "\1\u021d\37\uffff\1\u021d",
             "\1\u021e\37\uffff\1\u021e",
-            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
-            "\2\uffff\1\34\1\uffff\32\34",
+            "\1\u021f\37\uffff\1\u021f",
             "\1\u0220\37\uffff\1\u0220",
             "\1\u0221\37\uffff\1\u0221",
             "\1\u0222\37\uffff\1\u0222",
-            "\1\u0223\37\uffff\1\u0223",
-            "\1\u0224\37\uffff\1\u0224",
-            "",
+            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
+            "\2\uffff\1\34\1\uffff\32\34",
+            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
+            "\2\uffff\1\34\1\uffff\32\34",
             "\1\u0225\37\uffff\1\u0225",
             "\1\u0226\37\uffff\1\u0226",
             "\1\u0227\37\uffff\1\u0227",
-            "\1\u0228\37\uffff\1\u0228",
+            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
+            "\2\uffff\1\34\1\uffff\32\34",
             "\1\u0229\37\uffff\1\u0229",
-            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
-            "\2\uffff\1\34\1\uffff\32\34",
+            "\1\u022a\37\uffff\1\u022a",
             "\1\u022b\37\uffff\1\u022b",
-            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
-            "\2\uffff\1\34\1\uffff\32\34",
+            "\1\u022c\37\uffff\1\u022c",
             "\1\u022d\37\uffff\1\u022d",
+            "",
             "\1\u022e\37\uffff\1\u022e",
             "\1\u022f\37\uffff\1\u022f",
-            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\4\34\1\u0230\25\34"+
-            "\1\uffff\1\34\2\uffff\1\34\1\uffff\4\34\1\u0230\25\34",
+            "\1\u0230\37\uffff\1\u0230",
+            "\1\u0231\37\uffff\1\u0231",
             "\1\u0232\37\uffff\1\u0232",
-            "\1\u0233\37\uffff\1\u0233",
             "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
             "\2\uffff\1\34\1\uffff\32\34",
+            "\1\u0234\37\uffff\1\u0234",
             "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
             "\2\uffff\1\34\1\uffff\32\34",
-            "\1\u0213\37\uffff\1\u0213",
-            "\1\u0213\37\uffff\1\u0213",
             "\1\u0236\37\uffff\1\u0236",
             "\1\u0237\37\uffff\1\u0237",
             "\1\u0238\37\uffff\1\u0238",
-            "\1\u0239\37\uffff\1\u0239",
-            "\1\u023a\37\uffff\1\u023a",
+            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\4\34\1\u0239\25\34"+
+            "\1\uffff\1\34\2\uffff\1\34\1\uffff\4\34\1\u0239\25\34",
             "\1\u023b\37\uffff\1\u023b",
+            "\1\u023c\37\uffff\1\u023c",
             "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
             "\2\uffff\1\34\1\uffff\32\34",
-            "",
-            "",
-            "\1\u023d\37\uffff\1\u023d",
-            "\1\u023e\37\uffff\1\u023e",
+            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
+            "\2\uffff\1\34\1\uffff\32\34",
+            "\1\u021b\37\uffff\1\u021b",
+            "\1\u021b\37\uffff\1\u021b",
             "\1\u023f\37\uffff\1\u023f",
-            "",
             "\1\u0240\37\uffff\1\u0240",
             "\1\u0241\37\uffff\1\u0241",
             "\1\u0242\37\uffff\1\u0242",
             "\1\u0243\37\uffff\1\u0243",
             "\1\u0244\37\uffff\1\u0244",
+            "\1\u0245\37\uffff\1\u0245",
             "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
             "\2\uffff\1\34\1\uffff\32\34",
-            "\1\u0246\37\uffff\1\u0246",
+            "",
+            "",
             "\1\u0247\37\uffff\1\u0247",
             "\1\u0248\37\uffff\1\u0248",
             "\1\u0249\37\uffff\1\u0249",
             "",
             "\1\u024a\37\uffff\1\u024a",
-            "",
             "\1\u024b\37\uffff\1\u024b",
-            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
-            "\2\uffff\1\34\1\uffff\32\34",
+            "\1\u024c\37\uffff\1\u024c",
             "\1\u024d\37\uffff\1\u024d",
             "\1\u024e\37\uffff\1\u024e",
-            "",
-            "\1\u024f\37\uffff\1\u024f",
             "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
             "\2\uffff\1\34\1\uffff\32\34",
-            "",
-            "",
-            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
-            "\2\uffff\1\34\1\uffff\32\34",
-            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
-            "\2\uffff\1\34\1\uffff\32\34",
+            "\1\u0250\37\uffff\1\u0250",
+            "\1\u0251\37\uffff\1\u0251",
+            "\1\u0252\37\uffff\1\u0252",
             "\1\u0253\37\uffff\1\u0253",
+            "",
             "\1\u0254\37\uffff\1\u0254",
+            "",
             "\1\u0255\37\uffff\1\u0255",
             "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
             "\2\uffff\1\34\1\uffff\32\34",
-            "",
             "\1\u0257\37\uffff\1\u0257",
             "\1\u0258\37\uffff\1\u0258",
+            "",
             "\1\u0259\37\uffff\1\u0259",
-            "\1\u025a\37\uffff\1\u025a",
-            "\1\u025b\37\uffff\1\u025b",
-            "\1\u025c\37\uffff\1\u025c",
+            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
+            "\2\uffff\1\34\1\uffff\32\34",
+            "",
+            "",
+            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
+            "\2\uffff\1\34\1\uffff\32\34",
+            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
+            "\2\uffff\1\34\1\uffff\32\34",
             "\1\u025d\37\uffff\1\u025d",
             "\1\u025e\37\uffff\1\u025e",
-            "",
             "\1\u025f\37\uffff\1\u025f",
             "\1\u0260\37\uffff\1\u0260",
-            "\1\u0261\37\uffff\1\u0261",
+            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
+            "\2\uffff\1\34\1\uffff\32\34",
+            "",
             "\1\u0262\37\uffff\1\u0262",
             "\1\u0263\37\uffff\1\u0263",
             "\1\u0264\37\uffff\1\u0264",
-            "",
             "\1\u0265\37\uffff\1\u0265",
             "\1\u0266\37\uffff\1\u0266",
             "\1\u0267\37\uffff\1\u0267",
-            "",
-            "",
-            "",
             "\1\u0268\37\uffff\1\u0268",
             "\1\u0269\37\uffff\1\u0269",
-            "\1\u026a\37\uffff\1\u026a",
             "",
+            "\1\u026a\37\uffff\1\u026a",
             "\1\u026b\37\uffff\1\u026b",
             "\1\u026c\37\uffff\1\u026c",
             "\1\u026d\37\uffff\1\u026d",
             "\1\u026e\37\uffff\1\u026e",
             "\1\u026f\37\uffff\1\u026f",
+            "",
             "\1\u0270\37\uffff\1\u0270",
             "\1\u0271\37\uffff\1\u0271",
             "\1\u0272\37\uffff\1\u0272",
+            "",
+            "",
+            "",
+            "\1\u0273\37\uffff\1\u0273",
+            "\1\u0274\37\uffff\1\u0274",
             "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
             "\2\uffff\1\34\1\uffff\32\34",
-            "\1\u0274\37\uffff\1\u0274",
-            "\1\u0275\37\uffff\1\u0275",
             "\1\u0276\37\uffff\1\u0276",
+            "",
             "\1\u0277\37\uffff\1\u0277",
             "\1\u0278\37\uffff\1\u0278",
             "\1\u0279\37\uffff\1\u0279",
@@ -12317,119 +12478,133 @@ public class InputfileLexer extends Lexer {
             "\1\u027b\37\uffff\1\u027b",
             "\1\u027c\37\uffff\1\u027c",
             "\1\u027d\37\uffff\1\u027d",
+            "\1\u027e\37\uffff\1\u027e",
             "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
             "\2\uffff\1\34\1\uffff\32\34",
-            "\1\u027f\37\uffff\1\u027f",
             "\1\u0280\37\uffff\1\u0280",
             "\1\u0281\37\uffff\1\u0281",
             "\1\u0282\37\uffff\1\u0282",
             "\1\u0283\37\uffff\1\u0283",
-            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
-            "\2\uffff\1\34\1\uffff\32\34",
+            "\1\u0284\37\uffff\1\u0284",
             "\1\u0285\37\uffff\1\u0285",
             "\1\u0286\37\uffff\1\u0286",
-            "",
             "\1\u0287\37\uffff\1\u0287",
-            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
-            "\2\uffff\1\34\1\uffff\32\34",
+            "\1\u0288\37\uffff\1\u0288",
             "\1\u0289\37\uffff\1\u0289",
-            "\1\u028a\37\uffff\1\u028a",
+            "",
             "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
             "\2\uffff\1\34\1\uffff\32\34",
-            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
-            "\2\uffff\1\34\1\uffff\32\34",
+            "\1\u028b\37\uffff\1\u028b",
+            "\1\u028c\37\uffff\1\u028c",
             "\1\u028d\37\uffff\1\u028d",
             "\1\u028e\37\uffff\1\u028e",
+            "\1\u028f\37\uffff\1\u028f",
             "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
             "\2\uffff\1\34\1\uffff\32\34",
-            "\1\u0290\37\uffff\1\u0290",
-            "",
             "\1\u0291\37\uffff\1\u0291",
             "\1\u0292\37\uffff\1\u0292",
+            "",
+            "\1\u0293\37\uffff\1\u0293",
             "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
             "\2\uffff\1\34\1\uffff\32\34",
-            "\1\u0294\37\uffff\1\u0294",
             "\1\u0295\37\uffff\1\u0295",
-            "",
             "\1\u0296\37\uffff\1\u0296",
-            "\1\u0297\37\uffff\1\u0297",
             "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
             "\2\uffff\1\34\1\uffff\32\34",
-            "",
+            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
+            "\2\uffff\1\34\1\uffff\32\34",
             "\1\u0299\37\uffff\1\u0299",
             "\1\u029a\37\uffff\1\u029a",
-            "",
-            "",
-            "\1\u029b\37\uffff\1\u029b",
+            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
+            "\2\uffff\1\34\1\uffff\32\34",
             "\1\u029c\37\uffff\1\u029c",
             "",
+            "\1\u029d\37\uffff\1\u029d",
+            "\1\u029e\37\uffff\1\u029e",
             "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
             "\2\uffff\1\34\1\uffff\32\34",
-            "\1\u02a0\7\uffff\1\u029f\6\uffff\1\u029e\20\uffff\1\u02a0\7"+
-            "\uffff\1\u029f\6\uffff\1\u029e",
+            "\1\u02a0\37\uffff\1\u02a0",
             "\1\u02a1\37\uffff\1\u02a1",
             "",
+            "\1\u02a2\37\uffff\1\u02a2",
+            "\1\u02a3\37\uffff\1\u02a3",
             "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
             "\2\uffff\1\34\1\uffff\32\34",
-            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
-            "\2\uffff\1\34\1\uffff\32\34",
-            "\1\u02a4\37\uffff\1\u02a4",
+            "",
             "\1\u02a5\37\uffff\1\u02a5",
-            "",
             "\1\u02a6\37\uffff\1\u02a6",
-            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
-            "\2\uffff\1\34\1\uffff\32\34",
+            "",
+            "",
+            "\1\u02a7\37\uffff\1\u02a7",
             "\1\u02a8\37\uffff\1\u02a8",
-            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
-            "\2\uffff\1\34\1\uffff\32\34",
-            "",
-            "\1\u02aa\37\uffff\1\u02aa",
-            "\1\u02ab\37\uffff\1\u02ab",
-            "\1\u02ac\37\uffff\1\u02ac",
-            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
-            "\2\uffff\1\34\1\uffff\32\34",
-            "",
             "",
             "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
             "\2\uffff\1\34\1\uffff\32\34",
-            "\1\u02af\37\uffff\1\u02af",
+            "\1\u02ac\7\uffff\1\u02ab\6\uffff\1\u02aa\20\uffff\1\u02ac\7"+
+            "\uffff\1\u02ab\6\uffff\1\u02aa",
+            "\1\u02ad\37\uffff\1\u02ad",
+            "",
+            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
+            "\2\uffff\1\34\1\uffff\32\34",
+            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
+            "\2\uffff\1\34\1\uffff\32\34",
             "\1\u02b0\37\uffff\1\u02b0",
-            "",
             "\1\u02b1\37\uffff\1\u02b1",
             "",
             "\1\u02b2\37\uffff\1\u02b2",
-            "\1\u02b3\37\uffff\1\u02b3",
+            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
+            "\2\uffff\1\34\1\uffff\32\34",
             "\1\u02b4\37\uffff\1\u02b4",
+            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
+            "\2\uffff\1\34\1\uffff\32\34",
             "",
-            "",
-            "\1\u02b5\37\uffff\1\u02b5",
             "\1\u02b6\37\uffff\1\u02b6",
             "\1\u02b7\37\uffff\1\u02b7",
             "\1\u02b8\37\uffff\1\u02b8",
-            "\1\u02b9\37\uffff\1\u02b9",
-            "\1\u02ba\37\uffff\1\u02ba",
+            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
+            "\2\uffff\1\34\1\uffff\32\34",
+            "",
+            "",
+            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
+            "\2\uffff\1\34\1\uffff\32\34",
             "\1\u02bb\37\uffff\1\u02bb",
-            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
-            "\2\uffff\1\34\1\uffff\32\34",
-            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
-            "\2\uffff\1\34\1\uffff\32\34",
-            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
-            "\2\uffff\1\34\1\uffff\32\34",
+            "\1\u02bc\37\uffff\1\u02bc",
+            "",
+            "\1\u02bd\37\uffff\1\u02bd",
+            "",
+            "\1\u02be\37\uffff\1\u02be",
             "\1\u02bf\37\uffff\1\u02bf",
             "\1\u02c0\37\uffff\1\u02c0",
-            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
-            "\2\uffff\1\34\1\uffff\32\34",
             "",
             "",
-            "",
+            "\1\u02c1\37\uffff\1\u02c1",
             "\1\u02c2\37\uffff\1\u02c2",
             "\1\u02c3\37\uffff\1\u02c3",
-            "",
             "\1\u02c4\37\uffff\1\u02c4",
             "\1\u02c5\37\uffff\1\u02c5",
+            "\1\u02c6\37\uffff\1\u02c6",
+            "\1\u02c7\37\uffff\1\u02c7",
             "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
             "\2\uffff\1\34\1\uffff\32\34",
-            "\1\u02c7\37\uffff\1\u02c7",
+            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
+            "\2\uffff\1\34\1\uffff\32\34",
+            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
+            "\2\uffff\1\34\1\uffff\32\34",
+            "\1\u02cb\37\uffff\1\u02cb",
+            "\1\u02cc\37\uffff\1\u02cc",
+            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
+            "\2\uffff\1\34\1\uffff\32\34",
+            "",
+            "",
+            "",
+            "\1\u02ce\37\uffff\1\u02ce",
+            "\1\u02cf\37\uffff\1\u02cf",
+            "",
+            "\1\u02d0\37\uffff\1\u02d0",
+            "\1\u02d1\37\uffff\1\u02d1",
+            "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
+            "\2\uffff\1\34\1\uffff\32\34",
+            "\1\u02d3\37\uffff\1\u02d3",
             "",
             "\1\34\10\uffff\2\34\1\uffff\13\34\6\uffff\32\34\1\uffff\1\34"+
             "\2\uffff\1\34\1\uffff\32\34",
@@ -12466,7 +12641,7 @@ public class InputfileLexer extends Lexer {
             this.transition = DFA20_transition;
         }
         public String getDescription() {
-            return "1:1: Tokens : ( CRYSTAL | TYPE | DIFFRACTIONDECAYMODEL | DDM | SIMPLE | LINEAR | LEAL | DECAYPARAM | ABSCOEFCALC | DUMMY | DEFAULT | AVERAGE | RDFORTAN | RDJAVA | PDB | SAXS | SEQUENCE | SAXSSEQ | SMALLMOLE | CIF | DIMENSION | ANGLEP | ANGLEL | PIXELSPERMICRON | UNITCELL | PROTEINCONC | PROTEINCONCENTRATION | NUMMONOMERS | NUMRESIDUES | NUMRNA | NUMDNA | NUMCARB | PROTEINHEAVYATOMS | ELEMENT | SMALLMOLEATOMS | SOLVENTHEAVYCONC | SOLVENTFRACTION | PDBNAME | CIFNAME | WIREFRAMETYPE | MODELFILE | CALCULATEPEESCAPE | GONIOMETERAXIS | CONTAINERMATERIALTYPE | MATERIALTYPE | NONE | MIXTURE | ELEMENTAL | CONTAINERTHICKNESS | CONTAINERMATERIALMIXTURE | MATERIALMIXTURE | CONTAINERMATERIALELEMENTS | MATERIALELEMENTS | CONTAINERDENSITY | SEQUENCEFILE | SEQFILE | CALCULATEFLESCAPE | FLRESOLUTION | PERESOLUTION | SURROUNDINGHEAVYCONC | OILBASED | CALCSURROUNDING | OILELEMENTS | OILDENSITY | BEAM | FLUX | FWHM | ENERGY | KEV | FILE | PIXELSIZE | COLLIMATION | RECTANGULAR | CIRCULAR | HORIZONTAL | VERTICAL | WEDGE | EXPOSURETIME | ANGULARRESOLUTION | STARTOFFSET | TRANSLATEPERDEGREE | ROTAXBEAMOFFSET | FLOAT | COMMENT | WS | STRING );";
+            return "1:1: Tokens : ( CRYSTAL | TYPE | DIFFRACTIONDECAYMODEL | DDM | SIMPLE | LINEAR | LEAL | DECAYPARAM | ABSCOEFCALC | DUMMY | DEFAULT | AVERAGE | RDFORTAN | RDJAVA | PDB | SAXS | SEQUENCE | SAXSSEQ | SMALLMOLE | CIF | DIMENSION | ANGLEP | ANGLEL | PIXELSPERMICRON | UNITCELL | PROTEINCONC | PROTEINCONCENTRATION | NUMMONOMERS | NUMRESIDUES | NUMRNA | NUMDNA | NUMCARB | PROTEINHEAVYATOMS | ELEMENT | SMALLMOLEATOMS | SOLVENTHEAVYCONC | SOLVENTFRACTION | PDBNAME | CIFNAME | WIREFRAMETYPE | MODELFILE | CALCULATEPEESCAPE | GONIOMETERAXIS | CONTAINERMATERIALTYPE | MATERIALTYPE | NONE | MIXTURE | ELEMENTAL | CONTAINERTHICKNESS | CONTAINERMATERIALMIXTURE | MATERIALMIXTURE | CONTAINERMATERIALELEMENTS | MATERIALELEMENTS | CONTAINERDENSITY | SEQUENCEFILE | SEQFILE | CALCULATEFLESCAPE | FLRESOLUTION | PERESOLUTION | SURROUNDINGHEAVYCONC | OILBASED | CALCSURROUNDING | OILELEMENTS | OILDENSITY | BEAM | FLUX | FWHM | ENERGY | KEV | FILE | PIXELSIZE | COLLIMATION | RECTANGULAR | CIRCULAR | HORIZONTAL | VERTICAL | WEDGE | EXPOSURETIME | ANGULARRESOLUTION | STARTOFFSET | TRANSLATEPERDEGREE | ROTAXBEAMOFFSET | MAXRESOLUTION | FLOAT | COMMENT | WS | STRING );";
         }
     }
  

@@ -21,7 +21,7 @@ public class Wedge {
     START_POSITION_X, START_POSITION_Y, START_POSITION_Z,
     /** Translation along the axis in distance per radian. */
     TRANSLATION_X, TRANSLATION_Y, TRANSLATION_Z,
-    OFF_AXIS
+    OFF_AXIS, MAX_RESOLUTION
   };
 
   /** Storage of all wedge properties. */
@@ -47,6 +47,7 @@ public class Wedge {
     properties.put(WedgeProperties.TRANSLATION_Y, 0d);
     properties.put(WedgeProperties.TRANSLATION_Z, 0d);
     properties.put(WedgeProperties.OFF_AXIS, 0d);
+    properties.put(WedgeProperties.MAX_RESOLUTION, 2d);
 
     properties.putAll(wedgeProperties);
   }
@@ -83,12 +84,13 @@ public class Wedge {
       final Double translationX,
       final Double translationY,
       final Double translationZ,
-      final Double offAxisRotationUm) {
+      final Double offAxisRotationUm,
+      final Double maxResolution) {
 
     this(generateMapFromParameters(
         angularResolution, startAngle, endAngle, totalSecondsExposure,
         startXposition, startYposition, startZposition, translationX,
-        translationY, translationZ, offAxisRotationUm));
+        translationY, translationZ, offAxisRotationUm, maxResolution));
   }
 
   /**
@@ -120,7 +122,7 @@ public class Wedge {
       final Double startXposition, final Double startYposition,
       final Double startZposition, final Double translationX,
       final Double translationY, final Double translationZ,
-      final Double offAxisRotationUm) {
+      final Double offAxisRotationUm, final Double maxResolution) {
     Map<WedgeProperties, Double> wedgeProperties =
         new HashMap<WedgeProperties, Double>();
     /* Compulsory variables */
@@ -147,6 +149,9 @@ public class Wedge {
     }
     if (startZposition != null) {
       wedgeProperties.put(WedgeProperties.START_POSITION_Z, startZposition);
+    }
+    if (maxResolution != null) { 
+      wedgeProperties.put(WedgeProperties.MAX_RESOLUTION, maxResolution);
     }
 
     /*
@@ -230,6 +235,17 @@ public class Wedge {
   public Double getAngRes() {
     return properties.get(WedgeProperties.ANGULAR_RESOLUTION);
   }
+  
+  /**
+   * Returns max resolution.
+   *
+   * @return
+   *         Wedge angular resolution in radians.
+   */
+  public Double getMaxRes() {
+    return properties.get(WedgeProperties.MAX_RESOLUTION);
+  }
+  
 
   /**
    * Returns starting angle.

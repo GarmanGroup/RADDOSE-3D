@@ -639,11 +639,12 @@ scope {
 			Double	translateY;
 			Double	translateZ;
 			Double	rotationOffset;	
+			Double  maxRes
  }
 @init { 
 }
 @after { 
-wObj = new Wedge($wedge::angRes, $wedge::startAng, $wedge::endAng, $wedge::expTime, $wedge::offsetX, $wedge::offsetY, $wedge::offsetZ, $wedge::translateX, $wedge::translateY, $wedge::translateZ, $wedge::rotationOffset);
+wObj = new Wedge($wedge::angRes, $wedge::startAng, $wedge::endAng, $wedge::expTime, $wedge::offsetX, $wedge::offsetY, $wedge::offsetZ, $wedge::translateX, $wedge::translateY, $wedge::translateZ, $wedge::rotationOffset, $wedge::maxRes);
 }
 	: WEDGE a=FLOAT b=FLOAT {$wedge::startAng = Double.parseDouble($a.text);
 							 $wedge::endAng = Double.parseDouble($b.text); }
@@ -660,6 +661,7 @@ wedgeLine
 						  	 $wedge::translateY =$d.y;
 						  	 $wedge::translateZ =$d.z; }
 	| e=wedgeRotAxBeamOffset {$wedge::rotationOffset =$e.delta; }
+	| f=wedgeMaxRes {$wedge::maxRes =$f.res; }
 	;
 
 wedgeExposure returns [double value]
@@ -685,6 +687,10 @@ TRANSLATEPERDEGREE : ('T'|'t')('R'|'r')('A'|'a')('N'|'n')('S'|'s')('L'|'l')('A'|
 wedgeRotAxBeamOffset returns [double delta]
 	: ROTAXBEAMOFFSET a=FLOAT {$delta = Double.parseDouble($a.text);};
 ROTAXBEAMOFFSET : ('R'|'r')('O'|'o')('T'|'t')('A'|'a')('X'|'x')('B'|'b')('E'|'e')('A'|'a')('M'|'m')('O'|'o')('F'|'f')('F'|'f')('S'|'s')('E'|'e')('T'|'t') ;
+
+wedgeMaxRes returns [double res]
+	: MAXRESOLUTION a=FLOAT {$res = Double.parseDouble($a.text);};
+MAXRESOLUTION : ('M'|'m')('A'|'a')('X'|'x')('R'|'r')('E'|'e')('S'|'s')('O'|'o')('L'|'l')('U'|'u')('T'|'t')('I'|'i')('O'|'o')('N'|'n') ;
 
 / ------------------------------------------------------------------
 

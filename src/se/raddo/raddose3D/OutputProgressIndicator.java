@@ -69,7 +69,7 @@ public class OutputProgressIndicator implements Output, ExposeObserver {
   }
 
   @Override
-  public void exposureStart(final int upcomingImageCount) {
+  public void exposureStart(final int upcomingImageCount, Wedge wedge) {
     w.write("Exposing wedge: [ 0%");
     imageCount = upcomingImageCount;
     wedgeProgress = 0;
