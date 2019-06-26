@@ -109,7 +109,7 @@ public class XFEL {
   private double numFluxPhotons;
   protected long NUM_PHOTONS = 100000;
   protected  long PULSE_LENGTH = 30; //length in fs
-  protected static final double PULSE_BIN_LENGTH = 0.1; //length in fs
+  protected double PULSE_BIN_LENGTH = 0.1; //length in fs
   protected static final double PULSE_ENERGY = 1.4E-3; //energy in J
   protected static final double c = 299792458; //m/s
   protected static final double m = 9.10938356E-31; // in Kg
@@ -179,11 +179,23 @@ public class XFEL {
   public void CalculateXFEL(Beam beam, Wedge wedge, CoefCalc coefCalc) {
   //  coefCalc.getDifferentialInlasticxSection(beam.getPhotonEnergy());
   //  coefCalc.getStoppingPower(beam.getPhotonEnergy(), false);
+    //set pulse length and num photons from input
     PULSE_LENGTH = StrictMath.round(wedge.getTotSec()); //fs
+    if (PULSE_LENGTH <= 1) {
+      PULSE_BIN_LENGTH = 0.01;
+    }
+    else if (PULSE_LENGTH <= 50) {
+      PULSE_BIN_LENGTH = 0.1;
+    }
+    else {
+      PULSE_BIN_LENGTH = 1;
+    }
+    
     NUM_PHOTONS = coefCalc.getNumberSimulatedElectrons();
     if (NUM_PHOTONS == 0) {
       NUM_PHOTONS = 1000000;
     }
+    
     // for testing
     lastTime = ((1/c) * (ZDimension/1E9) * 1E15) + PULSE_LENGTH;
     numFluxPhotons = beam.getPhotonsPerSec() * wedge.getTotSec();
