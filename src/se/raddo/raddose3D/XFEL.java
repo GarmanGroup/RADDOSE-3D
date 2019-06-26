@@ -180,6 +180,9 @@ public class XFEL {
   //  coefCalc.getDifferentialInlasticxSection(beam.getPhotonEnergy());
   //  coefCalc.getStoppingPower(beam.getPhotonEnergy(), false);
     //set pulse length and num photons from input
+    
+    double pulseenerg = beam.getPulseEnergy();
+    
     PULSE_LENGTH = StrictMath.round(wedge.getTotSec()); //fs
     if (PULSE_LENGTH <= 1) {
       PULSE_BIN_LENGTH = 0.01;

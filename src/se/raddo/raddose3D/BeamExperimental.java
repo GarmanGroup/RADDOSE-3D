@@ -10,7 +10,8 @@ public class BeamExperimental implements Beam {
                            pixYSize,
                            beamYSize,
                            totalFlux,
-                           beamEnergy;
+                           beamEnergy,
+                           pulseEnergy;
   private double           beamSum,
                            attenuatedFlux;
 
@@ -42,7 +43,7 @@ public class BeamExperimental implements Beam {
    *          the vertical size of the pixels in micrometres
    */
   public BeamExperimental(final Double[][] datastructure,
-      final Double totalFlux, final Double beamEnergy,
+      final Double totalFlux, final Double beamEnergy, final Double pulseEnergy,
       final Double pixelSizeX,
       final Double pixelSizeY) {
     
@@ -53,6 +54,7 @@ public class BeamExperimental implements Beam {
     this.pixYSize = pixelSizeY;
     this.totalFlux = totalFlux;
     this.beamEnergy = beamEnergy;
+    this.pulseEnergy = pulseEnergy;
     
   }
 
@@ -256,5 +258,10 @@ public class BeamExperimental implements Beam {
   public double getImageY() {
     // TODO Auto-generated method stub
     return 0;
+  }
+
+  @Override
+  public double getPulseEnergy() {
+    return pulseEnergy;
   }
 }

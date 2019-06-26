@@ -103,4 +103,10 @@ public class BeamDummy implements Beam {
     // TODO Auto-generated method stub
     return 0;
   }
+
+  @Override
+  public double getPulseEnergy() {
+    // TODO Auto-generated method stub
+    return 0;
+  }
 }

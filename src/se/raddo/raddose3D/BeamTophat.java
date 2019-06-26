@@ -21,6 +21,9 @@ public class BeamTophat implements Beam {
   /** Beam energy. */
   private final Double photonEnergy;
   
+  /** Pulse energy. */
+  private final Double pulseEnergy;
+  
   private  Double semiAngle;
   private  Double apertureRadius;
 
@@ -71,11 +74,13 @@ public class BeamTophat implements Beam {
     beamYum = (Double) properties.get(Beam.BEAM_COLL_V);
     photonsPerSec = (Double) properties.get(Beam.BEAM_FLUX);
     photonEnergy = (Double) properties.get(Beam.BEAM_ENERGY);
+    pulseEnergy = (Double) properties.get(Beam.PULSE_ENERGY);
     exposure = (Double) properties.get(Beam.BEAM_EXPOSURE);
     semiAngle = (Double) properties.get(Beam.BEAM_SEMIANGLE);
     apertureRadius = (Double) properties.get(Beam.BEAM_APERTURERADIUS);
     imageX = (Double) properties.get(Beam.IMAGE_X);
     imageY = (Double) properties.get(Beam.IMAGE_Y);
+    
     
     if (properties.get(Beam.BEAM_CIRCULAR) == "TRUE") {
       isCircular = true;
@@ -136,6 +141,11 @@ public class BeamTophat implements Beam {
   @Override
   public double getPhotonEnergy() {
     return photonEnergy;
+  }
+  
+  @Override
+  public double getPulseEnergy() {
+    return pulseEnergy;
   }
   
   @Override

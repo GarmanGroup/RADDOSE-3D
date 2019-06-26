@@ -38,7 +38,8 @@ public class BeamExperimentalpgm extends BeamExperimental {
         (Double) properties.get(Beam.BEAM_FLUX),
         (Double) properties.get(Beam.BEAM_ENERGY),
         (Double) properties.get(Beam.BEAM_PIXSIZE_X),
-        (Double) properties.get(Beam.BEAM_PIXSIZE_Y));
+        (Double) properties.get(Beam.BEAM_PIXSIZE_Y),
+        (Double) properties.get(Beam.PULSE_ENERGY));
     file = (String) properties.get(Beam.BEAM_EXTFILE);
     
     if (properties.get(Beam.BEAM_CIRCULAR) == "TRUE") {

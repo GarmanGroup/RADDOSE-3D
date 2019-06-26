@@ -594,7 +594,7 @@ beamLine
 	| j=beamApertureRadius	{ $beam::beamProperties.put(Beam.BEAM_APERTURERADIUS, $j.apertureRadius);}
 	| k=imageDimensions		{ $beam::beamProperties.put(Beam.IMAGE_X, $k.xImage); 
 	                           $beam::beamProperties.put(Beam.IMAGE_Y, $k.yImage); }
-	
+	| l=pulseEnergy			 { $beam::beamProperties.put(Beam.PULSE_ENERGY, $l.pulse); }
 	;
 
 beamFlux returns [Double flux]
@@ -620,6 +620,10 @@ beamEnergy returns [Double energy]
 	;
 ENERGY : ('E'|'e')('N'|'n')('E'|'e')('R'|'r')('G'|'g')('Y'|'y') ;
 KEV : ('K'|'k')('E'|'e')('V'|'v') ;
+
+pulseEnergy returns [Double pulse]
+	: PULSEENERGY a=FLOAT {$pulse = Double.parseDouble($a.text);};
+PULSEENERGY : ('P'|'p')('U'|'u')('L'|'l')('S'|'s')('E'|'e')('E'|'e')('N'|'n')('E'|'e')('R'|'r')('G'|'g')('Y'|'y') ;
 
 beamSemiAngle returns [Double semiAngle]
 	: SEMIANGLE a=FLOAT {$semiAngle = Double.parseDouble($a.text);};

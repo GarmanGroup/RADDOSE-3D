@@ -13,6 +13,8 @@ public interface Beam {
   public static final String BEAM_COLL_V      = "COLL_V";
   /** Constant for data fields in Map constructors: Beam energy. */
   public static final String BEAM_ENERGY      = "ENERGY";
+  /** Constant for data fields in Map constructors: Pulse energy. */
+  public static final String PULSE_ENERGY      = "PULSE_ENERGY";
   /** Constant for data fields in Map constructors: External filename. */
   public static final String BEAM_EXTFILE     = "EXTFILE";
   /** Constant for data fields in Map constructors: FWHM X. */
@@ -78,6 +80,14 @@ public interface Beam {
    *         Photon energy in keV.
    */
   public double getPhotonEnergy();
+  
+  /**
+   * Returns pulse energy of the beam.
+   *
+   * @return
+   *         pulse energy in mJ.
+   */
+  public double getPulseEnergy();
   
   /**
    * Generates a beam array
