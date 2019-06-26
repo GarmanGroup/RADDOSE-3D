@@ -31,7 +31,7 @@ public class XFEL {
    * Should have same no. of entries as the indices array.
    */
   private double[][]            normals, rotatedNormals;
-  
+  //test
   /**
    * Distances from origin for each of the triangle planes.
    * Should have same no. of entries as the indices array.
