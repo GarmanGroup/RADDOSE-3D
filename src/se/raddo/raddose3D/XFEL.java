@@ -642,15 +642,8 @@ public class XFEL {
     raddoseStyleDoseCompton = ((raddoseStyleDoseCompton * (numberOfPhotons/NUM_PHOTONS) * Beam.KEVTOJOULES) / sampleMass) /1E6; //in MGy)
     escapedEnergy = ((escapedEnergy * (numberOfPhotons/NUM_PHOTONS) * Beam.KEVTOJOULES) / sampleMass) /1E6; //in MGy
     ionisationsOld = ionisationsOld * (numberOfPhotons/NUM_PHOTONS) / totalAtoms;
-    System.out.println("Photon Dose: " + sumPhotonDose);
-    System.out.println("Electron Dose: " + sumElectronDose); 
-    System.out.println("Dose: " + sumDose);
-    
-    avgW = 1000*(avgW/avgWNum);
-    avgUk = avgUk/avgUkNum;
-    
-  //  raddoseStyleDose = (raddoseStyleDose * sampleMass)/exposedMass;
-    
+    double totRADDOSEdose = raddoseStyleDose + raddoseStyleDoseCompton;
+    double rdExposed = (totRADDOSEdose * sampleMass)/exposedMass;
     //get diffraction efficiency
     double fractionElastic = getFractionElasticallyScattered(coefCalc);
     double numberElastic = numberOfPhotons * fractionElastic;
@@ -659,9 +652,32 @@ public class XFEL {
     double elasticMolecule = numberOfPhotons * getFractionElasticallyScatteredMacro(coefCalc);
     double elasticSolvent = numberElastic - elasticMolecule;
     
-    double diffractionEfficiency = numberElastic / sumDose;
+    double diffractionEfficiency = numberElastic / voxDoseExposed;
     double DEFull = numberElastic / sumDoseNoCutOff;
-    System.out.println("Diffraction Efficiency: " + diffractionEfficiency);
+    
+    
+    
+    //print
+    System.out.println(" ");
+    System.out.println("RADDOSE-3D style average dose whole crystal: " + totRADDOSEdose); 
+    System.out.println("RADDOSE-3D style average dose exposed region: " + rdExposed); 
+    System.out.println("RADDOSE-XFEL average dose whole crystal (ADWC): " + voxDosevResolved); 
+    System.out.println("RADDOSE-XFEL average dose exposed region (ADER): " + voxDoseExposed); 
+    if (voxDoseExposed > 400) { //change to exposed
+      System.out.println("Warning, damage may begin to be seen at these doses");
+    }
+    System.out.println("Diffraction Efficiency (number elastic/ADER): " + diffractionEfficiency); 
+    System.out.println(" ");
+    System.out.println("Average ionisations per atom exposed region): " + ionisationsPerAtomvResolvedExposed); 
+    System.out.println("Average ionisations per non-hydrogen atom exposed region): " + ionisationsPerNonHExposed); 
+    System.out.println(" ");
+    
+    avgW = 1000*(avgW/avgWNum);
+    avgUk = avgUk/avgUkNum;
+    
+  //  raddoseStyleDose = (raddoseStyleDose * sampleMass)/exposedMass;
+    
+
     
     //write for RADDOSE-MC
     /*
@@ -673,36 +689,68 @@ public class XFEL {
     }
     */
     double voxFrac = voxDosevResolved/gosTot;
+    //write output to csv
     try {
-      WriterFile("outputXFEL.CSV", gosTotNoCutoff, gosTot, ionsiationPerAtomAll, ionisationsPerAtomCutoff, numberElastic, ionisationsPerNonH, voxDosevResolved, voxFrac);
+      WriterFile("outputXFEL.CSV", totRADDOSEdose, rdExposed, voxDosevResolved, voxDoseExposed, diffractionEfficiency, ionisationsPerAtomvResolvedExposed, ionisationsPerNonHExposed, voxFrac);
     } catch (IOException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
     
     //write a csv for elements as well
+    try {
+      WriteElements("outputIonsPerAtom.CSV", volFraction);
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
     
   }
   
-  private void WriterFile(final String filename, final double gosTotNoCutoff, final double gosTot, final double ionsiationPerAtomAll, final double ionisationsPerAtomCutoff
-                          ,final double numberElastic, final double ionisationsPerNonH, final double voxelDose, final double voxFrac) throws IOException {
-    String elements = "";
+  private void WriterFile(final String filename, final double totRADDOSEdose, final double rdExposed, final double voxDosevResolved, final double voxDoseExposed
+                          ,final double diffractionEfficiency, final double ionisationsPerAtomvResolvedExposed, final double ionisationsPerNonHExposed, final double voxFrac) throws IOException {
+
+    BufferedWriter outFile;
+    outFile = new BufferedWriter(new OutputStreamWriter(
+        new FileOutputStream(filename), "UTF-8"));
+    try {
+      outFile.write("RD3D-ADWC,RD3D-ADER,XFEL-ADWC,XFEL-ADER,Diffraction efficiency,ions per atom, ions per non-H atom\n");
+      outFile.write(String.format(
+          " %f, %f, %f, %f, %f, %f, %f%n", totRADDOSEdose, rdExposed, voxDosevResolved,voxDoseExposed,diffractionEfficiency,ionisationsPerAtomvResolvedExposed, ionisationsPerNonHExposed));
+    } catch (IOException e) {
+      e.printStackTrace();
+      System.err.println("WriterFile: Could not write to file " + filename);
+    }
+    
+    try {
+      outFile.close();
+    } catch (IOException e) {
+      e.printStackTrace();
+      System.err.println("WriterFile: Could not close file " + filename);
+    }
+  }
+  
+  private void WriteElements(final String filename, final double volFraction)throws IOException {
+    BufferedWriter outFile;
+    outFile = new BufferedWriter(new OutputStreamWriter(
+        new FileOutputStream(filename), "UTF-8"));
+    try {
+      outFile.write("Atomic number,ionisationsPerAtom\n");
+    } catch (IOException e) {
+      e.printStackTrace();
+      System.err.println("WriterFile: Could not write to file " + filename);
+    }
+    
     for (Element e: atomicIonisationsPerAtom.keySet()) {
-      int Z = e.getAtomicNumber();
-      elements = elements + String.valueOf(Z) + " " + atomicIonisationsPerAtom.get(e) + "  "; 
-    }
-    BufferedWriter outFile;
-    outFile = new BufferedWriter(new OutputStreamWriter(
-        new FileOutputStream(filename), "UTF-8"));
-    try {
-      outFile.write("gosTot,voxDose,voxFrac\n");
+      try {
       outFile.write(String.format(
-          " %f, %f, %f%n", gosTot, voxelDose, voxFrac));
-    } catch (IOException e) {
-      e.printStackTrace();
-      System.err.println("WriterFile: Could not write to file " + filename);
+          " %d, %f%n", e.getAtomicNumber(), atomicIonisationsPerAtom.get(e)/volFraction));
+      }catch (IOException e1) {
+        e1.printStackTrace();
+        System.err.println("WriterFile: Could not write to file " + filename);
+      }
     }
-    
+
     try {
       outFile.close();
     } catch (IOException e) {
@@ -710,29 +758,7 @@ public class XFEL {
       System.err.println("WriterFile: Could not close file " + filename);
     }
   }
-  /*
-  private void WriteElements(final String filename)throws IOException {
   
-    BufferedWriter outFile;
-    outFile = new BufferedWriter(new OutputStreamWriter(
-        new FileOutputStream(filename), "UTF-8"));
-    try {
-      outFile.write("totalDose,numSimulated,RADDOSEDose,cutoffDose,AllIonisations,IonksationsCutoff,IonisationsOld\n");
-      outFile.write(String.format(
-          " %f, %d, %f, %f, %f, %f, %f, %f%n", gosTotNoCutoff, NUM_PHOTONS, raddoseStyleDose + raddoseStyleDoseCompton, gosTot, ionsiationPerAtomAll, ionisationsPerAtomCutoff, ionisationsOld, numberElastic));
-    } catch (IOException e) {
-      e.printStackTrace();
-      System.err.println("WriterFile: Could not write to file " + filename);
-    }
-    
-    try {
-      outFile.close();
-    } catch (IOException e) {
-      e.printStackTrace();
-      System.err.println("WriterFile: Could not close file " + filename);
-    }
-  }
-  */
   private double getFractionElasticallyScattered(CoefCalc coefCalc) {
     double elasticCoef = coefCalc.getElasticCoefficient(); //per um
     double fractionElastic = 1-Math.exp(-elasticCoef * (ZDimension/1000));
