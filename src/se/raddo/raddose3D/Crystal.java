@@ -224,8 +224,12 @@ public abstract class Crystal {
     String program = (String) properties.get(CRYSTAL_PROGRAM);
     if (program != null) {
       program = program.toUpperCase().trim();
+      subprogram = program;
     }
-    subprogram = program;
+    else {
+      subprogram = "RD3D";
+    }
+    
 
     //Check that ppm is sensible
     if ((properties.get(CRYSTAL_RESOLUTION) != null) && (properties.get(CRYSTAL_DIM_X) != null)) {
@@ -638,6 +642,7 @@ public abstract class Crystal {
   public void expose(final Beam beam, final Wedge wedge) {
     //start XFEL here, just comment and uncomment for now
     coefCalc.updateCoefficients(beam);
+    
     if (subprogram.equals("XFEL")) {
       startXFEL(XDim, YDim, ZDim, beam, wedge, coefCalc);
     }
