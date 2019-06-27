@@ -110,7 +110,7 @@ public class XFEL {
   protected long NUM_PHOTONS = 100000;
   protected  long PULSE_LENGTH = 30; //length in fs
   protected double PULSE_BIN_LENGTH = 0.1; //length in fs
-  protected static final double PULSE_ENERGY = 1.4E-3; //energy in J
+  protected double PULSE_ENERGY = 1.4E-3; //energy in J
   protected static final double c = 299792458; //m/s
   protected static final double m = 9.10938356E-31; // in Kg
   protected static final double h = 6.62607004E-34; //J.s
@@ -181,7 +181,7 @@ public class XFEL {
   //  coefCalc.getStoppingPower(beam.getPhotonEnergy(), false);
     //set pulse length and num photons from input
     
-    double pulseenerg = beam.getPulseEnergy();
+    PULSE_ENERGY = beam.getPulseEnergy() / 1E3;
     
     PULSE_LENGTH = StrictMath.round(wedge.getTotSec()); //fs
     if (PULSE_LENGTH <= 1) {
