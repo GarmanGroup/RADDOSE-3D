@@ -1982,6 +1982,12 @@ public class XFEL {
     }
   }
   
+/**
+ * This method places a photon randomly in the beam area
+ * Currently only works for tophat so need to make it for a gaussian
+ * @param beam
+ * @return the initial xy position of the photon
+ */
   private double[] getPhotonBeamXYPos(Beam beam) {
     double[] xyPos = new double[2];
     double RNDx = Math.random();
@@ -1993,12 +1999,14 @@ public class XFEL {
     double beamY = beam.getBeamY()*1000;
 //    previousY = (RNDy * YDimension) - (YDimension/2);
     if (beam.getIsCircular()) {   //reduce Y limits so you can't put it out of the circle / ellipse
-      double fractionLimit = Math.pow(1 - Math.pow(xyPos[0]/beamX, 2), 0.5);
-      RNDy *= fractionLimit;
+     // double fractionLimit = Math.pow(1 - Math.pow(xyPos[0]/beamX, 2), 0.5);
+    //  RNDy *= fractionLimit;
+      xyPos[1] = RNDy*Math.pow(Math.pow(beamY/2, 2)*(Math.pow(xyPos[0], 2)/Math.pow(beamX/2, 2)), 0.5);
+      xyPos[1] *= PosOrNeg();
     }
-    xyPos[1] = (RNDy * beamY) - (beamY/2);
-    //the circular beam is wrong and needs to change to the same as the MicroED
-    //Although this way is pretty much a gaussian!!!! - might keep a bit then
+    else {
+      xyPos[1] = (RNDy * beamY) - (beamY/2);
+    }
     return xyPos;
   }
   
