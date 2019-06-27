@@ -37,7 +37,7 @@ public abstract class Crystal {
   /** Constant for data fields in Map constructors: Goniometer Axis. */
   public static final String     CRYSTAL_GONIOMETER_AXIS       = "GONIOMETER";
   /** Constant for data fields in Map constructors: Electrons. */
-  public static final String     CRYSTAL_ELECTRONS       = "ELECTRONS";
+  public static final String     CRYSTAL_PROGRAM       = "PROGRAM";
 
   /** Constant for data fields in Map constructors: Photoelectron resolution. */
   
@@ -128,7 +128,8 @@ public abstract class Crystal {
   /**
    * whether electrons are used
    */
-  public final boolean useElectrons;
+ // public final boolean useElectrons;
+  public final String subprogram;
   
   /**
    * Goniometer Orientation
@@ -220,11 +221,11 @@ public abstract class Crystal {
     String goniometer =  String.valueOf(properties.get(CRYSTAL_GONIOMETER_AXIS));
     verticalGoniometer = ("90.0".equals(goniometer)); //so horizontal is default 
     
-    String electrons = (String) properties.get(CRYSTAL_ELECTRONS);
-    if (electrons != null) {
-      electrons = electrons.toUpperCase();
+    String program = (String) properties.get(CRYSTAL_PROGRAM);
+    if (program != null) {
+      program = program.toUpperCase().trim();
     }
-    useElectrons = ("TRUE".equals(electrons));
+    subprogram = program;
 
     //Check that ppm is sensible
     if ((properties.get(CRYSTAL_RESOLUTION) != null) && (properties.get(CRYSTAL_DIM_X) != null)) {
@@ -637,14 +638,14 @@ public abstract class Crystal {
   public void expose(final Beam beam, final Wedge wedge) {
     //start XFEL here, just comment and uncomment for now
     coefCalc.updateCoefficients(beam);
-    startXFEL(XDim, YDim, ZDim, beam, wedge, coefCalc);
-    
-    if (useElectrons == true) {
+    if (subprogram.equals("XFEL")) {
+      startXFEL(XDim, YDim, ZDim, beam, wedge, coefCalc);
+    }
+    else if (subprogram.equals("EMSP") || subprogram.equals("EMED")){
       startMicroED(XDim, YDim, ZDim, beam, wedge, coefCalc, crystalType);
     }
-    else { //photon stuff
-      
-      
+    else {
+  
     double fluorescenceEnergyRelease = 0;
     double augerEnergy = 0;   
     double cryoAugerEnergy = 0;

@@ -294,7 +294,7 @@ crystalLine
 	| ii=oilElements                { $crystal::oilNames    = $ii.names;  
 		                	         $crystal::oilNums	= $ii.num;  }
 	| jj=oilDensity	                { $crystal::oilDensity			= $jj.oildens;  }
-	| kk=electrons	                { $crystal::crystalProperties.put(Crystal.CRYSTAL_ELECTRONS, $kk.value); }
+	| kk=program	                { $crystal::crystalProperties.put(Crystal.CRYSTAL_PROGRAM, $kk.value); }
 	| ll=simElectrons		{ $crystal::simElectrons		= $ll.simel; }
 							
 	;
@@ -557,10 +557,10 @@ simElectrons returns [long simel]
 SIMELECTRONS :	('S'|'s')('I'|'i')('M'|'m')('E'|'e')('L'|'l')('E'|'e')('C'|'c')('T'|'t')('R'|'r')('O'|'o')('N'|'n')('S'|'s');
 
 
-electrons returns [String value]
-	: ELECTRONS a=STRING {$value = $a.text;};
-ELECTRONS  
-	:	 ('E'|'e')('L'|'l')('E'|'e')('C'|'c')('T'|'t')('R'|'r')('O'|'o')('N'|'n')('S'|'s') ;
+program returns [String value]
+	: SUBPROGRAM a=STRING {$value = $a.text;};
+SUBPROGRAM  
+	:	 ('S'|'s')('U'|'u')('B'|'b')('P'|'p')('R'|'r')('O'|'o')('G'|'g')('R'|'r')('A'|'a')('M'|'m') ;
 
 
 // ------------------------------------------------------------------
