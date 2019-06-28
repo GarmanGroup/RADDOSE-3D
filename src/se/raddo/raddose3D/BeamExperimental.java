@@ -264,4 +264,10 @@ public class BeamExperimental implements Beam {
   public double getPulseEnergy() {
     return pulseEnergy;
   }
+
+  @Override
+  public void setPhotonsPerfs(double photonsPerfs) {
+    // TODO Auto-generated method stub
+    
+  }
 }

@@ -230,4 +230,10 @@ public class BeamTophat implements Beam {
       return imageY;
     }
   }
+
+  @Override
+  public void setPhotonsPerfs(double photonsPerfs) {
+    // TODO Auto-generated method stub
+    attenuatedPhotonsPerSec = photonsPerfs;
+  }
 }

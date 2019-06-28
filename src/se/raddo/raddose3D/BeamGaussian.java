@@ -339,4 +339,9 @@ public class BeamGaussian implements Beam {
     // TODO Auto-generated method stub
     return 0;
   }
+  @Override
+  public void setPhotonsPerfs(double photonsPerfs) {
+    // TODO Auto-generated method stub
+    
+  }
 }

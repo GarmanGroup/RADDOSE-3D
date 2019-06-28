@@ -109,4 +109,10 @@ public class BeamDummy implements Beam {
     // TODO Auto-generated method stub
     return 0;
   }
+
+  @Override
+  public void setPhotonsPerfs(double photonsPerfs) {
+    // TODO Auto-generated method stub
+    
+  }
 }

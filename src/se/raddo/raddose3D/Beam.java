@@ -133,4 +133,6 @@ public interface Beam {
   public double getImageX();
   public double getImageY();
   
+  public void setPhotonsPerfs(double photonsPerfs);
+  
 }

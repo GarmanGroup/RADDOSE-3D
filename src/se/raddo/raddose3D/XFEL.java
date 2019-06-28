@@ -104,6 +104,9 @@ public class XFEL {
   private double avgUk;
   private int avgUkNum;
   
+  private double RD3D_ADWC;
+  private double RD3D_ADER;
+  
   private double[][][][] voxelEnergy;
   private double[][][][] voxelEnergyvResolved;
   private double[][][][] voxelIonisationsvResolved;
@@ -222,6 +225,7 @@ public class XFEL {
     */
     startMonteCarloXFEL(beam, wedge, coefCalc);
     processDose(beam, coefCalc);
+    RD3Dcheck(beam, wedge, coefCalc);
     System.out.println("XFEL done");
     
     //terminate the program
@@ -677,6 +681,7 @@ public class XFEL {
     ionisationsOld = ionisationsOld * (numberOfPhotons/NUM_PHOTONS) / totalAtoms;
     double totRADDOSEdose = raddoseStyleDose + raddoseStyleDoseCompton;
     double rdExposed = (totRADDOSEdose * sampleMass)/exposedMass;
+    raddoseStyleDose = rdExposed;
     //get diffraction efficiency
     double fractionElastic = getFractionElasticallyScattered(coefCalc);
     double numberElastic = numberOfPhotons * fractionElastic;
@@ -710,7 +715,6 @@ public class XFEL {
     
   //  raddoseStyleDose = (raddoseStyleDose * sampleMass)/exposedMass;
     
-
     
     //write for RADDOSE-MC
     /*
@@ -2822,6 +2826,113 @@ private Element chooseLowEnElement(CoefCalc coefCalc, double Pinner, Map<Element
     }
     return theta;
   }
+  
+  //Do a RD3D check of the values to make sure the RD3D dose is not ridiculous
+  public void RD3Dcheck(Beam beam, Wedge wedge, CoefCalc coefCalc) {
+    //firstly need to set the photons per fs in beam
+    double energyPerPhoton = beam.getPhotonEnergy()*Beam.KEVTOJOULES;
+    double numberOfPhotons = PULSE_ENERGY/energyPerPhoton;
+    double photonsPerfs = numberOfPhotons/PULSE_LENGTH;
+    beam.setPhotonsPerfs(photonsPerfs);
+    
+    double[] crystCoords;
+    int[] crystalSize = getMaxPixelCoordinates();
+    double[][][] voxImageFluence = new double[crystalSize[0]][crystalSize[1]][crystalSize[2]];
+    double[][][] voxImageDose = new double[crystalSize[0]][crystalSize[1]][crystalSize[2]];
+    double[][][] absorbedEnergy = new double[crystalSize[0]][crystalSize[1]][crystalSize[2]];
+    double[][][] voxElasticYield = new double[crystalSize[0]][crystalSize[1]][crystalSize[2]];
+    double[][][] voxImageComptonFluence = new double[crystalSize[0]][crystalSize[1]][crystalSize[2]];
+    
+    final double fluenceToDoseFactorCompton = -1
+        * Math.expm1(-1 * coefCalc.getInelasticCoefficient()
+            / crystalPixPerUMXFEL)
+        // exposure for the Voxel (J) * fraction absorbed by voxel
+        / (1e-15 * (Math.pow(crystalPixPerUMXFEL, -3) * coefCalc
+            .getDensity()))
+        // Voxel mass: 1um^3/1m/ml
+        // (= 1e-18/1e3) / [volume (um^-3) *density (g/ml)]
+        * 1e-6; // MGy
+        //
+
+ double fluenceToDoseFactor = -1
+    * Math.expm1(-1 * coefCalc.getAbsorptionCoefficient()
+        / crystalPixPerUMXFEL)
+    // exposure for the Voxel (J) * fraction absorbed by voxel
+    / (1e-15 * (Math.pow(crystalPixPerUMXFEL, -3) * coefCalc
+        .getDensity()))
+    // Voxel mass: 1um^3/1m/ml
+    // (= 1e-18/1e3) / [volume (um^-3) *density (g/ml)]
+    * 1e-6; // MGy
+    
+    double beamAttenuationFactor = Math.pow(crystalPixPerUMXFEL, -2)
+        * wedge.getTotSec();
+    // Area in um^2 of a voxel * time per angular step
+
+    final double beamAttenuationExpFactor = -coefCalc     
+        .getAttenuationCoefficient();
+    
+    long numVoxels = 0;
+    long numExposedVoxels = 0;
+    double sumDose = 0;
+    for (int i = 0; i < crystalSize[0]; i++) {
+      for (int j = 0; j < crystalSize[1]; j++) {
+        for (int k = 0; k < crystalSize[2]; k++) {
+          if (isMicrocrystalAt(i, j, k)) {
+            numVoxels += 1;
+            // Rotate crystal into position
+            crystCoords = convertToCartesianCoordinates(i, j, k);
+            for (int l = 0; l < 3; l++) {
+              crystCoords[l] = crystCoords[l]/1000;
+            }
+            
+            /* Unattenuated beam intensity (J/um^2/s) */
+            double unattenuatedBeamIntensity = beam.beamIntensity(
+                crystCoords[0], crystCoords[1],
+                0);
+
+            if (unattenuatedBeamIntensity > 0d) {
+              numExposedVoxels += 1;
+              double depth = crystCoords[2];
+
+              /*
+               * Assigning exposure (joules incident) and dose (J/kg absorbed)
+               * to the voxel.
+               */
+          
+              voxImageFluence[i][j][k] =     // Attenuates the beam for absorption in joules 
+                  unattenuatedBeamIntensity * beamAttenuationFactor // beam attenuation factor includes voxel size
+                      * Math.exp(depth * beamAttenuationExpFactor);   
+              
+              //calculate compton effect
+              double electronweight = 9.10938356E-31;
+              double csquared = 3E8*3E8;
+              double beamenergy = (beam.getPhotonEnergy() * Beam.KEVTOJOULES);
+              double mcsquared = electronweight * csquared;
+              double voxImageElectronEnergyDose = mcsquared / (2*beamenergy + mcsquared);
+              voxImageElectronEnergyDose = (beamenergy * (1 - (Math.pow(voxImageElectronEnergyDose, 0.5)))); //Compton electron energy in joules
+              double numberofphotons = voxImageFluence[i][j][k] / beamenergy; //This gives I0 in equation 9 in Karthik 2010, dividing by beam energy leaves photons per um^2/s
+              voxImageComptonFluence[i][j][k] = numberofphotons * voxImageElectronEnergyDose; //Re-calculate voxImageFluence using Compton electron energy
+              double voxImageDoseCompton = fluenceToDoseFactorCompton * voxImageComptonFluence[i][j][k];
+              
+              //elastic yield
+              //Dose absorbed by photoelectric effect
+              voxImageDose[i][j][k] = fluenceToDoseFactor * voxImageFluence[i][j][k] + voxImageDoseCompton;
+              sumDose += voxImageDose[i][j][k];
+            }
+          }
+        }
+      }
+    }
+    
+    RD3D_ADWC = sumDose/ numVoxels;
+    RD3D_ADER = sumDose/ numExposedVoxels;
+    boolean tooLowRes = false;
+    if ((Math.abs(RD3D_ADER - raddoseStyleDose) / raddoseStyleDose) > 0.25) {
+      System.out.println("Consider simulating more photons for a more reliable result");
+    }
+  }
+  
+  
   
   private boolean isMicrocrystalAt(final double x, final double y, final double z) {
     //Note that this is absolutely only right for a cuboid at the moment
