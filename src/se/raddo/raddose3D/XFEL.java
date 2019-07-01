@@ -70,7 +70,7 @@ public class XFEL {
   private HashMap<Integer, HashMap<Integer, double[]>> cumulativeTransitionProbabilities;
   private HashMap<Integer, HashMap<Integer, double[]>> augerTransitionEnergies;
   private HashMap<Integer, HashMap<Integer, double[]>> augerExitIndex;
-  private int[] augerElements = {6, 7, 8, 16, 26};
+  private int[] augerElements = {6, 7, 8, 11, 12, 14, 15, 16, 17, 19, 20, 25, 26, 27, 28, 29, 30, 33, 34};
   private HashMap<Integer, Double> totKAugerProb;
   
   //ionisationStuff
@@ -706,8 +706,8 @@ public class XFEL {
     }
     System.out.println("Diffraction Efficiency (number elastic/ADER): " + diffractionEfficiency); 
     System.out.println(" ");
-    System.out.println("Average ionisations per atom exposed region): " + totIonsperAtomExposed); 
-    System.out.println("Average ionisations per non-hydrogen atom exposed region): " + ionisationsPerNonHExposed); 
+    System.out.println("Average ionisations per atom exposed region: " + totIonsperAtomExposed); 
+    System.out.println("Average ionisations per non-hydrogen atom exposed region: " + ionisationsPerNonHExposed); 
     System.out.println(" ");
     
     avgW = 1000*(avgW/avgWNum);
@@ -949,8 +949,8 @@ public class XFEL {
     int[] pixelCoord = convertToPixelCoordinates(xn, yn, zn);
     int shell = (int) shellIndex;
     int Z = ionisedElement.getAtomicNumber();
-    if (Z == 6 || Z == 7 || Z == 8 || Z == 16 || Z == 26) {
-    if (shellIndex == 0 || (shellIndex < 4 && Z==16) || (shellIndex < 7 && Z==26)) {
+    if (Z == 6 || Z == 7 || Z == 8 || Z == 11 || Z == 12 || Z == 14 || Z == 16 || Z == 17 || Z == 19 || Z == 20 || Z == 25 || Z == 26 || Z == 27 || Z == 28 || Z == 29 || Z == 30 || Z == 33 || Z == 34) {
+    if (shellIndex == 0 || (shellIndex < 2 && Z==11) || (shellIndex < 3 && Z==12) || (shellIndex < 4 && Z<=20 && Z>12) || (shellIndex < 7 && Z>=25 && Z<31) || (shellIndex < 9 && Z>32 && Z < 35)) {
       //only do for elements that are possible right now - C N O S
         double shellFluorescenceYield = ionisedElement.getKShellFluorescenceYield();
         double fluoresenceYieldKRND = Math.random();
@@ -2212,20 +2212,29 @@ public class XFEL {
       HashMap<Integer, double[]> shellTransitionEnergies = new HashMap<Integer, double[]>();
       HashMap<Integer, double[]> shellCumulativeProbs = new HashMap<Integer, double[]>();
       HashMap<Integer, double[]> leftShellIndexes = new HashMap<Integer, double[]>();
-      if (augerElements[i] == 16) {
+      if (augerElements[i] == 11) {
+        shell = 1;
+      }
+      if (augerElements[i] == 12) {
+        shell = 2;
+      }
+      if (augerElements[i] <= 20 && augerElements[i] > 12) {
         shell = 3;
       }
-      if (augerElements[i] == 26) {
+      if (augerElements[i] >= 25 && augerElements[i] <= 30) {
         shell = 6;
+      }
+      if (augerElements[i] >= 33 && augerElements[i] <= 34) {
+        shell = 8;
       }
       for (int j =0; j <= shell; j++) {
     //  if (augerElements[i] != 26) {
-      double[] transitionProbs = new double[42];
-      double[] leftShellIndex = new double[42];
-      double[] cumulativeTransitionProbs = new double[42];
+      double[] transitionProbs = new double[65];
+      double[] leftShellIndex = new double[65];
+      double[] cumulativeTransitionProbs = new double[65];
       double sumProb = 0;
-      double[] transitionLinewidths = new double[42];
-      double[] transitionEnergies = new double[42];
+      double[] transitionLinewidths = new double[65];
+      double[] transitionEnergies = new double[65];
       String elementNum = String.valueOf(augerElements[i]) + "-" + j + ".csv";
       String filePath = "constants/auger_linewidths/" + elementNum;
       InputStreamReader isr = locateFile(filePath);

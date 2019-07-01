@@ -3018,7 +3018,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
   //with subShells
   @Override
   public int[] getNumValenceElectronsSubshells(Element e) {
-    int[] subshells = {2, 2, 2, 4, 2, 2, 4, 10, 32};
+    int[] subshells = {2, 2, 2, 4, 2, 2, 4, 10, 2, 30};
     int Z = e.getAtomicNumber();
     int valence = Z;
     int numInnerShells = 0;
@@ -3030,7 +3030,11 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
       numInnerShells = 2;
       valence -= 4;
     }
-    else if (Z >= 12 && Z <= 19) {
+    else if (Z == 12) {
+      numInnerShells = 3;
+      valence -= 6;
+    }
+    else if (Z >= 13 && Z <= 19) {
       valence -= 10;
       numInnerShells = 4;
     }
@@ -3045,6 +3049,10 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     else if (Z >= 24 && Z <= 32) {
       numInnerShells = 7;
       valence -= 18;
+    }
+    else if (Z >= 33 && Z <= 34) {
+      numInnerShells = 9;
+      valence -= 28;
     }
     if (Z == 26) {
    //   numInnerShells = 8; //might not want this
@@ -3385,7 +3393,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
       return e.getL3Edge();
     }
     else if (shellIndex == 4) {
-      return e.getM1Edge();
+      return e.getM1Binding();
     }
     else if (shellIndex == 5) {
       return e.getM2Edge();
@@ -3395,6 +3403,12 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     }
     else if (shellIndex == 7) {
       return e.getM4Edge();
+    }
+    else if (shellIndex == 8) {
+      return e.getM5Edge();
+    }
+    else if (shellIndex == 9) {
+      return e.getN1Binding();
     }
     else {
       return 0;     //I need to add in more for iron here!
@@ -3716,7 +3730,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
   public double getWkMolecule(double a, Element e, int shellIndex, boolean surrounding) {
     int[] shells = {2, 8, 18, 32};
   //  int[] subshells = {2, 2, 2, 4, 18, 32};
-    int[] subshells = {2, 2, 2, 4, 2, 2, 4, 10, 32};
+    int[] subshells = {2, 2, 2, 4, 2, 2, 4, 10, 2, 30};
     int Z = e.getAtomicNumber();
     
     int sumZ = 0;
@@ -3756,7 +3770,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
   public double[] checkMeanI(double electronEnergy, double a, boolean surrounding) {
     int[] shells = {2, 8, 18, 32};
    // int[] subshells = {2, 2, 2, 4, 18, 32};
-    int[] subshells = {2, 2, 2, 4, 2, 2, 4, 10, 32};
+    int[] subshells = {2, 2, 2, 4, 2, 2, 4, 10, 2, 30};
     //just a start for a test
     double ZlnI = getZlnI(electronEnergy, surrounding);
     double sumfcb = 0;
@@ -4819,7 +4833,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     }
     int[] shells = {2, 8, 18, 32};
  //   int[] subshells = {2, 2, 2, 4, 18, 32};
-    int[] subshells = {2, 2, 2, 4, 2, 2, 4, 10, 32};
+    int[] subshells = {2, 2, 2, 4, 2, 2, 4, 10, 2, 30};
     double elementaryCharge = 4.80320425E-10; //units = esu = g^0.5 cm^1.5 s^-1
     double m = 9.10938356E-31; // in Kg
     double c = 299792458;
@@ -4830,7 +4844,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     double constant = 2*Math.PI*(Math.pow(elementaryCharge, 4)/1E18)/(m*vSquared); //m^2
     double deltaF = 0;
     double sumfcb = 0, checkSum = 0;
-    int maxShells = 9;
+    int maxShells = 10;
     
     Set<Element> elementList = presentElements;
     if (surrounding == true) {

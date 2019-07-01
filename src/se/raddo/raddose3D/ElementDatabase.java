@@ -94,7 +94,7 @@ public class ElementDatabase {
     /** ELSEPA elastic cross section */
     EL_50(65), EL_100(66), EL_150(67), EL_200(68), EL_250(69), EL_300(70),
     /**Mean ionisation potential**/
-    I(71), L1(72);
+    I(71), L1(72), M1(73), N1(74);
 
     
     /**

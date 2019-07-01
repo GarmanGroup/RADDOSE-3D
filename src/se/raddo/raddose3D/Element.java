@@ -467,6 +467,14 @@ public class Element {
     return elementData.get(DatabaseFields.L1);
   }
   
+  public Double getM1Binding() {
+    return elementData.get(DatabaseFields.M1);
+  }
+  
+  public Double getN1Binding() {
+    return elementData.get(DatabaseFields.N1);
+  }
+  
   /**
    * Return the M1 edge energy in keV of the element
    * 
@@ -493,6 +501,8 @@ public class Element {
   public Double getM5Edge() {
     return elementData.get(DatabaseFields.EDGE_M5);
   }
+  
+  
   
   /**
    * Return the K edge ratio which is defined as the ratio
