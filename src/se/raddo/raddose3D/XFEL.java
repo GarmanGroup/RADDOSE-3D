@@ -114,6 +114,10 @@ public class XFEL {
   private double totElastic;
   
   
+  private final boolean silicon = false;
+  private final boolean simpleMC = false; 
+  
+  
   private double numFluxPhotons;
   protected long NUM_PHOTONS = 100000;
   protected  long PULSE_LENGTH = 30; //length in fs
@@ -238,6 +242,8 @@ public class XFEL {
    * @param coefCalc
    */
   public void startMonteCarloXFEL(Beam beam, Wedge wedge, CoefCalc coefCalc) {
+    
+    
     //populate augerLinewidths
       try {
         populateAugerLinewidths();
@@ -467,7 +473,19 @@ public class XFEL {
               //update timeStamp
               double timeToPoint = (1/c) * (ZDimension/1E9);
               timeStamp += timeToPoint * 1E15;
-              s = -photonMFPLSurrounding*Math.log(Math.random());
+              
+              //would need to make changes here if silicon is going at the back 
+              
+              if (silicon == true) {
+                Map<String, Double> siCoeffs = coefCalc.calculateCoefficientsSilicon(beam.getPhotonEnergy());
+                double siMFPL = (1/(siCoeffs.get("Photoelectric") + siCoeffs.get("Compton Attenuation")))*1000;
+                s = -siMFPL*Math.log(Math.random());
+              }
+              else {
+                s = -photonMFPLSurrounding*Math.log(Math.random());
+              }
+              
+              
               previousZ = ZDimension/2;
               xn = previousX + s * xNorm;
               yn = previousY + s * yNorm;
@@ -935,8 +953,10 @@ public class XFEL {
     }
     */
     //relax the atom and see if an auger electron was produced
-    if (surrounding == false) { //only want to track Auger if in the crystal for now
-      produceAugerElectron(coefCalc, timeStamp, shellIndex, ionisedElement, xn, yn, zn, surrounding, beam);
+    if (simpleMC == false){
+      if (surrounding == false) { //only want to track Auger if in the crystal for now
+        produceAugerElectron(coefCalc, timeStamp, shellIndex, ionisedElement, xn, yn, zn, surrounding, beam);
+      }
     }
     
   }
@@ -1181,6 +1201,7 @@ public class XFEL {
     double startingLambda_el = coefCalc.getElectronElasticMFPL(startingEnergy, surrounding);
     Map<ElementEM, Double> elasticProbs = coefCalc.getElasticProbs(surrounding);
     
+    
     //the FSE stuff 
     double startingFSExSection = getFSEXSection(startingEnergy);
     double startingFSELambda = coefCalc.getFSELambda(startingFSExSection, surrounding); //should be surrounding not false
@@ -1199,6 +1220,7 @@ public class XFEL {
     double gosInelasticLambda = 0, gosInnerLambda = 0, gosOuterLambda = 0;
     Map<Element, double[]> gosIonisationProbs = null;
     Map<Element, Double> gosOuterIonisationProbs = null;
+    if (simpleMC == false) {
     if (surrounding == false) {
       gosInelasticLambda = coefCalc.getGOSInel(surrounding, electronEnergy);
       gosInnerLambda = coefCalc.getGOSInnerLambda(surrounding);
@@ -1218,7 +1240,7 @@ public class XFEL {
     
     double startingPlasmonLambda = coefCalc.getPlasmaMFPL(startingEnergy, surrounding);
     double plasmaEnergy = coefCalc.getPlasmaFrequency(surrounding)/1000.0; //in keV
-    
+    }
     double lambdaT = 0;
     double Pinner = 0;
  //   lambdaT = startingLambda_el;
@@ -1321,10 +1343,14 @@ public class XFEL {
           //update timestamp
           timeStamp += getTimeToDistance(electronEnergy, intersectionDistance);
           //update energy to this point and coefficients
-       //   electronEnergy -= intersectionDistance * stoppingPower;
+          if (simpleMC == true) {
+            electronEnergy -= intersectionDistance * stoppingPower;
+            //might need to sort it out if less than 0.05 here
+          }
           stoppingPower = coefCalc.getStoppingPower(electronEnergy, surrounding);
           double newFSExSection = getFSEXSection(startingEnergy);
           double newFSELambda = coefCalc.getFSELambda(startingFSExSection, false);
+          if (simpleMC == false) {
           startingInnerShellLambda = coefCalc.betheIonisationxSection(startingEnergy, surrounding);
           ionisationProbs = coefCalc.getAllShellProbs(surrounding);
           gosInelasticLambda = coefCalc.getGOSInel(surrounding, electronEnergy);
@@ -1337,6 +1363,14 @@ public class XFEL {
           else {
             gosInelasticLambda = 1/gosOuterLambda;
           }
+          gosIonisationProbs = coefCalc.getGOSShellProbs(surrounding, gosInelasticLambda);
+          if (startingInnerShellLambda > 0) {
+            Pinner = (gosInelasticLambda/startingInnerShellLambda);
+          }
+          else {
+            Pinner = 0;
+          }
+          }
         //  lambdaT = 1/(1/coefCalc.getElectronElasticMFPL(electronEnergy, surrounding) + 1/newFSELambda);
           startingLambda_el = coefCalc.getElectronElasticMFPL(electronEnergy, surrounding);
           if (gosInelasticLambda > 0) {
@@ -1346,14 +1380,9 @@ public class XFEL {
             lambdaT = startingLambda_el;
           }
           elasticProbs = coefCalc.getElasticProbs(surrounding);
-          gosIonisationProbs = coefCalc.getGOSShellProbs(surrounding, gosInelasticLambda);
+
           Pinel = 1 - (lambdaT / startingLambda_el);
-          if (startingInnerShellLambda > 0) {
-            Pinner = (gosInelasticLambda/startingInnerShellLambda);
-          }
-          else {
-            Pinner = 0;
-          }
+
           //get a new s and xn, yn, zn
           s = -lambdaT*Math.log(Math.random());
           xn = previousX + s*xNorm;
@@ -1364,6 +1393,9 @@ public class XFEL {
       //Will need a second if microcrystal is at = to true here so that I can check the surrounding one again
       if (isMicrocrystalAt(xn, yn, zn) == true) {
         energyLost = s * stoppingPower;
+        if (simpleMC == true) {
+          lossSinceLastUpdate += energyLost;
+        }
         //work out how long it took to travel this far 
         double timeToDistance = getTimeToDistance(electronEnergy, s);
         int doseTime = (int) ((timeStamp + (timeToDistance/2))/PULSE_BIN_LENGTH);
@@ -1760,6 +1792,7 @@ public class XFEL {
           //put in a get maxUk thing in coefCalc
           if (lossSinceLastUpdate > energyLossToUpdate) {
             electronEnergy -= lossSinceLastUpdate;
+            if (simpleMC == false) {
             gosInelasticLambda = coefCalc.getGOSInel(false, electronEnergy);
             innerShellLamda = coefCalc.betheIonisationxSection(electronEnergy, false);
             gosOuterLambda = coefCalc.getGOSOuterLambda(surrounding);
@@ -1771,11 +1804,13 @@ public class XFEL {
             else {
               gosInelasticLambda = 1/gosOuterLambda;
             }
+            }
             lossSinceLastUpdate = 0;
           }
         }
         else {
           electronEnergy -= lossSinceLastUpdate;
+          if (simpleMC == false) {
           gosInelasticLambda = coefCalc.getGOSInel(false, electronEnergy);
           innerShellLamda = coefCalc.betheIonisationxSection(electronEnergy, false);
           gosOuterLambda = coefCalc.getGOSOuterLambda(surrounding);
@@ -1786,6 +1821,7 @@ public class XFEL {
           }
           else {
             gosInelasticLambda = gosOuterLambda;
+          }
           }
           lossSinceLastUpdate = 0;
         }
@@ -1799,7 +1835,12 @@ public class XFEL {
 
         
       //  lambdaT = 1/(1/lambdaEl + 1/FSELambda);
-        lambdaT = 1/(1/lambdaEl + 1/gosInelasticLambda);
+        if (gosInelasticLambda > 0) {
+          lambdaT = 1/(1/lambdaEl + 1/gosInelasticLambda);
+        }
+        else {
+          lambdaT = 1/(1/lambdaEl);
+        }
         s = -lambdaT*Math.log(Math.random());
         elasticProbs = coefCalc.getElasticProbs(false);
         ionisationProbs = coefCalc.getAllShellProbs(false);
@@ -1819,7 +1860,7 @@ public class XFEL {
           
           
           exited = true;
-          /*
+          if (simpleMC == true) {
           //get the energy deposited before it left the crystal. - when I slice need to also do timestamps 
           double escapeDist = 1000 * getIntersectionDistance(previousX, previousY, previousZ, xNorm, yNorm, zNorm); //nm
           double FSEStoppingPower = coefCalc.getStoppingPower(electronEnergy, false);
@@ -1890,7 +1931,7 @@ public class XFEL {
               electronDoseSurrounding[doseTime] += electronEnergy;
             }
           }
-          */
+          }
         }
         else { //it's one I'm tracking from the surrounding
           //check if it's still worth tracking it form the surrounding anymore - i.e still in track range
@@ -1960,6 +2001,7 @@ public class XFEL {
             int[] pixelCoord = convertToPixelCoordinates(previousX, previousY, previousZ);
         //    voxelEnergy[pixelCoord[0]][pixelCoord[1]][pixelCoord[2]][doseTime] += electronEnergy;
           }
+          if (simpleMC == false) {
           gosElectronDosevResolved[doseTime] += electronEnergy;
           int[] pixelCoord = convertToPixelCoordinates(previousX, previousY, previousZ);
           voxelEnergyvResolved[pixelCoord[0]][pixelCoord[1]][pixelCoord[2]][doseTime] += electronEnergy;
@@ -1992,6 +2034,7 @@ public class XFEL {
               }
             } 
           }
+        }
         }
       }
     }

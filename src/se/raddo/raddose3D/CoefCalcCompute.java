@@ -24,7 +24,7 @@ public class CoefCalcCompute extends CoefCalc {
   
   private long numSimulatedElectrons;
   
-  public double cellVolume;
+  public double cellVolume; //A^3
 
   private double cryoAbsCoeffComp, cryoAbsCoeffPhoto, cryoAttCoeff, cryoElasCoeff, cryoDensity;
   
@@ -577,6 +577,42 @@ public class CoefCalcCompute extends CoefCalc {
       System.out.println(test);
     }
     */
+    return absCoeffs;
+  }
+  
+  @Override
+  public  Map<String, Double> calculateCoefficientsSilicon(double energy){
+    Map<String, Double> absCoeffs = new HashMap<String, Double>();
+    double crossSectionPhotoElectric = 0;
+    double crossSectionCoherent = 0;
+    double crossSectionTotal = 0;
+    double crossSectionComptonAttenuation = 0;
+    
+    Element si = elementDB.getElement(14);
+    double siDensity = 2.32; //g/cm^3
+    double volumePerAtom = si.getAtomicWeightInGrams() / siDensity; //cm^3
+    volumePerAtom *= 1E24; //A^3
+    
+    Map<Element.CrossSection, Double> cs;
+    cs = si.getAbsCoefficients(energy);
+    
+    crossSectionPhotoElectric = cs.get(CrossSection.PHOTOELECTRIC) / volumePerAtom
+        / UNITSPERDECIUNIT;
+    crossSectionCoherent = cs.get(CrossSection.COHERENT) / volumePerAtom
+        / UNITSPERDECIUNIT;
+    crossSectionTotal = cs.get(CrossSection.TOTAL) / volumePerAtom
+        / UNITSPERDECIUNIT;
+    crossSectionComptonAttenuation = cs.get(CrossSection.COMPTON) / volumePerAtom
+        / UNITSPERDECIUNIT;
+    crossSectionPhotoElectric = crossSectionPhotoElectric / UNITSPERMILLIUNIT;
+    crossSectionTotal = crossSectionTotal / UNITSPERMILLIUNIT;
+    crossSectionCoherent = crossSectionCoherent / UNITSPERMILLIUNIT;
+    crossSectionComptonAttenuation = crossSectionComptonAttenuation/ UNITSPERMILLIUNIT;
+    absCoeffs.put(PHOTOELECTRIC, crossSectionPhotoElectric);
+    absCoeffs.put(ELASTIC, crossSectionCoherent);
+    absCoeffs.put(COMPTON, crossSectionComptonAttenuation);
+    absCoeffs.put(TOTAL, crossSectionTotal);
+    
     return absCoeffs;
   }
   

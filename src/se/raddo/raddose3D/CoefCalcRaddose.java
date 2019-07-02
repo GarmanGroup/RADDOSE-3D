@@ -676,4 +676,10 @@ public class CoefCalcRaddose extends CoefCalc {
     // TODO Auto-generated method stub
     return 0;
   }
+
+  @Override
+  public Map<String, Double> calculateCoefficientsSilicon(double energy) {
+    // TODO Auto-generated method stub
+    return null;
+  }
 }

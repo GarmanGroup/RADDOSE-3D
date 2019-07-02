@@ -755,7 +755,9 @@ public abstract class Crystal {
 
     // The main meat of it:
     for (int n = 0; n < angles.length; n++) {
+      
       // Expose one angle
+      
       exposeAngle(angles[n], beam, wedge, n, angles.length, fluorescenceEnergyRelease, 
                   augerEnergy, cryoAugerEnergy, cryoFluorescenceEnergyRelease, feFactors, cryoFeFactors,
                   elementAbsorptionProbs, ionisationProbs, angularEmissionProbs);

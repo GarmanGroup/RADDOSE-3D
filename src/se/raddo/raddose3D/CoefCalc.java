@@ -204,5 +204,7 @@ public abstract class CoefCalc {
   
   public abstract Double getProteinAtoms(final ElementEM element); 
   public abstract Double getSolventAtoms(final ElementEM element); 
+  
+  public abstract Map<String, Double> calculateCoefficientsSilicon(double energy);
 }
 
