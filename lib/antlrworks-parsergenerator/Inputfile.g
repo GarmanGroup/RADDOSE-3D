@@ -595,6 +595,7 @@ beamLine
 	| k=imageDimensions		{ $beam::beamProperties.put(Beam.IMAGE_X, $k.xImage); 
 	                           $beam::beamProperties.put(Beam.IMAGE_Y, $k.yImage); }
 	| l=pulseEnergy			 { $beam::beamProperties.put(Beam.PULSE_ENERGY, $l.pulse); }
+	| m=energyFWHM             { $beam::beamProperties.put(Beam.ENERGY_FWHM, $m.eFWHM); }
 	;
 
 beamFlux returns [Double flux]
@@ -624,6 +625,11 @@ KEV : ('K'|'k')('E'|'e')('V'|'v') ;
 pulseEnergy returns [Double pulse]
 	: PULSEENERGY a=FLOAT {$pulse = Double.parseDouble($a.text);};
 PULSEENERGY : ('P'|'p')('U'|'u')('L'|'l')('S'|'s')('E'|'e')('E'|'e')('N'|'n')('E'|'e')('R'|'r')('G'|'g')('Y'|'y') ;
+
+energyFWHM returns [Double eFWHM]
+	: ENERGYFWHM a=FLOAT {$eFWHM = Double.parseDouble($a.text);};
+ENERGYFWHM 
+	: ('E'|'e')('N'|'n')('E'|'e')('R'|'r')('G'|'g')('Y'|'y')('F'|'f')('W'|'w')('H'|'h')('M'|'m'); 
 
 beamSemiAngle returns [Double semiAngle]
 	: SEMIANGLE a=FLOAT {$semiAngle = Double.parseDouble($a.text);};

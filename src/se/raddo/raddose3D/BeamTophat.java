@@ -24,6 +24,8 @@ public class BeamTophat implements Beam {
   /** Pulse energy. */
   private final Double pulseEnergy;
   
+  private final Double energyFWHM;
+  
   private  Double semiAngle;
   private  Double apertureRadius;
 
@@ -74,6 +76,7 @@ public class BeamTophat implements Beam {
     beamYum = (Double) properties.get(Beam.BEAM_COLL_V);
     photonsPerSec = (Double) properties.get(Beam.BEAM_FLUX);
     photonEnergy = (Double) properties.get(Beam.BEAM_ENERGY);
+    energyFWHM = (Double) properties.get(Beam.ENERGY_FWHM);
     pulseEnergy = (Double) properties.get(Beam.PULSE_ENERGY);
     exposure = (Double) properties.get(Beam.BEAM_EXPOSURE);
     semiAngle = (Double) properties.get(Beam.BEAM_SEMIANGLE);
@@ -233,7 +236,11 @@ public class BeamTophat implements Beam {
 
   @Override
   public void setPhotonsPerfs(double photonsPerfs) {
-    // TODO Auto-generated method stub
     attenuatedPhotonsPerSec = photonsPerfs;
+  }
+
+  @Override
+  public double getEnergyFWHM() {
+    return energyFWHM;
   }
 }

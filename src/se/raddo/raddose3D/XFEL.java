@@ -253,12 +253,11 @@ public class XFEL {
   protected static final double h = 6.62607004E-34; //J.s
   
   
-  // Input peak beam parameters here (at the moment these are just very approximate from Meents 2017 Supplementary Figure 9); this bit might move into constructor below
-  private double meanEnergy = 12;
-  private double energyFWHM = 0.750;
+  // Initialising pink beam parameters - 
+  private double meanEnergy;
+  private double energyFWHM;
+  private double[] photonEnergyArray;
 //private double totalNumberOfPhotons = PULSE_ENERGY / meanEnergy; // need to check where this is computed elsewhere and change 
-  SampleNormalEnergyDistribution sampledPhotonEnergies = new SampleNormalEnergyDistribution(meanEnergy, energyFWHM, NUM_PHOTONS); //eventually need to not reply on assumption it is normal
-  
   
   
   public XFEL(double vertices[][], int[][] indices, double[][][][] crystCoord, 
@@ -331,7 +330,7 @@ public class XFEL {
     //set pulse length and num photons from input
     
     PULSE_ENERGY = beam.getPulseEnergy() / 1E3;
-    
+     
     PULSE_LENGTH = StrictMath.round(wedge.getTotSec()); //fs
     if (PULSE_LENGTH <= 1) {
       PULSE_BIN_LENGTH = 0.01;
@@ -347,6 +346,11 @@ public class XFEL {
     if (NUM_PHOTONS == 0) {
       NUM_PHOTONS = 1000000;
     }
+    
+    meanEnergy = beam.getPhotonEnergy();
+    energyFWHM = beam.getEnergyFWHM();
+    SampleNormalEnergyDistribution SamplePhotonEnergies = new SampleNormalEnergyDistribution(meanEnergy, energyFWHM, NUM_PHOTONS); //eventually need to not reply on assumption it is normal   
+    photonEnergyArray = SamplePhotonEnergies.getSampledEnergies();
     
     // for testing
     lastTime = ((1/c) * (ZDimension/1E9) * 1E15) + PULSE_LENGTH;
@@ -441,7 +445,7 @@ public class XFEL {
     double photonDivisions =  NUM_PHOTONS / (PULSE_LENGTH/PULSE_BIN_LENGTH);
 
     double xn = 0, yn = 0, zn = 0, progress = 0, lastProgress = 0;
-    for (int i = 0; i < NUM_PHOTONS; i++) { //for every electron to simulate
+    for (int i = 0; i < photonEnergyArray.length; i++) { //for every photon to simulate
       progress = ((double)i)/NUM_PHOTONS;
       if (progress - lastProgress >= 0.05) {
         lastProgress = progress;

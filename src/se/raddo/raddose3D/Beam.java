@@ -27,6 +27,8 @@ public interface Beam {
   public static final String BEAM_PIXSIZE_X   = "PIXSIZE_X";
   /** Constant for data fields in Map constructors: Pixel size Y. */
   public static final String BEAM_PIXSIZE_Y   = "PIXSIZE_Y";
+  
+  public static final String ENERGY_FWHM = "ENERGY_FWHM";
 
   public static final String BEAM_CIRCULAR   = "CIRCULAR";
   
@@ -134,5 +136,7 @@ public interface Beam {
   public double getImageY();
   
   public void setPhotonsPerfs(double photonsPerfs);
+  
+  public double getEnergyFWHM();
   
 }
