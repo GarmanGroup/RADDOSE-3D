@@ -17,6 +17,131 @@ import java.util.Random;
 import java.util.Set;
 import java.util.TreeMap;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import org.apache.commons.math3.distribution.NormalDistribution;
+
+
+// Might be preferable to put class NormalEnergyDistribution and class SampleNormalEnergyDistribution elsewhere
+class NormalEnergyDistribution  {
+    // Fields with defaults - defining distribution parameters
+    private NormalDistribution gE;
+    private double meanEnergy;
+    private double energyFwhm;
+    
+    private double sigmaE;
+    private double deltaEOverE; 
+
+    public double FWHM_TO_SIGMA = 1/(2*Math.sqrt(2*Math.log(2)));   
+    
+    // Method to compute parameters
+     public void computeValues() {
+        sigmaE = FWHM_TO_SIGMA*energyFwhm;
+        deltaEOverE = energyFwhm / meanEnergy; // need to check that this is how delta E /E is defined in Meents 2017, so have not used this as input
+     }
+     
+     public void setUpDistribution() {
+         gE = new NormalDistribution(meanEnergy, sigmaE);
+     }
+     
+    // Constructors
+    NormalEnergyDistribution() {meanEnergy = 0; energyFwhm = 1; computeValues(); setUpDistribution();}
+    NormalEnergyDistribution(double mean, double fwhm) {meanEnergy = mean; energyFwhm = fwhm; computeValues(); setUpDistribution();}
+    
+    
+    // Methods - altering distributions parameters
+    public void   setMean(double mean)  {meanEnergy = mean;}
+    public double getMean()             {return meanEnergy;}
+    public void   setWidth(double width) {energyFwhm = width;} //sets FWHM
+    public double getWidth()             {return energyFwhm;}
+    public void   setSigma(double sigma) {sigmaE = sigma;} //sets sd
+    public double getSigma()             {return sigmaE;}
+    public String describeDistribution() 
+    {return "\nNormal Distribution of Photon Energies: Parameters\nMean = " + meanEnergy + "\nFWHM = " + energyFwhm + "\nStandard Deviation = " + sigmaE + "\ndelta E / E = " + deltaEOverE + "\n";}
+    
+    //Method - the pdf
+    public double calcProbDensity(double value) {double probabilityDensity = gE.density(value); return probabilityDensity;}
+    
+    // Method - the cdf
+    public double calcCumulativeProb(double value) {double cumulativeProbability = gE.cumulativeProbability(value); return cumulativeProbability;}
+        
+    // Method - the inverse cdf
+    public double calcInverseCumulativeProb(double value) {double energy = gE.inverseCumulativeProbability(value); return energy;}
+            
+    // Method - selecting values to neglect because normal distribution is truncated
+    public boolean testIfNeglect(double value) {
+        double cutAt = 40*sigmaE; //need to check if this is suitable value, but unless sample size very large (number?) all it does is omit the infinities
+        double lowerEnergyBound = meanEnergy - cutAt;
+        double upperEnergyBound = meanEnergy + cutAt;
+        boolean result = true;
+        if((value < lowerEnergyBound) || (value > upperEnergyBound)) {result = true;}
+        else if((value >= lowerEnergyBound) & (value <= upperEnergyBound)) {result = false;}
+        return result;}
+    
+}   
+
+
+class SampleNormalEnergyDistribution {
+    
+    private double[] sample;
+
+//Constructor does all the work 
+SampleNormalEnergyDistribution(double mean, double fwhm, long numberOfPhotonsToSample) { // will put in the pulse energy input elsewhere, to get the total number photons using mean energy
+
+    // Create distribution objects to sample
+    NormalEnergyDistribution normalPinkBeam = new NormalEnergyDistribution(mean, fwhm); // Units are keV.
+
+    // Systematically sample along distribution
+    int sampleSize = Math.toIntExact(numberOfPhotonsToSample);
+    double[] arrayReg = new double[sampleSize];
+    for(int i = 0; i < sampleSize; i++) {double value = Double.valueOf(i)/Double.valueOf(sampleSize-1); arrayReg[i] = value;}
+
+    // Find number of values remaining after truncation
+    int lengthAfterNeglections = 0;
+    double[] energiesBeforeTruncation = new double[arrayReg.length];
+    for(int i=0; i < arrayReg.length; ++i) {
+        double element = arrayReg[i];
+        double photonEnergy = normalPinkBeam.calcInverseCumulativeProb(element);
+        energiesBeforeTruncation[i] = photonEnergy;
+        boolean test = normalPinkBeam.testIfNeglect(photonEnergy);
+        if(test == false) {lengthAfterNeglections += 1;}
+        else if(test == true) {;}
+
+    }
+    // Actually calculate the energies
+    double[] normalPhotonEnergies = new double[lengthAfterNeglections];
+    int newIndex = 0;
+    for(int i=0; i < arrayReg.length; i++) {
+        double photonEnergy = energiesBeforeTruncation[i];
+        if(normalPinkBeam.testIfNeglect(photonEnergy) == false) {normalPhotonEnergies[newIndex] = photonEnergy; newIndex += 1;}
+        else if(normalPinkBeam.testIfNeglect(photonEnergy) == true) {;} 
+    }
+    // Shuffle up the energies so not ordered, to avoid introducing bias as we iterate simultaneously
+    List<Double> normalPhotonEnergiesList = new ArrayList();
+    for (int i = 0; i < normalPhotonEnergies.length; i++) {
+        normalPhotonEnergiesList.add(normalPhotonEnergies[i]);}
+    Collections.shuffle(normalPhotonEnergiesList);
+    int length = normalPhotonEnergiesList.size();
+    double[] normalPhotonEnergiesShuffled = new double[length];
+    for(int i=0;i<length;i++){
+        normalPhotonEnergiesShuffled[i] = normalPhotonEnergiesList.get(i);}
+    
+    // Store the array of energies so accessible
+    this.sample = normalPhotonEnergiesShuffled;
+}
+
+    // Method to pull out the sampled energies
+    public double[] getSampledEnergies() {return sample;}
+
+}
+
+
+
+
+
+
+
 
 public class XFEL {
   //polyhderon variables
@@ -72,7 +197,7 @@ public class XFEL {
   private HashMap<Integer, HashMap<Integer, double[]>> augerExitIndex;
   private int[] augerElements = {6, 7, 8, 11, 12, 14, 15, 16, 17, 19, 20, 25, 26, 27, 28, 29, 30, 33, 34};
   private HashMap<Integer, Double> totKAugerProb;
-  
+    
   //ionisationStuff
   private long[] totalIonisationEvents;
   private double[] totalIonisationEventsPerAtom;
@@ -126,6 +251,15 @@ public class XFEL {
   protected static final double c = 299792458; //m/s
   protected static final double m = 9.10938356E-31; // in Kg
   protected static final double h = 6.62607004E-34; //J.s
+  
+  
+  // Input peak beam parameters here (at the moment these are just very approximate from Meents 2017 Supplementary Figure 9); this bit might move into constructor below
+  private double meanEnergy = 12;
+  private double energyFWHM = 0.750;
+//private double totalNumberOfPhotons = PULSE_ENERGY / meanEnergy; // need to check where this is computed elsewhere and change 
+  SampleNormalEnergyDistribution sampledPhotonEnergies = new SampleNormalEnergyDistribution(meanEnergy, energyFWHM, NUM_PHOTONS); //eventually need to not reply on assumption it is normal
+  
+  
   
   public XFEL(double vertices[][], int[][] indices, double[][][][] crystCoord, 
       double crystalPixPerUM, int[] crystSizeVoxels, boolean[][][][] crystOcc) {
@@ -2882,7 +3016,7 @@ private Element chooseLowEnElement(CoefCalc coefCalc, double Pinner, Map<Element
   //Do a RD3D check of the values to make sure the RD3D dose is not ridiculous
   public void RD3Dcheck(Beam beam, Wedge wedge, CoefCalc coefCalc) {
     //firstly need to set the photons per fs in beam
-    double energyPerPhoton = beam.getPhotonEnergy()*Beam.KEVTOJOULES;
+    double energyPerPhoton = beam.getPhotonEnergy()*Beam.KEVTOJOULES;              // change these two lines to: double numberOfPhotons = PulseEnergy / normalPinkBeam.getMean();
     double numberOfPhotons = PULSE_ENERGY/energyPerPhoton;
     double photonsPerfs = numberOfPhotons/PULSE_LENGTH;
     beam.setPhotonsPerfs(photonsPerfs);
