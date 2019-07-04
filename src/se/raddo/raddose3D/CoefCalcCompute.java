@@ -379,23 +379,23 @@ public class CoefCalcCompute extends CoefCalc {
    * Calculates the absorption, attenuation and elastic coefficients for the 
    * crystal and updates the corresponding instance properties
    * 
-   *  @param b
-   *    Beam object which contains the properties that describe the incident beam.
+   *  @param photonEnergy
+   *    The energy of each photon
    */
   @Override
-  public void updateCoefficients(final Beam b) { 
-    Map<String, Double> absCoefficients = calculateCoefficientsAll(b.getPhotonEnergy());
+  public void updateCoefficients(final double photonEnergy) { 
+    Map<String, Double> absCoefficients = calculateCoefficientsAll(photonEnergy);
     attCoeff = absCoefficients.get(TOTAL);
     elasCoeff = absCoefficients.get(ELASTIC);
     absCoeffcomp = absCoefficients.get(COMPTON);
     absCoeffphoto = absCoefficients.get(PHOTOELECTRIC);
-    absCoefficients = calculateCoefficientsMacro(b.getPhotonEnergy());
+    absCoefficients = calculateCoefficientsMacro(photonEnergy);
     elasCoeffMacro = absCoefficients.get(ELASTIC);
   }
   
   @Override
-  public void updateCryoCoefficients(final Beam b) { 
-    Map<String, Double> absCoefficients = calculateCryoCoefficientsAll(b.getPhotonEnergy());
+  public void updateCryoCoefficients(final double photonEnergy) { 
+    Map<String, Double> absCoefficients = calculateCryoCoefficientsAll(photonEnergy);
     cryoAttCoeff = absCoefficients.get(TOTAL);
     cryoElasCoeff = absCoefficients.get(ELASTIC);
     cryoAbsCoeffComp = absCoefficients.get(COMPTON);

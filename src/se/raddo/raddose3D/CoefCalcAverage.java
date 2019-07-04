@@ -80,12 +80,12 @@ public class CoefCalcAverage extends CoefCalc {
   }
 
   @Override
-  public void updateCoefficients(final Beam b) {
+  public void updateCoefficients(final double photonEnergy) {
     // Does nothing
   }
   
   @Override
-  public void updateCryoCoefficients(final Beam b) {
+  public void updateCryoCoefficients(final double photonEnergy) {
     // Does nothing
   }
 

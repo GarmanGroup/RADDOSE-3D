@@ -83,58 +83,88 @@ class NormalEnergyDistribution  {
 
 
 class SampleNormalEnergyDistribution {
-    
-    private double[] sample;
+  
+  private double[] sample;
+
 
 //Constructor does all the work 
-SampleNormalEnergyDistribution(double mean, double fwhm, long numberOfPhotonsToSample) { // will put in the pulse energy input elsewhere, to get the total number photons using mean energy
+SampleNormalEnergyDistribution(double mean, double fwhm, long numberOfPhotonsToSample) {    // what about the pulse energy?????
 
-    // Create distribution objects to sample
-    NormalEnergyDistribution normalPinkBeam = new NormalEnergyDistribution(mean, fwhm); // Units are keV.
+  // Create distribution objects to sample
+  NormalEnergyDistribution normalPinkBeam = new NormalEnergyDistribution(mean, fwhm); // Mean energy + FWHM +      Units are keV.
 
-    // Systematically sample along distribution
-    int sampleSize = Math.toIntExact(numberOfPhotonsToSample);
-    double[] arrayReg = new double[sampleSize];
-    for(int i = 0; i < sampleSize; i++) {double value = Double.valueOf(i)/Double.valueOf(sampleSize-1); arrayReg[i] = value;}
+  // Systematically sample along distribution
 
-    // Find number of values remaining after truncation
-    int lengthAfterNeglections = 0;
-    double[] energiesBeforeTruncation = new double[arrayReg.length];
-    for(int i=0; i < arrayReg.length; ++i) {
-        double element = arrayReg[i];
-        double photonEnergy = normalPinkBeam.calcInverseCumulativeProb(element);
-        energiesBeforeTruncation[i] = photonEnergy;
-        boolean test = normalPinkBeam.testIfNeglect(photonEnergy);
-        if(test == false) {lengthAfterNeglections += 1;}
-        else if(test == true) {;}
+  // Sample normal, but truncated (note this means it will not be normalised - need to correct to use a 'truncated normal distribution'):
+  // Find number of values remaining after truncation
+  int sampleSize = (int) numberOfPhotonsToSample;
+  int lengthBeforeNeglections = sampleSize;
+  int lengthAfterNeglections = 0;
+  double[] arrayReg;
+  int targetLength = sampleSize;
 
-    }
-    // Actually calculate the energies
-    double[] normalPhotonEnergies = new double[lengthAfterNeglections];
-    int newIndex = 0;
-    for(int i=0; i < arrayReg.length; i++) {
-        double photonEnergy = energiesBeforeTruncation[i];
-        if(normalPinkBeam.testIfNeglect(photonEnergy) == false) {normalPhotonEnergies[newIndex] = photonEnergy; newIndex += 1;}
-        else if(normalPinkBeam.testIfNeglect(photonEnergy) == true) {;} 
-    }
-    // Shuffle up the energies so not ordered, to avoid introducing bias as we iterate simultaneously
-    List<Double> normalPhotonEnergiesList = new ArrayList();
-    for (int i = 0; i < normalPhotonEnergies.length; i++) {
-        normalPhotonEnergiesList.add(normalPhotonEnergies[i]);}
-    Collections.shuffle(normalPhotonEnergiesList);
-    int length = normalPhotonEnergiesList.size();
-    double[] normalPhotonEnergiesShuffled = new double[length];
-    for(int i=0;i<length;i++){
-        normalPhotonEnergiesShuffled[i] = normalPhotonEnergiesList.get(i);}
-    
-    // Store the array of energies so accessible
-    this.sample = normalPhotonEnergiesShuffled;
+  
+  while(lengthAfterNeglections != targetLength) {
+  
+      arrayReg = new double[lengthBeforeNeglections];
+      for(int i = 0; i < arrayReg.length; i++) {
+          double value = Double.valueOf(i)/Double.valueOf(lengthBeforeNeglections-1); 
+          arrayReg[i] = value;
+          }
+      lengthAfterNeglections = 0;
+      for(int i=0; i < lengthBeforeNeglections; ++i) {
+          double cumulativeProb = arrayReg[i];
+          double photonEnergy = normalPinkBeam.calcInverseCumulativeProb(cumulativeProb);
+          boolean test = normalPinkBeam.testIfNeglect(photonEnergy);
+          if(test == false) {lengthAfterNeglections += 1;}
+          else if(test == true) {;}
+          }
+      lengthBeforeNeglections += 1;    
+  }
+      lengthBeforeNeglections -= 1;
+      
+  // Actually calculate the energies
+  double[] normalPhotonEnergies = new double[sampleSize];
+  int newIndex = 0;
+  
+  arrayReg = new double[lengthBeforeNeglections]; 
+  for(int i = 0; i < arrayReg.length; i++) {
+      double value = Double.valueOf(i)/Double.valueOf(lengthBeforeNeglections-1); 
+      arrayReg[i] = value;
+      }
+
+  
+  for(int i=0; i < lengthBeforeNeglections; i++) {
+      double cumulativeProb = arrayReg[i];
+      double photonEnergy = normalPinkBeam.calcInverseCumulativeProb(cumulativeProb);
+      boolean test = normalPinkBeam.testIfNeglect(photonEnergy);
+      if(test == false) {
+          normalPhotonEnergies[newIndex] = photonEnergy; 
+          newIndex += 1;
+          }
+      else if(test == true) {;}
+      
+  }   
+  
+  // Shuffle up the energies so not ordered, to avoid introducing bias as we iterate simultaneously
+  List<Double> normalPhotonEnergiesList = new ArrayList();
+  for (int i = 0; i < normalPhotonEnergies.length; i++) {
+      normalPhotonEnergiesList.add(normalPhotonEnergies[i]);}
+  Collections.shuffle(normalPhotonEnergiesList);
+  int length = normalPhotonEnergiesList.size();
+  double[] normalPhotonEnergiesShuffled = new double[length];
+  for(int i=0;i<length;i++){
+      normalPhotonEnergiesShuffled[i] = normalPhotonEnergiesList.get(i);}
+  
+  // Store the array of energies so accessible
+  this.sample = normalPhotonEnergiesShuffled;
 }
 
-    // Method to pull out the sampled energies
-    public double[] getSampledEnergies() {return sample;}
+  // Method to pull out the sampled energies
+  public double[] getSampledEnergies() {return sample;}
 
 }
+
 
 
 
@@ -325,8 +355,7 @@ public class XFEL {
   }
   
   public void CalculateXFEL(Beam beam, Wedge wedge, CoefCalc coefCalc) {
-  //  coefCalc.getDifferentialInlasticxSection(beam.getPhotonEnergy());
-  //  coefCalc.getStoppingPower(beam.getPhotonEnergy(), false);
+
     //set pulse length and num photons from input
     
     PULSE_ENERGY = beam.getPulseEnergy() / 1E3;
@@ -349,8 +378,10 @@ public class XFEL {
     
     meanEnergy = beam.getPhotonEnergy();
     energyFWHM = beam.getEnergyFWHM();
-    SampleNormalEnergyDistribution SamplePhotonEnergies = new SampleNormalEnergyDistribution(meanEnergy, energyFWHM, NUM_PHOTONS); //eventually need to not reply on assumption it is normal   
-    photonEnergyArray = SamplePhotonEnergies.getSampledEnergies();
+    if(energyFWHM == 0) {double[] array = new double[(int)NUM_PHOTONS]; Arrays.fill(array, meanEnergy); photonEnergyArray = array;}
+    else {
+    SampleNormalEnergyDistribution SamplePhotonEnergies = new SampleNormalEnergyDistribution(meanEnergy, energyFWHM, (NUM_PHOTONS)); //eventually need to not reply on assumption it is normal   
+    photonEnergyArray = SamplePhotonEnergies.getSampledEnergies();}                     
     
     // for testing
     lastTime = ((1/c) * (ZDimension/1E9) * 1E15) + PULSE_LENGTH;
@@ -360,7 +391,7 @@ public class XFEL {
       lastTimeVox[i] = ((1/c) * ((ZDimension/1E9)/lastTimeVox.length)*(i+1) * 1E15) + PULSE_LENGTH;
     }
     /*
-    double energyPerPhoton = beam.getPhotonEnergy()*Beam.KEVTOJOULES;
+    double energyPerPhoton = beam.getPhotonEnergy()*Beam.KEVTOJOULES; // would need to move this into for loop if decide to reinstate
     double numberOfPhotons = PULSE_ENERGY/energyPerPhoton;
     double fractionel = getFractionElasticallyScattered(coefCalc);
     double numberElastic = numberOfPhotons * fractionel;
@@ -395,62 +426,76 @@ public class XFEL {
     //get the straggling for all of these
   //  populateStraggling(beam, coefCalc);
     
-    //get absorption coefficient
-    coefCalc.updateCoefficients(beam);
-
-    double absCoef = coefCalc.getAbsorptionCoefficient(); //um-1
-    double comptonCoef = coefCalc.getInelasticCoefficient(); //um-1
-    double elasticCoef = coefCalc.getElasticCoefficient(); //um^-1
-    
- //   double photonMFPL = (1/absCoef)*1000; //just photoelectric absorption for now can put in Compton later
-    double photonMFPL = (1/(absCoef + comptonCoef))*1000; //including Compton
-    double probCompton = 1 - (photonMFPL/((1/absCoef)*1000));
-    double totalMFPL = (1/(absCoef + comptonCoef + elasticCoef))*1000;
-    double elasticProb = elasticCoef / (absCoef + comptonCoef);
-    
-    //populate the relative element cross sections here 
-    Map<Element, Double> elementAbsorptionProbs = coefCalc.getPhotoElectricProbsElement(beam.getPhotonEnergy());
-    //populate the relative shell cross sections
-    Map<Element, double[]> ionisationProbs = getRelativeShellProbs(elementAbsorptionProbs, beam.getPhotonEnergy());
     //populate the angular emission probs
-    populateAngularEmissionProbs();
+    populateAngularEmissionProbs();                   // DONT MOVE IN
     
     //elastic electron angle setup
-    coefCalc.populateCrossSectionCoefficients();
+    coefCalc.populateCrossSectionCoefficients();     // DONT MOVE IN
     
-    
-    //set up the surrounding stuff if there is one
-    double absCoefSurrounding = 0, comptonCoefSurrounding = 0, photonMFPLSurrounding = 0, probComptonSurrounding = 0, distanceNM = 0;
-    Map<Element, Double> elementAbsorptionProbsSurrounding = null;
-    Map<Element, double[]> ionisationProbsSurrounding = null;
-    if (coefCalc.isCryo() == true) { //user wants to simulate a surrounding
-      coefCalc.updateCryoCoefficients(beam);
-      absCoefSurrounding = coefCalc.getCryoAbsorptionCoefficient();
-      comptonCoefSurrounding = coefCalc.getCryoInelasticCoefficient();
-      photonMFPLSurrounding = (1/(absCoefSurrounding + comptonCoefSurrounding))*1000;
-      probComptonSurrounding = 1 - (photonMFPLSurrounding/((1/absCoefSurrounding)*1000));
-      elementAbsorptionProbsSurrounding = coefCalc.getPhotoElectricProbsElementSurrounding(beam.getPhotonEnergy());
-      ionisationProbsSurrounding = getRelativeShellProbs(elementAbsorptionProbsSurrounding, beam.getPhotonEnergy());
-      //just use the same angular emission probs
-      
-      //get the maximum photoelectron travel distance (based on photon energy) for tracking purposes   
-      //take the max using the CSDA without integration so a little bit of an overestimate 
-      double stoppingPower = coefCalc.getStoppingPower(beam.getPhotonEnergy(), true);
-      distanceNM = (beam.getPhotonEnergy()/stoppingPower);      
-      //set up my cryo crystal bigger than the normal one using this distance, similar to PE escape stuff
-      
-    }
+
     
     //Decide a starting time stamp for the photons
     double photonDivisions =  NUM_PHOTONS / (PULSE_LENGTH/PULSE_BIN_LENGTH);
 
     double xn = 0, yn = 0, zn = 0, progress = 0, lastProgress = 0;
-    for (int i = 0; i < photonEnergyArray.length; i++) { //for every photon to simulate
+    for (int i = 0; i < NUM_PHOTONS; i++) { //for every photon to simulate
+      double energyOfPhoton = photonEnergyArray[i];
       progress = ((double)i)/NUM_PHOTONS;
       if (progress - lastProgress >= 0.05) {
         lastProgress = progress;
         System.out.print((int)(progress*100) + "% ");
       }
+      
+      
+      // SECTION FOR STUFF MOVED INTO FOR LOOP
+      //get absorption coefficient
+      coefCalc.updateCoefficients(energyOfPhoton);                                                                       // CHANGE AS EXPLAINED!
+
+      double absCoef = coefCalc.getAbsorptionCoefficient(); //um-1
+      double comptonCoef = coefCalc.getInelasticCoefficient(); //um-1
+      double elasticCoef = coefCalc.getElasticCoefficient(); //um^-1
+      
+//    double photonMFPL = (1/absCoef)*1000; //just photoelectric absorption for now can put in Compton later
+      double photonMFPL = (1/(absCoef + comptonCoef))*1000; //including Compton
+      double probCompton = 1 - (photonMFPL/((1/absCoef)*1000));
+      double totalMFPL = (1/(absCoef + comptonCoef + elasticCoef))*1000;
+      double elasticProb = elasticCoef / (absCoef + comptonCoef);
+      
+      //populate the relative element cross sections here 
+      Map<Element, Double> elementAbsorptionProbs = coefCalc.getPhotoElectricProbsElement(energyOfPhoton);
+      //populate the relative shell cross sections
+      Map<Element, double[]> ionisationProbs = getRelativeShellProbs(elementAbsorptionProbs, energyOfPhoton);
+
+      
+      // AND SOME MORE STUFF MOVED IN
+      
+      //set up the surrounding stuff if there is one
+      double absCoefSurrounding = 0, comptonCoefSurrounding = 0, photonMFPLSurrounding = 0, probComptonSurrounding = 0, distanceNM = 0;
+      Map<Element, Double> elementAbsorptionProbsSurrounding = null;
+      Map<Element, double[]> ionisationProbsSurrounding = null;
+      if (coefCalc.isCryo() == true) { //user wants to simulate a surrounding
+        coefCalc.updateCryoCoefficients(energyOfPhoton);                                                                       // CHANGE AS DISCUSSED
+        absCoefSurrounding = coefCalc.getCryoAbsorptionCoefficient();
+        comptonCoefSurrounding = coefCalc.getCryoInelasticCoefficient();
+        photonMFPLSurrounding = (1/(absCoefSurrounding + comptonCoefSurrounding))*1000;
+        probComptonSurrounding = 1 - (photonMFPLSurrounding/((1/absCoefSurrounding)*1000));
+        elementAbsorptionProbsSurrounding = coefCalc.getPhotoElectricProbsElementSurrounding(energyOfPhoton);
+        ionisationProbsSurrounding = getRelativeShellProbs(elementAbsorptionProbsSurrounding, energyOfPhoton);
+        //just use the same angular emission probs
+        
+        //get the maximum photoelectron travel distance (based on photon energy) for tracking purposes   
+        //take the max using the CSDA without integration so a little bit of an overestimate 
+        double stoppingPower = coefCalc.getStoppingPower(energyOfPhoton, true);
+        distanceNM = (energyOfPhoton/stoppingPower);      
+        //set up my cryo crystal bigger than the normal one using this distance, similar to PE escape stuff
+        
+      }
+      
+      
+      
+      
+      // AND CONTINUE
+      
       boolean exited = false;
       double timeStamp = ((int) (i/ photonDivisions)) * PULSE_BIN_LENGTH;
       //firstly I need to get a position of the beam on the sample. the direction will simply be 0 0 1
@@ -510,11 +555,11 @@ public class XFEL {
             double RNDcompton = Math.random();
             if (RNDcompton < probComptonSurrounding) {
               //produce a compton electron
-              produceCompton(beam, coefCalc, timeStamp, xn, yn, zn, surrounding);
+              produceCompton(beam, coefCalc, timeStamp, xn, yn, zn, surrounding, energyOfPhoton);
             }
             else {
               //produce a photoelectron
-              producePhotoElectron(beam, coefCalc, elementAbsorptionProbsSurrounding, ionisationProbsSurrounding, timeStamp, doseTime, xn, yn, zn, surrounding);
+              producePhotoElectron(beam, coefCalc, elementAbsorptionProbsSurrounding, ionisationProbsSurrounding, timeStamp, doseTime, xn, yn, zn, surrounding, energyOfPhoton);
             }           
             // set exited to true so this photon is no longer tracked 
             exited = true;
@@ -561,12 +606,12 @@ public class XFEL {
           double RNDcompton = Math.random();
           if (RNDcompton < probCompton) {
             ionisationsOld += 1;
-            produceCompton(beam, coefCalc, timeStamp, xn, yn, zn, surrounding);
+            produceCompton(beam, coefCalc, timeStamp, xn, yn, zn, surrounding, energyOfPhoton);
           }
           else {
             //this was a photoelectric absorption
             ionisationsOld += 1;
-            producePhotoElectron(beam, coefCalc, elementAbsorptionProbs, ionisationProbs, timeStamp, doseTime, xn, yn, zn, surrounding);
+            producePhotoElectron(beam, coefCalc, elementAbsorptionProbs, ionisationProbs, timeStamp, doseTime, xn, yn, zn, surrounding, energyOfPhoton);
           }
           }
           //photon is absorbed so don't need to keep track of it after this and update stuff
@@ -596,11 +641,11 @@ public class XFEL {
                   double RNDcompton = Math.random();
                   if (RNDcompton < probComptonSurrounding) {
                     //produce a compton electron
-                    produceCompton(beam, coefCalc, timeStamp, xn, yn, zn, surrounding);
+                    produceCompton(beam, coefCalc, timeStamp, xn, yn, zn, surrounding, energyOfPhoton);
                   }
                   else {
                     //produce a photoelectron
-                    producePhotoElectron(beam, coefCalc, elementAbsorptionProbsSurrounding, ionisationProbsSurrounding, timeStamp, doseTime, xn, yn, zn, surrounding);
+                    producePhotoElectron(beam, coefCalc, elementAbsorptionProbsSurrounding, ionisationProbsSurrounding, timeStamp, doseTime, xn, yn, zn, surrounding, energyOfPhoton);
                   }           
                 }
               }
@@ -615,7 +660,7 @@ public class XFEL {
               //would need to make changes here if silicon is going at the back 
               
               if (silicon == true) {
-                Map<String, Double> siCoeffs = coefCalc.calculateCoefficientsSilicon(beam.getPhotonEnergy());
+                Map<String, Double> siCoeffs = coefCalc.calculateCoefficientsSilicon(energyOfPhoton);
                 double siMFPL = (1/(siCoeffs.get("Photoelectric") + siCoeffs.get("Compton Attenuation")))*1000;
                 s = -siMFPL*Math.log(Math.random());
               }
@@ -636,11 +681,11 @@ public class XFEL {
                 double RNDcompton = Math.random();
                 if (RNDcompton < probComptonSurrounding) {
                   //produce a compton electron
-                  produceCompton(beam, coefCalc, timeStamp, xn, yn, zn, surrounding);
+                  produceCompton(beam, coefCalc, timeStamp, xn, yn, zn, surrounding, energyOfPhoton);
                 }
                 else {
                   //produce a photoelectron
-                  producePhotoElectron(beam, coefCalc, elementAbsorptionProbsSurrounding, ionisationProbsSurrounding, timeStamp, doseTime, xn, yn, zn, surrounding);
+                  producePhotoElectron(beam, coefCalc, elementAbsorptionProbsSurrounding, ionisationProbsSurrounding, timeStamp, doseTime, xn, yn, zn, surrounding, energyOfPhoton);
                 }           
               }
             }
@@ -652,6 +697,10 @@ public class XFEL {
         exited = true; // because the photon is absorbed, also not tracking compton electrons after they scatter as unlikely to scatter again
       }
     }
+    
+    
+// END OF FOR LOOP (ITERATING THROUGH PHOTONS)
+    
     //get time at which last photon exits the sample
     lastTime = ((1/c) * (ZDimension/1E9) * 1E15) + PULSE_LENGTH;
     //get the time at which the last photon exits the last voxel
@@ -659,6 +708,9 @@ public class XFEL {
       lastTimeVox[i] = ((1/c) * ((ZDimension/1E9)/lastTimeVox.length)*(i+1) * 1E15) + PULSE_LENGTH;
     }
   }
+
+// END OF MONTE CARLO
+// processDose now does the work iterating through in 4D (no major changes needed)
   
   private void processDose(Beam beam, CoefCalc coefCalc) {
     //just take the whole sample, assuming it is bathed totally
@@ -671,8 +723,8 @@ public class XFEL {
     double exposedVolume = beam.getBeamX()*1000 * beam.getBeamY()*1000 * ZDimension * 1E-21;
     double volFraction = exposedVolume/sampleVolume;
     
-    double energyPerPhoton = beam.getPhotonEnergy()*Beam.KEVTOJOULES;
-    double numberOfPhotons = PULSE_ENERGY/energyPerPhoton;
+    double meanEnergyJoules = meanEnergy*Beam.KEVTOJOULES;
+    double numberOfPhotons = PULSE_ENERGY/meanEnergyJoules;
     
 //    numberOfPhotons = numFluxPhotons;
     int[] maxVoxel = getMaxPixelCoordinates();
@@ -1005,7 +1057,7 @@ public class XFEL {
   }
   
   private void producePhotoElectron(Beam beam, CoefCalc coefCalc, Map<Element, Double> elementAbsorptionProbs, Map<Element, double[]> ionisationProbs,
-                                    double timeStamp, int doseTime, double xn, double yn, double zn, boolean surrounding) {
+                                    double timeStamp, int doseTime, double xn, double yn, double zn, boolean surrounding, double photonEnergy) {
   //work out the element that has been absorbed with and hence the shell binding energy and photoelectron energy
     //element
     int[] pixelCoord = convertToPixelCoordinates(xn, yn, zn);
@@ -1042,7 +1094,7 @@ public class XFEL {
     int shellIndex = getIonisedShell(ionisedElement, ionisationProbs);
     //get the shell binding energy
     double shellBindingEnergy = getShellBindingEnergy(ionisedElement, shellIndex);
-    double photoelectronEnergy = beam.getPhotonEnergy() - shellBindingEnergy;
+    double photoelectronEnergy = photonEnergy - shellBindingEnergy;
     
     if (doseTime < 0) {
       doseTime = 0;
@@ -1052,7 +1104,7 @@ public class XFEL {
     if (surrounding == false) {
       dose[doseTime] += shellBindingEnergy;
       photonDose[doseTime] += shellBindingEnergy;
-      raddoseStyleDose += beam.getPhotonEnergy();
+      raddoseStyleDose += photonEnergy;
       //add to voxel
   //    int[] pixelCoord = convertToPixelCoordinates(xn, yn, zn);
     //  voxelEnergy[pixelCoord[0]][pixelCoord[1]][pixelCoord[2]][doseTime] += shellBindingEnergy;
@@ -1216,14 +1268,14 @@ public class XFEL {
     }
   }
   
-  private void produceCompton(Beam beam, CoefCalc coefCalc, double timeStamp, double xn, double yn, double zn, boolean surrounding) {
+  private void produceCompton(Beam beam, CoefCalc coefCalc, double timeStamp, double xn, double yn, double zn, boolean surrounding, double photonEnergy) {
     //then the photon scattered by the compton effect
     //pick an angle theta
     int[] pixelCoord = convertToPixelCoordinates(xn, yn, zn);
     double photonTheta = Math.PI * Math.random();
     //now get the energy of the compton electron
     double mcSquared = m * Math.pow(c, 2);
-    double incidentEnergy = beam.getPhotonEnergy() * Beam.KEVTOJOULES;
+    double incidentEnergy = photonEnergy * Beam.KEVTOJOULES;
     double Ecomp = ((Math.pow(incidentEnergy, 2) * (1-Math.cos(photonTheta))) / 
                    (mcSquared * (1+((incidentEnergy/mcSquared)*(1-Math.cos(photonTheta))))))
                     /Beam.KEVTOJOULES; //in keV
@@ -2460,8 +2512,8 @@ public class XFEL {
     }
   }
   
-  private void populateEnergyPerInel(Beam beam, CoefCalc coefCalc) {
-    double maxEnergy = beam.getPhotonEnergy();
+  private void populateEnergyPerInel(Beam beam, CoefCalc coefCalc, double photonEnergy) {
+    double maxEnergy = photonEnergy;
     for (int i = 1; i <= numInelEnBins; i++ ){
       double thisEnergy = i* (maxEnergy / numInelEnBins);
       //need to get elastic for inel to work
@@ -2480,7 +2532,7 @@ public class XFEL {
     }
   }
   
-  private void  populateStraggling(Beam beam, CoefCalc coefCalc) {
+  private void  populateStraggling(Beam beam, CoefCalc coefCalc, double photonEnergy) {
     /*
     //way 1 - non-relativistic but takes in thickness so probably better for lower energy
     
@@ -2488,7 +2540,7 @@ public class XFEL {
     //way 2 - relativistic but assuming thin so probably better for higher energy
   //  double m = 9.10938356E-31; // in Kg
     double csquared = c*c;  // (m/s)^2   //update this to be precise
-    double maxEnergy = beam.getPhotonEnergy();
+    double maxEnergy = photonEnergy;
     for (int i = 1; i <= numInelEnBins; i++ ){
       double thisEnergy = i* (maxEnergy / numInelEnBins);
       double Vo =  thisEnergy * Beam.KEVTOJOULES;
@@ -3020,8 +3072,8 @@ private Element chooseLowEnElement(CoefCalc coefCalc, double Pinner, Map<Element
   //Do a RD3D check of the values to make sure the RD3D dose is not ridiculous
   public void RD3Dcheck(Beam beam, Wedge wedge, CoefCalc coefCalc) {
     //firstly need to set the photons per fs in beam
-    double energyPerPhoton = beam.getPhotonEnergy()*Beam.KEVTOJOULES;              // change these two lines to: double numberOfPhotons = PulseEnergy / normalPinkBeam.getMean();
-    double numberOfPhotons = PULSE_ENERGY/energyPerPhoton;
+    double meanEnergyJoules = meanEnergy*Beam.KEVTOJOULES;
+    double numberOfPhotons = PULSE_ENERGY/meanEnergyJoules;
     double photonsPerfs = numberOfPhotons/PULSE_LENGTH;
     beam.setPhotonsPerfs(photonsPerfs);
     
@@ -3096,11 +3148,11 @@ private Element chooseLowEnElement(CoefCalc coefCalc, double Pinner, Map<Element
               //calculate compton effect
               double electronweight = 9.10938356E-31;
               double csquared = 3E8*3E8;
-              double beamenergy = (beam.getPhotonEnergy() * Beam.KEVTOJOULES);
+              double energyOfPhotonJoules = (meanEnergy * Beam.KEVTOJOULES); // Might change to loop through energies, after seen effect in RD3D
               double mcsquared = electronweight * csquared;
-              double voxImageElectronEnergyDose = mcsquared / (2*beamenergy + mcsquared);
-              voxImageElectronEnergyDose = (beamenergy * (1 - (Math.pow(voxImageElectronEnergyDose, 0.5)))); //Compton electron energy in joules
-              double numberofphotons = voxImageFluence[i][j][k] / beamenergy; //This gives I0 in equation 9 in Karthik 2010, dividing by beam energy leaves photons per um^2/s
+              double voxImageElectronEnergyDose = mcsquared / (2*energyOfPhotonJoules + mcsquared);
+              voxImageElectronEnergyDose = (energyOfPhotonJoules * (1 - (Math.pow(voxImageElectronEnergyDose, 0.5)))); //Compton electron energy in joules
+              double numberofphotons = voxImageFluence[i][j][k] / energyOfPhotonJoules; //This gives I0 in equation 9 in Karthik 2010, dividing by beam energy leaves photons per um^2/s
               voxImageComptonFluence[i][j][k] = numberofphotons * voxImageElectronEnergyDose; //Re-calculate voxImageFluence using Compton electron energy
               double voxImageDoseCompton = fluenceToDoseFactorCompton * voxImageComptonFluence[i][j][k];
               

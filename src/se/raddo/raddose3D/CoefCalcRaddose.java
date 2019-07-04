@@ -216,8 +216,8 @@ public class CoefCalcRaddose extends CoefCalc {
 
   @Override
   @SuppressWarnings("PMD.PrematureDeclaration")
-  public void updateCoefficients(final Beam b) {
-    String energy = String.format("ENERGY %g%n", b.getPhotonEnergy());
+  public void updateCoefficients(final double photonEnergy) {
+/*    String energy = String.format("ENERGY %g%n", photonEnergy);
     String phoSec = String.format("PHOSEC %g%n", b.getPhotonsPerSec());
     String exposure = String.format("EXPOSURE %d%n", 10);
     String debug = "DEBUG\n";
@@ -304,11 +304,11 @@ public class CoefCalcRaddose extends CoefCalc {
       t.printStackTrace();
     } catch (InterruptedException t) {
       t.printStackTrace();
-    }
+    } */
   }
   
   @Override
-  public void updateCryoCoefficients(final Beam b) {
+  public void updateCryoCoefficients(final double photonEnergy) {
     // Does nothing
   }
 

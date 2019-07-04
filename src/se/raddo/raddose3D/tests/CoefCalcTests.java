@@ -111,7 +111,7 @@ public class CoefCalcTests {
     beamProperties.put(Beam.BEAM_ENERGY, 8.05);
     Beam b = new BeamTophat(beamProperties);
 
-    coefCalc.updateCoefficients(b);
+    coefCalc.updateCoefficients(b.getPhotonEnergy());
 
     // Values obtained from RADDOSEv2, http://www.raddo.se/legacy/
     Assertion.equals(coefCalc.getAbsorptionCoefficient(), 0.001042,
@@ -165,7 +165,7 @@ public class CoefCalcTests {
     beamProperties.put(Beam.BEAM_ENERGY, 14.05);
     Beam b = new BeamTophat(beamProperties);
 
-    coefCalc.updateCoefficients(b);
+    coefCalc.updateCoefficients(b.getPhotonEnergy());
 
     // Values obtained from RADDOSEv2, http://www.raddo.se/legacy/
     Assertion.equals(coefCalc.getAbsorptionCoefficient(), 0.004675,
@@ -214,7 +214,7 @@ public class CoefCalcTests {
     beamProperties.put(Beam.BEAM_ENERGY, 12.1);
     Beam b = new BeamTophat(beamProperties);
 
-    coefCalc.updateCoefficients(b);
+    coefCalc.updateCoefficients(b.getPhotonEnergy());
 
     // Values obtained from RADDOSEv2, http://www.raddo.se/legacy/
     Assertion.equals(coefCalc.getAbsorptionCoefficient(), 4.60e-04,
@@ -270,7 +270,7 @@ public class CoefCalcTests {
     beamProperties.put(Beam.BEAM_ENERGY, 12.4);
     Beam b = new BeamTophat(beamProperties);
 
-    coefCalc.updateCryoCoefficients(b);
+    coefCalc.updateCryoCoefficients(b.getPhotonEnergy());
 
     // Values obtained from RADDOSEv2, http://www.raddo.se/legacy/
     Assertion.equals(coefCalc.getCryoAbsorptionCoefficient(), 3.535855532631557E-4,
@@ -325,7 +325,7 @@ public class CoefCalcTests {
     beamProperties.put(Beam.BEAM_ENERGY, 12.4);
     Beam b = new BeamTophat(beamProperties);
 
-    coefCalc.updateCryoCoefficients(b);
+    coefCalc.updateCryoCoefficients(b.getPhotonEnergy());
     
 
     // Values obtained from RADDOSEv2, http://www.raddo.se/legacy/
@@ -439,8 +439,7 @@ public class CoefCalcTests {
       beamProperties.put(Beam.BEAM_ENERGY, 12.1);
       Beam b = new BeamTophat(beamProperties);
 
-      coefCalc.updateCoefficients(b);
-      coefCalcRDV2.updateCoefficients(b);
+      coefCalc.updateCoefficients(b.getPhotonEnergy());
 
       // Values obtained from RADDOSEv2, http://www.raddo.se/legacy/
       Assertion.equals(coefCalc.getAbsorptionCoefficient(),

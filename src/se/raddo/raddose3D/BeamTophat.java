@@ -24,7 +24,7 @@ public class BeamTophat implements Beam {
   /** Pulse energy. */
   private final Double pulseEnergy;
   
-  private final Double energyFWHM;
+  private Double energyFWHM;
   
   private  Double semiAngle;
   private  Double apertureRadius;
@@ -241,6 +241,7 @@ public class BeamTophat implements Beam {
 
   @Override
   public double getEnergyFWHM() {
+    if(energyFWHM == null) {this.energyFWHM = 0.0;};
     return energyFWHM;
   }
 }

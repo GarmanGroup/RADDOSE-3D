@@ -11,10 +11,10 @@ public abstract class CoefCalc {
   /**
    * Calculate cross-sections for the new Beam.
    * 
-   * @param b
-   *          Beam object
+   * @param photonEnergy
+   *    The energy of each photon
    */
-  public abstract void updateCoefficients(Beam b);
+  public abstract void updateCoefficients(double photonEnergy);
 
   /**
    * Returns the current absorption coefficient. (Photoelectric)
@@ -74,10 +74,10 @@ public abstract class CoefCalc {
   /**
    * Calculate cryo-cross-sections for the new Beam.
    * 
-   * @param b
-   *          Beam object
+   * @param photonEnergy
+   *    The energy of each photon
    */
-  public abstract void updateCryoCoefficients(Beam b);
+  public abstract void updateCryoCoefficients(final double photonEnergy);
   
   /**
    * Returns the current cryo absorption coefficient. (Photoelectric and Compton)
