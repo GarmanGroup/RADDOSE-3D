@@ -1,4 +1,4 @@
-// $ANTLR 3.4 C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g 2019-06-24 17:34:18
+// $ANTLR 3.4 C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g 2019-07-04 15:00:01
 
 package se.raddo.raddose3D.parser;
 import se.raddo.raddose3D.*;
@@ -16,7 +16,7 @@ import java.util.ArrayList;
 @SuppressWarnings({"all", "warnings", "unchecked"})
 public class InputfileParser extends Parser {
     public static final String[] tokenNames = new String[] {
-        "<invalid>", "<EOR>", "<DOWN>", "<UP>", "ABSCOEFCALC", "ANGLEL", "ANGLEP", "ANGULARRESOLUTION", "AVERAGE", "BEAM", "CALCSURROUNDING", "CALCULATEFLESCAPE", "CALCULATEPEESCAPE", "CIF", "CIFNAME", "CIRCULAR", "COLLIMATION", "COMMENT", "CONTAINERDENSITY", "CONTAINERMATERIALELEMENTS", "CONTAINERMATERIALMIXTURE", "CONTAINERMATERIALTYPE", "CONTAINERTHICKNESS", "CRYSTAL", "DDM", "DECAYPARAM", "DEFAULT", "DIFFRACTIONDECAYMODEL", "DIMENSION", "DUMMY", "ELEMENT", "ELEMENTAL", "ENERGY", "EXPONENT", "EXPOSURETIME", "FILE", "FLOAT", "FLRESOLUTION", "FLUX", "FWHM", "GONIOMETERAXIS", "HORIZONTAL", "KEV", "LEAL", "LINEAR", "MATERIALELEMENTS", "MATERIALMIXTURE", "MATERIALTYPE", "MAXRESOLUTION", "MIXTURE", "MODELFILE", "NONE", "NUMCARB", "NUMDNA", "NUMMONOMERS", "NUMRESIDUES", "NUMRNA", "OILBASED", "OILDENSITY", "OILELEMENTS", "PDB", "PDBNAME", "PERESOLUTION", "PIXELSIZE", "PIXELSPERMICRON", "PROTEINCONC", "PROTEINCONCENTRATION", "PROTEINHEAVYATOMS", "RDFORTAN", "RDJAVA", "RECTANGULAR", "ROTAXBEAMOFFSET", "SAXS", "SAXSSEQ", "SEQFILE", "SEQUENCE", "SEQUENCEFILE", "SIMPLE", "SMALLMOLE", "SMALLMOLEATOMS", "SOLVENTFRACTION", "SOLVENTHEAVYCONC", "STARTOFFSET", "STRING", "SURROUNDINGHEAVYCONC", "TRANSLATEPERDEGREE", "TYPE", "UNITCELL", "VERTICAL", "WEDGE", "WIREFRAMETYPE", "WS"
+        "<invalid>", "<EOR>", "<DOWN>", "<UP>", "ABSCOEFCALC", "ANGLEL", "ANGLEP", "ANGULARRESOLUTION", "AVERAGE", "BEAM", "CALCSURROUNDING", "CALCULATEFLESCAPE", "CALCULATEPEESCAPE", "CIF", "CIFNAME", "CIRCULAR", "COLLIMATION", "COMMENT", "CONTAINERDENSITY", "CONTAINERMATERIALELEMENTS", "CONTAINERMATERIALMIXTURE", "CONTAINERMATERIALTYPE", "CONTAINERTHICKNESS", "CRYSTAL", "DDM", "DECAYPARAM", "DEFAULT", "DIFFRACTIONDECAYMODEL", "DIMENSION", "DUMMY", "ELEMENT", "ELEMENTAL", "ENERGY", "ENERGYFWHM", "EXPONENT", "EXPOSURETIME", "FILE", "FLOAT", "FLRESOLUTION", "FLUX", "FWHM", "GONIOMETERAXIS", "HORIZONTAL", "KEV", "LEAL", "LINEAR", "MATERIALELEMENTS", "MATERIALMIXTURE", "MATERIALTYPE", "MAXRESOLUTION", "MIXTURE", "MODELFILE", "NONE", "NUMCARB", "NUMDNA", "NUMMONOMERS", "NUMRESIDUES", "NUMRNA", "OILBASED", "OILDENSITY", "OILELEMENTS", "PDB", "PDBNAME", "PERESOLUTION", "PIXELSIZE", "PIXELSPERMICRON", "PROTEINCONC", "PROTEINCONCENTRATION", "PROTEINHEAVYATOMS", "RDFORTAN", "RDJAVA", "RECTANGULAR", "ROTAXBEAMOFFSET", "SAXS", "SAXSSEQ", "SEQFILE", "SEQUENCE", "SEQUENCEFILE", "SIMPLE", "SMALLMOLE", "SMALLMOLEATOMS", "SOLVENTFRACTION", "SOLVENTHEAVYCONC", "STARTOFFSET", "STRING", "SURROUNDINGHEAVYCONC", "TRANSLATEPERDEGREE", "TYPE", "UNITCELL", "VERTICAL", "WEDGE", "WIREFRAMETYPE", "WS"
     };
 
     public static final int EOF=-1;
@@ -49,65 +49,66 @@ public class InputfileParser extends Parser {
     public static final int ELEMENT=30;
     public static final int ELEMENTAL=31;
     public static final int ENERGY=32;
-    public static final int EXPONENT=33;
-    public static final int EXPOSURETIME=34;
-    public static final int FILE=35;
-    public static final int FLOAT=36;
-    public static final int FLRESOLUTION=37;
-    public static final int FLUX=38;
-    public static final int FWHM=39;
-    public static final int GONIOMETERAXIS=40;
-    public static final int HORIZONTAL=41;
-    public static final int KEV=42;
-    public static final int LEAL=43;
-    public static final int LINEAR=44;
-    public static final int MATERIALELEMENTS=45;
-    public static final int MATERIALMIXTURE=46;
-    public static final int MATERIALTYPE=47;
-    public static final int MAXRESOLUTION=48;
-    public static final int MIXTURE=49;
-    public static final int MODELFILE=50;
-    public static final int NONE=51;
-    public static final int NUMCARB=52;
-    public static final int NUMDNA=53;
-    public static final int NUMMONOMERS=54;
-    public static final int NUMRESIDUES=55;
-    public static final int NUMRNA=56;
-    public static final int OILBASED=57;
-    public static final int OILDENSITY=58;
-    public static final int OILELEMENTS=59;
-    public static final int PDB=60;
-    public static final int PDBNAME=61;
-    public static final int PERESOLUTION=62;
-    public static final int PIXELSIZE=63;
-    public static final int PIXELSPERMICRON=64;
-    public static final int PROTEINCONC=65;
-    public static final int PROTEINCONCENTRATION=66;
-    public static final int PROTEINHEAVYATOMS=67;
-    public static final int RDFORTAN=68;
-    public static final int RDJAVA=69;
-    public static final int RECTANGULAR=70;
-    public static final int ROTAXBEAMOFFSET=71;
-    public static final int SAXS=72;
-    public static final int SAXSSEQ=73;
-    public static final int SEQFILE=74;
-    public static final int SEQUENCE=75;
-    public static final int SEQUENCEFILE=76;
-    public static final int SIMPLE=77;
-    public static final int SMALLMOLE=78;
-    public static final int SMALLMOLEATOMS=79;
-    public static final int SOLVENTFRACTION=80;
-    public static final int SOLVENTHEAVYCONC=81;
-    public static final int STARTOFFSET=82;
-    public static final int STRING=83;
-    public static final int SURROUNDINGHEAVYCONC=84;
-    public static final int TRANSLATEPERDEGREE=85;
-    public static final int TYPE=86;
-    public static final int UNITCELL=87;
-    public static final int VERTICAL=88;
-    public static final int WEDGE=89;
-    public static final int WIREFRAMETYPE=90;
-    public static final int WS=91;
+    public static final int ENERGYFWHM=33;
+    public static final int EXPONENT=34;
+    public static final int EXPOSURETIME=35;
+    public static final int FILE=36;
+    public static final int FLOAT=37;
+    public static final int FLRESOLUTION=38;
+    public static final int FLUX=39;
+    public static final int FWHM=40;
+    public static final int GONIOMETERAXIS=41;
+    public static final int HORIZONTAL=42;
+    public static final int KEV=43;
+    public static final int LEAL=44;
+    public static final int LINEAR=45;
+    public static final int MATERIALELEMENTS=46;
+    public static final int MATERIALMIXTURE=47;
+    public static final int MATERIALTYPE=48;
+    public static final int MAXRESOLUTION=49;
+    public static final int MIXTURE=50;
+    public static final int MODELFILE=51;
+    public static final int NONE=52;
+    public static final int NUMCARB=53;
+    public static final int NUMDNA=54;
+    public static final int NUMMONOMERS=55;
+    public static final int NUMRESIDUES=56;
+    public static final int NUMRNA=57;
+    public static final int OILBASED=58;
+    public static final int OILDENSITY=59;
+    public static final int OILELEMENTS=60;
+    public static final int PDB=61;
+    public static final int PDBNAME=62;
+    public static final int PERESOLUTION=63;
+    public static final int PIXELSIZE=64;
+    public static final int PIXELSPERMICRON=65;
+    public static final int PROTEINCONC=66;
+    public static final int PROTEINCONCENTRATION=67;
+    public static final int PROTEINHEAVYATOMS=68;
+    public static final int RDFORTAN=69;
+    public static final int RDJAVA=70;
+    public static final int RECTANGULAR=71;
+    public static final int ROTAXBEAMOFFSET=72;
+    public static final int SAXS=73;
+    public static final int SAXSSEQ=74;
+    public static final int SEQFILE=75;
+    public static final int SEQUENCE=76;
+    public static final int SEQUENCEFILE=77;
+    public static final int SIMPLE=78;
+    public static final int SMALLMOLE=79;
+    public static final int SMALLMOLEATOMS=80;
+    public static final int SOLVENTFRACTION=81;
+    public static final int SOLVENTHEAVYCONC=82;
+    public static final int STARTOFFSET=83;
+    public static final int STRING=84;
+    public static final int SURROUNDINGHEAVYCONC=85;
+    public static final int TRANSLATEPERDEGREE=86;
+    public static final int TYPE=87;
+    public static final int UNITCELL=88;
+    public static final int VERTICAL=89;
+    public static final int WEDGE=90;
+    public static final int WIREFRAMETYPE=91;
+    public static final int WS=92;
 
     // delegates
     public Parser[] getDelegates() {
@@ -125,7 +126,7 @@ public class InputfileParser extends Parser {
     }
 
     public String[] getTokenNames() { return InputfileParser.tokenNames; }
-    public String getGrammarFileName() { return "C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g"; }
+    public String getGrammarFileName() { return "C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g"; }
 
 
         private BeamFactory beamFactory = null;
@@ -154,7 +155,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "configfile"
-    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:41:1: configfile : (a= crystal |b= wedge |c= beam )* EOF ;
+    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:41:1: configfile : (a= crystal |b= wedge |c= beam )* EOF ;
     public final void configfile() throws RecognitionException {
         Crystal a =null;
 
@@ -164,10 +165,10 @@ public class InputfileParser extends Parser {
 
 
         try {
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:41:11: ( (a= crystal |b= wedge |c= beam )* EOF )
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:42:11: (a= crystal |b= wedge |c= beam )* EOF
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:41:11: ( (a= crystal |b= wedge |c= beam )* EOF )
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:42:11: (a= crystal |b= wedge |c= beam )* EOF
             {
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:42:11: (a= crystal |b= wedge |c= beam )*
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:42:11: (a= crystal |b= wedge |c= beam )*
             loop1:
             do {
                 int alt1=4;
@@ -192,7 +193,7 @@ public class InputfileParser extends Parser {
 
                 switch (alt1) {
             	case 1 :
-            	    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:42:13: a= crystal
+            	    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:42:13: a= crystal
             	    {
             	    pushFollow(FOLLOW_crystal_in_configfile47);
             	    a=crystal();
@@ -205,7 +206,7 @@ public class InputfileParser extends Parser {
             	    }
             	    break;
             	case 2 :
-            	    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:43:13: b= wedge
+            	    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:43:13: b= wedge
             	    {
             	    pushFollow(FOLLOW_wedge_in_configfile65);
             	    b=wedge();
@@ -218,7 +219,7 @@ public class InputfileParser extends Parser {
             	    }
             	    break;
             	case 3 :
-            	    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:44:13: c= beam
+            	    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:44:13: c= beam
             	    {
             	    pushFollow(FOLLOW_beam_in_configfile85);
             	    c=beam();
@@ -307,7 +308,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "crystal"
-    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:49:1: crystal returns [Crystal cObj] : CRYSTAL ( crystalLine )+ ;
+    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:49:1: crystal returns [Crystal cObj] : CRYSTAL ( crystalLine )+ ;
     public final Crystal crystal() throws RecognitionException {
         crystal_stack.push(new crystal_scope());
         Crystal cObj = null;
@@ -318,12 +319,12 @@ public class InputfileParser extends Parser {
         		((crystal_scope)crystal_stack.peek()).crystalProperties = new HashMap<Object, Object>();
 
         try {
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:235:2: ( CRYSTAL ( crystalLine )+ )
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:235:4: CRYSTAL ( crystalLine )+
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:235:2: ( CRYSTAL ( crystalLine )+ )
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:235:4: CRYSTAL ( crystalLine )+
             {
             match(input,CRYSTAL,FOLLOW_CRYSTAL_in_crystal134); 
 
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:235:12: ( crystalLine )+
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:235:12: ( crystalLine )+
             int cnt2=0;
             loop2:
             do {
@@ -337,7 +338,7 @@ public class InputfileParser extends Parser {
 
                 switch (alt2) {
             	case 1 :
-            	    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:235:12: crystalLine
+            	    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:235:12: crystalLine
             	    {
             	    pushFollow(FOLLOW_crystalLine_in_crystal136);
             	    crystalLine();
@@ -511,7 +512,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "crystalLine"
-    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:238:1: crystalLine : (a= crystalType |b= crystalDDM |c= crystalCoefcalc |d= crystalDim |e= crystalPPM |f= crystalAngP |g= crystalAngL |h= crystalDecayParam |i= containerThickness |j= containerDensity |k= crystalContainerMaterial |l= containerMaterialMixture |m= unitcell |n= nummonomers |o= numresidues |p= numRNA |q= numDNA |qa= numcarb |r= heavyProteinAtoms |s= heavySolutionConc |t= solventFraction |u= pdb |v= wireframeType |w= modelFile |x= calculatePEEscape |y= proteinConcentration |z= containerMaterialElements |aa= sequenceFile |ab= smallMoleAtoms |ac= cif |bb= calculateFLEscape |cc= flResolution |dd= peResolution |ee= surroundingHeavyConc |ff= oilBased |gg= goniometerAxis |hh= calcSurrounding |ii= oilElements |jj= oilDensity );
+    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:238:1: crystalLine : (a= crystalType |b= crystalDDM |c= crystalCoefcalc |d= crystalDim |e= crystalPPM |f= crystalAngP |g= crystalAngL |h= crystalDecayParam |i= containerThickness |j= containerDensity |k= crystalContainerMaterial |l= containerMaterialMixture |m= unitcell |n= nummonomers |o= numresidues |p= numRNA |q= numDNA |qa= numcarb |r= heavyProteinAtoms |s= heavySolutionConc |t= solventFraction |u= pdb |v= wireframeType |w= modelFile |x= calculatePEEscape |y= proteinConcentration |z= containerMaterialElements |aa= sequenceFile |ab= smallMoleAtoms |ac= cif |bb= calculateFLEscape |cc= flResolution |dd= peResolution |ee= surroundingHeavyConc |ff= oilBased |gg= goniometerAxis |hh= calcSurrounding |ii= oilElements |jj= oilDensity );
     public final void crystalLine() throws RecognitionException {
         String a =null;
 
@@ -593,7 +594,7 @@ public class InputfileParser extends Parser {
 
 
         try {
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:239:2: (a= crystalType |b= crystalDDM |c= crystalCoefcalc |d= crystalDim |e= crystalPPM |f= crystalAngP |g= crystalAngL |h= crystalDecayParam |i= containerThickness |j= containerDensity |k= crystalContainerMaterial |l= containerMaterialMixture |m= unitcell |n= nummonomers |o= numresidues |p= numRNA |q= numDNA |qa= numcarb |r= heavyProteinAtoms |s= heavySolutionConc |t= solventFraction |u= pdb |v= wireframeType |w= modelFile |x= calculatePEEscape |y= proteinConcentration |z= containerMaterialElements |aa= sequenceFile |ab= smallMoleAtoms |ac= cif |bb= calculateFLEscape |cc= flResolution |dd= peResolution |ee= surroundingHeavyConc |ff= oilBased |gg= goniometerAxis |hh= calcSurrounding |ii= oilElements |jj= oilDensity )
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:239:2: (a= crystalType |b= crystalDDM |c= crystalCoefcalc |d= crystalDim |e= crystalPPM |f= crystalAngP |g= crystalAngL |h= crystalDecayParam |i= containerThickness |j= containerDensity |k= crystalContainerMaterial |l= containerMaterialMixture |m= unitcell |n= nummonomers |o= numresidues |p= numRNA |q= numDNA |qa= numcarb |r= heavyProteinAtoms |s= heavySolutionConc |t= solventFraction |u= pdb |v= wireframeType |w= modelFile |x= calculatePEEscape |y= proteinConcentration |z= containerMaterialElements |aa= sequenceFile |ab= smallMoleAtoms |ac= cif |bb= calculateFLEscape |cc= flResolution |dd= peResolution |ee= surroundingHeavyConc |ff= oilBased |gg= goniometerAxis |hh= calcSurrounding |ii= oilElements |jj= oilDensity )
             int alt3=39;
             switch ( input.LA(1) ) {
             case TYPE:
@@ -807,7 +808,7 @@ public class InputfileParser extends Parser {
 
             switch (alt3) {
                 case 1 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:239:4: a= crystalType
+                    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:239:4: a= crystalType
                     {
                     pushFollow(FOLLOW_crystalType_in_crystalLine192);
                     a=crystalType();
@@ -820,7 +821,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:240:4: b= crystalDDM
+                    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:240:4: b= crystalDDM
                     {
                     pushFollow(FOLLOW_crystalDDM_in_crystalLine203);
                     b=crystalDDM();
@@ -833,7 +834,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 3 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:241:4: c= crystalCoefcalc
+                    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:241:4: c= crystalCoefcalc
                     {
                     pushFollow(FOLLOW_crystalCoefcalc_in_crystalLine215);
                     c=crystalCoefcalc();
@@ -846,7 +847,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 4 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:242:4: d= crystalDim
+                    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:242:4: d= crystalDim
                     {
                     pushFollow(FOLLOW_crystalDim_in_crystalLine225);
                     d=crystalDim();
@@ -861,7 +862,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 5 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:245:4: e= crystalPPM
+                    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:245:4: e= crystalPPM
                     {
                     pushFollow(FOLLOW_crystalPPM_in_crystalLine236);
                     e=crystalPPM();
@@ -874,7 +875,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 6 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:246:4: f= crystalAngP
+                    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:246:4: f= crystalAngP
                     {
                     pushFollow(FOLLOW_crystalAngP_in_crystalLine247);
                     f=crystalAngP();
@@ -887,7 +888,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 7 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:247:4: g= crystalAngL
+                    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:247:4: g= crystalAngL
                     {
                     pushFollow(FOLLOW_crystalAngL_in_crystalLine258);
                     g=crystalAngL();
@@ -900,7 +901,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 8 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:248:4: h= crystalDecayParam
+                    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:248:4: h= crystalDecayParam
                     {
                     pushFollow(FOLLOW_crystalDecayParam_in_crystalLine269);
                     h=crystalDecayParam();
@@ -915,7 +916,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 9 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:251:4: i= containerThickness
+                    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:251:4: i= containerThickness
                     {
                     pushFollow(FOLLOW_containerThickness_in_crystalLine279);
                     i=containerThickness();
@@ -928,7 +929,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 10 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:252:4: j= containerDensity
+                    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:252:4: j= containerDensity
                     {
                     pushFollow(FOLLOW_containerDensity_in_crystalLine289);
                     j=containerDensity();
@@ -941,7 +942,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 11 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:253:4: k= crystalContainerMaterial
+                    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:253:4: k= crystalContainerMaterial
                     {
                     pushFollow(FOLLOW_crystalContainerMaterial_in_crystalLine299);
                     k=crystalContainerMaterial();
@@ -954,7 +955,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 12 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:254:4: l= containerMaterialMixture
+                    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:254:4: l= containerMaterialMixture
                     {
                     pushFollow(FOLLOW_containerMaterialMixture_in_crystalLine308);
                     l=containerMaterialMixture();
@@ -967,7 +968,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 13 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:255:4: m= unitcell
+                    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:255:4: m= unitcell
                     {
                     pushFollow(FOLLOW_unitcell_in_crystalLine317);
                     m=unitcell();
@@ -985,7 +986,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 14 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:261:4: n= nummonomers
+                    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:261:4: n= nummonomers
                     {
                     pushFollow(FOLLOW_nummonomers_in_crystalLine328);
                     n=nummonomers();
@@ -998,7 +999,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 15 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:262:4: o= numresidues
+                    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:262:4: o= numresidues
                     {
                     pushFollow(FOLLOW_numresidues_in_crystalLine339);
                     o=numresidues();
@@ -1011,7 +1012,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 16 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:263:4: p= numRNA
+                    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:263:4: p= numRNA
                     {
                     pushFollow(FOLLOW_numRNA_in_crystalLine350);
                     p=numRNA();
@@ -1024,7 +1025,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 17 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:264:4: q= numDNA
+                    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:264:4: q= numDNA
                     {
                     pushFollow(FOLLOW_numDNA_in_crystalLine363);
                     q=numDNA();
@@ -1037,7 +1038,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 18 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:265:4: qa= numcarb
+                    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:265:4: qa= numcarb
                     {
                     pushFollow(FOLLOW_numcarb_in_crystalLine376);
                     qa=numcarb();
@@ -1050,7 +1051,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 19 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:266:4: r= heavyProteinAtoms
+                    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:266:4: r= heavyProteinAtoms
                     {
                     pushFollow(FOLLOW_heavyProteinAtoms_in_crystalLine389);
                     r=heavyProteinAtoms();
@@ -1064,7 +1065,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 20 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:268:4: s= heavySolutionConc
+                    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:268:4: s= heavySolutionConc
                     {
                     pushFollow(FOLLOW_heavySolutionConc_in_crystalLine398);
                     s=heavySolutionConc();
@@ -1078,7 +1079,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 21 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:270:4: t= solventFraction
+                    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:270:4: t= solventFraction
                     {
                     pushFollow(FOLLOW_solventFraction_in_crystalLine407);
                     t=solventFraction();
@@ -1091,7 +1092,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 22 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:271:4: u= pdb
+                    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:271:4: u= pdb
                     {
                     pushFollow(FOLLOW_pdb_in_crystalLine417);
                     u=pdb();
@@ -1104,7 +1105,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 23 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:272:4: v= wireframeType
+                    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:272:4: v= wireframeType
                     {
                     pushFollow(FOLLOW_wireframeType_in_crystalLine430);
                     v=wireframeType();
@@ -1117,7 +1118,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 24 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:273:4: w= modelFile
+                    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:273:4: w= modelFile
                     {
                     pushFollow(FOLLOW_modelFile_in_crystalLine441);
                     w=modelFile();
@@ -1130,7 +1131,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 25 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:274:4: x= calculatePEEscape
+                    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:274:4: x= calculatePEEscape
                     {
                     pushFollow(FOLLOW_calculatePEEscape_in_crystalLine453);
                     x=calculatePEEscape();
@@ -1143,7 +1144,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 26 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:275:4: y= proteinConcentration
+                    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:275:4: y= proteinConcentration
                     {
                     pushFollow(FOLLOW_proteinConcentration_in_crystalLine463);
                     y=proteinConcentration();
@@ -1156,7 +1157,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 27 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:276:4: z= containerMaterialElements
+                    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:276:4: z= containerMaterialElements
                     {
                     pushFollow(FOLLOW_containerMaterialElements_in_crystalLine472);
                     z=containerMaterialElements();
@@ -1170,7 +1171,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 28 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:278:4: aa= sequenceFile
+                    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:278:4: aa= sequenceFile
                     {
                     pushFollow(FOLLOW_sequenceFile_in_crystalLine481);
                     aa=sequenceFile();
@@ -1183,7 +1184,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 29 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:279:4: ab= smallMoleAtoms
+                    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:279:4: ab= smallMoleAtoms
                     {
                     pushFollow(FOLLOW_smallMoleAtoms_in_crystalLine492);
                     ab=smallMoleAtoms();
@@ -1197,7 +1198,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 30 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:281:4: ac= cif
+                    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:281:4: ac= cif
                     {
                     pushFollow(FOLLOW_cif_in_crystalLine513);
                     ac=cif();
@@ -1210,7 +1211,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 31 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:283:4: bb= calculateFLEscape
+                    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:283:4: bb= calculateFLEscape
                     {
                     pushFollow(FOLLOW_calculateFLEscape_in_crystalLine527);
                     bb=calculateFLEscape();
@@ -1223,7 +1224,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 32 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:284:4: cc= flResolution
+                    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:284:4: cc= flResolution
                     {
                     pushFollow(FOLLOW_flResolution_in_crystalLine537);
                     cc=flResolution();
@@ -1236,7 +1237,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 33 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:285:4: dd= peResolution
+                    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:285:4: dd= peResolution
                     {
                     pushFollow(FOLLOW_peResolution_in_crystalLine548);
                     dd=peResolution();
@@ -1249,7 +1250,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 34 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:287:4: ee= surroundingHeavyConc
+                    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:287:4: ee= surroundingHeavyConc
                     {
                     pushFollow(FOLLOW_surroundingHeavyConc_in_crystalLine560);
                     ee=surroundingHeavyConc();
@@ -1263,7 +1264,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 35 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:289:4: ff= oilBased
+                    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:289:4: ff= oilBased
                     {
                     pushFollow(FOLLOW_oilBased_in_crystalLine577);
                     ff=oilBased();
@@ -1276,7 +1277,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 36 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:290:4: gg= goniometerAxis
+                    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:290:4: gg= goniometerAxis
                     {
                     pushFollow(FOLLOW_goniometerAxis_in_crystalLine602);
                     gg=goniometerAxis();
@@ -1289,7 +1290,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 37 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:291:4: hh= calcSurrounding
+                    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:291:4: hh= calcSurrounding
                     {
                     pushFollow(FOLLOW_calcSurrounding_in_crystalLine612);
                     hh=calcSurrounding();
@@ -1302,7 +1303,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 38 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:292:4: ii= oilElements
+                    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:292:4: ii= oilElements
                     {
                     pushFollow(FOLLOW_oilElements_in_crystalLine636);
                     ii=oilElements();
@@ -1316,7 +1317,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 39 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:294:4: jj= oilDensity
+                    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:294:4: jj= oilDensity
                     {
                     pushFollow(FOLLOW_oilDensity_in_crystalLine660);
                     jj=oilDensity();
@@ -1346,7 +1347,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "crystalType"
-    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:299:1: crystalType returns [String crystalType] : TYPE e= STRING ;
+    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:299:1: crystalType returns [String crystalType] : TYPE e= STRING ;
     public final String crystalType() throws RecognitionException {
         String crystalType = null;
 
@@ -1354,8 +1355,8 @@ public class InputfileParser extends Parser {
         Token e=null;
 
         try {
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:300:2: ( TYPE e= STRING )
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:300:4: TYPE e= STRING
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:300:2: ( TYPE e= STRING )
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:300:4: TYPE e= STRING
             {
             match(input,TYPE,FOLLOW_TYPE_in_crystalType703); 
 
@@ -1381,7 +1382,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "crystalDDM"
-    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:303:1: crystalDDM returns [int value] : ( DIFFRACTIONDECAYMODEL | DDM ) e= crystalDDMKeyword ;
+    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:303:1: crystalDDM returns [int value] : ( DIFFRACTIONDECAYMODEL | DDM ) e= crystalDDMKeyword ;
     public final int crystalDDM() throws RecognitionException {
         int value = 0;
 
@@ -1390,8 +1391,8 @@ public class InputfileParser extends Parser {
 
 
         try {
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:304:2: ( ( DIFFRACTIONDECAYMODEL | DDM ) e= crystalDDMKeyword )
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:304:4: ( DIFFRACTIONDECAYMODEL | DDM ) e= crystalDDMKeyword
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:304:2: ( ( DIFFRACTIONDECAYMODEL | DDM ) e= crystalDDMKeyword )
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:304:4: ( DIFFRACTIONDECAYMODEL | DDM ) e= crystalDDMKeyword
             {
             if ( input.LA(1)==DDM||input.LA(1)==DIFFRACTIONDECAYMODEL ) {
                 input.consume();
@@ -1429,13 +1430,13 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "crystalDDMKeyword"
-    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:307:1: crystalDDMKeyword returns [int value] : ( SIMPLE | LINEAR | LEAL );
+    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:307:1: crystalDDMKeyword returns [int value] : ( SIMPLE | LINEAR | LEAL );
     public final int crystalDDMKeyword() throws RecognitionException {
         int value = 0;
 
 
         try {
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:308:2: ( SIMPLE | LINEAR | LEAL )
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:308:2: ( SIMPLE | LINEAR | LEAL )
             int alt4=3;
             switch ( input.LA(1) ) {
             case SIMPLE:
@@ -1463,7 +1464,7 @@ public class InputfileParser extends Parser {
 
             switch (alt4) {
                 case 1 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:308:4: SIMPLE
+                    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:308:4: SIMPLE
                     {
                     match(input,SIMPLE,FOLLOW_SIMPLE_in_crystalDDMKeyword909); 
 
@@ -1472,7 +1473,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:309:4: LINEAR
+                    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:309:4: LINEAR
                     {
                     match(input,LINEAR,FOLLOW_LINEAR_in_crystalDDMKeyword916); 
 
@@ -1481,7 +1482,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 3 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:310:4: LEAL
+                    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:310:4: LEAL
                     {
                     match(input,LEAL,FOLLOW_LEAL_in_crystalDDMKeyword923); 
 
@@ -1513,7 +1514,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "crystalDecayParam"
-    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:316:1: crystalDecayParam returns [Double gammaParam, Double b0Param, Double betaParam] : DECAYPARAM a= FLOAT b= FLOAT c= FLOAT ;
+    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:316:1: crystalDecayParam returns [Double gammaParam, Double b0Param, Double betaParam] : DECAYPARAM a= FLOAT b= FLOAT c= FLOAT ;
     public final InputfileParser.crystalDecayParam_return crystalDecayParam() throws RecognitionException {
         InputfileParser.crystalDecayParam_return retval = new InputfileParser.crystalDecayParam_return();
         retval.start = input.LT(1);
@@ -1524,8 +1525,8 @@ public class InputfileParser extends Parser {
         Token c=null;
 
         try {
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:317:2: ( DECAYPARAM a= FLOAT b= FLOAT c= FLOAT )
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:317:4: DECAYPARAM a= FLOAT b= FLOAT c= FLOAT
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:317:2: ( DECAYPARAM a= FLOAT b= FLOAT c= FLOAT )
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:317:4: DECAYPARAM a= FLOAT b= FLOAT c= FLOAT
             {
             match(input,DECAYPARAM,FOLLOW_DECAYPARAM_in_crystalDecayParam1043); 
 
@@ -1558,7 +1559,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "crystalCoefcalc"
-    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:320:1: crystalCoefcalc returns [int value] : ABSCOEFCALC a= crystalCoefcalcKeyword ;
+    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:320:1: crystalCoefcalc returns [int value] : ABSCOEFCALC a= crystalCoefcalcKeyword ;
     public final int crystalCoefcalc() throws RecognitionException {
         int value = 0;
 
@@ -1567,8 +1568,8 @@ public class InputfileParser extends Parser {
 
 
         try {
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:321:2: ( ABSCOEFCALC a= crystalCoefcalcKeyword )
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:321:4: ABSCOEFCALC a= crystalCoefcalcKeyword
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:321:2: ( ABSCOEFCALC a= crystalCoefcalcKeyword )
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:321:4: ABSCOEFCALC a= crystalCoefcalcKeyword
             {
             match(input,ABSCOEFCALC,FOLLOW_ABSCOEFCALC_in_crystalCoefcalc1127); 
 
@@ -1598,13 +1599,13 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "crystalCoefcalcKeyword"
-    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:323:1: crystalCoefcalcKeyword returns [int value] : ( DUMMY | AVERAGE | DEFAULT | RDJAVA | RDFORTAN | PDB | SAXS | SEQUENCE | SAXSSEQ | SMALLMOLE | CIF );
+    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:323:1: crystalCoefcalcKeyword returns [int value] : ( DUMMY | AVERAGE | DEFAULT | RDJAVA | RDFORTAN | PDB | SAXS | SEQUENCE | SAXSSEQ | SMALLMOLE | CIF );
     public final int crystalCoefcalcKeyword() throws RecognitionException {
         int value = 0;
 
 
         try {
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:324:2: ( DUMMY | AVERAGE | DEFAULT | RDJAVA | RDFORTAN | PDB | SAXS | SEQUENCE | SAXSSEQ | SMALLMOLE | CIF )
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:324:2: ( DUMMY | AVERAGE | DEFAULT | RDJAVA | RDFORTAN | PDB | SAXS | SEQUENCE | SAXSSEQ | SMALLMOLE | CIF )
             int alt5=11;
             switch ( input.LA(1) ) {
             case DUMMY:
@@ -1672,7 +1673,7 @@ public class InputfileParser extends Parser {
 
             switch (alt5) {
                 case 1 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:324:4: DUMMY
+                    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:324:4: DUMMY
                     {
                     match(input,DUMMY,FOLLOW_DUMMY_in_crystalCoefcalcKeyword1210); 
 
@@ -1681,7 +1682,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:325:4: AVERAGE
+                    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:325:4: AVERAGE
                     {
                     match(input,AVERAGE,FOLLOW_AVERAGE_in_crystalCoefcalcKeyword1220); 
 
@@ -1690,7 +1691,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 3 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:326:4: DEFAULT
+                    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:326:4: DEFAULT
                     {
                     match(input,DEFAULT,FOLLOW_DEFAULT_in_crystalCoefcalcKeyword1228); 
 
@@ -1699,7 +1700,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 4 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:327:4: RDJAVA
+                    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:327:4: RDJAVA
                     {
                     match(input,RDJAVA,FOLLOW_RDJAVA_in_crystalCoefcalcKeyword1236); 
 
@@ -1708,7 +1709,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 5 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:328:4: RDFORTAN
+                    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:328:4: RDFORTAN
                     {
                     match(input,RDFORTAN,FOLLOW_RDFORTAN_in_crystalCoefcalcKeyword1243); 
 
@@ -1717,7 +1718,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 6 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:329:4: PDB
+                    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:329:4: PDB
                     {
                     match(input,PDB,FOLLOW_PDB_in_crystalCoefcalcKeyword1250); 
 
@@ -1726,7 +1727,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 7 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:330:4: SAXS
+                    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:330:4: SAXS
                     {
                     match(input,SAXS,FOLLOW_SAXS_in_crystalCoefcalcKeyword1260); 
 
@@ -1735,7 +1736,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 8 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:331:4: SEQUENCE
+                    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:331:4: SEQUENCE
                     {
                     match(input,SEQUENCE,FOLLOW_SEQUENCE_in_crystalCoefcalcKeyword1268); 
 
@@ -1744,7 +1745,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 9 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:332:4: SAXSSEQ
+                    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:332:4: SAXSSEQ
                     {
                     match(input,SAXSSEQ,FOLLOW_SAXSSEQ_in_crystalCoefcalcKeyword1275); 
 
@@ -1753,7 +1754,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 10 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:333:4: SMALLMOLE
+                    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:333:4: SMALLMOLE
                     {
                     match(input,SMALLMOLE,FOLLOW_SMALLMOLE_in_crystalCoefcalcKeyword1282); 
 
@@ -1762,7 +1763,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 11 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:334:4: CIF
+                    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:334:4: CIF
                     {
                     match(input,CIF,FOLLOW_CIF_in_crystalCoefcalcKeyword1293); 
 
@@ -1788,7 +1789,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "crystalDim"
-    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:348:1: crystalDim returns [Map<Object, Object> properties] : DIMENSION (a= FLOAT b= FLOAT c= FLOAT |e= FLOAT f= FLOAT |d= FLOAT ) ;
+    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:348:1: crystalDim returns [Map<Object, Object> properties] : DIMENSION (a= FLOAT b= FLOAT c= FLOAT |e= FLOAT f= FLOAT |d= FLOAT ) ;
     public final Map<Object, Object> crystalDim() throws RecognitionException {
         Map<Object, Object> properties = null;
 
@@ -1804,12 +1805,12 @@ public class InputfileParser extends Parser {
         		properties = new HashMap<Object, Object>();
 
         try {
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:351:3: ( DIMENSION (a= FLOAT b= FLOAT c= FLOAT |e= FLOAT f= FLOAT |d= FLOAT ) )
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:351:5: DIMENSION (a= FLOAT b= FLOAT c= FLOAT |e= FLOAT f= FLOAT |d= FLOAT )
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:351:3: ( DIMENSION (a= FLOAT b= FLOAT c= FLOAT |e= FLOAT f= FLOAT |d= FLOAT ) )
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:351:5: DIMENSION (a= FLOAT b= FLOAT c= FLOAT |e= FLOAT f= FLOAT |d= FLOAT )
             {
             match(input,DIMENSION,FOLLOW_DIMENSION_in_crystalDim1702); 
 
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:352:2: (a= FLOAT b= FLOAT c= FLOAT |e= FLOAT f= FLOAT |d= FLOAT )
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:352:2: (a= FLOAT b= FLOAT c= FLOAT |e= FLOAT f= FLOAT |d= FLOAT )
             int alt6=3;
             int LA6_0 = input.LA(1);
 
@@ -1853,7 +1854,7 @@ public class InputfileParser extends Parser {
             }
             switch (alt6) {
                 case 1 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:353:7: a= FLOAT b= FLOAT c= FLOAT
+                    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:353:7: a= FLOAT b= FLOAT c= FLOAT
                     {
                     a=(Token)match(input,FLOAT,FOLLOW_FLOAT_in_crystalDim1715); 
 
@@ -1868,7 +1869,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:356:7: e= FLOAT f= FLOAT
+                    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:356:7: e= FLOAT f= FLOAT
                     {
                     e=(Token)match(input,FLOAT,FOLLOW_FLOAT_in_crystalDim1735); 
 
@@ -1880,7 +1881,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 3 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:358:7: d= FLOAT
+                    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:358:7: d= FLOAT
                     {
                     d=(Token)match(input,FLOAT,FOLLOW_FLOAT_in_crystalDim1751); 
 
@@ -1910,7 +1911,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "crystalAngP"
-    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:362:1: crystalAngP returns [double value] : ANGLEP a= FLOAT ;
+    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:362:1: crystalAngP returns [double value] : ANGLEP a= FLOAT ;
     public final double crystalAngP() throws RecognitionException {
         double value = 0.0;
 
@@ -1918,8 +1919,8 @@ public class InputfileParser extends Parser {
         Token a=null;
 
         try {
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:363:2: ( ANGLEP a= FLOAT )
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:363:4: ANGLEP a= FLOAT
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:363:2: ( ANGLEP a= FLOAT )
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:363:4: ANGLEP a= FLOAT
             {
             match(input,ANGLEP,FOLLOW_ANGLEP_in_crystalAngP1828); 
 
@@ -1945,7 +1946,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "crystalAngL"
-    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:367:1: crystalAngL returns [double value] : ANGLEL a= FLOAT ;
+    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:367:1: crystalAngL returns [double value] : ANGLEL a= FLOAT ;
     public final double crystalAngL() throws RecognitionException {
         double value = 0.0;
 
@@ -1953,8 +1954,8 @@ public class InputfileParser extends Parser {
         Token a=null;
 
         try {
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:368:2: ( ANGLEL a= FLOAT )
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:368:4: ANGLEL a= FLOAT
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:368:2: ( ANGLEL a= FLOAT )
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:368:4: ANGLEL a= FLOAT
             {
             match(input,ANGLEL,FOLLOW_ANGLEL_in_crystalAngL1887); 
 
@@ -1980,7 +1981,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "crystalPPM"
-    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:372:1: crystalPPM returns [double ppm] : PIXELSPERMICRON FLOAT ;
+    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:372:1: crystalPPM returns [double ppm] : PIXELSPERMICRON FLOAT ;
     public final double crystalPPM() throws RecognitionException {
         double ppm = 0.0;
 
@@ -1988,8 +1989,8 @@ public class InputfileParser extends Parser {
         Token FLOAT1=null;
 
         try {
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:373:2: ( PIXELSPERMICRON FLOAT )
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:373:4: PIXELSPERMICRON FLOAT
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:373:2: ( PIXELSPERMICRON FLOAT )
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:373:4: PIXELSPERMICRON FLOAT
             {
             match(input,PIXELSPERMICRON,FOLLOW_PIXELSPERMICRON_in_crystalPPM1945); 
 
@@ -2024,7 +2025,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "unitcell"
-    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:376:1: unitcell returns [Double dimA, Double dimB, Double dimC, Double angA, Double angB, Double angC] : UNITCELL a= FLOAT b= FLOAT c= FLOAT (al= FLOAT be= FLOAT ga= FLOAT )? ;
+    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:376:1: unitcell returns [Double dimA, Double dimB, Double dimC, Double angA, Double angB, Double angC] : UNITCELL a= FLOAT b= FLOAT c= FLOAT (al= FLOAT be= FLOAT ga= FLOAT )? ;
     public final InputfileParser.unitcell_return unitcell() throws RecognitionException {
         InputfileParser.unitcell_return retval = new InputfileParser.unitcell_return();
         retval.start = input.LT(1);
@@ -2038,8 +2039,8 @@ public class InputfileParser extends Parser {
         Token ga=null;
 
         try {
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:377:2: ( UNITCELL a= FLOAT b= FLOAT c= FLOAT (al= FLOAT be= FLOAT ga= FLOAT )? )
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:377:4: UNITCELL a= FLOAT b= FLOAT c= FLOAT (al= FLOAT be= FLOAT ga= FLOAT )?
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:377:2: ( UNITCELL a= FLOAT b= FLOAT c= FLOAT (al= FLOAT be= FLOAT ga= FLOAT )? )
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:377:4: UNITCELL a= FLOAT b= FLOAT c= FLOAT (al= FLOAT be= FLOAT ga= FLOAT )?
             {
             match(input,UNITCELL,FOLLOW_UNITCELL_in_unitcell2045); 
 
@@ -2053,7 +2054,7 @@ public class InputfileParser extends Parser {
             		 retval.dimB = Double.parseDouble((b!=null?b.getText():null));
             		 retval.dimC = Double.parseDouble((c!=null?c.getText():null)); 
 
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:381:7: (al= FLOAT be= FLOAT ga= FLOAT )?
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:381:7: (al= FLOAT be= FLOAT ga= FLOAT )?
             int alt7=2;
             int LA7_0 = input.LA(1);
 
@@ -2062,7 +2063,7 @@ public class InputfileParser extends Parser {
             }
             switch (alt7) {
                 case 1 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:381:8: al= FLOAT be= FLOAT ga= FLOAT
+                    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:381:8: al= FLOAT be= FLOAT ga= FLOAT
                     {
                     al=(Token)match(input,FLOAT,FOLLOW_FLOAT_in_unitcell2072); 
 
@@ -2101,7 +2102,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "proteinConcentration"
-    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:389:1: proteinConcentration returns [Double proteinConc] : ( PROTEINCONCENTRATION | PROTEINCONC ) a= FLOAT ;
+    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:389:1: proteinConcentration returns [Double proteinConc] : ( PROTEINCONCENTRATION | PROTEINCONC ) a= FLOAT ;
     public final Double proteinConcentration() throws RecognitionException {
         Double proteinConc = null;
 
@@ -2109,8 +2110,8 @@ public class InputfileParser extends Parser {
         Token a=null;
 
         try {
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:390:2: ( ( PROTEINCONCENTRATION | PROTEINCONC ) a= FLOAT )
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:390:4: ( PROTEINCONCENTRATION | PROTEINCONC ) a= FLOAT
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:390:2: ( ( PROTEINCONCENTRATION | PROTEINCONC ) a= FLOAT )
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:390:4: ( PROTEINCONCENTRATION | PROTEINCONC ) a= FLOAT
             {
             if ( (input.LA(1) >= PROTEINCONC && input.LA(1) <= PROTEINCONCENTRATION) ) {
                 input.consume();
@@ -2144,7 +2145,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "nummonomers"
-    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:394:1: nummonomers returns [int value] : NUMMONOMERS a= FLOAT ;
+    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:394:1: nummonomers returns [int value] : NUMMONOMERS a= FLOAT ;
     public final int nummonomers() throws RecognitionException {
         int value = 0;
 
@@ -2152,8 +2153,8 @@ public class InputfileParser extends Parser {
         Token a=null;
 
         try {
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:395:2: ( NUMMONOMERS a= FLOAT )
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:395:4: NUMMONOMERS a= FLOAT
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:395:2: ( NUMMONOMERS a= FLOAT )
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:395:4: NUMMONOMERS a= FLOAT
             {
             match(input,NUMMONOMERS,FOLLOW_NUMMONOMERS_in_nummonomers2350); 
 
@@ -2179,7 +2180,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "numresidues"
-    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:398:1: numresidues returns [int value] : NUMRESIDUES a= FLOAT ;
+    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:398:1: numresidues returns [int value] : NUMRESIDUES a= FLOAT ;
     public final int numresidues() throws RecognitionException {
         int value = 0;
 
@@ -2187,8 +2188,8 @@ public class InputfileParser extends Parser {
         Token a=null;
 
         try {
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:399:2: ( NUMRESIDUES a= FLOAT )
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:399:4: NUMRESIDUES a= FLOAT
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:399:2: ( NUMRESIDUES a= FLOAT )
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:399:4: NUMRESIDUES a= FLOAT
             {
             match(input,NUMRESIDUES,FOLLOW_NUMRESIDUES_in_numresidues2431); 
 
@@ -2214,7 +2215,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "numRNA"
-    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:402:1: numRNA returns [int value] : NUMRNA a= FLOAT ;
+    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:402:1: numRNA returns [int value] : NUMRNA a= FLOAT ;
     public final int numRNA() throws RecognitionException {
         int value = 0;
 
@@ -2222,8 +2223,8 @@ public class InputfileParser extends Parser {
         Token a=null;
 
         try {
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:403:2: ( NUMRNA a= FLOAT )
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:403:4: NUMRNA a= FLOAT
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:403:2: ( NUMRNA a= FLOAT )
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:403:4: NUMRNA a= FLOAT
             {
             match(input,NUMRNA,FOLLOW_NUMRNA_in_numRNA2513); 
 
@@ -2249,7 +2250,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "numDNA"
-    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:406:1: numDNA returns [int value] : NUMDNA a= FLOAT ;
+    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:406:1: numDNA returns [int value] : NUMDNA a= FLOAT ;
     public final int numDNA() throws RecognitionException {
         int value = 0;
 
@@ -2257,8 +2258,8 @@ public class InputfileParser extends Parser {
         Token a=null;
 
         try {
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:407:2: ( NUMDNA a= FLOAT )
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:407:4: NUMDNA a= FLOAT
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:407:2: ( NUMDNA a= FLOAT )
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:407:4: NUMDNA a= FLOAT
             {
             match(input,NUMDNA,FOLLOW_NUMDNA_in_numDNA2570); 
 
@@ -2284,7 +2285,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "numcarb"
-    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:410:1: numcarb returns [int value] : NUMCARB a= FLOAT ;
+    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:410:1: numcarb returns [int value] : NUMCARB a= FLOAT ;
     public final int numcarb() throws RecognitionException {
         int value = 0;
 
@@ -2292,8 +2293,8 @@ public class InputfileParser extends Parser {
         Token a=null;
 
         try {
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:411:2: ( NUMCARB a= FLOAT )
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:411:4: NUMCARB a= FLOAT
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:411:2: ( NUMCARB a= FLOAT )
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:411:4: NUMCARB a= FLOAT
             {
             match(input,NUMCARB,FOLLOW_NUMCARB_in_numcarb2626); 
 
@@ -2324,7 +2325,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "heavyProteinAtoms"
-    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:414:1: heavyProteinAtoms returns [List<String> names, List<Double> num;] : PROTEINHEAVYATOMS (a= ELEMENT b= FLOAT )+ ;
+    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:414:1: heavyProteinAtoms returns [List<String> names, List<Double> num;] : PROTEINHEAVYATOMS (a= ELEMENT b= FLOAT )+ ;
     public final InputfileParser.heavyProteinAtoms_return heavyProteinAtoms() throws RecognitionException {
         InputfileParser.heavyProteinAtoms_return retval = new InputfileParser.heavyProteinAtoms_return();
         retval.start = input.LT(1);
@@ -2338,12 +2339,12 @@ public class InputfileParser extends Parser {
         retval.num = new ArrayList<Double>();
 
         try {
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:419:2: ( PROTEINHEAVYATOMS (a= ELEMENT b= FLOAT )+ )
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:419:4: PROTEINHEAVYATOMS (a= ELEMENT b= FLOAT )+
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:419:2: ( PROTEINHEAVYATOMS (a= ELEMENT b= FLOAT )+ )
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:419:4: PROTEINHEAVYATOMS (a= ELEMENT b= FLOAT )+
             {
             match(input,PROTEINHEAVYATOMS,FOLLOW_PROTEINHEAVYATOMS_in_heavyProteinAtoms2691); 
 
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:419:22: (a= ELEMENT b= FLOAT )+
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:419:22: (a= ELEMENT b= FLOAT )+
             int cnt8=0;
             loop8:
             do {
@@ -2357,7 +2358,7 @@ public class InputfileParser extends Parser {
 
                 switch (alt8) {
             	case 1 :
-            	    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:419:23: a= ELEMENT b= FLOAT
+            	    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:419:23: a= ELEMENT b= FLOAT
             	    {
             	    a=(Token)match(input,ELEMENT,FOLLOW_ELEMENT_in_heavyProteinAtoms2696); 
 
@@ -2404,7 +2405,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "smallMoleAtoms"
-    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:423:1: smallMoleAtoms returns [List<String> names, List<Double> num;] : SMALLMOLEATOMS (a= ELEMENT b= FLOAT )+ ;
+    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:423:1: smallMoleAtoms returns [List<String> names, List<Double> num;] : SMALLMOLEATOMS (a= ELEMENT b= FLOAT )+ ;
     public final InputfileParser.smallMoleAtoms_return smallMoleAtoms() throws RecognitionException {
         InputfileParser.smallMoleAtoms_return retval = new InputfileParser.smallMoleAtoms_return();
         retval.start = input.LT(1);
@@ -2418,12 +2419,12 @@ public class InputfileParser extends Parser {
         retval.num = new ArrayList<Double>();
 
         try {
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:428:2: ( SMALLMOLEATOMS (a= ELEMENT b= FLOAT )+ )
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:428:4: SMALLMOLEATOMS (a= ELEMENT b= FLOAT )+
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:428:2: ( SMALLMOLEATOMS (a= ELEMENT b= FLOAT )+ )
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:428:4: SMALLMOLEATOMS (a= ELEMENT b= FLOAT )+
             {
             match(input,SMALLMOLEATOMS,FOLLOW_SMALLMOLEATOMS_in_smallMoleAtoms2847); 
 
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:428:19: (a= ELEMENT b= FLOAT )+
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:428:19: (a= ELEMENT b= FLOAT )+
             int cnt9=0;
             loop9:
             do {
@@ -2437,7 +2438,7 @@ public class InputfileParser extends Parser {
 
                 switch (alt9) {
             	case 1 :
-            	    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:428:20: a= ELEMENT b= FLOAT
+            	    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:428:20: a= ELEMENT b= FLOAT
             	    {
             	    a=(Token)match(input,ELEMENT,FOLLOW_ELEMENT_in_smallMoleAtoms2852); 
 
@@ -2484,7 +2485,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "heavySolutionConc"
-    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:431:1: heavySolutionConc returns [List<String> names, List<Double> num;] : SOLVENTHEAVYCONC (a= ELEMENT b= FLOAT )+ ;
+    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:431:1: heavySolutionConc returns [List<String> names, List<Double> num;] : SOLVENTHEAVYCONC (a= ELEMENT b= FLOAT )+ ;
     public final InputfileParser.heavySolutionConc_return heavySolutionConc() throws RecognitionException {
         InputfileParser.heavySolutionConc_return retval = new InputfileParser.heavySolutionConc_return();
         retval.start = input.LT(1);
@@ -2498,12 +2499,12 @@ public class InputfileParser extends Parser {
         retval.num = new ArrayList<Double>();
 
         try {
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:436:2: ( SOLVENTHEAVYCONC (a= ELEMENT b= FLOAT )+ )
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:436:4: SOLVENTHEAVYCONC (a= ELEMENT b= FLOAT )+
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:436:2: ( SOLVENTHEAVYCONC (a= ELEMENT b= FLOAT )+ )
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:436:4: SOLVENTHEAVYCONC (a= ELEMENT b= FLOAT )+
             {
             match(input,SOLVENTHEAVYCONC,FOLLOW_SOLVENTHEAVYCONC_in_heavySolutionConc2958); 
 
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:436:21: (a= ELEMENT b= FLOAT )+
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:436:21: (a= ELEMENT b= FLOAT )+
             int cnt10=0;
             loop10:
             do {
@@ -2517,7 +2518,7 @@ public class InputfileParser extends Parser {
 
                 switch (alt10) {
             	case 1 :
-            	    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:436:22: a= ELEMENT b= FLOAT
+            	    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:436:22: a= ELEMENT b= FLOAT
             	    {
             	    a=(Token)match(input,ELEMENT,FOLLOW_ELEMENT_in_heavySolutionConc2963); 
 
@@ -2559,7 +2560,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "solventFraction"
-    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:439:1: solventFraction returns [double solFrac] : SOLVENTFRACTION a= FLOAT ;
+    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:439:1: solventFraction returns [double solFrac] : SOLVENTFRACTION a= FLOAT ;
     public final double solventFraction() throws RecognitionException {
         double solFrac = 0.0;
 
@@ -2567,8 +2568,8 @@ public class InputfileParser extends Parser {
         Token a=null;
 
         try {
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:440:2: ( SOLVENTFRACTION a= FLOAT )
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:440:4: SOLVENTFRACTION a= FLOAT
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:440:2: ( SOLVENTFRACTION a= FLOAT )
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:440:4: SOLVENTFRACTION a= FLOAT
             {
             match(input,SOLVENTFRACTION,FOLLOW_SOLVENTFRACTION_in_solventFraction3073); 
 
@@ -2594,7 +2595,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "pdb"
-    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:443:1: pdb returns [String pdb] : PDBNAME (a= STRING |a= FLOAT ) ;
+    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:443:1: pdb returns [String pdb] : PDBNAME (a= STRING |a= FLOAT ) ;
     public final String pdb() throws RecognitionException {
         String pdb = null;
 
@@ -2602,12 +2603,12 @@ public class InputfileParser extends Parser {
         Token a=null;
 
         try {
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:444:2: ( PDBNAME (a= STRING |a= FLOAT ) )
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:444:4: PDBNAME (a= STRING |a= FLOAT )
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:444:2: ( PDBNAME (a= STRING |a= FLOAT ) )
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:444:4: PDBNAME (a= STRING |a= FLOAT )
             {
             match(input,PDBNAME,FOLLOW_PDBNAME_in_pdb3174); 
 
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:444:12: (a= STRING |a= FLOAT )
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:444:12: (a= STRING |a= FLOAT )
             int alt11=2;
             int LA11_0 = input.LA(1);
 
@@ -2626,14 +2627,14 @@ public class InputfileParser extends Parser {
             }
             switch (alt11) {
                 case 1 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:444:13: a= STRING
+                    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:444:13: a= STRING
                     {
                     a=(Token)match(input,STRING,FOLLOW_STRING_in_pdb3179); 
 
                     }
                     break;
                 case 2 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:444:22: a= FLOAT
+                    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:444:22: a= FLOAT
                     {
                     a=(Token)match(input,FLOAT,FOLLOW_FLOAT_in_pdb3183); 
 
@@ -2663,7 +2664,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "cif"
-    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:447:1: cif returns [String cif] : CIFNAME a= STRING ;
+    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:447:1: cif returns [String cif] : CIFNAME a= STRING ;
     public final String cif() throws RecognitionException {
         String cif = null;
 
@@ -2671,8 +2672,8 @@ public class InputfileParser extends Parser {
         Token a=null;
 
         try {
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:448:2: ( CIFNAME a= STRING )
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:448:4: CIFNAME a= STRING
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:448:2: ( CIFNAME a= STRING )
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:448:4: CIFNAME a= STRING
             {
             match(input,CIFNAME,FOLLOW_CIFNAME_in_cif3221); 
 
@@ -2698,7 +2699,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "wireframeType"
-    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:451:1: wireframeType returns [String value] : WIREFRAMETYPE a= STRING ;
+    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:451:1: wireframeType returns [String value] : WIREFRAMETYPE a= STRING ;
     public final String wireframeType() throws RecognitionException {
         String value = null;
 
@@ -2706,8 +2707,8 @@ public class InputfileParser extends Parser {
         Token a=null;
 
         try {
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:452:2: ( WIREFRAMETYPE a= STRING )
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:452:4: WIREFRAMETYPE a= STRING
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:452:2: ( WIREFRAMETYPE a= STRING )
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:452:4: WIREFRAMETYPE a= STRING
             {
             match(input,WIREFRAMETYPE,FOLLOW_WIREFRAMETYPE_in_wireframeType3262); 
 
@@ -2733,7 +2734,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "modelFile"
-    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:455:1: modelFile returns [String value] : MODELFILE a= STRING ;
+    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:455:1: modelFile returns [String value] : MODELFILE a= STRING ;
     public final String modelFile() throws RecognitionException {
         String value = null;
 
@@ -2741,8 +2742,8 @@ public class InputfileParser extends Parser {
         Token a=null;
 
         try {
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:456:2: ( MODELFILE a= STRING )
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:456:4: MODELFILE a= STRING
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:456:2: ( MODELFILE a= STRING )
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:456:4: MODELFILE a= STRING
             {
             match(input,MODELFILE,FOLLOW_MODELFILE_in_modelFile3354); 
 
@@ -2768,7 +2769,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "calculatePEEscape"
-    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:459:1: calculatePEEscape returns [String value] : CALCULATEPEESCAPE a= STRING ;
+    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:459:1: calculatePEEscape returns [String value] : CALCULATEPEESCAPE a= STRING ;
     public final String calculatePEEscape() throws RecognitionException {
         String value = null;
 
@@ -2776,8 +2777,8 @@ public class InputfileParser extends Parser {
         Token a=null;
 
         try {
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:460:2: ( CALCULATEPEESCAPE a= STRING )
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:460:4: CALCULATEPEESCAPE a= STRING
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:460:2: ( CALCULATEPEESCAPE a= STRING )
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:460:4: CALCULATEPEESCAPE a= STRING
             {
             match(input,CALCULATEPEESCAPE,FOLLOW_CALCULATEPEESCAPE_in_calculatePEEscape3425); 
 
@@ -2803,7 +2804,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "goniometerAxis"
-    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:464:1: goniometerAxis returns [double value] : GONIOMETERAXIS a= FLOAT ;
+    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:464:1: goniometerAxis returns [double value] : GONIOMETERAXIS a= FLOAT ;
     public final double goniometerAxis() throws RecognitionException {
         double value = 0.0;
 
@@ -2811,8 +2812,8 @@ public class InputfileParser extends Parser {
         Token a=null;
 
         try {
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:465:2: ( GONIOMETERAXIS a= FLOAT )
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:465:4: GONIOMETERAXIS a= FLOAT
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:465:2: ( GONIOMETERAXIS a= FLOAT )
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:465:4: GONIOMETERAXIS a= FLOAT
             {
             match(input,GONIOMETERAXIS,FOLLOW_GONIOMETERAXIS_in_goniometerAxis3541); 
 
@@ -2838,7 +2839,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "crystalContainerMaterial"
-    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:469:1: crystalContainerMaterial returns [int value] : ( CONTAINERMATERIALTYPE | MATERIALTYPE ) e= crystalContainerKeyword ;
+    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:469:1: crystalContainerMaterial returns [int value] : ( CONTAINERMATERIALTYPE | MATERIALTYPE ) e= crystalContainerKeyword ;
     public final int crystalContainerMaterial() throws RecognitionException {
         int value = 0;
 
@@ -2847,8 +2848,8 @@ public class InputfileParser extends Parser {
 
 
         try {
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:470:2: ( ( CONTAINERMATERIALTYPE | MATERIALTYPE ) e= crystalContainerKeyword )
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:470:4: ( CONTAINERMATERIALTYPE | MATERIALTYPE ) e= crystalContainerKeyword
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:470:2: ( ( CONTAINERMATERIALTYPE | MATERIALTYPE ) e= crystalContainerKeyword )
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:470:4: ( CONTAINERMATERIALTYPE | MATERIALTYPE ) e= crystalContainerKeyword
             {
             if ( input.LA(1)==CONTAINERMATERIALTYPE||input.LA(1)==MATERIALTYPE ) {
                 input.consume();
@@ -2886,13 +2887,13 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "crystalContainerKeyword"
-    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:473:1: crystalContainerKeyword returns [int value] : ( NONE | MIXTURE | ELEMENTAL );
+    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:473:1: crystalContainerKeyword returns [int value] : ( NONE | MIXTURE | ELEMENTAL );
     public final int crystalContainerKeyword() throws RecognitionException {
         int value = 0;
 
 
         try {
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:474:2: ( NONE | MIXTURE | ELEMENTAL )
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:474:2: ( NONE | MIXTURE | ELEMENTAL )
             int alt12=3;
             switch ( input.LA(1) ) {
             case NONE:
@@ -2920,7 +2921,7 @@ public class InputfileParser extends Parser {
 
             switch (alt12) {
                 case 1 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:474:4: NONE
+                    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:474:4: NONE
                     {
                     match(input,NONE,FOLLOW_NONE_in_crystalContainerKeyword3847); 
 
@@ -2929,7 +2930,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:475:4: MIXTURE
+                    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:475:4: MIXTURE
                     {
                     match(input,MIXTURE,FOLLOW_MIXTURE_in_crystalContainerKeyword3856); 
 
@@ -2938,7 +2939,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 3 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:476:4: ELEMENTAL
+                    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:476:4: ELEMENTAL
                     {
                     match(input,ELEMENTAL,FOLLOW_ELEMENTAL_in_crystalContainerKeyword3864); 
 
@@ -2964,7 +2965,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "containerThickness"
-    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:482:1: containerThickness returns [double value] : CONTAINERTHICKNESS a= FLOAT ;
+    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:482:1: containerThickness returns [double value] : CONTAINERTHICKNESS a= FLOAT ;
     public final double containerThickness() throws RecognitionException {
         double value = 0.0;
 
@@ -2972,8 +2973,8 @@ public class InputfileParser extends Parser {
         Token a=null;
 
         try {
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:483:2: ( CONTAINERTHICKNESS a= FLOAT )
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:483:4: CONTAINERTHICKNESS a= FLOAT
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:483:2: ( CONTAINERTHICKNESS a= FLOAT )
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:483:4: CONTAINERTHICKNESS a= FLOAT
             {
             match(input,CONTAINERTHICKNESS,FOLLOW_CONTAINERTHICKNESS_in_containerThickness4004); 
 
@@ -2999,7 +3000,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "containerMaterialMixture"
-    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:486:1: containerMaterialMixture returns [String value] : ( CONTAINERMATERIALMIXTURE | MATERIALMIXTURE ) a= STRING ;
+    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:486:1: containerMaterialMixture returns [String value] : ( CONTAINERMATERIALMIXTURE | MATERIALMIXTURE ) a= STRING ;
     public final String containerMaterialMixture() throws RecognitionException {
         String value = null;
 
@@ -3007,8 +3008,8 @@ public class InputfileParser extends Parser {
         Token a=null;
 
         try {
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:487:2: ( ( CONTAINERMATERIALMIXTURE | MATERIALMIXTURE ) a= STRING )
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:487:4: ( CONTAINERMATERIALMIXTURE | MATERIALMIXTURE ) a= STRING
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:487:2: ( ( CONTAINERMATERIALMIXTURE | MATERIALMIXTURE ) a= STRING )
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:487:4: ( CONTAINERMATERIALMIXTURE | MATERIALMIXTURE ) a= STRING
             {
             if ( input.LA(1)==CONTAINERMATERIALMIXTURE||input.LA(1)==MATERIALMIXTURE ) {
                 input.consume();
@@ -3047,7 +3048,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "containerMaterialElements"
-    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:491:1: containerMaterialElements returns [List<String> names, List<Double> num;] : ( CONTAINERMATERIALELEMENTS | MATERIALELEMENTS ) (a= ELEMENT b= FLOAT )+ ;
+    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:491:1: containerMaterialElements returns [List<String> names, List<Double> num;] : ( CONTAINERMATERIALELEMENTS | MATERIALELEMENTS ) (a= ELEMENT b= FLOAT )+ ;
     public final InputfileParser.containerMaterialElements_return containerMaterialElements() throws RecognitionException {
         InputfileParser.containerMaterialElements_return retval = new InputfileParser.containerMaterialElements_return();
         retval.start = input.LT(1);
@@ -3061,8 +3062,8 @@ public class InputfileParser extends Parser {
         retval.num = new ArrayList<Double>();
 
         try {
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:496:2: ( ( CONTAINERMATERIALELEMENTS | MATERIALELEMENTS ) (a= ELEMENT b= FLOAT )+ )
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:496:4: ( CONTAINERMATERIALELEMENTS | MATERIALELEMENTS ) (a= ELEMENT b= FLOAT )+
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:496:2: ( ( CONTAINERMATERIALELEMENTS | MATERIALELEMENTS ) (a= ELEMENT b= FLOAT )+ )
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:496:4: ( CONTAINERMATERIALELEMENTS | MATERIALELEMENTS ) (a= ELEMENT b= FLOAT )+
             {
             if ( input.LA(1)==CONTAINERMATERIALELEMENTS||input.LA(1)==MATERIALELEMENTS ) {
                 input.consume();
@@ -3074,7 +3075,7 @@ public class InputfileParser extends Parser {
             }
 
 
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:496:51: (a= ELEMENT b= FLOAT )+
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:496:51: (a= ELEMENT b= FLOAT )+
             int cnt13=0;
             loop13:
             do {
@@ -3088,7 +3089,7 @@ public class InputfileParser extends Parser {
 
                 switch (alt13) {
             	case 1 :
-            	    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:496:52: a= ELEMENT b= FLOAT
+            	    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:496:52: a= ELEMENT b= FLOAT
             	    {
             	    a=(Token)match(input,ELEMENT,FOLLOW_ELEMENT_in_containerMaterialElements4365); 
 
@@ -3130,7 +3131,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "containerDensity"
-    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:500:1: containerDensity returns [double value] : CONTAINERDENSITY a= FLOAT ;
+    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:500:1: containerDensity returns [double value] : CONTAINERDENSITY a= FLOAT ;
     public final double containerDensity() throws RecognitionException {
         double value = 0.0;
 
@@ -3138,8 +3139,8 @@ public class InputfileParser extends Parser {
         Token a=null;
 
         try {
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:501:2: ( CONTAINERDENSITY a= FLOAT )
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:501:4: CONTAINERDENSITY a= FLOAT
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:501:2: ( CONTAINERDENSITY a= FLOAT )
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:501:4: CONTAINERDENSITY a= FLOAT
             {
             match(input,CONTAINERDENSITY,FOLLOW_CONTAINERDENSITY_in_containerDensity4604); 
 
@@ -3165,7 +3166,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "sequenceFile"
-    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:504:1: sequenceFile returns [String value] : ( SEQUENCEFILE | SEQFILE ) a= STRING ;
+    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:504:1: sequenceFile returns [String value] : ( SEQUENCEFILE | SEQFILE ) a= STRING ;
     public final String sequenceFile() throws RecognitionException {
         String value = null;
 
@@ -3173,8 +3174,8 @@ public class InputfileParser extends Parser {
         Token a=null;
 
         try {
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:505:2: ( ( SEQUENCEFILE | SEQFILE ) a= STRING )
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:505:4: ( SEQUENCEFILE | SEQFILE ) a= STRING
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:505:2: ( ( SEQUENCEFILE | SEQFILE ) a= STRING )
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:505:4: ( SEQUENCEFILE | SEQFILE ) a= STRING
             {
             if ( input.LA(1)==SEQFILE||input.LA(1)==SEQUENCEFILE ) {
                 input.consume();
@@ -3208,7 +3209,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "calculateFLEscape"
-    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:509:1: calculateFLEscape returns [String value] : CALCULATEFLESCAPE a= STRING ;
+    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:509:1: calculateFLEscape returns [String value] : CALCULATEFLESCAPE a= STRING ;
     public final String calculateFLEscape() throws RecognitionException {
         String value = null;
 
@@ -3216,8 +3217,8 @@ public class InputfileParser extends Parser {
         Token a=null;
 
         try {
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:510:2: ( CALCULATEFLESCAPE a= STRING )
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:510:4: CALCULATEFLESCAPE a= STRING
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:510:2: ( CALCULATEFLESCAPE a= STRING )
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:510:4: CALCULATEFLESCAPE a= STRING
             {
             match(input,CALCULATEFLESCAPE,FOLLOW_CALCULATEFLESCAPE_in_calculateFLEscape4842); 
 
@@ -3243,7 +3244,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "flResolution"
-    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:514:1: flResolution returns [int value] : FLRESOLUTION a= FLOAT ;
+    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:514:1: flResolution returns [int value] : FLRESOLUTION a= FLOAT ;
     public final int flResolution() throws RecognitionException {
         int value = 0;
 
@@ -3251,8 +3252,8 @@ public class InputfileParser extends Parser {
         Token a=null;
 
         try {
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:515:2: ( FLRESOLUTION a= FLOAT )
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:515:4: FLRESOLUTION a= FLOAT
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:515:2: ( FLRESOLUTION a= FLOAT )
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:515:4: FLRESOLUTION a= FLOAT
             {
             match(input,FLRESOLUTION,FOLLOW_FLRESOLUTION_in_flResolution4957); 
 
@@ -3278,7 +3279,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "peResolution"
-    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:518:1: peResolution returns [int value] : PERESOLUTION a= FLOAT ;
+    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:518:1: peResolution returns [int value] : PERESOLUTION a= FLOAT ;
     public final int peResolution() throws RecognitionException {
         int value = 0;
 
@@ -3286,8 +3287,8 @@ public class InputfileParser extends Parser {
         Token a=null;
 
         try {
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:519:2: ( PERESOLUTION a= FLOAT )
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:519:4: PERESOLUTION a= FLOAT
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:519:2: ( PERESOLUTION a= FLOAT )
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:519:4: PERESOLUTION a= FLOAT
             {
             match(input,PERESOLUTION,FOLLOW_PERESOLUTION_in_peResolution5043); 
 
@@ -3318,7 +3319,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "surroundingHeavyConc"
-    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:522:1: surroundingHeavyConc returns [List<String> names, List<Double> num;] : SURROUNDINGHEAVYCONC (a= ELEMENT b= FLOAT )+ ;
+    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:522:1: surroundingHeavyConc returns [List<String> names, List<Double> num;] : SURROUNDINGHEAVYCONC (a= ELEMENT b= FLOAT )+ ;
     public final InputfileParser.surroundingHeavyConc_return surroundingHeavyConc() throws RecognitionException {
         InputfileParser.surroundingHeavyConc_return retval = new InputfileParser.surroundingHeavyConc_return();
         retval.start = input.LT(1);
@@ -3332,12 +3333,12 @@ public class InputfileParser extends Parser {
         retval.num = new ArrayList<Double>();
 
         try {
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:527:2: ( SURROUNDINGHEAVYCONC (a= ELEMENT b= FLOAT )+ )
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:527:4: SURROUNDINGHEAVYCONC (a= ELEMENT b= FLOAT )+
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:527:2: ( SURROUNDINGHEAVYCONC (a= ELEMENT b= FLOAT )+ )
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:527:4: SURROUNDINGHEAVYCONC (a= ELEMENT b= FLOAT )+
             {
             match(input,SURROUNDINGHEAVYCONC,FOLLOW_SURROUNDINGHEAVYCONC_in_surroundingHeavyConc5133); 
 
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:527:25: (a= ELEMENT b= FLOAT )+
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:527:25: (a= ELEMENT b= FLOAT )+
             int cnt14=0;
             loop14:
             do {
@@ -3351,7 +3352,7 @@ public class InputfileParser extends Parser {
 
                 switch (alt14) {
             	case 1 :
-            	    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:527:26: a= ELEMENT b= FLOAT
+            	    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:527:26: a= ELEMENT b= FLOAT
             	    {
             	    a=(Token)match(input,ELEMENT,FOLLOW_ELEMENT_in_surroundingHeavyConc5138); 
 
@@ -3393,7 +3394,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "oilBased"
-    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:530:1: oilBased returns [String value] : OILBASED a= STRING ;
+    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:530:1: oilBased returns [String value] : OILBASED a= STRING ;
     public final String oilBased() throws RecognitionException {
         String value = null;
 
@@ -3401,8 +3402,8 @@ public class InputfileParser extends Parser {
         Token a=null;
 
         try {
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:531:2: ( OILBASED a= STRING )
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:531:4: OILBASED a= STRING
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:531:2: ( OILBASED a= STRING )
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:531:4: OILBASED a= STRING
             {
             match(input,OILBASED,FOLLOW_OILBASED_in_oilBased5270); 
 
@@ -3428,7 +3429,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "calcSurrounding"
-    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:534:1: calcSurrounding returns [String value] : CALCSURROUNDING a= STRING ;
+    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:534:1: calcSurrounding returns [String value] : CALCSURROUNDING a= STRING ;
     public final String calcSurrounding() throws RecognitionException {
         String value = null;
 
@@ -3436,8 +3437,8 @@ public class InputfileParser extends Parser {
         Token a=null;
 
         try {
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:535:2: ( CALCSURROUNDING a= STRING )
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:535:4: CALCSURROUNDING a= STRING
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:535:2: ( CALCSURROUNDING a= STRING )
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:535:4: CALCSURROUNDING a= STRING
             {
             match(input,CALCSURROUNDING,FOLLOW_CALCSURROUNDING_in_calcSurrounding5336); 
 
@@ -3468,7 +3469,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "oilElements"
-    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:539:1: oilElements returns [List<String> names, List<Double> num;] : OILELEMENTS (a= ELEMENT b= FLOAT )+ ;
+    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:539:1: oilElements returns [List<String> names, List<Double> num;] : OILELEMENTS (a= ELEMENT b= FLOAT )+ ;
     public final InputfileParser.oilElements_return oilElements() throws RecognitionException {
         InputfileParser.oilElements_return retval = new InputfileParser.oilElements_return();
         retval.start = input.LT(1);
@@ -3482,12 +3483,12 @@ public class InputfileParser extends Parser {
         retval.num = new ArrayList<Double>();
 
         try {
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:544:2: ( OILELEMENTS (a= ELEMENT b= FLOAT )+ )
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:544:4: OILELEMENTS (a= ELEMENT b= FLOAT )+
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:544:2: ( OILELEMENTS (a= ELEMENT b= FLOAT )+ )
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:544:4: OILELEMENTS (a= ELEMENT b= FLOAT )+
             {
             match(input,OILELEMENTS,FOLLOW_OILELEMENTS_in_oilElements5443); 
 
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:544:16: (a= ELEMENT b= FLOAT )+
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:544:16: (a= ELEMENT b= FLOAT )+
             int cnt15=0;
             loop15:
             do {
@@ -3501,7 +3502,7 @@ public class InputfileParser extends Parser {
 
                 switch (alt15) {
             	case 1 :
-            	    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:544:17: a= ELEMENT b= FLOAT
+            	    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:544:17: a= ELEMENT b= FLOAT
             	    {
             	    a=(Token)match(input,ELEMENT,FOLLOW_ELEMENT_in_oilElements5448); 
 
@@ -3543,7 +3544,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "oilDensity"
-    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:547:1: oilDensity returns [double oildens] : OILDENSITY a= FLOAT ;
+    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:547:1: oilDensity returns [double oildens] : OILDENSITY a= FLOAT ;
     public final double oilDensity() throws RecognitionException {
         double oildens = 0.0;
 
@@ -3551,8 +3552,8 @@ public class InputfileParser extends Parser {
         Token a=null;
 
         try {
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:548:2: ( OILDENSITY a= FLOAT )
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:548:4: OILDENSITY a= FLOAT
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:548:2: ( OILDENSITY a= FLOAT )
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:548:4: OILDENSITY a= FLOAT
             {
             match(input,OILDENSITY,FOLLOW_OILDENSITY_in_oilDensity5535); 
 
@@ -3585,7 +3586,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "beam"
-    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:552:1: beam returns [Beam bObj] : BEAM ( beamLine )+ ;
+    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:552:1: beam returns [Beam bObj] : BEAM ( beamLine )+ ;
     public final Beam beam() throws RecognitionException {
         beam_stack.push(new beam_scope());
         Beam bObj = null;
@@ -3595,26 +3596,26 @@ public class InputfileParser extends Parser {
         		((beam_scope)beam_stack.peek()).beamProperties = new HashMap<Object, Object>();
 
         try {
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:563:2: ( BEAM ( beamLine )+ )
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:563:4: BEAM ( beamLine )+
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:563:2: ( BEAM ( beamLine )+ )
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:563:4: BEAM ( beamLine )+
             {
             match(input,BEAM,FOLLOW_BEAM_in_beam5627); 
 
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:563:9: ( beamLine )+
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:563:9: ( beamLine )+
             int cnt16=0;
             loop16:
             do {
                 int alt16=2;
                 int LA16_0 = input.LA(1);
 
-                if ( ((LA16_0 >= CIRCULAR && LA16_0 <= COLLIMATION)||LA16_0==ENERGY||LA16_0==FILE||(LA16_0 >= FLUX && LA16_0 <= FWHM)||LA16_0==HORIZONTAL||LA16_0==PIXELSIZE||LA16_0==RECTANGULAR||LA16_0==TYPE||LA16_0==VERTICAL) ) {
+                if ( ((LA16_0 >= CIRCULAR && LA16_0 <= COLLIMATION)||(LA16_0 >= ENERGY && LA16_0 <= ENERGYFWHM)||LA16_0==FILE||(LA16_0 >= FLUX && LA16_0 <= FWHM)||LA16_0==HORIZONTAL||LA16_0==PIXELSIZE||LA16_0==RECTANGULAR||LA16_0==TYPE||LA16_0==VERTICAL) ) {
                     alt16=1;
                 }
 
 
                 switch (alt16) {
             	case 1 :
-            	    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:563:9: beamLine
+            	    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:563:9: beamLine
             	    {
             	    pushFollow(FOLLOW_beamLine_in_beam5629);
             	    beamLine();
@@ -3657,7 +3658,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "beamLine"
-    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:566:1: beamLine : ( TYPE a= STRING |b= beamFlux |c= beamFWHM |d= beamEnergy |e= beamCollimation |f= beamFile |g= beamPixelSize );
+    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:566:1: beamLine : ( TYPE a= STRING |b= beamFlux |c= beamFWHM |d= beamEnergy |e= beamCollimation |f= beamFile |g= beamPixelSize |h= energyFWHM );
     public final void beamLine() throws RecognitionException {
         Token a=null;
         Double b =null;
@@ -3672,10 +3673,12 @@ public class InputfileParser extends Parser {
 
         Map<Object, Object> g =null;
 
+        Double h =null;
+
 
         try {
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:567:2: ( TYPE a= STRING |b= beamFlux |c= beamFWHM |d= beamEnergy |e= beamCollimation |f= beamFile |g= beamPixelSize )
-            int alt17=7;
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:567:2: ( TYPE a= STRING |b= beamFlux |c= beamFWHM |d= beamEnergy |e= beamCollimation |f= beamFile |g= beamPixelSize |h= energyFWHM )
+            int alt17=8;
             switch ( input.LA(1) ) {
             case TYPE:
                 {
@@ -3716,6 +3719,11 @@ public class InputfileParser extends Parser {
                 alt17=7;
                 }
                 break;
+            case ENERGYFWHM:
+                {
+                alt17=8;
+                }
+                break;
             default:
                 NoViableAltException nvae =
                     new NoViableAltException("", 17, 0, input);
@@ -3726,7 +3734,7 @@ public class InputfileParser extends Parser {
 
             switch (alt17) {
                 case 1 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:567:4: TYPE a= STRING
+                    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:567:4: TYPE a= STRING
                     {
                     match(input,TYPE,FOLLOW_TYPE_in_beamLine5668); 
 
@@ -3737,7 +3745,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:568:4: b= beamFlux
+                    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:568:4: b= beamFlux
                     {
                     pushFollow(FOLLOW_beamFlux_in_beamLine5690);
                     b=beamFlux();
@@ -3750,7 +3758,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 3 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:569:4: c= beamFWHM
+                    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:569:4: c= beamFWHM
                     {
                     pushFollow(FOLLOW_beamFWHM_in_beamLine5702);
                     c=beamFWHM();
@@ -3764,7 +3772,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 4 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:571:4: d= beamEnergy
+                    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:571:4: d= beamEnergy
                     {
                     pushFollow(FOLLOW_beamEnergy_in_beamLine5714);
                     d=beamEnergy();
@@ -3777,7 +3785,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 5 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:572:4: e= beamCollimation
+                    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:572:4: e= beamCollimation
                     {
                     pushFollow(FOLLOW_beamCollimation_in_beamLine5726);
                     e=beamCollimation();
@@ -3792,7 +3800,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 6 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:575:4: f= beamFile
+                    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:575:4: f= beamFile
                     {
                     pushFollow(FOLLOW_beamFile_in_beamLine5737);
                     f=beamFile();
@@ -3805,7 +3813,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 7 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:576:4: g= beamPixelSize
+                    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:576:4: g= beamPixelSize
                     {
                     pushFollow(FOLLOW_beamPixelSize_in_beamLine5758);
                     g=beamPixelSize();
@@ -3814,6 +3822,19 @@ public class InputfileParser extends Parser {
 
 
                      ((beam_scope)beam_stack.peek()).beamProperties.putAll(g); 
+
+                    }
+                    break;
+                case 8 :
+                    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:577:4: h= energyFWHM
+                    {
+                    pushFollow(FOLLOW_energyFWHM_in_beamLine5774);
+                    h=energyFWHM();
+
+                    state._fsp--;
+
+
+                     ((beam_scope)beam_stack.peek()).beamProperties.put(Beam.ENERGY_FWHM, h); 
 
                     }
                     break;
@@ -3835,7 +3856,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "beamFlux"
-    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:580:1: beamFlux returns [Double flux] : FLUX a= FLOAT ;
+    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:581:1: beamFlux returns [Double flux] : FLUX a= FLOAT ;
     public final Double beamFlux() throws RecognitionException {
         Double flux = null;
 
@@ -3843,12 +3864,12 @@ public class InputfileParser extends Parser {
         Token a=null;
 
         try {
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:581:2: ( FLUX a= FLOAT )
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:581:4: FLUX a= FLOAT
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:582:2: ( FLUX a= FLOAT )
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:582:4: FLUX a= FLOAT
             {
-            match(input,FLUX,FOLLOW_FLUX_in_beamFlux5784); 
+            match(input,FLUX,FOLLOW_FLUX_in_beamFlux5805); 
 
-            a=(Token)match(input,FLOAT,FOLLOW_FLOAT_in_beamFlux5788); 
+            a=(Token)match(input,FLOAT,FOLLOW_FLOAT_in_beamFlux5809); 
 
             flux = Double.parseDouble((a!=null?a.getText():null));
 
@@ -3875,7 +3896,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "beamFWHM"
-    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:584:1: beamFWHM returns [Double x, Double y] : FWHM a= FLOAT b= FLOAT ;
+    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:585:1: beamFWHM returns [Double x, Double y] : FWHM a= FLOAT b= FLOAT ;
     public final InputfileParser.beamFWHM_return beamFWHM() throws RecognitionException {
         InputfileParser.beamFWHM_return retval = new InputfileParser.beamFWHM_return();
         retval.start = input.LT(1);
@@ -3885,14 +3906,14 @@ public class InputfileParser extends Parser {
         Token b=null;
 
         try {
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:585:2: ( FWHM a= FLOAT b= FLOAT )
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:585:4: FWHM a= FLOAT b= FLOAT
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:586:2: ( FWHM a= FLOAT b= FLOAT )
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:586:4: FWHM a= FLOAT b= FLOAT
             {
-            match(input,FWHM,FOLLOW_FWHM_in_beamFWHM5830); 
+            match(input,FWHM,FOLLOW_FWHM_in_beamFWHM5851); 
 
-            a=(Token)match(input,FLOAT,FOLLOW_FLOAT_in_beamFWHM5834); 
+            a=(Token)match(input,FLOAT,FOLLOW_FLOAT_in_beamFWHM5855); 
 
-            b=(Token)match(input,FLOAT,FOLLOW_FLOAT_in_beamFWHM5838); 
+            b=(Token)match(input,FLOAT,FOLLOW_FLOAT_in_beamFWHM5859); 
 
             retval.x = Double.parseDouble((a!=null?a.getText():null)); retval.y = Double.parseDouble((b!=null?b.getText():null));
 
@@ -3917,7 +3938,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "beamEnergy"
-    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:588:1: beamEnergy returns [Double energy] : ENERGY a= FLOAT ( KEV )? ;
+    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:589:1: beamEnergy returns [Double energy] : ENERGY a= FLOAT ( KEV )? ;
     public final Double beamEnergy() throws RecognitionException {
         Double energy = null;
 
@@ -3925,16 +3946,16 @@ public class InputfileParser extends Parser {
         Token a=null;
 
         try {
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:589:2: ( ENERGY a= FLOAT ( KEV )? )
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:589:4: ENERGY a= FLOAT ( KEV )?
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:590:2: ( ENERGY a= FLOAT ( KEV )? )
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:590:4: ENERGY a= FLOAT ( KEV )?
             {
-            match(input,ENERGY,FOLLOW_ENERGY_in_beamEnergy5880); 
+            match(input,ENERGY,FOLLOW_ENERGY_in_beamEnergy5901); 
 
-            a=(Token)match(input,FLOAT,FOLLOW_FLOAT_in_beamEnergy5884); 
+            a=(Token)match(input,FLOAT,FOLLOW_FLOAT_in_beamEnergy5905); 
 
             energy = Double.parseDouble((a!=null?a.getText():null));
 
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:590:2: ( KEV )?
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:591:2: ( KEV )?
             int alt18=2;
             int LA18_0 = input.LA(1);
 
@@ -3943,9 +3964,9 @@ public class InputfileParser extends Parser {
             }
             switch (alt18) {
                 case 1 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:590:4: KEV
+                    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:591:4: KEV
                     {
-                    match(input,KEV,FOLLOW_KEV_in_beamEnergy5891); 
+                    match(input,KEV,FOLLOW_KEV_in_beamEnergy5912); 
 
                     }
                     break;
@@ -3971,7 +3992,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "beamFile"
-    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:595:1: beamFile returns [String filename] : FILE a= STRING ;
+    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:596:1: beamFile returns [String filename] : FILE a= STRING ;
     public final String beamFile() throws RecognitionException {
         String filename = null;
 
@@ -3979,12 +4000,12 @@ public class InputfileParser extends Parser {
         Token a=null;
 
         try {
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:596:2: ( FILE a= STRING )
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:596:4: FILE a= STRING
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:597:2: ( FILE a= STRING )
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:597:4: FILE a= STRING
             {
-            match(input,FILE,FOLLOW_FILE_in_beamFile5969); 
+            match(input,FILE,FOLLOW_FILE_in_beamFile5990); 
 
-            a=(Token)match(input,STRING,FOLLOW_STRING_in_beamFile5973); 
+            a=(Token)match(input,STRING,FOLLOW_STRING_in_beamFile5994); 
 
             filename = (a!=null?a.getText():null);
 
@@ -4006,7 +4027,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "beamPixelSize"
-    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:600:1: beamPixelSize returns [Map<Object, Object> properties] : PIXELSIZE a= FLOAT b= FLOAT ;
+    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:601:1: beamPixelSize returns [Map<Object, Object> properties] : PIXELSIZE a= FLOAT b= FLOAT ;
     public final Map<Object, Object> beamPixelSize() throws RecognitionException {
         Map<Object, Object> properties = null;
 
@@ -4015,14 +4036,14 @@ public class InputfileParser extends Parser {
         Token b=null;
 
         try {
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:601:5: ( PIXELSIZE a= FLOAT b= FLOAT )
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:601:7: PIXELSIZE a= FLOAT b= FLOAT
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:602:5: ( PIXELSIZE a= FLOAT b= FLOAT )
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:602:7: PIXELSIZE a= FLOAT b= FLOAT
             {
-            match(input,PIXELSIZE,FOLLOW_PIXELSIZE_in_beamPixelSize6020); 
+            match(input,PIXELSIZE,FOLLOW_PIXELSIZE_in_beamPixelSize6041); 
 
-            a=(Token)match(input,FLOAT,FOLLOW_FLOAT_in_beamPixelSize6024); 
+            a=(Token)match(input,FLOAT,FOLLOW_FLOAT_in_beamPixelSize6045); 
 
-            b=(Token)match(input,FLOAT,FOLLOW_FLOAT_in_beamPixelSize6028); 
+            b=(Token)match(input,FLOAT,FOLLOW_FLOAT_in_beamPixelSize6049); 
 
             properties = new HashMap<Object, Object>();
             		 properties.put(Beam.BEAM_PIXSIZE_X, Double.parseDouble((a!=null?a.getText():null)));
@@ -4045,8 +4066,43 @@ public class InputfileParser extends Parser {
 
 
 
+    // $ANTLR start "energyFWHM"
+    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:609:1: energyFWHM returns [Double eFWHM] : ENERGYFWHM a= FLOAT ;
+    public final Double energyFWHM() throws RecognitionException {
+        Double eFWHM = null;
+
+
+        Token a=null;
+
+        try {
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:610:2: ( ENERGYFWHM a= FLOAT )
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:610:4: ENERGYFWHM a= FLOAT
+            {
+            match(input,ENERGYFWHM,FOLLOW_ENERGYFWHM_in_energyFWHM6124); 
+
+            a=(Token)match(input,FLOAT,FOLLOW_FLOAT_in_energyFWHM6128); 
+
+            eFWHM = Double.parseDouble((a!=null?a.getText():null));
+
+            }
+
+        }
+        catch (RecognitionException re) {
+            reportError(re);
+            recover(input,re);
+        }
+
+        finally {
+        	// do for sure before leaving
+        }
+        return eFWHM;
+    }
+    // $ANTLR end "energyFWHM"
+
+
+
     // $ANTLR start "beamCollimation"
-    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:608:1: beamCollimation returns [Map<Object, Object> properties] : ( COLLIMATION | RECTANGULAR a= FLOAT b= FLOAT | CIRCULAR c= FLOAT f= FLOAT | HORIZONTAL d= FLOAT | VERTICAL e= FLOAT );
+    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:615:1: beamCollimation returns [Map<Object, Object> properties] : ( COLLIMATION | RECTANGULAR a= FLOAT b= FLOAT | CIRCULAR c= FLOAT f= FLOAT | HORIZONTAL d= FLOAT | VERTICAL e= FLOAT );
     public final Map<Object, Object> beamCollimation() throws RecognitionException {
         Map<Object, Object> properties = null;
 
@@ -4062,7 +4118,7 @@ public class InputfileParser extends Parser {
         		properties = new HashMap<Object, Object>();
 
         try {
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:612:2: ( COLLIMATION | RECTANGULAR a= FLOAT b= FLOAT | CIRCULAR c= FLOAT f= FLOAT | HORIZONTAL d= FLOAT | VERTICAL e= FLOAT )
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:619:2: ( COLLIMATION | RECTANGULAR a= FLOAT b= FLOAT | CIRCULAR c= FLOAT f= FLOAT | HORIZONTAL d= FLOAT | VERTICAL e= FLOAT )
             int alt19=5;
             switch ( input.LA(1) ) {
             case COLLIMATION:
@@ -4100,20 +4156,20 @@ public class InputfileParser extends Parser {
 
             switch (alt19) {
                 case 1 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:612:4: COLLIMATION
+                    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:619:4: COLLIMATION
                     {
-                    match(input,COLLIMATION,FOLLOW_COLLIMATION_in_beamCollimation6107); 
+                    match(input,COLLIMATION,FOLLOW_COLLIMATION_in_beamCollimation6208); 
 
                     }
                     break;
                 case 2 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:613:4: RECTANGULAR a= FLOAT b= FLOAT
+                    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:620:4: RECTANGULAR a= FLOAT b= FLOAT
                     {
-                    match(input,RECTANGULAR,FOLLOW_RECTANGULAR_in_beamCollimation6113); 
+                    match(input,RECTANGULAR,FOLLOW_RECTANGULAR_in_beamCollimation6214); 
 
-                    a=(Token)match(input,FLOAT,FOLLOW_FLOAT_in_beamCollimation6117); 
+                    a=(Token)match(input,FLOAT,FOLLOW_FLOAT_in_beamCollimation6218); 
 
-                    b=(Token)match(input,FLOAT,FOLLOW_FLOAT_in_beamCollimation6121); 
+                    b=(Token)match(input,FLOAT,FOLLOW_FLOAT_in_beamCollimation6222); 
 
                      properties.put(Beam.BEAM_COLL_H, Double.parseDouble((a!=null?a.getText():null)));
                     	                                properties.put(Beam.BEAM_COLL_V, Double.parseDouble((b!=null?b.getText():null))); 
@@ -4121,13 +4177,13 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 3 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:615:4: CIRCULAR c= FLOAT f= FLOAT
+                    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:622:4: CIRCULAR c= FLOAT f= FLOAT
                     {
-                    match(input,CIRCULAR,FOLLOW_CIRCULAR_in_beamCollimation6128); 
+                    match(input,CIRCULAR,FOLLOW_CIRCULAR_in_beamCollimation6229); 
 
-                    c=(Token)match(input,FLOAT,FOLLOW_FLOAT_in_beamCollimation6132); 
+                    c=(Token)match(input,FLOAT,FOLLOW_FLOAT_in_beamCollimation6233); 
 
-                    f=(Token)match(input,FLOAT,FOLLOW_FLOAT_in_beamCollimation6136); 
+                    f=(Token)match(input,FLOAT,FOLLOW_FLOAT_in_beamCollimation6237); 
 
                      properties.put(Beam.BEAM_COLL_H, Double.parseDouble((c!=null?c.getText():null)));
                     	                                properties.put(Beam.BEAM_COLL_V, Double.parseDouble((f!=null?f.getText():null))); 
@@ -4136,22 +4192,22 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 4 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:618:4: HORIZONTAL d= FLOAT
+                    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:625:4: HORIZONTAL d= FLOAT
                     {
-                    match(input,HORIZONTAL,FOLLOW_HORIZONTAL_in_beamCollimation6143); 
+                    match(input,HORIZONTAL,FOLLOW_HORIZONTAL_in_beamCollimation6244); 
 
-                    d=(Token)match(input,FLOAT,FOLLOW_FLOAT_in_beamCollimation6147); 
+                    d=(Token)match(input,FLOAT,FOLLOW_FLOAT_in_beamCollimation6248); 
 
                      properties.put(Beam.BEAM_COLL_H, Double.parseDouble((d!=null?d.getText():null))); 
 
                     }
                     break;
                 case 5 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:619:4: VERTICAL e= FLOAT
+                    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:626:4: VERTICAL e= FLOAT
                     {
-                    match(input,VERTICAL,FOLLOW_VERTICAL_in_beamCollimation6154); 
+                    match(input,VERTICAL,FOLLOW_VERTICAL_in_beamCollimation6255); 
 
-                    e=(Token)match(input,FLOAT,FOLLOW_FLOAT_in_beamCollimation6158); 
+                    e=(Token)match(input,FLOAT,FOLLOW_FLOAT_in_beamCollimation6259); 
 
                      properties.put(Beam.BEAM_COLL_V, Double.parseDouble((e!=null?e.getText():null))); 
 
@@ -4192,7 +4248,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "wedge"
-    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:629:1: wedge returns [Wedge wObj] : WEDGE a= FLOAT b= FLOAT ( wedgeLine )+ ;
+    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:636:1: wedge returns [Wedge wObj] : WEDGE a= FLOAT b= FLOAT ( wedgeLine )+ ;
     public final Wedge wedge() throws RecognitionException {
         wedge_stack.push(new wedge_scope());
         Wedge wObj = null;
@@ -4204,19 +4260,19 @@ public class InputfileParser extends Parser {
          
 
         try {
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:649:2: ( WEDGE a= FLOAT b= FLOAT ( wedgeLine )+ )
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:649:4: WEDGE a= FLOAT b= FLOAT ( wedgeLine )+
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:656:2: ( WEDGE a= FLOAT b= FLOAT ( wedgeLine )+ )
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:656:4: WEDGE a= FLOAT b= FLOAT ( wedgeLine )+
             {
-            match(input,WEDGE,FOLLOW_WEDGE_in_wedge6471); 
+            match(input,WEDGE,FOLLOW_WEDGE_in_wedge6572); 
 
-            a=(Token)match(input,FLOAT,FOLLOW_FLOAT_in_wedge6475); 
+            a=(Token)match(input,FLOAT,FOLLOW_FLOAT_in_wedge6576); 
 
-            b=(Token)match(input,FLOAT,FOLLOW_FLOAT_in_wedge6479); 
+            b=(Token)match(input,FLOAT,FOLLOW_FLOAT_in_wedge6580); 
 
             ((wedge_scope)wedge_stack.peek()).startAng = Double.parseDouble((a!=null?a.getText():null));
             							 ((wedge_scope)wedge_stack.peek()).endAng = Double.parseDouble((b!=null?b.getText():null)); 
 
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:651:4: ( wedgeLine )+
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:658:4: ( wedgeLine )+
             int cnt20=0;
             loop20:
             do {
@@ -4230,9 +4286,9 @@ public class InputfileParser extends Parser {
 
                 switch (alt20) {
             	case 1 :
-            	    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:651:4: wedgeLine
+            	    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:658:4: wedgeLine
             	    {
-            	    pushFollow(FOLLOW_wedgeLine_in_wedge6486);
+            	    pushFollow(FOLLOW_wedgeLine_in_wedge6587);
             	    wedgeLine();
 
             	    state._fsp--;
@@ -4273,7 +4329,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "wedgeLine"
-    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:654:1: wedgeLine : (a= wedgeExposure |b= wedgeAngRes |c= wedgeStartOffset |d= wedgeTranslate |e= wedgeRotAxBeamOffset |f= wedgeMaxRes );
+    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:661:1: wedgeLine : (a= wedgeExposure |b= wedgeAngRes |c= wedgeStartOffset |d= wedgeTranslate |e= wedgeRotAxBeamOffset |f= wedgeMaxRes );
     public final void wedgeLine() throws RecognitionException {
         double a =0.0;
 
@@ -4289,7 +4345,7 @@ public class InputfileParser extends Parser {
 
 
         try {
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:655:2: (a= wedgeExposure |b= wedgeAngRes |c= wedgeStartOffset |d= wedgeTranslate |e= wedgeRotAxBeamOffset |f= wedgeMaxRes )
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:662:2: (a= wedgeExposure |b= wedgeAngRes |c= wedgeStartOffset |d= wedgeTranslate |e= wedgeRotAxBeamOffset |f= wedgeMaxRes )
             int alt21=6;
             switch ( input.LA(1) ) {
             case EXPOSURETIME:
@@ -4332,9 +4388,9 @@ public class InputfileParser extends Parser {
 
             switch (alt21) {
                 case 1 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:655:4: a= wedgeExposure
+                    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:662:4: a= wedgeExposure
                     {
-                    pushFollow(FOLLOW_wedgeExposure_in_wedgeLine6530);
+                    pushFollow(FOLLOW_wedgeExposure_in_wedgeLine6631);
                     a=wedgeExposure();
 
                     state._fsp--;
@@ -4345,9 +4401,9 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:656:4: b= wedgeAngRes
+                    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:663:4: b= wedgeAngRes
                     {
-                    pushFollow(FOLLOW_wedgeAngRes_in_wedgeLine6540);
+                    pushFollow(FOLLOW_wedgeAngRes_in_wedgeLine6641);
                     b=wedgeAngRes();
 
                     state._fsp--;
@@ -4358,9 +4414,9 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 3 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:657:4: c= wedgeStartOffset
+                    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:664:4: c= wedgeStartOffset
                     {
-                    pushFollow(FOLLOW_wedgeStartOffset_in_wedgeLine6551);
+                    pushFollow(FOLLOW_wedgeStartOffset_in_wedgeLine6652);
                     c=wedgeStartOffset();
 
                     state._fsp--;
@@ -4373,9 +4429,9 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 4 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:660:4: d= wedgeTranslate
+                    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:667:4: d= wedgeTranslate
                     {
-                    pushFollow(FOLLOW_wedgeTranslate_in_wedgeLine6561);
+                    pushFollow(FOLLOW_wedgeTranslate_in_wedgeLine6662);
                     d=wedgeTranslate();
 
                     state._fsp--;
@@ -4388,9 +4444,9 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 5 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:663:4: e= wedgeRotAxBeamOffset
+                    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:670:4: e= wedgeRotAxBeamOffset
                     {
-                    pushFollow(FOLLOW_wedgeRotAxBeamOffset_in_wedgeLine6571);
+                    pushFollow(FOLLOW_wedgeRotAxBeamOffset_in_wedgeLine6672);
                     e=wedgeRotAxBeamOffset();
 
                     state._fsp--;
@@ -4401,9 +4457,9 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 6 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:664:4: f= wedgeMaxRes
+                    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:671:4: f= wedgeMaxRes
                     {
-                    pushFollow(FOLLOW_wedgeMaxRes_in_wedgeLine6580);
+                    pushFollow(FOLLOW_wedgeMaxRes_in_wedgeLine6681);
                     f=wedgeMaxRes();
 
                     state._fsp--;
@@ -4431,7 +4487,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "wedgeExposure"
-    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:667:1: wedgeExposure returns [double value] : EXPOSURETIME a= FLOAT ;
+    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:674:1: wedgeExposure returns [double value] : EXPOSURETIME a= FLOAT ;
     public final double wedgeExposure() throws RecognitionException {
         double value = 0.0;
 
@@ -4439,12 +4495,12 @@ public class InputfileParser extends Parser {
         Token a=null;
 
         try {
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:668:2: ( EXPOSURETIME a= FLOAT )
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:668:4: EXPOSURETIME a= FLOAT
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:675:2: ( EXPOSURETIME a= FLOAT )
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:675:4: EXPOSURETIME a= FLOAT
             {
-            match(input,EXPOSURETIME,FOLLOW_EXPOSURETIME_in_wedgeExposure6597); 
+            match(input,EXPOSURETIME,FOLLOW_EXPOSURETIME_in_wedgeExposure6698); 
 
-            a=(Token)match(input,FLOAT,FOLLOW_FLOAT_in_wedgeExposure6601); 
+            a=(Token)match(input,FLOAT,FOLLOW_FLOAT_in_wedgeExposure6702); 
 
             value = Double.parseDouble((a!=null?a.getText():null));
 
@@ -4466,7 +4522,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "wedgeAngRes"
-    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:671:1: wedgeAngRes returns [double res] : ANGULARRESOLUTION a= FLOAT ;
+    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:678:1: wedgeAngRes returns [double res] : ANGULARRESOLUTION a= FLOAT ;
     public final double wedgeAngRes() throws RecognitionException {
         double res = 0.0;
 
@@ -4474,12 +4530,12 @@ public class InputfileParser extends Parser {
         Token a=null;
 
         try {
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:672:2: ( ANGULARRESOLUTION a= FLOAT )
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:672:4: ANGULARRESOLUTION a= FLOAT
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:679:2: ( ANGULARRESOLUTION a= FLOAT )
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:679:4: ANGULARRESOLUTION a= FLOAT
             {
-            match(input,ANGULARRESOLUTION,FOLLOW_ANGULARRESOLUTION_in_wedgeAngRes6683); 
+            match(input,ANGULARRESOLUTION,FOLLOW_ANGULARRESOLUTION_in_wedgeAngRes6784); 
 
-            a=(Token)match(input,FLOAT,FOLLOW_FLOAT_in_wedgeAngRes6687); 
+            a=(Token)match(input,FLOAT,FOLLOW_FLOAT_in_wedgeAngRes6788); 
 
             res = Double.parseDouble((a!=null?a.getText():null));
 
@@ -4507,7 +4563,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "wedgeStartOffset"
-    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:675:1: wedgeStartOffset returns [Double x, Double y, Double z] : STARTOFFSET a= FLOAT b= FLOAT (c= FLOAT )? ;
+    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:682:1: wedgeStartOffset returns [Double x, Double y, Double z] : STARTOFFSET a= FLOAT b= FLOAT (c= FLOAT )? ;
     public final InputfileParser.wedgeStartOffset_return wedgeStartOffset() throws RecognitionException {
         InputfileParser.wedgeStartOffset_return retval = new InputfileParser.wedgeStartOffset_return();
         retval.start = input.LT(1);
@@ -4518,18 +4574,18 @@ public class InputfileParser extends Parser {
         Token c=null;
 
         try {
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:676:2: ( STARTOFFSET a= FLOAT b= FLOAT (c= FLOAT )? )
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:676:4: STARTOFFSET a= FLOAT b= FLOAT (c= FLOAT )?
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:683:2: ( STARTOFFSET a= FLOAT b= FLOAT (c= FLOAT )? )
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:683:4: STARTOFFSET a= FLOAT b= FLOAT (c= FLOAT )?
             {
-            match(input,STARTOFFSET,FOLLOW_STARTOFFSET_in_wedgeStartOffset6794); 
+            match(input,STARTOFFSET,FOLLOW_STARTOFFSET_in_wedgeStartOffset6895); 
 
-            a=(Token)match(input,FLOAT,FOLLOW_FLOAT_in_wedgeStartOffset6798); 
+            a=(Token)match(input,FLOAT,FOLLOW_FLOAT_in_wedgeStartOffset6899); 
 
-            b=(Token)match(input,FLOAT,FOLLOW_FLOAT_in_wedgeStartOffset6802); 
+            b=(Token)match(input,FLOAT,FOLLOW_FLOAT_in_wedgeStartOffset6903); 
 
             retval.x = Double.parseDouble((a!=null?a.getText():null)); retval.y = Double.parseDouble((b!=null?b.getText():null));
 
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:677:17: (c= FLOAT )?
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:684:17: (c= FLOAT )?
             int alt22=2;
             int LA22_0 = input.LA(1);
 
@@ -4538,9 +4594,9 @@ public class InputfileParser extends Parser {
             }
             switch (alt22) {
                 case 1 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:677:17: c= FLOAT
+                    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:684:17: c= FLOAT
                     {
-                    c=(Token)match(input,FLOAT,FOLLOW_FLOAT_in_wedgeStartOffset6823); 
+                    c=(Token)match(input,FLOAT,FOLLOW_FLOAT_in_wedgeStartOffset6924); 
 
                     }
                     break;
@@ -4577,7 +4633,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "wedgeTranslate"
-    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:681:1: wedgeTranslate returns [Double x, Double y, Double z] : TRANSLATEPERDEGREE a= FLOAT b= FLOAT (c= FLOAT )? ;
+    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:688:1: wedgeTranslate returns [Double x, Double y, Double z] : TRANSLATEPERDEGREE a= FLOAT b= FLOAT (c= FLOAT )? ;
     public final InputfileParser.wedgeTranslate_return wedgeTranslate() throws RecognitionException {
         InputfileParser.wedgeTranslate_return retval = new InputfileParser.wedgeTranslate_return();
         retval.start = input.LT(1);
@@ -4588,18 +4644,18 @@ public class InputfileParser extends Parser {
         Token c=null;
 
         try {
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:682:2: ( TRANSLATEPERDEGREE a= FLOAT b= FLOAT (c= FLOAT )? )
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:682:4: TRANSLATEPERDEGREE a= FLOAT b= FLOAT (c= FLOAT )?
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:689:2: ( TRANSLATEPERDEGREE a= FLOAT b= FLOAT (c= FLOAT )? )
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:689:4: TRANSLATEPERDEGREE a= FLOAT b= FLOAT (c= FLOAT )?
             {
-            match(input,TRANSLATEPERDEGREE,FOLLOW_TRANSLATEPERDEGREE_in_wedgeTranslate6917); 
+            match(input,TRANSLATEPERDEGREE,FOLLOW_TRANSLATEPERDEGREE_in_wedgeTranslate7018); 
 
-            a=(Token)match(input,FLOAT,FOLLOW_FLOAT_in_wedgeTranslate6921); 
+            a=(Token)match(input,FLOAT,FOLLOW_FLOAT_in_wedgeTranslate7022); 
 
-            b=(Token)match(input,FLOAT,FOLLOW_FLOAT_in_wedgeTranslate6925); 
+            b=(Token)match(input,FLOAT,FOLLOW_FLOAT_in_wedgeTranslate7026); 
 
             retval.x = Double.parseDouble((a!=null?a.getText():null)); retval.y = Double.parseDouble((b!=null?b.getText():null));
 
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:683:24: (c= FLOAT )?
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:690:24: (c= FLOAT )?
             int alt23=2;
             int LA23_0 = input.LA(1);
 
@@ -4608,9 +4664,9 @@ public class InputfileParser extends Parser {
             }
             switch (alt23) {
                 case 1 :
-                    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:683:24: c= FLOAT
+                    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:690:24: c= FLOAT
                     {
-                    c=(Token)match(input,FLOAT,FOLLOW_FLOAT_in_wedgeTranslate6953); 
+                    c=(Token)match(input,FLOAT,FOLLOW_FLOAT_in_wedgeTranslate7054); 
 
                     }
                     break;
@@ -4641,7 +4697,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "wedgeRotAxBeamOffset"
-    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:687:1: wedgeRotAxBeamOffset returns [double delta] : ROTAXBEAMOFFSET a= FLOAT ;
+    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:694:1: wedgeRotAxBeamOffset returns [double delta] : ROTAXBEAMOFFSET a= FLOAT ;
     public final double wedgeRotAxBeamOffset() throws RecognitionException {
         double delta = 0.0;
 
@@ -4649,12 +4705,12 @@ public class InputfileParser extends Parser {
         Token a=null;
 
         try {
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:688:2: ( ROTAXBEAMOFFSET a= FLOAT )
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:688:4: ROTAXBEAMOFFSET a= FLOAT
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:695:2: ( ROTAXBEAMOFFSET a= FLOAT )
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:695:4: ROTAXBEAMOFFSET a= FLOAT
             {
-            match(input,ROTAXBEAMOFFSET,FOLLOW_ROTAXBEAMOFFSET_in_wedgeRotAxBeamOffset7089); 
+            match(input,ROTAXBEAMOFFSET,FOLLOW_ROTAXBEAMOFFSET_in_wedgeRotAxBeamOffset7190); 
 
-            a=(Token)match(input,FLOAT,FOLLOW_FLOAT_in_wedgeRotAxBeamOffset7093); 
+            a=(Token)match(input,FLOAT,FOLLOW_FLOAT_in_wedgeRotAxBeamOffset7194); 
 
             delta = Double.parseDouble((a!=null?a.getText():null));
 
@@ -4676,7 +4732,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "wedgeMaxRes"
-    // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:691:1: wedgeMaxRes returns [double res] : MAXRESOLUTION a= FLOAT ;
+    // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:698:1: wedgeMaxRes returns [double res] : MAXRESOLUTION a= FLOAT ;
     public final double wedgeMaxRes() throws RecognitionException {
         double res = 0.0;
 
@@ -4684,12 +4740,12 @@ public class InputfileParser extends Parser {
         Token a=null;
 
         try {
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:692:2: ( MAXRESOLUTION a= FLOAT )
-            // C:\\Users\\Josh\\git\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:692:4: MAXRESOLUTION a= FLOAT
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:699:2: ( MAXRESOLUTION a= FLOAT )
+            // C:\\Users\\user1\\Documents\\GitHub\\RADDOSE-3D\\lib\\antlrworks-parsergenerator\\Inputfile.g:699:4: MAXRESOLUTION a= FLOAT
             {
-            match(input,MAXRESOLUTION,FOLLOW_MAXRESOLUTION_in_wedgeMaxRes7190); 
+            match(input,MAXRESOLUTION,FOLLOW_MAXRESOLUTION_in_wedgeMaxRes7291); 
 
-            a=(Token)match(input,FLOAT,FOLLOW_FLOAT_in_wedgeMaxRes7194); 
+            a=(Token)match(input,FLOAT,FOLLOW_FLOAT_in_wedgeMaxRes7295); 
 
             res = Double.parseDouble((a!=null?a.getText():null));
 
@@ -4713,12 +4769,12 @@ public class InputfileParser extends Parser {
 
  
 
-    public static final BitSet FOLLOW_crystal_in_configfile47 = new BitSet(new long[]{0x0000000000800200L,0x0000000002000000L});
-    public static final BitSet FOLLOW_wedge_in_configfile65 = new BitSet(new long[]{0x0000000000800200L,0x0000000002000000L});
-    public static final BitSet FOLLOW_beam_in_configfile85 = new BitSet(new long[]{0x0000000000800200L,0x0000000002000000L});
+    public static final BitSet FOLLOW_crystal_in_configfile47 = new BitSet(new long[]{0x0000000000800200L,0x0000000004000000L});
+    public static final BitSet FOLLOW_wedge_in_configfile65 = new BitSet(new long[]{0x0000000000800200L,0x0000000004000000L});
+    public static final BitSet FOLLOW_beam_in_configfile85 = new BitSet(new long[]{0x0000000000800200L,0x0000000004000000L});
     public static final BitSet FOLLOW_EOF_in_configfile105 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_CRYSTAL_in_crystal134 = new BitSet(new long[]{0x6FF4E1201B7C5C70L,0x0000000004D3940FL});
-    public static final BitSet FOLLOW_crystalLine_in_crystal136 = new BitSet(new long[]{0x6FF4E1201B7C5C72L,0x0000000004D3940FL});
+    public static final BitSet FOLLOW_CRYSTAL_in_crystal134 = new BitSet(new long[]{0xDFE9C2401B7C5C70L,0x0000000009A7281EL});
+    public static final BitSet FOLLOW_crystalLine_in_crystal136 = new BitSet(new long[]{0xDFE9C2401B7C5C72L,0x0000000009A7281EL});
     public static final BitSet FOLLOW_crystalType_in_crystalLine192 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_crystalDDM_in_crystalLine203 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_crystalCoefcalc_in_crystalLine215 = new BitSet(new long[]{0x0000000000000002L});
@@ -4758,18 +4814,18 @@ public class InputfileParser extends Parser {
     public static final BitSet FOLLOW_calcSurrounding_in_crystalLine612 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_oilElements_in_crystalLine636 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_oilDensity_in_crystalLine660 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_TYPE_in_crystalType703 = new BitSet(new long[]{0x0000000000000000L,0x0000000000080000L});
+    public static final BitSet FOLLOW_TYPE_in_crystalType703 = new BitSet(new long[]{0x0000000000000000L,0x0000000000100000L});
     public static final BitSet FOLLOW_STRING_in_crystalType707 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_set_in_crystalDDM749 = new BitSet(new long[]{0x0000180000000000L,0x0000000000002000L});
+    public static final BitSet FOLLOW_set_in_crystalDDM749 = new BitSet(new long[]{0x0000300000000000L,0x0000000000004000L});
     public static final BitSet FOLLOW_crystalDDMKeyword_in_crystalDDM761 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_SIMPLE_in_crystalDDMKeyword909 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_LINEAR_in_crystalDDMKeyword916 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_LEAL_in_crystalDDMKeyword923 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_DECAYPARAM_in_crystalDecayParam1043 = new BitSet(new long[]{0x0000001000000000L});
-    public static final BitSet FOLLOW_FLOAT_in_crystalDecayParam1047 = new BitSet(new long[]{0x0000001000000000L});
-    public static final BitSet FOLLOW_FLOAT_in_crystalDecayParam1051 = new BitSet(new long[]{0x0000001000000000L});
+    public static final BitSet FOLLOW_DECAYPARAM_in_crystalDecayParam1043 = new BitSet(new long[]{0x0000002000000000L});
+    public static final BitSet FOLLOW_FLOAT_in_crystalDecayParam1047 = new BitSet(new long[]{0x0000002000000000L});
+    public static final BitSet FOLLOW_FLOAT_in_crystalDecayParam1051 = new BitSet(new long[]{0x0000002000000000L});
     public static final BitSet FOLLOW_FLOAT_in_crystalDecayParam1055 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_ABSCOEFCALC_in_crystalCoefcalc1127 = new BitSet(new long[]{0x1000000024002100L,0x0000000000004B30L});
+    public static final BitSet FOLLOW_ABSCOEFCALC_in_crystalCoefcalc1127 = new BitSet(new long[]{0x2000000024002100L,0x0000000000009660L});
     public static final BitSet FOLLOW_crystalCoefcalcKeyword_in_crystalCoefcalc1131 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_DUMMY_in_crystalCoefcalcKeyword1210 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_AVERAGE_in_crystalCoefcalcKeyword1220 = new BitSet(new long[]{0x0000000000000002L});
@@ -4782,99 +4838,99 @@ public class InputfileParser extends Parser {
     public static final BitSet FOLLOW_SAXSSEQ_in_crystalCoefcalcKeyword1275 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_SMALLMOLE_in_crystalCoefcalcKeyword1282 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_CIF_in_crystalCoefcalcKeyword1293 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_DIMENSION_in_crystalDim1702 = new BitSet(new long[]{0x0000001000000000L});
-    public static final BitSet FOLLOW_FLOAT_in_crystalDim1715 = new BitSet(new long[]{0x0000001000000000L});
-    public static final BitSet FOLLOW_FLOAT_in_crystalDim1719 = new BitSet(new long[]{0x0000001000000000L});
+    public static final BitSet FOLLOW_DIMENSION_in_crystalDim1702 = new BitSet(new long[]{0x0000002000000000L});
+    public static final BitSet FOLLOW_FLOAT_in_crystalDim1715 = new BitSet(new long[]{0x0000002000000000L});
+    public static final BitSet FOLLOW_FLOAT_in_crystalDim1719 = new BitSet(new long[]{0x0000002000000000L});
     public static final BitSet FOLLOW_FLOAT_in_crystalDim1723 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_FLOAT_in_crystalDim1735 = new BitSet(new long[]{0x0000001000000000L});
+    public static final BitSet FOLLOW_FLOAT_in_crystalDim1735 = new BitSet(new long[]{0x0000002000000000L});
     public static final BitSet FOLLOW_FLOAT_in_crystalDim1739 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_FLOAT_in_crystalDim1751 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_ANGLEP_in_crystalAngP1828 = new BitSet(new long[]{0x0000001000000000L});
+    public static final BitSet FOLLOW_ANGLEP_in_crystalAngP1828 = new BitSet(new long[]{0x0000002000000000L});
     public static final BitSet FOLLOW_FLOAT_in_crystalAngP1832 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_ANGLEL_in_crystalAngL1887 = new BitSet(new long[]{0x0000001000000000L});
+    public static final BitSet FOLLOW_ANGLEL_in_crystalAngL1887 = new BitSet(new long[]{0x0000002000000000L});
     public static final BitSet FOLLOW_FLOAT_in_crystalAngL1891 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_PIXELSPERMICRON_in_crystalPPM1945 = new BitSet(new long[]{0x0000001000000000L});
+    public static final BitSet FOLLOW_PIXELSPERMICRON_in_crystalPPM1945 = new BitSet(new long[]{0x0000002000000000L});
     public static final BitSet FOLLOW_FLOAT_in_crystalPPM1947 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_UNITCELL_in_unitcell2045 = new BitSet(new long[]{0x0000001000000000L});
-    public static final BitSet FOLLOW_FLOAT_in_unitcell2049 = new BitSet(new long[]{0x0000001000000000L});
-    public static final BitSet FOLLOW_FLOAT_in_unitcell2053 = new BitSet(new long[]{0x0000001000000000L});
-    public static final BitSet FOLLOW_FLOAT_in_unitcell2057 = new BitSet(new long[]{0x0000001000000002L});
-    public static final BitSet FOLLOW_FLOAT_in_unitcell2072 = new BitSet(new long[]{0x0000001000000000L});
-    public static final BitSet FOLLOW_FLOAT_in_unitcell2076 = new BitSet(new long[]{0x0000001000000000L});
+    public static final BitSet FOLLOW_UNITCELL_in_unitcell2045 = new BitSet(new long[]{0x0000002000000000L});
+    public static final BitSet FOLLOW_FLOAT_in_unitcell2049 = new BitSet(new long[]{0x0000002000000000L});
+    public static final BitSet FOLLOW_FLOAT_in_unitcell2053 = new BitSet(new long[]{0x0000002000000000L});
+    public static final BitSet FOLLOW_FLOAT_in_unitcell2057 = new BitSet(new long[]{0x0000002000000002L});
+    public static final BitSet FOLLOW_FLOAT_in_unitcell2072 = new BitSet(new long[]{0x0000002000000000L});
+    public static final BitSet FOLLOW_FLOAT_in_unitcell2076 = new BitSet(new long[]{0x0000002000000000L});
     public static final BitSet FOLLOW_FLOAT_in_unitcell2080 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_set_in_proteinConcentration2158 = new BitSet(new long[]{0x0000001000000000L});
+    public static final BitSet FOLLOW_set_in_proteinConcentration2158 = new BitSet(new long[]{0x0000002000000000L});
     public static final BitSet FOLLOW_FLOAT_in_proteinConcentration2168 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_NUMMONOMERS_in_nummonomers2350 = new BitSet(new long[]{0x0000001000000000L});
+    public static final BitSet FOLLOW_NUMMONOMERS_in_nummonomers2350 = new BitSet(new long[]{0x0000002000000000L});
     public static final BitSet FOLLOW_FLOAT_in_nummonomers2354 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_NUMRESIDUES_in_numresidues2431 = new BitSet(new long[]{0x0000001000000000L});
+    public static final BitSet FOLLOW_NUMRESIDUES_in_numresidues2431 = new BitSet(new long[]{0x0000002000000000L});
     public static final BitSet FOLLOW_FLOAT_in_numresidues2435 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_NUMRNA_in_numRNA2513 = new BitSet(new long[]{0x0000001000000000L});
+    public static final BitSet FOLLOW_NUMRNA_in_numRNA2513 = new BitSet(new long[]{0x0000002000000000L});
     public static final BitSet FOLLOW_FLOAT_in_numRNA2517 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_NUMDNA_in_numDNA2570 = new BitSet(new long[]{0x0000001000000000L});
+    public static final BitSet FOLLOW_NUMDNA_in_numDNA2570 = new BitSet(new long[]{0x0000002000000000L});
     public static final BitSet FOLLOW_FLOAT_in_numDNA2574 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_NUMCARB_in_numcarb2626 = new BitSet(new long[]{0x0000001000000000L});
+    public static final BitSet FOLLOW_NUMCARB_in_numcarb2626 = new BitSet(new long[]{0x0000002000000000L});
     public static final BitSet FOLLOW_FLOAT_in_numcarb2630 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_PROTEINHEAVYATOMS_in_heavyProteinAtoms2691 = new BitSet(new long[]{0x0000000040000000L});
-    public static final BitSet FOLLOW_ELEMENT_in_heavyProteinAtoms2696 = new BitSet(new long[]{0x0000001000000000L});
+    public static final BitSet FOLLOW_ELEMENT_in_heavyProteinAtoms2696 = new BitSet(new long[]{0x0000002000000000L});
     public static final BitSet FOLLOW_FLOAT_in_heavyProteinAtoms2700 = new BitSet(new long[]{0x0000000040000002L});
     public static final BitSet FOLLOW_SMALLMOLEATOMS_in_smallMoleAtoms2847 = new BitSet(new long[]{0x0000000040000000L});
-    public static final BitSet FOLLOW_ELEMENT_in_smallMoleAtoms2852 = new BitSet(new long[]{0x0000001000000000L});
+    public static final BitSet FOLLOW_ELEMENT_in_smallMoleAtoms2852 = new BitSet(new long[]{0x0000002000000000L});
     public static final BitSet FOLLOW_FLOAT_in_smallMoleAtoms2856 = new BitSet(new long[]{0x0000000040000002L});
     public static final BitSet FOLLOW_SOLVENTHEAVYCONC_in_heavySolutionConc2958 = new BitSet(new long[]{0x0000000040000000L});
-    public static final BitSet FOLLOW_ELEMENT_in_heavySolutionConc2963 = new BitSet(new long[]{0x0000001000000000L});
+    public static final BitSet FOLLOW_ELEMENT_in_heavySolutionConc2963 = new BitSet(new long[]{0x0000002000000000L});
     public static final BitSet FOLLOW_FLOAT_in_heavySolutionConc2967 = new BitSet(new long[]{0x0000000040000002L});
-    public static final BitSet FOLLOW_SOLVENTFRACTION_in_solventFraction3073 = new BitSet(new long[]{0x0000001000000000L});
+    public static final BitSet FOLLOW_SOLVENTFRACTION_in_solventFraction3073 = new BitSet(new long[]{0x0000002000000000L});
     public static final BitSet FOLLOW_FLOAT_in_solventFraction3077 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_PDBNAME_in_pdb3174 = new BitSet(new long[]{0x0000001000000000L,0x0000000000080000L});
+    public static final BitSet FOLLOW_PDBNAME_in_pdb3174 = new BitSet(new long[]{0x0000002000000000L,0x0000000000100000L});
     public static final BitSet FOLLOW_STRING_in_pdb3179 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_FLOAT_in_pdb3183 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_CIFNAME_in_cif3221 = new BitSet(new long[]{0x0000000000000000L,0x0000000000080000L});
+    public static final BitSet FOLLOW_CIFNAME_in_cif3221 = new BitSet(new long[]{0x0000000000000000L,0x0000000000100000L});
     public static final BitSet FOLLOW_STRING_in_cif3225 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_WIREFRAMETYPE_in_wireframeType3262 = new BitSet(new long[]{0x0000000000000000L,0x0000000000080000L});
+    public static final BitSet FOLLOW_WIREFRAMETYPE_in_wireframeType3262 = new BitSet(new long[]{0x0000000000000000L,0x0000000000100000L});
     public static final BitSet FOLLOW_STRING_in_wireframeType3266 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_MODELFILE_in_modelFile3354 = new BitSet(new long[]{0x0000000000000000L,0x0000000000080000L});
+    public static final BitSet FOLLOW_MODELFILE_in_modelFile3354 = new BitSet(new long[]{0x0000000000000000L,0x0000000000100000L});
     public static final BitSet FOLLOW_STRING_in_modelFile3358 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_CALCULATEPEESCAPE_in_calculatePEEscape3425 = new BitSet(new long[]{0x0000000000000000L,0x0000000000080000L});
+    public static final BitSet FOLLOW_CALCULATEPEESCAPE_in_calculatePEEscape3425 = new BitSet(new long[]{0x0000000000000000L,0x0000000000100000L});
     public static final BitSet FOLLOW_STRING_in_calculatePEEscape3429 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_GONIOMETERAXIS_in_goniometerAxis3541 = new BitSet(new long[]{0x0000001000000000L});
+    public static final BitSet FOLLOW_GONIOMETERAXIS_in_goniometerAxis3541 = new BitSet(new long[]{0x0000002000000000L});
     public static final BitSet FOLLOW_FLOAT_in_goniometerAxis3545 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_set_in_crystalContainerMaterial3642 = new BitSet(new long[]{0x000A000080000000L});
+    public static final BitSet FOLLOW_set_in_crystalContainerMaterial3642 = new BitSet(new long[]{0x0014000080000000L});
     public static final BitSet FOLLOW_crystalContainerKeyword_in_crystalContainerMaterial3654 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_NONE_in_crystalContainerKeyword3847 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_MIXTURE_in_crystalContainerKeyword3856 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_ELEMENTAL_in_crystalContainerKeyword3864 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_CONTAINERTHICKNESS_in_containerThickness4004 = new BitSet(new long[]{0x0000001000000000L});
+    public static final BitSet FOLLOW_CONTAINERTHICKNESS_in_containerThickness4004 = new BitSet(new long[]{0x0000002000000000L});
     public static final BitSet FOLLOW_FLOAT_in_containerThickness4008 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_set_in_containerMaterialMixture4119 = new BitSet(new long[]{0x0000000000000000L,0x0000000000080000L});
+    public static final BitSet FOLLOW_set_in_containerMaterialMixture4119 = new BitSet(new long[]{0x0000000000000000L,0x0000000000100000L});
     public static final BitSet FOLLOW_STRING_in_containerMaterialMixture4129 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_set_in_containerMaterialElements4354 = new BitSet(new long[]{0x0000000040000000L});
-    public static final BitSet FOLLOW_ELEMENT_in_containerMaterialElements4365 = new BitSet(new long[]{0x0000001000000000L});
+    public static final BitSet FOLLOW_ELEMENT_in_containerMaterialElements4365 = new BitSet(new long[]{0x0000002000000000L});
     public static final BitSet FOLLOW_FLOAT_in_containerMaterialElements4369 = new BitSet(new long[]{0x0000000040000002L});
-    public static final BitSet FOLLOW_CONTAINERDENSITY_in_containerDensity4604 = new BitSet(new long[]{0x0000001000000000L});
+    public static final BitSet FOLLOW_CONTAINERDENSITY_in_containerDensity4604 = new BitSet(new long[]{0x0000002000000000L});
     public static final BitSet FOLLOW_FLOAT_in_containerDensity4608 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_set_in_sequenceFile4709 = new BitSet(new long[]{0x0000000000000000L,0x0000000000080000L});
+    public static final BitSet FOLLOW_set_in_sequenceFile4709 = new BitSet(new long[]{0x0000000000000000L,0x0000000000100000L});
     public static final BitSet FOLLOW_STRING_in_sequenceFile4719 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_CALCULATEFLESCAPE_in_calculateFLEscape4842 = new BitSet(new long[]{0x0000000000000000L,0x0000000000080000L});
+    public static final BitSet FOLLOW_CALCULATEFLESCAPE_in_calculateFLEscape4842 = new BitSet(new long[]{0x0000000000000000L,0x0000000000100000L});
     public static final BitSet FOLLOW_STRING_in_calculateFLEscape4846 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_FLRESOLUTION_in_flResolution4957 = new BitSet(new long[]{0x0000001000000000L});
+    public static final BitSet FOLLOW_FLRESOLUTION_in_flResolution4957 = new BitSet(new long[]{0x0000002000000000L});
     public static final BitSet FOLLOW_FLOAT_in_flResolution4961 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_PERESOLUTION_in_peResolution5043 = new BitSet(new long[]{0x0000001000000000L});
+    public static final BitSet FOLLOW_PERESOLUTION_in_peResolution5043 = new BitSet(new long[]{0x0000002000000000L});
     public static final BitSet FOLLOW_FLOAT_in_peResolution5047 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_SURROUNDINGHEAVYCONC_in_surroundingHeavyConc5133 = new BitSet(new long[]{0x0000000040000000L});
-    public static final BitSet FOLLOW_ELEMENT_in_surroundingHeavyConc5138 = new BitSet(new long[]{0x0000001000000000L});
+    public static final BitSet FOLLOW_ELEMENT_in_surroundingHeavyConc5138 = new BitSet(new long[]{0x0000002000000000L});
     public static final BitSet FOLLOW_FLOAT_in_surroundingHeavyConc5142 = new BitSet(new long[]{0x0000000040000002L});
-    public static final BitSet FOLLOW_OILBASED_in_oilBased5270 = new BitSet(new long[]{0x0000000000000000L,0x0000000000080000L});
+    public static final BitSet FOLLOW_OILBASED_in_oilBased5270 = new BitSet(new long[]{0x0000000000000000L,0x0000000000100000L});
     public static final BitSet FOLLOW_STRING_in_oilBased5274 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_CALCSURROUNDING_in_calcSurrounding5336 = new BitSet(new long[]{0x0000000000000000L,0x0000000000080000L});
+    public static final BitSet FOLLOW_CALCSURROUNDING_in_calcSurrounding5336 = new BitSet(new long[]{0x0000000000000000L,0x0000000000100000L});
     public static final BitSet FOLLOW_STRING_in_calcSurrounding5340 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_OILELEMENTS_in_oilElements5443 = new BitSet(new long[]{0x0000000040000000L});
-    public static final BitSet FOLLOW_ELEMENT_in_oilElements5448 = new BitSet(new long[]{0x0000001000000000L});
+    public static final BitSet FOLLOW_ELEMENT_in_oilElements5448 = new BitSet(new long[]{0x0000002000000000L});
     public static final BitSet FOLLOW_FLOAT_in_oilElements5452 = new BitSet(new long[]{0x0000000040000002L});
-    public static final BitSet FOLLOW_OILDENSITY_in_oilDensity5535 = new BitSet(new long[]{0x0000001000000000L});
+    public static final BitSet FOLLOW_OILDENSITY_in_oilDensity5535 = new BitSet(new long[]{0x0000002000000000L});
     public static final BitSet FOLLOW_FLOAT_in_oilDensity5539 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_BEAM_in_beam5627 = new BitSet(new long[]{0x800002C900018000L,0x0000000001400040L});
-    public static final BitSet FOLLOW_beamLine_in_beam5629 = new BitSet(new long[]{0x800002C900018002L,0x0000000001400040L});
-    public static final BitSet FOLLOW_TYPE_in_beamLine5668 = new BitSet(new long[]{0x0000000000000000L,0x0000000000080000L});
+    public static final BitSet FOLLOW_BEAM_in_beam5627 = new BitSet(new long[]{0x0000059300018000L,0x0000000002800081L});
+    public static final BitSet FOLLOW_beamLine_in_beam5629 = new BitSet(new long[]{0x0000059300018002L,0x0000000002800081L});
+    public static final BitSet FOLLOW_TYPE_in_beamLine5668 = new BitSet(new long[]{0x0000000000000000L,0x0000000000100000L});
     public static final BitSet FOLLOW_STRING_in_beamLine5672 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_beamFlux_in_beamLine5690 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_beamFWHM_in_beamLine5702 = new BitSet(new long[]{0x0000000000000002L});
@@ -4882,55 +4938,58 @@ public class InputfileParser extends Parser {
     public static final BitSet FOLLOW_beamCollimation_in_beamLine5726 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_beamFile_in_beamLine5737 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_beamPixelSize_in_beamLine5758 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_FLUX_in_beamFlux5784 = new BitSet(new long[]{0x0000001000000000L});
-    public static final BitSet FOLLOW_FLOAT_in_beamFlux5788 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_FWHM_in_beamFWHM5830 = new BitSet(new long[]{0x0000001000000000L});
-    public static final BitSet FOLLOW_FLOAT_in_beamFWHM5834 = new BitSet(new long[]{0x0000001000000000L});
-    public static final BitSet FOLLOW_FLOAT_in_beamFWHM5838 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_ENERGY_in_beamEnergy5880 = new BitSet(new long[]{0x0000001000000000L});
-    public static final BitSet FOLLOW_FLOAT_in_beamEnergy5884 = new BitSet(new long[]{0x0000040000000002L});
-    public static final BitSet FOLLOW_KEV_in_beamEnergy5891 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_FILE_in_beamFile5969 = new BitSet(new long[]{0x0000000000000000L,0x0000000000080000L});
-    public static final BitSet FOLLOW_STRING_in_beamFile5973 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_PIXELSIZE_in_beamPixelSize6020 = new BitSet(new long[]{0x0000001000000000L});
-    public static final BitSet FOLLOW_FLOAT_in_beamPixelSize6024 = new BitSet(new long[]{0x0000001000000000L});
-    public static final BitSet FOLLOW_FLOAT_in_beamPixelSize6028 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_COLLIMATION_in_beamCollimation6107 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_RECTANGULAR_in_beamCollimation6113 = new BitSet(new long[]{0x0000001000000000L});
-    public static final BitSet FOLLOW_FLOAT_in_beamCollimation6117 = new BitSet(new long[]{0x0000001000000000L});
-    public static final BitSet FOLLOW_FLOAT_in_beamCollimation6121 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_CIRCULAR_in_beamCollimation6128 = new BitSet(new long[]{0x0000001000000000L});
-    public static final BitSet FOLLOW_FLOAT_in_beamCollimation6132 = new BitSet(new long[]{0x0000001000000000L});
-    public static final BitSet FOLLOW_FLOAT_in_beamCollimation6136 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_HORIZONTAL_in_beamCollimation6143 = new BitSet(new long[]{0x0000001000000000L});
-    public static final BitSet FOLLOW_FLOAT_in_beamCollimation6147 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_VERTICAL_in_beamCollimation6154 = new BitSet(new long[]{0x0000001000000000L});
-    public static final BitSet FOLLOW_FLOAT_in_beamCollimation6158 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_WEDGE_in_wedge6471 = new BitSet(new long[]{0x0000001000000000L});
-    public static final BitSet FOLLOW_FLOAT_in_wedge6475 = new BitSet(new long[]{0x0000001000000000L});
-    public static final BitSet FOLLOW_FLOAT_in_wedge6479 = new BitSet(new long[]{0x0001000400000080L,0x0000000000240080L});
-    public static final BitSet FOLLOW_wedgeLine_in_wedge6486 = new BitSet(new long[]{0x0001000400000082L,0x0000000000240080L});
-    public static final BitSet FOLLOW_wedgeExposure_in_wedgeLine6530 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_wedgeAngRes_in_wedgeLine6540 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_wedgeStartOffset_in_wedgeLine6551 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_wedgeTranslate_in_wedgeLine6561 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_wedgeRotAxBeamOffset_in_wedgeLine6571 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_wedgeMaxRes_in_wedgeLine6580 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_EXPOSURETIME_in_wedgeExposure6597 = new BitSet(new long[]{0x0000001000000000L});
-    public static final BitSet FOLLOW_FLOAT_in_wedgeExposure6601 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_ANGULARRESOLUTION_in_wedgeAngRes6683 = new BitSet(new long[]{0x0000001000000000L});
-    public static final BitSet FOLLOW_FLOAT_in_wedgeAngRes6687 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_STARTOFFSET_in_wedgeStartOffset6794 = new BitSet(new long[]{0x0000001000000000L});
-    public static final BitSet FOLLOW_FLOAT_in_wedgeStartOffset6798 = new BitSet(new long[]{0x0000001000000000L});
-    public static final BitSet FOLLOW_FLOAT_in_wedgeStartOffset6802 = new BitSet(new long[]{0x0000001000000002L});
-    public static final BitSet FOLLOW_FLOAT_in_wedgeStartOffset6823 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_TRANSLATEPERDEGREE_in_wedgeTranslate6917 = new BitSet(new long[]{0x0000001000000000L});
-    public static final BitSet FOLLOW_FLOAT_in_wedgeTranslate6921 = new BitSet(new long[]{0x0000001000000000L});
-    public static final BitSet FOLLOW_FLOAT_in_wedgeTranslate6925 = new BitSet(new long[]{0x0000001000000002L});
-    public static final BitSet FOLLOW_FLOAT_in_wedgeTranslate6953 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_ROTAXBEAMOFFSET_in_wedgeRotAxBeamOffset7089 = new BitSet(new long[]{0x0000001000000000L});
-    public static final BitSet FOLLOW_FLOAT_in_wedgeRotAxBeamOffset7093 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_MAXRESOLUTION_in_wedgeMaxRes7190 = new BitSet(new long[]{0x0000001000000000L});
-    public static final BitSet FOLLOW_FLOAT_in_wedgeMaxRes7194 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_energyFWHM_in_beamLine5774 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_FLUX_in_beamFlux5805 = new BitSet(new long[]{0x0000002000000000L});
+    public static final BitSet FOLLOW_FLOAT_in_beamFlux5809 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_FWHM_in_beamFWHM5851 = new BitSet(new long[]{0x0000002000000000L});
+    public static final BitSet FOLLOW_FLOAT_in_beamFWHM5855 = new BitSet(new long[]{0x0000002000000000L});
+    public static final BitSet FOLLOW_FLOAT_in_beamFWHM5859 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_ENERGY_in_beamEnergy5901 = new BitSet(new long[]{0x0000002000000000L});
+    public static final BitSet FOLLOW_FLOAT_in_beamEnergy5905 = new BitSet(new long[]{0x0000080000000002L});
+    public static final BitSet FOLLOW_KEV_in_beamEnergy5912 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_FILE_in_beamFile5990 = new BitSet(new long[]{0x0000000000000000L,0x0000000000100000L});
+    public static final BitSet FOLLOW_STRING_in_beamFile5994 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_PIXELSIZE_in_beamPixelSize6041 = new BitSet(new long[]{0x0000002000000000L});
+    public static final BitSet FOLLOW_FLOAT_in_beamPixelSize6045 = new BitSet(new long[]{0x0000002000000000L});
+    public static final BitSet FOLLOW_FLOAT_in_beamPixelSize6049 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_ENERGYFWHM_in_energyFWHM6124 = new BitSet(new long[]{0x0000002000000000L});
+    public static final BitSet FOLLOW_FLOAT_in_energyFWHM6128 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_COLLIMATION_in_beamCollimation6208 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_RECTANGULAR_in_beamCollimation6214 = new BitSet(new long[]{0x0000002000000000L});
+    public static final BitSet FOLLOW_FLOAT_in_beamCollimation6218 = new BitSet(new long[]{0x0000002000000000L});
+    public static final BitSet FOLLOW_FLOAT_in_beamCollimation6222 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_CIRCULAR_in_beamCollimation6229 = new BitSet(new long[]{0x0000002000000000L});
+    public static final BitSet FOLLOW_FLOAT_in_beamCollimation6233 = new BitSet(new long[]{0x0000002000000000L});
+    public static final BitSet FOLLOW_FLOAT_in_beamCollimation6237 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_HORIZONTAL_in_beamCollimation6244 = new BitSet(new long[]{0x0000002000000000L});
+    public static final BitSet FOLLOW_FLOAT_in_beamCollimation6248 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_VERTICAL_in_beamCollimation6255 = new BitSet(new long[]{0x0000002000000000L});
+    public static final BitSet FOLLOW_FLOAT_in_beamCollimation6259 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_WEDGE_in_wedge6572 = new BitSet(new long[]{0x0000002000000000L});
+    public static final BitSet FOLLOW_FLOAT_in_wedge6576 = new BitSet(new long[]{0x0000002000000000L});
+    public static final BitSet FOLLOW_FLOAT_in_wedge6580 = new BitSet(new long[]{0x0002000800000080L,0x0000000000480100L});
+    public static final BitSet FOLLOW_wedgeLine_in_wedge6587 = new BitSet(new long[]{0x0002000800000082L,0x0000000000480100L});
+    public static final BitSet FOLLOW_wedgeExposure_in_wedgeLine6631 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_wedgeAngRes_in_wedgeLine6641 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_wedgeStartOffset_in_wedgeLine6652 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_wedgeTranslate_in_wedgeLine6662 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_wedgeRotAxBeamOffset_in_wedgeLine6672 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_wedgeMaxRes_in_wedgeLine6681 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_EXPOSURETIME_in_wedgeExposure6698 = new BitSet(new long[]{0x0000002000000000L});
+    public static final BitSet FOLLOW_FLOAT_in_wedgeExposure6702 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_ANGULARRESOLUTION_in_wedgeAngRes6784 = new BitSet(new long[]{0x0000002000000000L});
+    public static final BitSet FOLLOW_FLOAT_in_wedgeAngRes6788 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_STARTOFFSET_in_wedgeStartOffset6895 = new BitSet(new long[]{0x0000002000000000L});
+    public static final BitSet FOLLOW_FLOAT_in_wedgeStartOffset6899 = new BitSet(new long[]{0x0000002000000000L});
+    public static final BitSet FOLLOW_FLOAT_in_wedgeStartOffset6903 = new BitSet(new long[]{0x0000002000000002L});
+    public static final BitSet FOLLOW_FLOAT_in_wedgeStartOffset6924 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_TRANSLATEPERDEGREE_in_wedgeTranslate7018 = new BitSet(new long[]{0x0000002000000000L});
+    public static final BitSet FOLLOW_FLOAT_in_wedgeTranslate7022 = new BitSet(new long[]{0x0000002000000000L});
+    public static final BitSet FOLLOW_FLOAT_in_wedgeTranslate7026 = new BitSet(new long[]{0x0000002000000002L});
+    public static final BitSet FOLLOW_FLOAT_in_wedgeTranslate7054 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_ROTAXBEAMOFFSET_in_wedgeRotAxBeamOffset7190 = new BitSet(new long[]{0x0000002000000000L});
+    public static final BitSet FOLLOW_FLOAT_in_wedgeRotAxBeamOffset7194 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_MAXRESOLUTION_in_wedgeMaxRes7291 = new BitSet(new long[]{0x0000002000000000L});
+    public static final BitSet FOLLOW_FLOAT_in_wedgeMaxRes7295 = new BitSet(new long[]{0x0000000000000002L});
 
 }

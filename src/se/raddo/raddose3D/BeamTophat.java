@@ -17,6 +17,8 @@ public class BeamTophat implements Beam {
 
   /** Beam energy. */
   private final Double photonEnergy;
+  
+  private final Double energyFWHM;
 
   /** Attenuated beam flux.  */
   private double attenuatedPhotonsPerSec;
@@ -55,6 +57,7 @@ public class BeamTophat implements Beam {
     beamYum = (Double) properties.get(Beam.BEAM_COLL_V);
     photonsPerSec = (Double) properties.get(Beam.BEAM_FLUX);
     photonEnergy = (Double) properties.get(Beam.BEAM_ENERGY);
+    energyFWHM = (Double) properties.get(Beam.ENERGY_FWHM);
     
     if (properties.get(Beam.BEAM_CIRCULAR) == "TRUE") {
       isCircular = true;
@@ -110,6 +113,11 @@ public class BeamTophat implements Beam {
   @Override
   public double getPhotonEnergy() {
     return photonEnergy;
+  }
+  
+  @Override
+  public double getEnergyFWHM() {
+    return energyFWHM;
   }
   
   @Override

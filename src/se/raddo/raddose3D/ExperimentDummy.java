@@ -93,6 +93,12 @@ public class ExperimentDummy extends Experiment {
       public double getBeamArea() {
         return 0;
       }
+
+      @Override
+      public double getEnergyFWHM() {
+        // TODO Auto-generated method stub
+        return 0;
+      }
     }
   }
 

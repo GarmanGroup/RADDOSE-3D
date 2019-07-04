@@ -10,7 +10,8 @@ public class BeamExperimental implements Beam {
                            pixYSize,
                            beamYSize,
                            totalFlux,
-                           beamEnergy;
+                           beamEnergy,
+                           energyFWHM;
   private double           beamSum,
                            attenuatedFlux;
 
@@ -44,7 +45,8 @@ public class BeamExperimental implements Beam {
   public BeamExperimental(final Double[][] datastructure,
       final Double totalFlux, final Double beamEnergy,
       final Double pixelSizeX,
-      final Double pixelSizeY) {
+      final Double pixelSizeY,
+      final Double energyFWHM) {
     
     this.dataStructure = datastructure;
     this.beamXSize = (datastructure[0].length + 2) * pixelSizeX;
@@ -53,6 +55,7 @@ public class BeamExperimental implements Beam {
     this.pixYSize = pixelSizeY;
     this.totalFlux = totalFlux;
     this.beamEnergy = beamEnergy;
+    this.energyFWHM = energyFWHM;
     
   }
 
@@ -187,6 +190,11 @@ public class BeamExperimental implements Beam {
     return beamEnergy;
   }
 
+  @Override
+  public double getEnergyFWHM() {
+    return energyFWHM;
+  }
+  
   @Override
   public void applyContainerAttenuation(Container sampleContainer){
     this.attenuatedFlux = (1 - sampleContainer.getContainerAttenuationFraction())

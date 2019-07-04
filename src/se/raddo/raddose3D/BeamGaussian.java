@@ -23,6 +23,8 @@ public class BeamGaussian implements Beam {
 
   /** Beam energy. */
   private final Double        photonEnergy;
+  
+  private final Double        energyFWHM;
 
   /** Horizontal/Vertical collimation. No collimation if set to null. */
   private final Double        collXum, collYum;
@@ -78,6 +80,7 @@ public class BeamGaussian implements Beam {
     photonEnergy = (Double) properties.get(Beam.BEAM_ENERGY);
     fwhmX = (Double) properties.get(Beam.BEAM_FWHM_X);
     fwhmY = (Double) properties.get(Beam.BEAM_FWHM_Y);
+    energyFWHM = (Double) properties.get(Beam.ENERGY_FWHM);
 
     Double sigmaX = fwhmX / SIGMA_TO_FWHM; // Convert to sigma
     Double sigmaY = fwhmY / SIGMA_TO_FWHM; // Convert to sigma
@@ -226,6 +229,11 @@ public class BeamGaussian implements Beam {
     return photonEnergy;
   }
 
+  @Override
+  public double getEnergyFWHM() {
+    return energyFWHM;
+  }
+  
   @Override
   public double beamIntensity(final double coordX, final double coordY,
       final double offAxisUM) {

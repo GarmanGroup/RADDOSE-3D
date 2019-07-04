@@ -34,6 +34,7 @@ public interface Beam {
   /** Conversion factor from keV to Joules. */
   public static final Double KEVTOJOULES      = 1000 * ELEMENTARYCHARGE;
 
+  public static final String ENERGY_FWHM = "ENERGY_FWHM";
   
   /**
    * Returns the mean intensity at position X, Y in joules/um^2/s.
@@ -88,5 +89,7 @@ public interface Beam {
   public double beamMinumumDimension();
   
   public double getBeamArea();
+  
+  public double getEnergyFWHM();
   
 }

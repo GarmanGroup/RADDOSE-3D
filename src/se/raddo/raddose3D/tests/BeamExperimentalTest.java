@@ -25,6 +25,7 @@ public class BeamExperimentalTest {
   private Double     defaultFlux              = 1e12;
   private Double     defaultVertSize          = 5.0;
   private Double     defaultHorizSize         = 5.0;
+  private Double     defaultFWHM              = null;
 
   public BeamExperimentalTest() {
     for (int i = 0; i < 4; i++) {
@@ -43,7 +44,7 @@ public class BeamExperimentalTest {
   /** Checks that the halfway points between nodes are correct */
   public void testHorizontal() {
     BeamExperimental evenVert = new BeamExperimental(evenBeamVerticalChange,
-        defaultFlux, defaultE, defaultHorizSize, defaultVertSize);
+        defaultFlux, defaultE, defaultHorizSize, defaultVertSize, defaultFWHM);
     // Intensity profile should be constant across rows, 
     // change from 0 to 4 across columns
     evenVert.generateBeamArray();
@@ -63,7 +64,7 @@ public class BeamExperimentalTest {
   /** Checks that the halfway points between nodes are correct */
   public void testVertical() {
     BeamExperimental evenHoriz = new BeamExperimental(evenBeamHorizontalChange,
-        defaultFlux, defaultE, defaultHorizSize, defaultVertSize);
+        defaultFlux, defaultE, defaultHorizSize, defaultVertSize, defaultFWHM);
     // Intensity profile should be constant across rows, 
     // change from 0 to 4 across columns
     evenHoriz.generateBeamArray();
@@ -81,7 +82,7 @@ public class BeamExperimentalTest {
   /** Checks that the halfway points between nodes are correct */
   public void testBoth() {
     BeamExperimental evenBoth = new BeamExperimental(evenBeamBothChange,
-        defaultFlux, defaultE, defaultHorizSize, defaultVertSize); // Intensity profile should be constant across rows, 
+        defaultFlux, defaultE, defaultHorizSize, defaultVertSize, defaultFWHM); // Intensity profile should be constant across rows, 
     evenBoth.generateBeamArray();
     double normF = defaultFlux / (sumBoth * defaultHorizSize * defaultVertSize);
 

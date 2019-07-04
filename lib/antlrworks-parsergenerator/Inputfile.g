@@ -574,6 +574,7 @@ beamLine
 							   } }
 	| f=beamFile             { $beam::beamProperties.put(Beam.BEAM_EXTFILE, $f.filename); }
 	| g=beamPixelSize        { $beam::beamProperties.putAll($g.properties); }
+	| h=energyFWHM             { $beam::beamProperties.put(Beam.ENERGY_FWHM, $h.eFWHM); }
 	
 	;
 
@@ -604,6 +605,12 @@ beamPixelSize returns [Map<Object, Object> properties]
     ;
 PIXELSIZE 
 	:	 ('P'|'p')('I'|'i')('X'|'x')('E'|'e')('L'|'l')('S'|'s')('I'|'i')('Z'|'z')('E'|'e');
+	
+energyFWHM returns [Double eFWHM]
+	: ENERGYFWHM a=FLOAT {$eFWHM = Double.parseDouble($a.text);};
+ENERGYFWHM 
+	: ('E'|'e')('N'|'n')('E'|'e')('R'|'r')('G'|'g')('Y'|'y')('F'|'f')('W'|'w')('H'|'h')('M'|'m'); 
+
 
 beamCollimation returns [Map<Object, Object> properties]
 @init { 
