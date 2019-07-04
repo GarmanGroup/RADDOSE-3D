@@ -394,6 +394,17 @@ public class CoefCalcCompute extends CoefCalc {
   }
   
   @Override
+  public void updateCoefficients(final Beam b) {
+    Map<String, Double> absCoefficients = calculateCoefficientsAll(b.getPhotonEnergy());
+    attCoeff = absCoefficients.get(TOTAL);
+    elasCoeff = absCoefficients.get(ELASTIC);
+    absCoeffcomp = absCoefficients.get(COMPTON);
+    absCoeffphoto = absCoefficients.get(PHOTOELECTRIC);
+    absCoefficients = calculateCoefficientsMacro(b.getPhotonEnergy());
+    elasCoeffMacro = absCoefficients.get(ELASTIC);
+  }
+  
+  @Override
   public void updateCryoCoefficients(final double photonEnergy) { 
     Map<String, Double> absCoefficients = calculateCryoCoefficientsAll(photonEnergy);
     cryoAttCoeff = absCoefficients.get(TOTAL);
@@ -402,7 +413,11 @@ public class CoefCalcCompute extends CoefCalc {
     cryoAbsCoeffPhoto = absCoefficients.get(PHOTOELECTRIC);
   }
   
-  
+  @Override
+  public void updateCryoCoefficients(final Beam b) {
+    // Does nothing
+  }
+   
   
   /**
    * Calculates the absorption, attenuation and elastic coefficients for

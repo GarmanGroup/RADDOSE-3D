@@ -641,7 +641,7 @@ public abstract class Crystal {
    */
   public void expose(final Beam beam, final Wedge wedge) {
     //start XFEL here, just comment and uncomment for now
-    coefCalc.updateCoefficients(beam.getPhotonEnergy());
+    coefCalc.updateCoefficients(beam);
     
     if (subprogram.equals("XFEL")) {
       startXFEL(XDim, YDim, ZDim, beam, wedge, coefCalc);
@@ -657,7 +657,7 @@ public abstract class Crystal {
     double cryoFluorescenceEnergyRelease = 0;
     double[][] cryoFeFactors = null;
     // Update coefficients in case the beam energy has changed.
-    coefCalc.updateCoefficients(beam.getPhotonEnergy());
+    coefCalc.updateCoefficients(beam);
 
     //Set up PE and FE - no need to do this is PE false
     double[][] feFactors = coefCalc.getFluorescentEscapeFactors(beam); 

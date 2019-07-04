@@ -9,13 +9,21 @@ import java.util.Map;
 
 public abstract class CoefCalc {
   /**
-   * Calculate cross-sections for the new Beam.
+   * Calculate cross-sections for the new photon energy.
    * 
    * @param photonEnergy
    *    The energy of each photon
    */
   public abstract void updateCoefficients(double photonEnergy);
 
+  /**
+   * Calculate cross-sections for the new Beam.
+   * 
+   * @param b
+   *    Beam object
+   */
+  public abstract void updateCoefficients(Beam b);
+  
   /**
    * Returns the current absorption coefficient. (Photoelectric)
    * 
@@ -78,6 +86,14 @@ public abstract class CoefCalc {
    *    The energy of each photon
    */
   public abstract void updateCryoCoefficients(final double photonEnergy);
+
+  /**
+   * Calculate cryo-cross-sections for the new Beam.
+   * 
+   * @param b
+   *    Beam object
+   */
+  public abstract void updateCryoCoefficients(Beam b);  
   
   /**
    * Returns the current cryo absorption coefficient. (Photoelectric and Compton)
