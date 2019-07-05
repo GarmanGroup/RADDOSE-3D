@@ -38,6 +38,8 @@ public abstract class Crystal {
   public static final String     CRYSTAL_GONIOMETER_AXIS       = "GONIOMETER";
   /** Constant for data fields in Map constructors: Electrons. */
   public static final String     CRYSTAL_PROGRAM       = "PROGRAM";
+  /** Constant for data fields in Map constructors: Electrons. */
+  public static final String     CRYSTAL_RUNS       = "RUNS";
 
   /** Constant for data fields in Map constructors: Photoelectron resolution. */
   
@@ -130,6 +132,7 @@ public abstract class Crystal {
    */
  // public final boolean useElectrons;
   public final String subprogram;
+  public final int runs;
   
   /**
    * Goniometer Orientation
@@ -230,6 +233,13 @@ public abstract class Crystal {
       subprogram = "RD3D";
     }
     
+
+    if (properties.get(CRYSTAL_RUNS) != null) {
+      runs = (int) properties.get(Crystal.CRYSTAL_RUNS);
+    }
+    else {
+      runs = 1;
+    }
 
     //Check that ppm is sensible
     if ((properties.get(CRYSTAL_RESOLUTION) != null) && (properties.get(CRYSTAL_DIM_X) != null)) {
@@ -644,7 +654,11 @@ public abstract class Crystal {
     coefCalc.updateCoefficients(beam);
     
     if (subprogram.equals("XFEL")) {
-      startXFEL(XDim, YDim, ZDim, beam, wedge, coefCalc);
+      for (int i = 0; i < runs; i++) {
+        startXFEL(XDim, YDim, ZDim, beam, wedge, coefCalc);
+      }
+      //terminate the program
+      System.exit(0);
     }
     else if (subprogram.equals("EMSP") || subprogram.equals("EMED")){
       startMicroED(XDim, YDim, ZDim, beam, wedge, coefCalc, crystalType);

@@ -296,6 +296,7 @@ crystalLine
 	| jj=oilDensity	                { $crystal::oilDensity			= $jj.oildens;  }
 	| kk=program	                { $crystal::crystalProperties.put(Crystal.CRYSTAL_PROGRAM, $kk.value); }
 	| ll=simElectrons		{ $crystal::simElectrons		= $ll.simel; }
+	| mm=runs	                { $crystal::crystalProperties.put(Crystal.CRYSTAL_RUNS, $mm.value); }
 							
 	;
 
@@ -561,6 +562,11 @@ program returns [String value]
 	: SUBPROGRAM a=STRING {$value = $a.text;};
 SUBPROGRAM  
 	:	 ('S'|'s')('U'|'u')('B'|'b')('P'|'p')('R'|'r')('O'|'o')('G'|'g')('R'|'r')('A'|'a')('M'|'m') ;
+
+runs returns [int value]
+	: RUNS a=FLOAT {$value = Integer.parseInt($a.text);};
+RUNS  
+	:	 ('R'|'r')('U'|'u')('N'|'n')('S'|'s') ;
 
 
 // ------------------------------------------------------------------

@@ -399,10 +399,9 @@ public class XFEL {
     startMonteCarloXFEL(beam, wedge, coefCalc);
     processDose(beam, coefCalc);
     RD3Dcheck(beam, wedge, coefCalc);
-    System.out.println("XFEL done");
+    System.out.println("RADDOSE-XFEL simulation complete");
     
-    //terminate the program
-    System.exit(0);
+
   }
   
   /**
@@ -905,17 +904,17 @@ public class XFEL {
     
     //print
     System.out.println(" ");
-    System.out.println("RADDOSE-3D style average dose whole crystal: " + totRADDOSEdose); 
-    System.out.println("RADDOSE-3D style average dose exposed region: " + rdExposed); 
-    System.out.println("RADDOSE-XFEL average dose whole crystal (ADWC): " + voxDosevResolved); 
-    System.out.println("RADDOSE-XFEL average dose exposed region (ADER): " + voxDoseExposed); 
+    System.out.println(String.format("RADDOSE-3D style average dose whole crystal: %.3f", totRADDOSEdose)); 
+    System.out.println(String.format("RADDOSE-3D style average dose exposed region: %.3f", rdExposed)); 
+    System.out.println(String.format("RADDOSE-XFEL average dose whole crystal (ADWC): %.3f", voxDosevResolved)); 
+    System.out.println(String.format("RADDOSE-XFEL average dose exposed region (ADER): %.3f", voxDoseExposed)); 
     if (voxDoseExposed > 400) { //change to exposed
       System.out.println("Warning, damage may begin to be seen at these doses");
     }
-    System.out.println("Diffraction Efficiency (number elastic/ADER): " + diffractionEfficiency); 
+    System.out.println(String.format("Diffraction Efficiency (number elastic/ADER): %.3f", diffractionEfficiency)); 
     System.out.println(" ");
-    System.out.println("Average ionisations per atom exposed region: " + totIonsperAtomExposed); 
-    System.out.println("Average ionisations per non-hydrogen atom exposed region: " + ionisationsPerNonHExposed); 
+    System.out.println(String.format("Average ionisations per atom exposed region: %.3f", totIonsperAtomExposed)); 
+    System.out.println(String.format("Average ionisations per non-hydrogen atom exposed region: %.3f", ionisationsPerNonHExposed)); 
     System.out.println(" ");
     
     avgW = 1000*(avgW/avgWNum);
