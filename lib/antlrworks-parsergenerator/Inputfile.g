@@ -533,8 +533,8 @@ $num	= new ArrayList<Double>();
 SURROUNDINGHEAVYCONC : ('S'|'s')('U'|'u')('R'|'r')('R'|'r')('O'|'o')('U'|'u')('N'|'n')('D'|'d')('I'|'i')('N'|'n')('G'|'g')('H'|'h')('E'|'e')('A'|'a')('V'|'v')('Y'|'y')('C'|'c')('O'|'o')('N'|'n')('C'|'c') ;
 
 oilBased returns [String value]
-	: OILBASED a=STRING {$value = $a.text;};
-OILBASED : ('O'|'o')('I'|'i')('L'|'l')('B'|'b')('A'|'a')('S'|'s')('E'|'e')('D'|'d') ;
+	: DENSITYBASED a=STRING {$value = $a.text;};
+DENSITYBASED : ('D'|'d')('E'|'e')('N'|'n')('S'|'s')('I'|'i')('T'|'t')('Y'|'y')('B'|'b')('A'|'a')('S'|'s')('E'|'e')('D'|'d') ;
 
 calcSurrounding returns [String value]
 	: CALCSURROUNDING a=STRING {$value = $a.text;};
@@ -546,12 +546,12 @@ oilElements returns [List<String> names, List<Double> num;]
 $names 	= new ArrayList<String>();
 $num	= new ArrayList<Double>();
 }
-	: OILELEMENTS (a=ELEMENT b=FLOAT {$names.add($a.text); $num.add(Double.parseDouble($b.text)); } )+ ; 	
-OILELEMENTS : ('O'|'o')('I'|'i')('L'|'l')('E'|'e')('L'|'l')('E'|'e')('M'|'m')('E'|'e')('N'|'n')('T'|'t')('S'|'s') ;
+	: SURROUNDINGELEMENTS (a=ELEMENT b=FLOAT {$names.add($a.text); $num.add(Double.parseDouble($b.text)); } )+ ; 	
+SURROUNDINGELEMENTS : ('S'|'s')('U'|'u')('R'|'r')('R'|'r')('O'|'o')('U'|'u')('N'|'n')('D'|'d')('I'|'i')('N'|'n')('G'|'g')('E'|'e')('L'|'l')('E'|'e')('M'|'m')('E'|'e')('N'|'n')('T'|'t')('S'|'s') ;
 
 oilDensity returns [double oildens]
-	: OILDENSITY a=FLOAT {$oildens = Double.parseDouble($a.text);};
-OILDENSITY : ('O'|'o')('I'|'i')('L'|'l')('D'|'d')('E'|'e')('N'|'n')('S'|'s')('I'|'i')('T'|'t')('Y'|'y') ;
+	: SURROUNDINGDENSITY a=FLOAT {$oildens = Double.parseDouble($a.text);};
+SURROUNDINGDENSITY : ('S'|'s')('U'|'u')('R'|'r')('R'|'r')('O'|'o')('U'|'u')('N'|'n')('D'|'d')('I'|'i')('N'|'n')('G'|'g')('D'|'d')('E'|'e')('N'|'n')('S'|'s')('I'|'i')('T'|'t')('Y'|'y') ;
 
 simElectrons returns [long simel]
 	: (SIMELECTRONS | SIMPHOTONS) a=FLOAT {$simel = Long.parseLong($a.text);};

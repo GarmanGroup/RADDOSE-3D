@@ -65,7 +65,8 @@ public class BeamTophat implements Beam {
     a.checkIsClass(properties.get(Beam.BEAM_ENERGY), Double.class,
         "no beam energy specified");
     if ((properties.get(Beam.BEAM_FLUX) == null)
-        && (properties.get(Beam.BEAM_EXPOSURE) == null)) {
+        && (properties.get(Beam.BEAM_EXPOSURE) == null) 
+        && (properties.get(Beam.PULSE_ENERGY) == null)) {
       a.checkIsClass(properties.get(Beam.BEAM_FLUX), Double.class,
                  "no beam flux specified");
     }

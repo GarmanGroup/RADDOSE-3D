@@ -74,10 +74,15 @@ public class BeamGaussian implements Beam {
         "no horizontal FWHM specified");
     a.checkIsClass(properties.get(Beam.BEAM_FWHM_Y), Double.class,
         "no vertical FWHM specified");
-    a.checkIsClass(properties.get(Beam.BEAM_FLUX), Double.class,
-        "no beam flux specified");
+  //  a.checkIsClass(properties.get(Beam.BEAM_FLUX), Double.class,
+  //      "no beam flux specified");
     a.checkIsClass(properties.get(Beam.BEAM_ENERGY), Double.class,
         "no beam energy specified");
+    if ((properties.get(Beam.BEAM_FLUX) == null)
+        && (properties.get(Beam.PULSE_ENERGY) == null)) {
+      a.checkIsClass(properties.get(Beam.BEAM_FLUX), Double.class,
+                 "no beam flux specified");
+    }
 
     photonsPerSec = (Double) properties.get(Beam.BEAM_FLUX);
     photonEnergy = (Double) properties.get(Beam.BEAM_ENERGY);
