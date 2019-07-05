@@ -354,8 +354,8 @@ public class Element {
         || (absorptionEdgeM != null && energy < absorptionEdgeM
         && energy > absorptionEdgeM - ABSORPTION_EDGE_TOLERANCE)) {
 
-      System.err.println("Warning: Energy is close to absorption edge of "
-          + elementName);
+   //   System.err.println("Warning: Energy is close to absorption edge of "
+   //       + elementName);
     }
 
     // Obtain photoelectric absorption coefficient using the closest edge.
