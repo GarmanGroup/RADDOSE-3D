@@ -145,8 +145,8 @@ public class CoefCalcCompute extends CoefCalc {
   /**
    * Water concentration in mM.
    */
-//  protected static final double      WATER_CONCENTRATION          = 55555;    // Density of 1 g/cm^3
- protected static final double      WATER_CONCENTRATION          = 51666;    // Density of 0.93 g/cm^3
+  protected static final double      WATER_CONCENTRATION          = 55555;    // Density of 1 g/cm^3
+// protected static final double      WATER_CONCENTRATION          = 51666;    // Density of 0.93 g/cm^3
 //  protected static final double      WATER_CONCENTRATION          = 83332.5;  
   
   /**

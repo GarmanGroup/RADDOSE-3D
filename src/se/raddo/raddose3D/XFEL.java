@@ -385,7 +385,7 @@ public class XFEL {
     
     // for testing
     lastTime = ((1/c) * (ZDimension/1E9) * 1E15) + PULSE_LENGTH;
-    numFluxPhotons = beam.getPhotonsPerSec() * wedge.getTotSec();
+   // numFluxPhotons = beam.getPhotonsPerSec() * wedge.getTotSec();
     //get the time at which the last photon exits the last voxel
     for (int i = 0; i < lastTimeVox.length; i++) {
       lastTimeVox[i] = ((1/c) * ((ZDimension/1E9)/lastTimeVox.length)*(i+1) * 1E15) + PULSE_LENGTH;

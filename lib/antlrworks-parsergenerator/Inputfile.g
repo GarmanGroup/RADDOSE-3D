@@ -553,9 +553,9 @@ oilDensity returns [double oildens]
 OILDENSITY : ('O'|'o')('I'|'i')('L'|'l')('D'|'d')('E'|'e')('N'|'n')('S'|'s')('I'|'i')('T'|'t')('Y'|'y') ;
 
 simElectrons returns [long simel]
-	: SIMELECTRONS a=FLOAT {$simel = Long.parseLong($a.text);};
+	: (SIMELECTRONS | SIMPHOTONS) a=FLOAT {$simel = Long.parseLong($a.text);};
 SIMELECTRONS :	('S'|'s')('I'|'i')('M'|'m')('E'|'e')('L'|'l')('E'|'e')('C'|'c')('T'|'t')('R'|'r')('O'|'o')('N'|'n')('S'|'s');
-
+SIMPHOTONS   :	('S'|'s')('I'|'i')('M'|'m')('P'|'p')('H'|'h')('O'|'o')('T'|'t')('O'|'o')('N'|'n')('S'|'s');
 
 program returns [String value]
 	: SUBPROGRAM a=STRING {$value = $a.text;};
