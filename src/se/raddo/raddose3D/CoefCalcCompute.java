@@ -280,8 +280,26 @@ public class CoefCalcCompute extends CoefCalc {
   }
   
   @Override
+  public void updateCoefficients(final double photonEnergy) { 
+    Map<String, Double> absCoefficients = calculateCoefficientsAll(photonEnergy);
+    attCoeff = absCoefficients.get(TOTAL);
+    elasCoeff = absCoefficients.get(ELASTIC);
+    absCoeffcomp = absCoefficients.get(COMPTON);
+    absCoeffphoto = absCoefficients.get(PHOTOELECTRIC);
+  }
+  
+  @Override
   public void updateCryoCoefficients(final Beam b) { 
     Map<String, Double> absCoefficients = calculateCryoCoefficientsAll(b.getPhotonEnergy());
+    cryoAttCoeff = absCoefficients.get(TOTAL);
+    cryoElasCoeff = absCoefficients.get(ELASTIC);
+    cryoAbsCoeffComp = absCoefficients.get(COMPTON);
+    cryoAbsCoeffPhoto = absCoefficients.get(PHOTOELECTRIC);
+  }
+
+  @Override
+  public void updateCryoCoefficients(final double photonEnergy) { 
+    Map<String, Double> absCoefficients = calculateCryoCoefficientsAll(photonEnergy);
     cryoAttCoeff = absCoefficients.get(TOTAL);
     cryoElasCoeff = absCoefficients.get(ELASTIC);
     cryoAbsCoeffComp = absCoefficients.get(COMPTON);
@@ -660,7 +678,7 @@ public class CoefCalcCompute extends CoefCalc {
     }    
     return fluorEscapeFactors;
   }
-
+  
 @Override
   public double[][] getCryoFluorescentEscapeFactors(Beam beam) {
     double[][] fluorEscapeFactors = new double[cryoElements.size()][NUM_FLUOR_ESCAPE_FACTORS];
@@ -830,7 +848,7 @@ public class CoefCalcCompute extends CoefCalc {
       element_counter += 1;
     }
     return fluorEscapeFactors;
-  } 
+  }
 
   @Override
   public double getAbsorptionCoefficient() {

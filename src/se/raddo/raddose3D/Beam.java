@@ -90,6 +90,6 @@ public interface Beam {
   
   public double getBeamArea();
   
-  public double getEnergyFWHM();
+  public Double getEnergyFWHM();
   
 }

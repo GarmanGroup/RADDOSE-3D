@@ -24,7 +24,7 @@ public class BeamGaussian implements Beam {
   /** Beam energy. */
   private final Double        photonEnergy;
   
-  private final Double        energyFWHM;
+  private Double        energyFWHM;
 
   /** Horizontal/Vertical collimation. No collimation if set to null. */
   private final Double        collXum, collYum;
@@ -230,7 +230,7 @@ public class BeamGaussian implements Beam {
   }
 
   @Override
-  public double getEnergyFWHM() {
+  public Double getEnergyFWHM() {
     return energyFWHM;
   }
   

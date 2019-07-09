@@ -95,9 +95,9 @@ public class ExperimentDummy extends Experiment {
       }
 
       @Override
-      public double getEnergyFWHM() {
+      public Double getEnergyFWHM() {
         // TODO Auto-generated method stub
-        return 0;
+        return null;
       }
     }
   }

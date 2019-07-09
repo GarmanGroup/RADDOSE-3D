@@ -10,8 +10,8 @@ public class BeamExperimental implements Beam {
                            pixYSize,
                            beamYSize,
                            totalFlux,
-                           beamEnergy,
-                           energyFWHM;
+                           beamEnergy;
+  private final Double     energyFWHM;
   private double           beamSum,
                            attenuatedFlux;
 
@@ -191,7 +191,7 @@ public class BeamExperimental implements Beam {
   }
 
   @Override
-  public double getEnergyFWHM() {
+  public Double getEnergyFWHM() {
     return energyFWHM;
   }
   

@@ -307,10 +307,20 @@ public class CoefCalcRaddose extends CoefCalc {
   }
   
   @Override
+  public void updateCoefficients(double photonEnergy) {
+    // Does nothing - the tests instead use the version which has the beam object as a parameter
+  }
+  
+  @Override
   public void updateCryoCoefficients(final Beam b) {
     // Does nothing
   }
 
+  @Override
+  public void updateCryoCoefficients(final double photonEnergy) {
+    // Does nothing
+  }
+  
   @Override
   public double getAbsorptionCoefficient() {
     return absCoeff;
@@ -365,7 +375,7 @@ public class CoefCalcRaddose extends CoefCalc {
     }
     return fluorEscapeFactors;
   }
-
+  
   @Override
   public double getInelasticCoefficient() {
     // Added to prevent error

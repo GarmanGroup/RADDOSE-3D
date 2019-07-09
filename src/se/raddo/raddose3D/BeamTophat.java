@@ -116,7 +116,7 @@ public class BeamTophat implements Beam {
   }
   
   @Override
-  public double getEnergyFWHM() {
+  public Double getEnergyFWHM() {
     return energyFWHM;
   }
   

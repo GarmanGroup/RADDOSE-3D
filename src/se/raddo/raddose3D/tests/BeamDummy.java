@@ -58,8 +58,8 @@ public class BeamDummy implements Beam {
   }
 
   @Override
-  public double getEnergyFWHM() {
+  public Double getEnergyFWHM() {
     // TODO Auto-generated method stub
-    return 0;
+    return null;
   }
 }

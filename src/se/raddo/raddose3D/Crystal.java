@@ -120,6 +120,12 @@ public abstract class Crystal {
   
   public boolean firstWedge;
   
+  // Increasing energiesPerAngle means the energy distribution is sampled more finely (so more representative) - this is only relevant for pink beam
+  private int energiesPerAngle = 100; // TODO maximise this given the constraints on runtime, 1000 is sufficiently rapid and gives back a clear Gaussian form if FWHM==1 for a histrogram binned with bins width 0.05eV 
+  private double[] sampleEnergiesArray;
+  SampleNormalEnergyDistribution sampleEnergies;
+  
+  
   /**
    * Goniometer Orientation
    */
@@ -676,23 +682,67 @@ public abstract class Crystal {
     for (ExposeObserver eo : exposureObservers) {
       eo.exposureStart(angles.length, wedge);
     }
+    
+    
+
+    // Set up energy array to iterate through; size equals number of photons to simulate
+    if(beam.getEnergyFWHM() == null) {         // i.e. not a pink beam
+      for(int i=0; i<energiesPerAngle; i++) {
+        energiesPerAngle = 1;
+        sampleEnergiesArray = new double[energiesPerAngle];
+        sampleEnergiesArray[0] = beam.getPhotonEnergy();
+        }
+      } 
+    else { // Gaussian pink beam
+      sampleEnergiesArray = new double[energiesPerAngle];
+      sampleEnergies = new SampleNormalEnergyDistribution(beam.getPhotonEnergy(), beam.getEnergyFWHM(), energiesPerAngle); 
+      sampleEnergiesArray = sampleEnergies.getSampledEnergies(); // systematically sampled by inverse transform sampling
+    }
+    
+    
+    
 
     // The main meat of it:
-    for (int n = 0; n < angles.length; n++) {
-      // Expose one angle
-      exposeAngle(angles[n], beam, wedge, n, angles.length, fluorescenceEnergyRelease, 
-                  augerEnergy, cryoAugerEnergy, cryoFluorescenceEnergyRelease, feFactors, cryoFeFactors);
+    for (int n = 0; n < angles.length; n++) { // loop through angles
+      for(int i=0; i < sampleEnergiesArray.length; i++) { // loop through energies
+        double photonEnergy = sampleEnergiesArray[i];
+        
+        
+        // Update coeeffients given new energy
+        coefCalc.updateCoefficients(photonEnergy);    // added in version that accesses photon energy directly (not via beam object)
+        if (coefCalc.isCryo() == true) {
+          coefCalc.updateCryoCoefficients(photonEnergy); // added in version that accesses photon energy directly (not via beam object)
+        }
+        
+        // No need to update fluorescence escape factors for the new energy. Already approximate, and would slow down the programme.
+        // To adapt just put in new fluorescence methods
+        // Ditto for photoelectron escape
 
+        // Ignore container, as only relevant for SAXS so not pink beam
+        
+        
+           
+        
+      // Expose one angle ... at one energy
+      exposeAngle(angles[n], beam, wedge, n, angles.length, fluorescenceEnergyRelease, 
+                  augerEnergy, cryoAugerEnergy, cryoFluorescenceEnergyRelease, feFactors, cryoFeFactors, photonEnergy);
+
+      } // end of looping through energies
+      
+      
       for (ExposeObserver eo : exposureObservers) {
         double lastAngle = 0;
         if (n > 0) {
           lastAngle = angles[n-1];
         }
         eo.imageComplete(n, angles[n], lastAngle, Math.pow(getCrystalPixPerUM(), -3));
-      }
+      }     
 
     } // end of looping over angles
-
+         
+    
+    
+    
     double fractionEscapedDose = (totalEscapedDose - totalDoseFromSurrounding)/totalCrystalDose; //Just to test escaped dose
     
     final double voxelMassKg =  (1e-15 * (Math.pow(getCrystalPixPerUM(), -3) * coefCalc
@@ -723,18 +773,19 @@ public abstract class Crystal {
       System.out.println(" J.\n");
     }
 
-    ///////////////////////////////////////////////////////
-    // END OF EXPOSE METHOD
-    ///////////////////////////////////////////////////////
-  }
+  } ///////////////////////////////////////// END OF EXPOSE METHOD //////////////////////////////////////////////////////////
+  
+  
+  
+  
 
   private void exposeAngle(final double angle, final Beam beam,
       final Wedge wedge, final int anglenum, final int anglecount,  
       double fluorescenceEnergyRelease, double augerEnergy, double cryoAugerEnergy,
-      double cryoFluorescenceEnergyRelease, double[][] feFactors, double[][] cryoFeFactors) {
+      double cryoFluorescenceEnergyRelease, double[][] feFactors, double[][] cryoFeFactors, double photonEnergy) {
 
     final int[] crystalSize = getCrystSizeVoxels();
-
+    
     final Double[] wedgeStart = wedge.getStartVector();
     final Double[] wedgeTranslation = wedge.getTranslationVector(angle);
 
@@ -745,9 +796,9 @@ public abstract class Crystal {
     
     //Set up tracks in polarised direction for photoelectrons
     if (photoElectronEscape) {
-      findVoxelsReachedByPE(false, coefCalc, beam.getPhotonEnergy(), feFactors, angle);
+      findVoxelsReachedByPE(false, coefCalc, photonEnergy, feFactors, angle);
       if (coefCalc.isCryo() == true) {
-        findVoxelsReachedByPE(true, coefCalc, beam.getPhotonEnergy(), cryoFeFactors, angle);
+        findVoxelsReachedByPE(true, coefCalc, photonEnergy, cryoFeFactors, angle);
       }
     }
     
@@ -782,14 +833,14 @@ public abstract class Crystal {
         / getCrystalPixPerUM())
         // exposure for the Voxel (J) * fraction scattered by the voxel
         //   = J scattered
-        / (beam.getPhotonEnergy() * Beam.KEVTOJOULES);
+        / (photonEnergy * Beam.KEVTOJOULES);
         // J scattered / [(keV/photon) / (J/keV)] = photons scattered
 
     double beamAttenuationFactor = Math.pow(getCrystalPixPerUM(), -2)
-        * wedge.getTotSec() / anglecount;
+        * wedge.getTotSec() / (anglecount*energiesPerAngle); // energiesPerAngle already set to 1 if energyFWHM == null              
     // Area in um^2 of a voxel * time per angular step
 
-    final double beamAttenuationExpFactor = -coefCalc     
+    final double beamAttenuationExpFactor = -coefCalc
         .getAttenuationCoefficient();
     
     double[] crystCoords;
@@ -830,11 +881,11 @@ public abstract class Crystal {
               //calculate compton effect
               double electronweight = 9.10938356E-31;
               double csquared = 3E8*3E8;
-              double beamenergy = (beam.getPhotonEnergy() * Beam.KEVTOJOULES);
+              double beamenergy = (photonEnergy * Beam.KEVTOJOULES); // changes for that specific energy (i.e. adapted for pink beam, unlike Auger/PE escape)
               double mcsquared = electronweight * csquared;
               double voxImageElectronEnergyDose = mcsquared / (2*beamenergy + mcsquared);
               voxImageElectronEnergyDose = (beamenergy * (1 - (Math.pow(voxImageElectronEnergyDose, 0.5)))); //Compton electron energy in joules
-              double numberofphotons = voxImageFluence[i][j][k] / beamenergy; //This gives I0 in equation 9 in Karthik 2010, dividing by beam energy leaves photons per um^2/s
+              double numberofphotons = voxImageFluence[i][j][k] / (beamenergy*energiesPerAngle); //This gives I0 in equation 9 in Karthik 2010, dividing by beam energy leaves photons per um^2/s
               voxImageComptonFluence[i][j][k] = numberofphotons * voxImageElectronEnergyDose; //Re-calculate voxImageFluence using Compton electron energy
               double voxImageDoseCompton = fluenceToDoseFactorCompton * voxImageComptonFluence[i][j][k];
               
@@ -1009,8 +1060,8 @@ public abstract class Crystal {
                     unattenuatedBeamIntensity * beamAttenuationFactor
                         * Math.exp(depth * beamAttenuationExpFactor); 
                 //For Auger
-                double beamEnergy = (beam.getPhotonEnergy() * Beam.KEVTOJOULES);
-                double numberOfPhotons = cryoVoxImageFluence / beamEnergy;
+                double beamEnergy = (beam.getPhotonEnergy() * Beam.KEVTOJOULES);                       // just left as the beam energy (or mean energy for a gaussian pink beam)
+                double numberOfPhotons = cryoVoxImageFluence / (beamEnergy*energiesPerAngle);          // Added in energiesPerAngle term here
                 
                 double cryoVoxImageEnergy = energyPerFluence * cryoVoxImageFluence; 
                 double cryoVoxImageDose= fluenceToDoseFactor * cryoVoxImageFluence;
@@ -1078,8 +1129,8 @@ public abstract class Crystal {
         }
       }
     }
-  }
-  }
+  }       
+  } /////////////////////////// END OF EXPOSE ANGLE METHOD ///////////////////////////////////////////////////////
 
   private double[] translateCrystalToPosition(double[] crystCoords, Double[] wedgeStart, Double[] wedgeTranslation,
                                                double anglecos, double anglesin) {
