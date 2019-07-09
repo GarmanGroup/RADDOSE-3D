@@ -385,7 +385,7 @@ public abstract class Crystal {
   public abstract void setCryoPEparamsForCurrentBeam(Beam beam, CoefCalc coefCalc, double[][] feFactors);
   
   public abstract void startMicroED(double XDim, double YDim, double ZDim, Beam beam, Wedge wedge, CoefCalc coefCalc, String crystalType);
-  public abstract void startXFEL(double XDim, double YDim, double ZDim, Beam beam, Wedge wedge, CoefCalc coefCalc);
+  public abstract void startXFEL(double XDim, double YDim, double ZDim, Beam beam, Wedge wedge, CoefCalc coefCalc, int runNum);
 
   
   /**
@@ -655,7 +655,8 @@ public abstract class Crystal {
     
     if (subprogram.equals("XFEL")) {
       for (int i = 0; i < runs; i++) {
-        startXFEL(XDim, YDim, ZDim, beam, wedge, coefCalc);
+        int runNum = i+1;
+        startXFEL(XDim, YDim, ZDim, beam, wedge, coefCalc, runNum);
       }
       //terminate the program
       System.exit(0);

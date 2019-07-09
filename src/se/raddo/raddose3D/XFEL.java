@@ -26,6 +26,7 @@ import org.apache.commons.math3.distribution.NormalDistribution;
 // Might be preferable to put class NormalEnergyDistribution and class SampleNormalEnergyDistribution elsewhere
 class NormalEnergyDistribution  {
     // Fields with defaults - defining distribution parameters
+    
     private NormalDistribution gE;
     private double meanEnergy;
     private double energyFwhm;
@@ -181,6 +182,7 @@ public class XFEL {
   public double crystalPixPerUMXFEL;
   public int[] crystalSizeVoxelsXFEL;
   public boolean[][][][] crystOccXFEL;
+  public int runNumber;
   /**
    * Normal array holding normalised direction vectors for
    * each triangle specified by the index array.
@@ -291,7 +293,7 @@ public class XFEL {
   
   
   public XFEL(double vertices[][], int[][] indices, double[][][][] crystCoord, 
-      double crystalPixPerUM, int[] crystSizeVoxels, boolean[][][][] crystOcc) {
+      double crystalPixPerUM, int[] crystSizeVoxels, boolean[][][][] crystOcc, int runNum) {
     verticesXFEL = vertices;
     indicesXFEL = indices;
     crystCoordXFEL = crystCoord;
@@ -352,6 +354,8 @@ public class XFEL {
     energyPerInelSurrounding = new TreeMap<Double, Double>();
     stragglingPerInel = new TreeMap<Double, Double>();
     stragglingPerInelSurrounding = new TreeMap<Double, Double>();
+    
+    runNumber = runNum;
   }
   
   public void CalculateXFEL(Beam beam, Wedge wedge, CoefCalc coefCalc) {
@@ -955,12 +959,20 @@ public class XFEL {
                           ,final double diffractionEfficiency, final double ionisationsPerAtomvResolvedExposed, final double ionisationsPerNonHExposed, final double voxFrac) throws IOException {
 
     BufferedWriter outFile;
+    if (runNumber == 1) {
     outFile = new BufferedWriter(new OutputStreamWriter(
         new FileOutputStream(filename), "UTF-8"));
+    }
+    else {
+      outFile = new BufferedWriter(new OutputStreamWriter(
+          new FileOutputStream(filename, true), "UTF-8"));
+    }
     try {
-      outFile.write("RD3D-ADWC,RD3D-ADER,XFEL-ADWC,XFEL-ADER,Diffraction efficiency,ions per atom, ions per non-H atom\n");
+      if (runNumber == 1) {
+        outFile.write("Run Number, RD3D-ADWC,RD3D-ADER,XFEL-ADWC,XFEL-ADER,Diffraction efficiency,ions per atom, ions per non-H atom\n");
+      }
       outFile.write(String.format(
-          " %f, %f, %f, %f, %f, %f, %f%n", totRADDOSEdose, rdExposed, voxDosevResolved,voxDoseExposed,diffractionEfficiency,ionisationsPerAtomvResolvedExposed, ionisationsPerNonHExposed));
+          " %d, %f, %f, %f, %f, %f, %f, %f%n", runNumber, totRADDOSEdose, rdExposed, voxDosevResolved,voxDoseExposed,diffractionEfficiency,ionisationsPerAtomvResolvedExposed, ionisationsPerNonHExposed));
     } catch (IOException e) {
       e.printStackTrace();
       System.err.println("WriterFile: Could not write to file " + filename);

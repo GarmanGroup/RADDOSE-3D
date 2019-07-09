@@ -2391,11 +2391,11 @@ public class CrystalPolyhedron extends Crystal {
   }
   @Override
   public void startXFEL(double XDim, double YDim, double ZDim, Beam beam,
-      Wedge wedge, CoefCalc coefCalc) {
+      Wedge wedge, CoefCalc coefCalc, int runNum) {
     //also need indices, vertices, crystalCoords, numberVoxelsm, PPM (may not need all of these but just 
     //to be safe for now
     XFEL xfel = new XFEL(vertices, indices, crystCoord, 
-                                  crystalPixPerUM, crystSizeVoxels, crystOcc);
+                                  crystalPixPerUM, crystSizeVoxels, crystOcc, runNum);
     xfel.CalculateXFEL(beam, wedge, coefCalc);
   }
   

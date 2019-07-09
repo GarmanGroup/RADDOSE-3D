@@ -381,7 +381,7 @@ public class ExperimentDummy extends Experiment {
 
       @Override
       public void startXFEL(double XDim, double YDim, double ZDim, Beam beam,
-          Wedge wedge, CoefCalc coefCalc) {
+          Wedge wedge, CoefCalc coefCalc, int runNum) {
         // TODO Auto-generated method stub
         
       }

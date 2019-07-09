@@ -322,7 +322,7 @@ public class CrystalSpherical extends Crystal {
 
   @Override
   public void startXFEL(double XDim, double YDim, double ZDim, Beam beam,
-      Wedge wedge, CoefCalc coefCalc) {
+      Wedge wedge, CoefCalc coefCalc, int runNum) {
     // TODO Auto-generated method stub
     
   }
