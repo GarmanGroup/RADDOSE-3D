@@ -119,6 +119,12 @@
     <include name="constants/EnergyCoefsMed.txt" />
     <include name="constants/EnergyCoefsHigh.txt" />
     <include name="constants/MuCalcConstants.txt" />
+	<include name="constants/low_overvoltage.csv" />
+	<include name="constants/high_overvoltage.csv" />
+	<include name="constants/fullelsepa.CSV" />
+	<include name="constants/below_20000/*.csv" />
+	<include name="constants/above_20000/*.csv" />
+	<include name="constants/auger_linewidths/*.csv" />
    </fileset>
 
    
@@ -144,6 +150,12 @@
     <include name="constants/EnergyCoefsLow.txt" />
     <include name="constants/EnergyCoefsMed.txt" />
     <include name="constants/EnergyCoefsHigh.txt" />
+	<include name="constants/low_overvoltage.csv" />
+	<include name="constants/high_overvoltage.csv" />
+	<include name="constants/full_elsepa.csv" />
+	<include name="constants/below_20000/*.csv" />
+	<include name="constants/above_20000/*.csv" />
+	<include name="constants/auger_linewidths/*.csv" />
    </fileset>
 
    <manifest>
@@ -179,6 +191,12 @@
     <include name="constants/EnergyCoefsLow.txt" />
     <include name="constants/EnergyCoefsMed.txt" />
     <include name="constants/EnergyCoefsHigh.txt" />
+	<include name="constants/low_overvoltage.csv" />
+	<include name="constants/high_overvoltage.csv" />
+	<include name="constants/full_elsepa.csv" />
+	<include name="constants/below_20000/*.csv" />
+	<include name="constants/above_20000/*.csv" />
+	<include name="constants/auger_linewidths/*.csv" />
    </fileset>
 
    <manifest>

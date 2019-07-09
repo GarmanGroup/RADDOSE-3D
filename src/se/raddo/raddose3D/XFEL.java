@@ -939,7 +939,7 @@ public class XFEL {
     double voxFrac = voxDosevResolved/gosTot;
     //write output to csv
     try {
-      WriterFile("outputXFEL.CSV", totRADDOSEdose, rdExposed, voxDosevResolved, voxDoseExposed, diffractionEfficiency, ionisationsPerAtomvResolvedExposed, ionisationsPerNonHExposed, voxFrac);
+      WriterFile("outputXFEL.CSV", totRADDOSEdose, rdExposed, voxDosevResolved, voxDoseExposed, diffractionEfficiency, ionisationsPerAtomvResolvedExposed, ionisationsPerNonHExposed, voxFrac, voxDoseNoCutoffvResolved);
     } catch (IOException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
@@ -956,7 +956,8 @@ public class XFEL {
   }
   
   private void WriterFile(final String filename, final double totRADDOSEdose, final double rdExposed, final double voxDosevResolved, final double voxDoseExposed
-                          ,final double diffractionEfficiency, final double ionisationsPerAtomvResolvedExposed, final double ionisationsPerNonHExposed, final double voxFrac) throws IOException {
+                          ,final double diffractionEfficiency, final double ionisationsPerAtomvResolvedExposed, final double ionisationsPerNonHExposed, final double voxFrac,
+                          final double vResolvedNoCut) throws IOException {
 
     BufferedWriter outFile;
     if (runNumber == 1) {
@@ -969,10 +970,10 @@ public class XFEL {
     }
     try {
       if (runNumber == 1) {
-        outFile.write("Run Number, RD3D-ADWC,RD3D-ADER,XFEL-ADWC,XFEL-ADER,Diffraction efficiency,ions per atom, ions per non-H atom\n");
+        outFile.write("Run Number, RD3D-ADWC,RD3D-ADER,XFEL-ADWC,XFEL-ADER,Diffraction efficiency,ions per atom, ions per non-H atom, vResolvedNoCut\n");
       }
       outFile.write(String.format(
-          " %d, %f, %f, %f, %f, %f, %f, %f%n", runNumber, totRADDOSEdose, rdExposed, voxDosevResolved,voxDoseExposed,diffractionEfficiency,ionisationsPerAtomvResolvedExposed, ionisationsPerNonHExposed));
+          " %d, %f, %f, %f, %f, %f, %f, %f, %f%n", runNumber, totRADDOSEdose, rdExposed, voxDosevResolved,voxDoseExposed,diffractionEfficiency,ionisationsPerAtomvResolvedExposed, ionisationsPerNonHExposed, vResolvedNoCut));
     } catch (IOException e) {
       e.printStackTrace();
       System.err.println("WriterFile: Could not write to file " + filename);

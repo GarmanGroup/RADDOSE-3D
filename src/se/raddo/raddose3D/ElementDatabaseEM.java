@@ -81,7 +81,7 @@ public class ElementDatabaseEM {
   /**
    * Location of MuCalcConstants library.
    */
-  private static final String ELCALC_FILE   = "constants/full_elsepa.CSV";
+  private static final String ELCALC_FILE   = "constants/fullelsepa.CSV";
 
   /** Position of the atomic number in the database file. */
   private static final int    ATOMIC_NUMBER = 0;
