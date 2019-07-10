@@ -728,12 +728,13 @@ public class XFEL {
     
     double meanEnergyJoules = meanEnergy*Beam.KEVTOJOULES;
     double numberOfPhotons = PULSE_ENERGY/meanEnergyJoules;
+    totElastic = totElastic * (numberOfPhotons/NUM_PHOTONS);
     
 //    numberOfPhotons = numFluxPhotons;
     int[] maxVoxel = getMaxPixelCoordinates();
     int voxelCount = 0, voxelCountExposed = 0;
     double voxDoseNoCutoff = 0, voxDose = 0, voxDoseExposed = 0, voxDoseExposedNoCutoff = 0;
-    double voxDosevResolved = 0, voxDoseNoCutoffvResolved = 0, DWD = 0, DWDNoCutoff = 0;
+    double voxDosevResolved = 0, voxDoseNoCutoffvResolved = 0, DWD = 0, DWDNoCutoff = 0, DWDcoarse = 0, DWDcoarseNoCutoff = 0;
     long ionisationsCutoff = 0, lowIonisationsCutOff = 0;
     int countCutoff = 0;
     double sumDose = 0, sumElectronDose = 0, sumPhotonDose = 0, sumElectronDoseSurrounding = 0, sumGOSDose = 0, gosTot = 0, gosTotNoCutoff = 0;
@@ -784,6 +785,8 @@ public class XFEL {
       
       for (int a = 0; a < maxVoxel[0]; a++) {
         for (int b = 0; b < maxVoxel[1]; b++) {
+          double xyElastic = 0;
+          double energySumResolved = 0, energySum = 0;
           for (int c = 0; c < maxVoxel[2]; c++) {
             double[] cartesian = convertToCartesianCoordinates(a,b,c);
             double flux = beam.beamIntensity(cartesian[0]/1000, cartesian[1]/1000, 0);
@@ -794,13 +797,21 @@ public class XFEL {
               voxelCount += 1;
               voxelElastic[a][b][c] = voxelElastic[a][b][c] * (numberOfPhotons/NUM_PHOTONS);
             }
+            xyElastic += voxelElastic[a][b][c];
             if (i*PULSE_BIN_LENGTH < lastTimeVox[c]-(1*PULSE_BIN_LENGTH)) {
         //      voxDose += voxelEnergy[a][b][c][i];
+              energySumResolved += voxelEnergyvResolved[a][b][c][i];
               voxDosevResolved += voxelEnergyvResolved[a][b][c][i];
               totIonsvResolved += voxelIonisationsvResolved[a][b][c][i];
               if ( voxelElastic[a][b][c]> 0) { //change later to wedge.getoffAxisUM
                // voxDoseExposed += voxelEnergyvResolved[a][b][c][i];
                 DWD += voxelEnergyvResolved[a][b][c][i] * (voxelElastic[a][b][c]/totElastic);
+
+              }
+              if (xyElastic > 0 && energySumResolved > 0) {
+                if (c == maxVoxel[2] - 1) {
+                  DWDcoarse += (energySumResolved/ (c+1)) * (xyElastic/totElastic);
+                }
               }
               if (Math.abs(cartesian[0])/1000 <= beam.getBeamX()/2 && Math.abs(cartesian[1])/1000 <= beam.getBeamY()/2) { 
                 voxDoseExposed += voxelEnergyvResolved[a][b][c][i];
@@ -809,11 +820,17 @@ public class XFEL {
             }
         //    voxDoseNoCutoff += voxelEnergy[a][b][c][i];
             voxDoseNoCutoffvResolved += voxelEnergyvResolved[a][b][c][i];
+            energySum += voxelEnergyvResolved[a][b][c][i];
             if (voxelElastic[a][b][c] > 0) { //change later to wedge.getoffAxisUM
               //  voxDoseExposedNoCutoff += voxelEnergyvResolved[a][b][c][i];
                 DWDNoCutoff += voxelEnergyvResolved[a][b][c][i] * (voxelElastic[a][b][c]/totElastic);
               if (i == 0) {
                 voxelCountExposed += 1;
+              }
+            }
+            if (xyElastic > 0 && energySum > 0) {
+              if (c == maxVoxel[2] - 1) {
+                DWDcoarseNoCutoff += (energySum / (c+1)) * (xyElastic/totElastic);
               }
             }
             if (Math.abs(cartesian[0])/1000 <= beam.getBeamX()/2 && Math.abs(cartesian[1])/1000 <= beam.getBeamY()/2) { 
@@ -885,6 +902,8 @@ public class XFEL {
     voxDoseExposedNoCutoff = (voxDoseExposedNoCutoff / exposedMass)/1E6;
     DWD = (DWD / voxelMass)/1E6;
     DWDNoCutoff = (DWDNoCutoff / voxelMass)/1E6;
+    DWDcoarse = (DWDcoarse / voxelMass)/1E6;
+    DWDcoarseNoCutoff = (DWDcoarseNoCutoff / voxelMass)/1E6;
     
     raddoseStyleDose = ((raddoseStyleDose * (numberOfPhotons/NUM_PHOTONS) * Beam.KEVTOJOULES) / sampleMass) /1E6; //in MGy
     raddoseStyleDoseCompton = ((raddoseStyleDoseCompton * (numberOfPhotons/NUM_PHOTONS) * Beam.KEVTOJOULES) / sampleMass) /1E6; //in MGy)
@@ -912,6 +931,7 @@ public class XFEL {
     System.out.println(String.format("RADDOSE-3D style average dose exposed region: %.3f", rdExposed)); 
     System.out.println(String.format("RADDOSE-XFEL average dose whole crystal (ADWC): %.3f", voxDosevResolved)); 
     System.out.println(String.format("RADDOSE-XFEL average dose exposed region (ADER): %.3f", voxDoseExposed)); 
+ //   System.out.println(String.format("RADDOSE-XFEL diffraction weighted dose (DWD): %.3f", DWDcoarse)); 
     if (voxDoseExposed > 400) { //change to exposed
       System.out.println("Warning, damage may begin to be seen at these doses");
     }
@@ -939,7 +959,7 @@ public class XFEL {
     double voxFrac = voxDosevResolved/gosTot;
     //write output to csv
     try {
-      WriterFile("outputXFEL.CSV", totRADDOSEdose, rdExposed, voxDosevResolved, voxDoseExposed, diffractionEfficiency, ionisationsPerAtomvResolvedExposed, ionisationsPerNonHExposed, voxFrac, voxDoseNoCutoffvResolved);
+      WriterFile("outputXFEL.CSV", totRADDOSEdose, rdExposed, voxDosevResolved, voxDoseExposed, diffractionEfficiency, ionisationsPerAtomvResolvedExposed, ionisationsPerNonHExposed, voxFrac, voxDoseNoCutoffvResolved, DWDcoarse);
     } catch (IOException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
@@ -957,7 +977,7 @@ public class XFEL {
   
   private void WriterFile(final String filename, final double totRADDOSEdose, final double rdExposed, final double voxDosevResolved, final double voxDoseExposed
                           ,final double diffractionEfficiency, final double ionisationsPerAtomvResolvedExposed, final double ionisationsPerNonHExposed, final double voxFrac,
-                          final double vResolvedNoCut) throws IOException {
+                          final double vResolvedNoCut, final double DWDcoarse) throws IOException {
 
     BufferedWriter outFile;
     if (runNumber == 1) {
@@ -970,10 +990,10 @@ public class XFEL {
     }
     try {
       if (runNumber == 1) {
-        outFile.write("Run Number, RD3D-ADWC,RD3D-ADER,XFEL-ADWC,XFEL-ADER,Diffraction efficiency,ions per atom, ions per non-H atom, vResolvedNoCut\n");
+        outFile.write("Run Number, RD3D-ADWC,RD3D-ADER,XFEL-ADWC,XFEL-ADER,Diffraction efficiency,ions per atom, ions per non-H atom, vResolvedNoCut, DWD\n");
       }
       outFile.write(String.format(
-          " %d, %f, %f, %f, %f, %f, %f, %f, %f%n", runNumber, totRADDOSEdose, rdExposed, voxDosevResolved,voxDoseExposed,diffractionEfficiency,ionisationsPerAtomvResolvedExposed, ionisationsPerNonHExposed, vResolvedNoCut));
+          " %d, %f, %f, %f, %f, %f, %f, %f, %f, %f%n", runNumber, totRADDOSEdose, rdExposed, voxDosevResolved,voxDoseExposed,diffractionEfficiency,ionisationsPerAtomvResolvedExposed, ionisationsPerNonHExposed, vResolvedNoCut, DWDcoarse));
     } catch (IOException e) {
       e.printStackTrace();
       System.err.println("WriterFile: Could not write to file " + filename);
@@ -3181,7 +3201,7 @@ private Element chooseLowEnElement(CoefCalc coefCalc, double Pinner, Map<Element
     RD3D_ADWC = sumDose/ numVoxels;
     RD3D_ADER = sumDose/ numExposedVoxels;
     boolean tooLowRes = false;
-    if ((Math.abs(RD3D_ADER - raddoseStyleDose) / raddoseStyleDose) > 0.25) {
+    if ((Math.abs(RD3D_ADER - raddoseStyleDose) / raddoseStyleDose) > 0.20) {
       System.out.println("Consider simulating more photons for a more reliable result");
     }
   }
