@@ -851,6 +851,7 @@ public class XFEL {
     double sumNonHIonisations = 0, sumHIonisations = 0, sumNonHIonisationsExposed = 0, sumHIonisationsExposed = 0;
     double[] ions = new double[99];
     for (Element e: atomicIonisations.keySet()) {
+      if (e != null) {
       long temp = StrictMath.round(atomicIonisations.get(e) * (numberOfPhotons/NUM_PHOTONS));
       long tempExposed = StrictMath.round(atomicIonisationsExposed.get(e) * (numberOfPhotons/NUM_PHOTONS));
     //  temp += temp*fractionLow;     
@@ -872,6 +873,7 @@ public class XFEL {
         sumHIonisations += temp;
         totalHAtomsExposed += totalAtomsElemExposed;
         sumHIonisationsExposed += tempExposed;
+      }
       }
     }
     double ionisationsPerNonH = sumNonHIonisations/totalNonHAtoms;
@@ -1333,6 +1335,7 @@ public class XFEL {
         totalIonisationEventsvResolved[ionisationTime] += 1;
         voxelIonisationsvResolved[pixelCoord[0]][pixelCoord[1]][pixelCoord[2]][ionisationTime] += 1;
         Element randomElem = getRandomElement(coefCalc); 
+        
         if (atomicIonisations.containsKey(randomElem)) {
           atomicIonisations.put(randomElem, atomicIonisations.get(randomElem)+1);
         }
@@ -1368,7 +1371,9 @@ public class XFEL {
     HashMap<Element, Double> numElectrons = new HashMap<Element, Double>(size);
     for (Element e: presentElements) {
       double electrons = e.getAtomicNumber() * coefCalc.getTotalAtomsInCrystalElement(sampleVolume, e);
-      numElectrons.put(e, electrons);
+      if (electrons < 0.0) {
+        numElectrons.put(e, electrons);
+      }
       sumElectrons += electrons;
     }
     HashMap<Element, Double> elementProb = new HashMap<Element, Double>(size);
