@@ -121,7 +121,7 @@ public abstract class Crystal {
   public boolean firstWedge;
   
   // Increasing energiesPerAngle means the energy distribution is sampled more finely (so more representative) - this is only relevant for pink beam
-  private int energiesPerAngle = 100; // TODO maximise this given the constraints on runtime, 1000 is sufficiently rapid and gives back a clear Gaussian form if FWHM==1 for a histrogram binned with bins width 0.05eV 
+  private int energiesPerAngle = 200; // 200 is better compromise for runtime and accuracy TODO maybe make this scale with the specified energyFWHM, within limits
   private double[] sampleEnergiesArray;
   SampleNormalEnergyDistribution sampleEnergies;
   
