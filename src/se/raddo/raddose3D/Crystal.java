@@ -885,7 +885,7 @@ public abstract class Crystal {
               double mcsquared = electronweight * csquared;
               double voxImageElectronEnergyDose = mcsquared / (2*beamenergy + mcsquared);
               voxImageElectronEnergyDose = (beamenergy * (1 - (Math.pow(voxImageElectronEnergyDose, 0.5)))); //Compton electron energy in joules
-              double numberofphotons = voxImageFluence[i][j][k] / (beamenergy*energiesPerAngle); //This gives I0 in equation 9 in Karthik 2010, dividing by beam energy leaves photons per um^2/s
+              double numberofphotons = voxImageFluence[i][j][k] / beamenergy; //This gives I0 in equation 9 in Karthik 2010, dividing by beam energy leaves photons per um^2/s
               voxImageComptonFluence[i][j][k] = numberofphotons * voxImageElectronEnergyDose; //Re-calculate voxImageFluence using Compton electron energy
               double voxImageDoseCompton = fluenceToDoseFactorCompton * voxImageComptonFluence[i][j][k];
               
@@ -1061,7 +1061,7 @@ public abstract class Crystal {
                         * Math.exp(depth * beamAttenuationExpFactor); 
                 //For Auger
                 double beamEnergy = (beam.getPhotonEnergy() * Beam.KEVTOJOULES);                       // just left as the beam energy (or mean energy for a gaussian pink beam)
-                double numberOfPhotons = cryoVoxImageFluence / (beamEnergy*energiesPerAngle);          // Added in energiesPerAngle term here
+                double numberOfPhotons = cryoVoxImageFluence / beamEnergy;          
                 
                 double cryoVoxImageEnergy = energyPerFluence * cryoVoxImageFluence; 
                 double cryoVoxImageDose= fluenceToDoseFactor * cryoVoxImageFluence;
