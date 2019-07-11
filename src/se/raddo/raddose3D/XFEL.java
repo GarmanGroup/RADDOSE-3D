@@ -728,11 +728,15 @@ public class XFEL {
     double sampleMass = ((coefCalc.getDensity() * sampleVolume) / 1000);  //in Kg 
     double totalAtoms = coefCalc.getTotalAtomsInCrystal(sampleVolume);
     double exposedVolume = beam.getBeamX()*1000 * beam.getBeamY()*1000 * ZDimension * 1E-21;
+    if (exposedVolume > sampleVolume) {
+      exposedVolume = sampleVolume;
+    }
     double volFraction = exposedVolume/sampleVolume;
     
     double meanEnergyJoules = meanEnergy*Beam.KEVTOJOULES;
     double numberOfPhotons = PULSE_ENERGY/meanEnergyJoules;
     totElastic = totElastic * (numberOfPhotons/NUM_PHOTONS);
+    double testSumxyEl = 0;
     
 //    numberOfPhotons = numFluxPhotons;
     int[] maxVoxel = getMaxPixelCoordinates();
@@ -800,8 +804,16 @@ public class XFEL {
             if (i == 0) {
               voxelCount += 1;
               voxelElastic[a][b][c] = voxelElastic[a][b][c] * (numberOfPhotons/NUM_PHOTONS);
+               
             }
             xyElastic += voxelElastic[a][b][c];
+            
+            
+            if (i == 0) {
+              testSumxyEl += xyElastic;
+            }
+            
+            
             if (i*PULSE_BIN_LENGTH < lastTimeVox[c]-(1*PULSE_BIN_LENGTH)) {
         //      voxDose += voxelEnergy[a][b][c][i];
               energySumResolved += voxelEnergyvResolved[a][b][c][i];
