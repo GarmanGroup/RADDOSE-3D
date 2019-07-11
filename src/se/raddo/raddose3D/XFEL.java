@@ -400,10 +400,12 @@ public class XFEL {
     double fractionel = getFractionElasticallyScattered(coefCalc);
     double numberElastic = numberOfPhotons * fractionel;
     */
+    long start = System.nanoTime();
     startMonteCarloXFEL(beam, wedge, coefCalc);
     processDose(beam, coefCalc);
     RD3Dcheck(beam, wedge, coefCalc);
-    System.out.println("RADDOSE-XFEL simulation complete");
+    long runtime = System.nanoTime() - start;
+    System.out.println(String.format("RADDOSE-XFEL simulation complete, runtime in seconds was: %.8e", runtime/1E9));
     
 
   }
