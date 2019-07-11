@@ -507,6 +507,7 @@ public class XFEL {
       double theta = 0, phi = 0, previousTheta = 0, previousPhi = 0, thisTheta = 0;
       double previousZ = -ZDimension/2;  //dodgy if specimen not flat - change for concave holes    
       //position
+      
       double[] xyPos = getPhotonBeamXYPos(beam);
       double previousX = xyPos[0];
       double previousY = xyPos[1];
@@ -719,6 +720,8 @@ public class XFEL {
   private void processDose(Beam beam, CoefCalc coefCalc) {
     //just take the whole sample, assuming it is bathed totally
     //and also just take a whole cube for now
+    double voxLength = Math.pow(crystalPixPerUMXFEL, -1) * 1000; //nm
+    double voxLengthRatio = ZDimension/voxLength;
     double voxelVolume = Math.pow(crystalPixPerUMXFEL, -3) * 1E-12; // cm^3
     double voxelMass = ((coefCalc.getDensity() * voxelVolume) / 1000);  //in Kg 
     double sampleVolume = XDimension * YDimension * ZDimension * 1E-21; //cm^3
@@ -811,7 +814,7 @@ public class XFEL {
               }
               if (xyElastic > 0 && energySumResolved > 0) {
                 if (c == maxVoxel[2] - 1) {
-                  DWDcoarse += (energySumResolved/ (c+1)) * (xyElastic/totElastic);
+                  DWDcoarse += (energySumResolved) * (xyElastic/totElastic);
                 }
               }
               if (Math.abs(cartesian[0])/1000 <= beam.getBeamX()/2 && Math.abs(cartesian[1])/1000 <= beam.getBeamY()/2) { 
@@ -831,7 +834,7 @@ public class XFEL {
             }
             if (xyElastic > 0 && energySum > 0) {
               if (c == maxVoxel[2] - 1) {
-                DWDcoarseNoCutoff += (energySum / (c+1)) * (xyElastic/totElastic);
+                DWDcoarseNoCutoff += (energySum) * (xyElastic/totElastic);
               }
             }
             if (Math.abs(cartesian[0])/1000 <= beam.getBeamX()/2 && Math.abs(cartesian[1])/1000 <= beam.getBeamY()/2) { 
@@ -905,8 +908,8 @@ public class XFEL {
     voxDoseExposedNoCutoff = (voxDoseExposedNoCutoff / exposedMass)/1E6;
     DWD = (DWD / voxelMass)/1E6;
     DWDNoCutoff = (DWDNoCutoff / voxelMass)/1E6;
-    DWDcoarse = (DWDcoarse / voxelMass)/1E6;
-    DWDcoarseNoCutoff = (DWDcoarseNoCutoff / voxelMass)/1E6;
+    DWDcoarse = (DWDcoarse / (voxelMass*voxLengthRatio))/1E6;
+    DWDcoarseNoCutoff = (DWDcoarseNoCutoff / (voxelMass*voxLengthRatio))/1E6;
     
     raddoseStyleDose = ((raddoseStyleDose * (numberOfPhotons/NUM_PHOTONS) * Beam.KEVTOJOULES) / sampleMass) /1E6; //in MGy
     raddoseStyleDoseCompton = ((raddoseStyleDoseCompton * (numberOfPhotons/NUM_PHOTONS) * Beam.KEVTOJOULES) / sampleMass) /1E6; //in MGy)
@@ -962,7 +965,7 @@ public class XFEL {
     double voxFrac = voxDosevResolved/gosTot;
     //write output to csv
     try {
-      WriterFile("outputXFEL.CSV", totRADDOSEdose, rdExposed, voxDosevResolved, voxDoseExposed, diffractionEfficiency, ionisationsPerAtomvResolvedExposed, ionisationsPerNonHExposed, voxFrac, voxDoseNoCutoffvResolved, DWDcoarse);
+      WriterFile("outputXFEL.CSV", totRADDOSEdose, rdExposed, voxDosevResolved, voxDoseExposed, diffractionEfficiency, ionisationsPerAtomvResolvedExposed, ionisationsPerNonHExposed, voxFrac, voxDoseNoCutoffvResolved, DWDcoarse, DWD);
     } catch (IOException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
@@ -980,7 +983,7 @@ public class XFEL {
   
   private void WriterFile(final String filename, final double totRADDOSEdose, final double rdExposed, final double voxDosevResolved, final double voxDoseExposed
                           ,final double diffractionEfficiency, final double ionisationsPerAtomvResolvedExposed, final double ionisationsPerNonHExposed, final double voxFrac,
-                          final double vResolvedNoCut, final double DWDcoarse) throws IOException {
+                          final double vResolvedNoCut, final double DWDcoarse, final double DWD) throws IOException {
 
     BufferedWriter outFile;
     if (runNumber == 1) {
@@ -993,10 +996,10 @@ public class XFEL {
     }
     try {
       if (runNumber == 1) {
-        outFile.write("Run Number, RD3D-ADWC,RD3D-ADER,XFEL-ADWC,XFEL-ADER,Diffraction efficiency,ions per atom, ions per non-H atom, vResolvedNoCut, DWD\n");
+        outFile.write("Run Number, RD3D-ADWC,RD3D-ADER,XFEL-ADWC,XFEL-ADER,Diffraction efficiency,ions per atom, ions per non-H atom, vResolvedNoCut, DWDcoarse, DWD\n");
       }
       outFile.write(String.format(
-          " %d, %f, %f, %f, %f, %f, %f, %f, %f, %f%n", runNumber, totRADDOSEdose, rdExposed, voxDosevResolved,voxDoseExposed,diffractionEfficiency,ionisationsPerAtomvResolvedExposed, ionisationsPerNonHExposed, vResolvedNoCut, DWDcoarse));
+          " %d, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f%n", runNumber, totRADDOSEdose, rdExposed, voxDosevResolved,voxDoseExposed,diffractionEfficiency,ionisationsPerAtomvResolvedExposed, ionisationsPerNonHExposed, vResolvedNoCut, DWDcoarse, DWD));
     } catch (IOException e) {
       e.printStackTrace();
       System.err.println("WriterFile: Could not write to file " + filename);
