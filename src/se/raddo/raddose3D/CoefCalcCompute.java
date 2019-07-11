@@ -645,6 +645,19 @@ public class CoefCalcCompute extends CoefCalc {
   }
   
   @Override
+  public Map<Element, Double> getComptonProbsElement(double beamEnergy) {
+    Map<Element, Double> elementComptonProbs = new HashMap<Element, Double>(); 
+    double runnningSumProb = 0;
+    for (Element e : this.presentElements) {
+      Map<String, Double> absCoeffs = calculateCoefficientsElement(beamEnergy, e);
+      double comptonProb = absCoeffs.get(COMPTON)/absCoeffcomp;
+      runnningSumProb += comptonProb;
+      elementComptonProbs.put(e, runnningSumProb);
+    }
+    return elementComptonProbs;
+  }
+  
+  @Override
   public Map<Element, Double> getPhotoElectricProbsElementSurrounding(double beamEnergy) {
     Map<Element, Double> elementAbsorptionProbs = new HashMap<Element, Double>(); 
     double runnningSumProb = 0;

@@ -466,6 +466,7 @@ public class XFEL {
       
       //populate the relative element cross sections here 
       Map<Element, Double> elementAbsorptionProbs = coefCalc.getPhotoElectricProbsElement(energyOfPhoton);
+      Map<Element, Double> elementComptonProbs = coefCalc.getComptonProbsElement(energyOfPhoton);
       //populate the relative shell cross sections
       Map<Element, double[]> ionisationProbs = getRelativeShellProbs(elementAbsorptionProbs, energyOfPhoton);
 
@@ -558,7 +559,7 @@ public class XFEL {
             double RNDcompton = Math.random();
             if (RNDcompton < probComptonSurrounding) {
               //produce a compton electron
-              produceCompton(beam, coefCalc, timeStamp, xn, yn, zn, surrounding, energyOfPhoton);
+              produceCompton(beam, coefCalc, timeStamp, xn, yn, zn, surrounding, energyOfPhoton, elementComptonProbs);
             }
             else {
               //produce a photoelectron
@@ -609,7 +610,7 @@ public class XFEL {
           double RNDcompton = Math.random();
           if (RNDcompton < probCompton) {
             ionisationsOld += 1;
-            produceCompton(beam, coefCalc, timeStamp, xn, yn, zn, surrounding, energyOfPhoton);
+            produceCompton(beam, coefCalc, timeStamp, xn, yn, zn, surrounding, energyOfPhoton, elementComptonProbs);
           }
           else {
             //this was a photoelectric absorption
@@ -644,7 +645,7 @@ public class XFEL {
                   double RNDcompton = Math.random();
                   if (RNDcompton < probComptonSurrounding) {
                     //produce a compton electron
-                    produceCompton(beam, coefCalc, timeStamp, xn, yn, zn, surrounding, energyOfPhoton);
+                    produceCompton(beam, coefCalc, timeStamp, xn, yn, zn, surrounding, energyOfPhoton, elementComptonProbs);
                   }
                   else {
                     //produce a photoelectron
@@ -684,7 +685,7 @@ public class XFEL {
                 double RNDcompton = Math.random();
                 if (RNDcompton < probComptonSurrounding) {
                   //produce a compton electron
-                  produceCompton(beam, coefCalc, timeStamp, xn, yn, zn, surrounding, energyOfPhoton);
+                  produceCompton(beam, coefCalc, timeStamp, xn, yn, zn, surrounding, energyOfPhoton, elementComptonProbs);
                 }
                 else {
                   //produce a photoelectron
@@ -1302,7 +1303,7 @@ public class XFEL {
     }
   }
   
-  private void produceCompton(Beam beam, CoefCalc coefCalc, double timeStamp, double xn, double yn, double zn, boolean surrounding, double photonEnergy) {
+  private void produceCompton(Beam beam, CoefCalc coefCalc, double timeStamp, double xn, double yn, double zn, boolean surrounding, double photonEnergy, Map<Element, Double> elementComptonProbs) {
     //then the photon scattered by the compton effect
     //pick an angle theta
     int[] pixelCoord = convertToPixelCoordinates(xn, yn, zn);
@@ -1330,24 +1331,25 @@ public class XFEL {
       ionisationTime = 0;
     }
     if (surrounding == false) {
+      
       totalIonisationEvents[ionisationTime] += 1;
       if (timeStamp <lastTimeVox[pixelCoord[2]]-(1*PULSE_BIN_LENGTH)) {
         totalIonisationEventsvResolved[ionisationTime] += 1;
         voxelIonisationsvResolved[pixelCoord[0]][pixelCoord[1]][pixelCoord[2]][ionisationTime] += 1;
-        Element randomElem = getRandomElement(coefCalc); 
+        Element ionisedElement = getIonisedElement(elementComptonProbs);
         
-        if (atomicIonisations.containsKey(randomElem)) {
-          atomicIonisations.put(randomElem, atomicIonisations.get(randomElem)+1);
+        if (atomicIonisations.containsKey(ionisedElement)) {
+          atomicIonisations.put(ionisedElement, atomicIonisations.get(ionisedElement)+1);
         }
         else {
-          atomicIonisations.put(randomElem, (long)1);
+          atomicIonisations.put(ionisedElement, (long)1);
         }
         if (Math.abs(xn)/1000 <= beam.getBeamX()/2 && Math.abs(yn)/1000 <= beam.getBeamY()/2) { 
-          if (atomicIonisationsExposed.containsKey(randomElem)) {
-            atomicIonisationsExposed.put(randomElem, atomicIonisationsExposed.get(randomElem)+1);
+          if (atomicIonisationsExposed.containsKey(ionisedElement)) {
+            atomicIonisationsExposed.put(ionisedElement, atomicIonisationsExposed.get(ionisedElement)+1);
           }
           else {
-            atomicIonisationsExposed.put(randomElem, (long)1);
+            atomicIonisationsExposed.put(ionisedElement, (long)1);
           }
         }
       }
@@ -1362,36 +1364,7 @@ public class XFEL {
     //i'm not doing the atomic ionisations here and really need to sort out what's going on. - at least need to do what element it's from even if not shell. 
     
   }
-  
-  private Element getRandomElement(CoefCalc coefCalc) { //weight this by number of electrons in the crystal.
-    double sampleVolume = XDimension * YDimension * ZDimension * 1E-21; //cm^3
-    Set<Element> presentElements = coefCalc.getPresentElements(false);
-    long sumElectrons = 0;
-    int size = presentElements.size();
-    HashMap<Element, Double> numElectrons = new HashMap<Element, Double>(size);
-    for (Element e: presentElements) {
-      double electrons = e.getAtomicNumber() * coefCalc.getTotalAtomsInCrystalElement(sampleVolume, e);
-      if (electrons < 0.0) {
-        numElectrons.put(e, electrons);
-      }
-      sumElectrons += electrons;
-    }
-    HashMap<Element, Double> elementProb = new HashMap<Element, Double>(size);
-    double sumProb = 0;
-    for (Element e: numElectrons.keySet()) {
-      sumProb += numElectrons.get(e)/sumElectrons;
-      elementProb.put(e, sumProb);
-    }
-    Element toReturn = null;
-    double RND = Math.random();
-    for (Element e: numElectrons.keySet()) {
-      if (RND <= elementProb.get(e)) {
-        toReturn = e;
-        break;
-      }
-    }
-    return toReturn;
-  }
+
   
   private void trackPhotoelectron(CoefCalc coefCalc, double startingTimeStamp, double startingEnergy,
                                   double previousX, double previousY, double previousZ,
@@ -3663,5 +3636,58 @@ private Element chooseLowEnElement(CoefCalc coefCalc, double Pinner, Map<Element
       return c;
     }
   }
-
+  /*
+  private Element getRandomElement(CoefCalc coefCalc) { //weight this by number of electrons in the crystal.
+    double sampleVolume = XDimension * YDimension * ZDimension * 1E-21; //cm^3
+    Set<Element> presentElements = coefCalc.getPresentElements(false);
+    long sumElectrons = 0;
+    int size = presentElements.size();
+    HashMap<Element, Double> numElectrons = new HashMap<Element, Double>(size);
+    for (Element e: presentElements) {
+      double electrons = e.getAtomicNumber() * coefCalc.getTotalAtomsInCrystalElement(sampleVolume, e);
+      if (electrons < 0.0) {
+        numElectrons.put(e, electrons);
+      }
+      sumElectrons += electrons;
+    }
+    HashMap<Element, Double> elementProb = new HashMap<Element, Double>(size);
+    double sumProb = 0;
+    for (Element e: numElectrons.keySet()) {
+      sumProb += numElectrons.get(e)/sumElectrons;
+      elementProb.put(e, sumProb);
+    }
+    Element toReturn = null;
+    double RND = Math.random();
+    for (Element e: numElectrons.keySet()) {
+      if (RND <= elementProb.get(e)) {
+        toReturn = e;
+        break;
+      }
+    }
+    return toReturn;
+  }
+  
+  private Element getComptonElement(CoefCalc coefCalc, double comptonCoef, double energy) { //weight this by number of electrons in the crystal.
+    Set<Element> presentElements = coefCalc.getPresentElements(false);
+    int size = presentElements.size();
+    HashMap<Element, Double> elementProb = new HashMap<Element, Double>(size);
+    double sumProb = 0;
+    for (Element e: presentElements) {
+      Map<String, Double> absCoeffsElement = new HashMap<String, Double>();
+      absCoeffsElement = coefCalc.calculateCoefficientsElement(energy, e);
+      double comptonEl = absCoeffsElement.get("Compton Attenuation");
+      sumProb += comptonEl/comptonCoef;
+      elementProb.put(e, sumProb);
+    }
+    Element toReturn = null;
+    double RND = Math.random();
+    for (Element e: presentElements) {
+      if (RND <= elementProb.get(e)) {
+        toReturn = e;
+        break;
+      }
+    }
+    return toReturn;
+  }
+  */
 }
