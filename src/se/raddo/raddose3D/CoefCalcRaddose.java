@@ -693,4 +693,10 @@ public class CoefCalcRaddose extends CoefCalc {
     // TODO Auto-generated method stub
     return null;
   }
+
+  @Override
+  public Map<Element, Double> getComptonProbsElement(double beamEnergy) {
+    // TODO Auto-generated method stub
+    return null;
+  }
 }
