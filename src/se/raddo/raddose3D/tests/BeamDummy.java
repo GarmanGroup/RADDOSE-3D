@@ -64,15 +64,15 @@ public class BeamDummy implements Beam {
   }
 
   @Override
-  public double getBeamX() {
+  public Double getBeamX() {
     // TODO Auto-generated method stub
-    return 0;
+    return null;
   }
 
   @Override
-  public double getBeamY() {
+  public Double getBeamY() {
     // TODO Auto-generated method stub
-    return 0;
+    return null;
   }
 
   @Override
@@ -117,7 +117,25 @@ public class BeamDummy implements Beam {
   }
 
   @Override
-  public double getEnergyFWHM() {
+  public Double getEnergyFWHM() {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public String getType() {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public double getSx() {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+
+  @Override
+  public double getSy() {
     // TODO Auto-generated method stub
     return 0;
   }

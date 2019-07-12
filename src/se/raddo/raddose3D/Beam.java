@@ -118,9 +118,11 @@ public interface Beam {
    */
   public double getExposure();
   
-  public double getBeamX();
+  public Double getBeamX();
   
-  public double getBeamY();
+  public Double getBeamY();
+  
+  public String getType();
   
   /**
    * Returns true if the beam is circularly collimated
@@ -137,6 +139,9 @@ public interface Beam {
   
   public void setPhotonsPerfs(double photonsPerfs);
   
-  public double getEnergyFWHM();
+  public Double getEnergyFWHM();
+  
+  public double getSx();
+  public double getSy();
   
 }

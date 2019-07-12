@@ -186,14 +186,20 @@ public class BeamTophat implements Beam {
   }
   
   @Override
-  public double getBeamX() {
+  public Double getBeamX() {
     return beamXum;
   }
   
   @Override
-  public double getBeamY() {
+  public Double getBeamY() {
     return beamYum;
   }
+  
+  @Override
+  public String getType() {
+    return "Tophat";
+  }
+
   
   @Override
   public boolean getIsCircular() {
@@ -241,8 +247,17 @@ public class BeamTophat implements Beam {
   }
 
   @Override
-  public double getEnergyFWHM() {
-    if(energyFWHM == null) {this.energyFWHM = 0.0;};
+  public Double getEnergyFWHM() {
     return energyFWHM;
+  }
+
+  @Override
+  public double getSx() {
+    return (1/Math.sqrt(12))*beamXum;
+  }
+
+  @Override
+  public double getSy() {
+    return (1/Math.sqrt(12))*beamYum;
   }
 }

@@ -192,7 +192,7 @@ public class BeamExperimental implements Beam {
   }
   
   @Override
-  public double getEnergyFWHM() {
+  public Double getEnergyFWHM() {
     return energyFWHM;
   }
 
@@ -227,15 +227,20 @@ public class BeamExperimental implements Beam {
   }
 
   @Override
-  public double getBeamX() {
+  public Double getBeamX() {
     // TODO Auto-generated method stub
-    return 0;
+    return null;
   }
 
   @Override
-  public double getBeamY() {
+  public Double getBeamY() {
     // TODO Auto-generated method stub
-    return 0;
+    return null;
+  }
+  
+  @Override
+  public String getType() {
+    return "Experimental";
   }
 
   @Override
@@ -276,5 +281,17 @@ public class BeamExperimental implements Beam {
   public void setPhotonsPerfs(double photonsPerfs) {
     // TODO Auto-generated method stub
     
+  }
+
+  @Override
+  public double getSx() {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+
+  @Override
+  public double getSy() {
+    // TODO Auto-generated method stub
+    return 0;
   }
 }

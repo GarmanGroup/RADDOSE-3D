@@ -128,7 +128,10 @@ public class BeamGaussian implements Beam {
     
 
 
-  }
+  } // End of constructor
+  
+  
+  
   /**
    * Calculate the scale factor for the beam.
    */
@@ -313,19 +316,22 @@ public class BeamGaussian implements Beam {
     return 0;
   }
   @Override
-  public double getBeamX() {
-    // TODO Auto-generated method stub
-    return 0;
+  public Double getBeamX() {
+    return collXum;
   }
   @Override
-  public double getBeamY() {
-    // TODO Auto-generated method stub
-    return 0;
+  public Double getBeamY() {
+    return collYum;
   }
+  
+  @Override
+  public String getType() {
+    return "Gaussian";
+  }
+
   @Override
   public boolean getIsCircular() {
-    // TODO Auto-generated method stub
-    return false;
+    return isCircular;
   }
   @Override
   public double getSemiAngle() {
@@ -353,7 +359,18 @@ public class BeamGaussian implements Beam {
     
   }
   @Override
-  public double getEnergyFWHM() {
+  public Double getEnergyFWHM() {
     return energyFWHM;
   }
+  
+  @Override
+  public double getSx() {
+    return fwhmX/SIGMA_TO_FWHM;
+  }
+  
+  @Override
+  public double getSy() {
+    return fwhmY/SIGMA_TO_FWHM;
+  }
+  
 }
