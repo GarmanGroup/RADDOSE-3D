@@ -604,7 +604,14 @@ For a horizontal goniometer, \textit{X} = vertical and \textit{Y} = horizontal, 
 
 \noindent \Keyword{ENERGY \textit{F} KEV}
 
-specifies the incident photon energy in keV. The optional keyword \Keyword{KEV} can be appended for human readability of the input file.
+For a monochromatic beam, the energy specifies the incident photon energy in keV. The optional keyword \Keyword{KEV} can be appended for human readability of the input file. \newline \indent If the beam is polychromatic (as indicated by the specification of an ENERGYFWHM, see \hyperref[energyfwhm]{section~\ref*{energyfwhm}}) the energy specifies the mean of the distribution of photon energies, which is assumed to be a Gaussian distribution. 
+
+\subsection{\Keyword{ENERGYFWHM}}
+\label{energyfwhm}
+
+\noindent \Keyword{ENERGYFWHM \textit{F}}
+
+specifies the FWHM of the distribution of incident photon energies in keV, which is assumed to be a Gaussian distribution. Not needed if the beam is monochromatic.
 
 \subsection{\Keyword{FILE}}
 \label{file}
