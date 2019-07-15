@@ -20,6 +20,8 @@ import java.util.TreeMap;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import org.apache.commons.math3.distribution.MultivariateNormalDistribution;
 import org.apache.commons.math3.distribution.NormalDistribution;
 
 
@@ -578,7 +580,7 @@ public class XFEL {
     double sampleVolume = XDimension * YDimension * ZDimension * 1E-21; //cm^3
     double sampleMass = ((coefCalc.getDensity() * sampleVolume) / 1000);  //in Kg 
     double totalAtoms = coefCalc.getTotalAtomsInCrystal(sampleVolume);
-    double exposedVolume = beam.getBeamX()*1000 * beam.getBeamY()*1000 * ZDimension * 1E-21;
+    double exposedVolume = getExposedArea(beam) * ZDimension * 1E-21;
     if (exposedVolume > sampleVolume) {
       exposedVolume = sampleVolume;
     }
@@ -680,7 +682,7 @@ public class XFEL {
                   DWDcoarse += (energySumResolved) * (xyElastic/totElastic);
                 }
               }
-              if (Math.abs(cartesian[0])/1000 <= beam.getBeamX()/2 && Math.abs(cartesian[1])/1000 <= beam.getBeamY()/2) { 
+              if(testIfInsideExposedArea(cartesian[0], cartesian[1], beam) == true) { 
                 voxDoseExposed += voxelEnergyvResolved[a][b][c][i];
                 totIonsvResolvedExposed += voxelIonisationsvResolved[a][b][c][i];
               }
@@ -700,7 +702,7 @@ public class XFEL {
                 DWDcoarseNoCutoff += (energySum) * (xyElastic/totElastic);
               }
             }
-            if (Math.abs(cartesian[0])/1000 <= beam.getBeamX()/2 && Math.abs(cartesian[1])/1000 <= beam.getBeamY()/2) { 
+            if (testIfInsideExposedArea(cartesian[0], cartesian[1], beam) == true) { 
               voxDoseExposedNoCutoff += voxelEnergyvResolved[a][b][c][i];
             }
           }
@@ -980,7 +982,7 @@ public class XFEL {
       else {
         atomicIonisations.put(ionisedElement, (long)1);
       }
-      if (Math.abs(xn)/1000 <= beam.getBeamX()/2 && Math.abs(yn)/1000 <= beam.getBeamY()/2) { // need to change so if inside exposed area, lots of similar places, search
+      if (testIfInsideExposedArea(xn, yn, beam) == true) { // marker
         if (atomicIonisationsExposed.containsKey(ionisedElement)) {
           atomicIonisationsExposed.put(ionisedElement, atomicIonisationsExposed.get(ionisedElement)+1);
         }
@@ -1116,7 +1118,7 @@ public class XFEL {
             else {
               atomicIonisations.put(ionisedElement, (long)1);
             }
-            if (Math.abs(xn)/1000 <= beam.getBeamX()/2 && Math.abs(yn)/1000 <= beam.getBeamY()/2) { 
+            if(testIfInsideExposedArea(xn, yn, beam)) {
               if (atomicIonisationsExposed.containsKey(ionisedElement)) {
                 atomicIonisationsExposed.put(ionisedElement, atomicIonisationsExposed.get(ionisedElement)+1);
               }
@@ -1210,7 +1212,7 @@ public class XFEL {
         else {
           atomicIonisations.put(ionisedElement, (long)1);
         }
-        if (Math.abs(xn)/1000 <= beam.getBeamX()/2 && Math.abs(yn)/1000 <= beam.getBeamY()/2) { 
+        if(testIfInsideExposedArea(xn, yn, beam) == true) { 
           if (atomicIonisationsExposed.containsKey(ionisedElement)) {
             atomicIonisationsExposed.put(ionisedElement, atomicIonisationsExposed.get(ionisedElement)+1);
           }
@@ -1380,7 +1382,7 @@ public class XFEL {
               else {
                 atomicIonisations.put(hitElem, (long)numIonisation);
               }
-              if (Math.abs(previousX)/1000 <= beam.getBeamX()/2 && Math.abs(previousY)/1000 <= beam.getBeamY()/2) { 
+              if(testIfInsideExposedArea(previousX, previousY, beam) == true) {
                 if (atomicIonisationsExposed.containsKey(hitElem)) {
                   atomicIonisationsExposed.put(hitElem, atomicIonisationsExposed.get(hitElem)+numIonisation);
                 }
@@ -1728,7 +1730,7 @@ public class XFEL {
               else {
                 atomicIonisations.put(collidedElement, (long)1);
               }
-              if (Math.abs(xn)/1000 <= beam.getBeamX()/2 && Math.abs(yn)/1000 <= beam.getBeamY()/2) { 
+              if(testIfInsideExposedArea(xn, yn, beam) == true) {
                 if (atomicIonisationsExposed.containsKey(collidedElement)) {
                   atomicIonisationsExposed.put(collidedElement, atomicIonisationsExposed.get(collidedElement)+1);
                 }
@@ -1807,7 +1809,7 @@ public class XFEL {
                     else {
                       atomicIonisations.put(hitElem, (long)numIonisation);
                     }
-                    if (Math.abs(xn)/1000 <= beam.getBeamX()/2 && Math.abs(yn)/1000 <= beam.getBeamY()/2) { 
+                    if(testIfInsideExposedArea(xn, yn, beam)) {
                       if (atomicIonisationsExposed.containsKey(hitElem)) {
                         atomicIonisationsExposed.put(hitElem, atomicIonisationsExposed.get(hitElem)+numIonisation);
                       }
@@ -2089,7 +2091,7 @@ public class XFEL {
                 else {
                   atomicIonisations.put(hitElem, (long)numIonisation);
                 }
-                if (Math.abs(xn)/1000 <= beam.getBeamX()/2 && Math.abs(yn)/1000 <= beam.getBeamY()/2) { 
+                if(testIfInsideExposedArea(xn, yn, beam) == true) {
                   if (atomicIonisationsExposed.containsKey(hitElem)) {
                     atomicIonisationsExposed.put(hitElem, atomicIonisationsExposed.get(hitElem)+numIonisation);
                   }
@@ -2226,34 +2228,128 @@ public class XFEL {
       return -1;
     }
   }
+
   
+public double getExposedArea(Beam beam) { // returns area in nm^2
+  double area = 0.0;
+  
+  if(beam.getType() == "Tophat") {
+    
+    // Get collimation in um
+    double xCollimation = beam.getBeamX();
+    double yCollimation = beam.getBeamY();
+    
+    if(beam.getIsCircular() == false) { // rectangular collimation
+      area = (xCollimation*1000)*(yCollimation*1000);
+    }
+    
+    else if(beam.getIsCircular() == true) { // elliptical collimation
+      area = Math.PI*(xCollimation*1000)*(yCollimation*1000);
+      }
+  }
+  
+  else if(beam.getType() == "Gaussian") {
+    
+    // Get collimation in um, or else set it to defaults
+    Double xCollimation = beam.getBeamX();
+    Double yCollimation = beam.getBeamY();
+    final double SIGMA_TO_FWHM = 2 * Math.sqrt(2 * Math.log(2));
+    if(xCollimation == null) {xCollimation = beam.getSx()*SIGMA_TO_FWHM*3;} // default collimation at three FWHM; TODO check if it would be better to move this bit into the beam classes
+    if(yCollimation == null) {yCollimation = beam.getSy()*SIGMA_TO_FWHM*3;}
+
+    if(beam.getIsCircular() == false) {
+      area = (xCollimation*1000)*(yCollimation*1000);
+    }
+    
+    else if(beam.getIsCircular() == true) {
+      area = Math.PI*(xCollimation*1000)*(yCollimation*1000);
+    }
+  }
+  
+  else {System.out.println("Beam type not supported");}
+  
+  return area;
+}
+  
+private boolean testIfInsideExposedArea(double xPos, double yPos, Beam beam) { // take positions in nm; returns true if inside exposed area
+  
+  boolean result = false;
+  
+  if(beam.getType() == "Tophat") {
+    
+    // Get collimation in um
+    double xCollimation = beam.getBeamX();
+    double yCollimation = beam.getBeamY();
+    
+    if(beam.getIsCircular() == false) { // rectangular collimation
+    
+      if ((Math.abs(xPos/1000) > (xCollimation/2))) {result = false;} // no need to subtract wedge.getOffAxisUm() as XFEL assumes it hits centre
+      else if ((Math.abs(yPos/1000) > (yCollimation/2))) {result = false;}
+      else {result = true;};
+    }
+    
+    else if(beam.getIsCircular() == true) { // elliptical collimation
+      if (((Math.pow((xPos/1000), 2)/Math.pow(xCollimation/2, 2)) + (Math.pow((yPos/1000), 2)/Math.pow(yCollimation/2, 2))) > 1) {result = false;} 
+      else {result = true;}
+      }
+  
+  }
+  
+  else if(beam.getType() == "Gaussian") {
+    
+    // Get collimation in um, or else set it to defaults
+    Double xCollimation = beam.getBeamX();
+    Double yCollimation = beam.getBeamY();
+    final double SIGMA_TO_FWHM = 2 * Math.sqrt(2 * Math.log(2));
+    if(xCollimation == null) {xCollimation = beam.getSx()*SIGMA_TO_FWHM*3;} // default collimation at three FWHM; TODO check if it would be better to move this bit into the beam classes
+    if(yCollimation == null) {yCollimation = beam.getSy()*SIGMA_TO_FWHM*3;}
+
+    if(beam.getIsCircular() == false) {
+      if ((Math.abs(xPos/1000) > (xCollimation/2))) {result = false;} // no need to subtract wedge.getOffAxisUm() as XFEL assumes it hits centre
+      else if ((Math.abs(yPos/1000) > (yCollimation/2))) {result = false;}
+      else {result = true;};
+    }
+    
+    else if(beam.getIsCircular() == true) {
+      if (((Math.pow((xPos/1000), 2)/Math.pow(xCollimation/2, 2)) + (Math.pow((yPos/1000), 2)/Math.pow(yCollimation/2, 2))) > 1) {result = false;} 
+      else {result = true;}
+    }
+  }
+  else {System.out.println("Beam type not supported");}
+  
+ return result; 
+  
+}
+
+
+
+
 /**
- * This method places a photon randomly in the beam area
- * Currently only works for tophat so need to make it for a gaussian
+ * This method places a photon randomly in the beam area.
+ * Works for Tophat and Gaussian (although case where FWHMs are not equal may take longer to run, especially if collimation is narrow), for both rectangular and elliptical/circular collimation. 
  * @param beam
+ * @param wedge
  * @return the initial xy position of the photon
  */
   private double[] getPhotonBeamXYPos(Beam beam, Wedge wedge) { //TODO need to change some more here; getPhotonBeamXYPos method
     double[] xyPos = new double[2];
-    boolean testIfCollimated;
     
     if(beam.getType() == "Tophat") {
     
       double RND1 = Math.random();
       double RND2 = Math.random();
       
-      double beamX = beam.getBeamX()*1000;
-      xyPos[0] = (RND1 * beamX) - (beamX/2); //places in beam area
+      double xCollimation = beam.getBeamX(); // fetch x collimation in um
+      xyPos[0] = 1000*xCollimation*(RND1 - 0.5); // x position in nm
     
-      double beamY = beam.getBeamY()*1000;
+      double yCollimation = beam.getBeamY();
       if (beam.getIsCircular()) {   //reduce Y limits so you can't put it out of the circle / ellipse
-        xyPos[1] = RND2*Math.pow(Math.pow(beamY/2, 2)*(Math.pow(xyPos[0], 2)/Math.pow(beamX/2, 2)), 0.5);
+        xyPos[1] = 1000*RND2*Math.sqrt(Math.pow(yCollimation/2, 2)*(Math.pow((xyPos[0]/1000), 2)/Math.pow(xCollimation/2, 2)));
         xyPos[1] *= PosOrNeg();
       }
       else {
-        xyPos[1] = (RND2 * beamY) - (beamY/2);
+        xyPos[1] = 1000*((RND2 * yCollimation) - (yCollimation/2));
       }
-
     }
     
     else if(beam.getType() == "Gaussian") {
@@ -2264,65 +2360,77 @@ public class XFEL {
         final double SIGMA_TO_FWHM = 2 * Math.sqrt(2 * Math.log(2));
         if(xCollimation == null) {xCollimation = beam.getSx()*SIGMA_TO_FWHM*3;} // default collimation at three FWHM; TODO check if it would be better to move this bit into the beam classes
         if(yCollimation == null) {yCollimation = beam.getSy()*SIGMA_TO_FWHM*3;}
-        
       
         if(beam.getIsCircular() == false) { // square 2D Gaussian
-        
-        do {
-          double RND1 = Math.random();
-          double RND2 = Math.random();
           
           double sx = beam.getSx()*1000; // beam.getSx() is in um, we want the positions in nanometers
           double sy = beam.getSy()*1000;
-          NormalDistribution gx = new NormalDistribution(0, sx);
+          NormalDistribution gx = new NormalDistribution(0, sx); // have assumed no offset so do not need to use wedge.getOffAxisUm(); units are nm
           NormalDistribution gy = new NormalDistribution(0, sy);
-          xyPos[0] = gx.inverseCumulativeProbability(RND1);
-          xyPos[1] = gy.inverseCumulativeProbability(RND2);
-        
           
+          // Find cumulative probabilities at collimation limits
+          double lowerCumulativeProbX = gx.cumulativeProbability(-xCollimation/2);
+          double upperCumulativeProbX = gx.cumulativeProbability(xCollimation/2);
+          double lowerCumulativeProbY = gy.cumulativeProbability(-yCollimation/2);
+          double upperCumulativeProbY = gy.cumulativeProbability(yCollimation/2);
           
+          // Randomly select cumulative probabilities between those limits
+          double RCPx = lowerCumulativeProbX + Math.random()*(upperCumulativeProbX - lowerCumulativeProbX); // gets a random cumulative probability
+          double RCPy = lowerCumulativeProbY + Math.random()*(upperCumulativeProbY - lowerCumulativeProbY);
           
-          
-          //test if in exposed area (rectangular collimation)  
-          if ((Math.abs(xyPos[0]/1000) > (xCollimation / 2))) {testIfCollimated = true;} // no need to subtract wedge.getOffAxisUm() as XFEL assumes it hits centre
-          else if ((Math.abs(xyPos[1]/1000) > (yCollimation / 2))) {testIfCollimated = true;}
-          else {testIfCollimated = false;};
-          //System.out.println(Arrays.toString(xyPos));
-          //System.out.println(testIfCollimated);
-            } while(testIfCollimated == true);
+          // Generate the coordinates, units nm
+          xyPos[0] = gx.inverseCumulativeProbability(RCPx);
+          xyPos[1] = gy.inverseCumulativeProbability(RCPy);
         }
- 
-
         
-        else if(beam.getIsCircular() == true) { // 2D Gaussian with circular symmetry
+        else if(beam.getIsCircular() == true) { // elliptical 2D Gaussian
           
-          do {
           double RND1 = Math.random();
           double RND2 = Math.random();  
-            
-          double[] rtPos = new double[2]; //Polar coordinates
-          double sr = beam.getSx()*1000;
-          NormalDistribution gr = new NormalDistribution(0, sr); // if it is circular Sx and Sy should be the same, else would be an ellipse - TODO this bit cannot take an ellipse, but could modify
-          rtPos[0] = gr.inverseCumulativeProbability(RND1); // value of r
-          rtPos[1] = 2*(Math.PI)*RND2; // angle anticlockwise from x-axis, using convention 0 <= theta < 2*pi, in radians
-          xyPos[0] = rtPos[0]*Math.cos(rtPos[1]);
-          xyPos[1] = rtPos[0]*Math.sin(rtPos[1]);
+ 
+// First test if can use circular Gaussian because it is quicker to run (do not have to keep placing until you get a photon within the exposed area, as always places in exposed area)
+          if(beam.getSx() == beam.getSy()) {
+            double[] rtPos = new double[2]; //Polar coordinates
+            double sr = beam.getSx()*1000; // noting sx == sy
+            NormalDistribution gr = new NormalDistribution(0, sr); //units of nm
           
-          // test if in circular exposed region (this bit can cope with an ellipse)
-            if (((Math.pow((xyPos[0]/1000), 2)/Math.pow(xCollimation/2, 2)) + (Math.pow((xyPos[1]/1000), 2)/Math.pow(yCollimation/2, 2))) > 1) {testIfCollimated = true;} 
-            else {testIfCollimated = false;}
-            //again no need to subtract wedge.getOffAxisUm() as XFEL assumes it hits centre
+            double lowerCumulativeProbR = gr.cumulativeProbability(-xCollimation/2);
+            double upperCumulativeProbR = gr.cumulativeProbability(xCollimation/2);
+            double RCPr = lowerCumulativeProbR + Math.random()*(upperCumulativeProbR - lowerCumulativeProbR); // gets a random cumulative probability
           
-          } while(testIfCollimated == true);
+            rtPos[0] = gr.inverseCumulativeProbability(RCPr); // value of r
+            rtPos[1] = 2*(Math.PI)*RND2; // angle anticlockwise from x-axis, using convention 0 <= theta < 2*pi, in radians
           
+            xyPos[0] = rtPos[0]*Math.cos(rtPos[1]);
+            xyPos[1] = rtPos[0]*Math.sin(rtPos[1]);
+          }
+
+// Else use full equation for bivariate Gaussian in Cartesian coordinates (slow to run if FWHMs >> collimations)
+          else if(beam.getSx() != beam.getSy()) {
+            double[] means = {0.0, 0.0};
+            double[][] covarianceMatrix = new double[2][2];
+          
+            double sx = beam.getSx()*1000;
+            double sy = beam.getSy()*1000;
+            double rho = 0; // we want rho == 0; note that when sx == sy this case simplifies to the above 
+            covarianceMatrix[0][0] = Math.pow(sx, 2);
+            covarianceMatrix[1][1] = Math.pow(sy, 2);
+            covarianceMatrix[0][1] = rho*sx*sy;
+            covarianceMatrix[1][0] = rho*sx*sy;
+          
+            MultivariateNormalDistribution gr = new MultivariateNormalDistribution(means, covarianceMatrix);
+          
+            do {
+              xyPos = gr.sample();
+            } while(((Math.pow((xyPos[0]/1000), 2)/Math.pow(xCollimation/2, 2)) + (Math.pow((xyPos[1]/1000), 2)/Math.pow(yCollimation/2, 2))) > 1);
+          }
         }
-    
     }
     else {System.out.println("Beam type not supported");}
     
+    //System.out.println(Arrays.toString(xyPos));
     return xyPos;
   }
-
   
   
   private Map<Element, double[]> getRelativeShellProbs(Map<Element, Double> elementAbsorptionProbs, double beamEnergy){
