@@ -844,6 +844,17 @@ public class XFEL {
       e.printStackTrace();
     }
     
+    //write stuff for simple MC
+    if (simpleMC == true) {
+      //write output to csv
+      try {
+        WriterFileMCsimple("outputMC.CSV", totRADDOSEdose, rdExposed, sumDoseNoCutOff);
+      } catch (IOException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+    }
+    
   }
   
   private void WriterFile(final String filename, final double totRADDOSEdose, final double rdExposed, final double voxDosevResolved, final double voxDoseExposed
@@ -905,6 +916,36 @@ public class XFEL {
       e.printStackTrace();
       System.err.println("WriterFile: Could not close file " + filename);
     }
+  }
+  
+  private void WriterFileMCsimple(final String filename, final double totRADDOSEdose, final double rdExposed, final double MCdose) throws IOException {
+    BufferedWriter outFile;
+    if (runNumber == 1) {
+      outFile = new BufferedWriter(new OutputStreamWriter(
+          new FileOutputStream(filename), "UTF-8"));
+    }
+    else {
+      outFile = new BufferedWriter(new OutputStreamWriter(
+          new FileOutputStream(filename, true), "UTF-8"));
+    }
+    try {
+    if (runNumber == 1) {
+    outFile.write("Run Number, RD3D-ADWC,RD3D-ADER,MC-ADWC\n");
+    }
+    outFile.write(String.format(
+    " %d, %f, %f, %f%n", runNumber, totRADDOSEdose, rdExposed, MCdose));
+    } catch (IOException e) {
+    e.printStackTrace();
+    System.err.println("WriterFile: Could not write to file " + filename);
+    }
+
+    try {
+    outFile.close();
+    } catch (IOException e) {
+    e.printStackTrace();
+    System.err.println("WriterFile: Could not close file " + filename);
+    }
+
   }
   
   private double getFractionElasticallyScattered(CoefCalc coefCalc) {
