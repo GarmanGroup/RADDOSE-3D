@@ -355,7 +355,7 @@ public class BeamGaussian implements Beam {
   }
   @Override
   public void setPhotonsPerfs(double photonsPerfs) {
-    // TODO Auto-generated method stub
+    attenuatedPhotonsPerSec = photonsPerfs;
     
   }
   @Override

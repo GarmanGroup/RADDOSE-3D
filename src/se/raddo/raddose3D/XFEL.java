@@ -123,7 +123,7 @@ public class XFEL {
   
   
   private final boolean silicon = false;
-  private final boolean simpleMC = false; 
+  private final boolean simpleMC = true; 
   
   
   private double numFluxPhotons;
@@ -1367,6 +1367,7 @@ public class XFEL {
         double avgEnergy = coefCalc.getAvgInelasticEnergy(startingEnergy);
         avgEnergy = coefCalc.getPlasmaEnergy(surrounding)/1000;
         if (avgEnergy > 0) {
+          if (simpleMC == false) {
           int numIonisation = (int) (startingEnergy/avgEnergy);
           if (numIonisation > 0 && surrounding == false) {
             totalIonisationEvents[doseTime] += numIonisation;
@@ -1392,6 +1393,7 @@ public class XFEL {
               }
             }
           }
+        }
         }
       }
     }
@@ -2363,8 +2365,10 @@ private boolean testIfInsideExposedArea(double xPos, double yPos, Beam beam) { /
       
         if(beam.getIsCircular() == false) { // square 2D Gaussian
           
-          double sx = beam.getSx()*1000; // beam.getSx() is in um, we want the positions in nanometers
-          double sy = beam.getSy()*1000;
+      //    double sx = beam.getSx()*1000; // beam.getSx() is in um, we want the positions in nanometers
+      //    double sy = beam.getSy()*1000;
+          double sx = beam.getSx(); // beam.getSx() is in um - same as collimation
+          double sy = beam.getSy();
           NormalDistribution gx = new NormalDistribution(0, sx); // have assumed no offset so do not need to use wedge.getOffAxisUm(); units are nm
           NormalDistribution gy = new NormalDistribution(0, sy);
           
@@ -2379,8 +2383,8 @@ private boolean testIfInsideExposedArea(double xPos, double yPos, Beam beam) { /
           double RCPy = lowerCumulativeProbY + Math.random()*(upperCumulativeProbY - lowerCumulativeProbY);
           
           // Generate the coordinates, units nm
-          xyPos[0] = gx.inverseCumulativeProbability(RCPx);
-          xyPos[1] = gy.inverseCumulativeProbability(RCPy);
+          xyPos[0] = gx.inverseCumulativeProbability(RCPx)*1000;
+          xyPos[1] = gy.inverseCumulativeProbability(RCPy)*1000;
         }
         
         else if(beam.getIsCircular() == true) { // elliptical 2D Gaussian
@@ -2391,14 +2395,15 @@ private boolean testIfInsideExposedArea(double xPos, double yPos, Beam beam) { /
 // First test if can use circular Gaussian because it is quicker to run (do not have to keep placing until you get a photon within the exposed area, as always places in exposed area)
           if(beam.getSx() == beam.getSy()) {
             double[] rtPos = new double[2]; //Polar coordinates
-            double sr = beam.getSx()*1000; // noting sx == sy
+         //   double sr = beam.getSx()*1000; // noting sx == sy
+            double sr = beam.getSx(); // noting sx == sy
             NormalDistribution gr = new NormalDistribution(0, sr); //units of nm
           
             double lowerCumulativeProbR = gr.cumulativeProbability(-xCollimation/2);
             double upperCumulativeProbR = gr.cumulativeProbability(xCollimation/2);
             double RCPr = lowerCumulativeProbR + Math.random()*(upperCumulativeProbR - lowerCumulativeProbR); // gets a random cumulative probability
           
-            rtPos[0] = gr.inverseCumulativeProbability(RCPr); // value of r
+            rtPos[0] = gr.inverseCumulativeProbability(RCPr)*1000; // value of r
             rtPos[1] = 2*(Math.PI)*RND2; // angle anticlockwise from x-axis, using convention 0 <= theta < 2*pi, in radians
           
             xyPos[0] = rtPos[0]*Math.cos(rtPos[1]);
@@ -2410,8 +2415,10 @@ private boolean testIfInsideExposedArea(double xPos, double yPos, Beam beam) { /
             double[] means = {0.0, 0.0};
             double[][] covarianceMatrix = new double[2][2];
           
-            double sx = beam.getSx()*1000;
-            double sy = beam.getSy()*1000;
+       //     double sx = beam.getSx()*1000;
+       //     double sy = beam.getSy()*1000;
+            double sx = beam.getSx();
+            double sy = beam.getSy();
             double rho = 0; // we want rho == 0; note that when sx == sy this case simplifies to the above 
             covarianceMatrix[0][0] = Math.pow(sx, 2);
             covarianceMatrix[1][1] = Math.pow(sy, 2);
@@ -2422,6 +2429,8 @@ private boolean testIfInsideExposedArea(double xPos, double yPos, Beam beam) { /
           
             do {
               xyPos = gr.sample();
+              xyPos[0] *= 1000;
+              xyPos[1] *= 1000;
             } while(((Math.pow((xyPos[0]/1000), 2)/Math.pow(xCollimation/2, 2)) + (Math.pow((xyPos[1]/1000), 2)/Math.pow(yCollimation/2, 2))) > 1);
           }
         }
@@ -3127,6 +3136,7 @@ private Element chooseLowEnElement(CoefCalc coefCalc, double Pinner, Map<Element
   public void RD3Dcheck(Beam beam, Wedge wedge, CoefCalc coefCalc) {
     //firstly need to set the photons per fs in beam
     double meanEnergyJoules = meanEnergy*Beam.KEVTOJOULES;
+    coefCalc.updateCoefficients(meanEnergy);
     double numberOfPhotons = PULSE_ENERGY/meanEnergyJoules;
     double photonsPerfs = numberOfPhotons/PULSE_LENGTH;
     beam.setPhotonsPerfs(photonsPerfs);
