@@ -123,7 +123,7 @@ public class XFEL {
   
   
   private final boolean silicon = false;
-  private final boolean simpleMC = true; 
+  private final boolean simpleMC = false; 
   
   
   private double numFluxPhotons;
