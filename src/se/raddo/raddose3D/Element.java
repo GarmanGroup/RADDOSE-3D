@@ -669,4 +669,8 @@ public class Element {
   public Double getLFluorescenceAverage() {
     return elementData.get(DatabaseFields.L_FL_AVERAGE);
   }
+  
+  public double getI() {
+    return elementData.get(DatabaseFields.I);
+  } 
 }

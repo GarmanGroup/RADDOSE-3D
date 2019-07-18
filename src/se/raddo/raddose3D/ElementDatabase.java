@@ -82,7 +82,7 @@ public class ElementDatabase {
     EDGE_M2(49), EDGE_M3(50), EDGE_M4(51), EDGE_M5(52),
     
     /** M edge ratios */
-    M1_EDGE_RATIO(53), M2_EDGE_RATIO(54), M3_EDGE_RATIO(55), M4_EDGE_RATIO(56), M5_EDGE_RATIO(57);
+    M1_EDGE_RATIO(53), M2_EDGE_RATIO(54), M3_EDGE_RATIO(55), M4_EDGE_RATIO(56), M5_EDGE_RATIO(57), I(58);
     
 
     

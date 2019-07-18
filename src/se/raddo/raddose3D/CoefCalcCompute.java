@@ -17,7 +17,7 @@ public class CoefCalcCompute extends CoefCalc {
 
   public double cellVolume;
 
-  private double cryoAbsCoeffComp, cryoAbsCoeffPhoto, cryoAttCoeff, cryoElasCoeff, cryoDensity;
+  private double cryoAbsCoeffComp, cryoAbsCoeffPhoto, cryoAttCoeff, cryoElasCoeff, cryoDensity, molecularWeight, molecularWeightSurrounding;
   
   /**
    * Set of the unique elements present in the crystal (including solvent
@@ -209,6 +209,9 @@ public class CoefCalcCompute extends CoefCalc {
    * Number of atoms in the solvent per unit cell, derived from
    * solventContentration.
    */
+  
+  public  Map<String, Double> fractionElementEM;
+  
   private final Map<Element, Double> solventOccurrence;
   
   /** Number of atoms (all) in cryoSolution per unit cell volume. */
@@ -227,6 +230,8 @@ public class CoefCalcCompute extends CoefCalc {
     solventConcentration = new HashMap<Element, Double>();
     cryoOccurrence = new HashMap<Element, Double>();
     cryoConcentration = new HashMap<Element, Double>();
+    
+    fractionElementEM = new HashMap<String, Double>();
   }
   
   /**
@@ -243,6 +248,7 @@ public class CoefCalcCompute extends CoefCalc {
 
     for (Element e : presentElements) {
       mass += totalAtoms(e) * e.getAtomicWeightInGrams();
+      molecularWeight += totalAtoms(e) * e.getAtomicWeight();
     }
     
     density = mass * MASS_TO_CELL_VOLUME / (cellVolume * UNITSPERMILLIUNIT);
@@ -258,6 +264,7 @@ public class CoefCalcCompute extends CoefCalc {
 
     for (Element e : cryoElements) {
       mass += getCryoOccurrence(e) * e.getAtomicWeightInGrams();
+      molecularWeightSurrounding += getCryoOccurrence(e) * e.getAtomicWeight();
     }
     
     cryoDensity = mass * MASS_TO_CELL_VOLUME / (cellVolume * UNITSPERMILLIUNIT);
@@ -1428,4 +1435,257 @@ public class CoefCalcCompute extends CoefCalc {
     }
   }
   
+  @Override
+  public Map<Element, Double> getPhotoElectricProbsElement(double beamEnergy) {
+    Map<Element, Double> elementAbsorptionProbs = new HashMap<Element, Double>(); 
+    double runnningSumProb = 0;
+    for (Element e : this.presentElements) {
+      Map<String, Double> absCoeffs = calculateCoefficientsElement(beamEnergy, e);
+      double absorptionProb = absCoeffs.get(PHOTOELECTRIC)/absCoeffphoto;
+      runnningSumProb += absorptionProb;
+      elementAbsorptionProbs.put(e, runnningSumProb);
+    }
+    return elementAbsorptionProbs;
+  }
+  
+  /**
+   * Return the stopping power of the material in keV/nm
+   */
+  @Override
+  public double getStoppingPower(double avgEnergy, boolean surrounding) {
+    double stoppingPower = 0;
+    if (surrounding == false) {
+      stoppingPower = calcStoppingPower(avgEnergy, presentElements, density, surrounding);
+    }
+    else {
+      stoppingPower = calcStoppingPower(avgEnergy, cryoElements, cryoDensity, surrounding);
+    }
+    return stoppingPower;  //keV/nm
+  }
+  
+  private double calcStoppingPower(double avgEnergy, Set<Element> elements, double passedDensity, boolean surrounding) {
+    double m = 9.10938356E-31; // in Kg
+    double c = 299792458;
+    double csquared = c*c;  // (m/s)^2
+    double Vo = avgEnergy * Beam.KEVTOJOULES;
+    double betaSquared = 1- Math.pow(m*csquared/(Vo + m*csquared), 2);
+    double K = 0.31;
+    double gamma = 1/Math.pow((1-betaSquared), 0.5);
+    double KE = (gamma - 1) * m * csquared;
+    
+    double meanJ = 0, meanlnI = 0;
+    double stoppingPower = 0;
+    double sumA = 0, meanZoverA = 0;
+    long sumZ = 0;
+    for (Element e : elements) { 
+      
+      //calculate meanJ (mean excitation energy) for this material
+      //molWeight fraction
+      double A = e.getAtomicWeight();
+      double molWeightFraction = 0;
+      int Z = e.getAtomicNumber();
+      if (surrounding == false) {
+        molWeightFraction = (totalAtoms(e) * A) / molecularWeight;
+        sumZ += Z * totalAtoms(e);
+        sumA += A * totalAtoms(e);
+      }
+      else {
+        molWeightFraction = (getCryoOccurrence(e) * A) / molecularWeightSurrounding;
+        sumZ += Z * getCryoOccurrence(e);
+        sumA += A * getCryoOccurrence(e);
+      }
+      fractionElementEM.put(ElementNameLower(e.getElementName()), molWeightFraction);
+      double J = 0, Jstar = 0, k = 0;
+
+      meanZoverA += molWeightFraction * (Z/A);
+
+      J = e.getI();
+      if ((Z != 1) && (Z != 6) && (Z != 7) && (Z != 8) && (Z!= 9) && (Z != 17)) { //already modified in table
+        J *= 1.13; //modified from gas to liquid/solid phase
+      }
+      k = 0.7344 * Math.pow(Z, 0.0367);
+      Jstar = J / (1+ k*(J/(avgEnergy*1000)));
+      meanJ += (Jstar * molWeightFraction);  //eV
+     
+      
+      meanlnI +=  molWeightFraction * (Z/A) * Math.log(Jstar);
+      
+      
+      stoppingPower += molWeightFraction * ((78500 * Z /(avgEnergy*A)) 
+          * Math.log(1.166 * avgEnergy/(J/1000)));  // keV/nm
+
+      
+    }
+      stoppingPower *= passedDensity /1E7;
+
+      
+      //density should be of every element...
+      //or use mean density, mean Z/A and mean J
+      //Z might need to be canged to Zeff
+   
+   meanlnI = meanlnI/(sumZ/sumA); 
+      double meanI = Math.exp(meanlnI);  //This is now right!!!
+    double Fbeta = 0;
+    
+    meanJ = meanI; //eV  
+    
+    meanJ = (meanJ/1000) * Beam.KEVTOJOULES;
+    double delta = 0.1832;
+    double energy = avgEnergy * Beam.KEVTOJOULES;
+    Fbeta = Math.log((m*csquared*(energy)* betaSquared) / (2*(1-betaSquared))) 
+            - (2*Math.pow((1-betaSquared),0.5) - 1 + betaSquared)
+            * Math.log(2) + 1 - betaSquared + (1/8)*(1-Math.pow(1-betaSquared,0.5));
+    stoppingPower = (0.153536/betaSquared)*(sumZ/sumA)*(Fbeta - 2*Math.log(meanJ) - delta);
+    stoppingPower = stoppingPower * 1000 * passedDensity /1E7;
+    
+    return stoppingPower;
+  }
+  
+  private String ElementNameLower(String elementName) { //Elements currently in caps, ESTAR needs the second letter lower case
+    String lowerCaseName = null;
+    if (elementName.length() == 1) {
+      lowerCaseName = elementName;
+    }
+    else {
+      char firstLetter = elementName.charAt(0);
+      char secondLetter = elementName.charAt(1);
+      secondLetter = Character.toLowerCase(secondLetter);
+      lowerCaseName = Character.toString(firstLetter) + Character.toString(secondLetter);
+    }
+    return lowerCaseName;
+  }
+  
+  @Override
+  public double getElectronElasticMFPL(double electronEnergy, boolean surrounding) {
+    double partLambda = getElectronElasticCrossSection(electronEnergy, surrounding);
+    double densityCalc = 0;
+    if (surrounding == false) {
+      densityCalc = density;
+    }
+    else {
+      densityCalc = cryoDensity;
+    }
+
+    double lambda = 1 / (AVOGADRO_NUM * (densityCalc/1E21) * partLambda);
+
+    return lambda; //nm
+  }
+  
+  private double getElectronElasticCrossSection(double electronEnergy, boolean surrounding) {
+    //set stuff for surrounding or not
+    Set<ElementEM> elementList = this.presentElementsEM;
+    if (surrounding == true) {
+      elementList = cryoElementsEM;
+    }
+    
+    double[] elasticElement = new double[elementList.size()];
+    double elasticMolecule = 0, partLambda =0, numerator = 0, denominator = 0;
+    double m = 9.10938356E-31; // in Kg
+    double csquared = 3E8*3E8;  // (m/s)^2   //update this to be precise
+    double Vo = electronEnergy * Beam.KEVTOJOULES;
+    double betaSquared = 1- Math.pow(m*csquared/(Vo + m*csquared), 2);
+    int counter = 0;
+    double sumZ = 0, sumA = 0;
+    double xSectionTotPerElement = 0;
+    ElasticxSectionTotPerElement = 0;
+    ElasticxSectionTotPerElementSurrounding = 0;
+    elasticXSections = new HashMap<ElementEM, Double>();
+    elasticXSectionsSurrounding = new HashMap<ElementEM, Double>();
+
+    
+    for (ElementEM e : elementList) {
+      double Z = e.getAtomicNumber();
+  //    Z = 7.22;
+      //Newbury and Myklebust
+      double alpha = (3.4E-3)*(Math.pow(Z, 0.67)/electronEnergy);
+      double sigmaNM = 1E14*((5.21E-21)*(Math.pow(Z, 2)/Math.pow(electronEnergy, 2))*(4*Math.PI/(alpha*(1+alpha)))*Math.pow((electronEnergy+511)/(electronEnergy+1024), 2)); //nm^2
+      //Mott
+      double u = Math.log10(8*electronEnergy*Math.pow(Z, -1.33));
+      double MottSigma=(1E14)*(4.7E-18)*((Math.pow(Z, 1.33)+0.032*Math.pow(Z, 2))/(electronEnergy+0.0155*Math.pow(Z, 1.33)*Math.pow(electronEnergy, 0.5)))*(1/(1-0.02*Math.pow(Z, 0.5)*Math.exp(-Math.pow(u, 2))));
+      
+      elasticElement[counter] =  ((1.4E-6 * Math.pow(Z, 1.5))/betaSquared)*
+                       ((1-(0.26*Z)/(137*Math.pow(betaSquared, 0.5)))); //Langmore and Smith
+                   //    *1E06; // nm^2/atom
+      double A = e.getAtomicWeight();
+      double molWeightFraction = 0;
+ //     double atomicFraction = totalAtomsEM(e) / totAtoms;
+      //do by ELSEPA as more accurate if in the table
+      
+      //test for this atom
+      double NperVol = 0; //Atoms per nm^3
+      
+      if (surrounding == false) {
+        molWeightFraction = (totalAtomsEM(e) * A) / molecularWeight;
+        NperVol = totalAtomsEM(e)/(cellVolume /1000); //Atoms per nm^3
+      }
+      else {
+        molWeightFraction = (getCryoOccurrenceEM(e) * A) / molecularWeightSurrounding;
+        NperVol = getCryoOccurrenceEM(e)/(cellVolume /1000); //Atoms per nm^3
+      }
+      
+      
+      //Do ELSEPA
+      
+      if ((electronEnergy <= 300) && (electronEnergy >= 0.05)) {
+        /*
+        ReadElasticFile rdEl = new ReadElasticFile();
+        double x_section = rdEl.openFile("constants/electron_elastic.txt", electronEnergy, e.getAtomicNumber()); 
+        if (x_section > 0.0) {
+          elasticElement[counter] = x_section;
+        }
+        */
+      
+        double x_section = e.getElasticCoefficient(electronEnergy);
+        if (x_section > 0.0) {
+          elasticElement[counter] = x_section;
+        }
+      }
+    
+      
+    //  double NperVol2 = molWeightFraction*(AVOGADRO_NUM * (density/1E21))/A; //Atoms per nm^3
+      xSectionTotPerElement += elasticElement[counter] * NperVol; //nm^-1
+      if (surrounding == false) {
+        elasticXSections.put(e, elasticElement[counter] * NperVol);
+      }
+      else {
+        elasticXSectionsSurrounding.put(e, elasticElement[counter] * NperVol);
+      }
+      
+
+      
+      //needs to just read the ELSEPA file once and store in an array or summin like that - CASINO interpolates
+      //This is now incorporated in element database 
+
+   //   double numEl = totalAtomsEM(e);
+  //   elasticElement[counter] *= numEl * atomicFraction;
+      elasticMolecule += elasticElement[counter];
+      partLambda += (molWeightFraction * elasticElement[counter])/A;
+   //   partLambda += elasticElement[counter]/A;
+      //other part Lambda
+   //   numerator += (molWeightFraction * A / density);
+   //   denominator += atomicFraction * elasticElement[counter];
+      
+      counter += 1;
+
+    }
+    // not summing the elastic cross section in the same way as Drouin et al 2007 CASINO 2.42 to get 
+    // lambda so need to have a look at this by comparisons to CASINOv3
+   // molecularWeight = molWeight;
+    
+    //testing the other way
+  //  partLambda = numerator/denominator;
+    double lambda = 1/ xSectionTotPerElement;
+    
+    if (surrounding == false) {
+      ElasticxSectionTotPerElement = xSectionTotPerElement;
+    }
+    else {
+      ElasticxSectionTotPerElementSurrounding = xSectionTotPerElement;
+    }
+    
+    
+  //  double test = getPimblottElastic(electronEnergy);
+    
+    return partLambda; //nm^2
+  }
 }

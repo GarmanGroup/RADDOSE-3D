@@ -1,5 +1,6 @@
 package se.raddo.raddose3D;
 
+import java.util.Map;
 import java.util.Set;
 
 public abstract class CoefCalc {
@@ -127,4 +128,10 @@ public abstract class CoefCalc {
    * @param cryo
    */
   public abstract Set<Element> getPresentElements(boolean cryo);
+  
+  public abstract Map<Element, Double> getPhotoElectricProbsElement(double beamEnergy);
+  
+  public abstract double getStoppingPower(double avgEnergy, boolean surrounding);
+  
+  public abstract double getElectronElasticMFPL(double electronEnergy, boolean surrounding);
 }
