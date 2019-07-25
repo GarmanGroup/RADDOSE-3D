@@ -1457,6 +1457,9 @@ public class XFEL {
           if (simpleMC == true) {
             electronEnergy -= intersectionDistance * stoppingPower;
             //might need to sort it out if less than 0.05 here
+            if (electronEnergy < 0.05) {
+              break; 
+            }
           }
           stoppingPower = coefCalc.getStoppingPower(electronEnergy, surrounding);
           double newFSExSection = getFSEXSection(startingEnergy);
@@ -1969,8 +1972,86 @@ public class XFEL {
         if (surrounding == false) {
           surrounding = true;  //will need to try and see what happens when it comes back in the crystal in both models
           
+          //might want to change this so they can re-enter
+          if (coefCalc.isCryo() == false) {
+            exited = true;
+          }
+          else {
+          //i think for stopping power just take it to the edge as well and deposit in the middle
+          //if energy drops below 0.05 keV than drop the rest in the same place
           
-          exited = true;
+          //set new position just outside
+          double escapeDistance = 1000 * getIntersectionDistance(previousX, previousY, previousZ, xNorm, yNorm, zNorm); //nm
+          previousX = previousX + (escapeDistance + (escapeDistance/1000))  * xNorm;
+          previousY = previousY + (escapeDistance + (escapeDistance/1000)) * yNorm;
+          previousZ = previousZ + (escapeDistance + (escapeDistance/1000)) * zNorm;
+          if (simpleMC == true) { 
+            //update energy
+            energyLost = escapeDistance * stoppingPower;
+            electronEnergy -= energyLost;
+            //work out how long it took to travel this far 
+            double timeToDistance = getTimeToDistance(electronEnergy, s);
+            int doseTime = (int) ((timeStamp + (timeToDistance/2))/PULSE_BIN_LENGTH);
+            timeStamp += timeToDistance;
+            double energyToAdd = energyLost;
+            if (doseTime < 0) {
+              doseTime = 0;
+            }
+            //add dose
+            dose[doseTime] += energyLost;
+            
+            //if drops below 0.05 keV deposit it all
+            if (electronEnergy < 0.05) {
+              dose[doseTime] += electronEnergy;
+              electronEnergy = 0;
+              exited = true;
+            }
+          }
+
+          //update cross section and probs and stuff for the surrounding
+          if (electronEnergy > 0.05) {
+          if (simpleMC == false) {
+            gosInelasticLambda = coefCalc.getGOSInel(surrounding, electronEnergy);
+            innerShellLamda = coefCalc.betheIonisationxSection(electronEnergy, surrounding);
+            gosOuterLambda = coefCalc.getGOSOuterLambda(surrounding);
+            gosOuterIonisationProbs = coefCalc.getGOSOuterShellProbs(surrounding, gosOuterLambda);
+            gosIonisationProbs = coefCalc.getGOSShellProbs(surrounding, gosInelasticLambda);
+            if (startingInnerShellLambda > 0) {
+              gosInelasticLambda = 1/(1/gosOuterLambda + 1/startingInnerShellLambda);
+            }
+            else {
+              gosInelasticLambda = 1/gosOuterLambda;
+            }
+          }
+          
+          stoppingPower = coefCalc.getStoppingPower(electronEnergy, surrounding);
+          //get new lambdaT
+          lambdaEl = coefCalc.getElectronElasticMFPL(electronEnergy, surrounding);
+          
+          if (gosInelasticLambda > 0) {
+            lambdaT = 1/(1/lambdaEl + 1/gosInelasticLambda);
+          }
+          else {
+            lambdaT = 1/(1/lambdaEl);
+          }
+          s = -lambdaT*Math.log(Math.random());
+          
+          elasticProbs = coefCalc.getElasticProbs(surrounding);
+          ionisationProbs = coefCalc.getAllShellProbs(false);
+          //GOS ionisation probs
+          Pinel = 1 - (lambdaT / lambdaEl);
+          if (innerShellLamda > 0) {
+            Pinner = gosInelasticLambda / innerShellLamda;
+          }
+          
+          //update to new position
+          xn = previousX + s * xNorm;
+          yn = previousY + s * yNorm;
+          zn = previousZ + s * zNorm;
+          }
+          }
+
+          /*
           if (simpleMC == true) {
           //get the energy deposited before it left the crystal. - when I slice need to also do timestamps 
           double escapeDist = 1000 * getIntersectionDistance(previousX, previousY, previousZ, xNorm, yNorm, zNorm); //nm
@@ -2043,6 +2124,12 @@ public class XFEL {
             }
           }
           }
+          else { //full GOS sim
+            // pretty much same as before 
+            //I want to pull the electron back to the point where it exited. Track it with same direction vector
+            //But the envitonemnt is now the surrounding
+          }
+          */
         }
         else { //it's one I'm tracking from the surrounding
           //check if it's still worth tracking it form the surrounding anymore - i.e still in track range
@@ -2162,6 +2249,11 @@ public class XFEL {
       }
     }
     //get the angles
+    
+    if (elasticElement == null) {
+      double test = 0;
+      test += 1;
+    }
     //ELSEPA stuff
     double theta = getPrimaryElasticScatteringAngle(electronEnergy, elasticElement.getAtomicNumber());
     theta = previousTheta + theta;
