@@ -23,7 +23,7 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  * @author magd3052
  */
-public abstract class CrystalPolyhedron extends Crystal {  
+public class CrystalPolyhedron extends Crystal {  
   /** Resolution of crystal in 1/um. */
   protected final double        crystalPixPerUM;
 
@@ -3039,7 +3039,7 @@ public void setELSEPA(CoefCalc coefCalc) {
     }
   }
 
-  
+  /*
   @Override
   public void simElectron(double i, double j, double k, double numAbsorbedPhotons,
       boolean addBindingEn, CoefCalc coefCalc, double photonEnergy, double angle, boolean surrounding) {
@@ -3049,12 +3049,13 @@ public void setELSEPA(CoefCalc coefCalc) {
     //return dose object
     dose = obj.getThisDose();
   }
-
-  
+*/
+  /*
   public abstract void runPEsim(double i, double j, double k, double numAbsorbedPhotons,
       boolean addBindingEn, CoefCalc coefCalc, double photonEnergy, double angle, boolean surrounding);
   
   
   public abstract double[][][] getThisDose();
+  */
 }
 

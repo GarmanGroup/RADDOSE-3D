@@ -322,7 +322,7 @@ public class CrystalSpherical extends Crystal {
 
   @Override
   public void startXFEL(double XDim, double YDim, double ZDim, Beam beam,
-      Wedge wedge, CoefCalc coefCalc, int runNum) {
+      Wedge wedge, CoefCalc coefCalc, int runNum, boolean verticalGoniometer, boolean xfelTrue, boolean gos) {
     // TODO Auto-generated method stub
     
   }
@@ -334,7 +334,7 @@ public class CrystalSpherical extends Crystal {
     // TODO Auto-generated method stub
     return 0;
   }
-
+/*
   @Override
   public void simElectron(int i, int j, int k, double numAbsorbedPhotons,
       boolean addBindingEn, CoefCalc coefCalc, double photonEnergy,
@@ -342,9 +342,17 @@ public class CrystalSpherical extends Crystal {
     // TODO Auto-generated method stub
     
   }
-
+*/
   @Override
   public void setELSEPA(CoefCalc coefCalc) {
+    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public void startMC(double XDim, double YDim, double ZDim, Beam beam,
+      Wedge wedge, CoefCalc coefCalc, int runNum, boolean verticalGoniometer,
+      boolean xfel, boolean gos) {
     // TODO Auto-generated method stub
     
   }

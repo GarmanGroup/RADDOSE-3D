@@ -94,7 +94,7 @@ public class CrystalCuboid extends CrystalPolyhedron {
   }
 
 
-
+/*
   @Override
   public void runPEsim(int i, int j, int k, double numAbsorbedPhotons,
       boolean addBindingEn, CoefCalc coefCalc, double photonEnergy,
@@ -102,4 +102,5 @@ public class CrystalCuboid extends CrystalPolyhedron {
     // TODO Auto-generated method stub
     
   }
+  */
 }

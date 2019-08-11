@@ -168,7 +168,7 @@ public class CrystalSphericalNew extends CrystalPolyhedron{
                 + "at a resolution of %.2f um per voxel edge.",
             crystSizeUM[0], 1 / crystalPixPerUM);
   }
-
+/*
   @Override
   public void runPEsim(int i, int j, int k, double numAbsorbedPhotons,
       boolean addBindingEn, CoefCalc coefCalc, double photonEnergy,
@@ -176,5 +176,6 @@ public class CrystalSphericalNew extends CrystalPolyhedron{
     // TODO Auto-generated method stub
     
   }
+  */
 }
   

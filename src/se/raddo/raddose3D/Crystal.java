@@ -294,7 +294,7 @@ public abstract class Crystal {
 
   public abstract void setupDepthFinding(double angrad, Wedge wedge);
   
-  public abstract void simElectron(double i, double j, double k, double numAbsorbedPhotons, boolean addBindingEn, CoefCalc coefCalc, double photonEnergy, double angle, boolean surrounding);
+  //public abstract void simElectron(double i, double j, double k, double numAbsorbedPhotons, boolean addBindingEn, CoefCalc coefCalc, double photonEnergy, double angle, boolean surrounding);
   /**
    * This should take a set of xyz coordinates (a voxel coordinate), the current
    * orientation of the crystal, and the wedge we are exposing and return the
@@ -1035,7 +1035,7 @@ public abstract class Crystal {
                   }
                   else {
                     // sim electron without adding shell binsing en 
-                    simElectron(i, j, k, absPhotons, false, coefCalc, beam.getPhotonEnergy(), angle, false);
+                  //  simElectron(i, j, k, absPhotons, false, coefCalc, beam.getPhotonEnergy(), angle, false);
                   }
                     
                 } 
@@ -1059,7 +1059,7 @@ public abstract class Crystal {
                 }
                   else {
                     //simelectron with adding shell binding en
-                    simElectron(i, j, k, absPhotons, true, coefCalc, beam.getPhotonEnergy(), angle, false);
+                  //  simElectron(i, j, k, absPhotons, true, coefCalc, beam.getPhotonEnergy(), angle, false);
                   }
                 }
                 else if (photoElectronEscape == false && fluorescentEscape == true) { //only do Fluorescent escape
@@ -1211,7 +1211,7 @@ public abstract class Crystal {
                   totalDoseFromSurrounding += doseAddedBack;
                   }
                   else {
-                    simElectron(iCryst, jCryst, kCryst, numAbsorbedPhotons, false, coefCalc, beam.getPhotonEnergy(), angle, true);
+                   // simElectron(iCryst, jCryst, kCryst, numAbsorbedPhotons, false, coefCalc, beam.getPhotonEnergy(), angle, true);
                   }
                 } // end if voximage dose > 0
               } // end if unattenuated beam intensity > 0
