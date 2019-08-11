@@ -16,13 +16,14 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * @author magd3052
  */
-public class CrystalPolyhedron extends Crystal {  
+public abstract class CrystalPolyhedron extends Crystal {  
   /** Resolution of crystal in 1/um. */
   protected final double        crystalPixPerUM;
 
@@ -34,6 +35,8 @@ public class CrystalPolyhedron extends Crystal {
   protected final double        p;
 
   protected final double        l;
+  
+  private boolean MCSim = false;
   
   /**
    * Number of bins used along the fluorescence escape tracks and photoelectron escape tracks
@@ -56,13 +59,19 @@ public class CrystalPolyhedron extends Crystal {
    * Dose and fluence arrays holding the scalar
    * fields for these values at voxel i,j,k.
    */
-  private final double[][][]    dose, fluence, elastic;
+  public double[][][]    dose, fluence, elastic;
+  
+  
+
+  private final int numberAngularEmissionBins = 50;
 
   /**
    * Escape factor (% of photoelectrons which remain within the crystal)
    * for each voxel coordinate i, j, k.
    */
   private final double[][][]    escapeFactor;
+  
+  private Map<Object, Object> totalProperties = new HashMap<Object, Object>();
 
   /**
    * Constants for calculation of Gumbel distribution mu and beta parameters.
@@ -133,9 +142,9 @@ public class CrystalPolyhedron extends Crystal {
   private static final int   FL_ANGLE_RESOLUTION = 1;
   private static final int   FL_ANGLE_RES_LIMIT = 16;
 
-  private final int numberAngularEmissionBins = 10;
-  private TreeMap<Double, double[]>[]  lowEnergyAngles;
-  private TreeMap<Double, double[]>[]  highEnergyAngles;
+//  private final int numberAngularEmissionBins = 10;
+  public TreeMap<Double, double[]>[]  lowEnergyAngles;
+  public TreeMap<Double, double[]>[]  highEnergyAngles;
   
   /**
    * Stores the number of tracks used for fluorescence 
@@ -193,7 +202,7 @@ public class CrystalPolyhedron extends Crystal {
    * is a flag (calculated/not calculated) and second element is
    * a boolean (crystal/not crystal).
    */
-  private final boolean[][][][] crystOcc;
+  public final boolean[][][][] crystOcc;
 
   /**
    * 4d array where the 4th dimension is a 3 element array with the coordinates
@@ -218,13 +227,13 @@ public class CrystalPolyhedron extends Crystal {
    * of normal vectors.
    * In groups of 3 - triangles only please, no octagon nonsense.
    */
-  private int[][]               indices;
+  public int[][]               indices;
 
   /**
    * Similar in style to the index array, except each index is replaced
    * by the corresponding rotatedVertex.
    */
-  private double[][][]          expandedRotatedVertices;
+  public double[][][]          expandedRotatedVertices;
 
   /**
    * Normal array holding normalised direction vectors for
@@ -232,13 +241,13 @@ public class CrystalPolyhedron extends Crystal {
    * Contains an i, j, k vector per triangle.
    * Should have same no. of entries as the indices array.
    */
-  private double[][]            normals, rotatedNormals;
+  public double[][]            normals, rotatedNormals;
 
   /**
    * Distances from origin for each of the triangle planes.
    * Should have same no. of entries as the indices array.
    */
-  private double[]              originDistances, rotatedOriginDistances;
+  public double[]              originDistances, rotatedOriginDistances;
 
   /**
    * Vector class containing magical vector methods
@@ -246,7 +255,7 @@ public class CrystalPolyhedron extends Crystal {
    *
    * @author magd3052
    */
-  private static class Vector {
+  public static class Vector {
     /**
      * Returns magnitude of 3D vector.
      *
@@ -524,7 +533,8 @@ public class CrystalPolyhedron extends Crystal {
     mergedProperties.put(Crystal.CRYSTAL_FLUORESCENT_RESOLUTION, 0);
     mergedProperties.put(Crystal.CRYSTAL_PHOTOELECTRON_RESOLUTION, 0);
     mergedProperties.putAll(properties);
-
+    
+    totalProperties = properties;
     // Check for valid parameters
     Assertions a = new Assertions("Could not create polyhedral crystal: ");
     a.checkIsClass(mergedProperties.get(Crystal.CRYSTAL_ANGLE_P), Double.class,
@@ -625,25 +635,28 @@ public class CrystalPolyhedron extends Crystal {
           double x = -xshift + i / crystalPixPerUM;
           double y = -yshift + j / crystalPixPerUM;
           double z = -zshift + k / crystalPixPerUM;
-
+          
+          
+          //need to remember to add this back in for the main RADDOSE-3D
+          
           /*
            * rotation in plane about [0 0 1] (P) Temporary variables needed
            * since we use all of the previous xyz's to set each of the new ones.
            */
-          /*
+          
           double x2 = x * Math.cos(p) + y * Math.sin(p);
           double y2 = -1 * x * Math.sin(p) + y * Math.cos(p);
           double z2 = z;
-          */
+          
           /*
            * rotation loop about [1 0 0] (L)
            */
-          /*
+          
           tempCrystCoords[i][j][k][0] = x2;
           tempCrystCoords[i][j][k][1] = y2 * Math.cos(l) + z2 * Math.sin(l);
           tempCrystCoords[i][j][k][2] = -1 * y2 * Math.sin(l) + z2
               * Math.cos(l);
-          */
+          
           tempCrystCoords[i][j][k][0] = x;
           tempCrystCoords[i][j][k][1] = y;
           tempCrystCoords[i][j][k][2] = z;
@@ -774,15 +787,22 @@ public class CrystalPolyhedron extends Crystal {
     }
     
  //   if ((crystalVolume > beamVolume) & (minDimCryst >= minDimBeam)
+    double idealPPM = 0.0;
+    if (MCSim == false) {
+      idealPPM = ((1/((double)maxPEDistance)) * 5) + ((1/((double)maxPEDistance)) * multiplyFactor * (1/minDimCryst)) ; 
+    }
+    else {
+      idealPPM = ((1/((double)maxPEDistance)) * 5) ;
+    }
     
-    double idealPPM = ((1/((double)maxPEDistance)) * 5) + ((1/((double)maxPEDistance)) * multiplyFactor * (1/minDimCryst)) ; 
-
     if (idealPPM >= crystalPixPerUM) { // set up a ppm so the crsytals can superimpose 
       pixelsPerMicron = Math.ceil(idealPPM / crystalPixPerUM) * crystalPixPerUM;
     } 
     else {
       pixelsPerMicron = crystalPixPerUM / ((int) (crystalPixPerUM / idealPPM));
     }
+    
+
     return pixelsPerMicron;
   }
   
@@ -2391,15 +2411,23 @@ public class CrystalPolyhedron extends Crystal {
   }
   @Override
   public void startXFEL(double XDim, double YDim, double ZDim, Beam beam,
-      Wedge wedge, CoefCalc coefCalc, int runNum) {
+      Wedge wedge, CoefCalc coefCalc, int runNum, boolean verticalGoniometer, boolean xfelTrue, boolean gos) {
     //also need indices, vertices, crystalCoords, numberVoxelsm, PPM (may not need all of these but just 
     //to be safe for now
     XFEL xfel = new XFEL(vertices, indices, crystCoord, 
-                                  crystalPixPerUM, crystSizeVoxels, crystOcc, runNum);
+                                  crystalPixPerUM, crystSizeVoxels, crystOcc, runNum, verticalGoniometer, xfelTrue, gos);
     xfel.CalculateXFEL(beam, wedge, coefCalc);
   }
   
-  
+  @Override
+  public void startMC(double XDim, double YDim, double ZDim, Beam beam,
+      Wedge wedge, CoefCalc coefCalc, int runNum, boolean verticalGoniometer, boolean xfelTrue, boolean gos) {
+    //also need indices, vertices, crystalCoords, numberVoxelsm, PPM (may not need all of these but just 
+    //to be safe for now
+    MC mc = new MC(vertices, indices, crystCoord, 
+                                  crystalPixPerUM, crystSizeVoxels, crystOcc, runNum, verticalGoniometer, xfelTrue, gos);
+    mc.CalculateXFEL(beam, wedge, coefCalc);
+  }
   
   
   
@@ -2708,7 +2736,7 @@ public class CrystalPolyhedron extends Crystal {
     }
   }
   
-  private double getPrimaryElasticScatteringAngle(double electronEnergy, int atomicNumber){
+  public double getPrimaryElasticScatteringAngle(double electronEnergy, int atomicNumber){
     boolean highEnergy = false;
     if (electronEnergy > 20) {
       highEnergy = true;
@@ -2759,7 +2787,7 @@ public class CrystalPolyhedron extends Crystal {
     return deflectionAngle;
   }
   
-  private InputStreamReader locateFile(String filePath) 
+  public InputStreamReader locateFile(String filePath) 
       throws UnsupportedEncodingException, FileNotFoundException{
     InputStream is = getClass().getResourceAsStream("/" + filePath);
 
@@ -2770,7 +2798,7 @@ public class CrystalPolyhedron extends Crystal {
     return new InputStreamReader(is, "US-ASCII");
   }
 
-  private boolean mapPopulated(boolean highEnergy, int atomicNumber) {
+  public boolean mapPopulated(boolean highEnergy, int atomicNumber) {
     if (highEnergy == true) {
       if (highEnergyAngles[atomicNumber] == null) {
         return true;
@@ -2790,7 +2818,7 @@ public class CrystalPolyhedron extends Crystal {
   }
 
 //--put it in here when I have copy and paste back
-private TreeMap<Double, double[]> getAngleFileData(boolean highEnergy, int atomicNum) throws IOException{
+public TreeMap<Double, double[]> getAngleFileData(boolean highEnergy, int atomicNum) throws IOException{
 String elementNum = String.valueOf(atomicNum) + ".csv";
 String filePath = "";
 if (highEnergy == true) {
@@ -2824,7 +2852,7 @@ return elementData;
 }
 
 
-private Double returnNearestEnergy(boolean highEnergy, int atomicNumber, double electronEnergy) {
+public Double returnNearestEnergy(boolean highEnergy, int atomicNumber, double electronEnergy) {
 Double nearestEnergy = 0.;
 if (electronEnergy >= 0.05 && electronEnergy <= 300) {
 Double beforeKey = 0.;
@@ -2857,7 +2885,7 @@ else {
 return nearestEnergy;
 }
 
-private double returnDeflectionAngle(boolean highEnergy, double[] energyAngleProbs) {
+public double returnDeflectionAngle(boolean highEnergy, double[] energyAngleProbs) {
 double totalProb = 0;
 for (int i = 0; i < energyAngleProbs.length; i++) {
 totalProb += energyAngleProbs[i];
@@ -2968,4 +2996,65 @@ private double getIntersectionDistance(double x, double y, double z, double ca, 
   return minIntersect;
 }
 
+@Override
+public void setELSEPA(CoefCalc coefCalc) {
+  Set<Element> presentElements = coefCalc.getPresentElements(false);
+  Set<Element> presentElementsSurr = coefCalc.getPresentElements(true);
+  if (presentElements != null) {
+    for (Element e: presentElements) {
+      readELSEPA(e);
+    }
+  }
+  if (presentElementsSurr != null) {
+    for (Element e: presentElementsSurr) {
+      readELSEPA(e);
+    }
+  }
+ }
+  private void readELSEPA(Element e) {
+    int atomicNumber = e.getAtomicNumber();
+    boolean getFile = mapPopulated(true, atomicNumber);
+    
+    //get the right file if I need to
+
+    TreeMap<Double, double[]> elementData = new TreeMap<Double, double[]>();
+    if (getFile == true) {
+    try {
+      elementData =  getAngleFileData(true, atomicNumber);
+    } catch (IOException e1) {
+      // TODO Auto-generated catch block
+      e1.printStackTrace();
+    } 
+    highEnergyAngles[atomicNumber] = elementData;
+    }
+    getFile = mapPopulated(false, atomicNumber);
+    if (getFile == true) {
+    try {
+      elementData =  getAngleFileData(false, atomicNumber);
+    } catch (IOException e1) {
+      // TODO Auto-generated catch block
+      e1.printStackTrace();
+    }
+    lowEnergyAngles[atomicNumber] = elementData;
+    }
+  }
+
+  
+  @Override
+  public void simElectron(double i, double j, double k, double numAbsorbedPhotons,
+      boolean addBindingEn, CoefCalc coefCalc, double photonEnergy, double angle, boolean surrounding) {
+ 
+    CrystalPolyhedron obj = new PEsim(totalProperties, dose);
+    obj.runPEsim(i, j, k, numAbsorbedPhotons, addBindingEn, coefCalc, photonEnergy, angle, surrounding);
+    //return dose object
+    dose = obj.getThisDose();
+  }
+
+  
+  public abstract void runPEsim(double i, double j, double k, double numAbsorbedPhotons,
+      boolean addBindingEn, CoefCalc coefCalc, double photonEnergy, double angle, boolean surrounding);
+  
+  
+  public abstract double[][][] getThisDose();
 }
+

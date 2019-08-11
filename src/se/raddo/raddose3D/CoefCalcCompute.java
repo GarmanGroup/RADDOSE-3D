@@ -1,5 +1,6 @@
 package se.raddo.raddose3D;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -5281,6 +5282,8 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
   public double returnAdjustment() {
     return sturnheimerAdjustment;
   }
+
+
   
   //inner shell cross sections I could sum into a sigma and then compare with the actual rigorous one and multiply this
   //up or down somehow to get actual number of ionisations. 

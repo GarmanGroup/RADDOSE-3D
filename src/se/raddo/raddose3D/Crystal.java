@@ -1,9 +1,12 @@
 package se.raddo.raddose3D;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
 /**
  * Crystal abstract class.
@@ -152,6 +155,9 @@ public abstract class Crystal {
   private final int numberAngularEmissionBins = 10;
   
   
+  private boolean MC = false;
+  
+  
   /**
    * The energy of each fluorescent event
    */
@@ -287,7 +293,8 @@ public abstract class Crystal {
   }
 
   public abstract void setupDepthFinding(double angrad, Wedge wedge);
-
+  
+  public abstract void simElectron(double i, double j, double k, double numAbsorbedPhotons, boolean addBindingEn, CoefCalc coefCalc, double photonEnergy, double angle, boolean surrounding);
   /**
    * This should take a set of xyz coordinates (a voxel coordinate), the current
    * orientation of the crystal, and the wedge we are exposing and return the
@@ -385,8 +392,8 @@ public abstract class Crystal {
   public abstract void setCryoPEparamsForCurrentBeam(Beam beam, CoefCalc coefCalc, double[][] feFactors);
   
   public abstract void startMicroED(double XDim, double YDim, double ZDim, Beam beam, Wedge wedge, CoefCalc coefCalc, String crystalType);
-  public abstract void startXFEL(double XDim, double YDim, double ZDim, Beam beam, Wedge wedge, CoefCalc coefCalc, int runNum);
-
+  public abstract void startXFEL(double XDim, double YDim, double ZDim, Beam beam, Wedge wedge, CoefCalc coefCalc, int runNum, boolean verticalGoniometer, boolean xfel, boolean gos);
+  public abstract void startMC(double XDim, double YDim, double ZDim, Beam beam, Wedge wedge, CoefCalc coefCalc, int runNum, boolean verticalGoniometer, boolean xfel, boolean gos);
   
   /**
    * finds the voxels that the bins on the tracks are in
@@ -454,6 +461,8 @@ public abstract class Crystal {
    * @param k k coord
    */
   public abstract double getFluence(int i, int j, int k);
+  
+  public abstract void setELSEPA(CoefCalc coefCalc);
 
   /**
    * Return the total elastic scattering from voxel ijk.
@@ -652,17 +661,41 @@ public abstract class Crystal {
   public void expose(final Beam beam, final Wedge wedge) {
     //start XFEL here, just comment and uncomment for now
     coefCalc.updateCoefficients(beam);
-    
+    boolean xfel = true;
+    boolean gos = true;
     if (subprogram.equals("XFEL")) {
+      xfel = true;
+      gos = true;
       for (int i = 0; i < runs; i++) {
         int runNum = i+1;
-        startXFEL(XDim, YDim, ZDim, beam, wedge, coefCalc, runNum);
+        startXFEL(XDim, YDim, ZDim, beam, wedge, coefCalc, runNum, verticalGoniometer, xfel, gos);
       }
       //terminate the program
       System.exit(0);
     }
     else if (subprogram.equals("EMSP") || subprogram.equals("EMED")){
       startMicroED(XDim, YDim, ZDim, beam, wedge, coefCalc, crystalType);
+    }
+    else if (subprogram.equals("MONTECARLO")){
+    //want to add in a simple Monte Carlo and a GOS Monte Carlo
+    xfel = false;
+    gos = false;
+    for (int i = 0; i < runs; i++) {
+      int runNum = i+1;
+      startMC(XDim, YDim, ZDim, beam, wedge, coefCalc, runNum, verticalGoniometer, xfel, gos);
+    }
+    //terminate the program
+    System.exit(0);
+    }
+    else if (subprogram.equals("GOS")){
+      xfel = false;
+      gos = true;
+      for (int i = 0; i < runs; i++) {
+        int runNum = i+1;
+        startMC(XDim, YDim, ZDim, beam, wedge, coefCalc, runNum, verticalGoniometer, xfel, gos);
+      }
+      //terminate the program
+      System.exit(0);
     }
     else {
   
@@ -697,7 +730,11 @@ public abstract class Crystal {
     
     //Calc Auger
     augerEnergy = getAugerEnergy(feFactors);
-
+    
+    //populate ELSEPA for MC
+    if (MC == true) {
+      setELSEPA(coefCalc);
+    }
     }
    if (fluorescentEscape) {
     //Calc % energy contribution of each event
@@ -949,6 +986,8 @@ public abstract class Crystal {
                   voxImageFluence[i][j][k]; //* beamEnergy;
               //Dose absorbed by photoelectric effect
               voxImageDose[i][j][k] = fluenceToDoseFactor * voxImageFluence[i][j][k];
+              double imageEnergyAbs = energyPerFluence * voxImageFluence[i][j][k];
+              double absPhotons = imageEnergyAbs/beamenergy;
 
               if (voxImageDose[i][j][k] > 0) {
                 totalCrystalDose += voxImageDose[i][j][k];
@@ -958,6 +997,7 @@ public abstract class Crystal {
                 if (photoElectronEscape == true && fluorescentEscape == true) {
                  //Fl part
                 //Energy to be released by voxel
+                  
                   double totFluorescenceEnergyRelease = fluorescenceEnergyRelease * numberofphotons;
                 //convert this to a dose to be released
                   double voxImageFlDoseRelease = fluenceToDoseFactor * totFluorescenceEnergyRelease;
@@ -966,16 +1006,21 @@ public abstract class Crystal {
                   //Dose in voxel
                   double totAugerDose = augerEnergy * numberofphotons * fluenceToDoseFactor;
                   
-                  //Do PE
-             //     double dosePE = voxImageDose[i][j][k] - voxImageFlDoseRelease - totAugerDose;
-                  double dosePE = voxImageDose[i][j][k] - (EnergyToSubtractFromPE/beam.getPhotonEnergy())*voxImageDose[i][j][k];
-                   
-                  double doseLostFromCrystalPE = addDoseAfterPE(i, j, k, dosePE); //to run with new photoelectron escape
-                  
                   double doseLostFromCrytsalFL = 0;
                   if (voxImageFlDoseRelease > 0) { //necessary to prevent error when 0
                   doseLostFromCrytsalFL = addDoseAfterFL(i, j, k, voxImageFlDoseRelease);
                   }
+                  if(totAugerDose > 0) {
+                  addDose(i, j, k, totAugerDose);
+                  }
+                  if (MC == false) {
+                  //Do PE
+                  double dosePE = voxImageDose[i][j][k] - voxImageFlDoseRelease - totAugerDose;
+             //     double dosePE = voxImageDose[i][j][k] - (EnergyToSubtractFromPE/beam.getPhotonEnergy())*voxImageDose[i][j][k];
+                   
+                  double doseLostFromCrystalPE = addDoseAfterPE(i, j, k, dosePE); //to run with new photoelectron escape
+                  
+
                   totalEscapedDosePE +=  doseLostFromCrystalPE;
                   totalEscapedDoseFL += doseLostFromCrytsalFL;
                   totalEscapedDose += doseLostFromCrystalPE + doseLostFromCrytsalFL;
@@ -986,11 +1031,16 @@ public abstract class Crystal {
                   totalAugerEnergyToRelease += totAugerDose;
                   
                   //add Auger to Voxel
-                  if(totAugerDose > 0) {
-                  addDose(i, j, k, totAugerDose);
+
                   }
+                  else {
+                    // sim electron without adding shell binsing en 
+                    simElectron(i, j, k, absPhotons, false, coefCalc, beam.getPhotonEnergy(), angle, false);
+                  }
+                    
                 } 
                 else if (photoElectronEscape == true && fluorescentEscape == false) { //only do PE escape
+                  if (MC == false) {
                   //Dose in voxel
                   double totAugerDose = augerEnergy * numberofphotons * fluenceToDoseFactor;
                   //Do PE
@@ -1005,6 +1055,11 @@ public abstract class Crystal {
                   //add Auger to Voxel
                   if(totAugerDose > 0) {
                   addDose(i, j, k, totAugerDose);
+                  }
+                }
+                  else {
+                    //simelectron with adding shell binding en
+                    simElectron(i, j, k, absPhotons, true, coefCalc, beam.getPhotonEnergy(), angle, false);
                   }
                 }
                 else if (photoElectronEscape == false && fluorescentEscape == true) { //only do Fluorescent escape
@@ -1128,10 +1183,15 @@ public abstract class Crystal {
                                                                              
                 if (cryoVoxImageEnergy > 0) {
             //    if (cryoVoxImageDose > 0) { 
+                  
+                  //get numAbsorbed photons
+                  double numAbsorbedPhotons = cryoVoxImageEnergy/beamEnergy;
+                  
                   double energyPE = 0;
                   double dosePE = 0;
                   double totCryoAugerEnergy = cryoAugerEnergy * numberOfPhotons * energyPerFluence;
                   double totCryoAugerDose = cryoAugerEnergy * numberOfPhotons * fluenceToDoseFactor;
+                  if (MC == false) {
                   if (fluorescentEscape == false) {
                     energyPE = cryoVoxImageEnergy - totCryoAugerEnergy;
                     dosePE = cryoVoxImageDose - totCryoAugerDose;
@@ -1149,6 +1209,10 @@ public abstract class Crystal {
                   double doseAddedBack = addDoseAfterPECryo(iCryst, jCryst, kCryst, energyPE, energyToDoseFactor);
               //    double doseAddedBack = addDoseAfterPECryo(iconverted, jconverted, kconverted, dosePE, energyToDoseFactor);
                   totalDoseFromSurrounding += doseAddedBack;
+                  }
+                  else {
+                    simElectron(iCryst, jCryst, kCryst, numAbsorbedPhotons, false, coefCalc, beam.getPhotonEnergy(), angle, true);
+                  }
                 } // end if voximage dose > 0
               } // end if unattenuated beam intensity > 0
             } // end if crystal not at

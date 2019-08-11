@@ -334,4 +334,18 @@ public class CrystalSpherical extends Crystal {
     // TODO Auto-generated method stub
     return 0;
   }
+
+  @Override
+  public void simElectron(int i, int j, int k, double numAbsorbedPhotons,
+      boolean addBindingEn, CoefCalc coefCalc, double photonEnergy,
+      double angle, boolean surrounding) {
+    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public void setELSEPA(CoefCalc coefCalc) {
+    // TODO Auto-generated method stub
+    
+  }
 }
