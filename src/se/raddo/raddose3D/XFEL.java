@@ -3495,7 +3495,7 @@ private Element chooseLowEnElement(CoefCalc coefCalc, double Pinner, Map<Element
     
     
     //will need to change this quick test when I start considering crytal rotation
-    /*
+    
     if ((x > XDimension/2) || (x < -XDimension/2)) {
       return false;
     }
@@ -3505,7 +3505,7 @@ private Element chooseLowEnElement(CoefCalc coefCalc, double Pinner, Map<Element
     if ((z > ZDimension/2) || (z < -ZDimension/2)) {
       return false;
     }
-     */
+     
     //now do the crystal occupancy stuff
     //convert xyz to ijk
     

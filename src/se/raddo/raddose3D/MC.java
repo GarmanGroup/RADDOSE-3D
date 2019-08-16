@@ -343,7 +343,7 @@ public class MC {
       // AND SOME MORE STUFF MOVED IN
       
       //set up the surrounding stuff if there is one
-      double absCoefSurrounding = 0, comptonCoefSurrounding = 0, photonMFPLSurrounding = 0, probComptonSurrounding = 0, distanceNM = 0;
+      double absCoefSurrounding = 0, comptonCoefSurrounding = 0, photonMFPLSurrounding = 0, probComptonSurrounding = 0, distanceNM = 0, wickTest = 0;
       Map<Element, Double> elementAbsorptionProbsSurrounding = null;
       Map<Element, double[]> ionisationProbsSurrounding = null;
       if (coefCalc.isCryo() == true) { //user wants to simulate a surrounding
@@ -360,6 +360,14 @@ public class MC {
         //take the max using the CSDA without integration so a little bit of an overestimate 
         double stoppingPower = coefCalc.getStoppingPower(energyOfPhoton, true);
         distanceNM = (energyOfPhoton/stoppingPower);      
+        wickTest = distanceNM;
+        
+        //space here to change the wickTest distance
+        //wickTest = 1000;
+       // wickTest = beam.getPulseEnergy() * 1000;
+            
+        
+        
         //set up my cryo crystal bigger than the normal one using this distance, similar to PE escape stuff
         
       }
@@ -412,14 +420,15 @@ public class MC {
         else { // a photon that could interact before the crystal
           s = -photonMFPLSurrounding*Math.log(Math.random());
         //  if ((s < distanceNM) || (distanceNM + ZDimension < s && s < 2*distanceNM + ZDimension) ) { //then this photon will interact before or after hitting the crystal
-            if ((s < distanceNM) ) { //photon interacts before hitting the crystal
+            
+            if ((s < wickTest) ) { //photon interacts before hitting the crystal
             //need to give it a timestamp, I'm going to start it off with a negative one and if it is negative one put it on 0
             surrounding = true;
             int beforeOrAfter = 1; 
-            double distance = s - distanceNM;
-            if ( s < distanceNM) {
+            double distance = s - wickTest;
+            if ( s < wickTest) {
               beforeOrAfter = -1; // -1 = before crystal, +1 = after crystal
-              distance = distanceNM - s;
+              distance = wickTest - s;
             }
             double timeToPoint =  beforeOrAfter*((1/c) * ((distance)/1E9)); //in seconds
             timeStamp += timeToPoint * 1E15;
@@ -427,7 +436,7 @@ public class MC {
             if (doseTime < 0) {
               doseTime = 0;  //not a perfect solution but not too bad, especially if slice fine enough
             }
-            previousZ = previousZ - distanceNM; 
+            previousZ = previousZ - wickTest; 
             xn = previousX + s * xNorm;
             yn = previousY + s * yNorm;
             zn = previousZ + s * zNorm;
@@ -553,7 +562,7 @@ public class MC {
               xn = previousX + s * xNorm;
               yn = previousY + s * yNorm;
               zn = previousZ + s * zNorm;
-              if (zn < distanceNM + ZDimension/2) {
+              if (zn < wickTest + ZDimension/2) {
                 //then it has interacted with the surrounding behind the crystal
                 timeToPoint = (1/c) * (s/1E9);
                 timeStamp += timeToPoint * 1E15;
@@ -900,7 +909,7 @@ public class MC {
     if (simpleMC == true) {
       //write output to csv
       try {
-        WriterFileMCsimple("outputMC.CSV", totRADDOSEdose, rdExposed, sumDoseNoCutOff);
+        WriterFileMCsimple("outputMC.CSV", totRADDOSEdose, rdExposed, sumMCDose, sumDoseNoCutOffExposed, numberElastic);
       } catch (IOException e) {
         // TODO Auto-generated catch block
         e.printStackTrace();
@@ -970,7 +979,8 @@ public class MC {
     }
   }
   
-  private void WriterFileMCsimple(final String filename, final double totRADDOSEdose, final double rdExposed, final double MCdose) throws IOException {
+  private void WriterFileMCsimple(final String filename, final double totRADDOSEdose, final double rdExposed, final double MCdose, final double MCdoseExposed,
+      final double numberEl) throws IOException {
     BufferedWriter outFile;
     if (runNumber == 1) {
       outFile = new BufferedWriter(new OutputStreamWriter(
@@ -982,10 +992,10 @@ public class MC {
     }
     try {
     if (runNumber == 1) {
-    outFile.write("Run Number, RD3D-ADWC,RD3D-ADER,MC-ADWC\n");
+    outFile.write("Run Number, RD3D-ADWC,RD3D-ADER,MC-ADWC,MC-ADER,numEl\n");
     }
     outFile.write(String.format(
-    " %d, %f, %f, %f%n", runNumber, totRADDOSEdose, rdExposed, MCdose));
+    " %d, %f, %f, %f, %f, %f%n", runNumber, totRADDOSEdose, rdExposed, MCdose, MCdoseExposed, numberEl));
     } catch (IOException e) {
     e.printStackTrace();
     System.err.println("WriterFile: Could not write to file " + filename);
@@ -3476,7 +3486,7 @@ private Element chooseLowEnElement(CoefCalc coefCalc, double Pinner, Map<Element
     
     
     //will need to change this quick test when I start considering crytal rotation
-    /*
+    
     if ((x > XDimension/2) || (x < -XDimension/2)) {
       return false;
     }
@@ -3486,7 +3496,7 @@ private Element chooseLowEnElement(CoefCalc coefCalc, double Pinner, Map<Element
     if ((z > ZDimension/2) || (z < -ZDimension/2)) {
       return false;
     }
-     */
+     
     //now do the crystal occupancy stuff
     //convert xyz to ijk
     

@@ -2333,6 +2333,9 @@ public class CoefCalcCompute extends CoefCalc {
   @Override
   public double getStoppingPower(double avgEnergy, boolean surrounding) {
     double stoppingPower = 0;
+    
+  //  double distance = getExpectedDistance(30, true);
+    
     if (surrounding == false) {
       stoppingPower = calcStoppingPower(avgEnergy, presentElements, density, surrounding);
     }
@@ -2382,7 +2385,21 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
 //    stoppingPower = 2.107602E-04;
  
  */
+
+      
     return stoppingPower;  //keV/nm
+  }
+  
+  private double getExpectedDistance(double avgEnergy, boolean surrounding) {
+    double distance = 0;//avgEnergy / stoppingPower;
+    double testEn = avgEnergy;
+    double stoppingPower = 0;
+    while (testEn > 0.05) {
+      stoppingPower = calcStoppingPower(testEn, presentElements, density, surrounding);
+      testEn -= 0.05;
+      distance += 0.05/stoppingPower;
+    }
+    return distance;
   }
   
   private double calcStoppingPower(double avgEnergy, Set<Element> elements, double passedDensity, boolean surrounding) {
@@ -2510,8 +2527,13 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
    // meanI = 78;
     meanJ = meanI; //eV  
     //modify meanJ for lower energy by Joy and Luo method - essential for FSEs
-   // double k = 0.85; //test
-   // meanJ = meanJ / (1 + 0.85*meanJ/(avgEnergy*1000));
+    
+    //I'll actually need to do this for  the MC model instead of GOS model but not for GOS
+    
+    double k = 0.85; //test
+    meanJ = meanJ / (1 + 0.85*meanJ/(avgEnergy*1000));
+    
+    
   //  passedDensity = 0.998;
     
     meanJ = (meanJ/1000) * Beam.KEVTOJOULES;
@@ -2523,9 +2545,11 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     stoppingPower = (0.153536/betaSquared)*(sumZ/sumA)*(Fbeta - 2*Math.log(meanJ) - delta);
     stoppingPower = stoppingPower * 1000 * passedDensity /1E7;
     
+    /*
     if (avgEnergy < 0.1) {
       double test = 0.0;
     }
+    */
     
     return stoppingPower;
   }
