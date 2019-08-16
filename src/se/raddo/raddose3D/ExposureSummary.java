@@ -105,6 +105,10 @@ public class ExposureSummary implements ExposeObserver {
   private double[][] imageRDE;
   private boolean[] lowImageRDE;
   
+  private double[][][][] voxDoseImage;
+  private double[][][][] voxFluenceImage;
+  
+  
   private double[] q = {0, 2*Math.PI, Math.PI, 2*Math.PI/3, 0.5*Math.PI}; //blank, 1A, 2A, 3A, 4A
   private final double alpha = 1.7;
   private final double K = 81.3;
@@ -130,7 +134,7 @@ public class ExposureSummary implements ExposeObserver {
   }
 
   @Override
-  public void exposureStart(final int imageCount, Wedge wedge) {
+  public void exposureStart(final int imageCount, Wedge wedge, final int[] crystalSize) {
     // Resets the global crystal metrics for each new exposure.
 
     // per voxel exposure variables exposureObservation()
@@ -154,6 +158,10 @@ public class ExposureSummary implements ExposeObserver {
     imageDWD = new double[imageCount];
     angleDWD = new double[imageCount];
     imageRDE = new double[imageCount][5];
+    
+    voxDoseImage = new double[crystalSize[0]][crystalSize[1]][crystalSize[2]][imageCount];
+    voxFluenceImage = new double[crystalSize[0]][crystalSize[1]][crystalSize[2]][imageCount];
+
     
     De = new double[5];
     //q0 needs to equal max res from wedge
@@ -195,6 +203,9 @@ public class ExposureSummary implements ExposeObserver {
       final double addedDose, final double totalVoxDose, final double fluence,
       final double doseDecay, final double absorbedEnergy,
       final double elastic) {
+    
+    voxDoseImage[i][j][k][wedgeImage] = totalVoxDose + (addedDose);
+    voxFluenceImage[i][j][k][wedgeImage] = fluence;
 
     // updating the diffracted intensity for this image/iteration equation
  //   diffNum += (totalVoxDose + addedDose / 2) * fluence * doseDecay;
@@ -456,6 +467,14 @@ public class ExposureSummary implements ExposeObserver {
   }
   public double[] getImageVol() {
     return imageVol;
+  }
+  
+  public double[][][][] getVoxelDoses(){
+    return voxDoseImage;
+  }
+  
+  public double[][][][] getVoxelFluences(){
+    return voxFluenceImage;
   }
   
   public double getRTDecay(double totalVoxelDose, double addedDose) {

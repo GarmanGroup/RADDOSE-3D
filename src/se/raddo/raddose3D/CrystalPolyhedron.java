@@ -2112,4 +2112,20 @@ public class CrystalPolyhedron extends Crystal {
   public int getCryoExtraVoxels() {
     return cryoCoordinateShift;
   }
+
+  @Override
+  public double getNumImages(Wedge wedge) {
+    if (Math.abs(wedge.getStartAng() - wedge.getEndAng()) < wedge.getAngRes()) {
+      return Crystal.STATICEXPOSURE;
+    }
+    else {
+      Integer sign = 1;
+      if (wedge.getEndAng() < wedge.getStartAng()) {
+        sign = -1;
+      }
+      return (sign
+          * (int) ((wedge.getEndAng() - wedge.getStartAng())
+              / wedge.getAngRes() + 1));
+    }
+  }
 }

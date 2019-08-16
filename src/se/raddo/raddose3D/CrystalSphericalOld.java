@@ -308,4 +308,10 @@ public class CrystalSphericalOld extends Crystal {
     
     return 0;
   }
+
+  @Override
+  public double getNumImages(Wedge wedge) {
+    // TODO Auto-generated method stub
+    return 0;
+  }
 }

@@ -23,7 +23,7 @@ public interface ExposeObserver {
    * @param wedgeImages
    *          Expected number of upcoming images
    */
-  public void exposureStart(int wedgeImages, Wedge wedge);
+  public void exposureStart(int wedgeImages, Wedge wedge, final int[] crystalSize);
 
   /**
    * Single voxel exposure event. Called for every voxel, in every angular step.

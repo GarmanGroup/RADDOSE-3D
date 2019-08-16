@@ -312,6 +312,12 @@ public class ExperimentDummy extends Experiment {
         
         return 0;
       }
+
+      @Override
+      public double getNumImages(Wedge wedge) {
+        // TODO Auto-generated method stub
+        return 0;
+      }
     }
   }
 }

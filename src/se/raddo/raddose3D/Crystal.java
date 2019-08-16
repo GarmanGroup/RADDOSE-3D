@@ -265,7 +265,8 @@ public abstract class Crystal {
    */
   public abstract double[] getCrystCoord(int i, int j, int k);
   public abstract double[] getCryoCrystCoord(int i, int j, int k);
-
+  public abstract double getNumImages(Wedge wedge);
+  
   /**
    * returns TRUE if there is a crystal at the coordinates i, j, k.
    *
@@ -678,9 +679,10 @@ public abstract class Crystal {
         angles[i] = wedge.getStartAng() + sign * i * wedge.getAngRes();
       }
     }
-
+     
+    final int[] crystalSize = getCrystSizeVoxels();
     for (ExposeObserver eo : exposureObservers) {
-      eo.exposureStart(angles.length, wedge);
+      eo.exposureStart(angles.length, wedge, crystalSize);
     }
     
     

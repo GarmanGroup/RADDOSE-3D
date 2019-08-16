@@ -305,6 +305,20 @@ public final class RD3D {
       e.printStackTrace();
       System.err.println("Could not initialize DWDs");
     }
+    try {
+      Writer w = new WriterFile(prefix + "VoxelDose.csv");
+      outputs.add(of.createOutputSimple("VoxelDose", w));
+    } catch (IOException e) {
+      e.printStackTrace();
+      System.err.println("Could not initialize VoxelDose");
+    }
+    try {
+      Writer w = new WriterFile(prefix + "VoxelFluences.csv");
+      outputs.add(of.createOutputSimple("VoxelFluences", w));
+    } catch (IOException e) {
+      e.printStackTrace();
+      System.err.println("Could not initialize VoxelFluences");
+    }
 
     Writer w = new WriterConsole();
     outputs.add(of.createOutputSimple("ProgressIndicator", w));

@@ -56,6 +56,10 @@ public class OutputFactory extends ClassFactory {
       revisedOutputName = "se.raddo.raddose3D.OutputRDECSV";
     }else if ("dwds".equalsIgnoreCase(outputName)) {
       revisedOutputName = "se.raddo.raddose3D.OutputDWDs";
+    }else if ("voxeldose".equalsIgnoreCase(outputName)) {
+      revisedOutputName = "se.raddo.raddose3D.OutputVoxelDose";
+    }else if ("voxeldose".equalsIgnoreCase(outputName)) {
+      revisedOutputName = "se.raddo.raddose3D.OutputVoxelFluences";
     }else {
       revisedOutputName = outputName;
     }

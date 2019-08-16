@@ -173,7 +173,7 @@ public class OutputFluencePerDoseHistCSV implements Output, ExposeObserver {
   }
 
   @Override
-  public void exposureStart(final int imageCount, Wedge wedge) {
+  public void exposureStart(final int imageCount, Wedge wedge, final int[] crystalSize) {
     // Implementation not required.
   }
 
@@ -199,4 +199,5 @@ public class OutputFluencePerDoseHistCSV implements Output, ExposeObserver {
   public void register(final Crystal c) {
     // Implementation not required.
   }
+
 }
