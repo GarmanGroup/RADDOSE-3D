@@ -179,23 +179,27 @@ public class XFEL {
     doseSimple = new double[maxVoxel[0]][maxVoxel[1]][maxVoxel[2]][(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (500/PULSE_BIN_LENGTH) + 10000)];
     
     //these break way way too easily so need a more permanent solution
-    dose = new double[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (500/PULSE_BIN_LENGTH) + 10000)];
-    photonDose = new double[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (500/PULSE_BIN_LENGTH) + 10000)];
-    electronDose = new double[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (500/PULSE_BIN_LENGTH) + 10000)];
-    gosElectronDose = new double[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (500/PULSE_BIN_LENGTH) + 10000)];
-    photonDosevResolved = new double[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (500/PULSE_BIN_LENGTH) + 10000)];
-    gosElectronDosevResolved = new double[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (500/PULSE_BIN_LENGTH) + 10000)];
+    int safetyOne = 0;
+    int safetyTwo = 1;
     
-    electronDoseSurrounding = new double[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (500/PULSE_BIN_LENGTH) + 10000)];
-    totalIonisationEvents = new long[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (500/PULSE_BIN_LENGTH) + 10000)];
-    lowEnergyIonisations = new long[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (500/PULSE_BIN_LENGTH) + 10000)];
-    totalIonisationEventsPerAtom = new double[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (500/PULSE_BIN_LENGTH) + 10000)];
-    lowEnergyIonisationsPerAtom = new double[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (500/PULSE_BIN_LENGTH) + 10000)];
-    totalIonisationEventsPerNonHAtom = new double[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (500/PULSE_BIN_LENGTH) + 10000)];
     
-    totalIonisationEventsvResolved = new long[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (500/PULSE_BIN_LENGTH) + 10000)];
-    totalIonisationEventsPerAtomvResolved = new double[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (500/PULSE_BIN_LENGTH) + 10000)];
-    totalIonisationEventsPerNonHAtomvResolved = new double[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (500/PULSE_BIN_LENGTH) + 10000)];
+    dose = new double[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (safetyOne/PULSE_BIN_LENGTH) + safetyTwo)];
+    photonDose = new double[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (safetyOne/PULSE_BIN_LENGTH) + safetyTwo)];
+    electronDose = new double[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (safetyOne/PULSE_BIN_LENGTH) + safetyTwo)];
+    gosElectronDose = new double[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (safetyOne/PULSE_BIN_LENGTH) + safetyTwo)];
+    photonDosevResolved = new double[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (safetyOne/PULSE_BIN_LENGTH) + safetyTwo)];
+    gosElectronDosevResolved = new double[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (safetyOne/PULSE_BIN_LENGTH) + safetyTwo)];
+    
+    electronDoseSurrounding = new double[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (safetyOne/PULSE_BIN_LENGTH) + safetyTwo)];
+    totalIonisationEvents = new long[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (safetyOne/PULSE_BIN_LENGTH) + safetyTwo)];
+    lowEnergyIonisations = new long[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (safetyOne/PULSE_BIN_LENGTH) + safetyTwo)];
+    totalIonisationEventsPerAtom = new double[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (safetyOne/PULSE_BIN_LENGTH) + safetyTwo)];
+    lowEnergyIonisationsPerAtom = new double[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (safetyOne/PULSE_BIN_LENGTH) + safetyTwo)];
+    totalIonisationEventsPerNonHAtom = new double[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (safetyOne/PULSE_BIN_LENGTH) + safetyTwo)];
+    
+    totalIonisationEventsvResolved = new long[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (safetyOne/PULSE_BIN_LENGTH) + safetyTwo)];
+    totalIonisationEventsPerAtomvResolved = new double[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (safetyOne/PULSE_BIN_LENGTH) + safetyTwo)];
+    totalIonisationEventsPerNonHAtomvResolved = new double[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (safetyOne/PULSE_BIN_LENGTH) + safetyTwo)];
     
     atomicIonisations = new HashMap<Element, Long>();
     atomicIonisationsPerAtom = new HashMap<Element, Double>();
@@ -260,6 +264,9 @@ public class XFEL {
     
     // for testing
     lastTime = ((1/c) * (ZDimension/1E9) * 1E15) + PULSE_LENGTH;
+    
+   // lastTime *= 100;
+    
    // numFluxPhotons = beam.getPhotonsPerSec() * wedge.getTotSec();
     //get the time at which the last photon exits the last voxel
     for (int i = 0; i < lastTimeVox.length; i++) {
@@ -602,6 +609,10 @@ public class XFEL {
     
     //get time at which last photon exits the sample
     lastTime = ((1/c) * (ZDimension/1E9) * 1E15) + PULSE_LENGTH;
+    
+  //  lastTime *= 100;
+    
+    
     //get the time at which the last photon exits the last voxel
     for (int i = 0; i < lastTimeVox.length; i++) {
       lastTimeVox[i] = ((1/c) * ((ZDimension/1E9)/lastTimeVox.length)*(i+1) * 1E15) + PULSE_LENGTH;
@@ -1549,6 +1560,10 @@ public class XFEL {
           previousZ = 1000*intersectionPoint[2];
           //update timestamp
           timeStamp += getTimeToDistance(electronEnergy, intersectionDistance);
+          if (timeStamp > lastTime) {
+            exited = true;
+            break;
+          }
           //update energy to this point and coefficients
           if (simpleMC == true) {
             electronEnergy -= intersectionDistance * stoppingPower;
@@ -1610,6 +1625,11 @@ public class XFEL {
         double timeToDistance = getTimeToDistance(electronEnergy, s);
         int doseTime = (int) ((timeStamp + (timeToDistance/2))/PULSE_BIN_LENGTH);
         timeStamp += timeToDistance;
+        if (timeStamp > lastTime) {
+          //then we don't care about the extra energy deposited
+          exited = true;
+          break;
+        }
         double energyToAdd = energyLost;
         if (doseTime < 0) {
           doseTime = 0;
@@ -2088,14 +2108,21 @@ public class XFEL {
           previousX = previousX + (escapeDistance + (escapeDistance/1000))  * xNorm;
           previousY = previousY + (escapeDistance + (escapeDistance/1000)) * yNorm;
           previousZ = previousZ + (escapeDistance + (escapeDistance/1000)) * zNorm;
+          
+          double timeToDistance = getTimeToDistance(electronEnergy, s);
+          int doseTime = (int) ((timeStamp + (timeToDistance/2))/PULSE_BIN_LENGTH);
+          timeStamp += timeToDistance;
+          if (timeStamp > lastTime) {
+            exited = true;
+            break;
+          }
+          
           if (simpleMC == true) { 
             //update energy
             energyLost = escapeDistance * stoppingPower;
             electronEnergy -= energyLost;
             //work out how long it took to travel this far 
-            double timeToDistance = getTimeToDistance(electronEnergy, s);
-            int doseTime = (int) ((timeStamp + (timeToDistance/2))/PULSE_BIN_LENGTH);
-            timeStamp += timeToDistance;
+
             double energyToAdd = energyLost;
             if (doseTime < 0) {
               doseTime = 0;
@@ -2108,7 +2135,7 @@ public class XFEL {
               doseSimple[pixelCoord[0]][pixelCoord[1]][pixelCoord[2]][doseTime] += energyLost;
             }
             else {
-              //add it somewhere in exposed crystal
+              //do nothing
               
             }
             
@@ -2257,6 +2284,11 @@ public class XFEL {
             //update timeStamp
             double timeToDistance = getTimeToDistance(electronEnergy, s);
             timeStamp += timeToDistance;
+
+            if (timeStamp > lastTime) {
+              exited = true;
+              break;
+            }
           //update position and angle
             //update position and angle
             previousTheta = theta;
