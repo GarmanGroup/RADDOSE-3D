@@ -1157,7 +1157,7 @@ public class XFEL {
         //get yNorm and zNorm
         xNorminit = PosOrNeg() * Math.random() * Math.pow(1-Math.pow(yNorm, 2), 0.5);
       }
-      zNorminit = PosOrNeg() * Math.pow(1 - Math.pow(xNorm, 2) - Math.pow(yNorm, 2), 0.5);
+      zNorminit = PosOrNeg() * Math.pow(1 - Math.pow(xNorminit, 2) - Math.pow(yNorm, 2), 0.5);
       
       //now apply the rotation matrix
       xNorm = xNorminit * Math.cos(thisAngle) + zNorminit * Math.sin(thisAngle);

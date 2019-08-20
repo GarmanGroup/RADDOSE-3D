@@ -28,6 +28,9 @@ import org.apache.commons.math3.distribution.NormalDistribution;
 public class MC {
   //polyhderon variables
   public double[][] verticesXFEL;
+  public double[][] rotatedVerticesXFEL;
+  public double[][][]          expandedRotatedVerticesXFEL;
+  
   public int[][] indicesXFEL;
   public double[][][][] crystCoordXFEL;
   public double crystalPixPerUMXFEL;
@@ -51,6 +54,9 @@ public class MC {
   public double XDimension; //nm
   public double YDimension;
   public double ZDimension;
+  
+  private double[] maxDims;
+  private double[] minDims;
   
   public double dose;
   public double photonDose;
@@ -199,6 +205,9 @@ public class MC {
     stragglingPerInelSurrounding = new TreeMap<Double, Double>();
     
     runNumber = runNum;
+    
+    maxDims = new double[3];
+    minDims = new double[3];
   }
   
   public void CalculateXFEL(Beam beam, Wedge wedge, CoefCalc coefCalc) {
@@ -318,6 +327,10 @@ public class MC {
       //convert to 0-2pi
       int timesOver = (int) (angle/(2*Math.PI));
       angle = angle - (timesOver * 2 *Math.PI);
+      
+      //need to update the vertices and stuff 
+      setUpRotatedVertices(angle, wedge);
+      
       
       // SECTION FOR STUFF MOVED INTO FOR LOOP
       //get absorption coefficient
@@ -1137,7 +1150,7 @@ public class MC {
         //get yNorm and zNorm
         xNorminit = PosOrNeg() * Math.random() * Math.pow(1-Math.pow(yNorm, 2), 0.5);
       }
-      zNorminit = PosOrNeg() * Math.pow(1 - Math.pow(xNorm, 2) - Math.pow(yNorm, 2), 0.5);
+      zNorminit = PosOrNeg() * Math.pow(1 - Math.pow(xNorminit, 2) - Math.pow(yNorm, 2), 0.5);
       
       //now apply the rotation matrix
       xNorm = xNorminit * Math.cos(thisAngle) + zNorminit * Math.sin(thisAngle);
@@ -1613,6 +1626,9 @@ public class MC {
         if (primaryElectron == true) { //only doing dose from the primary
           int[] pixelCoord = convertToPixelCoordinates(xn, yn, zn, angle, wedge);
           dose += energyToAdd;  //still just adding keV
+          
+          //the 
+          
           doseSimple[pixelCoord[0]][pixelCoord[1]][pixelCoord[2]]+= energyToAdd;
           if (entered == true) {
             electronDoseSurrounding += energyToAdd;
@@ -3486,15 +3502,18 @@ private Element chooseLowEnElement(CoefCalc coefCalc, double Pinner, Map<Element
     
     
     //will need to change this quick test when I start considering crytal rotation
-    
+    boolean outside = false;
     if ((x > XDimension/2) || (x < -XDimension/2)) {
-      return false;
+     // return false;
+     // outside = true;
     }
     if ((y > YDimension/2) || (y < -YDimension/2)) {
-      return false;
+    //  return false;
+    //  outside = true;
     }
     if ((z > ZDimension/2) || (z < -ZDimension/2)) {
-      return false;
+    //  return false;
+    //  outside = true;
     }
      
     //now do the crystal occupancy stuff
@@ -3511,15 +3530,21 @@ private Element chooseLowEnElement(CoefCalc coefCalc, double Pinner, Map<Element
     //if the pixel coords are less than 0 or more than max then need to return false
     int[] maxVoxel = getMaxPixelCoordinates();
     if (pixelCoords[0] < 0 || pixelCoords[0] >= maxVoxel[0]) {
-      return false;
+      //return false;
+      outside = true;
     }
     if (pixelCoords[1] < 0 || pixelCoords[1] >= maxVoxel[1]) {
-      return false;
+      //return false;
+      outside = true;
     }
     if (pixelCoords[2] < 0 || pixelCoords[2] >= maxVoxel[2]) {
-      return false;
+      //return false;
+      outside = true;
     }
     
+    //this is where I should change it!!!
+    //should just test the occupnacy every time!
+    /*
     boolean[] occ = crystOccXFEL[pixelCoords[0]][pixelCoords[1]][pixelCoords[2]];  //This means that if has already been done don't do it again
                                           // Really needed to speed up Monte Carlo
 
@@ -3528,7 +3553,32 @@ private Element chooseLowEnElement(CoefCalc coefCalc, double Pinner, Map<Element
       occ[0] = true;
     }
 
-    return occ[1];
+
+    */
+    boolean occ = calculateCrystalOccupancy(x, y, z);
+    
+    if (occ == true) {
+      //set a max and min in each dimension
+      setMaxMin(x, y, z);
+    }
+    /*
+    if (occ == true && outside == true) {
+      System.out.println("wrong");
+    }
+    */
+    return occ;
+  }
+  
+  private void setMaxMin(double x, double y, double z) {
+    double[] dims = {x, y, z};
+    for (int i = 0; i < 3; i++) {
+      if (dims[i] > maxDims[i]) {
+        maxDims[i] = dims[i];
+      }
+      if (dims[i] < minDims[i]) {
+        minDims[i] = dims[i];
+      }
+    }
   }
   
   private int[] convertToPixelCoordinates(final double x, final double y, final double z, final double angle, Wedge wedge) {
@@ -3590,6 +3640,10 @@ private Element chooseLowEnElement(CoefCalc coefCalc, double Pinner, Map<Element
   
   public boolean calculateCrystalOccupancy(final double x, final double y, final double z)
   {
+    
+    //i need to change this to take the rotated values if there has been rotation
+    //rotated vertices, rotated originDistances
+    
     if (normals == null) {
       calculateNormals(false);
     }
@@ -3607,8 +3661,8 @@ private Element chooseLowEnElement(CoefCalc coefCalc, double Pinner, Map<Element
     }
 
     for (int l = 0; l < indicesXFEL.length; l++) {
-      double intersectionDistance = Vector.rayTraceDistance(normals[l],
-          directionVector, origin, originDistances[l]);
+      double intersectionDistance = Vector.rayTraceDistance(rotatedNormals[l],
+          directionVector, origin, rotatedOriginDistances[l]);
 
       Double distanceObject = Double.valueOf(intersectionDistance);
 
@@ -3625,17 +3679,36 @@ private Element chooseLowEnElement(CoefCalc coefCalc, double Pinner, Map<Element
       // copy vertices referenced by indices into single array for
       // passing onto the polygon inclusion test.
       for (int m = 0; m < 3; m++) {
-        System.arraycopy(verticesXFEL[indicesXFEL[l][m] - 1], 0, triangleVertices[m],
+        System.arraycopy(rotatedVerticesXFEL[indicesXFEL[l][m] - 1], 0, triangleVertices[m],
             0, 3);
       }
 
-      boolean crosses = Vector.polygonInclusionTest(triangleVertices,
+  //    boolean crosses = Vector.polygonInclusionTest(triangleVertices,
+  //        intersectionPoint);
+      
+      boolean crosses = Vector.polygonInclusionTest(expandedRotatedVerticesXFEL[l],
           intersectionPoint);
 
       if (crosses) {
         inside = !inside;
       }
     }
+    
+    //my quick test
+    /*
+    boolean outside = false;
+    double[] point = {x/1000, y/1000, z/1000};
+    for (int k = 0; k < 3; k++) {
+   //   point[k] = Math.round(point[k] *1000.0)/1000.0;
+      if (point[k] > 1.05 || point[k] < -1.05) {
+        outside = true;
+      }
+    }
+    
+    if(inside == outside) {
+      System.out.println("no");
+    }
+    */
     return inside;
   }
   
@@ -3742,6 +3815,10 @@ private Element chooseLowEnElement(CoefCalc coefCalc, double Pinner, Map<Element
     double[][] verticesUsed = verticesXFEL;
     double[] originDistancesUsed = new double[verticesXFEL.length];
     double[][] normalsUsed = new double[verticesXFEL.length][3];
+    
+    if (rotated) {
+      verticesUsed = rotatedVerticesXFEL;
+    }
 
     normalsUsed = new double[indicesXFEL.length][3];
     originDistancesUsed = new double[indicesXFEL.length];
@@ -3770,6 +3847,18 @@ private Element chooseLowEnElement(CoefCalc coefCalc, double Pinner, Map<Element
       originDistancesUsed[i] = distanceFromOrigin;
     }
 
+    
+    if (rotated) {
+      rotatedOriginDistances = new double[indicesXFEL.length];
+      rotatedNormals = new double[indicesXFEL.length][3];
+
+      for (int i = 0; i < normalsUsed.length; i++) {
+        System.arraycopy(normalsUsed[i], 0, rotatedNormals[i], 0, 3);
+      }
+
+      System.arraycopy(originDistancesUsed, 0, rotatedOriginDistances, 0,
+          indicesXFEL.length);
+    } else {
       originDistances = new double[indicesXFEL.length];
       normals = new double[indicesXFEL.length][3];
 
@@ -3779,8 +3868,54 @@ private Element chooseLowEnElement(CoefCalc coefCalc, double Pinner, Map<Element
 
       System.arraycopy(originDistancesUsed, 0, originDistances, 0,
           indicesXFEL.length);
+    }
     
   }
+  
+  private void setUpRotatedVertices(final double angrad, final Wedge wedge) {
+    rotatedVerticesXFEL = new double[verticesXFEL.length][3];
+
+    // Rotate and translate the vertices of the crystal
+    // to the position defined by angrad (= deltaphi)
+
+    for (int vertInd = 0; vertInd < verticesXFEL.length; vertInd++) {
+      // Translate Y
+      rotatedVerticesXFEL[vertInd][1] = verticesXFEL[vertInd][1]
+          + wedge.getStartY()
+          + wedge.getTransY(angrad);
+      // Translate X
+      double transX = verticesXFEL[vertInd][0]
+          + wedge.getStartX()
+          + wedge.getTransX(angrad);
+      // Translate Z
+      double transZ = verticesXFEL[vertInd][2]
+          + wedge.getStartZ()
+          + wedge.getTransZ(angrad);
+
+      // Rotate X
+      rotatedVerticesXFEL[vertInd][0] = transX * Math.cos(angrad)
+          + transZ * Math.sin(angrad);
+      // Rotate Z
+      rotatedVerticesXFEL[vertInd][2] = -1 * transX * Math.sin(angrad)
+          + transZ * Math.cos(angrad);
+    }
+
+    calculateNormals(true);
+
+    /*
+     * Now we populate the expandedRotatedVertex array.
+     */
+
+    expandedRotatedVerticesXFEL = new double[indicesXFEL.length][3][3];
+
+    for (int i = 0; i < indicesXFEL.length; i++) {
+      for (int j = 0; j < 3; j++) {
+        System.arraycopy(rotatedVerticesXFEL[indicesXFEL[i][j] - 1], 0,
+            expandedRotatedVerticesXFEL[i][j], 0, 3);
+      }
+    }
+  }
+  
   
   private static class Vector {
     /**
@@ -3970,9 +4105,12 @@ private Element chooseLowEnElement(CoefCalc coefCalc, double Pinner, Map<Element
      * @return boolean value - in polygon or not in polygon.
      */
     public static boolean polygonInclusionTest(final double[][] vertices,
-        final double[] point) {
+         double[] point) {
       boolean c = false;
+      
+      
 
+      
       for (int i = 0, j = vertices.length - 1; i < vertices.length; j = i++) {
         if (((vertices[i][1] > point[1]) != (vertices[j][1] > point[1]))
             && (point[0] < (vertices[j][0] - vertices[i][0])
@@ -3981,6 +4119,7 @@ private Element chooseLowEnElement(CoefCalc coefCalc, double Pinner, Map<Element
           c = !c;
         }
       }
+      
 
       return c;
     }

@@ -2531,8 +2531,10 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     //I'll actually need to do this for  the MC model instead of GOS model but not for GOS
     
     double k = 0.85; //test
-    meanJ = meanJ / (1 + 0.85*meanJ/(avgEnergy*1000));
-    
+ //   if (MC == true) {
+      //for the non-GOS need to modify as inaccurate below 10 keV
+      meanJ = meanJ / (1 + 0.85*meanJ/(avgEnergy*1000));
+//    }
     
   //  passedDensity = 0.998;
     
