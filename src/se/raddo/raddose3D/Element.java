@@ -609,6 +609,23 @@ public class Element {
     return elementData.get(DatabaseFields.FLUORESCENCE_YIELD_L3);
   }
   
+  public Double getM1ShellFluorescenceYield() {
+    return elementData.get(DatabaseFields.FLUORESCENCE_YIELD_M1);
+  }
+  public Double getM2ShellFluorescenceYield() {
+    return elementData.get(DatabaseFields.FLUORESCENCE_YIELD_M2);
+  }
+  public Double getM3ShellFluorescenceYield() {
+    return elementData.get(DatabaseFields.FLUORESCENCE_YIELD_M3);
+  }
+  public Double getM4ShellFluorescenceYield() {
+    return elementData.get(DatabaseFields.FLUORESCENCE_YIELD_M4);
+  }
+  public Double getM5ShellFluorescenceYield() {
+    return elementData.get(DatabaseFields.FLUORESCENCE_YIELD_M5);
+  }
+  
+  
   /**
    * Return the probability of K shell ionisation
    * 

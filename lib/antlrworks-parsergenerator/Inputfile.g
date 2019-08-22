@@ -297,6 +297,9 @@ crystalLine
 	| kk=program	                { $crystal::crystalProperties.put(Crystal.CRYSTAL_PROGRAM, $kk.value); }
 	| ll=simElectrons		{ $crystal::simElectrons		= $ll.simel; }
 	| mm=runs	                { $crystal::crystalProperties.put(Crystal.CRYSTAL_RUNS, $mm.value); }
+	| nn=surroundingThickness			{ if ($nn.properties != null) {
+							   $crystal::crystalProperties.putAll($nn.properties);
+							  }; }
 							
 	;
 
@@ -390,6 +393,19 @@ unitcell returns [Double dimA, Double dimB, Double dimC, Double angA, Double ang
 		)? 
 	;
 UNITCELL : ('U'|'u')('N'|'n')('I'|'i')('T'|'t')('C'|'c')('E'|'e')('L'|'l')('L'|'l') ;
+
+
+surroundingThickness returns [Map<Object, Object> properties]
+@init { 
+		$properties = new HashMap<Object, Object>();
+}	: SURROUNDINGTHICKNESS 
+	(	
+	a=FLOAT b=FLOAT c=FLOAT { $properties.put(Crystal.SURROUNDING_X, Double.parseDouble($a.text));
+                                $properties.put(Crystal.SURROUNDING_Y, Double.parseDouble($b.text));
+                                $properties.put(Crystal.SURROUNDING_Z, Double.parseDouble($c.text)); }
+	);
+SURROUNDINGTHICKNESS : ('S'|'s')('U'|'u')('R'|'r')('R'|'r')('O'|'o')('U'|'u')('N'|'n')('D'|'d')('I'|'i')('N'|'n')('G'|'g')('T'|'t')('H'|'h')('I'|'i')('C'|'c')('K'|'k')('N'|'n')('E'|'e')('S'|'s')('S'|'s');
+
 	
 proteinConcentration returns [Double proteinConc]
 	: (PROTEINCONCENTRATION | PROTEINCONC) a=FLOAT {$proteinConc = Double.parseDouble($a.text);};

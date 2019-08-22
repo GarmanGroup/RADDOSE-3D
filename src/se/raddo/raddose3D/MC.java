@@ -86,6 +86,12 @@ public class MC {
   private HashMap<Integer, HashMap<Integer, double[]>> augerExitIndex;
   private int[] augerElements = {6, 7, 8, 11, 12, 14, 15, 16, 17, 19, 20, 25, 26, 27, 28, 29, 30, 33, 34};
   private HashMap<Integer, Double> totKAugerProb;
+  
+  private HashMap<Integer, HashMap<Integer, double[]>> flTransitionLinewidths;
+  private HashMap<Integer, HashMap<Integer, double[]>> flTransitionProbabilities;
+  private HashMap<Integer, HashMap<Integer, double[]>> flCumulativeTransitionProbabilities;
+  private HashMap<Integer, HashMap<Integer, double[]>> flTransitionEnergies;
+  private HashMap<Integer, HashMap<Integer, double[]>> flDropIndex;
     
   //ionisationStuff
   private long totalIonisationEvents;
@@ -153,10 +159,11 @@ public class MC {
   private double[] photonEnergyArray;
 //private double totalNumberOfPhotons = PULSE_ENERGY / meanEnergy; // need to check where this is computed elsewhere and change 
   
+  private double[] surroundingThickness;
   
   public MC(double vertices[][], int[][] indices, double[][][][] crystCoord, 
       double crystalPixPerUM, int[] crystSizeVoxels, boolean[][][][] crystOcc, int runNum, boolean verticalGoniometer,
-      boolean xfel, boolean gos) {
+      boolean xfel, boolean gos, double[] surrThickness) {
     verticesXFEL = vertices;
     indicesXFEL = indices;
     crystCoordXFEL = crystCoord;
@@ -199,6 +206,12 @@ public class MC {
     cumulativeTransitionProbabilities = new HashMap<Integer, HashMap<Integer, double[]>>();
     augerExitIndex = new HashMap<Integer, HashMap<Integer, double[]>>();
     
+    flTransitionLinewidths = new HashMap<Integer, HashMap<Integer, double[]>>();
+    flTransitionProbabilities = new HashMap<Integer, HashMap<Integer, double[]>>();
+    flTransitionEnergies = new HashMap<Integer, HashMap<Integer, double[]>>();
+    flCumulativeTransitionProbabilities = new HashMap<Integer, HashMap<Integer, double[]>>();
+    flDropIndex = new HashMap<Integer, HashMap<Integer, double[]>>();
+    
     energyPerInel = new TreeMap<Double, Double>();
     energyPerInelSurrounding = new TreeMap<Double, Double>();
     stragglingPerInel = new TreeMap<Double, Double>();
@@ -208,6 +221,10 @@ public class MC {
     
     maxDims = new double[3];
     minDims = new double[3];
+    
+    surroundingThickness = surrThickness;
+    
+    
   }
   
   public void CalculateXFEL(Beam beam, Wedge wedge, CoefCalc coefCalc) {
@@ -282,6 +299,7 @@ public class MC {
     //populate augerLinewidths
       try {
         populateAugerLinewidths();
+        populateFluorescenceLinewidths();
       } catch (IOException e) {
         // TODO Auto-generated catch block
         e.printStackTrace();
@@ -374,11 +392,19 @@ public class MC {
         double stoppingPower = coefCalc.getStoppingPower(energyOfPhoton, true);
         distanceNM = (energyOfPhoton/stoppingPower);      
         wickTest = distanceNM;
+        for (int test = 0; test < 3; test++) {
+          if (surroundingThickness[test] <= 0.0 || surroundingThickness[test] > wickTest) {
+            surroundingThickness[test] = wickTest;
+          }
+          else {
+            surroundingThickness[test] *= 1000;
+          }
+        }
         
         //space here to change the wickTest distance
         //wickTest = 1000;
        // wickTest = beam.getPulseEnergy() * 1000;
-            
+        
         
         
         //set up my cryo crystal bigger than the normal one using this distance, similar to PE escape stuff
@@ -398,7 +424,12 @@ public class MC {
       //will need to change these based on the angle 
       double xNorm = 0.0000, yNorm = 0.0000, zNorm = 1.0; //direction cosine are such that just going down in one
       double theta = 0, phi = 0, previousTheta = 0, previousPhi = 0, thisTheta = 0;
-      double previousZ = -ZDimension/2;  //dodgy if specimen not flat - change for concave holes 
+      double previousZ = -ZDimension/2;  //dodgy if specimen not flat - change for concave holes
+      //also need to change for the rotation... 
+      
+      
+      
+      
       
       //need to add start offset and translation to the xy position as well
       
@@ -416,7 +447,7 @@ public class MC {
         track = true;
         if (surrounding == true) { // if never going to hit the crystal
           //determine if it is worth tracking it or not
-          if ((Math.abs(previousX) - distanceNM) > XDimension/2 || (Math.abs(previousY) - distanceNM) > YDimension/2){
+          if ((Math.abs(previousX) - surroundingThickness[0]) > XDimension/2 || (Math.abs(previousY) - surroundingThickness[1]) > YDimension/2){
             track = false;
           }
           if (track == true) {
@@ -1089,26 +1120,7 @@ public class MC {
     }
     if (surrounding == false) {
       totalIonisationEvents += 1;
-    
-    if (surrounding == false) {
-      totalIonisationEventsvResolved += 1;
-      voxelIonisationsvResolved[pixelCoord[0]][pixelCoord[1]][pixelCoord[2]] += 1;
-      if (atomicIonisations.containsKey(ionisedElement)) {
-        atomicIonisations.put(ionisedElement, atomicIonisations.get(ionisedElement)+1);
-      }
-      else {
-        atomicIonisations.put(ionisedElement, (long)1);
-      }
-      if (testIfInsideExposedArea(xn, yn, beam) == true) { // marker
-        if (atomicIonisationsExposed.containsKey(ionisedElement)) {
-          atomicIonisationsExposed.put(ionisedElement, atomicIonisationsExposed.get(ionisedElement)+1);
-        }
-        else {
-          atomicIonisationsExposed.put(ionisedElement, (long)1);
-        }
-      }
-      
-    }
+      addIonisation(timeStamp, pixelCoord, ionisedElement, xn, yn, beam, 1);
     }
     //shell
     int shellIndex = getIonisedShell(ionisedElement, ionisationProbs);
@@ -1205,23 +1217,15 @@ public class MC {
     if (Z == 6 || Z == 7 || Z == 8 || Z == 11 || Z == 12 || Z == 14 || Z == 16 || Z == 17 || Z == 19 || Z == 20 || Z == 25 || Z == 26 || Z == 27 || Z == 28 || Z == 29 || Z == 30 || Z == 33 || Z == 34) {
     if (shellIndex == 0 || (shellIndex < 2 && Z==11) || (shellIndex < 3 && Z==12) || (shellIndex < 4 && Z<=20 && Z>12) || (shellIndex < 7 && Z>=25 && Z<31) || (shellIndex < 9 && Z>32 && Z < 35)) {
       //only do for elements that are possible right now - C N O S
-        double shellFluorescenceYield = ionisedElement.getKShellFluorescenceYield();
-        double fluoresenceYieldKRND = Math.random();
-        if (fluoresenceYieldKRND > shellFluorescenceYield) { //then this will emit and Auger electron 
+        double shellFluorescenceYield = getShellFluorescenceYield(ionisedElement, shellIndex);
+        double fluoresenceYieldRND = Math.random(); 
+
+        if (fluoresenceYieldRND > shellFluorescenceYield) { //then this will emit an Auger electron 
           // determine which transition happened in the usual way from cumulative probs
-          double transitionRND = Math.random();
-          
-          double[] transitionProbs = cumulativeTransitionProbabilities.get(Z).get(shell);
           double[] linewidths = augerTransitionLinewidths.get(Z).get(shell);
           double[] energies = augerTransitionEnergies.get(Z).get(shell);
           double[] exitIndexes = augerExitIndex.get(Z).get(shell);
-          int transitionIndex = 0;
-          for (int i = 0; i < transitionProbs.length; i++) {
-            if (transitionRND < transitionProbs[i]) { // then it's this transition
-              transitionIndex = i;
-              break;
-            }
-          }
+          int transitionIndex = getTransitionIndex(Z, shell, true);
           //could actually get a proper energy from this... Also get a linewidth and therefore lifetime 
           double augerEnergy = energies[transitionIndex];
           //can add the energy difference to the dose here
@@ -1246,27 +1250,9 @@ public class MC {
           int ionisationTime = (int) (timeStamp/PULSE_BIN_LENGTH);
           
           
-          totalIonisationEvents+= 1;
       //    if (timeStamp <lastTime-(1*PULSE_BIN_LENGTH) && surrounding == false) {
           if (surrounding == false) {
-          if (timeStamp <lastTimeVox[pixelCoord[2]]-(1*PULSE_BIN_LENGTH)) {
-            totalIonisationEventsvResolved += 1;
-            voxelIonisationsvResolved[pixelCoord[0]][pixelCoord[1]][pixelCoord[2]] += 1;
-            if (atomicIonisations.containsKey(ionisedElement)) {
-              atomicIonisations.put(ionisedElement, atomicIonisations.get(ionisedElement)+1);
-            }
-            else {
-              atomicIonisations.put(ionisedElement, (long)1);
-            }
-            if(testIfInsideExposedArea(xn, yn, beam)) {
-              if (atomicIonisationsExposed.containsKey(ionisedElement)) {
-                atomicIonisationsExposed.put(ionisedElement, atomicIonisationsExposed.get(ionisedElement)+1);
-              }
-              else {
-                atomicIonisationsExposed.put(ionisedElement, (long)1);
-              }
-            }
-          }
+            addIonisation(timeStamp, pixelCoord, ionisedElement, xn, yn, beam, 1);
           }
           trackPhotoelectron(coefCalc, timeStamp, augerEnergy, xn, yn, zn, xNorm, yNorm, zNorm, theta, phi, surrounding, false, beam, angle, wedge);
           if (surrounding == false) {
@@ -1274,6 +1260,24 @@ public class MC {
           }
           //produce another Auger from the leftover hole - only will happen if possible
           produceAugerElectron(coefCalc, timeStamp, exitIndex, ionisedElement, xn, yn, zn, surrounding, beam, angle, wedge);
+        }
+        else {
+          //do fluorescence
+          //i.e send out the photons just as I did before 
+          //shell binding energy is assuming they remain 
+          double[] linewidths = flTransitionLinewidths.get(Z).get(shell);
+          double[] energies = flTransitionEnergies.get(Z).get(shell);
+          int transitionIndex = getTransitionIndex(Z, shell, false);
+          double flEnergy = energies[transitionIndex];
+          double[] dropIndexes = flDropIndex.get(Z).get(shell);
+          int dropIndex = (int) dropIndexes[transitionIndex];
+          gosElectronDosevResolved += shellBindingEnergy;
+          voxelEnergyvResolved[pixelCoord[0]][pixelCoord[1]][pixelCoord[2]] += shellBindingEnergy;
+          
+          double flLinewidth = linewidths[transitionIndex];
+          double flLifetime = 1E15*((h/(2*Math.PI)) / ((flLinewidth/1000)*Beam.KEVTOJOULES));
+          timeStamp += flLifetime;
+          produceAugerElectron(coefCalc, timeStamp, dropIndex, ionisedElement, xn, yn, zn, surrounding, beam, angle, wedge);
         }
       }
     else {
@@ -1311,6 +1315,51 @@ public class MC {
     }
   }
   
+  private int getTransitionIndex(int Z, int shell, boolean auger) {
+    double[] transitionProbs = cumulativeTransitionProbabilities.get(Z).get(shell);
+    int transitionIndex = 0;
+    double transitionRND = Math.random();
+    for (int i = 0; i < transitionProbs.length; i++) {
+      if (transitionRND < transitionProbs[i]) { // then it's this transition
+        transitionIndex = i;
+        break;
+      }
+    }
+    return transitionIndex;
+  }
+  
+  
+  private double[] getTranstionProbs(int Z, int shell, boolean auger) {
+    if (auger == true) {
+      return cumulativeTransitionProbabilities.get(Z).get(shell);
+    }
+    else {
+      return flCumulativeTransitionProbabilities.get(Z).get(shell);
+    }
+  }
+  
+  private void addIonisation(double timeStamp, int[] pixelCoord, Element ionisedElement, double xn, double yn, Beam beam, int numIonisation) {
+    totalIonisationEvents += numIonisation; 
+      totalIonisationEventsvResolved += numIonisation;
+      voxelIonisationsvResolved[pixelCoord[0]][pixelCoord[1]][pixelCoord[2]]+= numIonisation;
+      if (atomicIonisations.containsKey(ionisedElement)) {
+        atomicIonisations.put(ionisedElement, atomicIonisations.get(ionisedElement)+numIonisation);
+      }
+      else {
+        atomicIonisations.put(ionisedElement, (long)numIonisation);
+      }
+      if(testIfInsideExposedArea(xn, yn, beam)) {
+        if (atomicIonisationsExposed.containsKey(ionisedElement)) {
+          atomicIonisationsExposed.put(ionisedElement, atomicIonisationsExposed.get(ionisedElement)+numIonisation);
+        }
+        else {
+          atomicIonisationsExposed.put(ionisedElement, (long)numIonisation);
+        }
+      }
+    
+  }
+  
+  
   private void produceCompton(Beam beam, CoefCalc coefCalc, double timeStamp, double xn, double yn, double zn, boolean surrounding, 
                               double photonEnergy, Map<Element, Double> elementComptonProbs, double angle, Wedge wedge) {
     //then the photon scattered by the compton effect
@@ -1340,27 +1389,9 @@ public class MC {
       ionisationTime = 0;
     }
     if (surrounding == false) {
-      
-      totalIonisationEvents += 1;
-      
-        totalIonisationEventsvResolved += 1;
-        voxelIonisationsvResolved[pixelCoord[0]][pixelCoord[1]][pixelCoord[2]] += 1;
         Element ionisedElement = getIonisedElement(elementComptonProbs);
-        
-        if (atomicIonisations.containsKey(ionisedElement)) {
-          atomicIonisations.put(ionisedElement, atomicIonisations.get(ionisedElement)+1);
-        }
-        else {
-          atomicIonisations.put(ionisedElement, (long)1);
-        }
-        if(testIfInsideExposedArea(xn, yn, beam) == true) { 
-          if (atomicIonisationsExposed.containsKey(ionisedElement)) {
-            atomicIonisationsExposed.put(ionisedElement, atomicIonisationsExposed.get(ionisedElement)+1);
-          }
-          else {
-            atomicIonisationsExposed.put(ionisedElement, (long)1);
-          }
-        }
+        addIonisation(timeStamp, pixelCoord, ionisedElement, xn, yn, beam, 1);
+     
       
       //need to add a random element in here 
     }
@@ -1374,6 +1405,31 @@ public class MC {
     
   }
 
+  private double getShellFluorescenceYield(Element ionisedElement, double shellIndex) {
+    double flYield = 0;
+    int intIndex = (int) shellIndex;
+    switch (intIndex) {
+      case 0: flYield = ionisedElement.getKShellFluorescenceYield();
+              break;
+      case 1: flYield = ionisedElement.getL1ShellFluorescenceYield();
+              break;
+      case 2: flYield = ionisedElement.getL2ShellFluorescenceYield();
+              break;
+      case 3: flYield = ionisedElement.getL3ShellFluorescenceYield();
+              break;
+      case 4: flYield = ionisedElement.getM1ShellFluorescenceYield();
+              break;
+      case 5: flYield = ionisedElement.getM2ShellFluorescenceYield();
+              break;
+      case 6: flYield = ionisedElement.getM3ShellFluorescenceYield();
+              break;
+      case 7: flYield = ionisedElement.getM4ShellFluorescenceYield();
+              break;
+      case 8: flYield = ionisedElement.getM5ShellFluorescenceYield();
+              break;
+    }
+    return flYield;
+  }
   
   private void trackPhotoelectron(CoefCalc coefCalc, double startingTimeStamp, double startingEnergy,
                                   double previousX, double previousY, double previousZ,
@@ -1511,28 +1567,10 @@ public class MC {
           if (simpleMC == false) {
           int numIonisation = (int) (startingEnergy/avgEnergy);
           if (numIonisation > 0 && surrounding == false) {
-            totalIonisationEvents += numIonisation;
             lowEnergyIonisations+= numIonisation;
             //decide what elements to add this to
             Element hitElem = chooseLowEnElement(coefCalc, Pinner, gosOuterIonisationProbs, ionisationProbs);
-            if (timeStamp <lastTimeVox[pixelCoord[2]]-(1*PULSE_BIN_LENGTH)) {
-              totalIonisationEventsvResolved+= numIonisation;
-              voxelIonisationsvResolved[pixelCoord[0]][pixelCoord[1]][pixelCoord[2]] += numIonisation;
-              if (atomicIonisations.containsKey(hitElem)) {
-                atomicIonisations.put(hitElem, atomicIonisations.get(hitElem)+numIonisation);
-              }
-              else {
-                atomicIonisations.put(hitElem, (long)numIonisation);
-              }
-              if(testIfInsideExposedArea(previousX, previousY, beam) == true) {
-                if (atomicIonisationsExposed.containsKey(hitElem)) {
-                  atomicIonisationsExposed.put(hitElem, atomicIonisationsExposed.get(hitElem)+numIonisation);
-                }
-                else {
-                  atomicIonisationsExposed.put(hitElem, (long)numIonisation);
-                }
-              }
-            }
+            addIonisation(timeStamp, pixelCoord, hitElem, xn, yn, beam, numIonisation);
           }
         }
         }
@@ -1870,26 +1908,7 @@ public class MC {
           if (SEEnergy > 0) {
       //      if (timeStamp <lastTime-(1*PULSE_BIN_LENGTH) & surrounding == false) {
             if (surrounding == false) {
-            totalIonisationEvents += 1;
-            if (timeStamp <lastTimeVox[pixelCoord[2]]-(1*PULSE_BIN_LENGTH)) { 
-              
-              totalIonisationEventsvResolved += 1;
-              voxelIonisationsvResolved[pixelCoord[0]][pixelCoord[1]][pixelCoord[2]] += 1;
-              if (atomicIonisations.containsKey(collidedElement)) {
-                atomicIonisations.put(collidedElement, atomicIonisations.get(collidedElement)+1);
-              }
-              else {
-                atomicIonisations.put(collidedElement, (long)1);
-              }
-              if(testIfInsideExposedArea(xn, yn, beam) == true) {
-                if (atomicIonisationsExposed.containsKey(collidedElement)) {
-                  atomicIonisationsExposed.put(collidedElement, atomicIonisationsExposed.get(collidedElement)+1);
-                }
-                else {
-                  atomicIonisationsExposed.put(collidedElement, (long)1);
-                }
-              }
-            }
+              addIonisation(timeStamp, pixelCoord, collidedElement, xn, yn, beam, 1);
             }
             ionisationsPerPhotoelectron += 1;
             avgUk += Uk;
@@ -1947,28 +1966,10 @@ public class MC {
               if (avgEnergy > 0 && surrounding == false) {
                 int numIonisation = (int) (SEEnergy/avgEnergy);
                 if (numIonisation > 0) {
-                  totalIonisationEvents += numIonisation;
                   lowEnergyIonisations += numIonisation;
                   //decide what elements to add this to
                   Element hitElem = chooseLowEnElement(coefCalc, Pinner, gosOuterIonisationProbs, ionisationProbs);
-                  if (timeStamp <lastTimeVox[pixelCoord[2]]-(1*PULSE_BIN_LENGTH)) {
-                    totalIonisationEventsvResolved+= numIonisation;
-                    voxelIonisationsvResolved[pixelCoord[0]][pixelCoord[1]][pixelCoord[2]] += numIonisation;
-                    if (atomicIonisations.containsKey(hitElem)) {
-                      atomicIonisations.put(hitElem, atomicIonisations.get(hitElem)+numIonisation);
-                    }
-                    else {
-                      atomicIonisations.put(hitElem, (long)numIonisation);
-                    }
-                    if(testIfInsideExposedArea(xn, yn, beam)) {
-                      if (atomicIonisationsExposed.containsKey(hitElem)) {
-                        atomicIonisationsExposed.put(hitElem, atomicIonisationsExposed.get(hitElem)+numIonisation);
-                      }
-                      else {
-                        atomicIonisationsExposed.put(hitElem, (long)numIonisation);
-                      }
-                    }
-                  }
+                  addIonisation(timeStamp, pixelCoord, hitElem, xn, yn, beam, numIonisation);
                 }
               }
             }
@@ -2254,6 +2255,9 @@ public class MC {
         else { //it's one I'm tracking from the surrounding
           //check if it's still worth tracking it form the surrounding anymore - i.e still in track range
           double maxDistanceNM = (electronEnergy/coefCalc.getStoppingPower(electronEnergy, surrounding)); 
+          
+          //this bit here will also need to change for rotation
+          
           if (Math.abs(xn) > maxDistanceNM + XDimension/2 || Math.abs(yn) > maxDistanceNM + YDimension/2 || Math.abs(zn) > maxDistanceNM + ZDimension/2) {
             exited = true;
           }
@@ -2330,27 +2334,10 @@ public class MC {
           if (avgEnergy > 0) {
             int numIonisation = (int) (electronEnergy/avgEnergy);
             if (numIonisation > 0) {
-              totalIonisationEvents += numIonisation;
               lowEnergyIonisations += numIonisation;
               //decide what elements to add this to
               Element hitElem = chooseLowEnElement(coefCalc, Pinner, gosOuterIonisationProbs, ionisationProbs);
-              
-                totalIonisationEventsvResolved += numIonisation;
-                voxelIonisationsvResolved[pixelCoord[0]][pixelCoord[1]][pixelCoord[2]] += numIonisation;
-                if (atomicIonisations.containsKey(hitElem)) {
-                  atomicIonisations.put(hitElem, atomicIonisations.get(hitElem)+numIonisation);
-                }
-                else {
-                  atomicIonisations.put(hitElem, (long)numIonisation);
-                }
-                if(testIfInsideExposedArea(xn, yn, beam) == true) {
-                  if (atomicIonisationsExposed.containsKey(hitElem)) {
-                    atomicIonisationsExposed.put(hitElem, atomicIonisationsExposed.get(hitElem)+numIonisation);
-                  }
-                  else {
-                    atomicIonisationsExposed.put(hitElem, (long)numIonisation);
-                  }
-                }
+              addIonisation(timeStamp, pixelCoord, hitElem, xn, yn, beam, numIonisation);
               
             } 
           }
@@ -2757,27 +2744,13 @@ private boolean testIfInsideExposedArea(double xPos, double yPos, Beam beam) { /
   
   private void populateAugerLinewidths() throws IOException {
     for (int i = 0; i < augerElements.length; i++) {
-      int shell = 0;
+      int shell = getNumAugerShells(i);
       HashMap<Integer, double[]> shellLinewidths = new HashMap<Integer, double[]>();
       HashMap<Integer, double[]> shellTransitionProbs = new HashMap<Integer, double[]>();
       HashMap<Integer, double[]> shellTransitionEnergies = new HashMap<Integer, double[]>();
       HashMap<Integer, double[]> shellCumulativeProbs = new HashMap<Integer, double[]>();
       HashMap<Integer, double[]> leftShellIndexes = new HashMap<Integer, double[]>();
-      if (augerElements[i] == 11) {
-        shell = 1;
-      }
-      if (augerElements[i] == 12) {
-        shell = 2;
-      }
-      if (augerElements[i] <= 20 && augerElements[i] > 12) {
-        shell = 3;
-      }
-      if (augerElements[i] >= 25 && augerElements[i] <= 30) {
-        shell = 6;
-      }
-      if (augerElements[i] >= 33 && augerElements[i] <= 34) {
-        shell = 8;
-      }
+
       for (int j =0; j <= shell; j++) {
     //  if (augerElements[i] != 26) {
       double[] transitionProbs = new double[65];
@@ -2828,6 +2801,83 @@ private boolean testIfInsideExposedArea(double xPos, double yPos, Beam beam) { /
         
      // }
     }
+  }
+  
+  private void populateFluorescenceLinewidths() throws IOException {
+    for (int i = 0; i < augerElements.length; i++) {
+      int shell = getNumAugerShells(i);
+      HashMap<Integer, double[]> flLinewidths = new HashMap<Integer, double[]>();
+      HashMap<Integer, double[]> flTransitionProbs = new HashMap<Integer, double[]>();
+      HashMap<Integer, double[]> transitionEnergiesfl = new HashMap<Integer, double[]>();
+      HashMap<Integer, double[]> flCumulativeProbs = new HashMap<Integer, double[]>();
+      HashMap<Integer, double[]> dropShellIndexes = new HashMap<Integer, double[]>();
+      
+      for (int j =0; j <= shell; j++) {
+        //  if (augerElements[i] != 26) {
+          double[] transitionProbs = new double[65];
+          double[] cumulativeTransitionProbs = new double[65];
+          double[] dropShellIndex = new double[65];
+          double sumProb = 0;
+          double[] transitionLinewidths = new double[65];
+          double[] transitionEnergies = new double[65];
+          String elementNum = String.valueOf(augerElements[i]) + "-" + j + ".csv";
+          String filePath = "constants/fl_linewidths/" + elementNum;
+          InputStreamReader isr = locateFile(filePath);
+          BufferedReader br = new BufferedReader(isr);
+          String line;
+          String[] components;
+          int count = -1;
+          while ((line = br.readLine()) != null) {
+            count += 1;
+            components = line.split(",");
+            transitionLinewidths[count] = Double.parseDouble(components[1]);
+            transitionProbs[count] = Double.parseDouble(components[2]);
+            transitionEnergies[count] = Double.parseDouble(components[3]);
+            dropShellIndex[count] = Double.parseDouble(components[4]);
+            sumProb += transitionProbs[count];
+            cumulativeTransitionProbs[count] = sumProb;
+          }
+          //scale cumulative probs to one 
+          for (int k = 0; k < cumulativeTransitionProbs.length; k++) {
+            cumulativeTransitionProbs[k] = cumulativeTransitionProbs[k] * (1/sumProb);
+          }
+          if (j == 0) {
+            totKAugerProb.put(augerElements[i], sumProb);
+          }
+          flLinewidths.put(j, transitionLinewidths);
+          flTransitionProbs.put(j, transitionProbs);
+          transitionEnergiesfl.put(j, transitionEnergies);
+          flCumulativeProbs.put(j, cumulativeTransitionProbs);
+          dropShellIndexes.put(j,  dropShellIndex);
+
+          }
+          
+          flTransitionLinewidths.put(augerElements[i], flLinewidths);
+          flTransitionProbabilities.put(augerElements[i], flTransitionProbs);
+          flTransitionEnergies.put(augerElements[i], transitionEnergiesfl);
+          flCumulativeTransitionProbabilities.put(augerElements[i], flCumulativeProbs);
+          flDropIndex.put(augerElements[i], dropShellIndexes);
+    }
+  }
+  
+  private int getNumAugerShells(int i) {
+    int shell = 0;
+    if (augerElements[i] == 11) {
+      shell = 1;
+    }
+    if (augerElements[i] == 12) {
+      shell = 2;
+    }
+    if (augerElements[i] <= 20 && augerElements[i] > 12) {
+      shell = 3;
+    }
+    if (augerElements[i] >= 25 && augerElements[i] <= 30) {
+      shell = 6;
+    }
+    if (augerElements[i] >= 33 && augerElements[i] <= 34) {
+      shell = 8;
+    }
+    return shell;
   }
   
   private void populateEnergyPerInel(Beam beam, CoefCalc coefCalc, double photonEnergy) {

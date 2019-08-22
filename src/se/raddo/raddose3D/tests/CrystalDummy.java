@@ -197,7 +197,7 @@ public class CrystalDummy extends Crystal {
   @Override
   public void startMC(double XDim, double YDim, double ZDim, Beam beam,
       Wedge wedge, CoefCalc coefCalc, int runNum, boolean verticalGoniometer,
-      boolean xfel, boolean gos) {
+      boolean xfel, boolean gos, double[] surrThickness) {
     // TODO Auto-generated method stub
     
   }

@@ -2421,11 +2421,11 @@ public class CrystalPolyhedron extends Crystal {
   
   @Override
   public void startMC(double XDim, double YDim, double ZDim, Beam beam,
-      Wedge wedge, CoefCalc coefCalc, int runNum, boolean verticalGoniometer, boolean xfelTrue, boolean gos) {
+      Wedge wedge, CoefCalc coefCalc, int runNum, boolean verticalGoniometer, boolean xfelTrue, boolean gos, double[] surrThickness) {
     //also need indices, vertices, crystalCoords, numberVoxelsm, PPM (may not need all of these but just 
     //to be safe for now
     MC mc = new MC(vertices, indices, crystCoord, 
-                                  crystalPixPerUM, crystSizeVoxels, crystOcc, runNum, verticalGoniometer, xfelTrue, gos);
+                                  crystalPixPerUM, crystSizeVoxels, crystOcc, runNum, verticalGoniometer, xfelTrue, gos, surrThickness);
     mc.CalculateXFEL(beam, wedge, coefCalc);
   }
   

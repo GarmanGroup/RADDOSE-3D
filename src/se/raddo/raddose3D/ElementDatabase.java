@@ -94,7 +94,9 @@ public class ElementDatabase {
     /** ELSEPA elastic cross section */
     EL_50(65), EL_100(66), EL_150(67), EL_200(68), EL_250(69), EL_300(70),
     /**Mean ionisation potential**/
-    I(71), L1(72), M1(73), N1(74);
+    I(71), L1(72), M1(73), N1(74), 
+    /**more Fl yields**/
+    FLUORESCENCE_YIELD_M1(75), FLUORESCENCE_YIELD_M2(76),FLUORESCENCE_YIELD_M3(77),FLUORESCENCE_YIELD_M4(78),FLUORESCENCE_YIELD_M5(79);
 
     
     /**

@@ -43,6 +43,11 @@ public abstract class Crystal {
   public static final String     CRYSTAL_PROGRAM       = "PROGRAM";
   /** Constant for data fields in Map constructors: Electrons. */
   public static final String     CRYSTAL_RUNS       = "RUNS";
+  
+  /** Constant for data fields in Map constructors: Electrons. */
+  public static final String     SURROUNDING_X       = "SURROUNDINGX";
+  public static final String     SURROUNDING_Y       = "SURROUNDINGY";
+  public static final String     SURROUNDING_Z       = "SURROUNDINGZ";
 
   /** Constant for data fields in Map constructors: Photoelectron resolution. */
   
@@ -151,6 +156,9 @@ public abstract class Crystal {
   public double XDim;
   public double YDim;
   public double ZDim;
+  public double XSurr;
+  public double YSurr;
+  public double ZSurr;
   
   private final int numberAngularEmissionBins = 10;
   
@@ -278,6 +286,20 @@ public abstract class Crystal {
         YDim = XDim;
       }
     }
+    
+    //surrounding thickness of specified
+    if (coefCalc.isCryo()) {
+      if(properties.get(Crystal.SURROUNDING_X) != null) {
+        XSurr = (double) properties.get(Crystal.SURROUNDING_X);
+      }
+      if(properties.get(Crystal.SURROUNDING_Y) != null) {
+        YSurr = (double) properties.get(Crystal.SURROUNDING_Y);
+      }
+      if(properties.get(Crystal.SURROUNDING_Z) != null) {
+        ZSurr = (double) properties.get(Crystal.SURROUNDING_Z);
+      }
+    }
+    
   }
   
   /**
@@ -393,7 +415,7 @@ public abstract class Crystal {
   
   public abstract void startMicroED(double XDim, double YDim, double ZDim, Beam beam, Wedge wedge, CoefCalc coefCalc, String crystalType);
   public abstract void startXFEL(double XDim, double YDim, double ZDim, Beam beam, Wedge wedge, CoefCalc coefCalc, int runNum, boolean verticalGoniometer, boolean xfel, boolean gos);
-  public abstract void startMC(double XDim, double YDim, double ZDim, Beam beam, Wedge wedge, CoefCalc coefCalc, int runNum, boolean verticalGoniometer, boolean xfel, boolean gos);
+  public abstract void startMC(double XDim, double YDim, double ZDim, Beam beam, Wedge wedge, CoefCalc coefCalc, int runNum, boolean verticalGoniometer, boolean xfel, boolean gos, double[] surrThickness);
   
   /**
    * finds the voxels that the bins on the tracks are in
@@ -663,6 +685,12 @@ public abstract class Crystal {
     coefCalc.updateCoefficients(beam);
     boolean xfel = true;
     boolean gos = true;
+    double[] surrThickness = new double[3];
+    if (coefCalc.isCryo()) {
+        surrThickness[0] = XSurr;
+        surrThickness[1] = YSurr;
+        surrThickness[2] = ZSurr;
+    }
     if (subprogram.equals("XFEL")) {
       xfel = true;
       gos = true;
@@ -682,7 +710,7 @@ public abstract class Crystal {
     gos = false;
     for (int i = 0; i < runs; i++) {
       int runNum = i+1;
-      startMC(XDim, YDim, ZDim, beam, wedge, coefCalc, runNum, verticalGoniometer, xfel, gos);
+      startMC(XDim, YDim, ZDim, beam, wedge, coefCalc, runNum, verticalGoniometer, xfel, gos, surrThickness);
     }
     //terminate the program
     System.exit(0);
@@ -692,7 +720,7 @@ public abstract class Crystal {
       gos = true;
       for (int i = 0; i < runs; i++) {
         int runNum = i+1;
-        startMC(XDim, YDim, ZDim, beam, wedge, coefCalc, runNum, verticalGoniometer, xfel, gos);
+        startMC(XDim, YDim, ZDim, beam, wedge, coefCalc, runNum, verticalGoniometer, xfel, gos, surrThickness);
       }
       //terminate the program
       System.exit(0);

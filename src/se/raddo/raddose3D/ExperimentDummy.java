@@ -430,7 +430,7 @@ public class ExperimentDummy extends Experiment {
       @Override
       public void startMC(double XDim, double YDim, double ZDim, Beam beam,
           Wedge wedge, CoefCalc coefCalc, int runNum,
-          boolean verticalGoniometer, boolean xfel, boolean gos) {
+          boolean verticalGoniometer, boolean xfel, boolean gos, double[] surrThickness) {
         // TODO Auto-generated method stub
         
       }
