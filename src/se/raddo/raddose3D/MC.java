@@ -51,6 +51,15 @@ public class MC {
    */
   private double[]              originDistances, rotatedOriginDistances;
   
+  
+  public double[][] verticesSurrounding;
+  public double[][] rotatedVerticesSurrounding;
+  public double[][][] expandedRotatedVerticesSurrounding;
+  public int[][] indicesSurrounding;
+  private double[][] normalsSurrounding, rotatedNormalsSurrounding;
+  private double[] originDistancesSurrounding, rotatedOriginDistancesSurrounding;
+  
+  
   public double XDimension; //nm
   public double YDimension;
   public double ZDimension;
@@ -84,6 +93,7 @@ public class MC {
   private HashMap<Integer, HashMap<Integer, double[]>> cumulativeTransitionProbabilities;
   private HashMap<Integer, HashMap<Integer, double[]>> augerTransitionEnergies;
   private HashMap<Integer, HashMap<Integer, double[]>> augerExitIndex;
+  private HashMap<Integer, HashMap<Integer, double[]>> augerDropIndex;
   private int[] augerElements = {6, 7, 8, 11, 12, 14, 15, 16, 17, 19, 20, 25, 26, 27, 28, 29, 30, 33, 34};
   private HashMap<Integer, Double> totKAugerProb;
   
@@ -170,6 +180,14 @@ public class MC {
     crystalPixPerUMXFEL = crystalPixPerUM;
     crystalSizeVoxelsXFEL = crystSizeVoxels;
     crystOccXFEL = crystOcc;
+    surroundingThickness = surrThickness;
+    for (int i = 0; i < 3; i++) {
+      surroundingThickness[i] *= 1000;
+    }
+    
+    //set up cryocystal
+    verticesSurrounding = new double[verticesXFEL.length][3];
+    indicesSurrounding = new int[indicesXFEL.length][3];
     
     verticalGoni = verticalGoniometer;
     doXFEL = xfel;
@@ -205,6 +223,7 @@ public class MC {
     totKAugerProb = new HashMap<Integer, Double>();
     cumulativeTransitionProbabilities = new HashMap<Integer, HashMap<Integer, double[]>>();
     augerExitIndex = new HashMap<Integer, HashMap<Integer, double[]>>();
+    augerDropIndex = new HashMap<Integer, HashMap<Integer, double[]>>();
     
     flTransitionLinewidths = new HashMap<Integer, HashMap<Integer, double[]>>();
     flTransitionProbabilities = new HashMap<Integer, HashMap<Integer, double[]>>();
@@ -222,10 +241,27 @@ public class MC {
     maxDims = new double[3];
     minDims = new double[3];
     
-    surroundingThickness = surrThickness;
+    
     
     
   }
+  
+  private void setupSurroundingVolume() {
+    
+    for (int i = 0; i < verticesXFEL.length; i++) {
+      for (int j = 0; j < 3; j++) {
+        if (verticesXFEL[i][j] < 0) {
+          verticesSurrounding[i][j] = verticesXFEL[i][j] - surroundingThickness[j]/1000;
+        }
+        else {
+          verticesSurrounding[i][j] = verticesXFEL[i][j] + surroundingThickness[j]/1000;
+        }
+      }
+    }
+    
+    indicesSurrounding = indicesXFEL;
+  }
+  
   
   public void CalculateXFEL(Beam beam, Wedge wedge, CoefCalc coefCalc) {
 
@@ -396,11 +432,11 @@ public class MC {
           if (surroundingThickness[test] <= 0.0 || surroundingThickness[test] > wickTest) {
             surroundingThickness[test] = wickTest;
           }
-          else {
-            surroundingThickness[test] *= 1000;
-          }
         }
         
+        setupSurroundingVolume();
+        //rotateSurrounding
+        setUpRotatedVerticesSurrounding(angle, wedge);
         //space here to change the wickTest distance
         //wickTest = 1000;
        // wickTest = beam.getPulseEnergy() * 1000;
@@ -424,12 +460,11 @@ public class MC {
       //will need to change these based on the angle 
       double xNorm = 0.0000, yNorm = 0.0000, zNorm = 1.0; //direction cosine are such that just going down in one
       double theta = 0, phi = 0, previousTheta = 0, previousPhi = 0, thisTheta = 0;
+      
+      
       double previousZ = -ZDimension/2;  //dodgy if specimen not flat - change for concave holes
-      //also need to change for the rotation... 
       
-      
-      
-      
+     
       
       //need to add start offset and translation to the xy position as well
       
@@ -438,16 +473,33 @@ public class MC {
       double[] xyPos = getPhotonBeamXYPos(beam, wedge);
       double previousX = xyPos[0];
       double previousY = xyPos[1];
+      //bring the z to the start of the surrounding volume
+      boolean track = false;
+      double tempZ = 0;
+      double tempZNorm = -1.0;
+      Double intersectionDistanceSurr = 1000*getIntersectionDistanceSurrounding(previousX, previousY, tempZ, xNorm, yNorm, tempZNorm); 
+      if (intersectionDistanceSurr.isInfinite()) {
+        track = false; //outside tracked area
+        exited = true;
+      }
+      else {
+        //then this is one I want to track so place it at the start of the surrounding
+        double[] intersectionPoint = getIntersectionPoint(intersectionDistanceSurr, previousX, previousY, tempZ, xNorm, yNorm, tempZNorm);
+        previousZ = intersectionPoint[2];
+      }
       
       //determine if the electron is incident on the sample or not
       double s = 0;
       boolean surrounding = !isMicrocrystalAt(previousX, previousY, 0, angle, wedge); //Z = 0 as just looking at x and y
-      boolean track = false;
+      
       if (coefCalc.isCryo()) {
         track = true;
         if (surrounding == true) { // if never going to hit the crystal
           //determine if it is worth tracking it or not
-          if ((Math.abs(previousX) - surroundingThickness[0]) > XDimension/2 || (Math.abs(previousY) - surroundingThickness[1]) > YDimension/2){
+          
+          //this should be if in xyz (z=0) is in the surrounding crystal
+      //    if ((Math.abs(previousX) - surroundingThickness[0]) > XDimension/2 || (Math.abs(previousY) - surroundingThickness[1]) > YDimension/2){
+          if (calculateCrystalOccupancySurrounding(previousX, previousY, 0) == false){
             track = false;
           }
           if (track == true) {
@@ -465,6 +517,10 @@ public class MC {
           s = -photonMFPLSurrounding*Math.log(Math.random());
         //  if ((s < distanceNM) || (distanceNM + ZDimension < s && s < 2*distanceNM + ZDimension) ) { //then this photon will interact before or after hitting the crystal
             
+          
+          
+          
+          //this bit will also need to change
             if ((s < wickTest) ) { //photon interacts before hitting the crystal
             //need to give it a timestamp, I'm going to start it off with a negative one and if it is negative one put it on 0
             surrounding = true;
@@ -557,7 +613,8 @@ public class MC {
               //check if this point is in a trackable point in the surrounding
               if (track == true) { // lazy way, but this is same as if user wants to track surrounding 
                 //check that the z is not ridiculuous
-                if (zn > -distanceNM - ZDimension/2 && zn < ZDimension/2 + distanceNM) { 
+               // if (zn > -distanceNM - ZDimension/2 && zn < ZDimension/2 + distanceNM) {
+                if (calculateCrystalOccupancySurrounding(xn, yn, zn) == true) {
                   //sort out the timeStamp
                   /*
                   int beforeOrAfter = 1; 
@@ -606,7 +663,8 @@ public class MC {
               xn = previousX + s * xNorm;
               yn = previousY + s * yNorm;
               zn = previousZ + s * zNorm;
-              if (zn < wickTest + ZDimension/2) {
+              //if (zn < wickTest + ZDimension/2) {
+              if(calculateCrystalOccupancySurrounding(xn, yn, zn) == true) {
                 //then it has interacted with the surrounding behind the crystal
                 timeToPoint = (1/c) * (s/1E9);
                 timeStamp += timeToPoint * 1E15;
@@ -1225,6 +1283,7 @@ public class MC {
           double[] linewidths = augerTransitionLinewidths.get(Z).get(shell);
           double[] energies = augerTransitionEnergies.get(Z).get(shell);
           double[] exitIndexes = augerExitIndex.get(Z).get(shell);
+          double[] dropIndexes = augerDropIndex.get(Z).get(shell);
           int transitionIndex = getTransitionIndex(Z, shell, true);
           //could actually get a proper energy from this... Also get a linewidth and therefore lifetime 
           double augerEnergy = energies[transitionIndex];
@@ -1236,6 +1295,7 @@ public class MC {
           double augerLifetime = 1E15*((h/(2*Math.PI)) / ((augerLinewidth/1000)*Beam.KEVTOJOULES));
           timeStamp += augerLifetime;
           int exitIndex = (int) exitIndexes[transitionIndex];
+          int dropIndex = (int) dropIndexes[transitionIndex];
           //add a charge 
           
           //account for this transition so cross sections can be adjusted
@@ -1260,6 +1320,7 @@ public class MC {
           }
           //produce another Auger from the leftover hole - only will happen if possible
           produceAugerElectron(coefCalc, timeStamp, exitIndex, ionisedElement, xn, yn, zn, surrounding, beam, angle, wedge);
+          produceAugerElectron(coefCalc, timeStamp, dropIndex, ionisedElement, xn, yn, zn, surrounding, beam, angle, wedge);
         }
         else {
           //do fluorescence
@@ -2258,7 +2319,8 @@ public class MC {
           
           //this bit here will also need to change for rotation
           
-          if (Math.abs(xn) > maxDistanceNM + XDimension/2 || Math.abs(yn) > maxDistanceNM + YDimension/2 || Math.abs(zn) > maxDistanceNM + ZDimension/2) {
+       //   if (Math.abs(xn) > maxDistanceNM + XDimension/2 || Math.abs(yn) > maxDistanceNM + YDimension/2 || Math.abs(zn) > maxDistanceNM + ZDimension/2) {
+          if (calculateCrystalOccupancySurrounding(xn, yn, zn) == false){
             exited = true;
           }
           else {
@@ -2750,11 +2812,13 @@ private boolean testIfInsideExposedArea(double xPos, double yPos, Beam beam) { /
       HashMap<Integer, double[]> shellTransitionEnergies = new HashMap<Integer, double[]>();
       HashMap<Integer, double[]> shellCumulativeProbs = new HashMap<Integer, double[]>();
       HashMap<Integer, double[]> leftShellIndexes = new HashMap<Integer, double[]>();
+      HashMap<Integer, double[]> dropShellIndexes = new HashMap<Integer, double[]>();
 
       for (int j =0; j <= shell; j++) {
     //  if (augerElements[i] != 26) {
       double[] transitionProbs = new double[65];
       double[] leftShellIndex = new double[65];
+      double[] dropShellIndex = new double[65];
       double[] cumulativeTransitionProbs = new double[65];
       double sumProb = 0;
       double[] transitionLinewidths = new double[65];
@@ -2773,6 +2837,7 @@ private boolean testIfInsideExposedArea(double xPos, double yPos, Beam beam) { /
         transitionProbs[count] = Double.parseDouble(components[2]);
         transitionEnergies[count] = Double.parseDouble(components[3]);
         leftShellIndex[count] = Double.parseDouble(components[4]);
+        dropShellIndex[count] = Double.parseDouble(components[5]);
         sumProb += transitionProbs[count];
         cumulativeTransitionProbs[count] = sumProb;
       }
@@ -2788,6 +2853,7 @@ private boolean testIfInsideExposedArea(double xPos, double yPos, Beam beam) { /
       shellTransitionEnergies.put(j, transitionEnergies);
       shellCumulativeProbs.put(j, cumulativeTransitionProbs);
       leftShellIndexes.put(j,  leftShellIndex);
+      dropShellIndexes.put(j,  dropShellIndex);
       }
 
       
@@ -2795,6 +2861,7 @@ private boolean testIfInsideExposedArea(double xPos, double yPos, Beam beam) { /
       augerTransitionProbabilities.put(augerElements[i], shellTransitionProbs);
       augerTransitionEnergies.put(augerElements[i], shellTransitionEnergies);
       augerExitIndex.put(augerElements[i], leftShellIndexes);
+      augerDropIndex.put(augerElements[i], dropShellIndexes);
       cumulativeTransitionProbabilities.put(augerElements[i], shellCumulativeProbs);
     //  }
     //  else {
@@ -3762,6 +3829,65 @@ private Element chooseLowEnElement(CoefCalc coefCalc, double Pinner, Map<Element
     return inside;
   }
   
+  public boolean calculateCrystalOccupancySurrounding(final double x, final double y, final double z)
+  {
+    
+    //i need to change this to take the rotated values if there has been rotation
+    //rotated vertices, rotated originDistances
+    
+    if (normalsSurrounding == null) {
+      calculateNormalsSurrounding(false);
+    }
+
+    boolean inside = false;
+
+    double[] directionVector = { 0, 0, 1 };
+    double[] origin = new double[3];
+    origin[0] = x/1000;
+    origin[1] = y/1000;
+    origin[2] = z/1000;
+    //It doesn't work if x = y so need a fudge here... this is horrible.
+    if (origin[0] == origin[1]) {
+      origin[0] += 0.00001;
+    }
+
+    for (int l = 0; l < indicesSurrounding.length; l++) {
+      double intersectionDistance = Vector.rayTraceDistance(rotatedNormalsSurrounding[l],
+          directionVector, origin, rotatedOriginDistancesSurrounding[l]);
+
+      Double distanceObject = Double.valueOf(intersectionDistance);
+
+      if (intersectionDistance < 0 || distanceObject.isNaN()
+          || distanceObject.isInfinite()) {
+        continue;
+      }
+
+      double[] intersectionPoint = Vector.rayTraceToPointWithDistance(
+          directionVector, origin, intersectionDistance);
+
+      double[][] triangleVertices = new double[3][3];
+
+      // copy vertices referenced by indices into single array for
+      // passing onto the polygon inclusion test.
+      for (int m = 0; m < 3; m++) {
+        System.arraycopy(rotatedVerticesSurrounding[indicesSurrounding[l][m] - 1], 0, triangleVertices[m],
+            0, 3);
+      }
+
+  //    boolean crosses = Vector.polygonInclusionTest(triangleVertices,
+  //        intersectionPoint);
+      
+      boolean crosses = Vector.polygonInclusionTest(expandedRotatedVerticesSurrounding[l],
+          intersectionPoint);
+
+      if (crosses) {
+        inside = !inside;
+      }
+    }
+
+    return inside;
+  }
+  
   private int[] getMaxPixelCoordinates() {
     double[] xMinMax = this.minMaxVertices(0, verticesXFEL);
     double[] yMinMax = this.minMaxVertices(1, verticesXFEL);
@@ -3820,6 +3946,44 @@ private Element chooseLowEnElement(CoefCalc coefCalc, double Pinner, Map<Element
     for (int l = 0; l < indicesXFEL.length; l++) {
       intersectionDistance = Vector.rayTraceDistance(normals[l],
           directionVector, origin, originDistances[l]);
+
+      Double distanceObject = Double.valueOf(intersectionDistance);
+
+      if (intersectionDistance < 0 || distanceObject.isNaN()
+          || distanceObject.isInfinite()) {
+          //do nothing
+      }
+      else {
+    //    break; //maybe should just be closest, or an issue with the rayTRace
+        if (minIntersect == 0) {
+          minIntersect = intersectionDistance;
+        }
+        else {
+          double min = Math.min(minIntersect, intersectionDistance);
+          minIntersect = min;
+        }
+      }
+
+    }
+    return minIntersect;
+  }
+  
+  private double getIntersectionDistanceSurrounding(double x, double y, double z, double ca, double cb, double cc) {
+    if (normalsSurrounding == null) {
+      calculateNormalsSurrounding(false);
+    }
+
+    double[] directionVector = {ca, cb, cc}; //the actual direction vector
+    double minIntersect = 0;
+    double[] origin = new double[3];
+    origin[0] = x/1000;
+    origin[1] = y/1000;
+    origin[2] = z/1000;
+    
+    double intersectionDistance = 0;
+    for (int l = 0; l < indicesSurrounding.length; l++) {
+      intersectionDistance = Vector.rayTraceDistance(normalsSurrounding[l],
+          directionVector, origin, originDistancesSurrounding[l]);
 
       Double distanceObject = Double.valueOf(intersectionDistance);
 
@@ -3922,6 +4086,68 @@ private Element chooseLowEnElement(CoefCalc coefCalc, double Pinner, Map<Element
     
   }
   
+  public void calculateNormalsSurrounding(final boolean rotated) {
+
+    double[][] verticesUsed = verticesSurrounding;
+    double[] originDistancesUsed = new double[verticesSurrounding.length];
+    double[][] normalsUsed = new double[verticesSurrounding.length][3];
+    
+    if (rotated) {
+      verticesUsed = rotatedVerticesSurrounding;
+    }
+
+    normalsUsed = new double[indicesSurrounding.length][3];
+    originDistancesUsed = new double[indicesSurrounding.length];
+
+    for (int i = 0; i < indicesSurrounding.length; i++) {
+      // get the three vertices which this triangle corresponds to.
+      double[] point1 = verticesUsed[indicesSurrounding[i][0] - 1];
+      double[] point2 = verticesUsed[indicesSurrounding[i][1] - 1];
+      double[] point3 = verticesUsed[indicesSurrounding[i][2] - 1];
+
+      // get two vectors which can be used to define our plane.
+
+      double[] vector1 = Vector.vectorBetweenPoints(point1, point2);
+      double[] vector2 = Vector.vectorBetweenPoints(point1, point3);
+
+      // get the normal vector between these two vectors.
+
+      double[] normalVector = Vector.normalisedCrossProduct(vector1, vector2);
+
+      // copy this vector into the normals array at the given point.
+      System.arraycopy(normalVector, 0, normalsUsed[i], 0, 3);
+
+      double distanceFromOrigin = -(normalVector[0] * point1[0]
+          + normalVector[1] * point1[1] + normalVector[2] * point1[2]);
+
+      originDistancesUsed[i] = distanceFromOrigin;
+    }
+
+    
+    if (rotated) {
+      rotatedOriginDistancesSurrounding = new double[indicesSurrounding.length];
+      rotatedNormalsSurrounding = new double[indicesSurrounding.length][3];
+
+      for (int i = 0; i < normalsUsed.length; i++) {
+        System.arraycopy(normalsUsed[i], 0, rotatedNormalsSurrounding[i], 0, 3);
+      }
+
+      System.arraycopy(originDistancesUsed, 0, rotatedOriginDistancesSurrounding, 0,
+          indicesSurrounding.length);
+    } else {
+      originDistancesSurrounding = new double[indicesSurrounding.length];
+      normalsSurrounding = new double[indicesSurrounding.length][3];
+
+      for (int i = 0; i < normalsUsed.length; i++) {
+        System.arraycopy(normalsUsed[i], 0, normalsSurrounding[i], 0, 3);
+      }
+
+      System.arraycopy(originDistancesUsed, 0, originDistancesSurrounding, 0,
+          indicesSurrounding.length);
+    }
+    
+  }
+  
   private void setUpRotatedVertices(final double angrad, final Wedge wedge) {
     rotatedVerticesXFEL = new double[verticesXFEL.length][3];
 
@@ -3962,6 +4188,50 @@ private Element chooseLowEnElement(CoefCalc coefCalc, double Pinner, Map<Element
       for (int j = 0; j < 3; j++) {
         System.arraycopy(rotatedVerticesXFEL[indicesXFEL[i][j] - 1], 0,
             expandedRotatedVerticesXFEL[i][j], 0, 3);
+      }
+    }
+  }
+  
+  private void setUpRotatedVerticesSurrounding(final double angrad, final Wedge wedge) {
+    rotatedVerticesSurrounding = new double[verticesSurrounding.length][3];
+
+    // Rotate and translate the vertices of the crystal
+    // to the position defined by angrad (= deltaphi)
+
+    for (int vertInd = 0; vertInd < verticesSurrounding.length; vertInd++) {
+      // Translate Y
+      rotatedVerticesSurrounding[vertInd][1] = verticesSurrounding[vertInd][1]
+          + wedge.getStartY()
+          + wedge.getTransY(angrad);
+      // Translate X
+      double transX = verticesSurrounding[vertInd][0]
+          + wedge.getStartX()
+          + wedge.getTransX(angrad);
+      // Translate Z
+      double transZ = verticesSurrounding[vertInd][2]
+          + wedge.getStartZ()
+          + wedge.getTransZ(angrad);
+
+      // Rotate X
+      rotatedVerticesSurrounding[vertInd][0] = transX * Math.cos(angrad)
+          + transZ * Math.sin(angrad);
+      // Rotate Z
+      rotatedVerticesSurrounding[vertInd][2] = -1 * transX * Math.sin(angrad)
+          + transZ * Math.cos(angrad);
+    }
+
+    calculateNormalsSurrounding(true);
+
+    /*
+     * Now we populate the expandedRotatedVertex array.
+     */
+
+    expandedRotatedVerticesSurrounding = new double[indicesSurrounding.length][3][3];
+
+    for (int i = 0; i < indicesSurrounding.length; i++) {
+      for (int j = 0; j < 3; j++) {
+        System.arraycopy(rotatedVerticesSurrounding[indicesSurrounding[i][j] - 1], 0,
+            expandedRotatedVerticesSurrounding[i][j], 0, 3);
       }
     }
   }
