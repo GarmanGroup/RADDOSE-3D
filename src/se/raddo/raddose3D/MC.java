@@ -24,6 +24,8 @@ import java.util.List;
 import org.apache.commons.math3.distribution.MultivariateNormalDistribution;
 import org.apache.commons.math3.distribution.NormalDistribution;
 
+import se.raddo.raddose3D.CrystalPolyhedron.Vector;
+
 
 public class MC {
   //polyhderon variables
@@ -376,7 +378,7 @@ public class MC {
         if (wedge.getEndAng() < wedge.getStartAng()) {
           sign = -1;
         }
-        angle = progress * (sign * (int) (wedge.getEndAng() - wedge.getStartAng()));
+        angle = wedge.getStartAng() + (progress * (sign * (int) (wedge.getEndAng() - wedge.getStartAng())));
       }
       //convert to 0-2pi
       int timesOver = (int) (angle/(2*Math.PI));
@@ -474,108 +476,98 @@ public class MC {
       double previousX = xyPos[0];
       double previousY = xyPos[1];
       //bring the z to the start of the surrounding volume
-      boolean track = false;
+      boolean track = true;
       double tempZ = 0;
       double tempZNorm = -1.0;
-      Double intersectionDistanceSurr = 1000*getIntersectionDistanceSurrounding(previousX, previousY, tempZ, xNorm, yNorm, tempZNorm); 
-      if (intersectionDistanceSurr.isInfinite()) {
+      
+      
+      
+      //this doesn't quite work as surrounding could be in front of z = 0 if rod in front;
+      
+      //or could be interacting twice with the plane if rod behind
+      //if it interacts twice I need to take the longer distance - but then could interact far away even more times...
+      //my fudge doesn't even always work
+      
+      
+      //defo needs sorting
+      
+      
+      
+      Double intersectionDistance = 0.0;
+      boolean surrounding = false, hitting = true;
+      double[] coord = {previousX/1000, previousY/1000, tempZ/1000};
+      double crystalZ = 0;
+      if (coefCalc.isCryo()) {
+        //place photon Z at start of surrrounding
+        previousZ = getStartingZSurrounding(angle, wedge, coord); 
+        crystalZ = getStartingZ(angle, wedge, coord, true); 
+        if (crystalZ == previousZ) {
+          //then there is no surrounding here
+          surrounding = false;
+        }
+        else {
+          surrounding = true;
+        }
+        if (crystalZ == 0.0) { // this is a photon that I want to track but will never hit the crystal
+          hitting = false;
+        }
+      }
+      else{
+        //Place photon Z at start of crystal 
+        previousZ = getStartingZ(angle, wedge, coord, true); 
+        surrounding = false;
+      }
+      if (previousZ == 0.0) {
         track = false; //outside tracked area
         exited = true;
       }
-      else {
-        //then this is one I want to track so place it at the start of the surrounding
-        double[] intersectionPoint = getIntersectionPoint(intersectionDistanceSurr, previousX, previousY, tempZ, xNorm, yNorm, tempZNorm);
-        previousZ = intersectionPoint[2];
-      }
       
-      //determine if the electron is incident on the sample or not
+      
       double s = 0;
-      boolean surrounding = !isMicrocrystalAt(previousX, previousY, 0, angle, wedge); //Z = 0 as just looking at x and y
+      //the next step will be to get s
       
-      if (coefCalc.isCryo()) {
-        track = true;
-        if (surrounding == true) { // if never going to hit the crystal
-          //determine if it is worth tracking it or not
-          
-          //this should be if in xyz (z=0) is in the surrounding crystal
-      //    if ((Math.abs(previousX) - surroundingThickness[0]) > XDimension/2 || (Math.abs(previousY) - surroundingThickness[1]) > YDimension/2){
-          if (calculateCrystalOccupancySurrounding(previousX, previousY, 0) == false){
-            track = false;
-          }
-          if (track == true) {
-            s = -photonMFPLSurrounding*Math.log(Math.random());
-            //update Z
-            previousZ = previousZ - distanceNM;
-            //give it a negative timestamp
-            timeStamp -= (1*((1/c) * ((distanceNM)/1E9))) * 1E15;
-          }
-          else {
-            exited = true; //no point tracking it at all
-          }
-        }
-        else { // a photon that could interact before the crystal
+      
+      //first deal with photons that first see surrounding
+      if (track == true) {
+        if (surrounding == true) {
           s = -photonMFPLSurrounding*Math.log(Math.random());
-        //  if ((s < distanceNM) || (distanceNM + ZDimension < s && s < 2*distanceNM + ZDimension) ) { //then this photon will interact before or after hitting the crystal
-            
-          
-          
-          
-          //this bit will also need to change
-            if ((s < wickTest) ) { //photon interacts before hitting the crystal
-            //need to give it a timestamp, I'm going to start it off with a negative one and if it is negative one put it on 0
-            surrounding = true;
-            int beforeOrAfter = 1; 
-            double distance = s - wickTest;
-            if ( s < wickTest) {
-              beforeOrAfter = -1; // -1 = before crystal, +1 = after crystal
-              distance = wickTest - s;
+          if (hitting == true) { //need to deal with photons that could interact before the crystal as MFPL changes on hitting xtal
+            double frontThickness = Math.abs(crystalZ-previousZ);
+            if (s < frontThickness) { // has interacted before the crystal
+              xn = previousX + s * xNorm;
+              yn = previousY + s * yNorm;
+              zn = previousZ + s * zNorm;
+              double RNDcompton = Math.random();
+              int doseTime = 0;
+              if (RNDcompton < probComptonSurrounding) {
+                //produce a compton electron
+                produceCompton(beam, coefCalc, timeStamp, xn, yn, zn, surrounding, energyOfPhoton, elementComptonProbs, angle, wedge);
+              }
+              else {
+                //produce a photoelectron
+                producePhotoElectron(beam, coefCalc, elementAbsorptionProbsSurrounding, ionisationProbsSurrounding, timeStamp, doseTime, xn, yn, zn, surrounding, energyOfPhoton, angle, wedge);
+              }           
+              // set exited to true so this photon is no longer tracked 
+              exited = true;
             }
-            double timeToPoint =  beforeOrAfter*((1/c) * ((distance)/1E9)); //in seconds
-            timeStamp += timeToPoint * 1E15;
-            int doseTime = (int) (timeStamp/PULSE_BIN_LENGTH);
-            if (doseTime < 0) {
-              doseTime = 0;  //not a perfect solution but not too bad, especially if slice fine enough
-            }
-            previousZ = previousZ - wickTest; 
-            xn = previousX + s * xNorm;
-            yn = previousY + s * yNorm;
-            zn = previousZ + s * zNorm;
-         
-            double RNDcompton = Math.random();
-            if (RNDcompton < probComptonSurrounding) {
-              //produce a compton electron
-              produceCompton(beam, coefCalc, timeStamp, xn, yn, zn, surrounding, energyOfPhoton, elementComptonProbs, angle, wedge);
-            }
-            else {
-              //produce a photoelectron
-              producePhotoElectron(beam, coefCalc, elementAbsorptionProbsSurrounding, ionisationProbsSurrounding, timeStamp, doseTime, xn, yn, zn, surrounding, energyOfPhoton, angle, wedge);
-            }           
-            // set exited to true so this photon is no longer tracked 
-            exited = true;
           }
         }
       }
-      //I need some pretest here 
-      //for those photons that could hit the crystal, pre-test to see if they are absorbed by the surrounding first
-      //for those photons that couldn't, just start them off with a surrounding MFPL
       
-      
-      
-      //the next step is to work out the distance s
-      if (surrounding == false) {
-     //   s = -photonMFPL*Math.log(Math.random());
+      //now set s for the photons that didn't interact before crystal
+      if (hitting == true) {
         s = -totalMFPL*Math.log(Math.random());
       }
-
+      //get interaction position
       xn = previousX + s * xNorm;
       yn = previousY + s * yNorm;
       zn = previousZ + s * zNorm;
-      //to test
-   //   zn = 0;
+      
       //now start the simulation
       
       while (exited == false) {
-        if (isMicrocrystalAt(xn, yn, zn, angle, wedge) == true) { //ignoring entry from the surrounding for now
+        if (isMicrocrystalAt(xn, yn, zn, angle, wedge) == true) { //if it hit the crystal
+          surrounding = false;
           // if the microcrystal is here a photoelectron will need to be produced
           //determine the time at which this happened = startingTimeStamp + time to this point
           double timeToPoint = (1/c) * (s/1E9); //in seconds
@@ -605,26 +597,12 @@ public class MC {
           }
           //photon is absorbed so don't need to keep track of it after this and update stuff
         }
-        else {
+        else { // this photon didn't hit the crystal
           if (coefCalc.isCryo()) {
-            //check if this has passed through the crystal or around the edge
-            if (surrounding == true) {
-              //it's gone through the edge
-              //check if this point is in a trackable point in the surrounding
-              if (track == true) { // lazy way, but this is same as if user wants to track surrounding 
-                //check that the z is not ridiculuous
-               // if (zn > -distanceNM - ZDimension/2 && zn < ZDimension/2 + distanceNM) {
-                if (calculateCrystalOccupancySurrounding(xn, yn, zn) == true) {
-                  //sort out the timeStamp
-                  /*
-                  int beforeOrAfter = 1; 
-                  double distance = s - distanceNM;
-                  if (s < distanceNM) {
-                    beforeOrAfter = -1; // -1 = before crystal, +1 = after crystal
-                    distance = distanceNM - s;
-                  }
-                  */
-                 // double timeToPoint = beforeOrAfter*((1/c) * (distance/1E9)); //in seconds
+            //first thing to check if it interacted in the tracked area
+            if (calculateCrystalOccupancySurrounding(xn, yn, zn) == true) {
+              surrounding = true;
+              if (hitting == false) {//it's gone through the edge
                   double timeToPoint = ((1/c) * (s/1E9)); //in seconds
                   timeStamp += timeToPoint * 1E15; //time from start of pulse that this happened
                   int doseTime = (int) (timeStamp/PULSE_BIN_LENGTH); //rounding down so 0 = 0-0.99999, 1 - 1-1.99999 etc 
@@ -638,48 +616,56 @@ public class MC {
                     producePhotoElectron(beam, coefCalc, elementAbsorptionProbsSurrounding, ionisationProbsSurrounding, timeStamp, doseTime, xn, yn, zn, surrounding, energyOfPhoton, angle, wedge);
                   }           
                 }
-              }
-            }
-            else {
-              //it's gone through the crystal and come out the back - check if it will interact with the behind surrounding
-              surrounding = true;
-              //update timeStamp
-              double timeToPoint = (1/c) * (ZDimension/1E9);
-              timeStamp += timeToPoint * 1E15;
-              
-              //would need to make changes here if silicon is going at the back 
-              
-              if (silicon == true) {
-                Map<String, Double> siCoeffs = coefCalc.calculateCoefficientsSilicon(energyOfPhoton);
-                double siMFPL = (1/(siCoeffs.get("Photoelectric") + siCoeffs.get("Compton Attenuation")))*1000;
-                s = -siMFPL*Math.log(Math.random());
-              }
               else {
-                s = -photonMFPLSurrounding*Math.log(Math.random());
-              }
-              
-              
-              previousZ = ZDimension/2;
-              xn = previousX + s * xNorm;
-              yn = previousY + s * yNorm;
-              zn = previousZ + s * zNorm;
-              //if (zn < wickTest + ZDimension/2) {
-              if(calculateCrystalOccupancySurrounding(xn, yn, zn) == true) {
-                //then it has interacted with the surrounding behind the crystal
-                timeToPoint = (1/c) * (s/1E9);
+                //it's gone through the crystal and come out the back - check if it will interact with the behind surrounding
+                surrounding = true;
+                //update timeStamp
+                double timeToPoint = (1/c) * (ZDimension/1E9);
                 timeStamp += timeToPoint * 1E15;
-                int doseTime = (int) (timeStamp/PULSE_BIN_LENGTH);
-                double RNDcompton = Math.random();
-                if (RNDcompton < probComptonSurrounding) {
-                  //produce a compton electron
-                  produceCompton(beam, coefCalc, timeStamp, xn, yn, zn, surrounding, energyOfPhoton, elementComptonProbs, angle, wedge);
+                
+                //would need to make changes here if silicon is going at the back 
+                
+                if (silicon == true) {
+                  Map<String, Double> siCoeffs = coefCalc.calculateCoefficientsSilicon(energyOfPhoton);
+                  double siMFPL = (1/(siCoeffs.get("Photoelectric") + siCoeffs.get("Compton Attenuation")))*1000;
+                  s = -siMFPL*Math.log(Math.random());
                 }
                 else {
-                  //produce a photoelectron
-                  producePhotoElectron(beam, coefCalc, elementAbsorptionProbsSurrounding, ionisationProbsSurrounding, timeStamp, doseTime, xn, yn, zn, surrounding, energyOfPhoton, angle, wedge);
-                }           
+                  s = -photonMFPLSurrounding*Math.log(Math.random());
+                }
+                
+                //set the Z to the point at the back of the crystal!!!
+              //  previousZ = ZDimension/2;
+                
+                previousZ = getStartingZ(angle, wedge, coord, false);
+                
+                
+                
+                xn = previousX + s * xNorm;
+                yn = previousY + s * yNorm;
+                zn = previousZ + s * zNorm;
+                //if (zn < wickTest + ZDimension/2) {
+                if(calculateCrystalOccupancySurrounding(xn, yn, zn) == true) {
+                  //then it has interacted with the surrounding behind the crystal
+                  timeToPoint = (1/c) * (s/1E9);
+                  timeStamp += timeToPoint * 1E15;
+                  int doseTime = (int) (timeStamp/PULSE_BIN_LENGTH);
+                  double RNDcompton = Math.random();
+                  if (RNDcompton < probComptonSurrounding) {
+                    //produce a compton electron
+                    produceCompton(beam, coefCalc, timeStamp, xn, yn, zn, surrounding, energyOfPhoton, elementComptonProbs, angle, wedge);
+                  }
+                  else {
+                    //produce a photoelectron
+                    producePhotoElectron(beam, coefCalc, elementAbsorptionProbsSurrounding, ionisationProbsSurrounding, timeStamp, doseTime, xn, yn, zn, surrounding, energyOfPhoton, angle, wedge);
+                  }           
+                }
               }
             }
+            
+            
+            
+
           }
 
           
@@ -1644,7 +1630,7 @@ public class MC {
           entered = true;
           surrounding = false;
           //need to check where it intersects
-          double intersectionDistance = 1000*getIntersectionDistance(previousX, previousY, previousZ, xNorm, yNorm, zNorm); //nm 
+          double intersectionDistance = 1000*getIntersectionDistance(previousX, previousY, previousZ, xNorm, yNorm, zNorm, true); //nm 
           double[] intersectionPoint = getIntersectionPoint(intersectionDistance, previousX, previousY, previousZ, xNorm, yNorm, zNorm); 
           //set this to previous positions
           previousX = 1000*intersectionPoint[0];
@@ -2153,7 +2139,7 @@ public class MC {
             //this escape distance will need to change as I don't think it does rotation
             
             
-          double escapeDistance = 1000 * getIntersectionDistance(previousX, previousY, previousZ, xNorm, yNorm, zNorm); //nm
+          double escapeDistance = 1000 * getIntersectionDistance(previousX, previousY, previousZ, xNorm, yNorm, zNorm, true); //nm
           previousX = previousX + (escapeDistance + (escapeDistance/1000))  * xNorm;
           previousY = previousY + (escapeDistance + (escapeDistance/1000)) * yNorm;
           previousZ = previousZ + (escapeDistance + (escapeDistance/1000)) * zNorm;
@@ -3930,7 +3916,7 @@ private Element chooseLowEnElement(CoefCalc coefCalc, double Pinner, Map<Element
     return result;
   }
   
-  private double getIntersectionDistance(double x, double y, double z, double ca, double cb, double cc) {
+  private double getIntersectionDistance(double x, double y, double z, double ca, double cb, double cc, boolean minVal) {
     if (normals == null) {
       calculateNormals(false);
     }
@@ -3960,7 +3946,13 @@ private Element chooseLowEnElement(CoefCalc coefCalc, double Pinner, Map<Element
         }
         else {
           double min = Math.min(minIntersect, intersectionDistance);
-          minIntersect = min;
+          double max = Math.max(minIntersect, intersectionDistance);
+          if (minVal == true) {
+            minIntersect = min;
+          }
+          else {
+            minIntersect = max;
+          }
         }
       }
 
@@ -3968,7 +3960,7 @@ private Element chooseLowEnElement(CoefCalc coefCalc, double Pinner, Map<Element
     return minIntersect;
   }
   
-  private double getIntersectionDistanceSurrounding(double x, double y, double z, double ca, double cb, double cc) {
+  private double getIntersectionDistanceSurrounding(double x, double y, double z, double ca, double cb, double cc, boolean minVal) {
     if (normalsSurrounding == null) {
       calculateNormalsSurrounding(false);
     }
@@ -3998,7 +3990,13 @@ private Element chooseLowEnElement(CoefCalc coefCalc, double Pinner, Map<Element
         }
         else {
           double min = Math.min(minIntersect, intersectionDistance);
-          minIntersect = min;
+          double max = Math.max(minIntersect, intersectionDistance);
+          if (minVal == true) {
+            minIntersect = min;
+          }
+          else {
+            minIntersect = max;
+          }
         }
       }
 
@@ -4233,6 +4231,88 @@ private Element chooseLowEnElement(CoefCalc coefCalc, double Pinner, Map<Element
         System.arraycopy(rotatedVerticesSurrounding[indicesSurrounding[i][j] - 1], 0,
             expandedRotatedVerticesSurrounding[i][j], 0, 3);
       }
+    }
+  }
+  
+  private double getStartingZSurrounding(double angle, Wedge wedge, double[] coord) {
+    double[] zAxis = { 0, 0, 1 };
+
+    List<Double> distancesFound = new ArrayList<Double>();
+
+    for (int i = 0; i < indicesSurrounding.length; i++) {
+      double intersectionDistance = 
+          Vector.rayTraceDistance(rotatedNormalsSurrounding[i],
+              zAxis, coord, rotatedOriginDistancesSurrounding[i]);
+
+      Double distanceObject = Double.valueOf(intersectionDistance);
+
+      if ( distanceObject.isNaN()
+          || distanceObject.isInfinite()) {
+        continue;
+      }
+
+      double[] intersectionPoint = Vector.rayTraceToPointWithDistance(
+          zAxis, coord, intersectionDistance);
+
+      boolean crosses = Vector.polygonInclusionTest(expandedRotatedVerticesSurrounding[i],
+          intersectionPoint);
+
+      if (crosses) {
+        distancesFound.add(Double.valueOf(intersectionDistance));
+      }
+    }
+
+    Collections.sort(distancesFound);
+    if (distancesFound.isEmpty()) {
+      return 0.0;
+    }
+    else {
+      //then it does cross - return the most negative value
+      return 1000*distancesFound.get(0).doubleValue();
+    }
+  }
+  
+  private double getStartingZ(double angle, Wedge wedge, double[] coord, boolean front) {
+    double[] zAxis = { 0, 0, 1 };
+
+    List<Double> distancesFound = new ArrayList<Double>();
+
+    for (int i = 0; i < indicesXFEL.length; i++) {
+      double intersectionDistance = 
+          Vector.rayTraceDistance(rotatedNormals[i],
+              zAxis, coord, rotatedOriginDistances[i]);
+
+      Double distanceObject = Double.valueOf(intersectionDistance);
+
+      if ( distanceObject.isNaN()
+          || distanceObject.isInfinite()) {
+        continue;
+      }
+
+      double[] intersectionPoint = Vector.rayTraceToPointWithDistance(
+          zAxis, coord, intersectionDistance);
+
+      boolean crosses = Vector.polygonInclusionTest(expandedRotatedVerticesXFEL[i],
+          intersectionPoint);
+
+      if (crosses) {
+        distancesFound.add(Double.valueOf(intersectionDistance));
+      }
+    }
+
+    Collections.sort(distancesFound);
+    
+    //get front or back
+    int index = 0;
+    if (front == false) {
+      index = 1;
+    }
+    if (distancesFound.isEmpty()) {
+      return 0.0;
+    }
+    else {
+      //then it does cross - return the most negative value
+      return 1000*distancesFound.get(index).doubleValue();
     }
   }
   
