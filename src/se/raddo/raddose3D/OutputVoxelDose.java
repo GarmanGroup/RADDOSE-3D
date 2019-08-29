@@ -1,5 +1,6 @@
 package se.raddo.raddose3D;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class OutputVoxelDose implements Output{
@@ -78,13 +79,17 @@ public class OutputVoxelDose implements Output{
     }
     w.write("\n");
 //    w.write("Fluence fraction\n");
-    double[][][][] voxDoses = expSummary.getVoxelDoses();
+  //  double[][][][] voxDoses = expSummary.getVoxelDoses();
+    HashMap<Integer, double[][][]> voxDoses = expSummary.getVoxelDoses();
+    
     for (int l = 0; l < crystal.getNumImages(wedge);l++) {
+      double imageDoses[][][] = voxDoses.get(l);
       for (int i = 0; i < crystal.getCrystSizeVoxels()[0]; i++) {
         for (int j = 0; j < crystal.getCrystSizeVoxels()[1]; j++) {
           for (int k = 0; k < crystal.getCrystSizeVoxels()[2]; k++) {
             if (crystal.isCrystalAt(i, j, k)) {
-            w.write(((float) voxDoses[i][j][k][l]) + ",");
+          //  w.write(((float) voxDoses[i][j][k][l]) + ",");
+            w.write(((float) imageDoses[i][j][k]) + ",");
             }
           }
         }

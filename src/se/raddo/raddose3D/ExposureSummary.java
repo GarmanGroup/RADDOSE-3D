@@ -1,5 +1,6 @@
 package se.raddo.raddose3D;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.NavigableMap;
 import java.util.TreeMap;
@@ -105,9 +106,15 @@ public class ExposureSummary implements ExposeObserver {
   private double[][] imageRDE;
   private boolean[] lowImageRDE;
   
-  private double[][][][] voxDoseImage;
-  private double[][][][] voxFluenceImage;
+ // private double[][][][] voxDoseImage;
+ // private double[][][][] voxFluenceImage;
   
+  private double[][][] imageDoses;
+  private double[][][] imageFluences;
+  private int[] xtalSize;
+  
+  private HashMap<Integer, double[][][]> voxDoseImage;
+  private HashMap<Integer, double[][][]> voxFluenceImage;
   
   private double[] q = {0, 2*Math.PI, Math.PI, 2*Math.PI/3, 0.5*Math.PI}; //blank, 1A, 2A, 3A, 4A
   private final double alpha = 1.7;
@@ -144,6 +151,7 @@ public class ExposureSummary implements ExposeObserver {
     wedgeElastic = 0d;
     imageExposedVoxels = 0;
     imageVol= new double[imageCount];
+    xtalSize = crystalSize;
     
     runningSumRDE = 0d;
     fluenceWeightedRunningSumRDE = 0d;
@@ -159,8 +167,14 @@ public class ExposureSummary implements ExposeObserver {
     angleDWD = new double[imageCount];
     imageRDE = new double[imageCount][5];
     
-    voxDoseImage = new double[crystalSize[0]][crystalSize[1]][crystalSize[2]][imageCount];
-    voxFluenceImage = new double[crystalSize[0]][crystalSize[1]][crystalSize[2]][imageCount];
+ //   voxDoseImage = new double[crystalSize[0]][crystalSize[1]][crystalSize[2]][imageCount];
+ //   voxFluenceImage = new double[crystalSize[0]][crystalSize[1]][crystalSize[2]][imageCount];
+    
+    imageDoses = new double[crystalSize[0]][crystalSize[1]][crystalSize[2]];
+    imageFluences = new double[crystalSize[0]][crystalSize[1]][crystalSize[2]];
+    
+    voxDoseImage = new HashMap<Integer, double[][][]>();
+    voxFluenceImage = new HashMap<Integer, double[][][]>();
 
     
     De = new double[5];
@@ -204,8 +218,11 @@ public class ExposureSummary implements ExposeObserver {
       final double doseDecay, final double absorbedEnergy,
       final double elastic) {
     
-    voxDoseImage[i][j][k][wedgeImage] = totalVoxDose + (addedDose);
-    voxFluenceImage[i][j][k][wedgeImage] = fluence;
+ //   voxDoseImage[i][j][k][wedgeImage] = totalVoxDose + (addedDose);
+ //   voxFluenceImage[i][j][k][wedgeImage] = fluence;
+    
+    imageDoses[i][j][k] = totalVoxDose + (addedDose);
+    imageFluences[i][j][k] = fluence;
 
     // updating the diffracted intensity for this image/iteration equation
  //   diffNum += (totalVoxDose + addedDose / 2) * fluence * doseDecay;
@@ -242,6 +259,10 @@ public class ExposureSummary implements ExposeObserver {
         imageRDE[image][i] = Math.exp((-imageDWD[image])/De[i]);
       }
     }
+    
+    voxDoseImage.put(image, imageDoses);
+    voxFluenceImage.put(image, imageFluences);
+    
    //angleDWD[image] = lastAngle + (angle-lastAngle)/2;
     angleDWD[image] = angle;
     imageVol[image] = imageExposedVoxels*voxVol;
@@ -270,6 +291,9 @@ public class ExposureSummary implements ExposeObserver {
     diffNum = 0d;
     diffDenom = 0d;
     images++;
+    
+    imageDoses = new double[xtalSize[0]][xtalSize[1]][xtalSize[2]];
+    imageFluences = new double[xtalSize[0]][xtalSize[1]][xtalSize[2]];
   }
 
   @Override
@@ -469,11 +493,22 @@ public class ExposureSummary implements ExposeObserver {
     return imageVol;
   }
   
+  /*
   public double[][][][] getVoxelDoses(){
     return voxDoseImage;
   }
   
+  
   public double[][][][] getVoxelFluences(){
+    return voxFluenceImage;
+  }
+  */
+  
+  public HashMap<Integer, double[][][]> getVoxelDoses(){
+    return voxDoseImage;
+  }
+  
+  public HashMap<Integer, double[][][]> getVoxelFluences(){
     return voxFluenceImage;
   }
   
