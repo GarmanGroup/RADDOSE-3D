@@ -182,9 +182,10 @@ public class MC {
     crystalPixPerUMXFEL = crystalPixPerUM;
     crystalSizeVoxelsXFEL = crystSizeVoxels;
     crystOccXFEL = crystOcc;
-    surroundingThickness = surrThickness;
+   // surroundingThickness = surrThickness;
+    surroundingThickness = new double[3];
     for (int i = 0; i < 3; i++) {
-      surroundingThickness[i] *= 1000;
+      surroundingThickness[i] = 1000*surrThickness[i];
     }
     
     //set up cryocystal
@@ -431,7 +432,7 @@ public class MC {
         distanceNM = (energyOfPhoton/stoppingPower);      
         wickTest = distanceNM;
         for (int test = 0; test < 3; test++) {
-          if (surroundingThickness[test] <= 0.0 || surroundingThickness[test] > wickTest) {
+          if (surroundingThickness[test] < 0.0 || surroundingThickness[test] > wickTest) {
             surroundingThickness[test] = wickTest;
           }
         }
@@ -2125,11 +2126,29 @@ public class MC {
         if (surrounding == false) {
           surrounding = true;  //will need to try and see what happens when it comes back in the crystal in both models
           
-          //might want to change this so they can re-enter
+          double escapeDistance = 1000 * getIntersectionDistance(previousX, previousY, previousZ, xNorm, yNorm, zNorm, true); //nm
+          
+          
+          //testing no re-entry
+          //exited = true;
+          
+          
           if (coefCalc.isCryo() == false) {
             exited = true;
+            //deposit the energy though
+            if (simpleMC == true) { 
+              energyLost = escapeDistance * stoppingPower;
+              electronEnergy -= energyLost;
+              dose += energyLost;
+              
+              if (isMicrocrystalAt(previousX, previousY, previousZ, angle, wedge) == true) {
+                int[] pixelCoord = convertToPixelCoordinates(previousX, previousY, previousZ, angle, wedge);
+                doseSimple[pixelCoord[0]][pixelCoord[1]][pixelCoord[2]] += energyLost;
+              }
+            }
           }
           else {
+            
           //i think for stopping power just take it to the edge as well and deposit in the middle
           //if energy drops below 0.05 keV than drop the rest in the same place
           
@@ -2139,10 +2158,8 @@ public class MC {
             //this escape distance will need to change as I don't think it does rotation
             
             
-          double escapeDistance = 1000 * getIntersectionDistance(previousX, previousY, previousZ, xNorm, yNorm, zNorm, true); //nm
-          previousX = previousX + (escapeDistance + (escapeDistance/1000))  * xNorm;
-          previousY = previousY + (escapeDistance + (escapeDistance/1000)) * yNorm;
-          previousZ = previousZ + (escapeDistance + (escapeDistance/1000)) * zNorm;
+          
+
           if (simpleMC == true) { 
             //update energy
             energyLost = escapeDistance * stoppingPower;
@@ -2163,18 +2180,21 @@ public class MC {
               doseSimple[pixelCoord[0]][pixelCoord[1]][pixelCoord[2]] += energyLost;
             }
             else {
-              //add it somewhere in exposed crystal
-              
+
             }
             
             //if drops below 0.05 keV deposit it all
             if (electronEnergy < 0.05) {
-              dose+= electronEnergy;
+              dose += electronEnergy;
               // doseSimple[0][0][0][doseTime] += energyLost;
               electronEnergy = 0;
               exited = true;
             }
           }
+          
+          previousX = previousX + (escapeDistance + (escapeDistance/1000)) * xNorm;
+          previousY = previousY + (escapeDistance + (escapeDistance/1000)) * yNorm;
+          previousZ = previousZ + (escapeDistance + (escapeDistance/1000)) * zNorm;
 
           //update cross section and probs and stuff for the surrounding
           if (electronEnergy > 0.05) {
@@ -2216,6 +2236,7 @@ public class MC {
           xn = previousX + s * xNorm;
           yn = previousY + s * yNorm;
           zn = previousZ + s * zNorm;
+          
           }
           }
 
