@@ -188,6 +188,7 @@ public class MC {
       surroundingThickness[i] = 1000*surrThickness[i];
     }
     
+    
     //set up cryocystal
     verticesSurrounding = new double[verticesXFEL.length][3];
     indicesSurrounding = new int[indicesXFEL.length][3];
@@ -268,6 +269,9 @@ public class MC {
   
   public void CalculateXFEL(Beam beam, Wedge wedge, CoefCalc coefCalc) {
 
+    
+    
+    
     //set pulse length and num photons from input
     
     //put in a flux if doXFEL not true
@@ -354,7 +358,7 @@ public class MC {
     
     //elastic electron angle setup
     coefCalc.populateCrossSectionCoefficients();     // DONT MOVE IN
-    
+    int missCount = 0;
     double angle = 0;
     
     //Decide a starting time stamp for the photons
@@ -521,6 +525,7 @@ public class MC {
       if (previousZ == 0.0) {
         track = false; //outside tracked area
         exited = true;
+        missCount += 1;
       }
       
       
@@ -680,6 +685,7 @@ public class MC {
 // END OF FOR LOOP (ITERATING THROUGH PHOTONS)
     
     //get time at which last photon exits the sample
+    double missFrac = (double) missCount / NUM_PHOTONS;
     lastTime = ((1/c) * (ZDimension/1E9) * 1E15) + PULSE_LENGTH;
     //get the time at which the last photon exits the last voxel
     for (int i = 0; i < lastTimeVox.length; i++) {
@@ -691,13 +697,15 @@ public class MC {
 // processDose now does the work iterating through in 4D (no major changes needed)
   
   private void processDose(Beam beam, CoefCalc coefCalc) {
+    double testVol = getSampleVolume();
     //just take the whole sample, assuming it is bathed totally
     //and also just take a whole cube for now
     double voxLength = Math.pow(crystalPixPerUMXFEL, -1) * 1000; //nm
     double voxLengthRatio = ZDimension/voxLength;
     double voxelVolume = Math.pow(crystalPixPerUMXFEL, -3) * 1E-12; // cm^3
     double voxelMass = ((coefCalc.getDensity() * voxelVolume) / 1000);  //in Kg 
-    double sampleVolume = XDimension * YDimension * ZDimension * 1E-21; //cm^3
+  //  double sampleVolume = XDimension * YDimension * ZDimension * 1E-21; //cm^3
+    double sampleVolume = getSampleVolume() * 1E-12;
     double sampleMass = ((coefCalc.getDensity() * sampleVolume) / 1000);  //in Kg 
     double totalAtoms = coefCalc.getTotalAtomsInCrystal(sampleVolume);
     double exposedVolume = getExposedArea(beam) * ZDimension * 1E-21;
@@ -3642,6 +3650,9 @@ private Element chooseLowEnElement(CoefCalc coefCalc, double Pinner, Map<Element
     //this quick test actually messes with the program and it's imperfect placing of pixels
     
     
+    //this doesn't do angleP and angleL yet!!!
+    
+    
     //will need to change this quick test when I start considering crytal rotation
     boolean outside = false;
     if ((x > XDimension/2) || (x < -XDimension/2)) {
@@ -3665,7 +3676,7 @@ private Element chooseLowEnElement(CoefCalc coefCalc, double Pinner, Map<Element
     
     
     //double[] rotatedCoords = translateInteractionToPosition(x, y, z, wedge.getStartVector(), wedge.getTranslationVector(angle), angle);
-    
+    /*
     int[] pixelCoords = convertToPixelCoordinates(x, y, z, angle, wedge); 
     
     //if the pixel coords are less than 0 or more than max then need to return false
@@ -3682,7 +3693,7 @@ private Element chooseLowEnElement(CoefCalc coefCalc, double Pinner, Map<Element
       //return false;
       outside = true;
     }
-    
+    */
     //this is where I should change it!!!
     //should just test the occupnacy every time!
     /*
@@ -4352,6 +4363,30 @@ private Element chooseLowEnElement(CoefCalc coefCalc, double Pinner, Map<Element
       //then it does cross - return the most negative value
       return 1000*distancesFound.get(index).doubleValue();
     }
+  }
+  
+  private double getSampleVolume() {
+    double totalVolume = 0;
+    for (int i = 0; i < indicesXFEL.length; i++) { //for every triangle
+      //get the length of the perimeter
+      int[] triangleIndices = indicesXFEL[i];
+      double[][] triangleVertices = new double[3][3];
+      for (int j = 0; j < 3; j++) {
+        triangleVertices[j] = verticesXFEL[triangleIndices[j]-1];
+      }
+      double[] edgeVector = Vector.vectorBetweenPoints(triangleVertices[0], triangleVertices[1]);
+      double a = Vector.vectorMagnitude(edgeVector);
+      edgeVector = Vector.vectorBetweenPoints(triangleVertices[1], triangleVertices[2]);
+      double b = Vector.vectorMagnitude(edgeVector);
+      edgeVector = Vector.vectorBetweenPoints(triangleVertices[2], triangleVertices[0]);
+      double c = Vector.vectorMagnitude(edgeVector);
+      double p = (a+b+c)/2;
+    //get the area of the triangle
+      double area = Math.pow(p*(p-a)*(p-b)*(p-c), 0.5);
+      totalVolume += Math.abs((originDistances[i] * area)/3);
+      
+    }
+    return totalVolume; //in um3
   }
   
   
