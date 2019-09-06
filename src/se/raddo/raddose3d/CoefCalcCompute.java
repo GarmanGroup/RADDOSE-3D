@@ -2334,7 +2334,7 @@ public class CoefCalcCompute extends CoefCalc {
   public double getStoppingPower(double avgEnergy, boolean surrounding) {
     double stoppingPower = 0;
     
-  //  double distance = getExpectedDistance(30, true);
+  //  double distance = getExpectedDistance(20, true)/1000;
     
     if (surrounding == false) {
       stoppingPower = calcStoppingPower(avgEnergy, presentElements, density, surrounding);
@@ -2393,9 +2393,18 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
   private double getExpectedDistance(double avgEnergy, boolean surrounding) {
     double distance = 0;//avgEnergy / stoppingPower;
     double testEn = avgEnergy;
-    double stoppingPower = 0;
+    double stoppingPower = 0, testDensity= 0;
+    Set<Element> elements = null;
+    if (surrounding == false) {
+      elements = presentElements;
+      testDensity = density;
+    }
+    else {
+      elements = cryoElements;
+      testDensity = cryoDensity;
+    }
     while (testEn > 0.05) {
-      stoppingPower = calcStoppingPower(testEn, presentElements, density, surrounding);
+      stoppingPower = calcStoppingPower(testEn, elements, testDensity, surrounding);
       testEn -= 0.05;
       distance += 0.05/stoppingPower;
     }

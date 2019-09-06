@@ -432,7 +432,7 @@ public class MC {
         distanceNM = (energyOfPhoton/stoppingPower);      
         wickTest = distanceNM;
         for (int test = 0; test < 3; test++) {
-          if (surroundingThickness[test] < 0.0 || surroundingThickness[test] > wickTest) {
+          if (surroundingThickness[test] <= 0.0 || surroundingThickness[test] > wickTest) {
             surroundingThickness[test] = wickTest;
           }
         }
@@ -916,7 +916,8 @@ public class MC {
     raddoseStyleDose = rdExposed;
     //get diffraction efficiency
     double fractionElastic = getFractionElasticallyScattered(coefCalc);
-    double numberElastic = numberOfPhotons * fractionElastic;
+   // double numberElastic = numberOfPhotons * fractionElastic;
+    double numberElastic = totElastic;
     double numberInelastic = numberOfPhotons * getFractionComptonScattered(coefCalc);
     
     double elasticMolecule = numberOfPhotons * getFractionElasticallyScatteredMacro(coefCalc);
@@ -1179,8 +1180,8 @@ public class MC {
     
     //Add the dose (shell binding energy) to the appropriate time
     if (surrounding == false) {
-      dose += shellBindingEnergy;
-      doseSimple[pixelCoord[0]][pixelCoord[1]][pixelCoord[2]] += shellBindingEnergy;
+  //    dose += shellBindingEnergy;
+  //    doseSimple[pixelCoord[0]][pixelCoord[1]][pixelCoord[2]] += shellBindingEnergy;
       photonDose += shellBindingEnergy;
       raddoseStyleDose += photonEnergy;
       //add to voxel
@@ -1243,11 +1244,11 @@ public class MC {
     }
     */
     //relax the atom and see if an auger electron was produced
-    if (simpleMC == false){
+  //  if (simpleMC == false){
       if (surrounding == false) { //only want to track Auger if in the crystal for now
         produceAugerElectron(coefCalc, timeStamp, shellIndex, ionisedElement, xn, yn, zn, surrounding, beam, angle, wedge);
       }
-    }
+  //  }
     
   }
   
@@ -1267,6 +1268,7 @@ public class MC {
 
         if (fluoresenceYieldRND > shellFluorescenceYield) { //then this will emit an Auger electron 
           // determine which transition happened in the usual way from cumulative probs
+          if (simpleMC == false) {
           double[] linewidths = augerTransitionLinewidths.get(Z).get(shell);
           double[] energies = augerTransitionEnergies.get(Z).get(shell);
           double[] exitIndexes = augerExitIndex.get(Z).get(shell);
@@ -1308,6 +1310,11 @@ public class MC {
           //produce another Auger from the leftover hole - only will happen if possible
           produceAugerElectron(coefCalc, timeStamp, exitIndex, ionisedElement, xn, yn, zn, surrounding, beam, angle, wedge);
           produceAugerElectron(coefCalc, timeStamp, dropIndex, ionisedElement, xn, yn, zn, surrounding, beam, angle, wedge);
+          }
+          else { //simpleMC == true
+            dose += shellBindingEnergy;
+            doseSimple[pixelCoord[0]][pixelCoord[1]][pixelCoord[2]] += shellBindingEnergy;
+          }
         }
         else {
           //do fluorescence
@@ -1317,6 +1324,7 @@ public class MC {
           double[] energies = flTransitionEnergies.get(Z).get(shell);
           int transitionIndex = getTransitionIndex(Z, shell, false);
           double flEnergy = energies[transitionIndex];
+          if (simpleMC == false) {
           double[] dropIndexes = flDropIndex.get(Z).get(shell);
           int dropIndex = (int) dropIndexes[transitionIndex];
           gosElectronDosevResolved += shellBindingEnergy;
@@ -1326,11 +1334,18 @@ public class MC {
           double flLifetime = 1E15*((h/(2*Math.PI)) / ((flLinewidth/1000)*Beam.KEVTOJOULES));
           timeStamp += flLifetime;
           produceAugerElectron(coefCalc, timeStamp, dropIndex, ionisedElement, xn, yn, zn, surrounding, beam, angle, wedge);
+          }
+          else {
+            dose += shellBindingEnergy - flEnergy;
+            doseSimple[pixelCoord[0]][pixelCoord[1]][pixelCoord[2]] += shellBindingEnergy - flEnergy;
+          }
         }
       }
     else {
       gosElectronDosevResolved += shellBindingEnergy;
       voxelEnergyvResolved[pixelCoord[0]][pixelCoord[1]][pixelCoord[2]] += shellBindingEnergy;
+      dose += shellBindingEnergy;
+      doseSimple[pixelCoord[0]][pixelCoord[1]][pixelCoord[2]] += shellBindingEnergy;
     }
     /*
       else if (Z == 26) {
@@ -1360,6 +1375,8 @@ public class MC {
     else {
       gosElectronDosevResolved += shellBindingEnergy;
       voxelEnergyvResolved[pixelCoord[0]][pixelCoord[1]][pixelCoord[2]] += shellBindingEnergy;
+      dose += shellBindingEnergy;
+      doseSimple[pixelCoord[0]][pixelCoord[1]][pixelCoord[2]] += shellBindingEnergy;
     }
   }
   
