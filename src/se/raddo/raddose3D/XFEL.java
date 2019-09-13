@@ -1987,6 +1987,7 @@ public class XFEL {
           }
           double Wak = WkToWak(electronEnergy, Wk, Uk); //eV
           double Wdis = 3*Wak - 2*Uk;
+          double scatterTheta = 0;
           if (type == 0 || type == 1) {
             //then this was a distant collision
              
@@ -2001,11 +2002,13 @@ public class XFEL {
             //get theta (new to add on to previous)
             if (type == 1) {
               //transverse
-              theta = previousTheta;
+             // theta = previousTheta;
+              scatterTheta = 0;
             }
             else {
               //longitudinal
-             theta = getGOSPrimaryThetaLong(electronEnergy, Q, Wak, previousTheta);
+          //   theta = getGOSPrimaryThetaLong(electronEnergy, Q, Wak, previousTheta);
+             scatterTheta = getGOSPrimaryScatterLong(electronEnergy, Q, Wak);
             }
           }
           else {
@@ -2018,7 +2021,8 @@ public class XFEL {
               double k = samplek(electronEnergy, Uk);
               W = k*(electronEnergy+Uk/1000); //keV
             }
-            theta = getGOSPrimaryThetaClose(electronEnergy, W, previousTheta);
+         //   theta = getGOSPrimaryThetaClose(electronEnergy, W, previousTheta);
+            scatterTheta = getGOSPrimaryScatterClose(electronEnergy, W);
           }
           //now I need to send out the secondary electron
           //get an angle and energy then recursively call ofc
@@ -2027,6 +2031,7 @@ public class XFEL {
           double SEPreviousPhi = previousPhi;
           double SEEnergy = W - Uk/1000;
           double SETheta = 0, SEPhi = 0, SExNorm = 0, SEyNorm = 0, SEzNorm = 0;
+          double SEdeflectionTheta = 0, SEdeflectionPhi = 0;
           int[] pixelCoord = convertToPixelCoordinates(xn, yn, zn, angle, wedge);
           if (SEEnergy > 0) {
       //      if (timeStamp <lastTime-(1*PULSE_BIN_LENGTH) & surrounding == false) {
@@ -2046,12 +2051,15 @@ public class XFEL {
            //   gosElectronDose[doseTime] += Uk/1000;
               //get theta
               if (type == 0 || type == 1) { //distant
-                SETheta = secondaryThetaDistant(electronEnergy, Wak, Q, previousTheta);
+               // SETheta = secondaryThetaDistant(electronEnergy, Wak, Q, previousTheta);
+                SEdeflectionTheta = secondaryScatterDistant(electronEnergy, Wak, Q);
               }
               else { //close
-                SETheta = secondaryThetaClose(electronEnergy, W, SEPreviousTheta);
+               // SETheta = secondaryThetaClose(electronEnergy, W, SEPreviousTheta);
+                SEdeflectionTheta = secondaryScatterClose(electronEnergy, W);
               }
               //get phi
+              /*
               SEPhi = 2 * Math.PI * Math.random();
               SEPhi = SEPreviousPhi + SEPhi;
               if (SEPhi >= (2 * Math.PI)) {
@@ -2063,6 +2071,17 @@ public class XFEL {
               
               SEzNorm = Math.cos(SETheta);
               //send it out with the correct timestamp
+              */
+              
+              SEdeflectionPhi = 2* Math.PI * Math.random();
+              
+              //now get SE normals from SE scatter angle
+              double[] newVector = getNewDirectionVector(xNorm, yNorm, zNorm, SEdeflectionTheta, SEdeflectionPhi);
+              SExNorm = newVector[0];
+              SEyNorm = newVector[1];
+              SEzNorm = newVector[2];
+              SETheta = Math.acos(SEzNorm);
+              SEPhi = Math.acos(SExNorm / Math.sin(SETheta)); 
               
               trackPhotoelectron(coefCalc, timeStamp, SEEnergy, xn, yn, zn, SExNorm, SEyNorm, SEzNorm, SETheta, SEPhi, surrounding, false, beam, angle, wedge);
               if (primaryElectron == true) { //only doing dose from the primary
@@ -2103,12 +2122,26 @@ public class XFEL {
           }
             
           //I still need to add a cutoff in here and do dose time and ionisations
+          
+          double deflectionPhi = 2* Math.PI * Math.random();
+          double[] newDirectionVector = getNewDirectionVector(xNorm, yNorm, zNorm, scatterTheta, deflectionPhi);
+          
+          xNorm = newDirectionVector[0];
+          yNorm = newDirectionVector[1];
+          zNorm = newDirectionVector[2];
+          
         }
         else {
           //do elastic
-          theta = getElectronElasticTheta(electronEnergy, elasticProbs, previousTheta);
+         // theta = getElectronElasticTheta(electronEnergy, elasticProbs, previousTheta);
           
+          double angularDeflectionTheta = getScatteringTheta(electronEnergy, elasticProbs);
+          double deflectionPhi = getScatteringPhi();
+          double[] newDirectionVector = getNewDirectionVector(xNorm, yNorm, zNorm, angularDeflectionTheta, deflectionPhi);
           
+          xNorm = newDirectionVector[0];
+          yNorm = newDirectionVector[1];
+          zNorm = newDirectionVector[2];
           
         //  theta = previousTheta;
           
@@ -2116,15 +2149,17 @@ public class XFEL {
 
         //update angle and stuff - for now it is always an elastic interaction
 
-        phi = getElectronElasticPhi(previousPhi);
+     //   phi = getElectronElasticPhi(previousPhi);
+        theta = Math.acos(zNorm);
+        phi = Math.acos(xNorm / Math.sin(theta));
         
    //     phi = previousPhi;
       //now further update the primary
-        
+        /*
         xNorm = Math.sin(theta) * Math.cos(phi);
         yNorm = Math.sin(theta) * Math.sin(phi);
         zNorm = Math.cos(theta);
-        
+        */
         //update the energy and stopping Power and stuff
      //   electronEnergy -= energyLost; 
      //   lossSinceLastUpdate += energyLost;
@@ -2481,20 +2516,9 @@ public class XFEL {
   }
   
   private double getElectronElasticTheta(double electronEnergy, Map<ElementEM, Double> elasticProbs, double previousTheta) {
-    double elasticElementRND = Math.random();
-    ElementEM elasticElement = null;
-    for (ElementEM e : elasticProbs.keySet()) {
-      if (elasticProbs.get(e) > elasticElementRND) { //Then this element is the one that was ionised
-        elasticElement = e;
-        break;
-      }
-    }
+    ElementEM elasticElement = getElasticElement(elasticProbs);
     //get the angles
     
-    if (elasticElement == null) {
-      double test = 0;
-      test += 1;
-    }
     //ELSEPA stuff
     double theta = getPrimaryElasticScatteringAngle(electronEnergy, elasticElement.getAtomicNumber());
     theta = previousTheta + theta;
@@ -2504,6 +2528,18 @@ public class XFEL {
     return theta;
   }
   
+  private ElementEM getElasticElement(Map<ElementEM, Double> elasticProbs) {
+    double elasticElementRND = Math.random();
+    ElementEM elasticElement = null;
+    for (ElementEM e : elasticProbs.keySet()) {
+      if (elasticProbs.get(e) > elasticElementRND) { //Then this element is the one that was ionised
+        elasticElement = e;
+        break;
+      }
+    }
+    return elasticElement;
+  }
+  
   private double getElectronElasticPhi(double previousPhi) {
     double phi = 2 * Math.PI * Math.random();
     phi = previousPhi + phi;
@@ -2511,6 +2547,32 @@ public class XFEL {
       phi -= 2*Math.PI;
     }
     return phi;
+  }
+  private double getScatteringTheta(double electronEnergy, Map<ElementEM, Double> elasticProbs) {
+    ElementEM elasticElement = getElasticElement(elasticProbs);
+    double theta = getPrimaryElasticScatteringAngle(electronEnergy, elasticElement.getAtomicNumber());
+    return theta;
+  }
+  
+  private double getScatteringPhi() {
+    double phi = 2 * Math.PI * Math.random();
+    return phi;
+  }
+  
+  private double[] getNewDirectionVector(double xNorm, double yNorm, double zNorm, 
+                                       double scatterTheta, double scatterPhi) {
+
+    double AN = -(xNorm/yNorm);
+    double AM = 1/ Math.pow(1+AN*AN, 0.5);
+    double V1 = AN*Math.sin(scatterTheta);
+    double V2 = AN*AM*Math.sin(scatterTheta);
+    double V3 = Math.cos(scatterPhi);
+    double V4 = Math.sin(scatterPhi);
+    double ca = (xNorm*Math.cos(scatterTheta))+(V1*V3)+(yNorm*V2*V4);
+    double cb = (yNorm*Math.cos(scatterTheta))+(V4*(zNorm*V1-xNorm*V2));
+    double cc = (zNorm*Math.cos(scatterTheta))+(V2*V3)-(yNorm*V1*V4);
+    double[] newVector = {ca, cb, cc};
+    return newVector;
   }
   
   private double getFSEXSection(double electronEnergy) {
@@ -3471,6 +3533,21 @@ private Element chooseLowEnElement(CoefCalc coefCalc, double Pinner, Map<Element
     return theta;
   }
   
+  public double getGOSPrimaryScatterLong(double EkeV, double Q, double WakeV) {
+    double m = 9.10938356E-31; // in Kg
+    double c = 299792458;
+    double csquared = c*c;  // (m/s)^2
+    double theta = 0;
+    //again make sure I sort out units in here
+    double E = EkeV * Beam.KEVTOJOULES;
+    double Wak = (WakeV/1000)*Beam.KEVTOJOULES;
+    double numerator = E*(E+2*m*csquared) + (E-Wak)*(E-Wak+2*m*csquared) - Q*(Q+2*m*csquared);
+    double denominator = 2*Math.pow(E*(E+2*m*csquared)*(E-Wak)*(E-Wak+2*m*csquared), 0.5);
+    double cosTheta = numerator/denominator;
+    theta = Math.acos(cosTheta);
+    return theta;
+  }
+  
   public double getRandomk(double E, double Qk) { //E in keV and Qk in eV
     double kc = Math.max(Qk, Wcc) / (E*1000 + Qk);  //get units right ofc
     double k = 0;
@@ -3544,6 +3621,18 @@ private Element chooseLowEnElement(CoefCalc coefCalc, double Pinner, Map<Element
     return theta;
   }
   
+  private double getGOSPrimaryScatterClose(double EkeV, double WkeV) {
+    double m = 9.10938356E-31; // in Kg
+    double c = 299792458;
+    double csquared = c*c;  // (m/s)^2
+    double E = EkeV*Beam.KEVTOJOULES;
+    double W = WkeV*Beam.KEVTOJOULES;
+    
+    double cosTheta = Math.pow(((E-W)/E) * ((E+ 2*m*csquared)/ (E-W+2*m*csquared)),0.5);
+    double theta = Math.acos(cosTheta);
+    return theta;
+  }
+  
   public double secondaryThetaClose(double EkeV, double WkeV, double previousTheta) {
     double m = 9.10938356E-31; // in Kg
     double c = 299792458;
@@ -3556,6 +3645,17 @@ private Element chooseLowEnElement(CoefCalc coefCalc, double Pinner, Map<Element
     if (theta >= (2 * Math.PI)) {
       theta -= 2*Math.PI;
     }
+    return theta;
+  }
+  
+  public double secondaryScatterClose(double EkeV, double WkeV) {
+    double m = 9.10938356E-31; // in Kg
+    double c = 299792458;
+    double csquared = c*c;  // (m/s)^2
+    double W = WkeV * Beam.KEVTOJOULES;
+    double E = EkeV * Beam.KEVTOJOULES;
+    double cosTheta = Math.pow((W/E)*((E+2*m*csquared)/(W+2*m*csquared)), 0.5);
+    double theta = Math.acos(cosTheta);
     return theta;
   }
   
@@ -3574,6 +3674,20 @@ private Element chooseLowEnElement(CoefCalc coefCalc, double Pinner, Map<Element
     if (theta >= (2 * Math.PI)) {
       theta -= 2*Math.PI;
     }
+    return theta;
+  }
+  
+  public double secondaryScatterDistant(double E, double WakeV, double Q) {
+    double m = 9.10938356E-31; // in Kg
+    double c = 299792458;
+    double csquared = c*c;  // (m/s)^2
+    double Vo = E * Beam.KEVTOJOULES;
+    double betaSquared = 1- Math.pow(m*csquared/(Vo + m*csquared), 2);
+    
+    double Wak = (WakeV/1000)*Beam.KEVTOJOULES;
+    double cosTheta = Math.pow(((Math.pow(Wak, 2)/betaSquared)/(Q*(Q+2*m*csquared)))
+                      *Math.pow(1+(Q*(Q+2*m*csquared)-Math.pow(Wak, 2))/(2*Wak*(Vo+m*csquared)), 2),0.5);
+    double theta = Math.acos(cosTheta);
     return theta;
   }
   

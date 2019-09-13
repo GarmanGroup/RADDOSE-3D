@@ -1952,12 +1952,12 @@ public class MC {
             //get theta (new to add on to previous)
             if (type == 1) {
               //transverse - no deflection 
-              theta = previousTheta;
+            //  theta = previousTheta;
               scatterTheta = 0;
             }
             else {
               //longitudinal
-             theta = getGOSPrimaryThetaLong(electronEnergy, Q, Wak, previousTheta);
+           //  theta = getGOSPrimaryThetaLong(electronEnergy, Q, Wak, previousTheta);
              scatterTheta = getGOSPrimaryScatterLong(electronEnergy, Q, Wak);
             }
           }
@@ -1971,7 +1971,7 @@ public class MC {
               double k = samplek(electronEnergy, Uk);
               W = k*(electronEnergy+Uk/1000); //keV
             }
-            theta = getGOSPrimaryThetaClose(electronEnergy, W, previousTheta);
+          //  theta = getGOSPrimaryThetaClose(electronEnergy, W, previousTheta);
             scatterTheta = getGOSPrimaryScatterClose(electronEnergy, W);
           }
           //now I need to send out the secondary electron
