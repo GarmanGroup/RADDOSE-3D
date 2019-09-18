@@ -697,7 +697,7 @@ public class MC {
 // processDose now does the work iterating through in 4D (no major changes needed)
   
   private void processDose(Beam beam, CoefCalc coefCalc) {
-    double testVol = getSampleVolume();
+   // double testVol = getSampleVolume();
     //just take the whole sample, assuming it is bathed totally
     //and also just take a whole cube for now
     double voxLength = Math.pow(crystalPixPerUMXFEL, -1) * 1000; //nm
@@ -4520,8 +4520,13 @@ private Element chooseLowEnElement(CoefCalc coefCalc, double Pinner, Map<Element
       double p = (a+b+c)/2;
     //get the area of the triangle
       double area = Math.pow(p*(p-a)*(p-b)*(p-c), 0.5);
-      totalVolume += Math.abs((originDistances[i] * area)/3);
-      
+      if (originDistances != null) {
+        totalVolume += Math.abs((originDistances[i] * area)/3);
+      }
+      else {
+        totalVolume += Math.abs((rotatedOriginDistances[i] * area)/3);
+      }
+
     }
     return totalVolume; //in um3
   }
