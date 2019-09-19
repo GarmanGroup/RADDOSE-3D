@@ -682,6 +682,8 @@ public abstract class Crystal {
    */
   public void expose(final Beam beam, final Wedge wedge) {
     //start XFEL here, just comment and uncomment for now
+    System.out.println("Current RADDOSE-3D version is: " + Version.VERSION_MAJOR + "." + Version.VERSION_MINOR);
+    
     coefCalc.updateCoefficients(beam);
     boolean xfel = true;
     boolean gos = true;
