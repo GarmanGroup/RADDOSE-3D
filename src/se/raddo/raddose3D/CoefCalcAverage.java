@@ -94,22 +94,12 @@ public class CoefCalcAverage extends CoefCalc {
     // Does nothing
   }
   
-  @Override
-  public void updateCoefficients(final double photonEnergy) {
-    // Does nothing
-  }
   
   @Override
   public void updateCryoCoefficients(final Beam b) {
     // Does nothing
   }
   
-  
-
-  @Override
-  public void updateCryoCoefficients(final double photonEnergy) {
-    // Does nothing
-  }
   
   @Override
   public double[][] getFluorescentEscapeFactors(Beam beam) {
