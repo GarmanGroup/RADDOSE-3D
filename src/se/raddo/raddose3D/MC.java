@@ -326,8 +326,8 @@ public class MC {
     processDose(beam, coefCalc);
     RD3Dcheck(beam, wedge, coefCalc);
     long runtime = System.nanoTime() - start;
-    System.out.println(String.format("RADDOSE-XFEL simulation complete, runtime in seconds was: %.8e", runtime/1E9));
-    
+    System.out.println(String.format("Monte Carlo simulation complete, runtime in seconds was: %.8e", runtime/1E9));
+    System.out.println("");
 
   }
   
@@ -953,8 +953,8 @@ public class MC {
         System.out.println(String.format("RADDOSE-GOS average dose exposed region (ADER): %.3f", voxDoseExposedNoCutoff)); 
       }
       else {
-        System.out.println(String.format("RADDOSE-MC average dose whole crystal (ADWC): %.3f", sumMCDose)); 
-        System.out.println(String.format("RADDOSE-MC average dose exposed region (ADER): %.3f", sumDoseNoCutOffExposed)); 
+        System.out.println(String.format("Monte Carlo average dose whole crystal (ADWC): %.3f", sumMCDose)); 
+        System.out.println(String.format("Monte Carlo average dose exposed region (ADER): %.3f", sumDoseNoCutOffExposed)); 
       }
       //unless just simpleMC in which case show diff dose
     }
@@ -962,6 +962,7 @@ public class MC {
     
     
  //   System.out.println(String.format("RADDOSE-XFEL diffraction weighted dose (DWD): %.3f", DWDcoarse)); 
+    /*
     if (voxDoseExposed > 400) { //change to exposed
       System.out.println("Warning, damage may begin to be seen at these doses");
     }
@@ -970,7 +971,7 @@ public class MC {
     System.out.println(String.format("Average ionisations per atom exposed region: %.3f", totIonsperAtomExposed)); 
     System.out.println(String.format("Average ionisations per non-hydrogen atom exposed region: %.3f", ionisationsPerNonHExposed)); 
     System.out.println(" ");
-    
+    */
     avgW = 1000*(avgW/avgWNum);
     avgUk = avgUk/avgUkNum;
     

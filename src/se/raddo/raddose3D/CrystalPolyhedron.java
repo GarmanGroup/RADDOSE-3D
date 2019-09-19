@@ -2439,7 +2439,7 @@ public class CrystalPolyhedron extends Crystal {
     //also need indices, vertices, crystalCoords, numberVoxelsm, PPM (may not need all of these but just 
     //to be safe for now
     XFEL xfel = new XFEL(vertices, indices, crystCoord, 
-                                  crystalPixPerUM, crystSizeVoxels, crystOcc, runNum, verticalGoniometer, xfelTrue, gos);
+                                  crystalPixPerUM, crystSizeVoxels, crystOcc, runNum, verticalGoniometer, xfelTrue, gos, wedge);
     xfel.CalculateXFEL(beam, wedge, coefCalc);
   }
   

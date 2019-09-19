@@ -159,7 +159,7 @@ public class XFEL {
   
   public XFEL(double vertices[][], int[][] indices, double[][][][] crystCoord, 
       double crystalPixPerUM, int[] crystSizeVoxels, boolean[][][][] crystOcc, int runNum, boolean verticalGoniometer,
-      boolean xfel, boolean gos) {
+      boolean xfel, boolean gos, Wedge wedge) {
     verticesXFEL = vertices;
     indicesXFEL = indices;
     crystCoordXFEL = crystCoord;
@@ -188,27 +188,41 @@ public class XFEL {
     doseSimple = new double[maxVoxel[0]][maxVoxel[1]][maxVoxel[2]][(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (500/PULSE_BIN_LENGTH) + 10000)];
     
     //these break way way too easily so need a more permanent solution
+    //need somw safety as last time is more than the pulse length, could calculate here
+    
+    PULSE_LENGTH = StrictMath.round(wedge.getTotSec()); //fs
+    if (PULSE_LENGTH <= 1) {
+      PULSE_BIN_LENGTH = 0.01;
+    }
+    else if (PULSE_LENGTH <= 50) {
+      PULSE_BIN_LENGTH = 0.1;
+    }
+    else {
+      PULSE_BIN_LENGTH = 1;
+    }
+    lastTime = ((1/c) * (ZDimension/1E9) * 1E15) + PULSE_LENGTH;
+    
     int safetyOne = 0;
     int safetyTwo = 1;
     
     
-    dose = new double[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (safetyOne/PULSE_BIN_LENGTH) + safetyTwo)];
-    photonDose = new double[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (safetyOne/PULSE_BIN_LENGTH) + safetyTwo)];
-    electronDose = new double[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (safetyOne/PULSE_BIN_LENGTH) + safetyTwo)];
-    gosElectronDose = new double[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (safetyOne/PULSE_BIN_LENGTH) + safetyTwo)];
-    photonDosevResolved = new double[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (safetyOne/PULSE_BIN_LENGTH) + safetyTwo)];
-    gosElectronDosevResolved = new double[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (safetyOne/PULSE_BIN_LENGTH) + safetyTwo)];
+    dose = new double[(int) (Math.ceil(lastTime/PULSE_BIN_LENGTH) + (safetyOne/PULSE_BIN_LENGTH) + safetyTwo)];
+    photonDose = new double[(int) (Math.ceil(lastTime/PULSE_BIN_LENGTH) + (safetyOne/PULSE_BIN_LENGTH) + safetyTwo)];
+    electronDose = new double[(int) (Math.ceil(lastTime/PULSE_BIN_LENGTH) + (safetyOne/PULSE_BIN_LENGTH) + safetyTwo)];
+    gosElectronDose = new double[(int) (Math.ceil(lastTime/PULSE_BIN_LENGTH) + (safetyOne/PULSE_BIN_LENGTH) + safetyTwo)];
+    photonDosevResolved = new double[(int) (Math.ceil(lastTime/PULSE_BIN_LENGTH) + (safetyOne/PULSE_BIN_LENGTH) + safetyTwo)];
+    gosElectronDosevResolved = new double[(int) (Math.ceil(lastTime/PULSE_BIN_LENGTH) + (safetyOne/PULSE_BIN_LENGTH) + safetyTwo)];
     
-    electronDoseSurrounding = new double[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (safetyOne/PULSE_BIN_LENGTH) + safetyTwo)];
-    totalIonisationEvents = new long[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (safetyOne/PULSE_BIN_LENGTH) + safetyTwo)];
-    lowEnergyIonisations = new long[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (safetyOne/PULSE_BIN_LENGTH) + safetyTwo)];
-    totalIonisationEventsPerAtom = new double[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (safetyOne/PULSE_BIN_LENGTH) + safetyTwo)];
-    lowEnergyIonisationsPerAtom = new double[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (safetyOne/PULSE_BIN_LENGTH) + safetyTwo)];
-    totalIonisationEventsPerNonHAtom = new double[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (safetyOne/PULSE_BIN_LENGTH) + safetyTwo)];
+    electronDoseSurrounding = new double[(int) (Math.ceil(lastTime/PULSE_BIN_LENGTH) + (safetyOne/PULSE_BIN_LENGTH) + safetyTwo)];
+    totalIonisationEvents = new long[(int) (Math.ceil(lastTime/PULSE_BIN_LENGTH) + (safetyOne/PULSE_BIN_LENGTH) + safetyTwo)];
+    lowEnergyIonisations = new long[(int) (Math.ceil(lastTime/PULSE_BIN_LENGTH) + (safetyOne/PULSE_BIN_LENGTH) + safetyTwo)];
+    totalIonisationEventsPerAtom = new double[(int) (Math.ceil(lastTime/PULSE_BIN_LENGTH) + (safetyOne/PULSE_BIN_LENGTH) + safetyTwo)];
+    lowEnergyIonisationsPerAtom = new double[(int) (Math.ceil(lastTime/PULSE_BIN_LENGTH) + (safetyOne/PULSE_BIN_LENGTH) + safetyTwo)];
+    totalIonisationEventsPerNonHAtom = new double[(int) (Math.ceil(lastTime/PULSE_BIN_LENGTH) + (safetyOne/PULSE_BIN_LENGTH) + safetyTwo)];
     
-    totalIonisationEventsvResolved = new long[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (safetyOne/PULSE_BIN_LENGTH) + safetyTwo)];
-    totalIonisationEventsPerAtomvResolved = new double[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (safetyOne/PULSE_BIN_LENGTH) + safetyTwo)];
-    totalIonisationEventsPerNonHAtomvResolved = new double[(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (safetyOne/PULSE_BIN_LENGTH) + safetyTwo)];
+    totalIonisationEventsvResolved = new long[(int) (Math.ceil(lastTime/PULSE_BIN_LENGTH) + (safetyOne/PULSE_BIN_LENGTH) + safetyTwo)];
+    totalIonisationEventsPerAtomvResolved = new double[(int) (Math.ceil(lastTime/PULSE_BIN_LENGTH) + (safetyOne/PULSE_BIN_LENGTH) + safetyTwo)];
+    totalIonisationEventsPerNonHAtomvResolved = new double[(int) (Math.ceil(lastTime/PULSE_BIN_LENGTH) + (safetyOne/PULSE_BIN_LENGTH) + safetyTwo)];
     
     atomicIonisations = new HashMap<Element, Long>();
     atomicIonisationsPerAtom = new HashMap<Element, Double>();
@@ -255,16 +269,7 @@ public class XFEL {
       PULSE_ENERGY = numPhotons * (beam.getPhotonEnergy()*Beam.KEVTOJOULES);
     }
      
-    PULSE_LENGTH = StrictMath.round(wedge.getTotSec()); //fs
-    if (PULSE_LENGTH <= 1) {
-      PULSE_BIN_LENGTH = 0.01;
-    }
-    else if (PULSE_LENGTH <= 50) {
-      PULSE_BIN_LENGTH = 0.1;
-    }
-    else {
-      PULSE_BIN_LENGTH = 1;
-    }
+
     
     NUM_PHOTONS = coefCalc.getNumberSimulatedElectrons();
     if (NUM_PHOTONS == 0) {
@@ -279,7 +284,7 @@ public class XFEL {
     photonEnergyArray = SamplePhotonEnergies.getSampledEnergies();}                     
     
     // for testing
-    lastTime = ((1/c) * (ZDimension/1E9) * 1E15) + PULSE_LENGTH;
+    
     
    // lastTime *= 100;
     
@@ -1284,6 +1289,7 @@ public class XFEL {
     int[] pixelCoord = convertToPixelCoordinates(xn, yn, zn, angle, wedge);
     int shell = (int) shellIndex;
     int Z = ionisedElement.getAtomicNumber();
+    if (timeStamp < lastTime) {
     if (Z == 6 || Z == 7 || Z == 8 || Z == 11 || Z == 12 || Z == 14 || Z == 16 || Z == 17 || Z == 19 || Z == 20 || Z == 25 || Z == 26 || Z == 27 || Z == 28 || Z == 29 || Z == 30 || Z == 33 || Z == 34) {
     if (shellIndex == 0 || (shellIndex < 2 && Z==11) || (shellIndex < 3 && Z==12) || (shellIndex < 4 && Z<=20 && Z>12) || (shellIndex < 7 && Z>=25 && Z<31) || (shellIndex < 9 && Z>32 && Z < 35)) {
       //only do for elements that are possible right now - C N O S
@@ -1341,6 +1347,7 @@ public class XFEL {
       gosElectronDosevResolved[doseTime] += shellBindingEnergy;
       voxelEnergyvResolved[pixelCoord[0]][pixelCoord[1]][pixelCoord[2]][doseTime] += shellBindingEnergy;
     }
+    }
   }
   
   private void sendOutAuger(CoefCalc coefCalc, double timeStamp, double xn, double yn, double zn, boolean surrounding,
@@ -1378,16 +1385,20 @@ public class XFEL {
     
     
 //    if (timeStamp <lastTime-(1*PULSE_BIN_LENGTH) && surrounding == false) {
-    if (surrounding == false) {
-      addIonisation(timeStamp, pixelCoord, ionisedElement, ionisationTime, xn, yn, beam, 1);
+    if (timeStamp < lastTime) {
+      if (surrounding == false) {
+        addIonisation(timeStamp, pixelCoord, ionisedElement, ionisationTime, xn, yn, beam, 1);
+      }
+      trackPhotoelectron(coefCalc, timeStamp, augerEnergy, xn, yn, zn, xNorm, yNorm, zNorm, theta, phi, surrounding, false, beam, angle, wedge);
     }
-    trackPhotoelectron(coefCalc, timeStamp, augerEnergy, xn, yn, zn, xNorm, yNorm, zNorm, theta, phi, surrounding, false, beam, angle, wedge);
     if (surrounding == false) {
       ionisationsOld += 1;
     }
     //produce another Auger from the leftover hole - only will happen if possible
-    produceAugerElectron(coefCalc, timeStamp, exitIndex, ionisedElement, xn, yn, zn, surrounding, beam, angle, wedge);
-    produceAugerElectron(coefCalc, timeStamp, dropIndex, ionisedElement, xn, yn, zn, surrounding, beam, angle, wedge);
+    if (timeStamp < lastTime) {
+      produceAugerElectron(coefCalc, timeStamp, exitIndex, ionisedElement, xn, yn, zn, surrounding, beam, angle, wedge);
+      produceAugerElectron(coefCalc, timeStamp, dropIndex, ionisedElement, xn, yn, zn, surrounding, beam, angle, wedge);
+    }
   }
   
   
@@ -1427,8 +1438,10 @@ public class XFEL {
     //to track a photon I should do it normally and determine if the interaction point will be in the crystal or at least in a trackable area
     
     //produce another Auger from the leftover hole - only will happen if possible
-    produceAugerElectron(coefCalc, timeStamp, dropIndex, ionisedElement, xn, yn, zn, surrounding, beam, angle, wedge);
+    if (timeStamp < lastTime) {
+      produceAugerElectron(coefCalc, timeStamp, dropIndex, ionisedElement, xn, yn, zn, surrounding, beam, angle, wedge);
     }
+  }
   
   
   
@@ -1666,6 +1679,7 @@ public class XFEL {
       //I need to add to the dose here
       if (isMicrocrystalAt(previousX, previousY, previousZ, angle, wedge) == true) { 
           int doseTime = (int) (timeStamp/PULSE_BIN_LENGTH);
+          if (timeStamp < lastTime) {
         if (primaryElectron == true) { //only doing dose from the primary
           dose[doseTime] += startingEnergy;
           electronDose[doseTime] += startingEnergy;
@@ -1677,6 +1691,7 @@ public class XFEL {
           voxelEnergyvResolved[pixelCoord[0]][pixelCoord[1]][pixelCoord[2]][doseTime] += startingEnergy;
           
         }
+          
         //get avg energy and add on ionisation
         double avgEnergy = coefCalc.getAvgInelasticEnergy(startingEnergy);
         avgEnergy = coefCalc.getPlasmaEnergy(surrounding)/1000;
@@ -1691,6 +1706,7 @@ public class XFEL {
           }
         }
         }
+          }
       }
     }
     while (exited == false) {
@@ -1909,6 +1925,7 @@ public class XFEL {
           if (doseTimeGOS < 0) {
             doseTimeGOS = 0;
           }
+          
           double shellBindingEnergy = 0;
           boolean plasmon = false;
           Element collidedElement = null;
@@ -2035,8 +2052,10 @@ public class XFEL {
           int[] pixelCoord = convertToPixelCoordinates(xn, yn, zn, angle, wedge);
           if (SEEnergy > 0) {
       //      if (timeStamp <lastTime-(1*PULSE_BIN_LENGTH) & surrounding == false) {
-            if (surrounding == false) {
-              addIonisation(timeStamp, pixelCoord, collidedElement, doseTimeGOS, xn, yn, beam, 1);
+            if (timeStamp < lastTime) {
+              if (surrounding == false) {
+                addIonisation(timeStamp, pixelCoord, collidedElement, doseTimeGOS, xn, yn, beam, 1);
+              }
             }
             ionisationsPerPhotoelectron += 1;
             avgUk += Uk;
