@@ -14,7 +14,7 @@
     pdffitwindow=false,     % window fit to page when opened
     pdfstartview={FitH},    % fits the width of the page to the window
     pdftitle={RADDOSE-3D Command Reference},    % title
-    pdfauthor={Zeldin, O. B.; Gerstel, M.; Garman, E. F.},     % author
+    pdfauthor={Zeldin, O. B.; Gerstel, M.; Dickerson, J. L.; Garman, E. F.},     % author
    % pdfsubject={},   % subject of the document
     pdfcreator={Gerstel, M.},   % creator of the document
 }
@@ -52,7 +52,7 @@
 %\addtolength{\textheight}{1in}
 \begin{center}
 \noindent \textsf{\huge\textbf{\RD Command Reference}}\\[0.3em]
-Dated: 27 July 2018\\[3.5em]
+Dated: 19 September 2019\\[3.5em]
 \end{center}
 
 \noindent
@@ -537,32 +537,55 @@ goniometer (parallel to the floor) and 90 a vertical goniometer (perpendicular t
 
 The default value for \textit{I} is 0 (horizontal).
 
-\subsection{\Keyword{OILBASED}}
+\subsection{\Keyword{DENSITYBASED}}
 \label{oilbased}
 
-\noindent \Keyword{OILBASED \textit{BOOLEAN}}
-Whether or not the surrounding is oil based. Set to \Keyword{\textit{TRUE}} to indicate oil based or \Keyword{\textit{FALSE}} otherwise (defaults to \Keyword{\textit{FALSE}} if not set).
+\noindent \Keyword{DENSITYBASED \textit{BOOLEAN}}
+Whether or not the surrounding is to be defined by elemental composition and density. Set to \Keyword{\textit{TRUE}} to indicate density based or \Keyword{\textit{FALSE}} otherwise (defaults to \Keyword{\textit{FALSE}} if not set).
 
-\subsection{\Keyword{OILELEMENTS}}
-\label{oilelements}
+\subsection{\Keyword{SURROUNDINGELEMENTS}}
+\label{surroundingelements}
 
-\noindent \Keyword{OILELEMENTS  \textit{El I} (\textit{El I} (\textit{El I} ..))}
-defines the formula of a lipid based surrounding material. Only to be used when \Keyword{\textit{OILBASED }} and \Keyword{\textit{CALCSURROUNDING}} are set to \Keyword{\textit{TRUE}}
+\noindent \Keyword{SURROUNDINGELEMENTS  \textit{El I} (\textit{El I} (\textit{El I} ..))}
+defines the formula of a density defined surrounding material. Only to be used when \Keyword{\textit{DENSITYBASED }} and \Keyword{\textit{CALCSURROUNDING}} are set to \Keyword{\textit{TRUE}}
 
-The command \Keyword{OILELEMENTS C 3 H 8} specifies elemental composition of 3 carbon atoms for every 8 hydrogen atoms
+The command \Keyword{SURROUNDINGELEMENTS C 3 H 8} specifies elemental composition of 3 carbon atoms for every 8 hydrogen atoms
 
-\subsection{\Keyword{OILDENSITY}}
-\label{oildensity}
-\noindent \Keyword{SOLVENTFRACTION \textit{F}}
-defines the density of a lipid based surrounding materia in g/ml. Only to be used when \Keyword{\textit{OILBASED }} and \Keyword{\textit{CALCSURROUNDING}} are set to \Keyword{\textit{TRUE}}
+\subsection{\Keyword{SURROUNDINGDENSITY}}
+\label{surroundingdensity}
+\noindent \Keyword{SURROUNDINGDENSITY \textit{F}}
+defines the density of a density defined surrounding materiaL in g/ml. Only to be used when \Keyword{\textit{DENSITYBASED }} and \Keyword{\textit{CALCSURROUNDING}} are set to \Keyword{\textit{TRUE}}
 
+\newpage
+\subsection{\Keyword{SUBPROGRAM}}
+\label{subprogram}
+This keyword specifies whether the program should use Monte Carlo simulations or RADDOSE-XFEL.\SB
 
+\noindent \Keyword{SUBPROGRAM XFEL}
 
+Specifies that RADDOSE-XFEL, which calcualtes the time-resolved dose absorbed by a crystal in an XFEL experiment, should be used. 
+
+The pulse energy of the beam must be defined in the beam block with the \hyperref[pulseenergy]{\Keyword{PULSEENERGY} keyword} (\hyperref[pulseenergy]{section~\ref*{pulseenergy}}). 
+
+The pulse length is defined in the wedge block with the \hyperref[exposuretime]{\Keyword{EXPOSURETIME} keyword} (\hyperref[exposuretime]{section~\ref*{exposuretime}}). \SB
+
+\noindent \Keyword{SUBPROGRAM MONTECARLO}
+
+Specifies that the RADDOSE-3D Monte Carlo simulations should be run. The thickness of the surrounding material can also be specified in the Monte Carlo simulations using the input \Keyword{\textit{SURROUNDINGTHICKNESS X Y Z}}\SB
+
+\noindent Both of these subprograms require at least two further inputs: \SB
+\noindent \Keyword{RUNS \textit{F}}
+
+Specifies the number of times the simulation is to be run
+
+\noindent \Keyword{SIMPHOTONS \textit{F}}
+
+Specifies the number of photons to use in the simulations
 
 
 \label{RDv3End}
 
-
+\newpage
 \section{\Class{Beam} block}
 
 A \Class{Beam} block must begin with the keyword \Keyword{BEAM}.
@@ -640,6 +663,13 @@ For a horizontal goniometer, \textit{X} = vertical and \textit{Y} = horizontal, 
 specifies the \textit{X} and \textit{Y} collimation of a circular or elliptical beam respectively in the RADDOSE-3D coordinate system. 
 \textit{X} and \textit{Y} are the diameter of the circle/ellipse defined by the slits. For a horizontal goniometer, \textit{X} = vertical and \textit{Y} = horizontal, with it being the opposite for a vertical goniometer. 
 
+\subsection{\Keyword{PULSEENERGY}}
+\label{pulseenergy}
+
+\noindent \Keyword{PULSEENERGY \textit{F}}
+
+specifies the energy of the XFEL pulse in mJ. To be used instead of FLUX when  the SUBPROGRAM XFEL input is used. 
+
 %\noindent \Keyword{COLLIMATION HORIZONTAL \textit{F}}
 %(not supported!)
 %
@@ -661,7 +691,7 @@ A \Class{Wedge} block must begin with the keyword \Keyword{WEDGE}.
 \end{figure}
 
 \subsection{\Keyword{EXPOSURETIME}}
-
+\label{exposuretime}
 \noindent \Keyword{EXPOSURETIME \textit{F}}
 
 specifies the total exposure time for this wedge in seconds.
