@@ -37,7 +37,7 @@ public class CoefCalcTests {
 
     CoefCalcFromParams coefCalc = new CoefCalcFromParams(100.0,
         100.0, 100.0, 90.0, 90.0, 90.0, 0, 0, 0, 0, atoms, numbers,
-        atoms, numbers, atoms, numbers, 100.0, null, null, 0, atoms, numbers, 0);
+        atoms, numbers, atoms, numbers, 100.0, null, null, 0, atoms, numbers, 0, 0);
 
     Double oxygenOccurrence = coefCalc.getSolventOccurrence(
         coefCalc.getParser().getElement("O"));
@@ -66,7 +66,7 @@ public class CoefCalcTests {
 
     CoefCalcFromParams coefCalc = new CoefCalcFromParams(100.0,
         100.0, 100.0, 90.0, 90.0, 90.0, 24, 10, 0, 0, atoms,
-        numbers, emptyAtoms, emptyNumbers, emptyAtoms, emptyNumbers, 100.0, null, null, 0, emptyAtoms, emptyNumbers, 0);
+        numbers, emptyAtoms, emptyNumbers, emptyAtoms, emptyNumbers, 100.0, null, null, 0, emptyAtoms, emptyNumbers, 0, 0);
 
     Double zincOccurrence = coefCalc.getMacromolecularOccurrence(
         coefCalc.getParser().getElement("ZN"));
@@ -102,7 +102,7 @@ public class CoefCalcTests {
     CoefCalcFromParams coefCalc = new CoefCalcFromParams(
         79.2, 79.2, 38.1, 90.0, 90.0, 90.0, 8, 129, 0, 0,
         heavyProtAtomNames, heavyProtAtomNums,
-        heavySolutionConcNames, heavySolutionConcNums, emptyAtoms, emptyNumbers, 0., null, null, 0, emptyAtoms, emptyNumbers, 0);
+        heavySolutionConcNames, heavySolutionConcNums, emptyAtoms, emptyNumbers, 0., null, null, 0, emptyAtoms, emptyNumbers, 0, 0);
 
     Map<Object, Object> beamProperties = new HashMap<Object, Object>();
     beamProperties.put(Beam.BEAM_COLL_H, 80.);
@@ -156,7 +156,7 @@ public class CoefCalcTests {
     CoefCalcFromParams coefCalc = new CoefCalcFromParams(
         79.2, 79.2, 38.1, 70.0, 70.0, 50.0, 4, 200, 0, 0,
         heavyProtAtomNames, heavyProtAtomNums,
-        heavySolutionConcNames, heavySolutionConcNums, emptyAtoms, emptyNumbers, 0., null, null, 0, emptyAtoms, emptyNumbers, 0);
+        heavySolutionConcNames, heavySolutionConcNums, emptyAtoms, emptyNumbers, 0., null, null, 0, emptyAtoms, emptyNumbers, 0, 0);
 
     Map<Object, Object> beamProperties = new HashMap<Object, Object>();
     beamProperties.put(Beam.BEAM_COLL_H, 80.);
@@ -205,7 +205,7 @@ public class CoefCalcTests {
     CoefCalcFromParams coefCalc = new CoefCalcFromParams(
         78.27, 78.27, 78.27, 90.0, 90.0, 90.0, 24, 51, 0, 0,
         heavyProtAtomNames, heavyProtAtomNums,
-        heavySolutionConcNames, heavySolutionConcNums, emptyAtoms, emptyNumbers, 0., null, null, 0, emptyAtoms, emptyNumbers, 0);
+        heavySolutionConcNames, heavySolutionConcNums, emptyAtoms, emptyNumbers, 0., null, null, 0, emptyAtoms, emptyNumbers, 0, 0);
 
     Map<Object, Object> beamProperties = new HashMap<Object, Object>();
     beamProperties.put(Beam.BEAM_COLL_H, 20.);
@@ -214,7 +214,7 @@ public class CoefCalcTests {
     beamProperties.put(Beam.BEAM_ENERGY, 12.1);
     Beam b = new BeamTophat(beamProperties);
 
-    coefCalc.updateCoefficients(b);
+    coefCalc.updateCoefficients(b.getPhotonEnergy());
 
     // Values obtained from RADDOSEv2, http://www.raddo.se/legacy/
     Assertion.equals(coefCalc.getAbsorptionCoefficient(), 4.60e-04,
@@ -261,7 +261,7 @@ public class CoefCalcTests {
     CoefCalcFromParams coefCalc = new CoefCalcFromParams(
         78.02, 78.02, 78.02, 90.0, 90.0, 90.0, 24, 51, 0, 0,
         heavyProtAtomNames, heavyProtAtomNums,
-        heavySolutionConcNames, heavySolutionConcNums, heavyCryoConcNames, heavyCryoConcNums, 0., null, "TRUE", 0, emptyAtoms, emptyNumbers, 0);
+        heavySolutionConcNames, heavySolutionConcNums, heavyCryoConcNames, heavyCryoConcNums, 0., null, "TRUE", 0, emptyAtoms, emptyNumbers, 0, 0);
 
     Map<Object, Object> beamProperties = new HashMap<Object, Object>();
     beamProperties.put(Beam.BEAM_COLL_H, 10.);
@@ -270,7 +270,7 @@ public class CoefCalcTests {
     beamProperties.put(Beam.BEAM_ENERGY, 12.4);
     Beam b = new BeamTophat(beamProperties);
 
-    coefCalc.updateCryoCoefficients(b);
+    coefCalc.updateCryoCoefficients(b.getPhotonEnergy());
 
     // Values obtained from RADDOSEv2, http://www.raddo.se/legacy/
     Assertion.equals(coefCalc.getCryoAbsorptionCoefficient(), 3.535855532631557E-4,
@@ -316,7 +316,7 @@ public class CoefCalcTests {
     CoefCalcFromParams coefCalc = new CoefCalcFromParams(
         78.02, 78.02, 78.02, 90.0, 90.0, 90.0, 24, 51, 0, 0,
         heavyProtAtomNames, heavyProtAtomNums,
-        heavySolutionConcNames, heavySolutionConcNums, emptyAtoms, emptyNumbers, 0., "TRUE", "TRUE", 0, oilNames, oilNums, 1.2);
+        heavySolutionConcNames, heavySolutionConcNums, emptyAtoms, emptyNumbers, 0., "TRUE", "TRUE", 0, oilNames, oilNums, 1.2, 0);
 
     Map<Object, Object> beamProperties = new HashMap<Object, Object>();
     beamProperties.put(Beam.BEAM_COLL_H, 10.);
@@ -325,7 +325,7 @@ public class CoefCalcTests {
     beamProperties.put(Beam.BEAM_ENERGY, 12.4);
     Beam b = new BeamTophat(beamProperties);
 
-    coefCalc.updateCryoCoefficients(b);
+    coefCalc.updateCryoCoefficients(b.getPhotonEnergy());
     
 
     // Values obtained from RADDOSEv2, http://www.raddo.se/legacy/
@@ -424,7 +424,7 @@ public class CoefCalcTests {
           unit_cell_length, unit_cell_length, unit_cell_length, 90.0, 90.0,
           90.0, 24, protein_residues, rna_residues, 0,
           heavyProtAtomNames, heavyProtAtomNums,
-          heavySolutionConcNames, heavySolutionConcNums, emptyAtoms, emptyNumbers, 0., null, null, 0, emptyAtoms, emptyNumbers, 0);
+          heavySolutionConcNames, heavySolutionConcNums, emptyAtoms, emptyNumbers, 0., null, null, 0, emptyAtoms, emptyNumbers, 0, 0);
 
       CoefCalcRaddose coefCalcRDV2 = new CoefCalcRaddose(
           unit_cell_length, unit_cell_length, unit_cell_length, 90.0, 90.0,
@@ -439,8 +439,7 @@ public class CoefCalcTests {
       beamProperties.put(Beam.BEAM_ENERGY, 12.1);
       Beam b = new BeamTophat(beamProperties);
 
-      coefCalc.updateCoefficients(b);
-      coefCalcRDV2.updateCoefficients(b);
+      coefCalc.updateCoefficients(b.getPhotonEnergy());
 
       // Values obtained from RADDOSEv2, http://www.raddo.se/legacy/
       Assertion.equals(coefCalc.getAbsorptionCoefficient(),

@@ -14,7 +14,7 @@ public final class Version {
   private static final String REVISION       = "?---?";
 
   /** The major version number. */
-  public static final long    VERSION_MAJOR  = 3;
+  public static final long    VERSION_MAJOR  = 4;
 
   /** The minor version number. */
   public static final long    VERSION_MINOR  = 0;

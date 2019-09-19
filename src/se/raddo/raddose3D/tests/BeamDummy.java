@@ -58,6 +58,84 @@ public class BeamDummy implements Beam {
   }
 
   @Override
+  public double getExposure() {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+
+  @Override
+  public Double getBeamX() {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public Double getBeamY() {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public boolean getIsCircular() {
+    // TODO Auto-generated method stub
+    return false;
+  }
+
+  @Override
+  public double getSemiAngle() {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+
+  @Override
+  public double getApertureRadius() {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+
+  @Override
+  public double getImageX() {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+  @Override
+  public double getImageY() {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+
+  @Override
+  public double getPulseEnergy() {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+
+  @Override
+  public void setPhotonsPerfs(double photonsPerfs) {
+    // TODO Auto-generated method stub
+    
+  }
+
+
+  @Override
+  public String getType() {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public double getSx() {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+
+  @Override
+  public double getSy() {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+
+  @Override
   public Double getEnergyFWHM() {
     // TODO Auto-generated method stub
     return null;

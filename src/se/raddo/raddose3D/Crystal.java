@@ -1,8 +1,12 @@
 package se.raddo.raddose3D;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
 /**
  * Crystal abstract class.
@@ -35,6 +39,15 @@ public abstract class Crystal {
   public static final String     CRYSTAL_FLUORESCENT_ESCAPE       = "FLESCAPE";
   /** Constant for data fields in Map constructors: Goniometer Axis. */
   public static final String     CRYSTAL_GONIOMETER_AXIS       = "GONIOMETER";
+  /** Constant for data fields in Map constructors: Electrons. */
+  public static final String     CRYSTAL_PROGRAM       = "PROGRAM";
+  /** Constant for data fields in Map constructors: Electrons. */
+  public static final String     CRYSTAL_RUNS       = "RUNS";
+  
+  /** Constant for data fields in Map constructors: Electrons. */
+  public static final String     SURROUNDING_X       = "SURROUNDINGX";
+  public static final String     SURROUNDING_Y       = "SURROUNDINGY";
+  public static final String     SURROUNDING_Z       = "SURROUNDINGZ";
 
   /** Constant for data fields in Map constructors: Photoelectron resolution. */
   
@@ -69,6 +82,10 @@ public abstract class Crystal {
   private final CoefCalc         coefCalc;
   /** The container encasing the irradiated sample*/
   private final Container        sampleContainer;
+  
+  public String crystalType;
+  
+  
 
   /**
    * Cumulative dose lost from crystal
@@ -127,6 +144,13 @@ public abstract class Crystal {
   
   
   /**
+   * whether electrons are used
+   */
+ // public final boolean useElectrons;
+  public final String subprogram;
+  public final int runs;
+  
+  /**
    * Goniometer Orientation
    */
   public final boolean verticalGoniometer; 
@@ -136,6 +160,19 @@ public abstract class Crystal {
    */
   public double EnergyToSubtractFromPE; 
   public double cryoEnergyToSubtractFromPE;
+  
+  public double XDim;
+  public double YDim;
+  public double ZDim;
+  public double XSurr;
+  public double YSurr;
+  public double ZSurr;
+  
+  private final int numberAngularEmissionBins = 10;
+  
+  
+  private boolean MC = false;
+  
   
   /**
    * The energy of each fluorescent event
@@ -210,6 +247,23 @@ public abstract class Crystal {
     //Get the goniometer axis
     String goniometer =  String.valueOf(properties.get(CRYSTAL_GONIOMETER_AXIS));
     verticalGoniometer = ("90.0".equals(goniometer)); //so horizontal is default 
+    
+    String program = (String) properties.get(CRYSTAL_PROGRAM);
+    if (program != null) {
+      program = program.toUpperCase().trim();
+      subprogram = program;
+    }
+    else {
+      subprogram = "RD3D";
+    }
+    
+
+    if (properties.get(CRYSTAL_RUNS) != null) {
+      runs = (int) properties.get(Crystal.CRYSTAL_RUNS);
+    }
+    else {
+      runs = 1;
+    }
 
     //Check that ppm is sensible
     if ((properties.get(CRYSTAL_RESOLUTION) != null) && (properties.get(CRYSTAL_DIM_X) != null)) {
@@ -220,7 +274,45 @@ public abstract class Crystal {
         CRYSTAL_RESOLUTION_DEF = 10 / ((double) properties.get(CRYSTAL_DIM_X));
         }  
     }
+
     firstWedge = true;
+
+    
+    crystalType = "CUBOID";
+    XDim = (double) properties.get(Crystal.CRYSTAL_DIM_X); // in um
+    try {
+      YDim = (double) properties.get(Crystal.CRYSTAL_DIM_Y); // in um
+    }
+    catch (NullPointerException e){
+      //then the crystal is spherical
+      crystalType = "SPHERICAL";
+      YDim = XDim;
+      ZDim = XDim;
+    }
+    try {
+      ZDim = (double) properties.get(Crystal.CRYSTAL_DIM_Z); // in um
+    }
+    catch (NullPointerException e){
+      if (crystalType == "CUBOID") { //then it's a cylinder
+        crystalType = "CYLINDER";
+        ZDim = YDim;
+        YDim = XDim;
+      }
+    }
+    
+    //surrounding thickness of specified
+    if (coefCalc.isCryo()) {
+      if(properties.get(Crystal.SURROUNDING_X) != null) {
+        XSurr = (double) properties.get(Crystal.SURROUNDING_X);
+      }
+      if(properties.get(Crystal.SURROUNDING_Y) != null) {
+        YSurr = (double) properties.get(Crystal.SURROUNDING_Y);
+      }
+      if(properties.get(Crystal.SURROUNDING_Z) != null) {
+        ZSurr = (double) properties.get(Crystal.SURROUNDING_Z);
+      }
+    }
+    
   }
   
   /**
@@ -236,7 +328,8 @@ public abstract class Crystal {
   }
 
   public abstract void setupDepthFinding(double angrad, Wedge wedge);
-
+  
+  //public abstract void simElectron(double i, double j, double k, double numAbsorbedPhotons, boolean addBindingEn, CoefCalc coefCalc, double photonEnergy, double angle, boolean surrounding);
   /**
    * This should take a set of xyz coordinates (a voxel coordinate), the current
    * orientation of the crystal, and the wedge we are exposing and return the
@@ -310,6 +403,10 @@ public abstract class Crystal {
   public abstract double addDoseAfterPE(int i, int j, int k, double doseIncreasePE);
   public abstract double addDoseAfterPECryo(double i, double j, double k, double doseIncreasePE, double energyToDoseFactor);
   
+  public abstract double trackPhotoelectron(int i, int j, int k, double doseIncreasePE, CoefCalc coefCalc, 
+                                            Map<Element, Double> elementAbsorptionProbs, Map<Element, double[]> ionisationProbs, double[] angularEmissionProbs,
+                                            Beam beam, boolean surrounding);
+  
   /**
    * This accounts for FL energy transfer to nearby voxels and caluclates release
    * 
@@ -329,6 +426,10 @@ public abstract class Crystal {
   public abstract void setPEparamsForCurrentBeam(double beamEnergy, CoefCalc coefCalc, double[][] feFactors);
   public abstract void setFLparamsForCurrentBeam(final double[][] feFactors);
   public abstract void setCryoPEparamsForCurrentBeam(Beam beam, CoefCalc coefCalc, double[][] feFactors);
+  
+  public abstract void startMicroED(double XDim, double YDim, double ZDim, Beam beam, Wedge wedge, CoefCalc coefCalc, String crystalType);
+  public abstract void startXFEL(double XDim, double YDim, double ZDim, Beam beam, Wedge wedge, CoefCalc coefCalc, int runNum, boolean verticalGoniometer, boolean xfel, boolean gos);
+  public abstract void startMC(double XDim, double YDim, double ZDim, Beam beam, Wedge wedge, CoefCalc coefCalc, int runNum, boolean verticalGoniometer, boolean xfel, boolean gos, double[] surrThickness);
   
   /**
    * finds the voxels that the bins on the tracks are in
@@ -396,6 +497,8 @@ public abstract class Crystal {
    * @param k k coord
    */
   public abstract double getFluence(int i, int j, int k);
+  
+  public abstract void setELSEPA(CoefCalc coefCalc);
 
   /**
    * Return the total elastic scattering from voxel ijk.
@@ -564,6 +667,7 @@ public abstract class Crystal {
 
     if (cryo == false) { //is this being called for the crystal or the cryo-solution
       EnergyToSubtractFromPE = totK + totL1 + totL2 + totL3 + totM1 + totM2 + totM3 + totM4 + totM5;
+      
     }
     else {
       cryoEnergyToSubtractFromPE = totK + totL1 + totL2 + totL3 + totM1 + totM2 + totM3 + totM4 + totM5;
@@ -591,12 +695,65 @@ public abstract class Crystal {
    *          translational and rotational information.
    */
   public void expose(final Beam beam, final Wedge wedge) {
-    //initialise previous voxel dose for DWD
-    if (firstWedge == true) {
-      final int[] crystalSize = getCrystSizeVoxels();
-      voxImageDoseLast = new double[crystalSize[0]][crystalSize[1]][crystalSize[2]];
-      firstWedge = false;
+
+
+
+    //start XFEL here, just comment and uncomment for now
+    System.out.println("Current RADDOSE-3D version is: " + Version.VERSION_MAJOR + "." + Version.VERSION_MINOR);
+    
+    coefCalc.updateCoefficients(beam);
+    boolean xfel = true;
+    boolean gos = true;
+    double[] surrThickness = new double[3];
+    if (coefCalc.isCryo()) {
+        surrThickness[0] = XSurr;
+        surrThickness[1] = YSurr;
+        surrThickness[2] = ZSurr;
     }
+    if (subprogram.equals("XFEL")) {
+      xfel = true;
+      gos = true;
+      for (int i = 0; i < runs; i++) {
+        int runNum = i+1;
+        startXFEL(XDim, YDim, ZDim, beam, wedge, coefCalc, runNum, verticalGoniometer, xfel, gos);
+      }
+      //terminate the program
+      System.exit(0);
+    }
+    else if (subprogram.equals("EMSP") || subprogram.equals("EMED")){
+      startMicroED(XDim, YDim, ZDim, beam, wedge, coefCalc, crystalType);
+    }
+    else if (subprogram.equals("MONTECARLO")){
+    //want to add in a simple Monte Carlo and a GOS Monte Carlo
+    xfel = false;
+    gos = false;
+    for (int i = 0; i < runs; i++) {
+      int runNum = i+1;
+      startMC(XDim, YDim, ZDim, beam, wedge, coefCalc, runNum, verticalGoniometer, xfel, gos, surrThickness);
+    }
+    //terminate the program
+    System.exit(0);
+    }
+    else if (subprogram.equals("GOS")){
+      xfel = false;
+      gos = true;
+      for (int i = 0; i < runs; i++) {
+        int runNum = i+1;
+        startMC(XDim, YDim, ZDim, beam, wedge, coefCalc, runNum, verticalGoniometer, xfel, gos, surrThickness);
+      }
+      //terminate the program
+      System.exit(0);
+    }
+    else {
+  
+      
+      //initialise previous voxel dose for DWD
+      if (firstWedge == true) {
+        final int[] crystalSize = getCrystSizeVoxels();
+        voxImageDoseLast = new double[crystalSize[0]][crystalSize[1]][crystalSize[2]];
+        firstWedge = false;
+      }  
+      
     double fluorescenceEnergyRelease = 0;
     double augerEnergy = 0;   
     double cryoAugerEnergy = 0;
@@ -607,13 +764,32 @@ public abstract class Crystal {
 
     //Set up PE and FE - no need to do this is PE false
     double[][] feFactors = coefCalc.getFluorescentEscapeFactors(beam); 
-   
+    Map<Element, Double> elementAbsorptionProbs = null;
+    Map<Element, double[]> ionisationProbs = null;
+    double[] angularEmissionProbs = null;
     if (photoElectronEscape) {
       //Calculate PE electron binding energy subtraction
+      
     calculatePEEnergySubtraction(feFactors, false); 
     setPEparamsForCurrentBeam(beam.getPhotonEnergy(), coefCalc, feFactors); 
+    
+    //change this stuff for the Monte carlo methos to element absorption probs and angular distribution
+    //populate the relative element cross sections here 
+    elementAbsorptionProbs = coefCalc.getPhotoElectricProbsElement(beam.getPhotonEnergy());
+    //populate the relative shell cross sections
+    ionisationProbs = getRelativeShellProbs(elementAbsorptionProbs, beam.getPhotonEnergy());
+    //populate the angular emission probs
+    angularEmissionProbs = getAngularEmissionProbs();
+    //elastic electron angle setup
+    coefCalc.populateCrossSectionCoefficients();
+    
     //Calc Auger
     augerEnergy = getAugerEnergy(feFactors);
+    
+    //populate ELSEPA for MC
+    if (MC == true) {
+      setELSEPA(coefCalc);
+    }
     }
    if (fluorescentEscape) {
     //Calc % energy contribution of each event
@@ -637,9 +813,9 @@ public abstract class Crystal {
     }
 
    if (coefCalc.isCryo() == true && photoElectronEscape == true){
-     coefCalc.updateCryoCoefficients(beam);
+     coefCalc.updateCryoCoefficients(beam.getPhotonEnergy());
      cryoFeFactors = coefCalc.getCryoFluorescentEscapeFactors(beam);
-     calculateCryoSolutionParameters(beam, cryoFeFactors);
+     calculateCryoSolutionParameters(beam, cryoFeFactors); //crystal and everhting set here 
      cryoAugerEnergy = getAugerEnergy(cryoFeFactors);
        if (fluorescentEscape) {
          cryoFluorescenceEnergyRelease = calcFluorescence(beam, cryoFeFactors);
@@ -705,6 +881,7 @@ public abstract class Crystal {
     
 
     // The main meat of it:
+
     for (int n = 0; n < angles.length; n++) { // loop through angles
       for(int i=0; i < sampleEnergiesArray.length; i++) { // loop through energies
         double photonEnergy = sampleEnergiesArray[i];
@@ -726,8 +903,9 @@ public abstract class Crystal {
            
         
       // Expose one angle ... at one energy
-      exposeAngle(angles[n], beam, wedge, n, angles.length, fluorescenceEnergyRelease, 
-                  augerEnergy, cryoAugerEnergy, cryoFluorescenceEnergyRelease, feFactors, cryoFeFactors, photonEnergy);
+        exposeAngle(angles[n], beam, wedge, n, angles.length, fluorescenceEnergyRelease, 
+            augerEnergy, cryoAugerEnergy, cryoFluorescenceEnergyRelease, feFactors, cryoFeFactors,
+            elementAbsorptionProbs, ionisationProbs, angularEmissionProbs, photonEnergy);
 
       } // end of looping through energies
       
@@ -774,6 +952,9 @@ public abstract class Crystal {
       System.out.print(String.format("Total energy that may escape by Fluorescent Escape: %.2e", totalEscapedDoseFL));
       System.out.println(" J.\n");
     }
+    
+    
+  } // this the the end of the if not electrons statement 
 
   } ///////////////////////////////////////// END OF EXPOSE METHOD //////////////////////////////////////////////////////////
   
@@ -784,8 +965,9 @@ public abstract class Crystal {
   private void exposeAngle(final double angle, final Beam beam,
       final Wedge wedge, final int anglenum, final int anglecount,  
       double fluorescenceEnergyRelease, double augerEnergy, double cryoAugerEnergy,
-      double cryoFluorescenceEnergyRelease, double[][] feFactors, double[][] cryoFeFactors, double photonEnergy) {
-
+      double cryoFluorescenceEnergyRelease, double[][] feFactors, double[][] cryoFeFactors,
+      Map<Element, Double> elementAbsorptionProbs, Map<Element, double[]> ionisationProbs, double[] angularEmissionProbs, double photonEnergy) {
+    
     final int[] crystalSize = getCrystSizeVoxels();
     
     final Double[] wedgeStart = wedge.getStartVector();
@@ -799,9 +981,11 @@ public abstract class Crystal {
     //Set up tracks in polarised direction for photoelectrons
     if (photoElectronEscape) {
       findVoxelsReachedByPE(false, coefCalc, photonEnergy, feFactors, angle);
+
       if (coefCalc.isCryo() == true) {
         findVoxelsReachedByPE(true, coefCalc, photonEnergy, cryoFeFactors, angle);
       }
+      
     }
     
     double energyPerFluence =
@@ -863,6 +1047,16 @@ public abstract class Crystal {
             translateRotateCoords = translateCrystalToPosition(crystCoords, wedgeStart, wedgeTranslation,
                                                                anglecos, anglesin) ;
             
+            
+            //here is where microED and Synchrotron really need to diverge. It will be easy to treat
+            //as one voxel to start but may need to change this at a later date - look at spread in CASINO 
+            //for now the rotation just needs to look at the surface area of the crystal then 
+            //so yeah stick with TopHat for now 
+            
+            //Could update stopping power with pixel depth
+            //My planned additional fudge factor would simply need to be applied to every voxel
+            
+            
             /* Unattenuated beam intensity (J/um^2/s) */
             double unattenuatedBeamIntensity = beam.beamIntensity(
                 translateRotateCoords[0], translateRotateCoords[1],
@@ -891,12 +1085,13 @@ public abstract class Crystal {
               voxImageComptonFluence[i][j][k] = numberofphotons * voxImageElectronEnergyDose; //Re-calculate voxImageFluence using Compton electron energy
               double voxImageDoseCompton = fluenceToDoseFactorCompton * voxImageComptonFluence[i][j][k];
               
-              
               //elastic yield
               voxElasticYield[i][j][k] = fluenceToElasticFactor *
                   voxImageFluence[i][j][k]; //* beamEnergy;
               //Dose absorbed by photoelectric effect
               voxImageDose[i][j][k] = fluenceToDoseFactor * voxImageFluence[i][j][k];
+              double imageEnergyAbs = energyPerFluence * voxImageFluence[i][j][k];
+              double absPhotons = imageEnergyAbs/beamenergy;
 
               if (voxImageDose[i][j][k] > 0) {
                 totalCrystalDose += voxImageDose[i][j][k];
@@ -906,6 +1101,7 @@ public abstract class Crystal {
                 if (photoElectronEscape == true && fluorescentEscape == true) {
                  //Fl part
                 //Energy to be released by voxel
+                  
                   double totFluorescenceEnergyRelease = fluorescenceEnergyRelease * numberofphotons;
                 //convert this to a dose to be released
                   double voxImageFlDoseRelease = fluenceToDoseFactor * totFluorescenceEnergyRelease;
@@ -914,14 +1110,21 @@ public abstract class Crystal {
                   //Dose in voxel
                   double totAugerDose = augerEnergy * numberofphotons * fluenceToDoseFactor;
                   
-                  //Do PE
-                  double dosePE = voxImageDose[i][j][k] - voxImageFlDoseRelease - totAugerDose;
-                   
-                  double doseLostFromCrystalPE = addDoseAfterPE(i, j, k, dosePE); //to run with new photoelectron escape
                   double doseLostFromCrytsalFL = 0;
                   if (voxImageFlDoseRelease > 0) { //necessary to prevent error when 0
                   doseLostFromCrytsalFL = addDoseAfterFL(i, j, k, voxImageFlDoseRelease);
                   }
+                  if(totAugerDose > 0) {
+                  addDose(i, j, k, totAugerDose);
+                  }
+                  if (MC == false) {
+                  //Do PE
+                  double dosePE = voxImageDose[i][j][k] - voxImageFlDoseRelease - totAugerDose;
+             //     double dosePE = voxImageDose[i][j][k] - (EnergyToSubtractFromPE/beam.getPhotonEnergy())*voxImageDose[i][j][k];
+                   
+                  double doseLostFromCrystalPE = addDoseAfterPE(i, j, k, dosePE); //to run with new photoelectron escape
+                  
+
                   totalEscapedDosePE +=  doseLostFromCrystalPE;
                   totalEscapedDoseFL += doseLostFromCrytsalFL;
                   totalEscapedDose += doseLostFromCrystalPE + doseLostFromCrytsalFL;
@@ -932,21 +1135,35 @@ public abstract class Crystal {
                   totalAugerEnergyToRelease += totAugerDose;
                   
                   //add Auger to Voxel
-                  if(totAugerDose > 0) {
-                  addDose(i, j, k, totAugerDose);
+
                   }
+                  else {
+                    // sim electron without adding shell binsing en 
+                  //  simElectron(i, j, k, absPhotons, false, coefCalc, beam.getPhotonEnergy(), angle, false);
+                  }
+                    
                 } 
                 else if (photoElectronEscape == true && fluorescentEscape == false) { //only do PE escape
+                  if (MC == false) {
                   //Dose in voxel
                   double totAugerDose = augerEnergy * numberofphotons * fluenceToDoseFactor;
                   //Do PE
-                  double dosePE = voxImageDose[i][j][k] - totAugerDose;
+                //  double dosePE = voxImageDose[i][j][k] - totAugerDose; //change this to binding energy fraction
+                  double dosePE = voxImageDose[i][j][k] - (EnergyToSubtractFromPE/beam.getPhotonEnergy())*voxImageDose[i][j][k];
                   double doseLostFromCrystalPE = addDoseAfterPE(i, j, k, dosePE);
+                  
+            //      double doseLostFromCrystalPE = trackPhotoelectron(i, j, k, dosePE, coefCalc, elementAbsorptionProbs, ionisationProbs, angularEmissionProbs, beam, false);
+                  
                   totalEscapedDosePE +=  doseLostFromCrystalPE;
                   totalEscapedDose += doseLostFromCrystalPE;
                   //add Auger to Voxel
                   if(totAugerDose > 0) {
                   addDose(i, j, k, totAugerDose);
+                  }
+                }
+                  else {
+                    //simelectron with adding shell binding en
+                  //  simElectron(i, j, k, absPhotons, true, coefCalc, beam.getPhotonEnergy(), angle, false);
                   }
                 }
                 else if (photoElectronEscape == false && fluorescentEscape == true) { //only do Fluorescent escape
@@ -1023,7 +1240,7 @@ public abstract class Crystal {
           for (int k = 0; k < cryoCrystalSize[2]; k++) {
             //if this is an extra voxel
             
-            double iCryst = (i - extraVoxels) * ppmRatio;
+            double iCryst = (i - extraVoxels) * ppmRatio; 
             double jCryst = (j - extraVoxels) * ppmRatio;
             double kCryst = (k - extraVoxels) * ppmRatio;
             
@@ -1070,10 +1287,15 @@ public abstract class Crystal {
                                                                              
                 if (cryoVoxImageEnergy > 0) {
             //    if (cryoVoxImageDose > 0) { 
+                  
+                  //get numAbsorbed photons
+                  double numAbsorbedPhotons = cryoVoxImageEnergy/beamEnergy;
+                  
                   double energyPE = 0;
                   double dosePE = 0;
                   double totCryoAugerEnergy = cryoAugerEnergy * numberOfPhotons * energyPerFluence;
                   double totCryoAugerDose = cryoAugerEnergy * numberOfPhotons * fluenceToDoseFactor;
+                  if (MC == false) {
                   if (fluorescentEscape == false) {
                     energyPE = cryoVoxImageEnergy - totCryoAugerEnergy;
                     dosePE = cryoVoxImageDose - totCryoAugerDose;
@@ -1083,12 +1305,18 @@ public abstract class Crystal {
                     //convert this to a dose to be released
                     double voxImageFlEnergyRelease = energyPerFluence * totCryoFluorescenceEnergyRelease;
                     double voxImageFlDoseRelease = fluenceToDoseFactor * totCryoFluorescenceEnergyRelease;
-                    energyPE = cryoVoxImageEnergy - totCryoAugerEnergy - voxImageFlEnergyRelease;
-                    dosePE = cryoVoxImageDose - totCryoAugerDose - voxImageFlDoseRelease;
+              //      energyPE = cryoVoxImageEnergy - totCryoAugerEnergy - voxImageFlEnergyRelease;
+                    energyPE = cryoVoxImageEnergy - (cryoEnergyToSubtractFromPE/beam.getPhotonEnergy())*cryoVoxImageEnergy;
+                  //  dosePE = cryoVoxImageDose - totCryoAugerDose - voxImageFlDoseRelease;
+                    dosePE = cryoVoxImageDose - (cryoEnergyToSubtractFromPE/beam.getPhotonEnergy())*cryoVoxImageDose;
                   }
                   double doseAddedBack = addDoseAfterPECryo(iCryst, jCryst, kCryst, energyPE, energyToDoseFactor);
               //    double doseAddedBack = addDoseAfterPECryo(iconverted, jconverted, kconverted, dosePE, energyToDoseFactor);
                   totalDoseFromSurrounding += doseAddedBack;
+                  }
+                  else {
+                   // simElectron(iCryst, jCryst, kCryst, numAbsorbedPhotons, false, coefCalc, beam.getPhotonEnergy(), angle, true);
+                  }
                 } // end if voximage dose > 0
               } // end if unattenuated beam intensity > 0
             } // end if crystal not at
@@ -1103,7 +1331,7 @@ public abstract class Crystal {
     for (int j = 0; j < crystalSize[1]; j++) {
       for (int k = 0; k < crystalSize[2]; k++) {
         if (isCrystalAt(i, j, k)) {
-          if (voxImageDose[i][j][k] > 0) {
+          if (voxImageFluence[i][j][k] > 0) {
             double totalVoxelDose = getDose(i, j, k); //how can this be done before the whole crystal???
             //This may need to change - ask what this is
             double interpolatedVoxelDose = totalVoxelDose + voxImageDose[i][j][k] / 2; // this needs to change for PE escape
@@ -1124,7 +1352,7 @@ public abstract class Crystal {
               eo.exposureObservation(anglenum, i, j, k, voxImageDose[i][j][k],   //voxImageDose should be added dose (doesn't do Compton or escape)
                   voxImageDoseLast[i][j][k], voxImageFluence[i][j][k],
                   relativeDiffractionEfficiency, absorbedEnergy[i][j][k],
-                  voxElasticYield[i][j][k]);
+                  voxElasticYield[i][j][k], anglecount);
             }
             voxImageDoseLast[i][j][k] = totalVoxelDose;
           }
@@ -1233,5 +1461,101 @@ public abstract class Crystal {
   
   public boolean getPEEscapeBool() {
     return photoElectronEscape;
+  }
+  
+  private Map<Element, double[]> getRelativeShellProbs(Map<Element, Double> elementAbsorptionProbs, double beamEnergy){
+    Map<Element, double[]> ionisationProbs = new HashMap<Element, double[]>();
+    for (Element e : elementAbsorptionProbs.keySet()) {
+      e.EdgeRatio();
+      double runningSumProb = 0;
+      double kshellProb = 0, L1shellProb = 0, L2shellProb = 0, L3shellProb = 0, M1shellProb = 0, M2shellProb = 0, M3shellProb = 0, M4shellProb = 0, M5shellProb = 0;
+      double[] shellProbs = new double[9];
+  //    double shellProb = 0;
+      if (beamEnergy > e.getKEdge() ) {
+        kshellProb = e.getKShellIonisationProb();
+        runningSumProb += kshellProb;
+        shellProbs[0] = runningSumProb;
+      }
+      if (beamEnergy > e.getL1Edge() && e.getAtomicNumber() >= 12) {
+        L1shellProb = e.getL1ShellIonisationProb() * (1-kshellProb);
+        runningSumProb += L1shellProb;
+        shellProbs[1] = runningSumProb;
+      }
+      if (beamEnergy > e.getL2Edge() && e.getAtomicNumber() >= 12) {
+        L2shellProb = e.getL2ShellIonisationProb() * (1-kshellProb-L1shellProb);
+        runningSumProb += L2shellProb;
+        shellProbs[2] = runningSumProb;
+      }
+      if (beamEnergy > e.getL3Edge() && e.getAtomicNumber() >= 12) {
+        L3shellProb = e.getL3ShellIonisationProb() * (1-kshellProb-L1shellProb-L2shellProb);
+        runningSumProb += L3shellProb;
+        shellProbs[3] = runningSumProb;
+      }
+      if (beamEnergy > e.getM1Edge() && e.getAtomicNumber() >= 73) { 
+        M1shellProb = e.getM1ShellIonisationProb() * (1-kshellProb-L1shellProb-L2shellProb-L3shellProb);
+        runningSumProb += M1shellProb;
+        shellProbs[4] = runningSumProb;
+      }
+      if (beamEnergy > e.getM2Edge() && e.getAtomicNumber() >= 73) { 
+        M2shellProb = e.getM2ShellIonisationProb() * (1-kshellProb-L1shellProb-L2shellProb-L3shellProb-M1shellProb);
+        runningSumProb += M2shellProb;
+        shellProbs[5] = runningSumProb;
+      }
+      if (beamEnergy > e.getM3Edge() && e.getAtomicNumber() >= 73) { 
+        M3shellProb = e.getM3ShellIonisationProb() * (1-kshellProb-L1shellProb-L2shellProb-L3shellProb-M1shellProb-M2shellProb);
+        runningSumProb += M3shellProb;
+        shellProbs[6] = runningSumProb;
+      }
+      if (beamEnergy > e.getM4Edge() && e.getAtomicNumber() >= 73) { 
+        M4shellProb = e.getM4ShellIonisationProb() * (1-kshellProb-L1shellProb-L2shellProb-L3shellProb-M1shellProb-M2shellProb-M3shellProb);
+        runningSumProb += M4shellProb;
+        shellProbs[7] = runningSumProb;
+      }
+      if (beamEnergy > e.getM5Edge() && e.getAtomicNumber() >= 73) { 
+        M4shellProb = e.getM5ShellIonisationProb() * (1-kshellProb-L1shellProb-L2shellProb-L3shellProb-M1shellProb-M2shellProb-M3shellProb-M4shellProb);
+        runningSumProb += M4shellProb;
+        shellProbs[8] = runningSumProb;
+      }
+      ionisationProbs.put(e, shellProbs);
+    }
+    return ionisationProbs;
+  }
+  
+  private double[] getAngularEmissionProbs() {
+    double[] angularEmissionProbs = new double[numberAngularEmissionBins];
+  //    double photoelectric = coefCalc.getElementAbsorptionCoef(beam.getPhotonEnergy(), e);
+      //integrate under the whole curve
+      double lastHeight = 0;
+      double totalArea = 0;
+      for (int i = 0; i <= 100; i++) {
+        double angle = ((Math.PI)/100)*i;
+        double height = solvePolarisationEquationForAngle(angle, 1, 2);
+        if (i > 0) {
+          double area = ((lastHeight + height)/2) * ((Math.PI)/100);
+          totalArea += area;
+        }
+        lastHeight = height;
+      }
+      //now get the proportion of some of these
+   //   double[] emissionProbs = new double[numberAngularEmissionBins];
+      lastHeight = 0;
+      double cumulativeProb = 0;
+      for (int i = 0; i <= numberAngularEmissionBins; i++) {
+        double angle = ((Math.PI)/numberAngularEmissionBins)*i;
+        double height = solvePolarisationEquationForAngle(angle, 1, 2);
+        if (i > 0) {
+          double area = ((lastHeight + height)/2) * ((Math.PI)/numberAngularEmissionBins);
+          cumulativeProb += area / totalArea;
+          angularEmissionProbs[i-1] = cumulativeProb;
+        }
+        lastHeight = height;
+      }
+    //  angularEmissionProbs.put(e, emissionProbs);
+    return angularEmissionProbs;
+  }
+  
+  private double solvePolarisationEquationForAngle(double phi, double photoElectric, double beta) {
+    double height = (photoElectric / (4*Math.PI)) * (1+(beta*0.5*(3*Math.pow(Math.cos(phi), 2) - 1)));
+    return height;
   }
 }

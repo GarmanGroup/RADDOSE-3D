@@ -1,0 +1,61 @@
+##############################################################################
+#                                 Crystal Block                              #
+##############################################################################
+
+Crystal
+
+Type Cuboid             # Cuboid
+Dimensions 100 100 100    # Dimensions of the crystal in X,Y,Z in µm.
+PixelsPerMicron 0.2     # The computational resolution
+AbsCoefCalc  RD3D       # Tells RADDOSE-3D how to calculate the
+                        # Absorption coefficients
+
+# Example case for insulin:
+UnitCell   78.02  78.02  78.02  # unit cell size: a, b, c
+                                # alpha, beta and gamma angles default to 90°
+NumMonomers  24                 # number of monomers in unit cell
+NumResidues  51                 # number of residues per monomer
+ProteinHeavyAtoms S 6  Zn 0 # heavy atoms added to protein part of the
+                                # monomer, i.e. S, coordinated metals,
+                                # Se in Se-Met
+# SolventHeavyConc P 425          # concentration of elements in the solvent
+                                # in mmol/l. Oxygen and lighter elements
+                                # should not be specified
+SolventFraction 0.641            # fraction of the unit cell occupied by solvent
+
+# CALCULATEPEESCAPE TRUE
+
+# CALCSURROUNDING TRUE
+
+# SURROUNDINGHEAVYCONC As % Na % 
+# CRYOSOLUTION C { H } O %
+# CRYOSOLUTION O 0
+
+# GONIOMETERAXIS 0
+
+##############################################################################
+#                                  Beam Block                                #
+##############################################################################
+
+Beam
+
+Type TopHat               # Gaussian profile beam
+Flux 2e12                 # in photons per second (2e12 = 2 * 10^12)
+# FWHM 20 70                # in µm, vertical by horizontal for a Gaussian beam
+Energy 60               # in keV
+
+Collimation Rectangular 100 100 # Vertical/Horizontal collimation of the beam
+                                # For 'uncollimated' Gaussians, 3xFWHM
+                                # recommended
+
+
+##############################################################################
+#                                  Wedge Block                               #
+##############################################################################
+
+Wedge 0 0               # Start and End rotational angle of the crystal
+                          # Start < End
+ExposureTime 50           # Total time for entire angular range in seconds
+
+# AngularResolution 2     # Only change from the defaults when using very
+                          # small wedges, e.g 5°.

@@ -80,7 +80,7 @@ public class OutputProgressIndicator implements Output, ExposeObserver {
       final int j, final int k,
       final double addedDose, final double totalDose, final double fluence,
       final double relativeDiffractionEfficiency, final double absorbedEnergy,
-      final double elastic) {
+      final double elastic, final double anglecount) {
     // No implementation required
   }
 

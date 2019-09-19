@@ -1,5 +1,7 @@
 package se.raddo.raddose3D;
 
+import java.io.IOException;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -78,6 +80,16 @@ public class CoefCalcAverage extends CoefCalc {
   }
 
   @Override
+  public void updateCoefficients(final double photonEnergy) {
+    // Does nothing
+  }
+  
+  @Override
+  public void updateCryoCoefficients(final double photonEnergy) {
+    // Does nothing
+  }
+  
+  @Override
   public void updateCoefficients(final Beam b) {
     // Does nothing
   }
@@ -91,6 +103,8 @@ public class CoefCalcAverage extends CoefCalc {
   public void updateCryoCoefficients(final Beam b) {
     // Does nothing
   }
+  
+  
 
   @Override
   public void updateCryoCoefficients(final double photonEnergy) {
@@ -143,6 +157,293 @@ public class CoefCalcAverage extends CoefCalc {
   
   @Override
   public Set<Element> getPresentElements(boolean cryo){
+    return null;
+  }
+
+  @Override
+  public double getElectronElastic(double avgEnergy) {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+
+  @Override
+  public double getElectronInelastic(double avgEnergy, double exposedVolume) {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+
+  @Override
+  public double getStoppingPower(double avgEnergy, boolean surrounding) {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+
+  @Override
+  public double getEta() {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+
+  @Override
+  public Map<String, Double> getFractionElementEM() {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public double getElectronElasticMFPL(double electronEnergy, boolean surrounding) {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+
+  @Override
+  public double getRutherfordScreening(double electronEnergy) {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+
+  @Override
+  public double getFSELambda(double FSExSection, boolean surrounding) {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+
+  @Override
+  public double betheIonisationxSection(double electronEnergy, boolean surrounding) {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+
+  /*
+  @Override
+  public Map<Element, Double> getInnerShellProbs() {
+    // TODO Auto-generated method stub
+    return null;
+  }
+*/
+  @Override
+  public double getEMFlAbsCoef(double flEnergy) {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+
+  @Override
+  public Map<ElementEM, Double> getElasticProbs(boolean surrounding) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public void calculateSterheimerFactor() {
+    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public double getZav() {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+
+  @Override
+  public void populateCrossSectionCoefficients(){
+    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public Map<Element, double[]> getAllShellProbs(boolean surrounding) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public double getPlasmaMFPL(double electronEnergy, boolean surrounding) {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+
+  @Override
+  public double getElectronInelasticMFPL(double electronEnergy, boolean surrounding) {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+
+  @Override
+  public double getPlasmaFrequency(boolean surrounding) {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+
+  @Override
+  public long getNumberSimulatedElectrons() {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+
+  @Override
+  public double getSolventFraction() {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+
+  @Override
+  public Map<Element, Double> getPhotoElectricProbsElement(double beamEnergy) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public double getElementAbsorptionCoef(double beamEnergy, Element e) {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+
+  @Override
+  public double getCryoInelasticCoefficient() {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+
+  @Override
+  public Map<Element, Double> getPhotoElectricProbsElementSurrounding(
+      double beamEnergy) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public double getTotalAtomsInCrystal(double crystalVolume) {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+
+  @Override
+  public void getDifferentialInlasticxSection(double electronEnergy, boolean surrounding) {
+    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public double getGOSInel(boolean surrounding, double E) {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+
+  @Override
+  public Map<Element, double[]> getGOSShellProbs(boolean surrounding,
+      double totLambda) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public Map<Element, double[][]> getGOSVariable(boolean surrounding) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public double[] getPlasmonVariable(boolean surrounding) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public double returnAdjustment() {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+
+  @Override
+  public double getWkMolecule(double a, Element e, int shellIndex, boolean surrounding) {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+
+  @Override
+  public double getWcbAll(boolean surrounding) {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+
+  @Override
+  public double getRecoilEnergyDistant(double EkeV, double WakeV, double Qak) {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+
+  @Override
+  public double getAvgInelasticEnergy(double E) {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+
+  @Override
+  public double getTotalAtomsInCrystalElement(double crystalVolume,
+      Element elem) {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+
+  @Override
+  public double getGOSOuterLambda(boolean surrounding) {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+
+  @Override
+  public double getGOSInnerLambda(boolean surrounding) {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+
+  @Override
+  public Map<Element, Double> getGOSOuterShellProbs(boolean surrounding,
+      double totLambda) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public int[] getNumValenceElectronsSubshells(Element e) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public double getPlasmaEnergy(boolean surrounding) {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+
+  @Override
+  public Double getProteinAtoms(ElementEM element) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public Double getSolventAtoms(ElementEM element) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public double getElasticCoefficientMacro() {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+
+  @Override
+  public Map<String, Double> calculateCoefficientsSilicon(double energy) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public Map<Element, Double> getComptonProbsElement(double beamEnergy) {
+    // TODO Auto-generated method stub
     return null;
   }
   

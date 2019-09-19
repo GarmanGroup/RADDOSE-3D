@@ -354,8 +354,8 @@ public class Element {
         || (absorptionEdgeM != null && energy < absorptionEdgeM
         && energy > absorptionEdgeM - ABSORPTION_EDGE_TOLERANCE)) {
 
-      System.err.println("Warning: Energy is close to absorption edge of "
-          + elementName);
+   //   System.err.println("Warning: Energy is close to absorption edge of "
+   //       + elementName);
     }
 
     // Obtain photoelectric absorption coefficient using the closest edge.
@@ -463,6 +463,18 @@ public class Element {
     return elementData.get(DatabaseFields.L3);
   }
   
+  public Double getL1Binding() {
+    return elementData.get(DatabaseFields.L1);
+  }
+  
+  public Double getM1Binding() {
+    return elementData.get(DatabaseFields.M1);
+  }
+  
+  public Double getN1Binding() {
+    return elementData.get(DatabaseFields.N1);
+  }
+  
   /**
    * Return the M1 edge energy in keV of the element
    * 
@@ -489,6 +501,8 @@ public class Element {
   public Double getM5Edge() {
     return elementData.get(DatabaseFields.EDGE_M5);
   }
+  
+  
   
   /**
    * Return the K edge ratio which is defined as the ratio
@@ -595,6 +609,23 @@ public class Element {
     return elementData.get(DatabaseFields.FLUORESCENCE_YIELD_L3);
   }
   
+  public Double getM1ShellFluorescenceYield() {
+    return elementData.get(DatabaseFields.FLUORESCENCE_YIELD_M1);
+  }
+  public Double getM2ShellFluorescenceYield() {
+    return elementData.get(DatabaseFields.FLUORESCENCE_YIELD_M2);
+  }
+  public Double getM3ShellFluorescenceYield() {
+    return elementData.get(DatabaseFields.FLUORESCENCE_YIELD_M3);
+  }
+  public Double getM4ShellFluorescenceYield() {
+    return elementData.get(DatabaseFields.FLUORESCENCE_YIELD_M4);
+  }
+  public Double getM5ShellFluorescenceYield() {
+    return elementData.get(DatabaseFields.FLUORESCENCE_YIELD_M5);
+  }
+  
+  
   /**
    * Return the probability of K shell ionisation
    * 
@@ -668,5 +699,73 @@ public class Element {
    */
   public Double getLFluorescenceAverage() {
     return elementData.get(DatabaseFields.L_FL_AVERAGE);
+  }
+  
+  
+  //EM stuff
+  
+  public double[] getELSEPACoefficients() {
+    double[] crossSection = new double[6];
+    for (int i = 1; i < 7; i++) {
+      String keV = String.valueOf((double)i * 50);
+      String field = "EL_" + keV;
+      crossSection[i-1] = elementData.get(ElementDatabase.DatabaseFields.valueOf(field));
+    }
+    return crossSection;
+  }
+  
+  
+  
+  /**
+   * @return the minimum energy for low ionisation coefficients
+   */
+  public Double getEminLow() {
+    return elementData.get(DatabaseFields.EminLow);
+  }
+  
+  /**
+   * @return the maximum energy for low ionisation coefficients
+   */
+  public Double getEmaxLow() {
+    return elementData.get(DatabaseFields.EmaxLow);
+  }
+  
+  /**
+   * @return the bK constant for low energy
+   */
+  public Double getbKLow() {
+    return elementData.get(DatabaseFields.bKlow);
+  }
+  
+  /**
+   * @return the cK constant for low energy
+   */
+  public Double getcKLow() {
+    return elementData.get(DatabaseFields.cKlow);
+  }
+  
+  /**
+   * @return the minimum energy for high energy ionisation coefficients
+   */
+  public Double getEminHigh() {
+    return elementData.get(DatabaseFields.EminHigh);
+  }
+  
+  /**
+   * @return the bK constant for high energy
+   */
+  public Double getbKHigh() {
+    return elementData.get(DatabaseFields.bKhigh);
+  }
+  
+  /**
+   * @return the cK constant for high energy
+   */
+  public Double getcKHigh() {
+    return elementData.get(DatabaseFields.cKhigh);
+  }
+  
+  public double getI() {
+    return elementData.get(DatabaseFields.I);
   }
 }

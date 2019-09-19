@@ -10,8 +10,10 @@ public class BeamExperimental implements Beam {
                            pixYSize,
                            beamYSize,
                            totalFlux,
-                           beamEnergy;
-  private final Double     energyFWHM;
+                           beamEnergy,
+                           pulseEnergy,
+                           energyFWHM;
+  
   private double           beamSum,
                            attenuatedFlux;
 
@@ -43,10 +45,11 @@ public class BeamExperimental implements Beam {
    *          the vertical size of the pixels in micrometres
    */
   public BeamExperimental(final Double[][] datastructure,
-      final Double totalFlux, final Double beamEnergy,
+      final Double totalFlux, final Double beamEnergy, final Double pulseEnergy,
       final Double pixelSizeX,
       final Double pixelSizeY,
       final Double energyFWHM) {
+
     
     this.dataStructure = datastructure;
     this.beamXSize = (datastructure[0].length + 2) * pixelSizeX;
@@ -55,6 +58,9 @@ public class BeamExperimental implements Beam {
     this.pixYSize = pixelSizeY;
     this.totalFlux = totalFlux;
     this.beamEnergy = beamEnergy;
+
+    this.pulseEnergy = pulseEnergy;
+
     this.energyFWHM = energyFWHM;
     
   }
@@ -189,11 +195,12 @@ public class BeamExperimental implements Beam {
   public double getPhotonEnergy() {
     return beamEnergy;
   }
-
+  
   @Override
   public Double getEnergyFWHM() {
     return energyFWHM;
   }
+
   
   @Override
   public void applyContainerAttenuation(Container sampleContainer){
@@ -219,4 +226,78 @@ public class BeamExperimental implements Beam {
     return 0;
   }
 
+  @Override
+  public double getExposure() {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+
+  @Override
+  public Double getBeamX() {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public Double getBeamY() {
+    // TODO Auto-generated method stub
+    return null;
+  }
+  
+  @Override
+  public String getType() {
+    return "Experimental";
+  }
+
+  @Override
+  public boolean getIsCircular() {
+    // TODO Auto-generated method stub
+    return false;
+  }
+
+  @Override
+  public double getSemiAngle() {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+
+  @Override
+  public double getApertureRadius() {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+
+  @Override
+  public double getImageX() {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+  @Override
+  public double getImageY() {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+
+  @Override
+  public double getPulseEnergy() {
+    return pulseEnergy;
+  }
+
+  @Override
+  public void setPhotonsPerfs(double photonsPerfs) {
+    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public double getSx() {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+
+  @Override
+  public double getSy() {
+    // TODO Auto-generated method stub
+    return 0;
+  }
 }

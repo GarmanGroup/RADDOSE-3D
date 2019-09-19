@@ -1,0 +1,129 @@
+####################################################################### 
+# 
+# This file contains crystal structure data downloaded from the 
+# Cambridge Structural Database (CSD) hosted by the Cambridge 
+# Crystallographic Data Centre (CCDC).
+# 
+# Full information about CCDC data access policies and citation 
+# guidelines are available at http://www.ccdc.cam.ac.uk/access/V1 
+# 
+# Audit and citation data items may have been added by the CCDC. 
+# Please retain this information to preserve the provenance of 
+# this file and to allow appropriate attribution of the data. 
+# 
+#######################################################################
+
+data_CAXPUM
+#This CIF has been generated from an entry in the Cambridge Structural Database
+_database_code_depnum_ccdc_archive 'CCDC 1121077'
+_database_code_CSD               CAXPUM
+loop_
+_citation_id
+_citation_doi
+_citation_year
+1 10.1107/S0108270183009506 1983
+_audit_creation_method           'Created from the CSD'
+_audit_update_record             
+;
+2017-12-08 downloaded from the CCDC.
+;
+_database_code_NBS               550684
+_chemical_name_common            'Diammine-zinc sulfadiazine'
+_chemical_formula_moiety         'C20 H24 N10 O4 S2 Zn1'
+_chemical_name_systematic        
+Diammine-bis(2-sulfanilamidopyrimidinato)-zinc(ii)
+_chemical_absolute_configuration unk
+_diffrn_ambient_temperature      295
+_exptl_crystal_density_diffrn    1.594
+#These two values have been output from a single CSD field.
+_refine_ls_R_factor_gt           0.04
+_refine_ls_wR_factor_gt          0.04
+_diffrn_radiation_probe          x-ray
+_symmetry_cell_setting           orthorhombic
+_symmetry_space_group_name_H-M   'P n 21 a'
+_symmetry_Int_Tables_number      33
+_space_group_name_Hall           'P -2ac -2n'
+loop_
+_symmetry_equiv_pos_site_id
+_symmetry_equiv_pos_as_xyz
+1 x,y,z
+2 1/2-x,1/2+y,1/2+z
+3 1/2+x,y,1/2-z
+4 -x,1/2+y,-z
+_cell_length_a                   13.894(1)
+_cell_length_b                   14.221(1)
+_cell_length_c                   12.608(1)
+_cell_angle_alpha                90
+_cell_angle_beta                 90
+_cell_angle_gamma                90
+_cell_volume                     2491.17
+_cell_formula_units_Z            4
+loop_
+_atom_site_label
+_atom_site_type_symbol
+_atom_site_fract_x
+_atom_site_fract_y
+_atom_site_fract_z
+Zn1 Zn 0.25773 0.00000 0.07747
+S1 S 0.40118 0.07560 0.34885
+O1 O 0.47700 0.14370 0.32850
+O2 O 0.31070 0.11640 0.38440
+N1 N 0.37540 0.01350 0.25010
+C1 C 0.44240 -0.01480 0.17940
+N2 N 0.40280 -0.03520 0.08370
+C2 C 0.46200 -0.06470 0.00680
+C3 C 0.55910 -0.07160 0.02120
+C4 C 0.59290 -0.05050 0.12030
+N3 N 0.53570 -0.02290 0.20120
+C5 C 0.44290 0.00340 0.45270
+C6 C 0.49040 0.04560 0.53640
+C7 C 0.51450 -0.00730 0.62430
+C8 C 0.49410 -0.10300 0.62860
+C9 C 0.44780 -0.14450 0.54200
+C10 C 0.42170 -0.09110 0.45500
+N4 N 0.51250 -0.15460 0.72020
+S2 S 0.30011 0.19850 -0.07394
+O3 O 0.26610 0.24260 -0.17000
+O4 O 0.27450 0.24420 0.02480
+N5 N 0.26470 0.09160 -0.05960
+C11 C 0.26480 0.02690 -0.14030
+N6 N 0.24880 -0.06080 -0.10040
+C12 C 0.24510 -0.13150 -0.16950
+C13 C 0.25630 -0.11670 -0.27640
+C14 C 0.27540 -0.02640 -0.30830
+N7 N 0.27950 0.04730 -0.24270
+C15 C 0.42680 0.19440 -0.07880
+C16 C 0.47300 0.20000 -0.17500
+C17 C 0.57470 0.19780 -0.17700
+C18 C 0.62690 0.18970 -0.08250
+C19 C 0.57740 0.18460 0.01350
+C20 C 0.47800 0.18780 0.01480
+N8 N 0.72640 0.18960 -0.08500
+N9 N 0.17790 -0.11290 0.12350
+N10 N 0.19140 0.09960 0.16960
+H1 H 0.44340 -0.08490 -0.06180
+H2 H 0.60270 -0.09060 -0.03600
+H3 H 0.66010 -0.05420 0.13920
+H4 H 0.51300 0.10860 0.53290
+H5 H 0.54500 0.02120 0.68130
+H6 H 0.43600 -0.21000 0.54240
+H7 H 0.38660 -0.12200 0.39910
+H8 H 0.57100 -0.13600 0.74700
+H9 H 0.51600 -0.21700 0.70600
+H10 H 0.23840 -0.19400 -0.14760
+H11 H 0.24700 -0.16420 -0.32800
+H12 H 0.29050 -0.01400 -0.38020
+H13 H 0.43950 0.20500 -0.23800
+H14 H 0.60710 0.20140 -0.24600
+H15 H 0.61250 0.17870 0.07380
+H16 H 0.44480 0.18510 0.08350
+H17 H 0.74200 0.14800 -0.13700
+H18 H 0.75200 0.16600 -0.02500
+H19 H 0.16900 -0.13780 0.05870
+H20 H 0.11660 -0.10410 0.14230
+H21 H 0.20000 -0.16880 0.15690
+H22 H 0.12750 0.09490 0.17820
+H23 H 0.20280 0.10890 0.23720
+H24 H 0.20000 0.15380 0.12390
+
+#END

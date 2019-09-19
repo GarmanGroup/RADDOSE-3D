@@ -14,16 +14,27 @@ public class BeamTophat implements Beam {
 
   /** Beam flux. */
   private final Double photonsPerSec;
+  
+  /** Beam exposure. */
+  private final Double exposure;
 
   /** Beam energy. */
   private final Double photonEnergy;
   
-  private final Double energyFWHM;
+  /** Pulse energy. */
+  private final Double pulseEnergy;
+  
+  private Double energyFWHM;
+  
+  private  Double semiAngle;
+  private  Double apertureRadius;
 
   /** Attenuated beam flux.  */
   private double attenuatedPhotonsPerSec;
   
   private boolean isCircular;
+  
+  private final Double imageX, imageY;
 
   /**
    * Generic property constructor for Top Hat beams. Extracts all required
@@ -41,16 +52,25 @@ public class BeamTophat implements Beam {
    *          {@link Beam} class.
    */
   public BeamTophat(final Map<Object, Object> properties) {
+
+    
     // Check for valid parameters
     Assertions a = new Assertions("Could not create TopHat beam: ");
     a.checkIsClass(properties.get(Beam.BEAM_COLL_H), Double.class,
         "no horizontal beam collimation specified");
     a.checkIsClass(properties.get(Beam.BEAM_COLL_V), Double.class,
         "no vertical beam collimation specified");
-    a.checkIsClass(properties.get(Beam.BEAM_FLUX), Double.class,
-        "no beam flux specified");
+ //   a.checkIsClass(properties.get(Beam.BEAM_FLUX), Double.class,
+ //       "no beam flux specified");
     a.checkIsClass(properties.get(Beam.BEAM_ENERGY), Double.class,
         "no beam energy specified");
+    if ((properties.get(Beam.BEAM_FLUX) == null)
+        && (properties.get(Beam.BEAM_EXPOSURE) == null) 
+        && (properties.get(Beam.PULSE_ENERGY) == null)) {
+      a.checkIsClass(properties.get(Beam.BEAM_FLUX), Double.class,
+                 "no beam flux specified");
+    }
+    
 
     // Set the final variables for the object
     beamXum = (Double) properties.get(Beam.BEAM_COLL_H);
@@ -58,6 +78,15 @@ public class BeamTophat implements Beam {
     photonsPerSec = (Double) properties.get(Beam.BEAM_FLUX);
     photonEnergy = (Double) properties.get(Beam.BEAM_ENERGY);
     energyFWHM = (Double) properties.get(Beam.ENERGY_FWHM);
+
+    pulseEnergy = (Double) properties.get(Beam.PULSE_ENERGY);
+    exposure = (Double) properties.get(Beam.BEAM_EXPOSURE);
+    semiAngle = (Double) properties.get(Beam.BEAM_SEMIANGLE);
+    apertureRadius = (Double) properties.get(Beam.BEAM_APERTURERADIUS);
+    imageX = (Double) properties.get(Beam.IMAGE_X);
+    imageY = (Double) properties.get(Beam.IMAGE_Y);
+    
+
     
     if (properties.get(Beam.BEAM_CIRCULAR) == "TRUE") {
       isCircular = true;
@@ -109,15 +138,19 @@ public class BeamTophat implements Beam {
   public double getPhotonsPerSec() {
     return photonsPerSec;
   }
+  
+  @Override
+  public double getExposure() {
+    return exposure;
+  }
 
   @Override
   public double getPhotonEnergy() {
     return photonEnergy;
   }
   
-  @Override
-  public Double getEnergyFWHM() {
-    return energyFWHM;
+  public double getPulseEnergy() {
+    return pulseEnergy;
   }
   
   @Override
@@ -151,5 +184,81 @@ public class BeamTophat implements Beam {
       beamArea = beamXum * beamYum;
     }
     return beamArea;
+  }
+  
+  @Override
+  public Double getBeamX() {
+    return beamXum;
+  }
+  
+  @Override
+  public Double getBeamY() {
+    return beamYum;
+  }
+  
+  @Override
+  public String getType() {
+    return "Tophat";
+  }
+
+  
+  @Override
+  public boolean getIsCircular() {
+    return isCircular;
+  }
+  
+  @Override
+  public double getSemiAngle() {
+    if (semiAngle == null) {
+      semiAngle = 0.;
+    }
+    return semiAngle;
+  }
+  @Override
+  public double getApertureRadius() {
+    if (apertureRadius == null) {
+      apertureRadius = 0.;
+    }
+    return apertureRadius;
+  }
+  
+  @Override
+  public double getImageX() {
+    if (imageX == null) {
+      return 0;
+    }
+    else {
+      return imageX;
+    }
+  }
+  
+  @Override
+  public double getImageY() {
+    if (imageY == null) {
+      return 0;
+    }
+    else {
+      return imageY;
+    }
+  }
+
+  @Override
+  public void setPhotonsPerfs(double photonsPerfs) {
+    attenuatedPhotonsPerSec = photonsPerfs;
+  }
+
+  @Override
+  public Double getEnergyFWHM() {
+    return energyFWHM;
+  }
+
+  @Override
+  public double getSx() {
+    return (1/Math.sqrt(12))*beamXum;
+  }
+
+  @Override
+  public double getSy() {
+    return (1/Math.sqrt(12))*beamYum;
   }
 }

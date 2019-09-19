@@ -328,4 +328,13 @@ public class CrystalCylinder extends CrystalPolyhedron {
           Math.toDegrees(p), Math.toDegrees(l));
     }
   }
+/*
+  @Override
+  public void runPEsim(int i, int j, int k, double numAbsorbedPhotons,
+      boolean addBindingEn, CoefCalc coefCalc, double photonEnergy,
+      double angle, boolean surrounding) {
+    // TODO Auto-generated method stub
+    
+  }
+  */
 }

@@ -13,6 +13,8 @@ public interface Beam {
   public static final String BEAM_COLL_V      = "COLL_V";
   /** Constant for data fields in Map constructors: Beam energy. */
   public static final String BEAM_ENERGY      = "ENERGY";
+  /** Constant for data fields in Map constructors: Pulse energy. */
+  public static final String PULSE_ENERGY      = "PULSE_ENERGY";
   /** Constant for data fields in Map constructors: External filename. */
   public static final String BEAM_EXTFILE     = "EXTFILE";
   /** Constant for data fields in Map constructors: FWHM X. */
@@ -25,8 +27,19 @@ public interface Beam {
   public static final String BEAM_PIXSIZE_X   = "PIXSIZE_X";
   /** Constant for data fields in Map constructors: Pixel size Y. */
   public static final String BEAM_PIXSIZE_Y   = "PIXSIZE_Y";
+  
+  public static final String ENERGY_FWHM = "ENERGY_FWHM";
 
   public static final String BEAM_CIRCULAR   = "CIRCULAR";
+  
+  /** Constant for data fields in Map constructors: Beam exposure. */
+  public static final String BEAM_EXPOSURE        = "EXPOSURE";
+  
+  public static final String BEAM_SEMIANGLE = "SEMIANGLE";
+  public static final String BEAM_APERTURERADIUS = "APERTURERADIUS";
+  
+  public static final String IMAGE_X = "IMAGE_X";
+  public static final String IMAGE_Y = "IMAGE_Y";
   
   /** The elementary charge, 1.6*10^-19 coulombs. */
   public static final Double ELEMENTARYCHARGE = 1.602176565e-19;
@@ -34,7 +47,6 @@ public interface Beam {
   /** Conversion factor from keV to Joules. */
   public static final Double KEVTOJOULES      = 1000 * ELEMENTARYCHARGE;
 
-  public static final String ENERGY_FWHM = "ENERGY_FWHM";
   
   /**
    * Returns the mean intensity at position X, Y in joules/um^2/s.
@@ -72,6 +84,14 @@ public interface Beam {
   public double getPhotonEnergy();
   
   /**
+   * Returns pulse energy of the beam.
+   *
+   * @return
+   *         pulse energy in mJ.
+   */
+  public double getPulseEnergy();
+  
+  /**
    * Generates a beam array
    */
   public void generateBeamArray();
@@ -90,6 +110,38 @@ public interface Beam {
   
   public double getBeamArea();
   
+  /**
+   * Returns exposure of the beam.
+   *
+   * @return
+   *         Beam exposure in electrons per Angstrom squared.
+   */
+  public double getExposure();
+  
+  public Double getBeamX();
+  
+  public Double getBeamY();
+  
+  public String getType();
+  
+  /**
+   * Returns true if the beam is circularly collimated
+   * @return
+   *        circular coll or not
+   */
+  public boolean getIsCircular();
+  
+  public double getSemiAngle();
+  public double getApertureRadius();
+  
+  public double getImageX();
+  public double getImageY();
+  
+  public void setPhotonsPerfs(double photonsPerfs);
+  
   public Double getEnergyFWHM();
+  
+  public double getSx();
+  public double getSy();
   
 }

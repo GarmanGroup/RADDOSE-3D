@@ -51,7 +51,8 @@ public class CoefCalcFromParams extends CoefCalcCompute {
       final List<Double> cryoSolutionConc,
       final Double solventFraction, final String oilBased, final String calcSurrounding,
       final int numCarb,
-      final List<String> oilElementNames, final List<Double> oilElementsNums, final double oilDensity) {
+      final List<String> oilElementNames, final List<Double> oilElementsNums, final double oilDensity,
+      final long numSimElectrons) {
 
     Double alpha = cellAlpha;
     Double beta = cellBeta;
@@ -74,6 +75,9 @@ public class CoefCalcFromParams extends CoefCalcCompute {
     }
 
     cellVolume(cellA, cellB, cellC, alpha, beta, gamma);
+    
+    //set number of simulated electrons
+    setNumberSimulatedElectrons(numSimElectrons);
 
     calculateAtomOccurrences(numMonomers, numResidues, numRNA, numDNA,
         sf, heavyProteinAtomNames, heavyProteinAtomNums,
@@ -118,10 +122,21 @@ public class CoefCalcFromParams extends CoefCalcCompute {
       for (int i = 0; i < heavyProteinAtomNames.size(); i++) {
         Element heavyAtom = getParser()
             .getElement(heavyProteinAtomNames.get(i));
+        
 
         // note: heavy atoms are provided per monomer,
         // so multiply by number of monomers.
         incrementMacromolecularOccurrence(heavyAtom,
+            heavyProteinAtomNums.get(i)
+                * monomers);
+        
+        ElementEM heavyAtomEM = getParserEM()
+            .getElement(heavyProteinAtomNames.get(i));
+        
+
+        // note: heavy atoms are provided per monomer,
+        // so multiply by number of monomers.
+        incrementMacromolecularOccurrenceEM(heavyAtomEM,
             heavyProteinAtomNums.get(i)
                 * monomers);
       }
@@ -215,5 +230,65 @@ public class CoefCalcFromParams extends CoefCalcCompute {
         * getNumCarb() * getNumMonomers());
     incrementMacromolecularOccurrence(hydrogen, HYDROGENS_PER_CARBOHYDRATE
         * getNumCarb() * getNumMonomers());
+    
+    
+    //repeat for EM
+    // Atom preparation...
+
+    ElementEM hydrogenEM = getParserEM().getElement("H");
+    ElementEM oxygenEM = getParserEM().getElement("O");
+    ElementEM carbonEM = getParserEM().getElement("C");
+    ElementEM nitrogenEM = getParserEM().getElement("N");
+    ElementEM phosphorusEM = getParserEM().getElement("P");
+
+    // Protein atoms: for every amino acid
+    // add 5C + 1.35 N + 1.5 O + 8H
+    incrementMacromolecularOccurrenceEM(carbonEM, CARBONS_PER_AMINO_ACID
+        * numResidues * getNumMonomers());
+    incrementMacromolecularOccurrenceEM(nitrogenEM, NITROGENS_PER_AMINO_ACID
+        * numResidues * getNumMonomers());
+    incrementMacromolecularOccurrenceEM(oxygenEM, OXYGENS_PER_AMINO_ACID
+        * numResidues * getNumMonomers());
+    incrementMacromolecularOccurrenceEM(hydrogenEM, HYDROGENS_PER_AMINO_ACID
+        * numResidues * getNumMonomers());
+
+    // RNA atoms: for every NTP
+    // add 11.25 H + 9.5 C + 3.75 N + 7 O + 1 P.
+    incrementMacromolecularOccurrenceEM(carbonEM, CARBONS_PER_RNA_NUCLEOTIDE
+        * getNumRNA() * getNumMonomers());
+    incrementMacromolecularOccurrenceEM(nitrogenEM, NITROGENS_PER_RNA_NUCLEOTIDE
+        * getNumRNA() * getNumMonomers());
+    incrementMacromolecularOccurrenceEM(oxygenEM, OXYGENS_PER_RNA_NUCLEOTIDE
+        * getNumRNA() * getNumMonomers());
+    incrementMacromolecularOccurrenceEM(hydrogenEM, HYDROGENS_PER_RNA_NUCLEOTIDE
+        * getNumRNA() * getNumMonomers());
+    incrementMacromolecularOccurrenceEM(phosphorusEM,
+        PHOSPHORI_PER_RNA_NUCLEOTIDE
+            * this.getNumRNA() * getNumMonomers());
+
+    // DNA atoms: for every NTP
+    // add 11.75 H + 9.75 C + 4 N + 6 O + 1 P.
+    incrementMacromolecularOccurrenceEM(carbonEM, CARBONS_PER_DNA_NUCLEOTIDE
+        * getNumDNA() * getNumMonomers());
+    incrementMacromolecularOccurrenceEM(nitrogenEM, NITROGENS_PER_DNA_NUCLEOTIDE
+        * getNumDNA() * getNumMonomers());
+    incrementMacromolecularOccurrenceEM(oxygenEM, OXYGENS_PER_DNA_NUCLEOTIDE
+        * getNumDNA() * getNumMonomers());
+    incrementMacromolecularOccurrenceEM(hydrogenEM, HYDROGENS_PER_DNA_NUCLEOTIDE
+        * getNumDNA() * getNumMonomers());
+    incrementMacromolecularOccurrenceEM(phosphorusEM,
+        PHOSPHORI_PER_DNA_NUCLEOTIDE
+            * getNumDNA() * getNumMonomers());
+    
+    // Carbohydrate atoms: for every residue
+    // add 11 H + 6 C + 5 O 
+    incrementMacromolecularOccurrenceEM(carbonEM, CARBONS_PER_CARBOHYDRATE
+        * getNumCarb() * getNumMonomers());
+    incrementMacromolecularOccurrenceEM(oxygenEM, OXYGENS_PER_CARBOHYDRATE
+        * getNumCarb() * getNumMonomers());
+    incrementMacromolecularOccurrenceEM(hydrogenEM, HYDROGENS_PER_CARBOHYDRATE
+        * getNumCarb() * getNumMonomers());
+    
+    
   }
 }

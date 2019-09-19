@@ -65,6 +65,12 @@ public class ExperimentDummy extends Experiment {
       public String getDescription() {
         return "";
       }
+      
+      @Override
+      public String getType() {
+        return "";
+      }
+
 
       @Override
       public double getPhotonsPerSec() {
@@ -95,10 +101,84 @@ public class ExperimentDummy extends Experiment {
       }
 
       @Override
+      public double getExposure() {
+        // TODO Auto-generated method stub
+        return 0;
+      }
+
+      @Override
+      public Double getBeamX() {
+        // TODO Auto-generated method stub
+        return null;
+      }
+
+      @Override
+      public Double getBeamY() {
+        // TODO Auto-generated method stub
+        return null;
+      }
+
+      @Override
+      public boolean getIsCircular() {
+        // TODO Auto-generated method stub
+        return false;
+      }
+
+      @Override
+      public double getSemiAngle() {
+        // TODO Auto-generated method stub
+        return 0;
+      }
+
+      @Override
+      public double getApertureRadius() {
+        // TODO Auto-generated method stub
+        return 0;
+      }
+
+      @Override
+      public double getImageX() {
+        // TODO Auto-generated method stub
+        return 0;
+      }
+
+      @Override
+      public double getImageY() {
+        // TODO Auto-generated method stub
+        return 0;
+      }
+
+      @Override
+      public double getPulseEnergy() {
+        // TODO Auto-generated method stub
+        return 0;
+      }
+
+      @Override
+      public void setPhotonsPerfs(double photonsPerfs) {
+        // TODO Auto-generated method stub
+        
+      }
+
+      @Override
       public Double getEnergyFWHM() {
         // TODO Auto-generated method stub
         return null;
       }
+
+
+      @Override
+      public double getSx() {
+        // TODO Auto-generated method stub
+        return 0;
+      }
+
+      @Override
+      public double getSy() {
+        // TODO Auto-generated method stub
+        return 0;
+      }
+
     }
   }
 
@@ -317,6 +397,51 @@ public class ExperimentDummy extends Experiment {
       public double getNumImages(Wedge wedge) {
         // TODO Auto-generated method stub
         return 0;
+      }
+
+      
+      @Override
+      public void startMicroED(double XDim, double YDim, double ZDim, Beam beam,
+          Wedge wedge, CoefCalc coefCalc, String crystalType) {
+        
+      }
+
+      @Override
+      public void startXFEL(double XDim, double YDim, double ZDim, Beam beam,
+          Wedge wedge, CoefCalc coefCalc, int runNum, boolean verticalGoniometer, boolean xfelTrue, boolean gos) {
+        // TODO Auto-generated method stub
+        
+      }
+
+      @Override
+      public double trackPhotoelectron(int i, int j, int k,
+          double doseIncreasePE, CoefCalc coefCalc, Map<Element, Double> elementAbsorptionProbs, Map<Element, double[]> ionisationProbs, double[] angularEmissionProbs,
+          Beam beam, boolean surrounding) {
+        // TODO Auto-generated method stub
+        return 0;
+      }
+/*
+      @Override
+      public void simElectron(int i, int j, int k, double numAbsorbedPhotons,
+          boolean addBindingEn, CoefCalc coefCalc, double photonEnergy,
+          double angle, boolean surrounding) {
+        // TODO Auto-generated method stub
+        
+      }
+*/
+      @Override
+      public void setELSEPA(CoefCalc coefCalc) {
+        // TODO Auto-generated method stub
+        
+      }
+
+
+      @Override
+      public void startMC(double XDim, double YDim, double ZDim, Beam beam,
+          Wedge wedge, CoefCalc coefCalc, int runNum,
+          boolean verticalGoniometer, boolean xfel, boolean gos, double[] surrThickness) {
+        // TODO Auto-generated method stub
+        
       }
     }
   }

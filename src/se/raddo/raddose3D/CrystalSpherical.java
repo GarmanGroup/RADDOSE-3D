@@ -319,4 +319,47 @@ public class CrystalSpherical extends Crystal {
     // TODO Auto-generated method stub
     return 0;
   }
+
+  public void startMicroED(double XDim, double YDim, double ZDim, Beam beam,
+      Wedge wedge, CoefCalc coefCalc, String crystalType) {
+    
+  }
+
+  @Override
+  public void startXFEL(double XDim, double YDim, double ZDim, Beam beam,
+      Wedge wedge, CoefCalc coefCalc, int runNum, boolean verticalGoniometer, boolean xfelTrue, boolean gos) {
+    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public double trackPhotoelectron(int i, int j, int k, double doseIncreasePE,
+      CoefCalc coefCalc, Map<Element, Double> elementAbsorptionProbs, Map<Element, double[]> ionisationProbs, double[] angularEmissionProbs,
+      Beam beam, boolean surrounding) {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+/*
+  @Override
+  public void simElectron(int i, int j, int k, double numAbsorbedPhotons,
+      boolean addBindingEn, CoefCalc coefCalc, double photonEnergy,
+      double angle, boolean surrounding) {
+    // TODO Auto-generated method stub
+    
+  }
+*/
+  @Override
+  public void setELSEPA(CoefCalc coefCalc) {
+    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public void startMC(double XDim, double YDim, double ZDim, Beam beam,
+      Wedge wedge, CoefCalc coefCalc, int runNum, boolean verticalGoniometer,
+      boolean xfel, boolean gos, double[] surrThickness) {
+    // TODO Auto-generated method stub
+    
+  }
+
 }

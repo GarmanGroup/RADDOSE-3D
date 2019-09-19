@@ -131,7 +131,7 @@ public class OutputFluencePerDoseHistCSV implements Output, ExposeObserver {
   public void exposureObservation(final int wedgeImage, final int i,
       final int j, final int k, final double addedDose, final double totalDose,
       final double fluence, final double doseDecay,
-      final double absorbedEnergy, final double elastic) {
+      final double absorbedEnergy, final double elastic, final double anglecount) {
 
     Double halfDose = totalDose + (addedDose / 2d);
     Double decay = crystal.getDDM().calcDecay(halfDose);

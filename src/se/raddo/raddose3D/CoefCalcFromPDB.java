@@ -368,6 +368,31 @@ public class CoefCalcFromPDB extends CoefCalcCompute {
       
       sequenceOnly = sequenceOnly.substring(SEQRES_RESI_LENGTH + 1,
           sequenceOnly.length());
+      
+      //repeat atom preparation for EM
+      ElementEM hydrogenEM = this.getParserEM().getElement("H");
+      ElementEM oxygenEM = this.getParserEM().getElement("O");
+      ElementEM carbonEM = this.getParserEM().getElement("C");
+      ElementEM nitrogenEM = this.getParserEM().getElement("N");
+      ElementEM phosphorusEM = this.getParserEM().getElement("P");
+      ElementEM sulphursEM = this.getParserEM().getElement("S");
+      ElementEM seleniumsEM = this.getParserEM().getElement("SE");  
+      
+      setMacromolecularOccurrenceEM(hydrogenEM, residue.getHydrogens()
+          + getMacromolecularOccurrenceEM(hydrogenEM));
+      setMacromolecularOccurrenceEM(oxygenEM, residue.getOxygens()
+          + getMacromolecularOccurrenceEM(oxygenEM));
+      setMacromolecularOccurrenceEM(carbonEM, residue.getCarbons()
+          + getMacromolecularOccurrenceEM(carbonEM));
+      setMacromolecularOccurrenceEM(nitrogenEM, residue.getNitrogens()
+          + getMacromolecularOccurrenceEM(nitrogenEM));
+      setMacromolecularOccurrenceEM(phosphorusEM, residue.getPhosphoruses()
+          + getMacromolecularOccurrenceEM(phosphorusEM));
+      setMacromolecularOccurrenceEM(sulphursEM, residue.getSulphurs()
+          + getMacromolecularOccurrenceEM(sulphursEM));
+      setMacromolecularOccurrenceEM(seleniumsEM, residue.getSeleniums()
+          + getMacromolecularOccurrenceEM(seleniumsEM));
+      
     }
   }
 
@@ -539,7 +564,7 @@ public class CoefCalcFromPDB extends CoefCalcCompute {
   public CoefCalcFromPDB(final String pdbCode,
       final List<String> cryoSolutionMolecule,
       final List<Double> cryoSolutionConc, final String oilBased, String calcSurrounding,
-      final List<String> oilElementNames, final List<Double> oilElementsNums, final double oilDensity) {
+      final List<String> oilElementNames, final List<Double> oilElementsNums, final double oilDensity, final long numSimElectrons) {
     
 
     
@@ -552,7 +577,8 @@ public class CoefCalcFromPDB extends CoefCalcCompute {
       String pdbName = pdbCode.toUpperCase();
       downloadPDB(pdbName);
     }
-    
+  //set number of simulated electrons
+    setNumberSimulatedElectrons(numSimElectrons);
     super.calculateDensity();
     
   //check whether a surrounding should be calculated 
@@ -581,10 +607,11 @@ public class CoefCalcFromPDB extends CoefCalcCompute {
       final List<Double> heavySolvConcNums,
       final List<String> cryoSolutionMolecule,
       final List<Double> cryoSolutionConc, final String oilBased, String calcSurrounding,
-      final List<String> oilElementNames, final List<Double> oilElementsNums, final double oilDensity) {
+      final List<String> oilElementNames, final List<Double> oilElementsNums, final double oilDensity, final long numSimElectrons) {
 
     this.addSolventConcentrations(heavySolvConcNames, heavySolvConcNums);
-
+  //set number of simulated electrons
+    setNumberSimulatedElectrons(numSimElectrons);
     if(isFile(pdbName)) {
       // Get info form PDB file
       try {

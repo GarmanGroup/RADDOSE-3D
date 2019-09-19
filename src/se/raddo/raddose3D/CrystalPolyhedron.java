@@ -3,11 +3,21 @@
  */
 package se.raddo.raddose3D;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -25,6 +35,8 @@ public class CrystalPolyhedron extends Crystal {
   protected final double        p;
 
   protected final double        l;
+  
+  private boolean MCSim = false;
   
   /**
    * Number of bins used along the fluorescence escape tracks and photoelectron escape tracks
@@ -47,13 +59,19 @@ public class CrystalPolyhedron extends Crystal {
    * Dose and fluence arrays holding the scalar
    * fields for these values at voxel i,j,k.
    */
-  private final double[][][]    dose, fluence, elastic;
+  public double[][][]    dose, fluence, elastic;
+  
+  
+
+  private final int numberAngularEmissionBins = 50;
 
   /**
    * Escape factor (% of photoelectrons which remain within the crystal)
    * for each voxel coordinate i, j, k.
    */
   private final double[][][]    escapeFactor;
+  
+  private Map<Object, Object> totalProperties = new HashMap<Object, Object>();
 
   /**
    * Constants for calculation of Gumbel distribution mu and beta parameters.
@@ -63,6 +81,18 @@ public class CrystalPolyhedron extends Crystal {
   private static  double[] CRYO_GUMBEL_DISTN_CALC_LOC = {0.0121, 0.0405}; //initially set as 1.17, <20keV
   private static  double[] CRYO_GUMBEL_DISTN_CALC_SCALE = {0.002, 0.0076}; //initially set as 1.17, <20keV
 
+  /**
+   * Constants for calculation of JohnsonSU distribution gamma and eta and loc/scale parameters.
+   */
+  private static  double JSU_DISTN_CALC_LOC; //initially set as 1.17, <20keV
+  private static  double JSU_DISTN_CALC_SCALE; //initially set as 1.17, <20keV
+  private static  double JSU_DISTN_CALC_GAMMA; //initially set as 1.17, <20keV
+  private static  double JSU_DISTN_CALC_ETA; //initially set as 1.17, <20keV
+  private static  double CRYO_JSU_DISTN_CALC_LOC; //initially set as 1.17, <20keV
+  private static  double CRYO_JSU_DISTN_CALC_SCALE; //initially set as 1.17, <20keV
+  private static  double CRYO_JSU_DISTN_CALC_GAMMA; //initially set as 1.17, <20keV
+  private static  double CRYO_JSU_DISTN_CALC_ETA; //initially set as 1.17, <20keV
+  
   /**
    * Distance bins travelled by a photoelectron.
    */ 
@@ -111,6 +141,10 @@ public class CrystalPolyhedron extends Crystal {
   
   private static final int   FL_ANGLE_RESOLUTION = 1;
   private static final int   FL_ANGLE_RES_LIMIT = 16;
+
+//  private final int numberAngularEmissionBins = 10;
+  public TreeMap<Double, double[]>[]  lowEnergyAngles;
+  public TreeMap<Double, double[]>[]  highEnergyAngles;
   
   /**
    * Stores the number of tracks used for fluorescence 
@@ -168,7 +202,7 @@ public class CrystalPolyhedron extends Crystal {
    * is a flag (calculated/not calculated) and second element is
    * a boolean (crystal/not crystal).
    */
-  private final boolean[][][][] crystOcc;
+  public final boolean[][][][] crystOcc;
 
   /**
    * 4d array where the 4th dimension is a 3 element array with the coordinates
@@ -193,13 +227,13 @@ public class CrystalPolyhedron extends Crystal {
    * of normal vectors.
    * In groups of 3 - triangles only please, no octagon nonsense.
    */
-  private int[][]               indices;
+  public int[][]               indices;
 
   /**
    * Similar in style to the index array, except each index is replaced
    * by the corresponding rotatedVertex.
    */
-  private double[][][]          expandedRotatedVertices;
+  public double[][][]          expandedRotatedVertices;
 
   /**
    * Normal array holding normalised direction vectors for
@@ -207,13 +241,13 @@ public class CrystalPolyhedron extends Crystal {
    * Contains an i, j, k vector per triangle.
    * Should have same no. of entries as the indices array.
    */
-  private double[][]            normals, rotatedNormals;
+  public double[][]            normals, rotatedNormals;
 
   /**
    * Distances from origin for each of the triangle planes.
    * Should have same no. of entries as the indices array.
    */
-  private double[]              originDistances, rotatedOriginDistances;
+  public double[]              originDistances, rotatedOriginDistances;
 
   /**
    * Vector class containing magical vector methods
@@ -221,7 +255,7 @@ public class CrystalPolyhedron extends Crystal {
    *
    * @author magd3052
    */
-  private static class Vector {
+  public static class Vector {
     /**
      * Returns magnitude of 3D vector.
      *
@@ -499,7 +533,8 @@ public class CrystalPolyhedron extends Crystal {
     mergedProperties.put(Crystal.CRYSTAL_FLUORESCENT_RESOLUTION, 0);
     mergedProperties.put(Crystal.CRYSTAL_PHOTOELECTRON_RESOLUTION, 0);
     mergedProperties.putAll(properties);
-
+    
+    totalProperties = properties;
     // Check for valid parameters
     Assertions a = new Assertions("Could not create polyhedral crystal: ");
     a.checkIsClass(mergedProperties.get(Crystal.CRYSTAL_ANGLE_P), Double.class,
@@ -540,6 +575,12 @@ public class CrystalPolyhedron extends Crystal {
       vertices[i][2] = -1 * y2 * Math.sin(l) + z2
           * Math.cos(l);
     }
+    
+    
+    //fudged for microED
+    xMinMax = this.minMaxVertices(0, vertices);
+    yMinMax = this.minMaxVertices(1, vertices);
+    zMinMax = this.minMaxVertices(2, vertices);
 
     Double xshift = -xMinMax[0];
     Double yshift = -yMinMax[0];
@@ -594,22 +635,32 @@ public class CrystalPolyhedron extends Crystal {
           double x = -xshift + i / crystalPixPerUM;
           double y = -yshift + j / crystalPixPerUM;
           double z = -zshift + k / crystalPixPerUM;
-
+          
+          
+          //need to remember to add this back in for the main RADDOSE-3D
+          
           /*
            * rotation in plane about [0 0 1] (P) Temporary variables needed
            * since we use all of the previous xyz's to set each of the new ones.
            */
+          
           double x2 = x * Math.cos(p) + y * Math.sin(p);
           double y2 = -1 * x * Math.sin(p) + y * Math.cos(p);
           double z2 = z;
-
+          
           /*
            * rotation loop about [1 0 0] (L)
            */
+          
           tempCrystCoords[i][j][k][0] = x2;
           tempCrystCoords[i][j][k][1] = y2 * Math.cos(l) + z2 * Math.sin(l);
           tempCrystCoords[i][j][k][2] = -1 * y2 * Math.sin(l) + z2
               * Math.cos(l);
+          
+          tempCrystCoords[i][j][k][0] = x;
+          tempCrystCoords[i][j][k][1] = y;
+          tempCrystCoords[i][j][k][2] = z;
+          
         }
       }
     }
@@ -634,6 +685,8 @@ public class CrystalPolyhedron extends Crystal {
    if (photoElectronEscape) {
     peRes = (int) mergedProperties.get(Crystal.CRYSTAL_PHOTOELECTRON_RESOLUTION);
    }
+   lowEnergyAngles = new TreeMap[95];
+   highEnergyAngles = new TreeMap[95];
   }
   
   /**
@@ -656,7 +709,7 @@ public class CrystalPolyhedron extends Crystal {
     double pixelsPerMicron = setCryoPPM(beam, maxPEDistance, xCryst, yCryst, zCryst);
 
     //test
-//    pixelsPerMicron = 1.6;
+//    pixelsPerMicron = 20;
     
     int extraVoxels = getExtraVoxels(maxPEDistance, pixelsPerMicron); // the extra voxels to add on each end
     
@@ -734,15 +787,22 @@ public class CrystalPolyhedron extends Crystal {
     }
     
  //   if ((crystalVolume > beamVolume) & (minDimCryst >= minDimBeam)
+    double idealPPM = 0.0;
+    if (MCSim == false) {
+      idealPPM = ((1/((double)maxPEDistance)) * 5) + ((1/((double)maxPEDistance)) * multiplyFactor * (1/minDimCryst)) ; 
+    }
+    else {
+      idealPPM = ((1/((double)maxPEDistance)) * 5) ;
+    }
     
-    double idealPPM = ((1/((double)maxPEDistance)) * 5) + ((1/((double)maxPEDistance)) * multiplyFactor * (1/minDimCryst)) ; 
-
     if (idealPPM >= crystalPixPerUM) { // set up a ppm so the crsytals can superimpose 
       pixelsPerMicron = Math.ceil(idealPPM / crystalPixPerUM) * crystalPixPerUM;
     } 
     else {
       pixelsPerMicron = crystalPixPerUM / ((int) (crystalPixPerUM / idealPPM));
     }
+    
+
     return pixelsPerMicron;
   }
   
@@ -1011,9 +1071,36 @@ public class CrystalPolyhedron extends Crystal {
     }
   }
   
+  private void calculateJohnsonSUDistribution(final double[] distancesTravelled,
+      double[] johnsonDistribution, final double gamma, final double eta, final double loc, final double scale,
+      final int bins) {
+    for (int i = 0; i < bins; i++) {
+      double x = distancesTravelled[i];
+      double hypSinh = asinh((x-loc)/scale);
+      johnsonDistribution[i] = (eta / (Math.pow((Math.pow((x-loc), 2) + Math.pow(scale, 2)), 0.5)  
+                               * Math.pow(2*Math.PI, 0.5))) * 
+                               (Math.exp(-0.5*Math.pow((gamma + eta*hypSinh), 2)));
+    }
+    
+  }
+  
+  private double asinh(double x)
+  {
+    return Math.log(x + Math.sqrt(x*x + 1.0));
+  }
+  
   private double calculateGumbelPDF(final double x, final double mu, final double beta) {
     double z = (x-mu)/beta;
     double PDF = Math.exp(z - Math.exp(z)) / beta;
+    return PDF;
+  }
+  
+  private double calculateJohnsonPDF(final double x, final double gamma, final double eta, 
+      final double loc, final double scale) {
+    double hypSinh = asinh((x-loc)/scale);
+    double PDF = (eta / (Math.pow((Math.pow((x-loc), 2) + Math.pow(scale, 2)), 0.5)  
+        * Math.pow(2*Math.PI, 0.5))) * 
+        (Math.exp(-0.5*Math.pow((gamma + eta*hypSinh), 2)));
     return PDF;
   }
   
@@ -1068,7 +1155,7 @@ public class CrystalPolyhedron extends Crystal {
   private double[] getGumbelParamsForBeamEnergy(final double beamEnergy, final boolean cryo) {
     // Gumbel distribution for mean photoelectron path lengths depend on 
     // beam energy. Derived from Josh Dickerson's project
-    double energyCorrection = EnergyToSubtractFromPE;  // this isn't the right energy correction for the cryo...
+    double energyCorrection = EnergyToSubtractFromPE;  // this isn't the right energy correction for the cryo
     
     if (cryo == true) {
       energyCorrection = cryoEnergyToSubtractFromPE;
@@ -1090,8 +1177,46 @@ public class CrystalPolyhedron extends Crystal {
       gumbParams[1] = CRYO_GUMBEL_DISTN_CALC_SCALE[0]*Math.pow(peEnergy,2) 
           + CRYO_GUMBEL_DISTN_CALC_SCALE[1]*(peEnergy);
     }
-
+    
+  //  gumbParams[0] += 1;
+   // gumbParams[1] = 0.256487;
+    
     return gumbParams;
+  }
+  
+  /**
+   * Gets the distance distribution for a photoelectron
+   * 
+   * @param beamEnergy
+   * @return
+   */ 
+  private double[] getJohnsonParamsForBeamEnergy(final double beamEnergy, final boolean cryo) {
+    // Gumbel distribution for mean photoelectron path lengths depend on 
+    // beam energy. Derived from Josh Dickerson's project
+    double energyCorrection = EnergyToSubtractFromPE;  // this isn't the right energy correction for the cryo
+    
+    if (cryo == true) {
+      energyCorrection = cryoEnergyToSubtractFromPE;
+    }
+    
+    double[] johnsonParams = new double[4]; //0 = location parameter, 1 = scale parameter, 2 = gamma, 3 = eta
+     
+    double peEnergy = beamEnergy - energyCorrection;
+
+    if (cryo == false) {
+      johnsonParams[0] = JSU_DISTN_CALC_LOC;
+      johnsonParams[1] = JSU_DISTN_CALC_SCALE;
+      johnsonParams[2] = JSU_DISTN_CALC_GAMMA;
+      johnsonParams[3] = JSU_DISTN_CALC_ETA;
+    }
+    else {
+      johnsonParams[0] = CRYO_JSU_DISTN_CALC_LOC;
+      johnsonParams[1] = CRYO_JSU_DISTN_CALC_SCALE;
+      johnsonParams[2] = CRYO_JSU_DISTN_CALC_GAMMA;
+      johnsonParams[3] = CRYO_JSU_DISTN_CALC_ETA;
+    }
+    
+    return johnsonParams;
   }
   
   /**
@@ -1160,6 +1285,9 @@ public class CrystalPolyhedron extends Crystal {
   private  void setMaxPEDistance(final double beamEnergy) { //needs to be dynamic as it depends on beam energy
     double peEnergy = beamEnergy - EnergyToSubtractFromPE;
     int maxPEDistance = (int) Math.ceil(getMaxPEDistance(peEnergy, false));
+  //  int maxPEDistance = (int) Math.ceil(getMaxPEDistanceJohnson(peEnergy, false));
+    
+ //   int maxPEDistance = 3;
 
       //Get PE bins
     if (peRes >= 2) { //if user defined and sensible
@@ -1181,7 +1309,9 @@ public class CrystalPolyhedron extends Crystal {
         //erring on side of caution
         peDistBins += 1;
         // ramping it up now it is quicker
+
         peDistBins += 50;
+
       }
      }
  // Get PE distances
@@ -1283,6 +1413,52 @@ public class CrystalPolyhedron extends Crystal {
     return maxDistance;
   }
   
+  /**
+   * Takes the averaage photoelectron energy and calculates the maximum distance one can travel
+   * 
+   * @param peEnergy
+   * @return
+   */
+  private double getMaxPEDistanceJohnson(final double peEnergy, final boolean cryo) {
+    int energyRange = 0;
+    double locationParam = 0;
+    double scaleParam = 0;
+    double gamma = 0;
+    double eta = 0;
+    if (cryo == false) {
+    locationParam = JSU_DISTN_CALC_LOC;
+    scaleParam = JSU_DISTN_CALC_SCALE;
+    gamma = JSU_DISTN_CALC_GAMMA;
+    eta = JSU_DISTN_CALC_ETA;
+    }//need to change for cryo
+    else {
+      locationParam = CRYO_JSU_DISTN_CALC_LOC;
+      scaleParam = CRYO_JSU_DISTN_CALC_SCALE;
+      gamma = CRYO_JSU_DISTN_CALC_GAMMA;
+      eta = CRYO_JSU_DISTN_CALC_ETA;
+    }
+    
+
+    double modalHeight = calculateJohnsonPDF(locationParam, gamma, eta, locationParam, scaleParam);
+    double targetHeight = modalHeight * 0.001;
+    double calcHeight = modalHeight;
+    double step = peEnergy/100;
+    if (peEnergy < 10) {
+    step /= 10;
+    }
+    double maxDistance = locationParam;
+    while (calcHeight >= targetHeight) {
+      maxDistance += step;
+      calcHeight = calculateJohnsonPDF(maxDistance, gamma, eta, locationParam, scaleParam);
+      //escape clause in case there is an issue
+      if (maxDistance >= locationParam * 2) {
+        break;
+      }
+    }
+
+    return maxDistance;
+  }
+  
   @Override
   public void setPEparamsForCurrentBeam(final double beamEnergy, CoefCalc coefCalc, double[][] feFactors) {
     // Initialise crystal photolectron escape properties here for current beam
@@ -1292,6 +1468,13 @@ public class CrystalPolyhedron extends Crystal {
     double peEnergy = beamEnergy - EnergyToSubtractFromPE;
     GUMBEL_DISTN_CALC_LOC = setGumbelLoc(density, peEnergy);
     GUMBEL_DISTN_CALC_SCALE = setGumbelScale(density, peEnergy);
+    
+    double jsuParams[] = setJohnsonParams(density, peEnergy);
+    JSU_DISTN_CALC_LOC = jsuParams[0];
+    JSU_DISTN_CALC_SCALE = jsuParams[1];
+    JSU_DISTN_CALC_GAMMA = jsuParams[2];
+    JSU_DISTN_CALC_ETA = jsuParams[3];
+    
     //first of all need to get PE distances 
     setMaxPEDistance(beamEnergy);
     angularDistribution = setUpPEPolarisation(coefCalc, beamEnergy, feFactors, false);
@@ -1384,6 +1567,25 @@ public class CrystalPolyhedron extends Crystal {
     return gumbelParams;
   }
   
+  /**Sets the Location parameters for the Gumbel distribution based on density
+   * 
+   * 
+   * @param density
+   * @param peEnergy
+   * @return
+   */
+  private double[] setJohnsonParams(final double density, final double peEnergy) {
+    double[] johnsonParams = new double[4];
+    //for 11.25keV
+    johnsonParams[0] = 3.884704185; //loc
+    johnsonParams[1] = 0.991818699; //scale
+    johnsonParams[2] = 9.542206584; //gamma
+    johnsonParams[3] = 6.608091735; //eta
+    return johnsonParams;
+  }
+  
+  
+  
   /**
    * calculate the fraction of energy deposited by PE up to each 
    * distance, assuming PE distances follow a given distribution and convoluting with the energy
@@ -1395,9 +1597,20 @@ public class CrystalPolyhedron extends Crystal {
     // Set up a mean path length distribution
     double[] pathLengthDistn = new double[peDistBins];
 
+    
     double[] distnParams = getGumbelParamsForBeamEnergy(beamEnergy, false);
     calculateGumbelDistribution(PE_DISTANCES_TRAVELLED, pathLengthDistn, distnParams[0],
         distnParams[1], peDistBins);
+    
+    
+    /*
+    double[] distnParams = getJohnsonParamsForBeamEnergy(beamEnergy, false);
+    calculateJohnsonSUDistribution(PE_DISTANCES_TRAVELLED, pathLengthDistn, distnParams[2], distnParams[3], distnParams[0],
+        distnParams[1], peDistBins);
+    */
+    
+    
+    
     
     //I'm applying the energy distribution to each PE distance travelled so it can be combined with the distance distribution 
     double[][] totalEnergyDistn = new double[peDistBins][peDistBins];
@@ -1424,12 +1637,14 @@ public class CrystalPolyhedron extends Crystal {
           totEnergyIntegral[i] += width * energyHeight; 
         }
       }
-    }  
+    } 
+
     
-    /*
-     * The following code calculates the proportion of dose deposited along
-     * each track by the travelling PE
-     */  
+    
+     // The following code calculates the proportion of dose deposited along
+     // each track by the travelling PE
+      
+    
    double[] distanceWidths = new double[peDistBins];
    double[] distanceHeights = new double[peDistBins];
    int pathCount = -1;
@@ -1438,7 +1653,7 @@ public class CrystalPolyhedron extends Crystal {
      distanceWidths[pathCount] = PE_DISTANCES_TRAVELLED[l] - PE_DISTANCES_TRAVELLED[l-1]; //width of this electron length subset
      distanceHeights[pathCount] = (pathLengthDistn[l] + pathLengthDistn[l-1]) / 2;
    }
-   
+
    // a way to get the mean
    int thisCount = -1;
    double sumWidth = 0, mean = 0;
@@ -1447,8 +1662,7 @@ public class CrystalPolyhedron extends Crystal {
      thisCount += 1;
      sumWidth += distanceWidths[l];
      mean += (sumWidth) * ((distanceWidths[l]*distanceHeights[l])/distnIntegral);
-   }
-   
+   } 
    
    /*
     * Starting at the last bin, the population of photoelectron that stop here is calculated based
@@ -1456,6 +1670,7 @@ public class CrystalPolyhedron extends Crystal {
     * along the path length. 
     * Then move back one to second last bin and do the same and keep looping for all bins
     */
+
     for (int l = peDistBins-1; l > 0; l--) { //for every bin 
       for (int i = 0; i < peDistBins; i++) { //for every subset of electrons that stop at this path length
         double energyHeight = 0.;
@@ -1469,6 +1684,79 @@ public class CrystalPolyhedron extends Crystal {
         }
       }
     }
+
+    
+    /*
+    // get the energy propertion dist
+    double[][] totalEnergyDistn = new double[peDistBins-1][peDistBins-1];
+    double width = PE_DISTANCES_TRAVELLED[1] - PE_DISTANCES_TRAVELLED[0];
+    for (int i = 0; i < peDistBins-1; i++) {
+      double[] energyDistn = calculateEnergyDistn(PE_DISTANCES_TRAVELLED, peDistBins - i, peEnergy);
+      double[] energyPropDistn = new double[peDistBins - 1];
+      double tot = 0;
+      for (int l = 1; l < energyDistn.length; l++) {
+        tot += width * ((energyDistn[l] + energyDistn[l-1])/2);
+      }
+      for (int l = 1; l < energyDistn.length; l++) {
+        energyPropDistn[l-1] = (width * ((energyDistn[l] + energyDistn[l-1])/2))/tot;   //convert to a proportion
+      }
+      int length = energyPropDistn.length;
+      for (int j = (length - 1); j >= 0  ; j--) {
+      totalEnergyDistn[i][j] = energyPropDistn[j];  //i = 0 is longest distance, a high j is top energy
+      }
+    }
+    System.out.println("test");
+    
+    //Now get path lengths
+    double distnIntegral = 0;
+    //start with total area under curve
+    for (int l = 0; l < peDistBins-1; l++) {
+      double height = (pathLengthDistn[l + 1] + pathLengthDistn[l]) / 2;
+      distnIntegral += width * height;
+    }
+    double[] pathLengthPropDist = new double[peDistBins-1];
+    for (int l = 0; l < peDistBins-1; l++) {
+      double height = (pathLengthDistn[l + 1] + pathLengthDistn[l]) / 2;
+      pathLengthPropDist[l] = (width * height)/distnIntegral;
+    }
+    System.out.println("test");
+    
+    //now combine
+    for (int l = peDistBins-1; l > 0; l--) { //for every bin 
+      //get proportion that stop here
+      double proportionStop = pathLengthPropDist[l-1];
+      for (int i = 0; i < l; i++) { //for all the bins within this path length
+        propnDoseDepositedAtDist[i] += proportionStop * totalEnergyDistn[peDistBins-l-1][i];
+      }
+    }
+    
+    //test
+    double test = 0;
+    for(int i = 0; i < propnDoseDepositedAtDist.length; i++) {
+      test += propnDoseDepositedAtDist[i];
+    }
+    System.out.println(test);
+    */
+    /*
+    //just CSDA
+    
+    // get the energy propertion dist
+    double width = PE_DISTANCES_TRAVELLED[1] - PE_DISTANCES_TRAVELLED[0];
+ 
+      double[] energyDistn = calculateEnergyDistn(PE_DISTANCES_TRAVELLED, peDistBins, peEnergy);
+      double[] energyPropDistn = new double[peDistBins - 1];
+      double tot = 0;
+      for (int l = 1; l < energyDistn.length; l++) {
+        tot += width * ((energyDistn[l] + energyDistn[l-1])/2);
+      }
+      for (int l = 1; l < energyDistn.length; l++) {
+        energyPropDistn[l-1] = (width * ((energyDistn[l] + energyDistn[l-1])/2))/tot;   //convert to a proportion
+      }
+    //now combine
+      for (int i = 0; i < l; i++) { //for all the bins within this path length
+        propnDoseDepositedAtDist[i] += energyPropDistn[i];
+      }
+    */
   }
   
   /**
@@ -1483,10 +1771,16 @@ public class CrystalPolyhedron extends Crystal {
     double peEnergy = beamEnergy - cryoEnergyToSubtractFromPE;
     // Set up a mean path length distribution
     double[] pathLengthDistn = new double[peDistBins];
-        
+    
     double[] distnParams = getGumbelParamsForBeamEnergy(beamEnergy, true);
     calculateGumbelDistribution(CRYO_PE_DISTANCES_TRAVELLED, pathLengthDistn, distnParams[0],
         distnParams[1], peDistBins);
+    
+    /*
+    double[] distnParams = getJohnsonParamsForBeamEnergy(beamEnergy, false);
+    calculateJohnsonSUDistribution(CRYO_PE_DISTANCES_TRAVELLED, pathLengthDistn, distnParams[2], distnParams[3], distnParams[0],
+        distnParams[1], peDistBins);
+    */
     
     //I'm applying the energy distribution to each PE distance travelled so it can be combined with the distance distribution 
     double[][] totalEnergyDistn = new double[peDistBins][peDistBins];
@@ -1609,8 +1903,8 @@ public class CrystalPolyhedron extends Crystal {
           }else {
             dotProduct = yNorm;
           } 
-          double magnitude = Math.sqrt(Math.pow(xNorm, 2) + Math.pow(yNorm, 2) + Math.pow(zNorm, 2));
-          double cosAngleToX = dotProduct / magnitude;
+          double magnitude = Math.sqrt(Math.pow(xNorm, 2) + Math.pow(yNorm, 2) + Math.pow(zNorm, 2)); //always 1
+          double cosAngleToX = dotProduct / magnitude; 
           double angleToX = Math.acos(cosAngleToX);
           //find where angle is in distribution
           int place = (int) Math.rint((angleToX * PE_ANGLE_RES_LIMIT)/PE_ANGLE_LIMIT);
@@ -1700,6 +1994,8 @@ public class CrystalPolyhedron extends Crystal {
       point = solvePolarisationEquationForAngle(angle, 1, beta) / solvePolarisationEquationForAngle(0, 1, beta);
       sumPoint = point * weight * degreeOfPolarisation;
       weightedAveragePoint[i] = Math.round((1000 * sumPoint)) + (1000 * (1-(weight*degreeOfPolarisation))); //second part is the non-polarised parts
+      
+   //   weightedAveragePoint[i] = 1000;
       
     }
      return weightedAveragePoint;
@@ -2128,4 +2424,663 @@ public class CrystalPolyhedron extends Crystal {
               / wedge.getAngRes() + 1));
     }
   }
+
+  public void startMicroED(double XDim, double YDim, double ZDim, Beam beam,
+      Wedge wedge, CoefCalc coefCalc, String crystalType) {
+    //also need indices, vertices, crystalCoords, numberVoxelsm, PPM (may not need all of these but just 
+    //to be safe for now
+    MicroED microED = new MicroED(vertices, indices, crystCoord, 
+                                  crystalPixPerUM, crystSizeVoxels, crystOcc, crystalType);
+    microED.CalculateEM(beam, wedge, coefCalc);
+  }
+  @Override
+  public void startXFEL(double XDim, double YDim, double ZDim, Beam beam,
+      Wedge wedge, CoefCalc coefCalc, int runNum, boolean verticalGoniometer, boolean xfelTrue, boolean gos) {
+    //also need indices, vertices, crystalCoords, numberVoxelsm, PPM (may not need all of these but just 
+    //to be safe for now
+    XFEL xfel = new XFEL(vertices, indices, crystCoord, 
+                                  crystalPixPerUM, crystSizeVoxels, crystOcc, runNum, verticalGoniometer, xfelTrue, gos);
+    xfel.CalculateXFEL(beam, wedge, coefCalc);
+  }
+  
+  @Override
+  public void startMC(double XDim, double YDim, double ZDim, Beam beam,
+      Wedge wedge, CoefCalc coefCalc, int runNum, boolean verticalGoniometer, boolean xfelTrue, boolean gos, double[] surrThickness) {
+    //also need indices, vertices, crystalCoords, numberVoxelsm, PPM (may not need all of these but just 
+    //to be safe for now
+    MC mc = new MC(vertices, indices, crystCoord, 
+                                  crystalPixPerUM, crystSizeVoxels, crystOcc, runNum, verticalGoniometer, xfelTrue, gos, surrThickness);
+    mc.CalculateXFEL(beam, wedge, coefCalc);
+  }
+  
+  
+  
+  //photoelectron Monte Carlo stuff starts below
+  
+  
+  
+  
+  @Override
+  public double trackPhotoelectron(int i, int j, int k, double doseIncreasePE, CoefCalc coefCalc, 
+                    Map<Element, Double> elementAbsorptionProbs, Map<Element, double[]> ionisationProbs, double[] angularEmissionProbs,
+                    Beam beam, boolean surrounding) {
+    double energyEscapedPE = 0;
+    //determine which element absorbed this photoelectron and which shell it came from
+    Element ionisedElement = getIonisedElement(elementAbsorptionProbs);
+    int shellIndex = getIonisedShell(ionisationProbs, ionisedElement);
+    double shellBindingEnergy = getShellBindingEnergy(ionisedElement, shellIndex);
+    double photoelectronEnergy = beam.getPhotonEnergy() - shellBindingEnergy;
+    //get the dose scaling factor
+    double voxelVolume = Math.pow(((1/crystalPixPerUM)/1E4),3); //in cm^3
+    double voxelMass = (coefCalc.getDensity() *  voxelVolume) / 1000; //in Kg
+    double startingDose = ((photoelectronEnergy * Beam.KEVTOJOULES) / voxelMass)/1E6; //in  MGy
+    double doseScale = doseIncreasePE / startingDose;
+    
+    //convert pixel coordinates to cartesian to get starting point
+    double[] startingCoordinates = convertToCartesianCoordinates(i, j, k); //um
+    double previousX = startingCoordinates[0];
+    double previousY = startingCoordinates[1];
+    double previousZ = startingCoordinates[2];
+    //choose an initial direction
+    double theta = 0, phi = 0, xNorm = 0, yNorm = 0, zNorm = 0;
+    if (shellIndex == 0) { //then I want to send out in a biased direction
+      xNorm = getCosAngleToX(angularEmissionProbs);
+      //get yNorm and zNorm
+      yNorm = PosOrNeg() * Math.random() * Math.pow(1-Math.pow(xNorm, 2), 0.5);
+      zNorm = PosOrNeg() * Math.pow(1 - Math.pow(xNorm, 2) - Math.pow(yNorm, 2), 0.5);
+      //get theta and phi
+      theta = Math.acos(zNorm);
+      phi = Math.acos(xNorm / Math.sin(theta));
+    }
+    else { // send it out in a random direction
+      theta = Math.random() * 2 * Math.PI;
+      phi = Math.random() * 2 * Math.PI;
+      xNorm = Math.sin(theta) * Math.cos(phi);
+      yNorm = Math.sin(theta) * Math.sin(phi);
+      zNorm = Math.cos(theta);
+    }
+    
+    //now set up the energy and MFPL stuff for the Monte Carlo simulation
+    double electronEnergy = photoelectronEnergy;
+    double energyLost = 0;
+    surrounding = false;   //I'm just going to focus on the crystal for now and see how long it takes to run, then add in surrounding 
+    double stoppingPower = coefCalc.getStoppingPower(photoelectronEnergy, surrounding); //in keV/nm
+    
+    double startingLambda_el = coefCalc.getElectronElasticMFPL(photoelectronEnergy, surrounding);
+    Map<ElementEM, Double> elasticProbs = coefCalc.getElasticProbs(surrounding);
+    
+    double lambdaT = 0;
+    lambdaT = startingLambda_el;
+    
+    //first distance
+    double testRND = Math.random();
+    double s = -lambdaT*Math.log(testRND) / 1000; //um
+ //   double Pinel = 1 - (lambdaT / startingLambda_el);
+    double xn = previousX + s * xNorm;
+    double yn = previousY + s * yNorm;
+    double zn = previousZ + s * zNorm;
+    
+    
+    boolean exited = false;
+    double previousTheta = 0, previousPhi = 0;
+    if (photoelectronEnergy < 0.05) {
+      exited = true;
+    }
+    while (exited == false) {
+      //convert coordinate to voxel
+      int[] pixelCoords = convertToPixelCoordinates(xn, yn, zn);
+      if (isCrystalAt(pixelCoords[0], pixelCoords[1], pixelCoords[2]) == true) { //photoelectron still in the crystal
+        energyLost = s*1000 * stoppingPower;
+        //convert this energy to dose and add it to the middle voxel in the track
+        double middleX = previousX + (s/2) * xNorm;
+        double middleY = previousY + (s/2) * yNorm;
+        double middleZ = previousZ + (s/2) * zNorm;
+        addMonteCarloDoseToPixels(energyLost, middleX, middleY, middleZ, doseScale, voxelMass);
+
+        //update position and angle
+        //update position and angle
+        previousTheta = theta;
+        previousPhi = phi;
+        previousX = xn;
+        previousY = yn;
+        previousZ = zn;
+        
+        //update angle and stuff - for now it is always an elastic interaction
+        double elasticElementRND = Math.random();
+        ElementEM elasticElement = null;
+        for (ElementEM e : elasticProbs.keySet()) {
+          if (elasticProbs.get(e) > elasticElementRND) { //Then this element is the one that was ionised
+            elasticElement = e;
+            break;
+          }
+        }
+        
+        //get the angles
+        //ELSEPA stuff
+
+        theta = getPrimaryElasticScatteringAngle(electronEnergy, elasticElement.getAtomicNumber());
+
+        //to test a straight line
+      //  theta = 0;
+        
+        theta = previousTheta + theta;
+        if (theta >= (2 * Math.PI)) {
+          theta -= 2*Math.PI;
+        }
+        phi = 2 * Math.PI * Math.random();
+        
+        //testing a straight line
+     //   phi = 0;
+        
+        phi = previousPhi + phi;
+        if (phi >= (2 * Math.PI)) {
+          phi -= 2*Math.PI;
+        }
+      //now further update the primary
+        
+        xNorm = Math.sin(theta) * Math.cos(phi);
+        yNorm = Math.sin(theta) * Math.sin(phi);
+        zNorm = Math.cos(theta);
+        
+        //update the energy and stopping Power and stuff
+        electronEnergy -= energyLost; 
+        stoppingPower = coefCalc.getStoppingPower(electronEnergy, false);
+        //get new lambdaT
+        double lambdaEl = coefCalc.getElectronElasticMFPL(electronEnergy, false);
+        lambdaT = lambdaEl;
+        s = -lambdaT*Math.log(Math.random()) /1000;
+        elasticProbs = coefCalc.getElasticProbs(false);
+        
+        //update to new position
+        xn = previousX + s * xNorm;
+        yn = previousY + s * yNorm;
+        zn = previousZ + s * zNorm;
+      }
+      else { //it's left the crystal
+        exited = true;
+        //get the energy deposited before it left the crystal. - when I slice need to also do timestamps 
+        double escapeDist = getIntersectionDistance(previousX, previousY, previousZ, xNorm, yNorm, zNorm); //nm
+        double FSEStoppingPower = coefCalc.getStoppingPower(electronEnergy, false);
+        double energyToEdge = FSEStoppingPower * escapeDist*1000;
+        if (energyToEdge < electronEnergy){ //the FSE has escaped
+          double energyLostStep = 0, totFSEenLostLastStep = 0;
+          energyLost = escapeDist * 1000 * stoppingPower;
+          double middleX = previousX + (escapeDist/2) * xNorm;
+          double middleY = previousY + (escapeDist/2) * yNorm;
+          double middleZ = previousZ + (escapeDist/2) * zNorm;
+          addMonteCarloDoseToPixels(energyLost, middleX, middleY, middleZ, doseScale, voxelMass);
+          double newEnergy = electronEnergy - energyLost;
+          /*
+          double newEnergy = electronEnergy;
+          for (int m = 0; m < 10; m++) { //I will need to play around with the amount of slicing when I am writing up
+            energyLostStep = (escapeDist/10)*1000 * FSEStoppingPower;
+            //add dose to the pixel in the centre of the slice
+            double middleX = previousX + (m*(escapeDist/10) + escapeDist/20) * xNorm;
+            double middleY = previousY + (m*(escapeDist/10) + escapeDist/20) * yNorm;
+            double middleZ = previousZ + (m*(escapeDist/10) + escapeDist/20) * zNorm;
+            addMonteCarloDoseToPixels(energyLostStep, middleX, middleY, middleZ, doseScale, voxelMass);
+            
+            newEnergy -= energyLostStep;
+            FSEStoppingPower = coefCalc.getStoppingPower(newEnergy, false);
+            if (newEnergy < 0) {
+              break;
+            }
+          } 
+          */
+          if (newEnergy > 0) {
+            energyEscapedPE += newEnergy;
+          }
+        }
+        else {
+          //didn't quite escape, add all to middle pixel
+          double middleX = previousX + (escapeDist/2) * xNorm;
+          double middleY = previousY + (escapeDist/2) * yNorm;
+          double middleZ = previousZ + (escapeDist/2) * zNorm;
+          addMonteCarloDoseToPixels(electronEnergy, middleX, middleY, middleZ, doseScale, voxelMass);
+        }
+      }
+      if (electronEnergy < 0.05) {
+        exited = true;
+      }
+    }
+    energyEscapedPE = doseScale*(((energyEscapedPE * Beam.KEVTOJOULES) / voxelMass)/1E6);
+    return energyEscapedPE;
+  }
+  
+  private void addMonteCarloDoseToPixels(double energyLost, double middleX, double middleY, double middleZ, 
+                                        double doseScale, double voxelMass) {
+    int[] middlePixelCoords = convertToPixelCoordinates(middleX, middleY, middleZ);
+    if (isCrystalAt(middlePixelCoords[0], middlePixelCoords[1], middlePixelCoords[2]) == true) { //needed as could go out and in again
+      //then convert energy to dose
+      double doseLost = ((energyLost * Beam.KEVTOJOULES) / voxelMass)/1E6; //in  MGy
+      //scale this dose up to be representative of all
+      double doseToAdd = doseLost * doseScale;
+      //add this dose to the pixel
+      addDose(middlePixelCoords[0], middlePixelCoords[1], middlePixelCoords[2], doseToAdd);
+    }
+  }
+  
+  private double[] convertToCartesianCoordinates(final int i, final int j, final int k) {
+    double[] xMinMax = this.minMaxVertices(0, vertices);
+    double[] yMinMax = this.minMaxVertices(1, vertices);
+    double[] zMinMax = this.minMaxVertices(2, vertices);
+    double x = ((i/crystalPixPerUM) + xMinMax[0]);
+    double y = ((j/crystalPixPerUM) + yMinMax[0]);
+    double z = ((k/crystalPixPerUM) + zMinMax[0]);
+    double[] cartesianCoords = {x, y, z};
+    return cartesianCoords; // in um
+  }
+  
+  private int[] convertToPixelCoordinates(final double x, final double y, final double z) {
+    double[] xMinMax = this.minMaxVertices(0, vertices);
+    double[] yMinMax = this.minMaxVertices(1, vertices);
+    double[] zMinMax = this.minMaxVertices(2, vertices);
+    int i = (int) StrictMath.round(((x) - xMinMax[0]) * crystalPixPerUM);
+    int j = (int) StrictMath.round(((y) - yMinMax[0]) * crystalPixPerUM);
+    int k = (int) StrictMath.round(((z) - zMinMax[0]) * crystalPixPerUM);
+    int[] pixelCoords = {i, j, k};
+    return pixelCoords;
+  }
+  
+  private Element getIonisedElement(Map<Element, Double> elementAbsorptionProbs) {
+    double elementRND = Math.random();
+    Element ionisedElement = null;
+    for (Element e : elementAbsorptionProbs.keySet()) {
+      double elementProb =  elementAbsorptionProbs.get(e);
+      if (elementProb > elementRND) {
+        ionisedElement = e;
+        break;
+      }
+    }
+    return ionisedElement;
+  }
+  
+  private int getIonisedShell(Map<Element, double[]> ionisationProbs, Element ionisedElement) {
+    double[] shellProbs = ionisationProbs.get(ionisedElement);
+    double shellRND = Math.random();
+    int shellIndex = 0;
+    for (int j = 0; j < shellProbs.length; j++) {
+      if (shellProbs[j] > shellRND) {
+        shellIndex = j;
+        break;
+      }
+    }
+    return shellIndex;
+  }
+  
+  private double getShellBindingEnergy(Element collidedElement, int collidedShell) {
+    double shellBindingEnergy = 0;
+    switch (collidedShell) {
+      case 0: shellBindingEnergy = collidedElement.getKEdge();
+              break;
+      case 1: shellBindingEnergy = collidedElement.getL1Edge();
+              break;
+      case 2: shellBindingEnergy = collidedElement.getL2Edge();
+              break;
+      case 3: shellBindingEnergy = collidedElement.getL3Edge();
+              break;
+      case 4: shellBindingEnergy = collidedElement.getM1Edge();
+              break;
+      case 5: shellBindingEnergy = collidedElement.getM2Edge();
+              break;
+      case 6: shellBindingEnergy = collidedElement.getM3Edge();
+              break;
+      case 7: shellBindingEnergy = collidedElement.getM4Edge();
+              break;
+      case 8: shellBindingEnergy = collidedElement.getM5Edge();
+              break;
+    }
+    return shellBindingEnergy;
+  }
+  
+  private double getCosAngleToX( double[] angularEmissionProbs) {
+    double RNDangle = Math.random();
+    double lastProb = 0;
+    double angle = 0;
+    for (int i = 0; i < numberAngularEmissionBins; i++) {
+      if (RNDangle < angularEmissionProbs[i]) { //then it's in this angle range
+        //interpolate angle
+        double angleStart = i * Math.PI/numberAngularEmissionBins;
+        double angleEnd = (i+1) * (Math.PI/numberAngularEmissionBins);
+        double proportionAlong = (RNDangle - lastProb) / (angularEmissionProbs[i] - lastProb);
+        angle = angleStart + (proportionAlong * (angleEnd - angleStart));
+        break;
+      }
+      lastProb = angularEmissionProbs[i];
+    }
+    return Math.cos(angle);
+  }
+  private double PosOrNeg() {
+    double RND = Math.random();
+    if (RND < 0.5) {
+      return 1;
+    }
+    else {
+      return -1;
+    }
+  }
+  
+  public double getPrimaryElasticScatteringAngle(double electronEnergy, int atomicNumber){
+    boolean highEnergy = false;
+    if (electronEnergy > 20) {
+      highEnergy = true;
+    }
+   
+    //determine if need to get data from file or it's already loaded
+    boolean getFile = mapPopulated(highEnergy, atomicNumber);
+    
+    //get the right file if I need to
+    if (getFile == true) {
+      
+      TreeMap<Double, double[]> elementData = new TreeMap<Double, double[]>();
+      try {
+        elementData =  getAngleFileData(highEnergy, atomicNumber);
+      } catch (IOException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      } 
+      //now add the file data to the global array
+      if (highEnergy == true) {
+        highEnergyAngles[atomicNumber] = elementData;
+      }
+      else {
+        lowEnergyAngles[atomicNumber] = elementData;
+      }
+    }
+    
+    //Now use the data in the global array to work out the angle
+    //get nearest energy
+    Double energyKey = returnNearestEnergy(highEnergy, atomicNumber, electronEnergy);
+    
+    //should probably interpolate the values here tbh.... will do at some point
+    
+    //get the differential cross sections for that energy of the element
+    double[] energyAngleProbs = null;
+    if (highEnergy == true) {
+      energyAngleProbs = highEnergyAngles[atomicNumber].get(energyKey);
+    }
+    else {
+      energyAngleProbs = lowEnergyAngles[atomicNumber].get(energyKey);
+    }
+    //get the angle from this 
+    double deflectionAngle = returnDeflectionAngle(highEnergy, energyAngleProbs);
+    
+    if (Double.isNaN(deflectionAngle)){
+      System.out.println("test");
+    }
+    return deflectionAngle;
+  }
+  
+  public InputStreamReader locateFile(String filePath) 
+      throws UnsupportedEncodingException, FileNotFoundException{
+    InputStream is = getClass().getResourceAsStream("/" + filePath);
+
+    if (is == null) {
+      is = new FileInputStream(filePath);
+    }
+
+    return new InputStreamReader(is, "US-ASCII");
+  }
+
+  public boolean mapPopulated(boolean highEnergy, int atomicNumber) {
+    if (highEnergy == true) {
+      if (highEnergyAngles[atomicNumber] == null) {
+        return true;
+      }
+      else {
+        return false;
+      }
+    }
+    else {
+      if (lowEnergyAngles[atomicNumber] == null) {
+        return true;
+      }
+      else {
+       return false;
+      }
+    }
+  }
+
+//--put it in here when I have copy and paste back
+public TreeMap<Double, double[]> getAngleFileData(boolean highEnergy, int atomicNum) throws IOException{
+String elementNum = String.valueOf(atomicNum) + ".csv";
+String filePath = "";
+if (highEnergy == true) {
+filePath = "constants/above_20000/" + elementNum;
 }
+else {
+filePath = "constants/below_20000/" + elementNum;
+}
+
+InputStreamReader isr = locateFile(filePath);
+BufferedReader br = new BufferedReader(isr);
+TreeMap<Double, double[]> elementData = new TreeMap<Double, double[]>();
+String line;
+String[] components;
+int count = -1;
+while ((line = br.readLine()) != null) {
+count +=1 ;
+components = line.split(",");
+if (count > 0) { //if this is not the first line
+  Double energy = Double.valueOf(components[0]);
+  String[] angleProbsString = Arrays.copyOfRange(components, 1, components.length);
+  double[] angleProbs = new double[angleProbsString.length];
+  for (int i = 0; i < angleProbsString.length; i++) {
+    angleProbs[i] = Double.parseDouble(angleProbsString[i]);
+  }
+  //Now add this to the local treemap
+  elementData.put(energy, angleProbs);
+}
+}
+return elementData;
+}
+
+
+public Double returnNearestEnergy(boolean highEnergy, int atomicNumber, double electronEnergy) {
+Double nearestEnergy = 0.;
+if (electronEnergy >= 0.05 && electronEnergy <= 300) {
+Double beforeKey = 0.;
+Double afterKey = 0.;
+if (highEnergy == true) {
+  beforeKey = highEnergyAngles[atomicNumber].floorKey(electronEnergy);
+  afterKey = highEnergyAngles[atomicNumber].ceilingKey(electronEnergy);
+  
+}
+else {
+  beforeKey = lowEnergyAngles[atomicNumber].floorKey(electronEnergy);
+  afterKey = lowEnergyAngles[atomicNumber].ceilingKey(electronEnergy);
+}
+if (beforeKey == null) {
+  beforeKey = 0.;
+}
+if (afterKey == null) {
+  afterKey = 0.;
+}
+beforeKey = (beforeKey == 0.) ? afterKey: beforeKey;
+afterKey = (afterKey == 0.) ? beforeKey: afterKey;
+if (Math.abs(electronEnergy - beforeKey) <= Math.abs(electronEnergy-afterKey)) {
+  nearestEnergy = beforeKey;
+}
+else {
+  nearestEnergy = afterKey;
+}
+
+}
+return nearestEnergy;
+}
+
+public double returnDeflectionAngle(boolean highEnergy, double[] energyAngleProbs) {
+double totalProb = 0;
+for (int i = 0; i < energyAngleProbs.length; i++) {
+totalProb += energyAngleProbs[i];
+}
+double[] probPerAngle = new double[energyAngleProbs.length];
+double sumProb = 0;
+for (int j = 0; j < energyAngleProbs.length; j++) {
+sumProb += energyAngleProbs[j];
+probPerAngle[j] = sumProb/totalProb;
+}
+
+double RND = Math.random();
+double index = 0;
+for (int k = 0; k < probPerAngle.length; k++) {
+if (probPerAngle[k] >= RND) {
+  index = k;
+  break;
+}
+
+}
+//convert the index to an angle
+double angleDegrees = 0;
+if (highEnergy == true) {
+double startFactor = 0.;
+int factor = 0;
+double divideFactor = 4;
+double minusFactor = 0;
+double modFactor = 0;
+if (index >=1 && index < 146) {
+  minusFactor = 1;
+  modFactor = 36;
+  factor = (int) ((int) (index - minusFactor)/modFactor);
+  startFactor = Math.pow(10, factor) * 0.0001;
+  divideFactor = 4;
+}
+else if (index >= 146 && index < 236) {
+//   factor = (int) (index-146)/100;
+  startFactor = 1;
+  divideFactor = 10;
+  minusFactor = 146;
+  modFactor = 90;
+}
+else if (index >= 236 && index <= 296) {
+  startFactor = 10;  //go until 25
+  divideFactor = 40;
+  minusFactor = 236;
+  modFactor = 60;
+}
+else if (index > 296) {
+  startFactor = 25;
+  divideFactor = 50;
+  minusFactor = 296;
+  modFactor = 1000000; //just anything super high as all but first one
+}
+angleDegrees = startFactor + (((index-minusFactor)%modFactor)*(startFactor/divideFactor));
+if (Double.isNaN(angleDegrees)){
+//   System.out.println("test");
+  angleDegrees = 0;
+}
+}
+else {
+angleDegrees = 1.0 * index;
+}
+double angleRadians = angleDegrees * Math.PI/180;
+/*
+if (index > 296 && highEnergy == true) {
+System.out.println("test");
+}
+*/
+
+return angleRadians;
+}
+
+private double getIntersectionDistance(double x, double y, double z, double ca, double cb, double cc) {
+  if (normals == null) {
+    calculateNormals(false);
+  }
+
+  double[] directionVector = {ca, cb, cc}; //the actual direction vector
+  double minIntersect = 0;
+  double[] origin = new double[3];
+  origin[0] = x;
+  origin[1] = y;
+  origin[2] = z;
+  
+  double intersectionDistance = 0;
+  for (int l = 0; l < indices.length; l++) {
+    intersectionDistance = Vector.rayTraceDistance(normals[l],
+        directionVector, origin, originDistances[l]);
+
+    Double distanceObject = Double.valueOf(intersectionDistance);
+
+    if (intersectionDistance < 0 || distanceObject.isNaN()
+        || distanceObject.isInfinite()) {
+        //do nothing
+    }
+    else {
+  //    break; //maybe should just be closest, or an issue with the rayTRace
+      if (minIntersect == 0) {
+        minIntersect = intersectionDistance;
+      }
+      else {
+        double min = Math.min(minIntersect, intersectionDistance);
+        minIntersect = min;
+      }
+    }
+
+  }
+  return minIntersect;
+}
+
+@Override
+public void setELSEPA(CoefCalc coefCalc) {
+  Set<Element> presentElements = coefCalc.getPresentElements(false);
+  Set<Element> presentElementsSurr = coefCalc.getPresentElements(true);
+  if (presentElements != null) {
+    for (Element e: presentElements) {
+      readELSEPA(e);
+    }
+  }
+  if (presentElementsSurr != null) {
+    for (Element e: presentElementsSurr) {
+      readELSEPA(e);
+    }
+  }
+ }
+  private void readELSEPA(Element e) {
+    int atomicNumber = e.getAtomicNumber();
+    boolean getFile = mapPopulated(true, atomicNumber);
+    
+    //get the right file if I need to
+
+    TreeMap<Double, double[]> elementData = new TreeMap<Double, double[]>();
+    if (getFile == true) {
+    try {
+      elementData =  getAngleFileData(true, atomicNumber);
+    } catch (IOException e1) {
+      // TODO Auto-generated catch block
+      e1.printStackTrace();
+    } 
+    highEnergyAngles[atomicNumber] = elementData;
+    }
+    getFile = mapPopulated(false, atomicNumber);
+    if (getFile == true) {
+    try {
+      elementData =  getAngleFileData(false, atomicNumber);
+    } catch (IOException e1) {
+      // TODO Auto-generated catch block
+      e1.printStackTrace();
+    }
+    lowEnergyAngles[atomicNumber] = elementData;
+    }
+  }
+
+  /*
+  @Override
+  public void simElectron(double i, double j, double k, double numAbsorbedPhotons,
+      boolean addBindingEn, CoefCalc coefCalc, double photonEnergy, double angle, boolean surrounding) {
+ 
+    CrystalPolyhedron obj = new PEsim(totalProperties, dose);
+    obj.runPEsim(i, j, k, numAbsorbedPhotons, addBindingEn, coefCalc, photonEnergy, angle, surrounding);
+    //return dose object
+    dose = obj.getThisDose();
+  }
+*/
+  /*
+  public abstract void runPEsim(double i, double j, double k, double numAbsorbedPhotons,
+      boolean addBindingEn, CoefCalc coefCalc, double photonEnergy, double angle, boolean surrounding);
+  
+  
+  public abstract double[][][] getThisDose();
+  */
+}
+

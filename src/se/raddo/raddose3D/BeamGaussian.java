@@ -24,7 +24,10 @@ public class BeamGaussian implements Beam {
   /** Beam energy. */
   private final Double        photonEnergy;
   
-  private Double        energyFWHM;
+  /** Pulse energy. */
+  private final Double        pulseEnergy;
+  
+  private final Double        energyFWHM;
 
   /** Horizontal/Vertical collimation. No collimation if set to null. */
   private final Double        collXum, collYum;
@@ -71,16 +74,22 @@ public class BeamGaussian implements Beam {
         "no horizontal FWHM specified");
     a.checkIsClass(properties.get(Beam.BEAM_FWHM_Y), Double.class,
         "no vertical FWHM specified");
-    a.checkIsClass(properties.get(Beam.BEAM_FLUX), Double.class,
-        "no beam flux specified");
+  //  a.checkIsClass(properties.get(Beam.BEAM_FLUX), Double.class,
+  //      "no beam flux specified");
     a.checkIsClass(properties.get(Beam.BEAM_ENERGY), Double.class,
         "no beam energy specified");
+    if ((properties.get(Beam.BEAM_FLUX) == null)
+        && (properties.get(Beam.PULSE_ENERGY) == null)) {
+      a.checkIsClass(properties.get(Beam.BEAM_FLUX), Double.class,
+                 "no beam flux specified");
+    }
 
     photonsPerSec = (Double) properties.get(Beam.BEAM_FLUX);
     photonEnergy = (Double) properties.get(Beam.BEAM_ENERGY);
+    pulseEnergy = (Double) properties.get(Beam.PULSE_ENERGY);
+    energyFWHM = (Double) properties.get(Beam.ENERGY_FWHM);
     fwhmX = (Double) properties.get(Beam.BEAM_FWHM_X);
     fwhmY = (Double) properties.get(Beam.BEAM_FWHM_Y);
-    energyFWHM = (Double) properties.get(Beam.ENERGY_FWHM);
 
     Double sigmaX = fwhmX / SIGMA_TO_FWHM; // Convert to sigma
     Double sigmaY = fwhmY / SIGMA_TO_FWHM; // Convert to sigma
@@ -119,7 +128,10 @@ public class BeamGaussian implements Beam {
     
 
 
-  }
+  } // End of constructor
+  
+  
+  
   /**
    * Calculate the scale factor for the beam.
    */
@@ -228,6 +240,11 @@ public class BeamGaussian implements Beam {
   public double getPhotonEnergy() {
     return photonEnergy;
   }
+  
+  @Override
+  public double getPulseEnergy() {
+    return pulseEnergy;
+  }
 
   @Override
   public Double getEnergyFWHM() {
@@ -298,4 +315,63 @@ public class BeamGaussian implements Beam {
     // TODO Auto-generated method stub
     return 0;
   }
+  @Override
+  public double getExposure() {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+  @Override
+  public Double getBeamX() {
+    return collXum;
+  }
+  @Override
+  public Double getBeamY() {
+    return collYum;
+  }
+  
+  @Override
+  public String getType() {
+    return "Gaussian";
+  }
+
+  @Override
+  public boolean getIsCircular() {
+    return isCircular;
+  }
+  @Override
+  public double getSemiAngle() {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+  @Override
+  public double getApertureRadius() {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+  @Override
+  public double getImageX() {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+  @Override
+  public double getImageY() {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+  @Override
+  public void setPhotonsPerfs(double photonsPerfs) {
+    attenuatedPhotonsPerSec = photonsPerfs;
+    
+  }
+  
+  @Override
+  public double getSx() {
+    return fwhmX/SIGMA_TO_FWHM;
+  }
+  
+  @Override
+  public double getSy() {
+    return fwhmY/SIGMA_TO_FWHM;
+  }
+  
 }

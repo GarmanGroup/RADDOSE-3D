@@ -82,8 +82,21 @@ public class ElementDatabase {
     EDGE_M2(49), EDGE_M3(50), EDGE_M4(51), EDGE_M5(52),
     
     /** M edge ratios */
-    M1_EDGE_RATIO(53), M2_EDGE_RATIO(54), M3_EDGE_RATIO(55), M4_EDGE_RATIO(56), M5_EDGE_RATIO(57);
-    
+    M1_EDGE_RATIO(53), M2_EDGE_RATIO(54), M3_EDGE_RATIO(55), M4_EDGE_RATIO(56), M5_EDGE_RATIO(57),
+    /** Valid energy ranges for low energy x sections */
+    EminLow(58), EmaxLow(59),
+    /** Constants for the lower energy K shell*/
+    bKlow(60), cKlow(61), 
+    /** Valid energy ranges for high energy x sections */
+    EminHigh(62), 
+    /** Constants for the higher energy K shell*/
+    bKhigh(63), cKhigh(64), 
+    /** ELSEPA elastic cross section */
+    EL_50(65), EL_100(66), EL_150(67), EL_200(68), EL_250(69), EL_300(70),
+    /**Mean ionisation potential**/
+    I(71), L1(72), M1(73), N1(74), 
+    /**more Fl yields**/
+    FLUORESCENCE_YIELD_M1(75), FLUORESCENCE_YIELD_M2(76),FLUORESCENCE_YIELD_M3(77),FLUORESCENCE_YIELD_M4(78),FLUORESCENCE_YIELD_M5(79);
 
     
     /**

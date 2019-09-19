@@ -92,6 +92,7 @@ scope {
 	List<Double>          oilNums;
 	Double 		      oilDensity;
 	String 	           calcSurrounding;
+	long              simElectrons;
     HashMap<Object, Object> crystalProperties;
 	}
 @init { 
@@ -113,7 +114,8 @@ if ($crystal::crystalCoefCalc == 2)
   													$crystal::heavySolutionConcNames, $crystal::heavySolutionConcNums,
   													$crystal::cryoSolutionMolecule, $crystal::cryoSolutionConc,
   													$crystal::solFrac, $crystal::oilBased, 	$crystal::calcSurrounding,
-  													$crystal::numCarb, $crystal::oilNames, $crystal::oilNums,  $crystal::oilDensity);
+  													$crystal::numCarb, $crystal::oilNames, $crystal::oilNums,  $crystal::oilDensity, 
+  													$crystal::simElectrons);
 }
 
 if ($crystal::crystalCoefCalc == 3) {
@@ -130,9 +132,9 @@ if ($crystal::crystalCoefCalc == 4)
       $crystal::oilDensity = 0.0 ;
    }
   if ($crystal::heavySolutionConcNames != null)
-  	$crystal::crystalCoefCalcClass = new CoefCalcFromPDB($crystal::pdb, $crystal::heavySolutionConcNames, $crystal::heavySolutionConcNums, $crystal::cryoSolutionMolecule, $crystal::cryoSolutionConc, $crystal::oilBased, 	$crystal::calcSurrounding, $crystal::oilNames, $crystal::oilNums, $crystal::oilDensity);
+  	$crystal::crystalCoefCalcClass = new CoefCalcFromPDB($crystal::pdb, $crystal::heavySolutionConcNames, $crystal::heavySolutionConcNums, $crystal::cryoSolutionMolecule, $crystal::cryoSolutionConc, $crystal::oilBased, 	$crystal::calcSurrounding, $crystal::oilNames, $crystal::oilNums, $crystal::oilDensity, $crystal::simElectrons);
   else
-	$crystal::crystalCoefCalcClass = new CoefCalcFromPDB($crystal::pdb, $crystal::cryoSolutionMolecule, $crystal::cryoSolutionConc, $crystal::oilBased, 	$crystal::calcSurrounding, $crystal::oilNames, $crystal::oilNums, $crystal::oilDensity);
+	$crystal::crystalCoefCalcClass = new CoefCalcFromPDB($crystal::pdb, $crystal::cryoSolutionMolecule, $crystal::cryoSolutionConc, $crystal::oilBased, 	$crystal::calcSurrounding, $crystal::oilNames, $crystal::oilNums, $crystal::oilDensity, $crystal::simElectrons);
   													  													
 }
 
@@ -292,6 +294,12 @@ crystalLine
 	| ii=oilElements                { $crystal::oilNames    = $ii.names;  
 		                	         $crystal::oilNums	= $ii.num;  }
 	| jj=oilDensity	                { $crystal::oilDensity			= $jj.oildens;  }
+	| kk=program	                { $crystal::crystalProperties.put(Crystal.CRYSTAL_PROGRAM, $kk.value); }
+	| ll=simElectrons		{ $crystal::simElectrons		= $ll.simel; }
+	| mm=runs	                { $crystal::crystalProperties.put(Crystal.CRYSTAL_RUNS, $mm.value); }
+	| nn=surroundingThickness			{ if ($nn.properties != null) {
+							   $crystal::crystalProperties.putAll($nn.properties);
+							  }; }
 							
 	;
 
@@ -385,6 +393,19 @@ unitcell returns [Double dimA, Double dimB, Double dimC, Double angA, Double ang
 		)? 
 	;
 UNITCELL : ('U'|'u')('N'|'n')('I'|'i')('T'|'t')('C'|'c')('E'|'e')('L'|'l')('L'|'l') ;
+
+
+surroundingThickness returns [Map<Object, Object> properties]
+@init { 
+		$properties = new HashMap<Object, Object>();
+}	: SURROUNDINGTHICKNESS 
+	(	
+	a=FLOAT b=FLOAT c=FLOAT { $properties.put(Crystal.SURROUNDING_X, Double.parseDouble($a.text));
+                                $properties.put(Crystal.SURROUNDING_Y, Double.parseDouble($b.text));
+                                $properties.put(Crystal.SURROUNDING_Z, Double.parseDouble($c.text)); }
+	);
+SURROUNDINGTHICKNESS : ('S'|'s')('U'|'u')('R'|'r')('R'|'r')('O'|'o')('U'|'u')('N'|'n')('D'|'d')('I'|'i')('N'|'n')('G'|'g')('T'|'t')('H'|'h')('I'|'i')('C'|'c')('K'|'k')('N'|'n')('E'|'e')('S'|'s')('S'|'s');
+
 	
 proteinConcentration returns [Double proteinConc]
 	: (PROTEINCONCENTRATION | PROTEINCONC) a=FLOAT {$proteinConc = Double.parseDouble($a.text);};
@@ -528,8 +549,8 @@ $num	= new ArrayList<Double>();
 SURROUNDINGHEAVYCONC : ('S'|'s')('U'|'u')('R'|'r')('R'|'r')('O'|'o')('U'|'u')('N'|'n')('D'|'d')('I'|'i')('N'|'n')('G'|'g')('H'|'h')('E'|'e')('A'|'a')('V'|'v')('Y'|'y')('C'|'c')('O'|'o')('N'|'n')('C'|'c') ;
 
 oilBased returns [String value]
-	: OILBASED a=STRING {$value = $a.text;};
-OILBASED : ('O'|'o')('I'|'i')('L'|'l')('B'|'b')('A'|'a')('S'|'s')('E'|'e')('D'|'d') ;
+	: DENSITYBASED a=STRING {$value = $a.text;};
+DENSITYBASED : ('D'|'d')('E'|'e')('N'|'n')('S'|'s')('I'|'i')('T'|'t')('Y'|'y')('B'|'b')('A'|'a')('S'|'s')('E'|'e')('D'|'d') ;
 
 calcSurrounding returns [String value]
 	: CALCSURROUNDING a=STRING {$value = $a.text;};
@@ -541,15 +562,31 @@ oilElements returns [List<String> names, List<Double> num;]
 $names 	= new ArrayList<String>();
 $num	= new ArrayList<Double>();
 }
-	: OILELEMENTS (a=ELEMENT b=FLOAT {$names.add($a.text); $num.add(Double.parseDouble($b.text)); } )+ ; 	
-OILELEMENTS : ('O'|'o')('I'|'i')('L'|'l')('E'|'e')('L'|'l')('E'|'e')('M'|'m')('E'|'e')('N'|'n')('T'|'t')('S'|'s') ;
+	: SURROUNDINGELEMENTS (a=ELEMENT b=FLOAT {$names.add($a.text); $num.add(Double.parseDouble($b.text)); } )+ ; 	
+SURROUNDINGELEMENTS : ('S'|'s')('U'|'u')('R'|'r')('R'|'r')('O'|'o')('U'|'u')('N'|'n')('D'|'d')('I'|'i')('N'|'n')('G'|'g')('E'|'e')('L'|'l')('E'|'e')('M'|'m')('E'|'e')('N'|'n')('T'|'t')('S'|'s') ;
 
 oilDensity returns [double oildens]
-	: OILDENSITY a=FLOAT {$oildens = Double.parseDouble($a.text);};
-OILDENSITY : ('O'|'o')('I'|'i')('L'|'l')('D'|'d')('E'|'e')('N'|'n')('S'|'s')('I'|'i')('T'|'t')('Y'|'y') ;
-	
+	: SURROUNDINGDENSITY a=FLOAT {$oildens = Double.parseDouble($a.text);};
+SURROUNDINGDENSITY : ('S'|'s')('U'|'u')('R'|'r')('R'|'r')('O'|'o')('U'|'u')('N'|'n')('D'|'d')('I'|'i')('N'|'n')('G'|'g')('D'|'d')('E'|'e')('N'|'n')('S'|'s')('I'|'i')('T'|'t')('Y'|'y') ;
+
+simElectrons returns [long simel]
+	: (SIMELECTRONS | SIMPHOTONS) a=FLOAT {$simel = Long.parseLong($a.text);};
+SIMELECTRONS :	('S'|'s')('I'|'i')('M'|'m')('E'|'e')('L'|'l')('E'|'e')('C'|'c')('T'|'t')('R'|'r')('O'|'o')('N'|'n')('S'|'s');
+SIMPHOTONS   :	('S'|'s')('I'|'i')('M'|'m')('P'|'p')('H'|'h')('O'|'o')('T'|'t')('O'|'o')('N'|'n')('S'|'s');
+
+program returns [String value]
+	: SUBPROGRAM a=STRING {$value = $a.text;};
+SUBPROGRAM  
+	:	 ('S'|'s')('U'|'u')('B'|'b')('P'|'p')('R'|'r')('O'|'o')('G'|'g')('R'|'r')('A'|'a')('M'|'m') ;
+
+runs returns [int value]
+	: RUNS a=FLOAT {$value = Integer.parseInt($a.text);};
+RUNS  
+	:	 ('R'|'r')('U'|'u')('N'|'n')('S'|'s') ;
+
+
 // ------------------------------------------------------------------
-beam returns [Beam bObj]
+beam returns [Beam bObj] 
 scope {
 		String beamType;
 		HashMap<Object, Object> beamProperties;
@@ -574,13 +611,29 @@ beamLine
 							   } }
 	| f=beamFile             { $beam::beamProperties.put(Beam.BEAM_EXTFILE, $f.filename); }
 	| g=beamPixelSize        { $beam::beamProperties.putAll($g.properties); }
-	| h=energyFWHM             { $beam::beamProperties.put(Beam.ENERGY_FWHM, $h.eFWHM); }
-	
+
+	| h=beamExposure			 { $beam::beamProperties.put(Beam.BEAM_EXPOSURE, $h.exposure); }
+	| i=beamSemiAngle	{ $beam::beamProperties.put(Beam.BEAM_SEMIANGLE, $i.semiAngle);}
+	| j=beamApertureRadius	{ $beam::beamProperties.put(Beam.BEAM_APERTURERADIUS, $j.apertureRadius);}
+	| k=imageDimensions		{ $beam::beamProperties.put(Beam.IMAGE_X, $k.xImage); 
+	                           $beam::beamProperties.put(Beam.IMAGE_Y, $k.yImage); }
+	| l=pulseEnergy			 { $beam::beamProperties.put(Beam.PULSE_ENERGY, $l.pulse); }
+	| m=energyFWHM             { $beam::beamProperties.put(Beam.ENERGY_FWHM, $m.eFWHM); }
+
 	;
 
 beamFlux returns [Double flux]
 	: FLUX a=FLOAT {$flux = Double.parseDouble($a.text);};
 FLUX : ('F'|'f')('L'|'l')('U'|'u')('X'|'x') ;
+
+beamExposure returns [Double exposure]
+	: EXPOSURE a=FLOAT {$exposure = Double.parseDouble($a.text);};
+EXPOSURE : ('E'|'e')('X'|'x')('P'|'p')('O'|'o')('S'|'s')('U'|'u')('R'|'r')('E'|'e') ;
+
+imageDimensions returns [Double xImage, Double yImage]
+	: IMAGEDIM a=FLOAT b=FLOAT {$xImage = Double.parseDouble($a.text); $yImage = Double.parseDouble($b.text);};
+IMAGEDIM 
+	:	 ('I'|'i')('M'|'m')('A'|'a')('G'|'g')('E'|'e')('D'|'d')('I'|'i')('M'|'m') ;
 
 beamFWHM returns [Double x, Double y]
 	: FWHM a=FLOAT b=FLOAT {$x = Double.parseDouble($a.text); $y = Double.parseDouble($b.text);};
@@ -592,6 +645,21 @@ beamEnergy returns [Double energy]
 	;
 ENERGY : ('E'|'e')('N'|'n')('E'|'e')('R'|'r')('G'|'g')('Y'|'y') ;
 KEV : ('K'|'k')('E'|'e')('V'|'v') ;
+
+pulseEnergy returns [Double pulse]
+	: PULSEENERGY a=FLOAT {$pulse = Double.parseDouble($a.text);};
+PULSEENERGY : ('P'|'p')('U'|'u')('L'|'l')('S'|'s')('E'|'e')('E'|'e')('N'|'n')('E'|'e')('R'|'r')('G'|'g')('Y'|'y') ;
+
+
+beamSemiAngle returns [Double semiAngle]
+	: SEMIANGLE a=FLOAT {$semiAngle = Double.parseDouble($a.text);};
+SEMIANGLE 
+	:	 ('S'|'s')('E'|'e')('M'|'m')('I'|'i')('A'|'a')('N'|'n')('G'|'g')('L'|'l')('E'|'e');
+
+beamApertureRadius returns [Double apertureRadius]
+	: APERTURERADIUS a=FLOAT {$apertureRadius = Double.parseDouble($a.text);};
+APERTURERADIUS
+	:	('A'|'a')('P'|'p')('E'|'e')('R'|'r')('T'|'t')('U'|'u')('R'|'r')('E'|'e')('R'|'r')('A'|'a')('D'|'d')('I'|'i')('U'|'u')('S'|'s');
 
 beamFile returns [String filename]
 	: FILE a=STRING {$filename = $a.text;}
@@ -730,11 +798,10 @@ WS  :   ( ' '
 */
     
 STRING
-	: ('a'..'z' | 'A'..'Z' | '0'..'9' | '.' | '$' | '-' | '_' | ':' | '\\' )+
+	: ('a'..'z' | 'A'..'Z' | '0'..'9' | '.' | '$' | '-' | '_' | ':' | '\\' | '/')+
 	;
 
 /*CHAR:  '\'' ( ESC_SEQ | ~('\''|'\\') ) '\''
 //    ;
 */
-
 
