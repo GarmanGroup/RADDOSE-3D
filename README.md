@@ -17,7 +17,7 @@ imaging real experimental X-ray beam profiles.
 Brought to you by the Garman Lab at the University of Oxford.
 http://www.bioch.ox.ac.uk/garmangroup
 
-If you have any questions on how to run RADDOSE-3D or would like advice on what inputs to use please email joshua.dickerson@oriel.ox.ac.uk  or create an issue.
+If you have any questions on how to run RADDOSE-3D or would like advice on what inputs to use please email jld62@cam.ac.uk or create an issue.
 
 Usage
 ------
@@ -117,11 +117,12 @@ and this should produce the required output.
 Found RADDOSE at ../raddose but could not execute`      
 `RADDOSE program could not be run. Please specify path to RADDOSE manually using the -r command line argument`. This problem should be solved by changing the `CoefCalc` input value to `RD3D`.
 
-- If you run RADDOSE-3D and come across the error: `Error accessing element database file constants/MuCalcConstants.txt` this is likely because RADDOSE-3D hasn't found the `MuCalcConstants.txt` file which it needs to know information about the various elements. To solve this problem:
+- If you run RADDOSE-3D and come across the error: `Error accessing element database file constants/MuCalcConstants.txt` this is likely because RADDOSE-3D hasn't found the `MuCalcConstants.txt` file which it needs to know information about the various elements.  This error should only occur when the `CoefCalc` input values are either: `RD3D`, `EXP`, `SAXS`, `SEQUENCE` or `SAXSSEQ`. To solve this problem:
    - you need to create a folder in your working directory called `constants`.       
    - make a copy of the `MuCalcConstants.txt` file from [here](https://github.com/GarmanGroup/RADDOSE-3D/tree/master/constants) in that folder.    
+   - if you are running RADDOSE-XFEL or RADDOSE-3D Monte Carlo simulations, all files in the constants folder will need to be present to avoid an error.
 
-   This error should only occur when the `CoefCalc` input values are either: `RD3D`, `EXP`, `SAXS`, `SEQUENCE` or `SAXSSEQ`.
+
 
 
 - The `flux` value that is provided in the `Beam` block in the input file represents the **flux at the sample position after collimation.** This can lead to ostensibly surprising results. For example if you run 1 simulation and get a dose value, we'll say dose 1, and then run a second simulation with the same inputs except the collimation has been reduced, then the second dose value, dose 2, will be larger than dose 1. This happens because the same flux in both simulations is spread over a smaller area in the second simulation. So the dose distribution in the crystal is spread over a smaller volume but it has received the same number of photons in that volume as in the first simulation.
@@ -142,6 +143,7 @@ Contributors:
 * Charlie Bury
 * Steve Walsh
 * Josh Dickerson
+* Patrick McCubbin
 
 
 
