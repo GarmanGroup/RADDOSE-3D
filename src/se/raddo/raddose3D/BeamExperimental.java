@@ -5,7 +5,7 @@ package se.raddo.raddose3D;
  * the correct intensity using Bilinear interpolation.
  */
 public class BeamExperimental implements Beam {
-  private final double     pixXSize,
+  private final Double     pixXSize,
                            beamXSize,
                            pixYSize,
                            beamYSize,
@@ -45,9 +45,9 @@ public class BeamExperimental implements Beam {
    *          the vertical size of the pixels in micrometres
    */
   public BeamExperimental(final Double[][] datastructure,
-      final Double totalFlux, final Double beamEnergy, final Double pulseEnergy,
+      final Double totalFlux, final Double beamEnergy, 
       final Double pixelSizeX,
-      final Double pixelSizeY,
+      final Double pixelSizeY,final Double pulseEnergy,
       final Double energyFWHM) {
 
     
