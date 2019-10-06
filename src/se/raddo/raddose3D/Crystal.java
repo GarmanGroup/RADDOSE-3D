@@ -1346,10 +1346,12 @@ public abstract class Crystal {
             double comptonabsorbedEnergy = voxImageComptonFluence[i][j][k] * energyPerFluence;
             
             absorbedEnergy[i][j][k] = absorbedEnergy[i][j][k] + comptonabsorbedEnergy;
+            
+            double addedDose = totalVoxelDose - voxImageDoseLast[i][j][k];
  
          //   relativeDiffractionEfficiency = 1;
             for (ExposeObserver eo : exposureObservers) {
-              eo.exposureObservation(anglenum, i, j, k, voxImageDose[i][j][k],   //voxImageDose should be added dose (doesn't do Compton or escape)
+              eo.exposureObservation(anglenum, i, j, k, addedDose,   //voxImageDose should be added dose (doesn't do Compton or escape)
                   voxImageDoseLast[i][j][k], voxImageFluence[i][j][k],
                   relativeDiffractionEfficiency, absorbedEnergy[i][j][k],
                   voxElasticYield[i][j][k], anglecount);
