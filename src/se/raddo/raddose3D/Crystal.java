@@ -39,6 +39,8 @@ public abstract class Crystal {
   public static final String     CRYSTAL_FLUORESCENT_ESCAPE       = "FLESCAPE";
   /** Constant for data fields in Map constructors: Goniometer Axis. */
   public static final String     CRYSTAL_GONIOMETER_AXIS       = "GONIOMETER";
+  /** Constant for data fields in Map constructors: Polarisation Direction. */
+  public static final String     CRYSTAL_POLARISATION_DIRECTION       = "POLARISATION";
   /** Constant for data fields in Map constructors: Electrons. */
   public static final String     CRYSTAL_PROGRAM       = "PROGRAM";
   /** Constant for data fields in Map constructors: Electrons. */
@@ -156,6 +158,11 @@ public abstract class Crystal {
   public final boolean verticalGoniometer; 
   
   /**
+   * Polarisation Direction
+   */
+  public final boolean verticalPolarisation; 
+  
+  /**
    * Average photoelectron binding energy to subtract from beam energy to get average photoelectron energy
    */
   public double EnergyToSubtractFromPE; 
@@ -247,6 +254,12 @@ public abstract class Crystal {
     //Get the goniometer axis
     String goniometer =  String.valueOf(properties.get(CRYSTAL_GONIOMETER_AXIS));
     verticalGoniometer = ("90.0".equals(goniometer)); //so horizontal is default 
+    
+    //Get the polarisation direction
+   // String pDirection =  (String) properties.get(CRYSTAL_POLARISATION_DIRECTION);
+    String pDirection =  String.valueOf(properties.get(CRYSTAL_POLARISATION_DIRECTION));
+
+    verticalPolarisation = ("90.0".equals(pDirection)); //so horizontal is default 
     
     String program = (String) properties.get(CRYSTAL_PROGRAM);
     if (program != null) {
@@ -428,8 +441,8 @@ public abstract class Crystal {
   public abstract void setCryoPEparamsForCurrentBeam(Beam beam, CoefCalc coefCalc, double[][] feFactors);
   
   public abstract void startMicroED(double XDim, double YDim, double ZDim, Beam beam, Wedge wedge, CoefCalc coefCalc, String crystalType);
-  public abstract void startXFEL(double XDim, double YDim, double ZDim, Beam beam, Wedge wedge, CoefCalc coefCalc, int runNum, boolean verticalGoniometer, boolean xfel, boolean gos);
-  public abstract void startMC(double XDim, double YDim, double ZDim, Beam beam, Wedge wedge, CoefCalc coefCalc, int runNum, boolean verticalGoniometer, boolean xfel, boolean gos, double[] surrThickness);
+  public abstract void startXFEL(double XDim, double YDim, double ZDim, Beam beam, Wedge wedge, CoefCalc coefCalc, int runNum, boolean verticalGoniometer, boolean xfel, boolean gos, boolean verticalPolarisation);
+  public abstract void startMC(double XDim, double YDim, double ZDim, Beam beam, Wedge wedge, CoefCalc coefCalc, int runNum, boolean verticalGoniometer, boolean xfel, boolean gos, double[] surrThickness, boolean verticalPolarisation);
   
   /**
    * finds the voxels that the bins on the tracks are in
@@ -715,7 +728,7 @@ public abstract class Crystal {
       gos = true;
       for (int i = 0; i < runs; i++) {
         int runNum = i+1;
-        startXFEL(XDim, YDim, ZDim, beam, wedge, coefCalc, runNum, verticalGoniometer, xfel, gos);
+        startXFEL(XDim, YDim, ZDim, beam, wedge, coefCalc, runNum, verticalGoniometer, xfel, gos, verticalPolarisation);
       }
       //terminate the program
       System.exit(0);
@@ -729,7 +742,7 @@ public abstract class Crystal {
     gos = false;
     for (int i = 0; i < runs; i++) {
       int runNum = i+1;
-      startMC(XDim, YDim, ZDim, beam, wedge, coefCalc, runNum, verticalGoniometer, xfel, gos, surrThickness);
+      startMC(XDim, YDim, ZDim, beam, wedge, coefCalc, runNum, verticalGoniometer, xfel, gos, surrThickness, verticalPolarisation);
     }
     //terminate the program
     System.exit(0);
@@ -739,7 +752,7 @@ public abstract class Crystal {
       gos = true;
       for (int i = 0; i < runs; i++) {
         int runNum = i+1;
-        startMC(XDim, YDim, ZDim, beam, wedge, coefCalc, runNum, verticalGoniometer, xfel, gos, surrThickness);
+        startMC(XDim, YDim, ZDim, beam, wedge, coefCalc, runNum, verticalGoniometer, xfel, gos, surrThickness, verticalPolarisation);
       }
       //terminate the program
       System.exit(0);

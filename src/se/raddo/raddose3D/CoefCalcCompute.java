@@ -147,7 +147,7 @@ public class CoefCalcCompute extends CoefCalc {
    * Water concentration in mM.
    */
   protected static final double      WATER_CONCENTRATION          = 55555;    // Density of 1 g/cm^3
-// protected static final double      WATER_CONCENTRATION          = 51666;    // Density of 0.93 g/cm^3
+ //protected static final double      WATER_CONCENTRATION          = 51666;    // Density of 0.93 g/cm^3
 //  protected static final double      WATER_CONCENTRATION          = 83332.5;  
   
   /**
@@ -1410,6 +1410,10 @@ public class CoefCalcCompute extends CoefCalc {
         / UNITSPERMILLIUNIT
         * cellVolume * (1 / MASS_TO_CELL_VOLUME) * solventFraction
         - nonWaterAtoms;
+    
+    if (waterMolecules < 0) {
+      waterMolecules = 0;
+    }
 
     // Add water molecules to hydrogen and oxygen.
 
@@ -3163,10 +3167,12 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
  //     numInnerShells = 9;
  //   }
     /*
-    if (Z == 6 ) {
+    if (Z == 6 || Z == 7 || Z == 8) {
       valence -= 2;
       numInnerShells = 2; //just K
     }
+    */
+    /*
     if (Z > 6 && Z <= 8 ) {
       valence -= 4;
       numInnerShells = 3; //just K

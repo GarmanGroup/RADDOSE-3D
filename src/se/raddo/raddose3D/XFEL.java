@@ -25,6 +25,7 @@ import org.apache.commons.math3.distribution.MultivariateNormalDistribution;
 import org.apache.commons.math3.distribution.NormalDistribution;
 
 
+
 public class XFEL {
   //polyhderon variables
   public double[][] verticesXFEL;
@@ -122,6 +123,7 @@ public class XFEL {
   private int avgUkNum;
   
   private boolean verticalGoni;
+  private boolean verticalPol;
   
   private double RD3D_ADWC;
   private double RD3D_ADER;
@@ -159,7 +161,7 @@ public class XFEL {
   
   public XFEL(double vertices[][], int[][] indices, double[][][][] crystCoord, 
       double crystalPixPerUM, int[] crystSizeVoxels, boolean[][][][] crystOcc, int runNum, boolean verticalGoniometer,
-      boolean xfel, boolean gos, Wedge wedge) {
+      boolean xfel, boolean gos, Wedge wedge, boolean verticalPolarisation) {
     verticesXFEL = vertices;
     indicesXFEL = indices;
     crystCoordXFEL = crystCoord;
@@ -168,6 +170,7 @@ public class XFEL {
     crystOccXFEL = crystOcc;
     
     verticalGoni = verticalGoniometer;
+    verticalPol = verticalPolarisation;
     doXFEL = xfel;
     simpleMC = !gos;
     
@@ -1226,8 +1229,10 @@ public class XFEL {
     double thisAngle = 2*Math.PI - angle;
     double polarised = Math.random();
     double xNorminit = 0, zNorminit = 0, xNorm = 0, yNorm = 0, zNorm = 0, phi = 0, theta = 0;
-    if (shellIndex == 0 && polarised > 0.25) { //then I want to send out in a biased direction
-      if (verticalGoni == true) {
+    //polarised 0 as asuming 100% polarised
+    if (shellIndex == 0 && polarised > 0) { //then I want to send out in a biased direction
+      //will need to change this with polarisation input to match polarisation and goniometer
+      if ((verticalGoni == true && verticalPol == false) || (verticalGoni == false && verticalPol == true)) {
         xNorminit = getCosAngleToX();
         //get yNorm and zNorm
         yNorm = PosOrNeg() * Math.random() * Math.pow(1-Math.pow(xNorminit, 2), 0.5);
@@ -2591,7 +2596,8 @@ public class XFEL {
     double cb = (yNorm*Math.cos(scatterTheta))+(V4*(zNorm*V1-xNorm*V2));
     double cc = (zNorm*Math.cos(scatterTheta))+(V2*V3)-(yNorm*V1*V4);
     double[] newVector = {ca, cb, cc};
-    return newVector;
+    double[] normalVector = Vector.normaliseVector(newVector);
+    return normalVector;
   }
   
   private double getFSEXSection(double electronEnergy) {

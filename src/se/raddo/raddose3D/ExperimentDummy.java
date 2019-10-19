@@ -408,7 +408,7 @@ public class ExperimentDummy extends Experiment {
 
       @Override
       public void startXFEL(double XDim, double YDim, double ZDim, Beam beam,
-          Wedge wedge, CoefCalc coefCalc, int runNum, boolean verticalGoniometer, boolean xfelTrue, boolean gos) {
+          Wedge wedge, CoefCalc coefCalc, int runNum, boolean verticalGoniometer, boolean xfelTrue, boolean gos, boolean verticalPolarisation) {
         // TODO Auto-generated method stub
         
       }
@@ -439,7 +439,7 @@ public class ExperimentDummy extends Experiment {
       @Override
       public void startMC(double XDim, double YDim, double ZDim, Beam beam,
           Wedge wedge, CoefCalc coefCalc, int runNum,
-          boolean verticalGoniometer, boolean xfel, boolean gos, double[] surrThickness) {
+          boolean verticalGoniometer, boolean xfel, boolean gos, double[] surrThickness, boolean verticalPolarisation) {
         // TODO Auto-generated method stub
         
       }

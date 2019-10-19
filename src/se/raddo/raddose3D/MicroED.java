@@ -18,6 +18,7 @@ import org.openqa.selenium.Keys;
 //import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.interactions.Actions;
 
+import javafx.util.Pair;
 
 import org.openqa.selenium.chrome.ChromeDriver;
 //import org.openqa.selenium.support.ui.ExpectedCondition;
@@ -28,6 +29,7 @@ import java.awt.Toolkit;
 import java.awt.datatransfer.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -168,6 +170,11 @@ public class MicroED {
   private double Wcount;
   private double avgShell;
   
+  private double inelAngleSum;
+  private double inelAngleCount;
+  ArrayList<Double> inelAngles = new ArrayList<Double>();
+  private HashMap<Double, Double> inelEnAngle;
+  
   private boolean GOS = true;
   
   private boolean scatteredSolvent = false;
@@ -183,7 +190,7 @@ public class MicroED {
   
   protected static final double CUTOFF = 0.0001;
   public double energyCUTOFF = 3;
-  public final boolean considerCharge = true;
+  public final boolean considerCharge = false;
   
   
   protected static final int BIN_DIVISION = 2; //how many bins to divide the dose deposition into 
@@ -618,6 +625,42 @@ private void writeDoseCSV(final String filename) throws IOException {
   }
 }
 
+private void writeAngleCSV(HashMap<Double, Double> EnAngles, double startEn, ArrayList<Double> inelAngles) throws IOException{
+  String filename = "OutputAngles.csv";
+  BufferedWriter outFile;
+  outFile = new BufferedWriter(new OutputStreamWriter(
+      new FileOutputStream(filename), "UTF-8"));
+  
+  //write the headings
+  try {
+  //  outFile.write("Beam energy,Thickness, Energy lost,Angle\n");
+    outFile.write("Beam energy, Thickness, Angle\n");
+  } catch (IOException e) {
+    e.printStackTrace();
+    System.err.println("WriterFile: Could not write to file " + filename);
+  }
+  
+ // for (Double e: EnAngles.keySet()) {
+  for (int i = 0; i < inelAngles.size(); i++) {
+    try {
+    outFile.write(String.format(
+   //     " %f,%f,%f,%f%n", startEn, ZDimension,e, EnAngles.get(e)));
+        " %f,%f,%f%n", startEn, ZDimension, inelAngles.get(i)));
+    }catch (IOException e1) {
+      e1.printStackTrace();
+      System.err.println("WriterFile: Could not write to file " + filename);
+    }
+  }
+
+  try {
+    outFile.close();
+  } catch (IOException e) {
+    e.printStackTrace();
+    System.err.println("WriterFile: Could not close file " + filename);
+  }
+  
+}
+
 public void accessESTAR(CoefCalc coefCalc, double avgElectronEnergy) {
   String exePath = "lib\\selenium\\chromedriver.exe";
   System.setProperty("webdriver.chrome.driver", exePath);
@@ -855,6 +898,7 @@ private void startMonteCarlo(CoefCalc coefCalc, Beam beam) {
   //test ELSEPA
  // startingLambda = 236;
   double progress = 0, lastProgress = 0;
+  inelEnAngle = new HashMap<Double, Double>();
   for (int i = 0; i < numSimulatedElectrons; i++) { //for every electron to simulate
     simNumber = i;
     progress = ((double)i)/numSimulatedElectrons;
@@ -1098,8 +1142,6 @@ if (GOS == true) {
     previousY = yn;
     previousZ = zn;
 
-    
-    
      
     //add an elastic collision
 
@@ -1127,7 +1169,10 @@ if (GOS == true) {
     //  else {
       //else produce an FSE
       triggered += 1;
-      theta = doPrimaryInelastic(coefCalc, previousX, previousY, previousZ, electronEnergy, ionisationProbs, false, beam, i, previousTheta, previousPhi, Pinner, gosOuterIonisationProbs, entered);
+      theta = doPrimaryInelastic(coefCalc, previousX, previousY, previousZ, electronEnergy, ionisationProbs, false, beam, i, previousTheta, previousPhi, Pinner, gosOuterIonisationProbs, entered, xNorm, yNorm, zNorm);
+    //  inelAngleSum += theta;
+    //  inelAngleCount += 1;
+     // inelAngles.add(theta);
       if (GOS == true) {
         electronEnergy -= energyLostGOS;
       }
@@ -1150,6 +1195,7 @@ if (GOS == true) {
       }
     }
     //now further update the primary
+    /*
     phi =  2 * Math.PI * Math.random();
     theta = previousTheta + theta;
     if (theta >= (2 * Math.PI)) {
@@ -1159,11 +1205,20 @@ if (GOS == true) {
     if (phi >= (2 * Math.PI)) {
       phi -= 2*Math.PI;
     }
+    */
+    double scatterPhi = getScatteringPhi();
    
+    double[] newDirectionVector = getNewDirectionVector(xNorm, yNorm, zNorm, theta, scatterPhi);
+    /*
     xNorm = Math.sin(theta) * Math.cos(phi);
     yNorm = Math.sin(theta) * Math.sin(phi);
     zNorm = Math.cos(theta);
-    
+    */
+    xNorm = newDirectionVector[0];
+    yNorm = newDirectionVector[1];
+    zNorm = newDirectionVector[2];
+    theta = Math.acos(zNorm);
+    phi = Math.acos(xNorm / Math.sin(theta));
     
       //update stopping powers
       //get new stoppingPower
@@ -1284,7 +1339,7 @@ if (GOS == true) {
      //   else {
         //else produce an FSE
         triggered += 1;
-        theta = doPrimaryInelastic(coefCalc, previousX, previousY, previousZ, electronEnergy, ionisationProbsSurrounding, true, beam, i, previousTheta, previousPhi, Pinner, gosOuterIonisationProbsSur, entered);
+        theta = doPrimaryInelastic(coefCalc, previousX, previousY, previousZ, electronEnergy, ionisationProbsSurrounding, true, beam, i, previousTheta, previousPhi, Pinner, gosOuterIonisationProbsSur, entered, xNorm, yNorm, zNorm);
         if (GOS == true) {
           electronEnergy -= energyLostGOS;
         }
@@ -1300,6 +1355,7 @@ if (GOS == true) {
         scatteredSol += 1;
       }
       //now further update the primary
+      /*
       phi =  2 * Math.PI * Math.random();
       theta = previousTheta + theta;
       if (theta >= (2 * Math.PI)) {
@@ -1313,8 +1369,14 @@ if (GOS == true) {
       xNorm = Math.sin(theta) * Math.cos(phi);
       yNorm = Math.sin(theta) * Math.sin(phi);
       zNorm = Math.cos(theta);
-      
-      
+      */
+      double scatterPhi = getScatteringPhi();
+      double[] newDirectionVector = getNewDirectionVector(xNorm, yNorm, zNorm, theta, scatterPhi);
+      xNorm = newDirectionVector[0];
+      yNorm = newDirectionVector[1];
+      zNorm = newDirectionVector[2];
+      theta = Math.acos(zNorm);
+      phi = Math.acos(xNorm / Math.sin(theta));
         //update stopping powers
         //get new stoppingPower
       
@@ -1459,6 +1521,31 @@ if (GOS == true) {
     MonteCarloUnproductiveMicroEDSolvent += 1;
   }
   
+  
+  //if it has not elastically scattered but has inelastically scattered at least once, 
+  //I want to get it's energy loss and the angle to the initial vector
+  if (elasticCount < 1 && inelastic == true) {
+    //get the angle to the initial vector
+    double[] currentVector = {xNorm, yNorm, zNorm};
+    double[] startVector = {0, 0, 1};
+    double angle = 1000*Math.acos(Vector.dotProduct(startVector, currentVector)); //mrad
+    double energyLostAtEnd = beam.getPhotonEnergy() - electronEnergy;
+    inelEnAngle.put(energyLostAtEnd, angle);
+    inelAngles.add(angle);
+  }
+  //I'm also going to put the ones that didn't scatter at all in the array now as this might
+  //be more representative
+  if (elasticCount < 1 && inelastic == false) {
+    //get the angle to the initial vector
+    //double[] currentVector = {xNorm, yNorm, zNorm};
+    //double[] startVector = {0, 0, 1};
+    //double angle = 1000*Math.acos(Vector.dotProduct(startVector, currentVector)); //mrad
+    //double energyLostAtEnd = beam.getPhotonEnergy() - electronEnergy;
+    inelEnAngle.put(0.0, 0.0);
+    inelAngles.add(0.0);
+  }
+  
+  
   } //end looping through electrons
   
   //Will need to do something about exiting the correct plane here
@@ -1571,6 +1658,10 @@ private double[] processMonteCarloDose(Beam beam, CoefCalc coefCalc) {
   MonteCarloCharge = (MonteCarloElectronsExited - MonteCarloElectronsEntered) * (electronNumber / numSimulatedElectrons) * Beam.ELEMENTARYCHARGE; //need to add in Auger to these
   MonteCarloChargeDensity = MonteCarloCharge / (exposedVolume/1000); // C/m^3
   
+ // double avgInel = (inelAngleSum/inelAngleCount) * 1000; //mrad
+  Collections.sort(inelAngles);
+ // double medianAngle = inelAngles.get((int)(inelAngleCount/2));
+  
   //process voxel dose
   //for every voxel, convert keV to dose and average this
   /*
@@ -1604,6 +1695,17 @@ private double[] processMonteCarloDose(Beam beam, CoefCalc coefCalc) {
     e.printStackTrace();
   }
   */
+  
+  
+  //Write an angle csv
+  
+  try {
+    writeAngleCSV(inelEnAngle, beam.getPhotonEnergy(), inelAngles);
+  } catch (IOException e) {
+    // TODO Auto-generated catch block
+    e.printStackTrace();
+  }
+  
   
   //process region dose
   int count = 0;
@@ -1816,7 +1918,8 @@ private double getShellBindingEnergy(Element collidedElement, int collidedShell)
 
 private double doPrimaryInelastic(CoefCalc coefCalc, double previousX, double previousY, double previousZ, 
                                   double electronEnergy, Map<Element, double[]> ionisationProbs, boolean surrounding, Beam beam, int i,
-                                  double previousTheta, double previousPhi, double Pinner,  Map<Element, Double> gosOuterIonisationProbs, boolean entered) {
+                                  double previousTheta, double previousPhi, double Pinner,  Map<Element, Double> gosOuterIonisationProbs, boolean entered,
+                                  double xNorm, double yNorm, double zNorm) {
  //I'm now going to change thi for the GOS model
   
   double theta = 0;
@@ -1902,7 +2005,8 @@ private double doPrimaryInelastic(CoefCalc coefCalc, double previousX, double pr
       //get theta (new to add on to previous)
       if (type == 1) {
         //transverse
-        theta = previousTheta;
+       // theta = previousTheta;
+        theta = 0;
       }
       else {
         //longitudinal
@@ -1940,6 +2044,7 @@ private double doPrimaryInelastic(CoefCalc coefCalc, double previousX, double pr
         else { //close
           SETheta = secondaryThetaClose(electronEnergy, W, SEPreviousTheta);
         }
+        /*
         //get phi
         SEPhi = 2 * Math.PI * Math.random();
         SEPhi = SEPreviousPhi + SEPhi;
@@ -1951,6 +2056,14 @@ private double doPrimaryInelastic(CoefCalc coefCalc, double previousX, double pr
         SEyNorm = Math.sin(SETheta) * Math.sin(SEPhi);
         
         SEzNorm = Math.cos(SETheta);
+        */
+        double scatterPhi = getScatteringPhi();
+        double[] newDirectionVector = getNewDirectionVector(xNorm, yNorm, zNorm, SETheta, scatterPhi);
+        SExNorm = newDirectionVector[0];
+        SEyNorm = newDirectionVector[1];
+        SEzNorm = newDirectionVector[2];
+        SETheta = Math.acos(SEzNorm);
+        SEPhi = Math.acos(SExNorm / Math.sin(SETheta));
         //send it out with the correct timestamp
         if (surrounding == false) {
           MonteCarloGOSDose += W;
@@ -2617,7 +2730,7 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
 
       theta = getPrimaryElasticScatteringAngle(electronEnergy, elasticElement.getAtomicNumber());
 
-      
+      /*
       theta = previousTheta + theta;
       if (theta >= (2 * Math.PI)) {
         theta -= 2*Math.PI;
@@ -2629,24 +2742,19 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
       }
     //now further update the primary
 //      psi = 2 * Math.PI * Math.random();
-
-      /*
-      //x and y are the same as in Joy, so x will be the rotation axis
-      AN = -(cx/cz); // will need to catch an error here if = 0
-      AM = 1 / (Math.pow(1 + AN*AN, 0.5));
-      V1 = AN * Math.sin(phi);
-      V2 = AN*AM*Math.sin(phi);
-      V3 = Math.cos(psi);
-      V4 = Math.sin(psi);
-      
-      ca = (cx*cosPhi) + (V1*V3) + (cy*V2*V4);
-      cb = (cy*cosPhi) + (V4*(cz*V1 - cx*V2));
-      cc = (cz*cosPhi) + (V2*V3) - (cy*V1*V4);
-      */
       
       xNorm = Math.sin(theta) * Math.cos(phi);
       yNorm = Math.sin(theta) * Math.sin(phi);
       zNorm = Math.cos(theta);
+      */
+      double scatterPhi = getScatteringPhi();
+      double[] newDirectionVector = getNewDirectionVector(xNorm, yNorm, zNorm, theta, scatterPhi);
+      xNorm = newDirectionVector[0];
+      yNorm = newDirectionVector[1];
+      zNorm = newDirectionVector[2];
+      theta = Math.acos(zNorm);
+      phi = Math.acos(xNorm / Math.sin(theta));
+      
       if (Double.isNaN(xNorm)){
         System.out.println("test");
       }
@@ -2880,7 +2988,7 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
 
           theta = getPrimaryElasticScatteringAngle(electronEnergy, elasticElement.getAtomicNumber());
 
-          
+          /*
           theta = previousTheta + theta;
           if (theta >= (2 * Math.PI)) {
             theta -= 2*Math.PI;
@@ -2894,6 +3002,14 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
           xNorm = Math.sin(theta) * Math.cos(phi);
           yNorm = Math.sin(theta) * Math.sin(phi);
           zNorm = Math.cos(theta);
+          */
+          double scatterPhi = getScatteringPhi();
+          double[] newDirectionVector = getNewDirectionVector(xNorm, yNorm, zNorm, theta, scatterPhi);
+          xNorm = newDirectionVector[0];
+          yNorm = newDirectionVector[1];
+          zNorm = newDirectionVector[2];
+          theta = Math.acos(zNorm);
+          phi = Math.acos(xNorm / Math.sin(theta));
           
           if (Double.isNaN(xNorm)){
             System.out.println("test");
@@ -3101,11 +3217,11 @@ private void MonteCarloSecondaryElastic(CoefCalc coefCalc, double FSEenergy, dou
 private double[] getElectronStartingDirection(Beam beam, double previousX, double previousY, double previousZ) {
   double beamSemiAngle = beam.getSemiAngle();  //in mrad
   if (beamSemiAngle == 0) {
-    beamSemiAngle = 10;
+ //   beamSemiAngle = 10;
   }
   double beamApertureRadius = beam.getApertureRadius();
   if (beamApertureRadius == 0) {
-    beamApertureRadius = 1.2; // how many times bigger the aperture is than the beam
+    beamApertureRadius = 1; // how many times bigger the aperture is than the beam
   }
     
   double beamRadius = Math.pow(Math.pow((beam.getBeamX()/2),2) + Math.pow(beam.getBeamY()/2, 2), 0.5);
@@ -3123,7 +3239,46 @@ private double[] getElectronStartingDirection(Beam beam, double previousX, doubl
   for (int v = 0; v <= 2; v ++) {
     directionVector[v] /= magnitude;   //this is to normalise it 
   }
+  directionVector[0] = 0;
+  directionVector[1] = 0;
+  directionVector[2] = 1;
   return directionVector;
+}
+
+private double[] getNewDirectionVector(double xNorm, double yNorm, double zNorm, 
+    double scatterTheta, double scatterPhi) {
+/*
+  if (xNorm == 0) {
+  xNorm += 0.000001;
+}
+if (yNorm == 0) {
+  yNorm += 0.000001;
+}
+if (zNorm == 0) {
+  zNorm += 0.000001;
+}
+*/
+double AN = -(xNorm/yNorm);
+if (yNorm == 0) {
+  AN = 1;
+}
+double AM = 1/ Math.pow(1+AN*AN, 0.5);
+double V1 = AN*Math.sin(scatterTheta);
+double V2 = AN*AM*Math.sin(scatterTheta);
+double V3 = Math.cos(scatterPhi);
+double V4 = Math.sin(scatterPhi);
+double ca = (xNorm*Math.cos(scatterTheta))+(V1*V3)+(yNorm*V2*V4);
+double cb = (yNorm*Math.cos(scatterTheta))+(V4*(zNorm*V1-xNorm*V2));
+double cc = (zNorm*Math.cos(scatterTheta))+(V2*V3)-(yNorm*V1*V4);
+double[] newVector = {ca, cb, cc};
+//normalise the vector
+double[] normalVector = Vector.normaliseVector(newVector);
+return normalVector;
+}
+
+private double getScatteringPhi() {
+  double phi = 2 * Math.PI * Math.random();
+  return phi;
 }
 
 private double getPrimaryElasticScatteringAngle(double electronEnergy, int atomicNumber){
@@ -3578,10 +3733,12 @@ public double getGOSPrimaryThetaLong(double EkeV, double Q, double WakeV, double
   double denominator = 2*Math.pow(E*(E+2*m*csquared)*(E-Wak)*(E-Wak+2*m*csquared), 0.5);
   double cosTheta = numerator/denominator;
   theta = Math.acos(cosTheta);
+  /*
   theta = previousTheta + theta;
   if (theta >= (2 * Math.PI)) {
     theta -= 2*Math.PI;
   }
+  */
   return theta;
 }
 
@@ -3651,10 +3808,12 @@ private double getGOSPrimaryThetaClose(double EkeV, double WkeV, double previous
   
   double cosTheta = Math.pow(((E-W)/E) * ((E+ 2*m*csquared)/ (E-W+2*m*csquared)),0.5);
   double theta = Math.acos(cosTheta);
+  /*
   theta = previousTheta + theta;
   if (theta >= (2 * Math.PI)) {
     theta -= 2*Math.PI;
   }
+  */
   return theta;
 }
 
@@ -3666,10 +3825,12 @@ public double secondaryThetaClose(double EkeV, double WkeV, double previousTheta
   double E = EkeV * Beam.KEVTOJOULES;
   double cosTheta = Math.pow((W/E)*((E+2*m*csquared)/(W+2*m*csquared)), 0.5);
   double theta = Math.acos(cosTheta);
+  /*
   theta = previousTheta + theta;
   if (theta >= (2 * Math.PI)) {
     theta -= 2*Math.PI;
   }
+  */
   return theta;
 }
 
@@ -3684,10 +3845,12 @@ public double secondaryThetaDistant(double E, double WakeV, double Q, double pre
   double cosTheta = Math.pow(((Math.pow(Wak, 2)/betaSquared)/(Q*(Q+2*m*csquared)))
                     *Math.pow(1+(Q*(Q+2*m*csquared)-Math.pow(Wak, 2))/(2*Wak*(Vo+m*csquared)), 2),0.5);
   double theta = Math.acos(cosTheta);
+  /*
   theta = previousTheta + theta;
   if (theta >= (2 * Math.PI)) {
     theta -= 2*Math.PI;
   }
+  */
   return theta;
 }
 

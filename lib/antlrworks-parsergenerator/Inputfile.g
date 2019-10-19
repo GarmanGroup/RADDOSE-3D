@@ -300,6 +300,7 @@ crystalLine
 	| nn=surroundingThickness			{ if ($nn.properties != null) {
 							   $crystal::crystalProperties.putAll($nn.properties);
 							  }; }
+        | pp=polarisationDirection	{ $crystal::crystalProperties.put(Crystal.CRYSTAL_POLARISATION_DIRECTION, $pp.value); }					 
 							
 	;
 
@@ -486,6 +487,11 @@ goniometerAxis returns [double value]
 	: GONIOMETERAXIS a=FLOAT {$value = Double.parseDouble($a.text);};
 GONIOMETERAXIS  
 	:	 ('G'|'g')('O'|'o')('N'|'n')('I'|'i')('O'|'o')('M'|'m')('E'|'e')('T'|'t')('E'|'e')('R'|'r')('A'|'a')('X'|'x')('I'|'i')('S'|'s') ;
+	
+polarisationDirection returns [double value]
+	: POLARISATIONDIRECTION a=FLOAT {$value = Double.parseDouble($a.text);};
+POLARISATIONDIRECTION  
+	:	 ('P'|'p')('O'|'o')('L'|'l')('A'|'a')('R'|'r')('I'|'i')('S'|'s')('A'|'a')('T'|'t')('I'|'i')('O'|'o')('N'|'n')('D'|'d')('I'|'i')('R'|'r')('E'|'e')('C'|'c')('T'|'t')('I'|'i')('O'|'o')('N'|'n') ;
 	
 crystalContainerMaterial returns [int value]
 	: ( CONTAINERMATERIALTYPE | MATERIALTYPE ) e=crystalContainerKeyword { $value = $e.value; };

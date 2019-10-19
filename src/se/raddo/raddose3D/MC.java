@@ -137,6 +137,7 @@ public class MC {
   private int avgUkNum;
   
   private boolean verticalGoni;
+  private boolean verticalPol;
   
   private double RD3D_ADWC;
   private double RD3D_ADER;
@@ -175,7 +176,7 @@ public class MC {
   
   public MC(double vertices[][], int[][] indices, double[][][][] crystCoord, 
       double crystalPixPerUM, int[] crystSizeVoxels, boolean[][][][] crystOcc, int runNum, boolean verticalGoniometer,
-      boolean xfel, boolean gos, double[] surrThickness) {
+      boolean xfel, boolean gos, double[] surrThickness, boolean verticalPolarisation) {
     verticesXFEL = vertices;
     indicesXFEL = indices;
     crystCoordXFEL = crystCoord;
@@ -194,6 +195,7 @@ public class MC {
     indicesSurrounding = new int[indicesXFEL.length][3];
     
     verticalGoni = verticalGoniometer;
+    verticalPol = verticalPolarisation;
     doXFEL = xfel;
     simpleMC = !gos;
     
@@ -1207,7 +1209,7 @@ public class MC {
     double polarised = Math.random();
     double xNorminit = 0, zNorminit = 0, xNorm = 0, yNorm = 0, zNorm = 0, phi = 0, theta = 0;
     if (shellIndex == 0 && polarised > 0.25) { //then I want to send out in a biased direction
-      if (verticalGoni == true) {
+      if ((verticalGoni == true && verticalPol == false) || (verticalGoni == false && verticalPol == true)) {
         xNorminit = getCosAngleToX();
         //get yNorm and zNorm
         yNorm = PosOrNeg() * Math.random() * Math.pow(1-Math.pow(xNorminit, 2), 0.5);
@@ -2556,7 +2558,8 @@ public class MC {
     double cb = (yNorm*Math.cos(scatterTheta))+(V4*(zNorm*V1-xNorm*V2));
     double cc = (zNorm*Math.cos(scatterTheta))+(V2*V3)-(yNorm*V1*V4);
     double[] newVector = {ca, cb, cc};
-    return newVector;
+    double[] normalVector = Vector.normaliseVector(newVector);
+    return normalVector;
   }
   
   private double getFSEXSection(double electronEnergy) {
