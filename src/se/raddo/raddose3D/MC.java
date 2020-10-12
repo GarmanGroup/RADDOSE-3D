@@ -385,7 +385,7 @@ public class MC {
         if (wedge.getEndAng() < wedge.getStartAng()) {
           sign = -1;
         }
-        angle = wedge.getStartAng() + (progress * (sign * (int) (wedge.getEndAng() - wedge.getStartAng())));
+        angle = wedge.getStartAng() + (progress * ((double)sign * (wedge.getEndAng() - wedge.getStartAng())));
       }
       //convert to 0-2pi
       int timesOver = (int) (angle/(2*Math.PI));
