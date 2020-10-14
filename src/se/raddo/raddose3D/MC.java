@@ -1741,8 +1741,6 @@ public class MC {
           int[] pixelCoord = convertToPixelCoordinates(xn, yn, zn, angle, wedge);
           dose += energyToAdd;  //still just adding keV
           
-          //the 
-          
           doseSimple[pixelCoord[0]][pixelCoord[1]][pixelCoord[2]]+= energyToAdd;
           if (entered == true) {
             electronDoseSurrounding += energyToAdd;
@@ -3882,6 +3880,15 @@ private Element chooseLowEnElement(CoefCalc coefCalc, double Pinner, Map<Element
     int i = (int) StrictMath.round(((rotatedCoords[0]/1000) - xMinMax[0]) * crystalPixPerUMXFEL);
     int j = (int) StrictMath.round(((rotatedCoords[1]/1000) - yMinMax[0]) * crystalPixPerUMXFEL);
     int k = (int) StrictMath.round(((rotatedCoords[2]/1000) - zMinMax[0]) * crystalPixPerUMXFEL);
+    if (i < 0){
+      i = 0;
+    }
+    if (j < 0){
+      j = 0;
+    }
+    if (k < 0){
+      k = 0;
+    }
     int[] pixelCoords = {i, j, k};
     
     
