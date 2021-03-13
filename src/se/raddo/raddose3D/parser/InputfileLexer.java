@@ -1,4 +1,4 @@
-// $ANTLR 3.4 /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g 2021-03-13 16:00:33
+// $ANTLR 3.4 /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g 2021-03-13 16:23:09
 
 package se.raddo.raddose3D.parser;
 
@@ -132,8 +132,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = CRYSTAL;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:248:9: ( ( 'C' | 'c' ) ( 'R' | 'r' ) ( 'Y' | 'y' ) ( 'S' | 's' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'L' | 'l' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:248:11: ( 'C' | 'c' ) ( 'R' | 'r' ) ( 'Y' | 'y' ) ( 'S' | 's' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'L' | 'l' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:269:9: ( ( 'C' | 'c' ) ( 'R' | 'r' ) ( 'Y' | 'y' ) ( 'S' | 's' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'L' | 'l' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:269:11: ( 'C' | 'c' ) ( 'R' | 'r' ) ( 'Y' | 'y' ) ( 'S' | 's' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'L' | 'l' )
             {
             if ( input.LA(1)=='C'||input.LA(1)=='c' ) {
                 input.consume();
@@ -221,8 +221,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = TYPE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:320:6: ( ( 'T' | 't' ) ( 'Y' | 'y' ) ( 'P' | 'p' ) ( 'E' | 'e' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:320:8: ( 'T' | 't' ) ( 'Y' | 'y' ) ( 'P' | 'p' ) ( 'E' | 'e' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:341:6: ( ( 'T' | 't' ) ( 'Y' | 'y' ) ( 'P' | 'p' ) ( 'E' | 'e' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:341:8: ( 'T' | 't' ) ( 'Y' | 'y' ) ( 'P' | 'p' ) ( 'E' | 'e' )
             {
             if ( input.LA(1)=='T'||input.LA(1)=='t' ) {
                 input.consume();
@@ -280,8 +280,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = DIFFRACTIONDECAYMODEL;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:324:23: ( ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'F' | 'f' ) ( 'F' | 'f' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'C' | 'c' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'Y' | 'y' ) ( 'M' | 'm' ) ( 'O' | 'o' ) ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'L' | 'l' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:324:25: ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'F' | 'f' ) ( 'F' | 'f' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'C' | 'c' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'Y' | 'y' ) ( 'M' | 'm' ) ( 'O' | 'o' ) ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'L' | 'l' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:345:23: ( ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'F' | 'f' ) ( 'F' | 'f' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'C' | 'c' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'Y' | 'y' ) ( 'M' | 'm' ) ( 'O' | 'o' ) ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'L' | 'l' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:345:25: ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'F' | 'f' ) ( 'F' | 'f' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'C' | 'c' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'Y' | 'y' ) ( 'M' | 'm' ) ( 'O' | 'o' ) ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'L' | 'l' )
             {
             if ( input.LA(1)=='D'||input.LA(1)=='d' ) {
                 input.consume();
@@ -509,8 +509,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = DDM;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:325:5: ( ( 'D' | 'd' ) ( 'D' | 'd' ) ( 'M' | 'm' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:325:7: ( 'D' | 'd' ) ( 'D' | 'd' ) ( 'M' | 'm' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:346:5: ( ( 'D' | 'd' ) ( 'D' | 'd' ) ( 'M' | 'm' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:346:7: ( 'D' | 'd' ) ( 'D' | 'd' ) ( 'M' | 'm' )
             {
             if ( input.LA(1)=='D'||input.LA(1)=='d' ) {
                 input.consume();
@@ -558,8 +558,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = SIMPLE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:331:8: ( ( 'S' | 's' ) ( 'I' | 'i' ) ( 'M' | 'm' ) ( 'P' | 'p' ) ( 'L' | 'l' ) ( 'E' | 'e' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:331:10: ( 'S' | 's' ) ( 'I' | 'i' ) ( 'M' | 'm' ) ( 'P' | 'p' ) ( 'L' | 'l' ) ( 'E' | 'e' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:352:8: ( ( 'S' | 's' ) ( 'I' | 'i' ) ( 'M' | 'm' ) ( 'P' | 'p' ) ( 'L' | 'l' ) ( 'E' | 'e' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:352:10: ( 'S' | 's' ) ( 'I' | 'i' ) ( 'M' | 'm' ) ( 'P' | 'p' ) ( 'L' | 'l' ) ( 'E' | 'e' )
             {
             if ( input.LA(1)=='S'||input.LA(1)=='s' ) {
                 input.consume();
@@ -637,8 +637,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = LINEAR;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:332:8: ( ( 'L' | 'l' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'R' | 'r' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:332:10: ( 'L' | 'l' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'R' | 'r' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:353:8: ( ( 'L' | 'l' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'R' | 'r' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:353:10: ( 'L' | 'l' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'R' | 'r' )
             {
             if ( input.LA(1)=='L'||input.LA(1)=='l' ) {
                 input.consume();
@@ -716,8 +716,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = LEAL;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:333:6: ( ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'L' | 'l' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:333:8: ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'L' | 'l' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:354:6: ( ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'L' | 'l' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:354:8: ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'L' | 'l' )
             {
             if ( input.LA(1)=='L'||input.LA(1)=='l' ) {
                 input.consume();
@@ -775,8 +775,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = DECAYPARAM;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:337:13: ( ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'Y' | 'y' ) ( 'P' | 'p' ) ( 'A' | 'a' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'M' | 'm' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:337:15: ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'Y' | 'y' ) ( 'P' | 'p' ) ( 'A' | 'a' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'M' | 'm' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:358:13: ( ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'Y' | 'y' ) ( 'P' | 'p' ) ( 'A' | 'a' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'M' | 'm' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:358:15: ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'Y' | 'y' ) ( 'P' | 'p' ) ( 'A' | 'a' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'M' | 'm' )
             {
             if ( input.LA(1)=='D'||input.LA(1)=='d' ) {
                 input.consume();
@@ -894,10 +894,10 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = ABSCOEFCALC;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:341:13: ( ( ( 'A' | 'a' ) ( 'B' | 'b' ) ( 'S' | 's' ) )? ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'E' | 'e' ) ( 'F' | 'f' ) ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'C' | 'c' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:341:15: ( ( 'A' | 'a' ) ( 'B' | 'b' ) ( 'S' | 's' ) )? ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'E' | 'e' ) ( 'F' | 'f' ) ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'C' | 'c' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:362:13: ( ( ( 'A' | 'a' ) ( 'B' | 'b' ) ( 'S' | 's' ) )? ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'E' | 'e' ) ( 'F' | 'f' ) ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'C' | 'c' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:362:15: ( ( 'A' | 'a' ) ( 'B' | 'b' ) ( 'S' | 's' ) )? ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'E' | 'e' ) ( 'F' | 'f' ) ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'C' | 'c' )
             {
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:341:15: ( ( 'A' | 'a' ) ( 'B' | 'b' ) ( 'S' | 's' ) )?
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:362:15: ( ( 'A' | 'a' ) ( 'B' | 'b' ) ( 'S' | 's' ) )?
             int alt1=2;
             int LA1_0 = input.LA(1);
 
@@ -906,7 +906,7 @@ public class InputfileLexer extends Lexer {
             }
             switch (alt1) {
                 case 1 :
-                    // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:341:16: ( 'A' | 'a' ) ( 'B' | 'b' ) ( 'S' | 's' )
+                    // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:362:16: ( 'A' | 'a' ) ( 'B' | 'b' ) ( 'S' | 's' )
                     {
                     if ( input.LA(1)=='A'||input.LA(1)=='a' ) {
                         input.consume();
@@ -1040,8 +1040,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = DUMMY;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:355:7: ( ( 'D' | 'd' ) ( 'U' | 'u' ) ( 'M' | 'm' ) ( 'M' | 'm' ) ( 'Y' | 'y' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:355:9: ( 'D' | 'd' ) ( 'U' | 'u' ) ( 'M' | 'm' ) ( 'M' | 'm' ) ( 'Y' | 'y' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:376:7: ( ( 'D' | 'd' ) ( 'U' | 'u' ) ( 'M' | 'm' ) ( 'M' | 'm' ) ( 'Y' | 'y' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:376:9: ( 'D' | 'd' ) ( 'U' | 'u' ) ( 'M' | 'm' ) ( 'M' | 'm' ) ( 'Y' | 'y' )
             {
             if ( input.LA(1)=='D'||input.LA(1)=='d' ) {
                 input.consume();
@@ -1109,8 +1109,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = DEFAULT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:356:9: ( ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'F' | 'f' ) ( 'A' | 'a' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'T' | 't' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:356:11: ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'F' | 'f' ) ( 'A' | 'a' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'T' | 't' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:377:9: ( ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'F' | 'f' ) ( 'A' | 'a' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'T' | 't' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:377:11: ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'F' | 'f' ) ( 'A' | 'a' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'T' | 't' )
             {
             if ( input.LA(1)=='D'||input.LA(1)=='d' ) {
                 input.consume();
@@ -1198,8 +1198,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = AVERAGE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:357:9: ( ( 'A' | 'a' ) ( 'V' | 'v' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'G' | 'g' ) ( 'E' | 'e' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:357:11: ( 'A' | 'a' ) ( 'V' | 'v' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'G' | 'g' ) ( 'E' | 'e' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:378:9: ( ( 'A' | 'a' ) ( 'V' | 'v' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'G' | 'g' ) ( 'E' | 'e' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:378:11: ( 'A' | 'a' ) ( 'V' | 'v' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'G' | 'g' ) ( 'E' | 'e' )
             {
             if ( input.LA(1)=='A'||input.LA(1)=='a' ) {
                 input.consume();
@@ -1287,8 +1287,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = RDFORTAN;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:358:10: ( ( 'R' | 'r' ) ( 'D' | 'd' ) ( 'V' | 'v' ) ( '2' | '3' )? )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:358:12: ( 'R' | 'r' ) ( 'D' | 'd' ) ( 'V' | 'v' ) ( '2' | '3' )?
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:379:10: ( ( 'R' | 'r' ) ( 'D' | 'd' ) ( 'V' | 'v' ) ( '2' | '3' )? )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:379:12: ( 'R' | 'r' ) ( 'D' | 'd' ) ( 'V' | 'v' ) ( '2' | '3' )?
             {
             if ( input.LA(1)=='R'||input.LA(1)=='r' ) {
                 input.consume();
@@ -1320,7 +1320,7 @@ public class InputfileLexer extends Lexer {
             }
 
 
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:358:39: ( '2' | '3' )?
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:379:39: ( '2' | '3' )?
             int alt2=2;
             int LA2_0 = input.LA(1);
 
@@ -1363,8 +1363,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = RDJAVA;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:359:8: ( ( 'R' | 'r' ) ( 'D' | 'd' ) ( '3' ) ( 'D' | 'd' )? )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:359:10: ( 'R' | 'r' ) ( 'D' | 'd' ) ( '3' ) ( 'D' | 'd' )?
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:380:8: ( ( 'R' | 'r' ) ( 'D' | 'd' ) ( '3' ) ( 'D' | 'd' )? )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:380:10: ( 'R' | 'r' ) ( 'D' | 'd' ) ( '3' ) ( 'D' | 'd' )?
             {
             if ( input.LA(1)=='R'||input.LA(1)=='r' ) {
                 input.consume();
@@ -1386,15 +1386,15 @@ public class InputfileLexer extends Lexer {
             }
 
 
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:359:28: ( '3' )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:359:29: '3'
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:380:28: ( '3' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:380:29: '3'
             {
             match('3'); 
 
             }
 
 
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:359:33: ( 'D' | 'd' )?
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:380:33: ( 'D' | 'd' )?
             int alt3=2;
             int LA3_0 = input.LA(1);
 
@@ -1437,8 +1437,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = PDB;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:360:5: ( ( 'E' | 'e' ) ( 'X' | 'x' ) ( 'P' | 'p' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:360:7: ( 'E' | 'e' ) ( 'X' | 'x' ) ( 'P' | 'p' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:381:5: ( ( 'E' | 'e' ) ( 'X' | 'x' ) ( 'P' | 'p' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:381:7: ( 'E' | 'e' ) ( 'X' | 'x' ) ( 'P' | 'p' )
             {
             if ( input.LA(1)=='E'||input.LA(1)=='e' ) {
                 input.consume();
@@ -1486,8 +1486,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = SAXS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:361:6: ( ( 'S' | 's' ) ( 'A' | 'a' ) ( 'X' | 'x' ) ( 'S' | 's' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:361:8: ( 'S' | 's' ) ( 'A' | 'a' ) ( 'X' | 'x' ) ( 'S' | 's' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:382:6: ( ( 'S' | 's' ) ( 'A' | 'a' ) ( 'X' | 'x' ) ( 'S' | 's' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:382:8: ( 'S' | 's' ) ( 'A' | 'a' ) ( 'X' | 'x' ) ( 'S' | 's' )
             {
             if ( input.LA(1)=='S'||input.LA(1)=='s' ) {
                 input.consume();
@@ -1545,8 +1545,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = SEQUENCE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:362:10: ( ( 'S' | 's' ) ( 'E' | 'e' ) ( 'Q' | 'q' ) ( 'U' | 'u' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'C' | 'c' ) ( 'E' | 'e' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:362:12: ( 'S' | 's' ) ( 'E' | 'e' ) ( 'Q' | 'q' ) ( 'U' | 'u' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'C' | 'c' ) ( 'E' | 'e' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:383:10: ( ( 'S' | 's' ) ( 'E' | 'e' ) ( 'Q' | 'q' ) ( 'U' | 'u' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'C' | 'c' ) ( 'E' | 'e' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:383:12: ( 'S' | 's' ) ( 'E' | 'e' ) ( 'Q' | 'q' ) ( 'U' | 'u' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'C' | 'c' ) ( 'E' | 'e' )
             {
             if ( input.LA(1)=='S'||input.LA(1)=='s' ) {
                 input.consume();
@@ -1644,8 +1644,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = SAXSSEQ;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:363:9: ( ( 'S' | 's' ) ( 'A' | 'a' ) ( 'X' | 'x' ) ( 'S' | 's' ) ( 'S' | 's' ) ( 'E' | 'e' ) ( 'Q' | 'q' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:363:11: ( 'S' | 's' ) ( 'A' | 'a' ) ( 'X' | 'x' ) ( 'S' | 's' ) ( 'S' | 's' ) ( 'E' | 'e' ) ( 'Q' | 'q' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:384:9: ( ( 'S' | 's' ) ( 'A' | 'a' ) ( 'X' | 'x' ) ( 'S' | 's' ) ( 'S' | 's' ) ( 'E' | 'e' ) ( 'Q' | 'q' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:384:11: ( 'S' | 's' ) ( 'A' | 'a' ) ( 'X' | 'x' ) ( 'S' | 's' ) ( 'S' | 's' ) ( 'E' | 'e' ) ( 'Q' | 'q' )
             {
             if ( input.LA(1)=='S'||input.LA(1)=='s' ) {
                 input.consume();
@@ -1733,8 +1733,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = SMALLMOLE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:364:11: ( ( 'S' | 's' ) ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'L' | 'l' ) ( 'M' | 'm' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'E' | 'e' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:364:13: ( 'S' | 's' ) ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'L' | 'l' ) ( 'M' | 'm' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'E' | 'e' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:385:11: ( ( 'S' | 's' ) ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'L' | 'l' ) ( 'M' | 'm' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'E' | 'e' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:385:13: ( 'S' | 's' ) ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'L' | 'l' ) ( 'M' | 'm' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'E' | 'e' )
             {
             if ( input.LA(1)=='S'||input.LA(1)=='s' ) {
                 input.consume();
@@ -1842,8 +1842,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = CIF;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:365:5: ( ( 'E' | 'e' ) ( 'X' | 'x' ) ( 'P' | 'p' ) ( 'S' | 's' ) ( 'M' | 'm' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:365:7: ( 'E' | 'e' ) ( 'X' | 'x' ) ( 'P' | 'p' ) ( 'S' | 's' ) ( 'M' | 'm' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:386:5: ( ( 'E' | 'e' ) ( 'X' | 'x' ) ( 'P' | 'p' ) ( 'S' | 's' ) ( 'M' | 'm' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:386:7: ( 'E' | 'e' ) ( 'X' | 'x' ) ( 'P' | 'p' ) ( 'S' | 's' ) ( 'M' | 'm' )
             {
             if ( input.LA(1)=='E'||input.LA(1)=='e' ) {
                 input.consume();
@@ -1911,8 +1911,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = DIMENSION;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:379:11: ( ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'S' | 's' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'S' | 's' )? )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:379:13: ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'S' | 's' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'S' | 's' )?
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:400:11: ( ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'S' | 's' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'S' | 's' )? )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:400:13: ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'S' | 's' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'S' | 's' )?
             {
             if ( input.LA(1)=='D'||input.LA(1)=='d' ) {
                 input.consume();
@@ -2004,7 +2004,7 @@ public class InputfileLexer extends Lexer {
             }
 
 
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:379:94: ( 'S' | 's' )?
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:400:94: ( 'S' | 's' )?
             int alt4=2;
             int LA4_0 = input.LA(1);
 
@@ -2047,8 +2047,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = ANGLEP;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:384:8: ( ( 'A' | 'a' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'P' | 'p' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:384:10: ( 'A' | 'a' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'P' | 'p' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:405:8: ( ( 'A' | 'a' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'P' | 'p' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:405:10: ( 'A' | 'a' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'P' | 'p' )
             {
             if ( input.LA(1)=='A'||input.LA(1)=='a' ) {
                 input.consume();
@@ -2126,8 +2126,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = ANGLEL;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:389:8: ( ( 'A' | 'a' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'L' | 'l' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:389:10: ( 'A' | 'a' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'L' | 'l' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:410:8: ( ( 'A' | 'a' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'L' | 'l' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:410:10: ( 'A' | 'a' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'L' | 'l' )
             {
             if ( input.LA(1)=='A'||input.LA(1)=='a' ) {
                 input.consume();
@@ -2205,8 +2205,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = PIXELSPERMICRON;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:393:17: ( ( 'P' | 'p' ) ( 'I' | 'i' ) ( 'X' | 'x' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'S' | 's' ) ( 'P' | 'p' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'M' | 'm' ) ( 'I' | 'i' ) ( 'C' | 'c' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'N' | 'n' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:393:19: ( 'P' | 'p' ) ( 'I' | 'i' ) ( 'X' | 'x' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'S' | 's' ) ( 'P' | 'p' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'M' | 'm' ) ( 'I' | 'i' ) ( 'C' | 'c' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'N' | 'n' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:414:17: ( ( 'P' | 'p' ) ( 'I' | 'i' ) ( 'X' | 'x' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'S' | 's' ) ( 'P' | 'p' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'M' | 'm' ) ( 'I' | 'i' ) ( 'C' | 'c' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'N' | 'n' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:414:19: ( 'P' | 'p' ) ( 'I' | 'i' ) ( 'X' | 'x' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'S' | 's' ) ( 'P' | 'p' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'M' | 'm' ) ( 'I' | 'i' ) ( 'C' | 'c' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'N' | 'n' )
             {
             if ( input.LA(1)=='P'||input.LA(1)=='p' ) {
                 input.consume();
@@ -2374,8 +2374,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = UNITCELL;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:406:10: ( ( 'U' | 'u' ) ( 'N' | 'n' ) ( 'I' | 'i' ) ( 'T' | 't' ) ( 'C' | 'c' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'L' | 'l' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:406:12: ( 'U' | 'u' ) ( 'N' | 'n' ) ( 'I' | 'i' ) ( 'T' | 't' ) ( 'C' | 'c' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'L' | 'l' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:427:10: ( ( 'U' | 'u' ) ( 'N' | 'n' ) ( 'I' | 'i' ) ( 'T' | 't' ) ( 'C' | 'c' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'L' | 'l' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:427:12: ( 'U' | 'u' ) ( 'N' | 'n' ) ( 'I' | 'i' ) ( 'T' | 't' ) ( 'C' | 'c' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'L' | 'l' )
             {
             if ( input.LA(1)=='U'||input.LA(1)=='u' ) {
                 input.consume();
@@ -2473,8 +2473,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = SURROUNDINGTHICKNESS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:418:22: ( ( 'S' | 's' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'U' | 'u' ) ( 'N' | 'n' ) ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'T' | 't' ) ( 'H' | 'h' ) ( 'I' | 'i' ) ( 'C' | 'c' ) ( 'K' | 'k' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'S' | 's' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:418:24: ( 'S' | 's' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'U' | 'u' ) ( 'N' | 'n' ) ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'T' | 't' ) ( 'H' | 'h' ) ( 'I' | 'i' ) ( 'C' | 'c' ) ( 'K' | 'k' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'S' | 's' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:439:22: ( ( 'S' | 's' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'U' | 'u' ) ( 'N' | 'n' ) ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'T' | 't' ) ( 'H' | 'h' ) ( 'I' | 'i' ) ( 'C' | 'c' ) ( 'K' | 'k' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'S' | 's' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:439:24: ( 'S' | 's' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'U' | 'u' ) ( 'N' | 'n' ) ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'T' | 't' ) ( 'H' | 'h' ) ( 'I' | 'i' ) ( 'C' | 'c' ) ( 'K' | 'k' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'S' | 's' )
             {
             if ( input.LA(1)=='S'||input.LA(1)=='s' ) {
                 input.consume();
@@ -2692,8 +2692,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = PROTEINCONC;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:423:12: ( ( 'P' | 'p' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'C' | 'c' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:423:14: ( 'P' | 'p' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'C' | 'c' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:444:12: ( ( 'P' | 'p' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'C' | 'c' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:444:14: ( 'P' | 'p' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'C' | 'c' )
             {
             if ( input.LA(1)=='P'||input.LA(1)=='p' ) {
                 input.consume();
@@ -2821,8 +2821,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = PROTEINCONCENTRATION;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:424:21: ( ( 'P' | 'p' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'C' | 'c' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:424:23: ( 'P' | 'p' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'C' | 'c' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:445:21: ( ( 'P' | 'p' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'C' | 'c' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:445:23: ( 'P' | 'p' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'C' | 'c' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' )
             {
             if ( input.LA(1)=='P'||input.LA(1)=='p' ) {
                 input.consume();
@@ -3040,8 +3040,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = NUMMONOMERS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:428:12: ( ( 'N' | 'n' ) ( 'U' | 'u' ) ( 'M' | 'm' ) ( 'M' | 'm' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'O' | 'o' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'S' | 's' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:428:14: ( 'N' | 'n' ) ( 'U' | 'u' ) ( 'M' | 'm' ) ( 'M' | 'm' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'O' | 'o' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'S' | 's' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:449:12: ( ( 'N' | 'n' ) ( 'U' | 'u' ) ( 'M' | 'm' ) ( 'M' | 'm' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'O' | 'o' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'S' | 's' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:449:14: ( 'N' | 'n' ) ( 'U' | 'u' ) ( 'M' | 'm' ) ( 'M' | 'm' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'O' | 'o' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'S' | 's' )
             {
             if ( input.LA(1)=='N'||input.LA(1)=='n' ) {
                 input.consume();
@@ -3169,8 +3169,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = NUMRESIDUES;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:432:13: ( ( 'N' | 'n' ) ( 'U' | 'u' ) ( 'M' | 'm' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'I' | 'i' ) ( 'D' | 'd' ) ( 'U' | 'u' ) ( 'E' | 'e' ) ( 'S' | 's' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:432:15: ( 'N' | 'n' ) ( 'U' | 'u' ) ( 'M' | 'm' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'I' | 'i' ) ( 'D' | 'd' ) ( 'U' | 'u' ) ( 'E' | 'e' ) ( 'S' | 's' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:453:13: ( ( 'N' | 'n' ) ( 'U' | 'u' ) ( 'M' | 'm' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'I' | 'i' ) ( 'D' | 'd' ) ( 'U' | 'u' ) ( 'E' | 'e' ) ( 'S' | 's' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:453:15: ( 'N' | 'n' ) ( 'U' | 'u' ) ( 'M' | 'm' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'I' | 'i' ) ( 'D' | 'd' ) ( 'U' | 'u' ) ( 'E' | 'e' ) ( 'S' | 's' )
             {
             if ( input.LA(1)=='N'||input.LA(1)=='n' ) {
                 input.consume();
@@ -3298,8 +3298,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = NUMRNA;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:436:8: ( ( 'N' | 'n' ) ( 'U' | 'u' ) ( 'M' | 'm' ) ( 'R' | 'r' ) ( 'N' | 'n' ) ( 'A' | 'a' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:436:10: ( 'N' | 'n' ) ( 'U' | 'u' ) ( 'M' | 'm' ) ( 'R' | 'r' ) ( 'N' | 'n' ) ( 'A' | 'a' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:457:8: ( ( 'N' | 'n' ) ( 'U' | 'u' ) ( 'M' | 'm' ) ( 'R' | 'r' ) ( 'N' | 'n' ) ( 'A' | 'a' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:457:10: ( 'N' | 'n' ) ( 'U' | 'u' ) ( 'M' | 'm' ) ( 'R' | 'r' ) ( 'N' | 'n' ) ( 'A' | 'a' )
             {
             if ( input.LA(1)=='N'||input.LA(1)=='n' ) {
                 input.consume();
@@ -3377,8 +3377,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = NUMDNA;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:440:8: ( ( 'N' | 'n' ) ( 'U' | 'u' ) ( 'M' | 'm' ) ( 'D' | 'd' ) ( 'N' | 'n' ) ( 'A' | 'a' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:440:10: ( 'N' | 'n' ) ( 'U' | 'u' ) ( 'M' | 'm' ) ( 'D' | 'd' ) ( 'N' | 'n' ) ( 'A' | 'a' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:461:8: ( ( 'N' | 'n' ) ( 'U' | 'u' ) ( 'M' | 'm' ) ( 'D' | 'd' ) ( 'N' | 'n' ) ( 'A' | 'a' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:461:10: ( 'N' | 'n' ) ( 'U' | 'u' ) ( 'M' | 'm' ) ( 'D' | 'd' ) ( 'N' | 'n' ) ( 'A' | 'a' )
             {
             if ( input.LA(1)=='N'||input.LA(1)=='n' ) {
                 input.consume();
@@ -3456,8 +3456,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = NUMCARB;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:444:9: ( ( 'N' | 'n' ) ( 'U' | 'u' ) ( 'M' | 'm' ) ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'R' | 'r' ) ( 'B' | 'b' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:444:11: ( 'N' | 'n' ) ( 'U' | 'u' ) ( 'M' | 'm' ) ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'R' | 'r' ) ( 'B' | 'b' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:465:9: ( ( 'N' | 'n' ) ( 'U' | 'u' ) ( 'M' | 'm' ) ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'R' | 'r' ) ( 'B' | 'b' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:465:11: ( 'N' | 'n' ) ( 'U' | 'u' ) ( 'M' | 'm' ) ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'R' | 'r' ) ( 'B' | 'b' )
             {
             if ( input.LA(1)=='N'||input.LA(1)=='n' ) {
                 input.consume();
@@ -3545,8 +3545,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = PROTEINHEAVYATOMS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:452:19: ( ( 'P' | 'p' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'H' | 'h' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'V' | 'v' ) ( 'Y' | 'y' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'O' | 'o' ) ( 'M' | 'm' ) ( 'S' | 's' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:452:21: ( 'P' | 'p' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'H' | 'h' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'V' | 'v' ) ( 'Y' | 'y' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'O' | 'o' ) ( 'M' | 'm' ) ( 'S' | 's' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:473:19: ( ( 'P' | 'p' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'H' | 'h' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'V' | 'v' ) ( 'Y' | 'y' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'O' | 'o' ) ( 'M' | 'm' ) ( 'S' | 's' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:473:21: ( 'P' | 'p' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'H' | 'h' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'V' | 'v' ) ( 'Y' | 'y' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'O' | 'o' ) ( 'M' | 'm' ) ( 'S' | 's' )
             {
             if ( input.LA(1)=='P'||input.LA(1)=='p' ) {
                 input.consume();
@@ -3734,8 +3734,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = ELEMENT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:453:9: ( ( 'A' .. 'Z' | 'a' .. 'z' ) ( 'A' .. 'Z' | 'a' .. 'z' )? )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:453:11: ( 'A' .. 'Z' | 'a' .. 'z' ) ( 'A' .. 'Z' | 'a' .. 'z' )?
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:474:9: ( ( 'A' .. 'Z' | 'a' .. 'z' ) ( 'A' .. 'Z' | 'a' .. 'z' )? )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:474:11: ( 'A' .. 'Z' | 'a' .. 'z' ) ( 'A' .. 'Z' | 'a' .. 'z' )?
             {
             if ( (input.LA(1) >= 'A' && input.LA(1) <= 'Z')||(input.LA(1) >= 'a' && input.LA(1) <= 'z') ) {
                 input.consume();
@@ -3747,7 +3747,7 @@ public class InputfileLexer extends Lexer {
             }
 
 
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:453:32: ( 'A' .. 'Z' | 'a' .. 'z' )?
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:474:32: ( 'A' .. 'Z' | 'a' .. 'z' )?
             int alt5=2;
             int LA5_0 = input.LA(1);
 
@@ -3790,8 +3790,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = SMALLMOLEATOMS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:461:16: ( ( 'S' | 's' ) ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'L' | 'l' ) ( 'M' | 'm' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'O' | 'o' ) ( 'M' | 'm' ) ( 'S' | 's' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:461:18: ( 'S' | 's' ) ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'L' | 'l' ) ( 'M' | 'm' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'O' | 'o' ) ( 'M' | 'm' ) ( 'S' | 's' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:482:16: ( ( 'S' | 's' ) ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'L' | 'l' ) ( 'M' | 'm' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'O' | 'o' ) ( 'M' | 'm' ) ( 'S' | 's' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:482:18: ( 'S' | 's' ) ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'L' | 'l' ) ( 'M' | 'm' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'O' | 'o' ) ( 'M' | 'm' ) ( 'S' | 's' )
             {
             if ( input.LA(1)=='S'||input.LA(1)=='s' ) {
                 input.consume();
@@ -3949,8 +3949,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = SOLVENTHEAVYCONC;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:469:18: ( ( 'S' | 's' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'V' | 'v' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'H' | 'h' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'V' | 'v' ) ( 'Y' | 'y' ) ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'C' | 'c' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:469:20: ( 'S' | 's' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'V' | 'v' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'H' | 'h' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'V' | 'v' ) ( 'Y' | 'y' ) ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'C' | 'c' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:490:18: ( ( 'S' | 's' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'V' | 'v' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'H' | 'h' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'V' | 'v' ) ( 'Y' | 'y' ) ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'C' | 'c' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:490:20: ( 'S' | 's' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'V' | 'v' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'H' | 'h' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'V' | 'v' ) ( 'Y' | 'y' ) ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'C' | 'c' )
             {
             if ( input.LA(1)=='S'||input.LA(1)=='s' ) {
                 input.consume();
@@ -4128,8 +4128,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = SOLVENTFRACTION;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:473:17: ( ( 'S' | 's' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'V' | 'v' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'F' | 'f' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'C' | 'c' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:473:19: ( 'S' | 's' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'V' | 'v' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'F' | 'f' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'C' | 'c' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:494:17: ( ( 'S' | 's' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'V' | 'v' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'F' | 'f' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'C' | 'c' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:494:19: ( 'S' | 's' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'V' | 'v' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'F' | 'f' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'C' | 'c' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' )
             {
             if ( input.LA(1)=='S'||input.LA(1)=='s' ) {
                 input.consume();
@@ -4297,8 +4297,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = PDBNAME;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:477:9: ( ( 'P' | 'p' ) ( 'D' | 'd' ) ( 'B' | 'b' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:477:11: ( 'P' | 'p' ) ( 'D' | 'd' ) ( 'B' | 'b' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:498:9: ( ( 'P' | 'p' ) ( 'D' | 'd' ) ( 'B' | 'b' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:498:11: ( 'P' | 'p' ) ( 'D' | 'd' ) ( 'B' | 'b' )
             {
             if ( input.LA(1)=='P'||input.LA(1)=='p' ) {
                 input.consume();
@@ -4346,8 +4346,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = CIFNAME;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:481:9: ( ( 'C' | 'c' ) ( 'I' | 'i' ) ( 'F' | 'f' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:481:11: ( 'C' | 'c' ) ( 'I' | 'i' ) ( 'F' | 'f' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:502:9: ( ( 'C' | 'c' ) ( 'I' | 'i' ) ( 'F' | 'f' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:502:11: ( 'C' | 'c' ) ( 'I' | 'i' ) ( 'F' | 'f' )
             {
             if ( input.LA(1)=='C'||input.LA(1)=='c' ) {
                 input.consume();
@@ -4395,8 +4395,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = WIREFRAMETYPE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:485:15: ( ( 'W' | 'w' ) ( 'I' | 'i' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'F' | 'f' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'T' | 't' ) ( 'Y' | 'y' |) ( 'P' | 'p' ) ( 'E' | 'e' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:485:17: ( 'W' | 'w' ) ( 'I' | 'i' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'F' | 'f' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'T' | 't' ) ( 'Y' | 'y' |) ( 'P' | 'p' ) ( 'E' | 'e' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:506:15: ( ( 'W' | 'w' ) ( 'I' | 'i' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'F' | 'f' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'T' | 't' ) ( 'Y' | 'y' |) ( 'P' | 'p' ) ( 'E' | 'e' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:506:17: ( 'W' | 'w' ) ( 'I' | 'i' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'F' | 'f' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'T' | 't' ) ( 'Y' | 'y' |) ( 'P' | 'p' ) ( 'E' | 'e' )
             {
             if ( input.LA(1)=='W'||input.LA(1)=='w' ) {
                 input.consume();
@@ -4498,7 +4498,7 @@ public class InputfileLexer extends Lexer {
             }
 
 
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:485:107: ( 'Y' | 'y' |)
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:506:107: ( 'Y' | 'y' |)
             int alt6=3;
             switch ( input.LA(1) ) {
             case 'Y':
@@ -4527,21 +4527,21 @@ public class InputfileLexer extends Lexer {
 
             switch (alt6) {
                 case 1 :
-                    // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:485:108: 'Y'
+                    // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:506:108: 'Y'
                     {
                     match('Y'); 
 
                     }
                     break;
                 case 2 :
-                    // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:485:112: 'y'
+                    // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:506:112: 'y'
                     {
                     match('y'); 
 
                     }
                     break;
                 case 3 :
-                    // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:485:116: 
+                    // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:506:116: 
                     {
                     }
                     break;
@@ -4585,8 +4585,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = MODELFILE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:489:11: ( ( 'M' | 'm' ) ( 'O' | 'o' ) ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'F' | 'f' ) ( 'I' | 'i' ) ( 'L' | 'l' ) ( 'E' | 'e' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:489:13: ( 'M' | 'm' ) ( 'O' | 'o' ) ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'F' | 'f' ) ( 'I' | 'i' ) ( 'L' | 'l' ) ( 'E' | 'e' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:510:11: ( ( 'M' | 'm' ) ( 'O' | 'o' ) ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'F' | 'f' ) ( 'I' | 'i' ) ( 'L' | 'l' ) ( 'E' | 'e' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:510:13: ( 'M' | 'm' ) ( 'O' | 'o' ) ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'F' | 'f' ) ( 'I' | 'i' ) ( 'L' | 'l' ) ( 'E' | 'e' )
             {
             if ( input.LA(1)=='M'||input.LA(1)=='m' ) {
                 input.consume();
@@ -4694,8 +4694,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = CALCULATEPEESCAPE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:494:2: ( ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'C' | 'c' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'P' | 'p' ) ( 'E' | 'e' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'P' | 'p' ) ( 'E' | 'e' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:494:5: ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'C' | 'c' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'P' | 'p' ) ( 'E' | 'e' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'P' | 'p' ) ( 'E' | 'e' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:515:2: ( ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'C' | 'c' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'P' | 'p' ) ( 'E' | 'e' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'P' | 'p' ) ( 'E' | 'e' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:515:5: ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'C' | 'c' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'P' | 'p' ) ( 'E' | 'e' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'P' | 'p' ) ( 'E' | 'e' )
             {
             if ( input.LA(1)=='C'||input.LA(1)=='c' ) {
                 input.consume();
@@ -4883,8 +4883,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = GONIOMETERAXIS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:499:2: ( ( 'G' | 'g' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'X' | 'x' ) ( 'I' | 'i' ) ( 'S' | 's' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:499:5: ( 'G' | 'g' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'X' | 'x' ) ( 'I' | 'i' ) ( 'S' | 's' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:520:2: ( ( 'G' | 'g' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'X' | 'x' ) ( 'I' | 'i' ) ( 'S' | 's' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:520:5: ( 'G' | 'g' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'X' | 'x' ) ( 'I' | 'i' ) ( 'S' | 's' )
             {
             if ( input.LA(1)=='G'||input.LA(1)=='g' ) {
                 input.consume();
@@ -5042,8 +5042,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = POLARISATIONDIRECTION;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:504:2: ( ( 'P' | 'p' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'A' | 'a' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'S' | 's' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'C' | 'c' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:504:5: ( 'P' | 'p' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'A' | 'a' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'S' | 's' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'C' | 'c' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:525:2: ( ( 'P' | 'p' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'A' | 'a' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'S' | 's' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'C' | 'c' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:525:5: ( 'P' | 'p' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'A' | 'a' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'S' | 's' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'C' | 'c' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' )
             {
             if ( input.LA(1)=='P'||input.LA(1)=='p' ) {
                 input.consume();
@@ -5271,8 +5271,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = CONTAINERMATERIALTYPE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:508:23: ( ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'T' | 't' ) ( 'Y' | 'y' ) ( 'P' | 'p' ) ( 'E' | 'e' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:508:25: ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'T' | 't' ) ( 'Y' | 'y' ) ( 'P' | 'p' ) ( 'E' | 'e' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:529:23: ( ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'T' | 't' ) ( 'Y' | 'y' ) ( 'P' | 'p' ) ( 'E' | 'e' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:529:25: ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'T' | 't' ) ( 'Y' | 'y' ) ( 'P' | 'p' ) ( 'E' | 'e' )
             {
             if ( input.LA(1)=='C'||input.LA(1)=='c' ) {
                 input.consume();
@@ -5500,8 +5500,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = MATERIALTYPE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:509:14: ( ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'T' | 't' ) ( 'Y' | 'y' ) ( 'P' | 'p' ) ( 'E' | 'e' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:509:16: ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'T' | 't' ) ( 'Y' | 'y' ) ( 'P' | 'p' ) ( 'E' | 'e' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:530:14: ( ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'T' | 't' ) ( 'Y' | 'y' ) ( 'P' | 'p' ) ( 'E' | 'e' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:530:16: ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'T' | 't' ) ( 'Y' | 'y' ) ( 'P' | 'p' ) ( 'E' | 'e' )
             {
             if ( input.LA(1)=='M'||input.LA(1)=='m' ) {
                 input.consume();
@@ -5639,8 +5639,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = NONE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:515:7: ( ( 'N' | 'n' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'E' | 'e' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:515:9: ( 'N' | 'n' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'E' | 'e' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:536:7: ( ( 'N' | 'n' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'E' | 'e' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:536:9: ( 'N' | 'n' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'E' | 'e' )
             {
             if ( input.LA(1)=='N'||input.LA(1)=='n' ) {
                 input.consume();
@@ -5698,8 +5698,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = MIXTURE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:516:9: ( ( 'M' | 'm' ) ( 'I' | 'i' ) ( 'X' | 'x' ) ( 'T' | 't' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'E' | 'e' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:516:11: ( 'M' | 'm' ) ( 'I' | 'i' ) ( 'X' | 'x' ) ( 'T' | 't' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'E' | 'e' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:537:9: ( ( 'M' | 'm' ) ( 'I' | 'i' ) ( 'X' | 'x' ) ( 'T' | 't' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'E' | 'e' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:537:11: ( 'M' | 'm' ) ( 'I' | 'i' ) ( 'X' | 'x' ) ( 'T' | 't' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'E' | 'e' )
             {
             if ( input.LA(1)=='M'||input.LA(1)=='m' ) {
                 input.consume();
@@ -5787,8 +5787,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = ELEMENTAL;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:517:11: ( ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'L' | 'l' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:517:13: ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'L' | 'l' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:538:11: ( ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'L' | 'l' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:538:13: ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'L' | 'l' )
             {
             if ( input.LA(1)=='E'||input.LA(1)=='e' ) {
                 input.consume();
@@ -5896,8 +5896,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = CONTAINERTHICKNESS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:521:19: ( ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'T' | 't' ) ( 'H' | 'h' ) ( 'I' | 'i' ) ( 'C' | 'c' ) ( 'K' | 'k' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'S' | 's' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:521:21: ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'T' | 't' ) ( 'H' | 'h' ) ( 'I' | 'i' ) ( 'C' | 'c' ) ( 'K' | 'k' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'S' | 's' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:542:19: ( ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'T' | 't' ) ( 'H' | 'h' ) ( 'I' | 'i' ) ( 'C' | 'c' ) ( 'K' | 'k' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'S' | 's' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:542:21: ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'T' | 't' ) ( 'H' | 'h' ) ( 'I' | 'i' ) ( 'C' | 'c' ) ( 'K' | 'k' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'S' | 's' )
             {
             if ( input.LA(1)=='C'||input.LA(1)=='c' ) {
                 input.consume();
@@ -6095,8 +6095,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = CONTAINERMATERIALMIXTURE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:525:25: ( ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'M' | 'm' ) ( 'I' | 'i' ) ( 'X' | 'x' ) ( 'T' | 't' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'E' | 'e' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:525:27: ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'M' | 'm' ) ( 'I' | 'i' ) ( 'X' | 'x' ) ( 'T' | 't' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'E' | 'e' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:546:25: ( ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'M' | 'm' ) ( 'I' | 'i' ) ( 'X' | 'x' ) ( 'T' | 't' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'E' | 'e' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:546:27: ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'M' | 'm' ) ( 'I' | 'i' ) ( 'X' | 'x' ) ( 'T' | 't' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'E' | 'e' )
             {
             if ( input.LA(1)=='C'||input.LA(1)=='c' ) {
                 input.consume();
@@ -6354,8 +6354,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = MATERIALMIXTURE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:526:16: ( ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'M' | 'm' ) ( 'I' | 'i' ) ( 'X' | 'x' ) ( 'T' | 't' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'E' | 'e' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:526:18: ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'M' | 'm' ) ( 'I' | 'i' ) ( 'X' | 'x' ) ( 'T' | 't' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'E' | 'e' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:547:16: ( ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'M' | 'm' ) ( 'I' | 'i' ) ( 'X' | 'x' ) ( 'T' | 't' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'E' | 'e' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:547:18: ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'M' | 'm' ) ( 'I' | 'i' ) ( 'X' | 'x' ) ( 'T' | 't' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'E' | 'e' )
             {
             if ( input.LA(1)=='M'||input.LA(1)=='m' ) {
                 input.consume();
@@ -6523,8 +6523,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = CONTAINERMATERIALELEMENTS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:534:26: ( ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'S' | 's' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:534:28: ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'S' | 's' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:555:26: ( ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'S' | 's' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:555:28: ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'S' | 's' )
             {
             if ( input.LA(1)=='C'||input.LA(1)=='c' ) {
                 input.consume();
@@ -6792,8 +6792,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = MATERIALELEMENTS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:535:17: ( ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'S' | 's' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:535:19: ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'S' | 's' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:556:17: ( ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'S' | 's' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:556:19: ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'S' | 's' )
             {
             if ( input.LA(1)=='M'||input.LA(1)=='m' ) {
                 input.consume();
@@ -6971,8 +6971,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = CONTAINERDENSITY;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:539:17: ( ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'S' | 's' ) ( 'I' | 'i' ) ( 'T' | 't' ) ( 'Y' | 'y' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:539:19: ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'S' | 's' ) ( 'I' | 'i' ) ( 'T' | 't' ) ( 'Y' | 'y' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:560:17: ( ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'S' | 's' ) ( 'I' | 'i' ) ( 'T' | 't' ) ( 'Y' | 'y' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:560:19: ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'S' | 's' ) ( 'I' | 'i' ) ( 'T' | 't' ) ( 'Y' | 'y' )
             {
             if ( input.LA(1)=='C'||input.LA(1)=='c' ) {
                 input.consume();
@@ -7150,8 +7150,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = SEQUENCEFILE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:543:14: ( ( 'S' | 's' ) ( 'E' | 'e' ) ( 'Q' | 'q' ) ( 'U' | 'u' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'C' | 'c' ) ( 'E' | 'e' ) ( 'F' | 'f' ) ( 'I' | 'i' ) ( 'L' | 'l' ) ( 'E' | 'e' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:543:17: ( 'S' | 's' ) ( 'E' | 'e' ) ( 'Q' | 'q' ) ( 'U' | 'u' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'C' | 'c' ) ( 'E' | 'e' ) ( 'F' | 'f' ) ( 'I' | 'i' ) ( 'L' | 'l' ) ( 'E' | 'e' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:564:14: ( ( 'S' | 's' ) ( 'E' | 'e' ) ( 'Q' | 'q' ) ( 'U' | 'u' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'C' | 'c' ) ( 'E' | 'e' ) ( 'F' | 'f' ) ( 'I' | 'i' ) ( 'L' | 'l' ) ( 'E' | 'e' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:564:17: ( 'S' | 's' ) ( 'E' | 'e' ) ( 'Q' | 'q' ) ( 'U' | 'u' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'C' | 'c' ) ( 'E' | 'e' ) ( 'F' | 'f' ) ( 'I' | 'i' ) ( 'L' | 'l' ) ( 'E' | 'e' )
             {
             if ( input.LA(1)=='S'||input.LA(1)=='s' ) {
                 input.consume();
@@ -7289,8 +7289,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = SEQFILE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:544:9: ( ( 'S' | 's' ) ( 'E' | 'e' ) ( 'Q' | 'q' ) ( 'F' | 'f' ) ( 'I' | 'i' ) ( 'L' | 'l' ) ( 'E' | 'e' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:544:11: ( 'S' | 's' ) ( 'E' | 'e' ) ( 'Q' | 'q' ) ( 'F' | 'f' ) ( 'I' | 'i' ) ( 'L' | 'l' ) ( 'E' | 'e' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:565:9: ( ( 'S' | 's' ) ( 'E' | 'e' ) ( 'Q' | 'q' ) ( 'F' | 'f' ) ( 'I' | 'i' ) ( 'L' | 'l' ) ( 'E' | 'e' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:565:11: ( 'S' | 's' ) ( 'E' | 'e' ) ( 'Q' | 'q' ) ( 'F' | 'f' ) ( 'I' | 'i' ) ( 'L' | 'l' ) ( 'E' | 'e' )
             {
             if ( input.LA(1)=='S'||input.LA(1)=='s' ) {
                 input.consume();
@@ -7378,8 +7378,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = CALCULATEFLESCAPE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:549:2: ( ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'C' | 'c' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'F' | 'f' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'P' | 'p' ) ( 'E' | 'e' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:549:5: ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'C' | 'c' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'F' | 'f' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'P' | 'p' ) ( 'E' | 'e' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:570:2: ( ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'C' | 'c' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'F' | 'f' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'P' | 'p' ) ( 'E' | 'e' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:570:5: ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'C' | 'c' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'F' | 'f' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'P' | 'p' ) ( 'E' | 'e' )
             {
             if ( input.LA(1)=='C'||input.LA(1)=='c' ) {
                 input.consume();
@@ -7567,8 +7567,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = FLRESOLUTION;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:553:14: ( ( 'F' | 'f' ) ( 'L' | 'l' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'U' | 'u' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:553:16: ( 'F' | 'f' ) ( 'L' | 'l' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'U' | 'u' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:574:14: ( ( 'F' | 'f' ) ( 'L' | 'l' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'U' | 'u' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:574:16: ( 'F' | 'f' ) ( 'L' | 'l' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'U' | 'u' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' )
             {
             if ( input.LA(1)=='F'||input.LA(1)=='f' ) {
                 input.consume();
@@ -7706,8 +7706,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = PERESOLUTION;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:557:14: ( ( 'P' | 'p' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'U' | 'u' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:557:16: ( 'P' | 'p' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'U' | 'u' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:578:14: ( ( 'P' | 'p' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'U' | 'u' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:578:16: ( 'P' | 'p' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'U' | 'u' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' )
             {
             if ( input.LA(1)=='P'||input.LA(1)=='p' ) {
                 input.consume();
@@ -7845,8 +7845,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = SURROUNDINGHEAVYCONC;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:565:22: ( ( 'S' | 's' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'U' | 'u' ) ( 'N' | 'n' ) ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'H' | 'h' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'V' | 'v' ) ( 'Y' | 'y' ) ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'C' | 'c' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:565:24: ( 'S' | 's' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'U' | 'u' ) ( 'N' | 'n' ) ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'H' | 'h' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'V' | 'v' ) ( 'Y' | 'y' ) ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'C' | 'c' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:586:22: ( ( 'S' | 's' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'U' | 'u' ) ( 'N' | 'n' ) ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'H' | 'h' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'V' | 'v' ) ( 'Y' | 'y' ) ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'C' | 'c' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:586:24: ( 'S' | 's' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'U' | 'u' ) ( 'N' | 'n' ) ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'H' | 'h' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'V' | 'v' ) ( 'Y' | 'y' ) ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'C' | 'c' )
             {
             if ( input.LA(1)=='S'||input.LA(1)=='s' ) {
                 input.consume();
@@ -8064,8 +8064,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = DENSITYBASED;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:569:14: ( ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'S' | 's' ) ( 'I' | 'i' ) ( 'T' | 't' ) ( 'Y' | 'y' ) ( 'B' | 'b' ) ( 'A' | 'a' ) ( 'S' | 's' ) ( 'E' | 'e' ) ( 'D' | 'd' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:569:16: ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'S' | 's' ) ( 'I' | 'i' ) ( 'T' | 't' ) ( 'Y' | 'y' ) ( 'B' | 'b' ) ( 'A' | 'a' ) ( 'S' | 's' ) ( 'E' | 'e' ) ( 'D' | 'd' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:590:14: ( ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'S' | 's' ) ( 'I' | 'i' ) ( 'T' | 't' ) ( 'Y' | 'y' ) ( 'B' | 'b' ) ( 'A' | 'a' ) ( 'S' | 's' ) ( 'E' | 'e' ) ( 'D' | 'd' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:590:16: ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'S' | 's' ) ( 'I' | 'i' ) ( 'T' | 't' ) ( 'Y' | 'y' ) ( 'B' | 'b' ) ( 'A' | 'a' ) ( 'S' | 's' ) ( 'E' | 'e' ) ( 'D' | 'd' )
             {
             if ( input.LA(1)=='D'||input.LA(1)=='d' ) {
                 input.consume();
@@ -8203,8 +8203,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = CALCSURROUNDING;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:573:17: ( ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'C' | 'c' ) ( 'S' | 's' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'U' | 'u' ) ( 'N' | 'n' ) ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'G' | 'g' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:573:19: ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'C' | 'c' ) ( 'S' | 's' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'U' | 'u' ) ( 'N' | 'n' ) ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'G' | 'g' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:594:17: ( ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'C' | 'c' ) ( 'S' | 's' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'U' | 'u' ) ( 'N' | 'n' ) ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'G' | 'g' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:594:19: ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'C' | 'c' ) ( 'S' | 's' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'U' | 'u' ) ( 'N' | 'n' ) ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'G' | 'g' )
             {
             if ( input.LA(1)=='C'||input.LA(1)=='c' ) {
                 input.consume();
@@ -8372,8 +8372,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = SURROUNDINGELEMENTS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:582:21: ( ( 'S' | 's' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'U' | 'u' ) ( 'N' | 'n' ) ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'S' | 's' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:582:23: ( 'S' | 's' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'U' | 'u' ) ( 'N' | 'n' ) ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'S' | 's' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:603:21: ( ( 'S' | 's' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'U' | 'u' ) ( 'N' | 'n' ) ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'S' | 's' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:603:23: ( 'S' | 's' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'U' | 'u' ) ( 'N' | 'n' ) ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'S' | 's' )
             {
             if ( input.LA(1)=='S'||input.LA(1)=='s' ) {
                 input.consume();
@@ -8581,8 +8581,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = SURROUNDINGDENSITY;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:586:20: ( ( 'S' | 's' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'U' | 'u' ) ( 'N' | 'n' ) ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'S' | 's' ) ( 'I' | 'i' ) ( 'T' | 't' ) ( 'Y' | 'y' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:586:22: ( 'S' | 's' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'U' | 'u' ) ( 'N' | 'n' ) ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'S' | 's' ) ( 'I' | 'i' ) ( 'T' | 't' ) ( 'Y' | 'y' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:607:20: ( ( 'S' | 's' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'U' | 'u' ) ( 'N' | 'n' ) ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'S' | 's' ) ( 'I' | 'i' ) ( 'T' | 't' ) ( 'Y' | 'y' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:607:22: ( 'S' | 's' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'U' | 'u' ) ( 'N' | 'n' ) ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'S' | 's' ) ( 'I' | 'i' ) ( 'T' | 't' ) ( 'Y' | 'y' )
             {
             if ( input.LA(1)=='S'||input.LA(1)=='s' ) {
                 input.consume();
@@ -8780,8 +8780,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = SIMELECTRONS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:590:14: ( ( 'S' | 's' ) ( 'I' | 'i' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'C' | 'c' ) ( 'T' | 't' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'S' | 's' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:590:16: ( 'S' | 's' ) ( 'I' | 'i' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'C' | 'c' ) ( 'T' | 't' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'S' | 's' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:611:14: ( ( 'S' | 's' ) ( 'I' | 'i' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'C' | 'c' ) ( 'T' | 't' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'S' | 's' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:611:16: ( 'S' | 's' ) ( 'I' | 'i' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'C' | 'c' ) ( 'T' | 't' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'S' | 's' )
             {
             if ( input.LA(1)=='S'||input.LA(1)=='s' ) {
                 input.consume();
@@ -8919,8 +8919,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = SIMPHOTONS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:591:14: ( ( 'S' | 's' ) ( 'I' | 'i' ) ( 'M' | 'm' ) ( 'P' | 'p' ) ( 'H' | 'h' ) ( 'O' | 'o' ) ( 'T' | 't' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'S' | 's' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:591:16: ( 'S' | 's' ) ( 'I' | 'i' ) ( 'M' | 'm' ) ( 'P' | 'p' ) ( 'H' | 'h' ) ( 'O' | 'o' ) ( 'T' | 't' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'S' | 's' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:612:14: ( ( 'S' | 's' ) ( 'I' | 'i' ) ( 'M' | 'm' ) ( 'P' | 'p' ) ( 'H' | 'h' ) ( 'O' | 'o' ) ( 'T' | 't' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'S' | 's' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:612:16: ( 'S' | 's' ) ( 'I' | 'i' ) ( 'M' | 'm' ) ( 'P' | 'p' ) ( 'H' | 'h' ) ( 'O' | 'o' ) ( 'T' | 't' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'S' | 's' )
             {
             if ( input.LA(1)=='S'||input.LA(1)=='s' ) {
                 input.consume();
@@ -9038,8 +9038,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = SUBPROGRAM;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:596:2: ( ( 'S' | 's' ) ( 'U' | 'u' ) ( 'B' | 'b' ) ( 'P' | 'p' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'G' | 'g' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'M' | 'm' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:596:5: ( 'S' | 's' ) ( 'U' | 'u' ) ( 'B' | 'b' ) ( 'P' | 'p' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'G' | 'g' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'M' | 'm' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:617:2: ( ( 'S' | 's' ) ( 'U' | 'u' ) ( 'B' | 'b' ) ( 'P' | 'p' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'G' | 'g' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'M' | 'm' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:617:5: ( 'S' | 's' ) ( 'U' | 'u' ) ( 'B' | 'b' ) ( 'P' | 'p' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'G' | 'g' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'M' | 'm' )
             {
             if ( input.LA(1)=='S'||input.LA(1)=='s' ) {
                 input.consume();
@@ -9157,8 +9157,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = RUNS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:601:2: ( ( 'R' | 'r' ) ( 'U' | 'u' ) ( 'N' | 'n' ) ( 'S' | 's' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:601:5: ( 'R' | 'r' ) ( 'U' | 'u' ) ( 'N' | 'n' ) ( 'S' | 's' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:622:2: ( ( 'R' | 'r' ) ( 'U' | 'u' ) ( 'N' | 'n' ) ( 'S' | 's' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:622:5: ( 'R' | 'r' ) ( 'U' | 'u' ) ( 'N' | 'n' ) ( 'S' | 's' )
             {
             if ( input.LA(1)=='R'||input.LA(1)=='r' ) {
                 input.consume();
@@ -9216,8 +9216,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = BEAM;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:617:6: ( ( 'B' | 'b' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'M' | 'm' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:617:8: ( 'B' | 'b' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'M' | 'm' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:638:6: ( ( 'B' | 'b' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'M' | 'm' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:638:8: ( 'B' | 'b' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'M' | 'm' )
             {
             if ( input.LA(1)=='B'||input.LA(1)=='b' ) {
                 input.consume();
@@ -9275,8 +9275,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = FLUX;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:643:6: ( ( 'F' | 'f' ) ( 'L' | 'l' ) ( 'U' | 'u' ) ( 'X' | 'x' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:643:8: ( 'F' | 'f' ) ( 'L' | 'l' ) ( 'U' | 'u' ) ( 'X' | 'x' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:664:6: ( ( 'F' | 'f' ) ( 'L' | 'l' ) ( 'U' | 'u' ) ( 'X' | 'x' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:664:8: ( 'F' | 'f' ) ( 'L' | 'l' ) ( 'U' | 'u' ) ( 'X' | 'x' )
             {
             if ( input.LA(1)=='F'||input.LA(1)=='f' ) {
                 input.consume();
@@ -9334,8 +9334,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = EXPOSURE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:647:10: ( ( 'E' | 'e' ) ( 'X' | 'x' ) ( 'P' | 'p' ) ( 'O' | 'o' ) ( 'S' | 's' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'E' | 'e' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:647:12: ( 'E' | 'e' ) ( 'X' | 'x' ) ( 'P' | 'p' ) ( 'O' | 'o' ) ( 'S' | 's' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'E' | 'e' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:668:10: ( ( 'E' | 'e' ) ( 'X' | 'x' ) ( 'P' | 'p' ) ( 'O' | 'o' ) ( 'S' | 's' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'E' | 'e' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:668:12: ( 'E' | 'e' ) ( 'X' | 'x' ) ( 'P' | 'p' ) ( 'O' | 'o' ) ( 'S' | 's' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'E' | 'e' )
             {
             if ( input.LA(1)=='E'||input.LA(1)=='e' ) {
                 input.consume();
@@ -9433,8 +9433,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = IMAGEDIM;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:652:2: ( ( 'I' | 'i' ) ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'G' | 'g' ) ( 'E' | 'e' ) ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'M' | 'm' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:652:5: ( 'I' | 'i' ) ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'G' | 'g' ) ( 'E' | 'e' ) ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'M' | 'm' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:673:2: ( ( 'I' | 'i' ) ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'G' | 'g' ) ( 'E' | 'e' ) ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'M' | 'm' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:673:5: ( 'I' | 'i' ) ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'G' | 'g' ) ( 'E' | 'e' ) ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'M' | 'm' )
             {
             if ( input.LA(1)=='I'||input.LA(1)=='i' ) {
                 input.consume();
@@ -9532,8 +9532,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = FWHM;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:656:6: ( ( 'F' | 'f' ) ( 'W' | 'w' ) ( 'H' | 'h' ) ( 'M' | 'm' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:656:8: ( 'F' | 'f' ) ( 'W' | 'w' ) ( 'H' | 'h' ) ( 'M' | 'm' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:677:6: ( ( 'F' | 'f' ) ( 'W' | 'w' ) ( 'H' | 'h' ) ( 'M' | 'm' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:677:8: ( 'F' | 'f' ) ( 'W' | 'w' ) ( 'H' | 'h' ) ( 'M' | 'm' )
             {
             if ( input.LA(1)=='F'||input.LA(1)=='f' ) {
                 input.consume();
@@ -9591,8 +9591,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = ENERGY;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:662:8: ( ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'G' | 'g' ) ( 'Y' | 'y' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:662:10: ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'G' | 'g' ) ( 'Y' | 'y' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:683:8: ( ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'G' | 'g' ) ( 'Y' | 'y' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:683:10: ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'G' | 'g' ) ( 'Y' | 'y' )
             {
             if ( input.LA(1)=='E'||input.LA(1)=='e' ) {
                 input.consume();
@@ -9670,8 +9670,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = KEV;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:663:5: ( ( 'K' | 'k' ) ( 'E' | 'e' ) ( 'V' | 'v' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:663:7: ( 'K' | 'k' ) ( 'E' | 'e' ) ( 'V' | 'v' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:684:5: ( ( 'K' | 'k' ) ( 'E' | 'e' ) ( 'V' | 'v' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:684:7: ( 'K' | 'k' ) ( 'E' | 'e' ) ( 'V' | 'v' )
             {
             if ( input.LA(1)=='K'||input.LA(1)=='k' ) {
                 input.consume();
@@ -9719,8 +9719,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = PULSEENERGY;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:667:13: ( ( 'P' | 'p' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'S' | 's' ) ( 'E' | 'e' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'G' | 'g' ) ( 'Y' | 'y' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:667:15: ( 'P' | 'p' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'S' | 's' ) ( 'E' | 'e' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'G' | 'g' ) ( 'Y' | 'y' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:688:13: ( ( 'P' | 'p' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'S' | 's' ) ( 'E' | 'e' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'G' | 'g' ) ( 'Y' | 'y' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:688:15: ( 'P' | 'p' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'S' | 's' ) ( 'E' | 'e' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'G' | 'g' ) ( 'Y' | 'y' )
             {
             if ( input.LA(1)=='P'||input.LA(1)=='p' ) {
                 input.consume();
@@ -9848,8 +9848,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = SEMIANGLE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:673:2: ( ( 'S' | 's' ) ( 'E' | 'e' ) ( 'M' | 'm' ) ( 'I' | 'i' ) ( 'A' | 'a' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'L' | 'l' ) ( 'E' | 'e' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:673:5: ( 'S' | 's' ) ( 'E' | 'e' ) ( 'M' | 'm' ) ( 'I' | 'i' ) ( 'A' | 'a' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'L' | 'l' ) ( 'E' | 'e' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:694:2: ( ( 'S' | 's' ) ( 'E' | 'e' ) ( 'M' | 'm' ) ( 'I' | 'i' ) ( 'A' | 'a' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'L' | 'l' ) ( 'E' | 'e' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:694:5: ( 'S' | 's' ) ( 'E' | 'e' ) ( 'M' | 'm' ) ( 'I' | 'i' ) ( 'A' | 'a' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'L' | 'l' ) ( 'E' | 'e' )
             {
             if ( input.LA(1)=='S'||input.LA(1)=='s' ) {
                 input.consume();
@@ -9957,8 +9957,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = APERTURERADIUS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:678:2: ( ( 'A' | 'a' ) ( 'P' | 'p' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'T' | 't' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'U' | 'u' ) ( 'S' | 's' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:678:4: ( 'A' | 'a' ) ( 'P' | 'p' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'T' | 't' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'U' | 'u' ) ( 'S' | 's' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:699:2: ( ( 'A' | 'a' ) ( 'P' | 'p' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'T' | 't' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'U' | 'u' ) ( 'S' | 's' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:699:4: ( 'A' | 'a' ) ( 'P' | 'p' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'T' | 't' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'U' | 'u' ) ( 'S' | 's' )
             {
             if ( input.LA(1)=='A'||input.LA(1)=='a' ) {
                 input.consume();
@@ -10116,8 +10116,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = FILE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:683:6: ( ( 'F' | 'f' ) ( 'I' | 'i' ) ( 'L' | 'l' ) ( 'E' | 'e' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:683:8: ( 'F' | 'f' ) ( 'I' | 'i' ) ( 'L' | 'l' ) ( 'E' | 'e' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:704:6: ( ( 'F' | 'f' ) ( 'I' | 'i' ) ( 'L' | 'l' ) ( 'E' | 'e' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:704:8: ( 'F' | 'f' ) ( 'I' | 'i' ) ( 'L' | 'l' ) ( 'E' | 'e' )
             {
             if ( input.LA(1)=='F'||input.LA(1)=='f' ) {
                 input.consume();
@@ -10175,8 +10175,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = PIXELSIZE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:691:2: ( ( 'P' | 'p' ) ( 'I' | 'i' ) ( 'X' | 'x' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'S' | 's' ) ( 'I' | 'i' ) ( 'Z' | 'z' ) ( 'E' | 'e' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:691:5: ( 'P' | 'p' ) ( 'I' | 'i' ) ( 'X' | 'x' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'S' | 's' ) ( 'I' | 'i' ) ( 'Z' | 'z' ) ( 'E' | 'e' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:712:2: ( ( 'P' | 'p' ) ( 'I' | 'i' ) ( 'X' | 'x' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'S' | 's' ) ( 'I' | 'i' ) ( 'Z' | 'z' ) ( 'E' | 'e' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:712:5: ( 'P' | 'p' ) ( 'I' | 'i' ) ( 'X' | 'x' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'S' | 's' ) ( 'I' | 'i' ) ( 'Z' | 'z' ) ( 'E' | 'e' )
             {
             if ( input.LA(1)=='P'||input.LA(1)=='p' ) {
                 input.consume();
@@ -10284,8 +10284,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = ENERGYFWHM;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:696:2: ( ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'G' | 'g' ) ( 'Y' | 'y' ) ( 'F' | 'f' ) ( 'W' | 'w' ) ( 'H' | 'h' ) ( 'M' | 'm' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:696:4: ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'G' | 'g' ) ( 'Y' | 'y' ) ( 'F' | 'f' ) ( 'W' | 'w' ) ( 'H' | 'h' ) ( 'M' | 'm' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:717:2: ( ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'G' | 'g' ) ( 'Y' | 'y' ) ( 'F' | 'f' ) ( 'W' | 'w' ) ( 'H' | 'h' ) ( 'M' | 'm' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:717:4: ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'G' | 'g' ) ( 'Y' | 'y' ) ( 'F' | 'f' ) ( 'W' | 'w' ) ( 'H' | 'h' ) ( 'M' | 'm' )
             {
             if ( input.LA(1)=='E'||input.LA(1)=='e' ) {
                 input.consume();
@@ -10403,8 +10403,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = COLLIMATION;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:712:13: ( ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'L' | 'l' ) ( 'I' | 'i' ) ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:712:15: ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'L' | 'l' ) ( 'I' | 'i' ) ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:733:13: ( ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'L' | 'l' ) ( 'I' | 'i' ) ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:733:15: ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'L' | 'l' ) ( 'I' | 'i' ) ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' )
             {
             if ( input.LA(1)=='C'||input.LA(1)=='c' ) {
                 input.consume();
@@ -10532,8 +10532,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = RECTANGULAR;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:713:13: ( ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'C' | 'c' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'A' | 'a' ) ( 'R' | 'r' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:713:15: ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'C' | 'c' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'A' | 'a' ) ( 'R' | 'r' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:734:13: ( ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'C' | 'c' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'A' | 'a' ) ( 'R' | 'r' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:734:15: ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'C' | 'c' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'A' | 'a' ) ( 'R' | 'r' )
             {
             if ( input.LA(1)=='R'||input.LA(1)=='r' ) {
                 input.consume();
@@ -10661,8 +10661,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = CIRCULAR;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:714:11: ( ( 'C' | 'c' ) ( 'I' | 'i' ) ( 'R' | 'r' ) ( 'C' | 'c' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'A' | 'a' ) ( 'R' | 'r' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:714:13: ( 'C' | 'c' ) ( 'I' | 'i' ) ( 'R' | 'r' ) ( 'C' | 'c' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'A' | 'a' ) ( 'R' | 'r' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:735:11: ( ( 'C' | 'c' ) ( 'I' | 'i' ) ( 'R' | 'r' ) ( 'C' | 'c' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'A' | 'a' ) ( 'R' | 'r' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:735:13: ( 'C' | 'c' ) ( 'I' | 'i' ) ( 'R' | 'r' ) ( 'C' | 'c' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'A' | 'a' ) ( 'R' | 'r' )
             {
             if ( input.LA(1)=='C'||input.LA(1)=='c' ) {
                 input.consume();
@@ -10760,8 +10760,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = HORIZONTAL;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:715:13: ( ( 'H' | 'h' ) ( 'O' | 'o' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'Z' | 'z' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'L' | 'l' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:715:15: ( 'H' | 'h' ) ( 'O' | 'o' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'Z' | 'z' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'L' | 'l' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:736:13: ( ( 'H' | 'h' ) ( 'O' | 'o' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'Z' | 'z' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'L' | 'l' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:736:15: ( 'H' | 'h' ) ( 'O' | 'o' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'Z' | 'z' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'L' | 'l' )
             {
             if ( input.LA(1)=='H'||input.LA(1)=='h' ) {
                 input.consume();
@@ -10879,8 +10879,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = VERTICAL;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:716:11: ( ( 'V' | 'v' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'L' | 'l' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:716:13: ( 'V' | 'v' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'L' | 'l' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:737:11: ( ( 'V' | 'v' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'L' | 'l' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:737:13: ( 'V' | 'v' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'L' | 'l' )
             {
             if ( input.LA(1)=='V'||input.LA(1)=='v' ) {
                 input.consume();
@@ -10978,8 +10978,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = WEDGE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:743:7: ( ( 'W' | 'w' ) ( 'E' | 'e' ) ( 'D' | 'd' ) ( 'G' | 'g' ) ( 'E' | 'e' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:743:9: ( 'W' | 'w' ) ( 'E' | 'e' ) ( 'D' | 'd' ) ( 'G' | 'g' ) ( 'E' | 'e' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:764:7: ( ( 'W' | 'w' ) ( 'E' | 'e' ) ( 'D' | 'd' ) ( 'G' | 'g' ) ( 'E' | 'e' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:764:9: ( 'W' | 'w' ) ( 'E' | 'e' ) ( 'D' | 'd' ) ( 'G' | 'g' ) ( 'E' | 'e' )
             {
             if ( input.LA(1)=='W'||input.LA(1)=='w' ) {
                 input.consume();
@@ -11047,8 +11047,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = EXPOSURETIME;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:760:14: ( ( 'E' | 'e' ) ( 'X' | 'x' ) ( 'P' | 'p' ) ( 'O' | 'o' ) ( 'S' | 's' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'M' | 'm' ) ( 'E' | 'e' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:760:16: ( 'E' | 'e' ) ( 'X' | 'x' ) ( 'P' | 'p' ) ( 'O' | 'o' ) ( 'S' | 's' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'M' | 'm' ) ( 'E' | 'e' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:781:14: ( ( 'E' | 'e' ) ( 'X' | 'x' ) ( 'P' | 'p' ) ( 'O' | 'o' ) ( 'S' | 's' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'M' | 'm' ) ( 'E' | 'e' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:781:16: ( 'E' | 'e' ) ( 'X' | 'x' ) ( 'P' | 'p' ) ( 'O' | 'o' ) ( 'S' | 's' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'M' | 'm' ) ( 'E' | 'e' )
             {
             if ( input.LA(1)=='E'||input.LA(1)=='e' ) {
                 input.consume();
@@ -11186,8 +11186,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = ANGULARRESOLUTION;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:764:19: ( ( 'A' | 'a' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'A' | 'a' ) ( 'R' | 'r' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'U' | 'u' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:764:21: ( 'A' | 'a' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'A' | 'a' ) ( 'R' | 'r' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'U' | 'u' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:785:19: ( ( 'A' | 'a' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'A' | 'a' ) ( 'R' | 'r' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'U' | 'u' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:785:21: ( 'A' | 'a' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'A' | 'a' ) ( 'R' | 'r' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'U' | 'u' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' )
             {
             if ( input.LA(1)=='A'||input.LA(1)=='a' ) {
                 input.consume();
@@ -11375,8 +11375,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = STARTOFFSET;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:770:13: ( ( 'S' | 's' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'R' | 'r' ) ( 'T' | 't' ) ( 'O' | 'o' ) ( 'F' | 'f' ) ( 'F' | 'f' ) ( 'S' | 's' ) ( 'E' | 'e' ) ( 'T' | 't' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:770:15: ( 'S' | 's' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'R' | 'r' ) ( 'T' | 't' ) ( 'O' | 'o' ) ( 'F' | 'f' ) ( 'F' | 'f' ) ( 'S' | 's' ) ( 'E' | 'e' ) ( 'T' | 't' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:791:13: ( ( 'S' | 's' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'R' | 'r' ) ( 'T' | 't' ) ( 'O' | 'o' ) ( 'F' | 'f' ) ( 'F' | 'f' ) ( 'S' | 's' ) ( 'E' | 'e' ) ( 'T' | 't' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:791:15: ( 'S' | 's' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'R' | 'r' ) ( 'T' | 't' ) ( 'O' | 'o' ) ( 'F' | 'f' ) ( 'F' | 'f' ) ( 'S' | 's' ) ( 'E' | 'e' ) ( 'T' | 't' )
             {
             if ( input.LA(1)=='S'||input.LA(1)=='s' ) {
                 input.consume();
@@ -11504,8 +11504,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = TRANSLATEPERDEGREE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:776:20: ( ( 'T' | 't' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'N' | 'n' ) ( 'S' | 's' ) ( 'L' | 'l' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'P' | 'p' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'G' | 'g' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'E' | 'e' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:776:22: ( 'T' | 't' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'N' | 'n' ) ( 'S' | 's' ) ( 'L' | 'l' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'P' | 'p' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'G' | 'g' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'E' | 'e' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:797:20: ( ( 'T' | 't' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'N' | 'n' ) ( 'S' | 's' ) ( 'L' | 'l' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'P' | 'p' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'G' | 'g' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'E' | 'e' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:797:22: ( 'T' | 't' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'N' | 'n' ) ( 'S' | 's' ) ( 'L' | 'l' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'P' | 'p' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'G' | 'g' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'E' | 'e' )
             {
             if ( input.LA(1)=='T'||input.LA(1)=='t' ) {
                 input.consume();
@@ -11703,8 +11703,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = ROTAXBEAMOFFSET;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:780:17: ( ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'X' | 'x' ) ( 'B' | 'b' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'M' | 'm' ) ( 'O' | 'o' ) ( 'F' | 'f' ) ( 'F' | 'f' ) ( 'S' | 's' ) ( 'E' | 'e' ) ( 'T' | 't' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:780:19: ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'X' | 'x' ) ( 'B' | 'b' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'M' | 'm' ) ( 'O' | 'o' ) ( 'F' | 'f' ) ( 'F' | 'f' ) ( 'S' | 's' ) ( 'E' | 'e' ) ( 'T' | 't' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:801:17: ( ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'X' | 'x' ) ( 'B' | 'b' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'M' | 'm' ) ( 'O' | 'o' ) ( 'F' | 'f' ) ( 'F' | 'f' ) ( 'S' | 's' ) ( 'E' | 'e' ) ( 'T' | 't' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:801:19: ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'X' | 'x' ) ( 'B' | 'b' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'M' | 'm' ) ( 'O' | 'o' ) ( 'F' | 'f' ) ( 'F' | 'f' ) ( 'S' | 's' ) ( 'E' | 'e' ) ( 'T' | 't' )
             {
             if ( input.LA(1)=='R'||input.LA(1)=='r' ) {
                 input.consume();
@@ -11872,8 +11872,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = MAXRESOLUTION;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:784:15: ( ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'X' | 'x' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'U' | 'u' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:784:17: ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'X' | 'x' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'U' | 'u' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:805:15: ( ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'X' | 'x' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'U' | 'u' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:805:17: ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'X' | 'x' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'U' | 'u' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' )
             {
             if ( input.LA(1)=='M'||input.LA(1)=='m' ) {
                 input.consume();
@@ -12021,10 +12021,10 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = FLOAT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:789:5: ( ( '+' | '-' )? ( ( '0' .. '9' )+ | ( '0' .. '9' )+ '.' ( '0' .. '9' )* | '.' ( '0' .. '9' )+ ) ( EXPONENT )? )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:789:7: ( '+' | '-' )? ( ( '0' .. '9' )+ | ( '0' .. '9' )+ '.' ( '0' .. '9' )* | '.' ( '0' .. '9' )+ ) ( EXPONENT )?
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:810:5: ( ( '+' | '-' )? ( ( '0' .. '9' )+ | ( '0' .. '9' )+ '.' ( '0' .. '9' )* | '.' ( '0' .. '9' )+ ) ( EXPONENT )? )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:810:7: ( '+' | '-' )? ( ( '0' .. '9' )+ | ( '0' .. '9' )+ '.' ( '0' .. '9' )* | '.' ( '0' .. '9' )+ ) ( EXPONENT )?
             {
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:789:7: ( '+' | '-' )?
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:810:7: ( '+' | '-' )?
             int alt7=2;
             int LA7_0 = input.LA(1);
 
@@ -12051,14 +12051,14 @@ public class InputfileLexer extends Lexer {
             }
 
 
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:790:5: ( ( '0' .. '9' )+ | ( '0' .. '9' )+ '.' ( '0' .. '9' )* | '.' ( '0' .. '9' )+ )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:811:5: ( ( '0' .. '9' )+ | ( '0' .. '9' )+ '.' ( '0' .. '9' )* | '.' ( '0' .. '9' )+ )
             int alt12=3;
             alt12 = dfa12.predict(input);
             switch (alt12) {
                 case 1 :
-                    // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:790:7: ( '0' .. '9' )+
+                    // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:811:7: ( '0' .. '9' )+
                     {
-                    // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:790:7: ( '0' .. '9' )+
+                    // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:811:7: ( '0' .. '9' )+
                     int cnt8=0;
                     loop8:
                     do {
@@ -12100,9 +12100,9 @@ public class InputfileLexer extends Lexer {
                     }
                     break;
                 case 2 :
-                    // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:791:7: ( '0' .. '9' )+ '.' ( '0' .. '9' )*
+                    // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:812:7: ( '0' .. '9' )+ '.' ( '0' .. '9' )*
                     {
-                    // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:791:7: ( '0' .. '9' )+
+                    // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:812:7: ( '0' .. '9' )+
                     int cnt9=0;
                     loop9:
                     do {
@@ -12143,7 +12143,7 @@ public class InputfileLexer extends Lexer {
 
                     match('.'); 
 
-                    // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:791:23: ( '0' .. '9' )*
+                    // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:812:23: ( '0' .. '9' )*
                     loop10:
                     do {
                         int alt10=2;
@@ -12180,11 +12180,11 @@ public class InputfileLexer extends Lexer {
                     }
                     break;
                 case 3 :
-                    // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:792:19: '.' ( '0' .. '9' )+
+                    // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:813:19: '.' ( '0' .. '9' )+
                     {
                     match('.'); 
 
-                    // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:792:23: ( '0' .. '9' )+
+                    // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:813:23: ( '0' .. '9' )+
                     int cnt11=0;
                     loop11:
                     do {
@@ -12229,7 +12229,7 @@ public class InputfileLexer extends Lexer {
             }
 
 
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:793:7: ( EXPONENT )?
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:814:7: ( EXPONENT )?
             int alt13=2;
             int LA13_0 = input.LA(1);
 
@@ -12238,7 +12238,7 @@ public class InputfileLexer extends Lexer {
             }
             switch (alt13) {
                 case 1 :
-                    // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:793:7: EXPONENT
+                    // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:814:7: EXPONENT
                     {
                     mEXPONENT(); 
 
@@ -12263,8 +12263,8 @@ public class InputfileLexer extends Lexer {
     // $ANTLR start "EXPONENT"
     public final void mEXPONENT() throws RecognitionException {
         try {
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:797:10: ( ( 'e' | 'E' ) ( '+' | '-' )? ( '0' .. '9' )+ )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:797:12: ( 'e' | 'E' ) ( '+' | '-' )? ( '0' .. '9' )+
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:818:10: ( ( 'e' | 'E' ) ( '+' | '-' )? ( '0' .. '9' )+ )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:818:12: ( 'e' | 'E' ) ( '+' | '-' )? ( '0' .. '9' )+
             {
             if ( input.LA(1)=='E'||input.LA(1)=='e' ) {
                 input.consume();
@@ -12276,7 +12276,7 @@ public class InputfileLexer extends Lexer {
             }
 
 
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:797:22: ( '+' | '-' )?
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:818:22: ( '+' | '-' )?
             int alt14=2;
             int LA14_0 = input.LA(1);
 
@@ -12303,7 +12303,7 @@ public class InputfileLexer extends Lexer {
             }
 
 
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:797:33: ( '0' .. '9' )+
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:818:33: ( '0' .. '9' )+
             int cnt15=0;
             loop15:
             do {
@@ -12357,10 +12357,10 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = COMMENT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:799:5: ( ( '#' | '//' | '!' ) (~ ( '\\n' | '\\r' ) )* ( '\\r' )? '\\n' )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:799:9: ( '#' | '//' | '!' ) (~ ( '\\n' | '\\r' ) )* ( '\\r' )? '\\n'
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:820:5: ( ( '#' | '//' | '!' ) (~ ( '\\n' | '\\r' ) )* ( '\\r' )? '\\n' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:820:9: ( '#' | '//' | '!' ) (~ ( '\\n' | '\\r' ) )* ( '\\r' )? '\\n'
             {
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:799:9: ( '#' | '//' | '!' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:820:9: ( '#' | '//' | '!' )
             int alt16=3;
             switch ( input.LA(1) ) {
             case '#':
@@ -12388,14 +12388,14 @@ public class InputfileLexer extends Lexer {
 
             switch (alt16) {
                 case 1 :
-                    // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:799:10: '#'
+                    // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:820:10: '#'
                     {
                     match('#'); 
 
                     }
                     break;
                 case 2 :
-                    // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:799:16: '//'
+                    // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:820:16: '//'
                     {
                     match("//"); 
 
@@ -12404,7 +12404,7 @@ public class InputfileLexer extends Lexer {
                     }
                     break;
                 case 3 :
-                    // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:799:23: '!'
+                    // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:820:23: '!'
                     {
                     match('!'); 
 
@@ -12414,7 +12414,7 @@ public class InputfileLexer extends Lexer {
             }
 
 
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:799:28: (~ ( '\\n' | '\\r' ) )*
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:820:28: (~ ( '\\n' | '\\r' ) )*
             loop17:
             do {
                 int alt17=2;
@@ -12448,7 +12448,7 @@ public class InputfileLexer extends Lexer {
             } while (true);
 
 
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:799:42: ( '\\r' )?
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:820:42: ( '\\r' )?
             int alt18=2;
             int LA18_0 = input.LA(1);
 
@@ -12457,7 +12457,7 @@ public class InputfileLexer extends Lexer {
             }
             switch (alt18) {
                 case 1 :
-                    // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:799:42: '\\r'
+                    // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:820:42: '\\r'
                     {
                     match('\r'); 
 
@@ -12487,8 +12487,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = WS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:802:5: ( ( ' ' | '\\t' | '\\r' | '\\n' ) )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:802:9: ( ' ' | '\\t' | '\\r' | '\\n' )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:823:5: ( ( ' ' | '\\t' | '\\r' | '\\n' ) )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:823:9: ( ' ' | '\\t' | '\\r' | '\\n' )
             {
             if ( (input.LA(1) >= '\t' && input.LA(1) <= '\n')||input.LA(1)=='\r'||input.LA(1)==' ' ) {
                 input.consume();
@@ -12518,10 +12518,10 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = STRING;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:817:2: ( ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '.' | '$' | '-' | '_' | ':' | '\\\\' | '/' )+ )
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:817:4: ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '.' | '$' | '-' | '_' | ':' | '\\\\' | '/' )+
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:838:2: ( ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '.' | '$' | '-' | '_' | ':' | '\\\\' | '/' )+ )
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:838:4: ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '.' | '$' | '-' | '_' | ':' | '\\\\' | '/' )+
             {
-            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:817:4: ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '.' | '$' | '-' | '_' | ':' | '\\\\' | '/' )+
+            // /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g:838:4: ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '.' | '$' | '-' | '_' | ':' | '\\\\' | '/' )+
             int cnt19=0;
             loop19:
             do {
@@ -13426,7 +13426,7 @@ public class InputfileLexer extends Lexer {
             this.transition = DFA12_transition;
         }
         public String getDescription() {
-            return "790:5: ( ( '0' .. '9' )+ | ( '0' .. '9' )+ '.' ( '0' .. '9' )* | '.' ( '0' .. '9' )+ )";
+            return "811:5: ( ( '0' .. '9' )+ | ( '0' .. '9' )+ '.' ( '0' .. '9' )* | '.' ( '0' .. '9' )+ )";
         }
     }
     static final String DFA20_eotS =

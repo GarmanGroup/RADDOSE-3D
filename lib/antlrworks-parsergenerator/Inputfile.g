@@ -140,8 +140,17 @@ if ($crystal::crystalCoefCalc == 4)
 
 if ($crystal::crystalCoefCalc == 5)
 {
-   if ($crystal::oilDensity == null){
-      $crystal::oilDensity = 0.0 ;
+      if ($crystal::containerDensity != null){
+         $crystal::oilDensity = $crystal::containerDensity ;
+      }
+      else{
+         $crystal::oilDensity = 0.0 ;
+      }
+      if ($crystal::oilNames == null){
+         if ($crystal::containerElementNames != null){
+            $crystal::oilNames = $crystal::containerElementNames;
+            $crystal::oilNums = $crystal::containerElementNums;
+      }
    }
   $crystal::crystalCoefCalcClass = new CoefCalcSAXS($crystal::cellA, $crystal::cellB, $crystal::cellC, $crystal::cellAl, $crystal::cellBe, $crystal::cellGa,
   													$crystal::numRes, $crystal::numRNA, $crystal::numDNA,
@@ -171,8 +180,20 @@ if ($crystal::crystalCoefCalc == 6)
 if ($crystal::crystalCoefCalc == 7)
 {
    if ($crystal::oilDensity == null){
-      $crystal::oilDensity = 0.0 ;
+      if ($crystal::containerDensity != null){
+         $crystal::oilDensity = $crystal::containerDensity ;
+      }
+      else{
+         $crystal::oilDensity = 0.0 ;
+      }
    }
+   if ($crystal::oilNames == null){
+      if ($crystal::containerElementNames != null){
+         $crystal::oilNames = $crystal::containerElementNames;
+         $crystal::oilNums = $crystal::containerElementNums;
+      }
+   }
+   
   $crystal::crystalCoefCalcClass = new CoefCalcFromSequenceSAXS($crystal::cellA, $crystal::cellB, $crystal::cellC, $crystal::cellAl, $crystal::cellBe, $crystal::cellGa,
   													$crystal::heavyProteinAtomNames, $crystal::heavyProteinAtomNums,
   													$crystal::heavySolutionConcNames, $crystal::heavySolutionConcNums,
