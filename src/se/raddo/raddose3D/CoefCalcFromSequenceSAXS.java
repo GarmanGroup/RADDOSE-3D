@@ -23,7 +23,10 @@ public class CoefCalcFromSequenceSAXS extends CoefCalcFromSequence {
       List<String> heavyProteinAtomNames, List<Double> heavyProteinAtomNums, 
       List<String> heavySolutionConcNames, List<Double> heavySolutionConcNums, 
       Double solventFraction, Double proteinConc, String seqFile,
-      final int numCarb) {
+      final List<String> cryoSolutionMolecule,
+      final List<Double> cryoSolutionConc, final String oilBased, final String calcSurrounding,
+      final int numCarb,
+      final List<String> oilElementNames, final List<Double> oilElementsNums, final double oilDensity) {
     
     /**
      * Create local variables for the unit cell parameters.
@@ -88,7 +91,8 @@ public class CoefCalcFromSequenceSAXS extends CoefCalcFromSequence {
     this.setNumMonomers(numMonomers);
     
     calculateHeavyAtomOccurrences(numMonomers, sf, heavyProteinAtomNames,
-        heavyProteinAtomNums, heavySolutionConcNames, heavySolutionConcNums, numCarb);
+        heavyProteinAtomNums, heavySolutionConcNames, heavySolutionConcNums, cryoSolutionMolecule, cryoSolutionConc, oilBased, calcSurrounding, numCarb,
+        oilElementNames, oilElementsNums, oilDensity);
     
     multiplyAtoms(this.getNumMonomers()); //this is multiplying by the monomers
     
@@ -99,7 +103,10 @@ public class CoefCalcFromSequenceSAXS extends CoefCalcFromSequence {
 
   public void calculateHeavyAtomOccurrences(int monomers, Double solventFraction,
       List<String> heavyProteinAtomNames, List<Double> heavyProteinAtomNums,
-      List<String> heavySolvConcNames, List<Double> heavySolvConcNums, final int numCarb) {
+      List<String> heavySolvConcNames, List<Double> heavySolvConcNums,       final List<String> cryoSolutionMolecule,
+      final List<Double> cryoSolutionConc, final String oilBased, String calcSurrounding,
+      final int numCarb,
+      final List<String> oilElementNames, final List<Double> oilElementsNums, final double oilDensity) {
 
     // Start by dealing with heavy atom in the
     // protein and adding these to the unit cell.
@@ -120,6 +127,18 @@ public class CoefCalcFromSequenceSAXS extends CoefCalcFromSequence {
     // solvent and add these to the unit cell.
     if (heavySolvConcNames != null) {
       addSolventConcentrations(heavySolvConcNames, heavySolvConcNums);
+    }
+    
+    //check whether a surrounding should be calculated 
+    if (calcSurrounding != null) {
+      calcSurrounding = calcSurrounding.toUpperCase();
+    }
+    boolean surrounding = ("TRUE".equals(calcSurrounding));
+    
+    if (surrounding == true) { 
+      //populate the 'cryo unit cell' with these atoms 
+      addCryoConcentrations(cryoSolutionMolecule, cryoSolutionConc, oilBased, oilElementNames, oilElementsNums, oilDensity);
+      super.calculateCryoDensity();
     }
 
     // If the solvent fraction has not been specified.

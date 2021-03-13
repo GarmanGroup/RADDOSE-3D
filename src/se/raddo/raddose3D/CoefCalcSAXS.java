@@ -67,7 +67,10 @@ public class CoefCalcSAXS extends CoefCalcFromParams {
       final List<Double> heavySolutionConcNums,
       final Double solventFraction,
       final Double proteinConc,
-      final int numCarb) {
+      final List<String> cryoSolutionMolecule,
+      final List<Double> cryoSolutionConc, final String oilBased, final String calcSurrounding,
+      final int numCarb,
+      final List<String> oilElementNames, final List<Double> oilElementsNums, final double oilDensity) {
 
     /*
      * Create local variables for the unit cell parameters.
@@ -123,7 +126,8 @@ public class CoefCalcSAXS extends CoefCalcFromParams {
 
     calculateAtomOccurrences(numMonomers, numResidues, numRNA, numDNA,
         sf, heavyProteinAtomNames, heavyProteinAtomNums,
-        heavySolutionConcNames, heavySolutionConcNums, emptyAtoms, emptyNumbers, null, null, numCarb, emptyAtoms, emptyNumbers, 0.);
+        heavySolutionConcNames, heavySolutionConcNums, cryoSolutionMolecule, cryoSolutionConc, oilBased, calcSurrounding, numCarb,
+        oilElementNames, oilElementsNums, oilDensity);
     
     super.calculateDensity();
   }

@@ -346,6 +346,13 @@ public class CoefCalcTests {
 
     List<String> heavySolutionConcNames = new ArrayList<String>();
     List<Double> heavySolutionConcNums = new ArrayList<Double>();
+    
+    //These are cryo can test later
+    List<String> emptyAtoms = new ArrayList<String>();
+    List<Double> emptyNumbers = new ArrayList<Double>();
+    
+    List<String> oilNames = new ArrayList<String>();
+    List<Double> oilNums = new ArrayList<Double>();
 
     heavyProtAtomNames.add("S");
     heavyProtAtomNums.add(10.0);
@@ -355,10 +362,15 @@ public class CoefCalcTests {
     heavySolutionConcNums.add(1200.);
     heavySolutionConcNums.add(200.);
     
+    oilNames.add("C");
+    oilNames.add("H");
+    oilNums.add(3.0);
+    oilNums.add(8.0); 
+    
     CoefCalcFromSequenceSAXS coefCalc = new CoefCalcFromSequenceSAXS(100.0, 100.0, 
         100.0, RIGHT_ANGLE, RIGHT_ANGLE, RIGHT_ANGLE, heavyProtAtomNames,
         heavyProtAtomNums, heavySolutionConcNames, heavySolutionConcNums,
-        -1.0, 1.0, "TestSequence.fasta", 0);
+        -1.0, 1.0, "TestSequence.fasta", emptyAtoms, emptyNumbers, "TRUE", "TRUE", 0, oilNames, oilNums, 1.2);
     
     boolean correctNumProtein = false;
     if (coefCalc.getNumAminoAcids() == 25) {

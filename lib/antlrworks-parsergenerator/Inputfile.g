@@ -140,12 +140,17 @@ if ($crystal::crystalCoefCalc == 4)
 
 if ($crystal::crystalCoefCalc == 5)
 {
+   if ($crystal::oilDensity == null){
+      $crystal::oilDensity = 0.0 ;
+   }
   $crystal::crystalCoefCalcClass = new CoefCalcSAXS($crystal::cellA, $crystal::cellB, $crystal::cellC, $crystal::cellAl, $crystal::cellBe, $crystal::cellGa,
   													$crystal::numRes, $crystal::numRNA, $crystal::numDNA,
   													$crystal::heavyProteinAtomNames, $crystal::heavyProteinAtomNums,
   													$crystal::heavySolutionConcNames, $crystal::heavySolutionConcNums,
-  													$crystal::solFrac, $crystal::proteinConc,
-  													$crystal::numCarb);
+  													$crystal::solFrac, $crystal::proteinConc, 
+  													$crystal::cryoSolutionMolecule, $crystal::cryoSolutionConc,
+  													$crystal::oilBased, 	$crystal::calcSurrounding,
+  													$crystal::numCarb, $crystal::oilNames, $crystal::oilNums, $crystal::oilDensity);
 }
 
 if ($crystal::crystalCoefCalc == 6)
@@ -165,11 +170,16 @@ if ($crystal::crystalCoefCalc == 6)
 
 if ($crystal::crystalCoefCalc == 7)
 {
+   if ($crystal::oilDensity == null){
+      $crystal::oilDensity = 0.0 ;
+   }
   $crystal::crystalCoefCalcClass = new CoefCalcFromSequenceSAXS($crystal::cellA, $crystal::cellB, $crystal::cellC, $crystal::cellAl, $crystal::cellBe, $crystal::cellGa,
   													$crystal::heavyProteinAtomNames, $crystal::heavyProteinAtomNums,
   													$crystal::heavySolutionConcNames, $crystal::heavySolutionConcNums,
-  													$crystal::solFrac, $crystal::proteinConc, $crystal::seqFile,
-  													$crystal::numCarb);
+  													$crystal::solFrac, $crystal::proteinConc, $crystal::seqFile, 		
+  													$crystal::cryoSolutionMolecule, $crystal::cryoSolutionConc,					
+  													$crystal::oilBased, 	$crystal::calcSurrounding,
+  													$crystal::numCarb, $crystal::oilNames, $crystal::oilNums, $crystal::oilDensity);
 }
 
 if ($crystal::crystalCoefCalc == 8)
