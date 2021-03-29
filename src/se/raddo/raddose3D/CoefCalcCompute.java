@@ -821,10 +821,10 @@ public class CoefCalcCompute extends CoefCalc {
           e.getAtomicNumber() >= 12) {
         l1ShellEnergy = e.getL1Edge();
         l1FactorA = (e.getL1ShellIonisationProb()) * (1-kFactorA);
-      //  l1FactorB = e.getL1ShellFluorescenceYield();
+        l1FactorB = e.getL1ShellFluorescenceYield();
                
-      //  photonMuAbsL1 = calculateCoefficientsAll(e.getLFluorescenceAverage());       
-      //  escapeMuAbsL1 = photonMuAbsL1.get(PHOTOELECTRIC);       
+        photonMuAbsL1 = calculateCoefficientsAll(e.getLFluorescenceAverage());       
+        escapeMuAbsL1 = photonMuAbsL1.get(PHOTOELECTRIC);       
       } 
       else {
         l1ShellEnergy = 0.0;
@@ -838,10 +838,10 @@ public class CoefCalcCompute extends CoefCalc {
           e.getAtomicNumber() >= 12) {
         l2ShellEnergy = e.getL2Edge();
         l2FactorA = e.getL2ShellIonisationProb() * (1-kFactorA - l1FactorA);
-      //  l2FactorB = e.getL2ShellFluorescenceYield();
+        l2FactorB = e.getL2ShellFluorescenceYield();
 
-      //  photonMuAbsL2 = calculateCoefficientsAll(e.getLFluorescenceAverage());       
-      //  escapeMuAbsL2 = photonMuAbsL2.get(PHOTOELECTRIC);
+        photonMuAbsL2 = calculateCoefficientsAll(e.getLFluorescenceAverage());       
+        escapeMuAbsL2 = photonMuAbsL2.get(PHOTOELECTRIC);
       } 
       else {
         l2ShellEnergy = 0.0;
@@ -855,10 +855,10 @@ public class CoefCalcCompute extends CoefCalc {
           e.getAtomicNumber() >= 12) {
         l3ShellEnergy = e.getL3Edge();
         l3FactorA = e.getL3ShellIonisationProb() * (1-kFactorA - l1FactorA - l2FactorA);
-      //  l3FactorB = e.getL3ShellFluorescenceYield();
+        l3FactorB = e.getL3ShellFluorescenceYield();
 
-      //  photonMuAbsL3 = calculateCoefficientsAll(e.getLFluorescenceAverage());       
-      //  escapeMuAbsL3 = photonMuAbsL3.get(PHOTOELECTRIC);
+        photonMuAbsL3 = calculateCoefficientsAll(e.getLFluorescenceAverage());       
+        escapeMuAbsL3 = photonMuAbsL3.get(PHOTOELECTRIC);
       } 
       else {
         l3ShellEnergy = 0.0;
@@ -925,16 +925,16 @@ public class CoefCalcCompute extends CoefCalc {
       
       fluorEscapeFactors[element_counter][5] = l1ShellEnergy;
       fluorEscapeFactors[element_counter][6] = l1FactorA;
-     // fluorEscapeFactors[element_counter][7] = l1FactorB;
-     // fluorEscapeFactors[element_counter][8] = escapeMuAbsL1;
+      fluorEscapeFactors[element_counter][7] = l1FactorB;
+      fluorEscapeFactors[element_counter][8] = escapeMuAbsL1;
       fluorEscapeFactors[element_counter][9] = l2ShellEnergy;
       fluorEscapeFactors[element_counter][10] = l2FactorA;
-    //  fluorEscapeFactors[element_counter][11] = l2FactorB;
-    //  fluorEscapeFactors[element_counter][12] = escapeMuAbsL2;
+      fluorEscapeFactors[element_counter][11] = l2FactorB;
+      fluorEscapeFactors[element_counter][12] = escapeMuAbsL2;
       fluorEscapeFactors[element_counter][13] = l3ShellEnergy;
       fluorEscapeFactors[element_counter][14] = l3FactorA;
-    //  fluorEscapeFactors[element_counter][15] = l3FactorB;
-    //  fluorEscapeFactors[element_counter][16] = escapeMuAbsL3;
+      fluorEscapeFactors[element_counter][15] = l3FactorB;
+      fluorEscapeFactors[element_counter][16] = escapeMuAbsL3;
       
       fluorEscapeFactors[element_counter][17] = m1ShellEnergy;
       fluorEscapeFactors[element_counter][18] = m1FactorA;
@@ -2340,7 +2340,7 @@ public class CoefCalcCompute extends CoefCalc {
   public double getStoppingPower(double avgEnergy, boolean surrounding) {
     double stoppingPower = 0;
     
-  //  double distance = getExpectedDistance(20, true)/1000;
+    double distance = getExpectedDistance(12, true)/1000;
     
     if (surrounding == false) {
       stoppingPower = calcStoppingPower(avgEnergy, presentElements, density, surrounding);
@@ -3673,7 +3673,8 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
         //Add this to the right place
         double currentValue = dsimgaOverdW.get(energyKey);
         double newValue = currentValue + dsigmaiOverdW;
-        dsimgaOverdW.replace(energyKey, newValue);
+        dsimgaOverdW.put(energyKey, newValue);
+        
         
         wtimes = Wjoules*fi*(getdci(Wi, W, E) + getddi(Wi, W, E));  //J.Kg^-1 s^2
         w2times = Wjoules*Wjoules*fi*(getdci(Wi, W, E) + getddi(Wi, W, E));  //J^2Kg^-1 s^2

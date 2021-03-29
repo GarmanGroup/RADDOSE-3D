@@ -184,13 +184,13 @@ public abstract class Crystal {
   /**
    * The energy of each fluorescent event
    */
- // public double[][] fluorescenceEnergyPerEvent;
-  public double[] fluorescenceEnergyPerEvent;
+  public double[][] fluorescenceEnergyPerEvent;
+  //public double[] fluorescenceEnergyPerEvent;
   /**
    * The proportion that each fluorescent wavelength contributes to the total fluorescent energy
    */
- // public double[][] fluorescenceProportionEvent;
-  public double[] fluorescenceProportionEvent;
+  public double[][] fluorescenceProportionEvent;
+ // public double[] fluorescenceProportionEvent;
   
   double[][][] voxImageDoseLast;
   /**
@@ -599,25 +599,25 @@ public abstract class Crystal {
    */
   public void getFluorescenceEnergyPerEvent(double[][] fluorescentEscapeFactors) {
     int length = fluorescentEscapeFactors.length;
-  // fluorescenceEnergyPerEvent = new double[length][4];
-   fluorescenceEnergyPerEvent = new double[length];
+   fluorescenceEnergyPerEvent = new double[length][4];
+ //  fluorescenceEnergyPerEvent = new double[length];
   for (int i = 0; i < length; i++){    //loops over each atom type
     double muratio = fluorescentEscapeFactors[i][0]; // uj/upe
   //j-shell ionization x j-shell fluorescence yield x j-edge energy
    double K1 = fluorescentEscapeFactors[i][1] * fluorescentEscapeFactors[i][2]*fluorescentEscapeFactors[i][3];
-   /*
+   
    double L1 = fluorescentEscapeFactors[i][5] * fluorescentEscapeFactors[i][6]*fluorescentEscapeFactors[i][7];
    double L2 = fluorescentEscapeFactors[i][9] * fluorescentEscapeFactors[i][10]*fluorescentEscapeFactors[i][11];
    double L3 = fluorescentEscapeFactors[i][13] * fluorescentEscapeFactors[i][14]*fluorescentEscapeFactors[i][15];
-   */
+   
     //calculate energy per event
-   /*
+   
     fluorescenceEnergyPerEvent[i][0] = K1 * muratio * Beam.KEVTOJOULES;
     fluorescenceEnergyPerEvent[i][1] = L1 * muratio * Beam.KEVTOJOULES;
     fluorescenceEnergyPerEvent[i][2] = L2 * muratio * Beam.KEVTOJOULES;
     fluorescenceEnergyPerEvent[i][3] = L3 * muratio * Beam.KEVTOJOULES;
-    */
-   fluorescenceEnergyPerEvent[i] = K1 * muratio * Beam.KEVTOJOULES;
+    
+   //fluorescenceEnergyPerEvent[i] = K1 * muratio * Beam.KEVTOJOULES;
   }
   
   }
@@ -639,14 +639,14 @@ public abstract class Crystal {
     double muratio = fluorescentEscapeFactors[i][0]; // uj/upe
     //j-shell ionization x j-shell fluorescence yield x j-edge energy
     double K1 = fluorescentEscapeFactors[i][1]*fluorescentEscapeFactors[i][2]*fluorescentEscapeFactors[i][3]; 
-  /*  
+    
     double L1 = fluorescentEscapeFactors[i][5]*fluorescentEscapeFactors[i][6]*fluorescentEscapeFactors[i][7];
     double L2 = fluorescentEscapeFactors[i][9]*fluorescentEscapeFactors[i][10]*fluorescentEscapeFactors[i][11];
     double L3 = fluorescentEscapeFactors[i][13]*fluorescentEscapeFactors[i][14]*fluorescentEscapeFactors[i][15];
-    */
     
-   // fluorescentEnergyToRelease = fluorescentEnergyToRelease + ((K1 + L1 + L2 + L3) * muratio);     //the units are kEV
-    fluorescentEnergyToRelease = fluorescentEnergyToRelease + (K1 * muratio);     //the units are kEV
+    
+    fluorescentEnergyToRelease = fluorescentEnergyToRelease + ((K1 + L1 + L2 + L3) * muratio);     //the units are kEV
+   // fluorescentEnergyToRelease = fluorescentEnergyToRelease + (K1 * muratio);     //the units are kEV
     
     }
   //Convert keV to Joules
@@ -809,16 +809,16 @@ public abstract class Crystal {
  
     getFluorescenceEnergyPerEvent(feFactors);
     fluorescenceEnergyRelease = calcFluorescence(beam, feFactors);
-   // fluorescenceProportionEvent = new double[feFactors.length][4];
-    fluorescenceProportionEvent = new double[feFactors.length];
+    fluorescenceProportionEvent = new double[feFactors.length][4];
+    //fluorescenceProportionEvent = new double[feFactors.length];
     for (int m = 0; m < feFactors.length; m++) {
      
-    //  fluorescenceProportionEvent[m][0] = fluorescenceEnergyPerEvent[m][0] / fluorescenceEnergyRelease; //K
-    //  fluorescenceProportionEvent[m][1] = fluorescenceEnergyPerEvent[m][1] / fluorescenceEnergyRelease; //L1
-    //  fluorescenceProportionEvent[m][2] = fluorescenceEnergyPerEvent[m][2] / fluorescenceEnergyRelease; //L2
-    //  fluorescenceProportionEvent[m][3] = fluorescenceEnergyPerEvent[m][3] / fluorescenceEnergyRelease; //L3
+      fluorescenceProportionEvent[m][0] = fluorescenceEnergyPerEvent[m][0] / fluorescenceEnergyRelease; //K
+      fluorescenceProportionEvent[m][1] = fluorescenceEnergyPerEvent[m][1] / fluorescenceEnergyRelease; //L1
+      fluorescenceProportionEvent[m][2] = fluorescenceEnergyPerEvent[m][2] / fluorescenceEnergyRelease; //L2
+      fluorescenceProportionEvent[m][3] = fluorescenceEnergyPerEvent[m][3] / fluorescenceEnergyRelease; //L3
       
-      fluorescenceProportionEvent[m] = fluorescenceEnergyPerEvent[m] / fluorescenceEnergyRelease; //K
+      //fluorescenceProportionEvent[m] = fluorescenceEnergyPerEvent[m] / fluorescenceEnergyRelease; //K
     }
 
     setFLparamsForCurrentBeam(feFactors);

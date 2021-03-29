@@ -153,7 +153,7 @@
     <include name="constants/EnergyCoefsHigh.txt" />
 	<include name="constants/low_overvoltage.csv" />
 	<include name="constants/high_overvoltage.csv" />
-	<include name="constants/full_elsepa.csv" />
+	<include name="constants/fullelsepa.csv" />
 	<include name="constants/below_20000/*.csv" />
 	<include name="constants/above_20000/*.csv" />
 	<include name="constants/auger_linewidths/*.csv" />
@@ -195,7 +195,7 @@
     <include name="constants/EnergyCoefsHigh.txt" />
 	<include name="constants/low_overvoltage.csv" />
 	<include name="constants/high_overvoltage.csv" />
-	<include name="constants/full_elsepa.csv" />
+	<include name="constants/fullelsepa.csv" />
 	<include name="constants/below_20000/*.csv" />
 	<include name="constants/above_20000/*.csv" />
 	<include name="constants/auger_linewidths/*.csv" />

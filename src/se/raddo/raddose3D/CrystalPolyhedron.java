@@ -102,8 +102,8 @@ public class CrystalPolyhedron extends Crystal {
   /**
    * Distance bins travelled by fluorescence.
    */
- // private double[][][] flDistancesTravelled;
-  private double[][] flDistancesTravelled;
+  private double[][][] flDistancesTravelled;
+ // private double[][] flDistancesTravelled;
   
   /**
    * length of distance bins travelled by photoelectron.
@@ -181,8 +181,8 @@ public class CrystalPolyhedron extends Crystal {
    * 5d array for voxels where fluorescence can reach
    * the first two dimensions are element and shell
    */
-  //private double[][][][][] flRelativeVoxXYZ;
-  private double[][][][] flRelativeVoxXYZ;
+  private double[][][][][] flRelativeVoxXYZ;
+ // private double[][][][] flRelativeVoxXYZ;
   /**
    * Proportion of voxel dose deposited at each distance
    * from voxel due to photoelectron escape
@@ -194,8 +194,8 @@ public class CrystalPolyhedron extends Crystal {
    * Proportion of voxel dose deposited at each distance
    * from voxel for each shell energy of each element
    */
- // private double[][][] flDistanceDistribution; 
-  private double[][] flDistanceDistribution;
+  private double[][][] flDistanceDistribution; 
+ // private double[][] flDistanceDistribution;
   /**
    * A boolean (int for extensibility to deeper segmentation) array.
    * Fourth dimension is a two element array, first element
@@ -1226,16 +1226,16 @@ public class CrystalPolyhedron extends Crystal {
    */
   private void calcFluorescenceDistribution(final double[][] feFactors) {
     int distanceResolution = flDistBins -1;
- //   flDistanceDistribution = new double[feFactors.length][4][flDistBins];
-    flDistanceDistribution = new double[feFactors.length][flDistBins];
-//    flDistancesTravelled = new double[feFactors.length][4][flDistBins];
-    flDistancesTravelled = new double[feFactors.length][flDistBins];
+    flDistanceDistribution = new double[feFactors.length][4][flDistBins];
+ //   flDistanceDistribution = new double[feFactors.length][flDistBins];
+    flDistancesTravelled = new double[feFactors.length][4][flDistBins];
+//    flDistancesTravelled = new double[feFactors.length][flDistBins];
     double runningEscapeTotal;
     for (int i = 0; i < feFactors.length; i++) { //for every element
-   //   for (int j = 0; j < 4; j++) { //for each shell
+      for (int j = 0; j < 4; j++) { //for each shell
         runningEscapeTotal = 0;
-  //    if (fluorescenceProportionEvent[i][j] > 0) { //If j shell fluorescence possible
-        if (fluorescenceProportionEvent[i] > 0) {
+      if (fluorescenceProportionEvent[i][j] > 0) { //If j shell fluorescence possible
+   //     if (fluorescenceProportionEvent[i] > 0) {
   //      int muabsIndex = (4* j) + 4;
           int muabsIndex = 4;
         //Calculate distance at which escape probability = 5%
@@ -1248,8 +1248,8 @@ public class CrystalPolyhedron extends Crystal {
         }
           //populate fldistances with crystalMaxDistance as the last
         for (int q = 0; q <= distanceResolution; q++) {
-       //   flDistancesTravelled[i][j][q] = (maxDistanceFl/distanceResolution) * q;
-          flDistancesTravelled[i][q] = (maxDistanceFl/distanceResolution) * q;
+          flDistancesTravelled[i][j][q] = (maxDistanceFl/distanceResolution) * q;
+       //   flDistancesTravelled[i][q] = (maxDistanceFl/distanceResolution) * q;
         }
 
         for (int l = flDistBins-1; l >= 0; l--) { 
@@ -1260,19 +1260,19 @@ public class CrystalPolyhedron extends Crystal {
           //Might be better to land it halfway between the points instead of at the end of each point
           
           if(l == flDistBins-1) { //prob of escape
-        //    flDistanceDistribution[i][j][l] = Math.exp(-feFactors[i][muabsIndex] * flDistancesTravelled[i][j][l]);
-            flDistanceDistribution[i][l] = Math.exp(-feFactors[i][muabsIndex] * flDistancesTravelled[i][l]);
+            flDistanceDistribution[i][j][l] = Math.exp(-feFactors[i][muabsIndex] * flDistancesTravelled[i][j][l]);
+        //    flDistanceDistribution[i][l] = Math.exp(-feFactors[i][muabsIndex] * flDistancesTravelled[i][l]);
           }
             else { //prob it stops at this distance
-        //      flDistanceDistribution[i][j][l] = Math.exp(-feFactors[i][muabsIndex] * flDistancesTravelled[i][j][l]) - runningEscapeTotal;
-              flDistanceDistribution[i][l] = Math.exp(-feFactors[i][muabsIndex] * flDistancesTravelled[i][l]) - runningEscapeTotal;
+              flDistanceDistribution[i][j][l] = Math.exp(-feFactors[i][muabsIndex] * flDistancesTravelled[i][j][l]) - runningEscapeTotal;
+        //      flDistanceDistribution[i][l] = Math.exp(-feFactors[i][muabsIndex] * flDistancesTravelled[i][l]) - runningEscapeTotal;
             }
-        //  runningEscapeTotal += flDistanceDistribution[i][j][l];
-          runningEscapeTotal += flDistanceDistribution[i][l];
+          runningEscapeTotal += flDistanceDistribution[i][j][l];
+       //   runningEscapeTotal += flDistanceDistribution[i][l];
         }
 
       }
-     // }
+      }
 
     }
   }
@@ -2020,8 +2020,8 @@ public class CrystalPolyhedron extends Crystal {
    */
   private void findVoxelsReachedByFL(final double feFactors[][]) {
     double step = PE_ANGLE_LIMIT / FL_ANGLE_RES_LIMIT;  
-    //flRelativeVoxXYZ = new double[feFactors.length][4][flDistBins][FL_ANGLE_RESOLUTION * FL_ANGLE_RESOLUTION][3];
-    flRelativeVoxXYZ = new double[feFactors.length][flDistBins][FL_ANGLE_RES_LIMIT * FL_ANGLE_RES_LIMIT][3];
+    flRelativeVoxXYZ = new double[feFactors.length][4][flDistBins][FL_ANGLE_RES_LIMIT * FL_ANGLE_RES_LIMIT][3];
+   // flRelativeVoxXYZ = new double[feFactors.length][flDistBins][FL_ANGLE_RES_LIMIT * FL_ANGLE_RES_LIMIT][3];
     int counter = -1;
     for (double phi = 0; phi < PE_ANGLE_LIMIT; phi += step) {
       for (double theta = 0; theta <= PE_ANGLE_LIMIT / 2; theta += step) {
@@ -2045,25 +2045,25 @@ public class CrystalPolyhedron extends Crystal {
         
        
         for (int i = 0; i < feFactors.length; i++) { //for every element
- //         for (int j = 0; j < 4; j++) { //for each shell
+          for (int j = 0; j < 4; j++) { //for each shell
             for (int m = 0; m < flDistBins; m++) { 
           // calculate r in voxel coordinates rather than pixels
-         /*     
+              
           double r = flDistancesTravelled[i][j][m] * this.crystalPixPerUM; 
           flRelativeVoxXYZ[i][j][m][counter][0] = r * xNorm;
           flRelativeVoxXYZ[i][j][m][counter][1] = r * yNorm;
           flRelativeVoxXYZ[i][j][m][counter][2] = r * zNorm;
-          */
+          
               
-              double r = flDistancesTravelled[i][m] * this.crystalPixPerUM; 
-              flRelativeVoxXYZ[i][m][counter][0] = r * xNorm;
-              flRelativeVoxXYZ[i][m][counter][1] = r * yNorm;
-              flRelativeVoxXYZ[i][m][counter][2] = r * zNorm;
+            //  double r = flDistancesTravelled[i][m] * this.crystalPixPerUM; 
+           //   flRelativeVoxXYZ[i][m][counter][0] = r * xNorm;
+           //   flRelativeVoxXYZ[i][m][counter][1] = r * yNorm;
+           //   flRelativeVoxXYZ[i][m][counter][2] = r * zNorm;
               
             }
           }
         }
-   //   }
+      }
       }
     } 
     numberOfTracksFL = counter + 1;
@@ -2118,7 +2118,7 @@ public class CrystalPolyhedron extends Crystal {
    
    //for every energy distribution
     for (int n = 0; n < fluorescenceProportionEvent.length; n++) { 
-   //   for (int l = 0; l < 4; l++) { // 0 = K, 1 = L1, 2 = L2, 3 = L3
+      for (int l = 0; l < 4; l++) { // 0 = K, 1 = L1, 2 = L2, 3 = L3
     for (int m = 0; m < flDistBins; m++) {   
       for (int q = 0; q < FL_ANGLE_RESOLUTION*FL_ANGLE_RESOLUTION; q++) { //One loop for now
 
@@ -2126,26 +2126,27 @@ public class CrystalPolyhedron extends Crystal {
         // get dose transferred to these located voxels 
         // at the distance r away (due to PE movement)
         
-     //     if(fluorescenceProportionEvent[n][l] != 0) {
-            if(fluorescenceProportionEvent[n] != 0) {
-   //     flPartialDose = doseIncreaseFL  * fluorescenceProportionEvent[n][l] * flDistanceDistribution[n][l][m] 
-   //         / Math.pow(FL_ANGLE_RESOLUTION,2);
-          flPartialDose = doseIncreaseFL  * fluorescenceProportionEvent[n] * flDistanceDistribution[n][m] 
-              / Math.pow(FL_ANGLE_RESOLUTION,2);
+          if(fluorescenceProportionEvent[n][l] != 0) {
+     //       if(fluorescenceProportionEvent[n] != 0) {
+        flPartialDose = doseIncreaseFL  * fluorescenceProportionEvent[n][l] * flDistanceDistribution[n][l][m] 
+            / Math.pow(FL_ANGLE_RESOLUTION,2);
+   //       flPartialDose = doseIncreaseFL  * fluorescenceProportionEvent[n] * flDistanceDistribution[n][m] 
+   //           / Math.pow(FL_ANGLE_RESOLUTION,2);
               
         //TO TEST
          fldose += flPartialDose;
-      /*  
+      
         double x = flRelativeVoxXYZ[n][l][m][q][0];
         double y = flRelativeVoxXYZ[n][l][m][q][1];
         double z = flRelativeVoxXYZ[n][l][m][q][2];
-        */
+        
          
          //change q for a random number between 0 and 35. 
+        /*
          double x = flRelativeVoxXYZ[n][m][randomTrack][0];
          double y = flRelativeVoxXYZ[n][m][randomTrack][1];  
          double z = flRelativeVoxXYZ[n][m][randomTrack][2];
-         
+         */
         // add counts to total & total within crystal in order to
         // calculate the proportion for a given r.     
         if (isCrystalAt((int) StrictMath.round(i + x), (int) StrictMath.round(j + y),
@@ -2160,7 +2161,7 @@ public class CrystalPolyhedron extends Crystal {
           }
         }
       }
-  //  }
+    }
     }
     return doseLostFromCrystalFL;
   }  
