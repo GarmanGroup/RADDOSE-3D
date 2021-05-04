@@ -110,8 +110,21 @@ public class OutputFinalDoseStateR implements Output {
         + String.format("scale3d(cube3d(),%d/2,%d/2,%d/2),",
             csize[0], csize[1], csize[2])
         + String.format("%d/2,%d/2,%d/2),", csize[0], csize[1], csize[2])
-        + "col = 'grey')");
-
+        + "col = 'grey')\n");
+    w.write("rgl.viewpoint( theta = 0, phi = 0)\n");
+    w.write("rgl.snapshot(\"plot_0_0.png\", fmt = \"png\", top = TRUE)\n");
+    w.write("Sys.sleep(1)\n");
+    w.write("rgl.viewpoint( theta = 0, phi = 45)\n");
+    w.write("rgl.snapshot( \"plot_0_45.png\", fmt = \"png\", top = TRUE)\n");
+    w.write("Sys.sleep(1)\n");
+    w.write("rgl.viewpoint( theta = 45, phi = 45)\n");
+    w.write("rgl.snapshot( \"plot_45_45.png\", fmt = \"png\", top = TRUE)\n");
+    w.write("Sys.sleep(1)\n");
+    w.write("rgl.viewpoint( theta = 90, phi = 45)\n");
+    w.write("rgl.snapshot( \"plot_90_45.png\", fmt = \"png\", top = TRUE)\n");
+    w.write("Sys.sleep(1)\n");
+    w.write("rgl.viewpoint( theta = 90, phi = 90)\n");
+    w.write("rgl.snapshot( \"plot_90_90.png\", fmt = \"png\", top = TRUE)\n");
     crystal = null;
     w.close();
   }
