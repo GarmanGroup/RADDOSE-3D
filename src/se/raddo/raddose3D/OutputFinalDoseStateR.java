@@ -125,6 +125,7 @@ public class OutputFinalDoseStateR implements Output {
     w.write("Sys.sleep(1)\n");
     w.write("rgl.viewpoint( theta = 90, phi = 90)\n");
     w.write("rgl.snapshot( \"plot_90_90.png\", fmt = \"png\", top = TRUE)\n");
+    w.write("print(\"Plots Saved\")\n");
     crystal = null;
     w.close();
   }
