@@ -851,21 +851,24 @@ public abstract class Crystal {
 
     // Set up angles to iterate over.
     double[] angles;
-    if (Math.abs(wedge.getStartAng() - wedge.getEndAng()) < wedge.getAngRes()) {
+    int diff = (int)(wedge.getStartAng()/(2*Math.PI));
+    double wedgeStartAngle = wedge.getStartAng() - (Math.PI*2*diff);
+    double wedgeEndAngle = wedge.getEndAng() - (Math.PI*2*diff);
+    if (Math.abs(wedgeStartAngle - wedgeEndAngle) < wedge.getAngRes()) {
       angles = new double[STATICEXPOSURE]; // TODO: something clever
       for (int i = 0; i < angles.length; i++) {
-        angles[i] = wedge.getStartAng();
+        angles[i] = wedgeStartAngle;
       }
     } else {
       Integer sign = 1;
-      if (wedge.getEndAng() < wedge.getStartAng()) {
+      if (wedgeEndAngle < wedgeStartAngle) {
         sign = -1;
       }
       angles = new double[sign
-          * (int) ((wedge.getEndAng() - wedge.getStartAng())
+          * (int) ((wedgeEndAngle - wedgeStartAngle)
               / wedge.getAngRes() + 1)];
       for (int i = 0; i < angles.length; i++) {
-        angles[i] = wedge.getStartAng() + sign * i * wedge.getAngRes();
+        angles[i] = wedgeStartAngle + sign * i * wedge.getAngRes();
       }
     }
      

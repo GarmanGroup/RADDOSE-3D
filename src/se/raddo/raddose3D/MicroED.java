@@ -18,7 +18,7 @@ import org.openqa.selenium.Keys;
 //import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.interactions.Actions;
 
-import javafx.util.Pair;
+//import javafx.util.Pair;
 
 import org.openqa.selenium.chrome.ChromeDriver;
 //import org.openqa.selenium.support.ui.ExpectedCondition;
