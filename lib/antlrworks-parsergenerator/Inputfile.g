@@ -242,6 +242,11 @@ if ($crystal::crystalDdm == 3)
 	$crystal::crystalDdmClass = new DDMLeal($crystal::gammaParam, $crystal::b0Param, $crystal::betaParam);
 }
 
+if ($crystal::crystalDdm == 4)
+{
+	$crystal::crystalDdmClass = new DDMBfactor($crystal::gammaParam, $crystal::b0Param, $crystal::betaParam);
+}
+
 $crystal::crystalProperties.put(Crystal.CRYSTAL_DDM, $crystal::crystalDdmClass);
 
 if ($crystal::crystalContainerMaterial == 1)
@@ -348,10 +353,12 @@ crystalDDMKeyword returns [int value]
 	: SIMPLE { $value = 1; }
 	| LINEAR { $value = 2; }
 	| LEAL   { $value = 3; }
+	| BFACTOR   { $value = 4; }
 	;
 SIMPLE : ('S'|'s')('I'|'i')('M'|'m')('P'|'p')('L'|'l')('E'|'e') ;
 LINEAR : ('L'|'l')('I'|'i')('N'|'n')('E'|'e')('A'|'a')('R'|'r') ;
 LEAL : ('L'|'l')('E'|'e')('A'|'a')('L'|'l') ;
+BFACTOR : ('B'|'b')('F'|'f')('A'|'a')('C'|'c')('T'|'t')('O'|'o')('R'|'r') ;
 
 crystalDecayParam returns [Double gammaParam, Double b0Param, Double betaParam]
 	: DECAYPARAM a=FLOAT b=FLOAT c=FLOAT {$gammaParam = Double.parseDouble($a.text); $b0Param = Double.parseDouble($b.text); $betaParam = Double.parseDouble($c.text);};
