@@ -355,6 +355,12 @@
    <include name="*.jar"/>
   </fileset>
  </path>
+ 
+  <path id="selenium">
+  <fileset dir="lib/selenium">
+   <include name="*.jar"/>
+  </fileset>
+ </path>
 
  <path id="pmd.classpath">
   <pathelement location="${build}"/>
