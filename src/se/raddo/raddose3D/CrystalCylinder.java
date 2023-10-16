@@ -316,8 +316,8 @@ public class CrystalCylinder extends CrystalPolyhedron {
             "Cylinder (Polyhedron) crystal of "
                 + "diameter %.2f mm and height %.2f mm at a "
                 + "resolution of %.2f microns per voxel edge.",
-                crystSizeUM[1] * CONVERSION_MICRONS_TO_MILLIMETERS,
                 crystSizeUM[0] * CONVERSION_MICRONS_TO_MILLIMETERS,
+                crystSizeUM[1] * CONVERSION_MICRONS_TO_MILLIMETERS,
             1 / crystalPixPerUM);
     if (l == 0 && p == 0) {
       return s;
