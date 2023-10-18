@@ -344,6 +344,10 @@ public class Element {
     }
     Double absorptionEdgeL =
         elementData.get(ElementDatabase.DatabaseFields.EDGE_L);
+    Double absorptionEdgeL2 =
+        elementData.get(ElementDatabase.DatabaseFields.L2);
+    Double absorptionEdgeL3 =
+        elementData.get(ElementDatabase.DatabaseFields.L3);
     Double absorptionEdgeM =
         elementData.get(ElementDatabase.DatabaseFields.EDGE_M);
 
@@ -362,7 +366,7 @@ public class Element {
     double photoelectric = 0;
     if ((energy > absorptionEdgeK) || (absorptionEdgeL == null)) {
       photoelectric = baxForEdge(energy, AbsorptionEdge.K);
-    } else if ((energy > absorptionEdgeL) || (absorptionEdgeM == null)) {
+    } else if ((energy > absorptionEdgeL3) || (absorptionEdgeM == null)) {
       photoelectric = baxForEdge(energy, AbsorptionEdge.L);
     } else if (energy > absorptionEdgeM) {
       photoelectric = baxForEdge(energy, AbsorptionEdge.M);
@@ -371,7 +375,9 @@ public class Element {
     }
 
     // Correction of the absorption coefficient for light elements
-    if (atomicNumber <= LIGHT_ATOM_MAX_NUM) {
+    //I don't think this is doing it correctly. It's not just for light atoms
+    //if (atomicNumber <= LIGHT_ATOM_MAX_NUM) {
+   // if (atomicNumber <= 99) {
       // Fortran says...
       // correct for L-edges since McMaster uses L1 edge.
       // Use edge jumps for correct X-sections.
@@ -384,7 +390,7 @@ public class Element {
           && (energy < absorptionEdgeL)) {
         photoelectric /= LJ_1;
       }
-    }
+  //  }
 
     return photoelectric;
   }
