@@ -215,7 +215,7 @@ if ($crystal::crystalCoefCalc == 8)
   													$crystal::solFrac,
   													$crystal::cryoSolutionMolecule, $crystal::cryoSolutionConc,
   													$crystal::oilBased, 	$crystal::calcSurrounding,
-  													$crystal::oilNames, $crystal::oilNums, $crystal::oilDensity);
+  													$crystal::oilNames, $crystal::oilNums, $crystal::oilDensity, $crystal::simElectrons);
 }
 
 if ($crystal::crystalCoefCalc == 9)

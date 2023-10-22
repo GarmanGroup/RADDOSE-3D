@@ -146,8 +146,8 @@ public class CoefCalcCompute extends CoefCalc {
   /**
    * Water concentration in mM.
    */
-  protected static final double      WATER_CONCENTRATION          = 55555;    // Density of 1 g/cm^3
- //protected static final double      WATER_CONCENTRATION          = 51666;    // Density of 0.93 g/cm^3
+//  protected static final double      WATER_CONCENTRATION          = 55555;    // Density of 1 g/cm^3
+ protected static final double      WATER_CONCENTRATION          = 51666;    // Density of 0.93 g/cm^3
 //  protected static final double      WATER_CONCENTRATION          = 83332.5;  
   
   /**
@@ -2340,7 +2340,7 @@ public class CoefCalcCompute extends CoefCalc {
   public double getStoppingPower(double avgEnergy, boolean surrounding) {
     double stoppingPower = 0;
     
-    double distance = getExpectedDistance(12, true)/1000;
+    // double distance = getExpectedDistance(12, true)/1000;
     
     if (surrounding == false) {
       stoppingPower = calcStoppingPower(avgEnergy, presentElements, density, surrounding);

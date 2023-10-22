@@ -46,7 +46,7 @@ public class CoefCalcSmallMolecules extends CoefCalcCompute {
       final List<String> cryoSolutionMolecule,
       final List<Double> cryoSolutionConc,
       final String oilBased, final String calcSurrounding,
-      final List<String> oilElementNames, final List<Double> oilElementsNums, final double oilDensity) {
+      final List<String> oilElementNames, final List<Double> oilElementsNums, final double oilDensity, final long numSimElectrons) {
 
     Double alpha = cellAlpha;
     Double beta = cellBeta;
@@ -69,6 +69,9 @@ public class CoefCalcSmallMolecules extends CoefCalcCompute {
     }
 
     cellVolume(cellA, cellB, cellC, alpha, beta, gamma);
+    
+    //set number of simulated electrons
+    setNumberSimulatedElectrons(numSimElectrons);
 
     if (numMonomers == 0) {
       numMonomers = 1;

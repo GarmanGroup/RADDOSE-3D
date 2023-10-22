@@ -1,4 +1,4 @@
-// $ANTLR 3.4 /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g 2022-11-16 17:46:51
+// $ANTLR 3.4 /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g 2023-10-22 19:25:47
 
 package se.raddo.raddose3D.parser;
 

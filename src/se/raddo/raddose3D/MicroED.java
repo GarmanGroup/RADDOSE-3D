@@ -93,6 +93,7 @@ public class MicroED {
   private double gosDoseOutput;
   
   private double numberElastic;
+  private double numberInelastic;
   private double numberSingleElastic;
   private double numberNotInelasticEqu;
   private double numberNotInelasticRatio;
@@ -192,6 +193,8 @@ public class MicroED {
   public double energyCUTOFF = 3;
   public final boolean considerCharge = false;
   
+  DecimalFormat df = new DecimalFormat("0.00");
+  
   
   protected static final int BIN_DIVISION = 2; //how many bins to divide the dose deposition into 
   
@@ -278,40 +281,40 @@ public class MicroED {
     double wavelength = getWavelength(beam);
     double resRough = getResolutionRough(wavelength);
     double maxRes = getMaxRes(wavelength);
-    System.out.println(String.format("The rough maximum resolution is: %.2e", resRough));
-    System.out.println(String.format("The max res is: %.2e", maxRes));
+    //System.out.println(String.format("The rough maximum resolution is: %.2e", resRough));
+    //System.out.println(String.format("The max res is: %.2e", maxRes));
     
     
     double dose1 = EMLETWay(beam, wedge, coefCalc);
-    System.out.print(String.format("\nThe Dose in the exposed area by LET: %.8e", dose1));
-    System.out.println(" MGy\n");
+    //System.out.print(String.format("\nThe Dose in the exposed area by LET: %.8e", dose1));
+    //System.out.println(" MGy\n");
  
   
     double dose2 = EMEquationWay(beam, wedge, coefCalc, true);
-    System.out.print(String.format("\nThe Dose in the exposed area by equation: %.8e", dose2));
-    System.out.println(" MGy\n");
+    //System.out.print(String.format("\nThe Dose in the exposed area by equation: %.8e", dose2));
+    //System.out.println(" MGy\n");
     
-    dose2 = EMEquationWay(beam, wedge, coefCalc, false);
-    System.out.print(String.format("\nThe Dose in the exposed area by 3:1: %.8e", dose2));
-    System.out.println(" MGy\n");
+    //dose2 = EMEquationWay(beam, wedge, coefCalc, false);
+    //System.out.print(String.format("\nThe Dose in the exposed area by 3:1: %.8e", dose2));
+    //System.out.println(" MGy\n");
     
     //calculate Sternheimer adjustment factor
     
     double dose3 = EMStoppingPowerWay(beam, wedge, coefCalc);
-    System.out.print(String.format("\nThe Dose in the exposed area by stopping power: %.8e", dose3));
+    System.out.print(String.format("\nThe Dose in the exposed area by stopping power: %.4e", dose3));
     System.out.println(" MGy\n");
     
     //start the Monte carlo stuff
-    long start = System.nanoTime();
-    startMonteCarlo(coefCalc, beam); 
-    double[] dose4 = processMonteCarloDose(beam, coefCalc);
-    System.out.print(String.format("\nThe Dose in the exposed area by Monte Carlo: %.8e", dose4[0]));
-    System.out.println(" MGy\n");
-    System.out.print(String.format("The Dose in the imaged area by Monte Carlo: %.8e", dose4[1]));
-    System.out.println(" MGy\n");
-    long runtime = System.nanoTime() - start;
-    System.out.println(String.format("The Monte Carlo runtime in seconds was: %.8e", runtime/1E9));
-    MonteCarloRuntime = runtime/1E9;
+    //long start = System.nanoTime();
+    //startMonteCarlo(coefCalc, beam); 
+    //double[] dose4 = processMonteCarloDose(beam, coefCalc);
+    //System.out.print(String.format("\nThe Dose in the exposed area by Monte Carlo: %.8e", dose4[0]));
+    //System.out.println(" MGy\n");
+    //System.out.print(String.format("The Dose in the imaged area by Monte Carlo: %.8e", dose4[1]));
+    //System.out.println(" MGy\n");
+    //long runtime = System.nanoTime() - start;
+    //System.out.println(String.format("The Monte Carlo runtime in seconds was: %.8e", runtime/1E9));
+    //MonteCarloRuntime = runtime/1E9;
     
     /*
     accessESTAR(coefCalc, beam.getPhotonEnergy());
@@ -320,19 +323,20 @@ public class MicroED {
     System.out.println(" MGy\n");
     */
     
-    System.out.println("\nNumber elastic events: " + numberElastic);
-    System.out.println("Number single elastic events: " + numberSingleElastic);
-    System.out.println("Number productive events: " + numberProductive);
+    System.out.println("\nNumber elastic events: " + df.format(numberElastic));
+    System.out.println("Number single elastic events: " + df.format(numberSingleElastic));
+    System.out.println("\nNumber Inelastic events: " + df.format(numberInelastic));
+    System.out.println("Number productive events: " + df.format(numberProductive));
     
-    System.out.println("Number elastic events Monte Carlo: " + MonteCarloTotElasticCount);
-    System.out.println("Number single elastic events Monte Carlo: " + MonteCarloSingleElasticCount);
-    System.out.println("Number of productive electrons Monte Carlo: " + MonteCarloProductive);
+    //System.out.println("Number elastic events Monte Carlo: " + MonteCarloTotElasticCount);
+    //System.out.println("Number single elastic events Monte Carlo: " + MonteCarloSingleElasticCount);
+    //System.out.println("Number of productive electrons Monte Carlo: " + MonteCarloProductive);
     
-    System.out.println("\nCharge buildup: " + MonteCarloCharge);
-    System.out.println("Charge density " + MonteCarloChargeDensity);
+    //System.out.println("\nCharge buildup: " + MonteCarloCharge);
+    //System.out.println("Charge density " + MonteCarloChargeDensity);
     
     try {
-      WriterFile("outputMicroED.CSV", dose4[0], beam);
+      WriterFile("outputMicroED.CSV", dose3, beam);
     } catch (IOException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
@@ -446,10 +450,28 @@ private double EMEquationWay(Beam beam, Wedge wedge, CoefCalc coefCalc, boolean 
   //Elastic collisions
   // put in multislice here as well
   double elasticProb = 0;
+  double inelProb = 0;
   double avgEnergy = beam.getPhotonEnergy();
+  double t = sampleThickness/numberSlices;
   for (int i = 1; i <= numberSlices; i++) {
-    double elasticProbOverT = coefCalc.getElectronElastic(avgEnergy);
-    elasticProb += elasticProbOverT * (sampleThickness/numberSlices); 
+  
+    //double elasticProbOverT = coefCalc.getElectronElastic(avgEnergy);
+    //double elasticSliceProb = elasticProbOverT * t;
+    //elasticProb += elasticSliceProb; 
+    
+    //elastic
+    double elasticLambda = coefCalc.getElectronElasticMFPL(avgEnergy, false);
+    //System.out.println("\nel lambda: " + elasticLambda); 
+    double elasticSliceProb = (1 - Math.exp(-t/elasticLambda));
+    elasticProb += elasticSliceProb;  
+    
+    //inelastic
+    double gosInelasticLambda = coefCalc.getGOSInel(false, avgEnergy);
+    //System.out.println("\ninel lambda: " + gosInelasticLambda);
+
+    double inelSliceProb = (1 - Math.exp(-t/gosInelasticLambda));
+    inelProb += inelSliceProb;
+    
     //I need to update the electron energy, will do this with the stopping power for consistency
     double stoppingPower = coefCalc.getStoppingPower(avgEnergy, false); //send it electron energy
     double energyPerEl =  stoppingPower * (sampleThickness/numberSlices);
@@ -459,8 +481,14 @@ private double EMEquationWay(Beam beam, Wedge wedge, CoefCalc coefCalc, boolean 
   
   numberElastic = elasticProb * electronNumber;
   numberSingleElastic = electronNumber * 
-                        Math.exp(-elasticProb) * (Math.pow(elasticProb, 1) / 1); //Poisson distribution
+                        Math.exp(-elasticProb) * (Math.pow(elasticProb, 1) / 1); 
+  numberInelastic = inelProb * electronNumber;
+  numberProductive = numberSingleElastic * (1-inelProb);
+                     
+                        
+                        //Poisson distribution
   
+  /*
   //inelastic 
   double inelasticProbOverT = 0;
   double inelasticProb = 0;
@@ -486,8 +514,8 @@ private double EMEquationWay(Beam beam, Wedge wedge, CoefCalc coefCalc, boolean 
     inelasticProb = elasticProb * 3;
     numberNotInelasticRatio = Math.exp(-inelasticProb) * electronNumber;
   }
-  
-  numberProductive = numberSingleElastic* numberNotInelasticEqu / electronNumber;
+  */
+  //numberProductive = numberSingleElastic* numberNotInelasticEqu / electronNumber;
 
   //calculate backscattering coefficient - Use Heinrichs equation as a start
   double eta = coefCalc.getEta();
@@ -503,11 +531,11 @@ private double EMEquationWay(Beam beam, Wedge wedge, CoefCalc coefCalc, boolean 
   
   
 //Am I doing the mass right???? What is dose it is energy per mass of all right not just protein....
-  double numberInelasticEvents = (inelasticProb * electronNumber);
-  double energyDeposited = (energyPerEvent * numberInelasticEvents) * Beam.KEVTOJOULES; //in J
-  double exposedMass = (((coefCalc.getDensity()*1000) * exposedVolume) / 1000);  //in Kg 
-  double dose = (energyDeposited/exposedMass) / 1E06; //dose in MGy //thickness isn't making a difference on dose as mass increases with it
-  
+  //double numberInelasticEvents = (inelasticProb * electronNumber);
+  //double energyDeposited = (energyPerEvent * numberInelasticEvents) * Beam.KEVTOJOULES; //in J
+  //double exposedMass = (((coefCalc.getDensity()*1000) * exposedVolume) / 1000);  //in Kg 
+  //double dose = (energyDeposited/exposedMass) / 1E06; //dose in MGy //thickness isn't making a difference on dose as mass increases with it
+  double dose = 0;
   return dose;
 }
 
@@ -580,9 +608,9 @@ private void WriterFile(final String filename, final double dose4, Beam beam) th
   outFile = new BufferedWriter(new OutputStreamWriter(
       new FileOutputStream(filename), "UTF-8"));
   try {
-    outFile.write("beam_en, numSimulated, dose, gosDose, Productive, Unproductive\n");
+    outFile.write("Beam_en, Dose, Elastic, Single_elastic, Inelastic, Productive\n");
     outFile.write(String.format(
-        " %f, %d, %f, %f, %f, %f%n", beam.getPhotonEnergy(), numSimulatedElectrons, doseOutput, gosDoseOutput, MonteCarloProductive, MonteCarloUnproductiveMicroED));
+        " %f, %f, %f, %f, %f, %f%n", beam.getPhotonEnergy(), doseOutput, numberElastic, numberSingleElastic, numberInelastic, numberProductive));
   } catch (IOException e) {
     e.printStackTrace();
     System.err.println("WriterFile: Could not write to file " + filename);

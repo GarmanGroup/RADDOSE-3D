@@ -1,4 +1,4 @@
-// $ANTLR 3.4 /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g 2022-11-16 17:46:51
+// $ANTLR 3.4 /home/josh/git/RADDOSE-3D/lib/antlrworks-parsergenerator/Inputfile.g 2023-10-22 19:25:46
 
 package se.raddo.raddose3D.parser;
 import se.raddo.raddose3D.*;
@@ -490,7 +490,7 @@ public class InputfileParser extends Parser {
               													((crystal_scope)crystal_stack.peek()).solFrac,
               													((crystal_scope)crystal_stack.peek()).cryoSolutionMolecule, ((crystal_scope)crystal_stack.peek()).cryoSolutionConc,
               													((crystal_scope)crystal_stack.peek()).oilBased, 	((crystal_scope)crystal_stack.peek()).calcSurrounding,
-              													((crystal_scope)crystal_stack.peek()).oilNames, ((crystal_scope)crystal_stack.peek()).oilNums, ((crystal_scope)crystal_stack.peek()).oilDensity);
+              													((crystal_scope)crystal_stack.peek()).oilNames, ((crystal_scope)crystal_stack.peek()).oilNums, ((crystal_scope)crystal_stack.peek()).oilDensity, ((crystal_scope)crystal_stack.peek()).simElectrons);
             }
 
             if (((crystal_scope)crystal_stack.peek()).crystalCoefCalc == 9)
