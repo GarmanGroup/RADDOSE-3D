@@ -194,9 +194,12 @@ public class MicroED {
   public final boolean considerCharge = false;
   
   DecimalFormat df = new DecimalFormat("0.00");
+  DecimalFormat df2 = new DecimalFormat("0");
   
   
   protected static final int BIN_DIVISION = 2; //how many bins to divide the dose deposition into 
+  
+  protected static final double[] energyArray = new double[]{ 10,100,200,300,400,500,600,700,800,900,1000,1100,1200,1300,1400,1500,1600,1700,1800,1900,2000 }; //energies to broadly sample 
   
   //for cylinder
   public boolean rotated;
@@ -334,6 +337,12 @@ public class MicroED {
     
     //System.out.println("\nCharge buildup: " + MonteCarloCharge);
     //System.out.println("Charge density " + MonteCarloChargeDensity);
+    
+    
+    //Now I want to add in an optimal thickness and optimal beam energy bit 
+    double optimalEn = getOptimalEnergy(beam, wedge, coefCalc);
+    System.out.println("\nThe optimal accelerating voltage is: " + df2.format(optimalEn) + " kV\n");
+    
     
     try {
       WriterFile("outputMicroED.CSV", dose3, beam);
@@ -602,6 +611,85 @@ private double getExposedY(Beam beam) {
   }
   return exposedAreaY;
 }
+
+
+private double getOptimalEnergy(Beam beam, Wedge wedge, CoefCalc coefCalc){
+
+  //Get the exposed area
+  double exposedArea = 0;
+  double exposure = beam.getExposure();
+  if (beam.getIsCircular() == false) {
+    exposedArea = (getExposedX(beam) * getExposedY(beam)); //um^2
+  }
+  else {
+    exposedArea = Math.PI * ((getExposedX(beam)/2) * (getExposedY(beam)/2)); //um^2
+  }
+  double electronNumber = exposure * (exposedArea * 1E08);
+  numElectrons = electronNumber;
+  
+  double exposedVolume = exposedArea  * (sampleThickness/1000) * 1E-15; //exposed volume in dm^3
+  double exposedMass = (((coefCalc.getDensity()*1000) * exposedVolume) / 1000);  //in Kg 
+  
+  double dose = 0;
+  double productive_el = 0;
+  double info_coef = 0;
+  double thisEnergy = 0;
+  double info_coefs_all[];
+  info_coefs_all = new double[energyArray.length];
+  int exit_i = 0;
+  for (int i = 0; i < energyArray.length; i++) {
+      exit_i = i;
+      thisEnergy = energyArray[i];
+      info_coef = getInfoCoef(coefCalc, thisEnergy, electronNumber, exposedMass);
+      info_coefs_all[i] = info_coef;
+      if (i > 1){
+        if (info_coef < info_coefs_all[i-1]){
+          break;
+        }
+      }
+  }
+  //now the final three should be the max 3
+  int step = 10;
+  double start_en = energyArray[exit_i-2];
+  double end_en = energyArray[exit_i];
+  int length_loop = ((int)(end_en-start_en) / step)+1;
+  double prev_info_coef = 0;
+  
+  for (int i = 0; i < length_loop; i++) {
+      thisEnergy = start_en + i*step;
+      info_coef = getInfoCoef(coefCalc, thisEnergy, electronNumber, exposedMass);
+      if (i > 0){
+          if (info_coef < prev_info_coef){
+              break;
+          }
+      }
+      prev_info_coef = info_coef;
+  }
+  double best_en = thisEnergy - step;
+
+  return best_en;
+}
+
+private double getInfoCoef(CoefCalc coefCalc, double testEnergy, double electronNumber, double exposedMass){
+      double stoppingPower = coefCalc.getStoppingPower(testEnergy, false);
+      double energyPerEl =  stoppingPower * sampleThickness;
+      double energyDeposited = electronNumber * energyPerEl * Beam.KEVTOJOULES;
+      double dose = (energyDeposited/exposedMass) / 1E06; //dose in MGy
+      //get num productive
+      //elastic
+      double elasticLambda = coefCalc.getElectronElasticMFPL(testEnergy, false);
+      double elasticProb = (1 - Math.exp(-sampleThickness/elasticLambda));
+      //inelastic
+      double gosInelasticLambda = coefCalc.getGOSInel(false, testEnergy);
+      double inelProb = (1 - Math.exp(-sampleThickness/gosInelasticLambda));
+      //productive
+      double numberSingleElastic = electronNumber * 
+                        Math.exp(-elasticProb) * (Math.pow(elasticProb, 1) / 1); 
+      double productive_el = numberSingleElastic * (1-inelProb);
+      double info_coef = productive_el / dose;
+      return info_coef;
+}
+
 
 private void WriterFile(final String filename, final double dose4, Beam beam) throws IOException {
   BufferedWriter outFile;
