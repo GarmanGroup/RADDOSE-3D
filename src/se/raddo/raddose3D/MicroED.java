@@ -200,6 +200,7 @@ public class MicroED {
   protected static final int BIN_DIVISION = 2; //how many bins to divide the dose deposition into 
   
   protected static final double[] energyArray = new double[]{ 10,100,200,300,400,500,600,700,800,900,1000,1100,1200,1300,1400,1500,1600,1700,1800,1900,2000 }; //energies to broadly sample 
+  protected static final double[] thicknessArray = new double[]{ 10,50,100,200,300,400,500,600,700,800,900,1000,1100,1200,1300,1400,1500,1600,1700,1800,1900,2000 }; //thicknesses to broadly sample in nm
   
   //for cylinder
   public boolean rotated;
@@ -256,7 +257,7 @@ public class MicroED {
   }
   
   public void getCSDArange(CoefCalc coefCalc) {
-    double en = 100;
+    double en = 100; 
     int divisions = 100;
     double distance = 0;
     double energyStep = en/divisions;
@@ -305,7 +306,7 @@ public class MicroED {
     
     double dose3 = EMStoppingPowerWay(beam, wedge, coefCalc);
     System.out.print(String.format("\nThe Dose in the exposed area by stopping power: %.4e", dose3));
-    System.out.println(" MGy\n");
+    System.out.println(" MGy");
     
     //start the Monte carlo stuff
     //long start = System.nanoTime();
@@ -328,7 +329,7 @@ public class MicroED {
     
     System.out.println("\nNumber elastic events: " + df.format(numberElastic));
     System.out.println("Number single elastic events: " + df.format(numberSingleElastic));
-    System.out.println("\nNumber Inelastic events: " + df.format(numberInelastic));
+    System.out.println("Number Inelastic events: " + df.format(numberInelastic));
     System.out.println("Number productive events: " + df.format(numberProductive));
     
     //System.out.println("Number elastic events Monte Carlo: " + MonteCarloTotElasticCount);
@@ -341,11 +342,13 @@ public class MicroED {
     
     //Now I want to add in an optimal thickness and optimal beam energy bit 
     double optimalEn = getOptimalEnergy(beam, wedge, coefCalc);
-    System.out.println("\nThe optimal accelerating voltage is: " + df2.format(optimalEn) + " kV\n");
+    System.out.println("\nThe optimal accelerating voltage is: " + df2.format(optimalEn) + " kV");
+    double optimalT = getOptimalThickness(beam, wedge, coefCalc);
+    System.out.println("The optimal thickness is: " + df2.format(optimalT) + " nm\n");
     
     
     try {
-      WriterFile("outputMicroED.CSV", dose3, beam);
+      WriterFile("outputMicroED.CSV", dose3, beam, optimalEn, optimalT);
     } catch (IOException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
@@ -640,7 +643,7 @@ private double getOptimalEnergy(Beam beam, Wedge wedge, CoefCalc coefCalc){
   for (int i = 0; i < energyArray.length; i++) {
       exit_i = i;
       thisEnergy = energyArray[i];
-      info_coef = getInfoCoef(coefCalc, thisEnergy, electronNumber, exposedMass);
+      info_coef = getInfoCoef(coefCalc, thisEnergy, electronNumber, exposedMass, sampleThickness);
       info_coefs_all[i] = info_coef;
       if (i > 1){
         if (info_coef < info_coefs_all[i-1]){
@@ -657,7 +660,7 @@ private double getOptimalEnergy(Beam beam, Wedge wedge, CoefCalc coefCalc){
   
   for (int i = 0; i < length_loop; i++) {
       thisEnergy = start_en + i*step;
-      info_coef = getInfoCoef(coefCalc, thisEnergy, electronNumber, exposedMass);
+      info_coef = getInfoCoef(coefCalc, thisEnergy, electronNumber, exposedMass, sampleThickness);
       if (i > 0){
           if (info_coef < prev_info_coef){
               break;
@@ -670,18 +673,78 @@ private double getOptimalEnergy(Beam beam, Wedge wedge, CoefCalc coefCalc){
   return best_en;
 }
 
-private double getInfoCoef(CoefCalc coefCalc, double testEnergy, double electronNumber, double exposedMass){
+private double getOptimalThickness(Beam beam, Wedge wedge, CoefCalc coefCalc){
+  double avgEnergy = beam.getPhotonEnergy();
+  //Get the exposed area
+  double exposedArea = 0;
+  double exposure = beam.getExposure();
+  if (beam.getIsCircular() == false) {
+    exposedArea = (getExposedX(beam) * getExposedY(beam)); //um^2
+  }
+  else {
+    exposedArea = Math.PI * ((getExposedX(beam)/2) * (getExposedY(beam)/2)); //um^2
+  }
+  double electronNumber = exposure * (exposedArea * 1E08);
+  numElectrons = electronNumber;
+
+  int exit_i = 0;
+  double info_coef = 0;
+  double thisThickness = 0;
+  double info_coefs_all[];
+  info_coefs_all = new double[energyArray.length];
+  double exposedVolume = 0;
+  double exposedMass = 0;
+  for (int i = 0; i < thicknessArray.length; i++) {
+    exit_i = i;
+    thisThickness = thicknessArray[i];
+    exposedVolume = exposedArea  * (thisThickness/1000) * 1E-15; //exposed volume in dm^3
+    exposedMass = (((coefCalc.getDensity()*1000) * exposedVolume) / 1000);  //in Kg 
+    info_coef = getInfoCoef(coefCalc, avgEnergy, electronNumber, exposedMass, thisThickness);
+    info_coefs_all[i] = info_coef;
+    if (i > 1){
+      if (info_coef < info_coefs_all[i-1]){
+        break;
+      }
+    }
+  }
+  
+  //now the final three should be the max 3
+  int step = 5;
+  double start_t = thicknessArray[exit_i-2];
+  double end_t = thicknessArray[exit_i];
+  int length_loop = ((int)(end_t-start_t) / step)+1;
+  double prev_info_coef = 0;
+  
+  for (int i = 0; i < length_loop; i++) {
+      thisThickness = start_t + i*step;
+      exposedVolume = exposedArea  * (thisThickness/1000) * 1E-15; //exposed volume in dm^3
+      exposedMass = (((coefCalc.getDensity()*1000) * exposedVolume) / 1000);  //in Kg 
+      info_coef = getInfoCoef(coefCalc, avgEnergy, electronNumber, exposedMass, thisThickness);
+      if (i > 0){
+          if (info_coef < prev_info_coef){
+              break;
+          }
+      }
+      prev_info_coef = info_coef;
+  }
+  double best_t = thisThickness - step;
+
+  return best_t;
+  
+}
+
+private double getInfoCoef(CoefCalc coefCalc, double testEnergy, double electronNumber, double exposedMass, double thisThickness){
       double stoppingPower = coefCalc.getStoppingPower(testEnergy, false);
-      double energyPerEl =  stoppingPower * sampleThickness;
+      double energyPerEl =  stoppingPower * thisThickness;
       double energyDeposited = electronNumber * energyPerEl * Beam.KEVTOJOULES;
       double dose = (energyDeposited/exposedMass) / 1E06; //dose in MGy
       //get num productive
       //elastic
       double elasticLambda = coefCalc.getElectronElasticMFPL(testEnergy, false);
-      double elasticProb = (1 - Math.exp(-sampleThickness/elasticLambda));
+      double elasticProb = (1 - Math.exp(-thisThickness/elasticLambda));
       //inelastic
       double gosInelasticLambda = coefCalc.getGOSInel(false, testEnergy);
-      double inelProb = (1 - Math.exp(-sampleThickness/gosInelasticLambda));
+      double inelProb = (1 - Math.exp(-thisThickness/gosInelasticLambda));
       //productive
       double numberSingleElastic = electronNumber * 
                         Math.exp(-elasticProb) * (Math.pow(elasticProb, 1) / 1); 
@@ -691,14 +754,14 @@ private double getInfoCoef(CoefCalc coefCalc, double testEnergy, double electron
 }
 
 
-private void WriterFile(final String filename, final double dose4, Beam beam) throws IOException {
+private void WriterFile(final String filename, final double dose4, Beam beam, final double optimalEn, final double optimalT) throws IOException {
   BufferedWriter outFile;
   outFile = new BufferedWriter(new OutputStreamWriter(
       new FileOutputStream(filename), "UTF-8"));
   try {
-    outFile.write("Beam_en, Dose, Elastic, Single_elastic, Inelastic, Productive\n");
+    outFile.write("Beam_en, Dose, Elastic, Single_elastic, Inelastic, Productive, Best_en, Best_t\n");
     outFile.write(String.format(
-        " %f, %f, %f, %f, %f, %f%n", beam.getPhotonEnergy(), doseOutput, numberElastic, numberSingleElastic, numberInelastic, numberProductive));
+        " %f, %f, %f, %f, %f, %f, %f, %f%n", beam.getPhotonEnergy(), doseOutput, numberElastic, numberSingleElastic, numberInelastic, numberProductive, optimalEn, optimalT));
   } catch (IOException e) {
     e.printStackTrace();
     System.err.println("WriterFile: Could not write to file " + filename);
