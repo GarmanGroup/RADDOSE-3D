@@ -2426,10 +2426,10 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     double K = 0.31;
     double gamma = 1/Math.pow((1-betaSquared), 0.5);
     double KE = (gamma - 1) * m * csquared;
-    
+    double KE_MeV = (KE / Beam.KEVTOJOULES)/1000;
     double meanJ = 0, meanlnI = 0;
     double stoppingPower = 0;
-    double sumA = 0, meanZoverA = 0;
+    double sumA = 0, meanZoverA = 0, meanZ=0;
     long sumZ = 0;
     for (Element e : elements) { 
       
@@ -2452,7 +2452,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
       double J = 0, Jstar = 0, k = 0;
  //     double energy = beam.getPhotonEnergy();
       meanZoverA += molWeightFraction * (Z/A);
-
+      meanZ += molWeightFraction * Z;
       /*
       if (Z <= 12) {
         J = Z * 11.5;    //eV
@@ -2561,7 +2561,8 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
             * Math.log(2) + 1 - betaSquared + (1/8)*(1-Math.pow(1-betaSquared,0.5));
     stoppingPower = (0.153536/betaSquared)*(sumZ/sumA)*(Fbeta - 2*Math.log(meanJ) - delta);
     stoppingPower = stoppingPower * 1000 * passedDensity /1E7;
-    
+    double radiativeStopping = ((KE_MeV*meanZ)/800)*stoppingPower;
+    stoppingPower += radiativeStopping;
     /*
     if (avgEnergy < 0.1) {
       double test = 0.0;

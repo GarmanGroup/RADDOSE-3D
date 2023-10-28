@@ -332,6 +332,9 @@ public class MicroED {
     System.out.println("Number Inelastic events: " + df.format(numberInelastic));
     System.out.println("Number productive events: " + df.format(numberProductive));
     
+    double information_coef = numberProductive / dose3;
+    System.out.println("Information Coefficient (productive/MGy): " + df.format(information_coef));
+    
     //System.out.println("Number elastic events Monte Carlo: " + MonteCarloTotElasticCount);
     //System.out.println("Number single elastic events Monte Carlo: " + MonteCarloSingleElasticCount);
     //System.out.println("Number of productive electrons Monte Carlo: " + MonteCarloProductive);
@@ -348,7 +351,7 @@ public class MicroED {
     
     
     try {
-      WriterFile("outputMicroED.CSV", dose3, beam, optimalEn, optimalT);
+      WriterFile("outputMicroED.CSV", dose3, beam, optimalEn, optimalT, information_coef);
     } catch (IOException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
@@ -754,14 +757,14 @@ private double getInfoCoef(CoefCalc coefCalc, double testEnergy, double electron
 }
 
 
-private void WriterFile(final String filename, final double dose4, Beam beam, final double optimalEn, final double optimalT) throws IOException {
+private void WriterFile(final String filename, final double dose3, Beam beam, final double optimalEn, final double optimalT, final double info_coef) throws IOException {
   BufferedWriter outFile;
   outFile = new BufferedWriter(new OutputStreamWriter(
       new FileOutputStream(filename), "UTF-8"));
   try {
-    outFile.write("Beam_en, Dose, Elastic, Single_elastic, Inelastic, Productive, Best_en, Best_t\n");
+    outFile.write("Beam_en, Dose, Elastic, Single_elastic, Inelastic, Productive, Info_coef, Best_en, Best_t\n");
     outFile.write(String.format(
-        " %f, %f, %f, %f, %f, %f, %f, %f%n", beam.getPhotonEnergy(), doseOutput, numberElastic, numberSingleElastic, numberInelastic, numberProductive, optimalEn, optimalT));
+        " %f, %f, %f, %f, %f, %f, %f, %f, %f%n", beam.getPhotonEnergy(), dose3, numberElastic, numberSingleElastic, numberInelastic, numberProductive, info_coef, optimalEn, optimalT));
   } catch (IOException e) {
     e.printStackTrace();
     System.err.println("WriterFile: Could not write to file " + filename);
