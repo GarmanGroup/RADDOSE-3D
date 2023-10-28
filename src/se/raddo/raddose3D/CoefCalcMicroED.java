@@ -123,6 +123,16 @@ public class CoefCalcMicroED extends CoefCalcCompute{
         incrementMacromolecularOccurrence(heavyAtom,
             heavyProteinAtomNums.get(i)
                 * monomers);
+        
+        ElementEM heavyAtomEM = getParserEM()
+            .getElement(heavyProteinAtomNames.get(i));
+        
+
+        // note: heavy atoms are provided per monomer,
+        // so multiply by number of monomers.
+        incrementMacromolecularOccurrenceEM(heavyAtomEM,
+            heavyProteinAtomNums.get(i)
+                * monomers);
       }
     }
 
