@@ -756,7 +756,7 @@ private double getInfoCoef(CoefCalc coefCalc, double testEnergy, double electron
       double inelProb = (1 - Math.exp(-thisThickness/gosInelasticLambda));
       //productive
       double numberSingleElastic = electronNumber * 
-                        Math.exp(-elasticProb) * (Math.pow(elasticProb, 1) / 1); 
+                        Math.exp(-thisThickness/elasticLambda) * (Math.pow(thisThickness/elasticLambda, 1) / 1); 
       double productive_el = numberSingleElastic * (1-inelProb);
       double info_coef = productive_el / dose;
       return info_coef;
