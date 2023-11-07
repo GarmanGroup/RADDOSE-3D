@@ -468,6 +468,7 @@ private double EMEquationWay(Beam beam, Wedge wedge, CoefCalc coefCalc, boolean 
   double inelProb = 0;
   double avgEnergy = beam.getPhotonEnergy();
   double t = sampleThickness/numberSlices;
+  /*
   for (int i = 1; i <= numberSlices; i++) {
   
     //double elasticProbOverT = coefCalc.getElectronElastic(avgEnergy);
@@ -492,11 +493,16 @@ private double EMEquationWay(Beam beam, Wedge wedge, CoefCalc coefCalc, boolean 
     double energyPerEl =  stoppingPower * (sampleThickness/numberSlices);
     avgEnergy -= energyPerEl;
   }
-
+  */
   
+  double elasticLambda = coefCalc.getElectronElasticMFPL(avgEnergy, false);
+  elasticProb = (1 - Math.exp(-sampleThickness/elasticLambda));
   numberElastic = elasticProb * electronNumber;
+  
   numberSingleElastic = electronNumber * 
-                        Math.exp(-elasticProb) * (Math.pow(elasticProb, 1) / 1); 
+                        Math.exp(-sampleThickness/elasticLambda) * (Math.pow(sampleThickness/elasticLambda, 1) / 1); 
+  double gosInelasticLambda = coefCalc.getGOSInel(false, avgEnergy);
+  inelProb = (1 - Math.exp(-sampleThickness/gosInelasticLambda));                
   numberInelastic = inelProb * electronNumber;
   numberProductive = numberSingleElastic * (1-inelProb);
                      
