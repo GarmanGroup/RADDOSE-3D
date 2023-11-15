@@ -457,8 +457,9 @@ public class DDMLeal implements DDM {
      * However to up-weight damaged voxels we return 1 minus the
      * relative diffraction efficiency.
      */
-    double relativeWeight = 1 - (getIntegratedIntensity(dose)
-        / this.zeroDoseIntegratedIntensity);
+    //double relativeWeight = 1 - (getIntegratedIntensity(dose)
+    //    / this.zeroDoseIntegratedIntensity);
+    double relativeWeight = getIntegratedIntensity(dose) / this.zeroDoseIntegratedIntensity;
     return relativeWeight;
   }
 

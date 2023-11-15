@@ -241,13 +241,13 @@ public class ExposureSummary implements ExposeObserver {
 
     double decay = getRTDecay(totalVoxDose, addedDose);
     decay = 1;
-    diffNum += (totalVoxDose + addedDose / 2) * fluence * decay;  //Why addedDose/2? Need to understand before changing
-    diffDenom += fluence * decay;
+    diffNum += (totalVoxDose + addedDose / 2) * fluence * doseDecay;  //Why addedDose/2? Need to understand before changing
+    diffDenom += fluence * doseDecay;
      
       
     if (wedgeImage == anglecount-1) {  //the last image
-      lastDWDNum += totalVoxDose * fluence * 1;
-      lastDWDDenom += fluence * 1;
+      lastDWDNum += totalVoxDose * fluence * doseDecay;
+      lastDWDDenom += fluence * doseDecay;
     }
 
     
