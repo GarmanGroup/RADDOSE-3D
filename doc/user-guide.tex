@@ -578,6 +578,8 @@ The pulse energy of the beam must be defined in the beam block with the \hyperre
 
 The pulse length is defined in the wedge block with the \hyperref[exposuretime]{\Keyword{EXPOSURETIME} keyword} (\hyperref[exposuretime]{section~\ref*{exposuretime}}). \SB
 
+
+
 \noindent \Keyword{SUBPROGRAM MONTECARLO}
 
 Specifies that the RADDOSE-3D Monte Carlo simulations should be run. The thickness of the surrounding material can also be specified in the Monte Carlo simulations using the input \Keyword{\textit{SURROUNDINGTHICKNESS X Y Z}}\SB
@@ -589,8 +591,17 @@ Specifies the number of times the simulation is to be run
 
 \noindent \Keyword{SIMPHOTONS \textit{F}}
 
-Specifies the number of photons to use in the simulations
+Specifies the number of photons to use in the simulations. \SB
 
+\noindent \Keyword{SUBPROGRAM EMED}
+
+Specifies that the RADDOSE-ED subprogram should be run, which calcualtes doses for MicroED experiments.
+
+In the beam block, a further input is required:
+
+\noindent \Keyword{EXPOSURE \textit{F}}
+ 
+Specifies the total fluence in e\textsuperscript{-}/{\AA}\textsuperscript{2}\SB
 
 \label{RDv3End}
 
