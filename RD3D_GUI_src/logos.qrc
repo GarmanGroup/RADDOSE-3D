@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/new/prefix1">
+        <file>raddoseLogo.png</file>
+    </qresource>
+</RCC>
