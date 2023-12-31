@@ -565,6 +565,16 @@ The command \Keyword{SURROUNDINGELEMENTS C 3 H 8} specifies elemental compositio
 \noindent \Keyword{SURROUNDINGDENSITY \textit{F}}
 defines the density of a density defined surrounding materiaL in g/ml. Only to be used when \Keyword{\textit{DENSITYBASED }} and \Keyword{\textit{CALCSURROUNDING}} are set to \Keyword{\textit{TRUE}}
 
+\subsection{\Keyword{DDM}}
+\label{subprogram}
+\noindent \Keyword{SURROUNDINGDENSITY \textit{S}}
+specifies the dose decay model used by RADDOSE-3D.
+If no DDM is specified, no intensity decay is mdoelled by deault.
+
+\noindent \Keyword{DDM LEAL} uses the Leal model (Leal RM, Bourenkov G, Russi S, Popov AN. J Synchrotron Radiat. 2013 Jan;20(Pt 1):14-22) which requires three parameters:
+\noindent \Keyword{DECAYPARAM \textit{F F F}}
+which are the $\gamma$, $B_0$, and $\beta$ parameters, respectively.
+
 \newpage
 \subsection{\Keyword{SUBPROGRAM}}
 \label{subprogram}
