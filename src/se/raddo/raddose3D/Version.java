@@ -11,7 +11,7 @@ public final class Version {
    * build/deploy process. In development builds the version will be reported as
    * 'head'.
    */
-  private static final String REVISION       = "1027";
+  private static final String REVISION       = "1040";
 
   /** The major version number. */
   public static final long    VERSION_MAJOR  = 4;
