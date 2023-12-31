@@ -1,0 +1,8 @@
+﻿RADDOSE GUI todo
+
+    • Test and play
+    • Build on linux, mac, and windows
+
+bugs:
+container type doesn't load (anything not specified doesn't really undo)
+	
