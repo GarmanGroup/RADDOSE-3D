@@ -37,7 +37,7 @@
   <!-- Standard compile run, no warnings -->
   <mkdir dir="bin"/>
   <javac srcdir="src" destdir="bin"
-         debug="false" includes="**/*.java" includeantruntime="false">
+         debug="false" includes="**/*.java" includeantruntime="false"   source="1.8" target="1.8">
    <classpath refid="antlr" />
    <classpath refid="math3" />
    <classpath refid="testng" />
