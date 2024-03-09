@@ -700,7 +700,7 @@ private double getOptimalThickness(Beam beam, Wedge wedge, CoefCalc coefCalc){
   double info_coef = 0;
   double thisThickness = 0;
   double info_coefs_all[];
-  info_coefs_all = new double[energyArray.length];
+  info_coefs_all = new double[thicknessArray.length];
   double exposedVolume = 0;
   double exposedMass = 0;
   for (int i = 0; i < thicknessArray.length; i++) {
