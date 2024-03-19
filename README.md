@@ -17,7 +17,7 @@ imaging real experimental X-ray beam profiles.
 Brought to you by the Garman Lab at the University of Oxford.
 http://www.bioch.ox.ac.uk/garmangroup
 
-If you have any questions on how to run RADDOSE-3D or would like advice on what inputs to use please email jld62@cam.ac.uk or create an issue.
+If you have any questions on how to run RADDOSE-3D or would like advice on what inputs to use please email jld62@cam.ac.uk.
 
 Usage
 ------
@@ -156,5 +156,17 @@ We now have a new publication on updates to RADDOSE-3D in the period 2014 - 2017
 
 For the application to SAXS, also check out:
 - Brooks-Bartlett, J. C., Batters, R. A., Bury, C. S., Lowe, E. D., Ginn, H. M., Round, A., & Garman, E. F. (2017). Development of tools to automate quantitative analysis of radiation damage in SAXS experiments. Journal of Synchrotron Radiation, 24, 1–10. https://doi.org/10.1107/S1600577516015083
+
+For RADDOSE-XFEL please cite:
+- Dickerson, J. L., McCubbin, P. T. N. & Garman, E. F. (2020). RADDOSE-XFEL: femtosecond time-resolved dose estimates for macromolecular X-ray free-electron laser experiments. J. Appl. Cryst. 53, 549-560. https://doi.org/10.1107/S1600576720000643
+
+RADDOSE-3D can now also be used with small molecules:
+- Christensen, J., Horton, P. N., Bury, C. S., Dickerson, J. L., Taberman, H., Garman, E. F. & Coles, S. J. (2019). Radiation damage in small-molecule crystallography: fact not fiction. IUCrJ, 6, 703-713. https://doi.org/10.1107/S2052252519006948
+
+And if using microcrystals or microbeams, we recommend using the Monte Carlo simulations outlined in:
+- Dickerson JL, Garman EF. Doses for experiments with microbeams and microcrystals: Monte Carlo simulations in RADDOSE-3D. Protein Science. 2021; 30: 8–19. https://doi.org/10.1002/pro.3922
+
+If there are heavy atoms present in the sample, it may be more accurate to simulate fluorescent escape, with the implementation detailed in:
+- Fernando, N. K., Cairns, A. B., Murray, C. A., Thompson, A. L., Dickerson, J. L., Garman, E. F., … Regoutz, A. (2021). Structural and Electronic Effects of X-ray Irradiation on Prototypical [M(COD)Cl]2 Catalysts. The Journal of Physical Chemistry A, 125(34), 7473–7488. doi:10.1021/acs.jpca.1c05759
 
 
