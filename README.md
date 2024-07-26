@@ -17,7 +17,7 @@ imaging real experimental X-ray beam profiles.
 Brought to you by the Garman Lab at the University of Oxford.
 http://www.bioch.ox.ac.uk/garmangroup
 
-If you have any questions on how to run RADDOSE-3D or would like advice on what inputs to use please email jld62@cam.ac.uk.
+If you have any questions on how to run RADDOSE-3D or would like advice on what inputs to use please email j_dickerson80@yahoo.com.
 
 Usage
 ------
@@ -151,6 +151,9 @@ Contributors:
 The original RADDOSE-3D publication is:
 - Zeldin, O. B., Gerstel, M., & Garman, E. F. (2013). RADDOSE-3D : time- and space-resolved modelling of dose in macromolecular crystallography. Journal of Applied Crystallography, 46, 1225–1230. https://doi.org/10.1107/S0021889813011461
 
+RADDOSE-3D version 5 now includes a new program to estimate doses for electron diffraction experiments, RADDOSE-ED. We also now include dose decay models and a new GUI:
+- Dickerson, J. L., McCubbin P. T. N, Brooks-Bartlett J. C., Garman E. F.. Doses for X-ray and electron diffraction: New features in RADDOSE-3D including intensity decay models. Protein Science. 2024;33(7):e5005. https://doi.org/10.1002/pro.5005
+
 We now have a new publication on updates to RADDOSE-3D in the period 2014 - 2017:
 - Bury, C. S., Brooks‐Bartlett, J. C., Walsh, S. P. and Garman, E. F. (2018), Estimate your dose: RADDOSE‐3D. Protein Science, 27, 217-228. https://doi.org/10.1002/pro.3302
 
@@ -168,5 +171,7 @@ And if using microcrystals or microbeams, we recommend using the Monte Carlo sim
 
 If there are heavy atoms present in the sample, it may be more accurate to simulate fluorescent escape, with the implementation detailed in:
 - Fernando, N. K., Cairns, A. B., Murray, C. A., Thompson, A. L., Dickerson, J. L., Garman, E. F., … Regoutz, A. (2021). Structural and Electronic Effects of X-ray Irradiation on Prototypical [M(COD)Cl]2 Catalysts. The Journal of Physical Chemistry A, 125(34), 7473–7488. doi:10.1021/acs.jpca.1c05759
+
+
 
 
