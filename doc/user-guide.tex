@@ -40,6 +40,8 @@
 \textblockorigin{0mm}{20mm} % start everything near the top-left corner
 
 \newcommand{\RD}{\texttt{RADDOSE-3D}\xspace}
+\newcommand{\RE}{\texttt{RADDOSE-ED}\xspace}
+\newcommand{\RX}{\texttt{RADDOSE-XFEL}\xspace}
 \newcommand{\Class}[1]{\texttt{#1}\xspace}
 \newcommand{\Function}[1]{\textit{#1}\xspace}
 \newcommand{\Keyword}[1]{\texttt{\textbf{#1}}\xspace}
@@ -52,7 +54,7 @@
 %\addtolength{\textheight}{1in}
 \begin{center}
 \noindent \textsf{\huge\textbf{\RD Command Reference}}\\[0.3em]
-Dated: 19 September 2019\\[3.5em]
+Dated: 26 July 2024\\[3.5em]
 \end{center}
 
 \noindent
@@ -63,6 +65,27 @@ Please cite the following primary publication when using \RD:\\[0.4em]
 \href{http://dx.doi.org/10.1107/S0021889813011461}{doi:10.1107/S0021889813011461}
 \\[1.5em]
 \noindent
+For intensity decay models or doses for electron diffraction (\RE), please cite:\\[0.4em]
+\href{https://doi.org/10.1002/pro.5005}{\large\textbf{Doses for X-ray and electron diffraction: New features in \RD including intensity decay models}}\\[0.1em]
+\href{https://doi.org/10.1002/pro.5005}{Dickerson J. L.; McCubbin P. T. N.; Brooks-Bartlett, J. C., \& Garman, E. F. (2024). \textit{Protein Science} \textbf{33} %, ??--??
+}\\[0.1em]
+\href{https://doi.org/10.1002/pro.5005}{doi.org/10.1002/pro.5005}
+\\[1.5em]
+\noindent
+If calculating doses for X-ray Free-Electron Lasers (\RX), please cite:\\[0.4em]
+\href{https://doi.org/10.1107/S1600576720000643}{\large\textbf{\RX: femtosecond time-resolved dose estimates for macromolecular X-ray free-electron laser experiments}}\\[0.1em]
+\href{https://doi.org/10.1107/S1600576720000643}{Dickerson J. L.; McCubbin P. T. N., \& Garman, E. F. (2020). \textit{J. Appl. Cryst.} \textbf{53} %, ??--??
+}\\[0.1em]
+\href{https://doi.org/10.1107/S1600576720000643}{doi.org/10.1107/S1600576720000643}
+\\[1.5em]
+\noindent
+If using microcrystals or microbeams, we recommend using the Monte Carlo simulations outlined in:\\[0.4em]
+\href{https://doi.org/10.1002/pro.3922}{\large\textbf{Doses for experiments with microbeams and microcrystals: Monte Carlo simulations in \RD}}\\[0.1em]
+\href{https://doi.org/10.1002/pro.3922}{ickerson J. L.\& Garman, E. F. (2020). \textit{Protein Science} \textbf{30} %, ??--??
+}\\[0.1em]
+\href{https://doi.org/10.1002/pro.3922}{doi.org/10.1002/pro.3922}
+\\[1.5em]
+\noindent
 For dose calculations related to SAXS experiments, please cite:\\[0.4em]
 \href{https://doi.org/10.1107/S1600577516015083}{\large\textbf{Development of tools to automate quantitative analysis of radiation damage in SAXS experiments}}\\[0.1em]
 \href{https://doi.org/10.1107/S1600577516015083}{Brooks-Bartlett, J. C.; Batters, R. A.; Bury, C. S.; Lowe, E. D.; Ginn, H. M.; Round, A., \& Garman, E. F. (2017). \textit{J. Synch. Rad.} \textbf{24} %, ??--??
@@ -70,11 +93,18 @@ For dose calculations related to SAXS experiments, please cite:\\[0.4em]
 \href{https://doi.org/10.1107/S1600577516015083}{doi:10.1107/S1600577516015083}
 \\[1.5em]
 \noindent
-For more recent developments in \RD, including the ability to incorporate experimental profiles and irregular polyhedral crystal geometries, as well as the inclusion of  models for energy loss from the crystal volume due to the Compton effect and photoelectron escape, please additionally refer to:\\[0.4em]
+For developments in \RD, including the ability to incorporate experimental profiles and irregular polyhedral crystal geometries, as well as the inclusion of  models for energy loss from the crystal volume due to the Compton effect, please additionally refer to:\\[0.4em]
 \href{https://doi.org/10.1002/pro.3302}{\large\textbf{Estimate your dose: \RD}}\\[0.1em]
 \href{https://doi.org/10.1002/pro.3302}{Bury, C. S.; Brooks-Bartlett, J. C.; Walsh, S. P. \& Garman, E. F. (2018). \textit{Protein Science} \textbf{27} %, ??--??
 }\\[0.1em]
 \href{https://doi.org/10.1002/pro.3302}{doi:10.1002/pro.3302}
+\\[1.5em]
+\noindent
+If there are heavy atoms present in the sample, it may be more accurate to simulate fluorescent escape, with the implementation detailed in:\\[0.4em]
+\href{https://doi:10.1021/acs.jpca.1c05759}{\large\textbf{Structural and Electronic Effects of X-ray Irradiation on Prototypical [M(COD)Cl]2 Catalysts}}\\[0.1em]
+\href{https://doi:10.1021/acs.jpca.1c05759}{Fernando, N. K. et al. (2021). \textit{The Journal of Physical Chemistry A} \textbf{125} %, ??--??
+}\\[0.1em]
+\href{https://doi:10.1021/acs.jpca.1c05759}{doi:10.1021/acs.jpca.1c05759}
 \\[1.5em]
 
 \tableofcontents
@@ -566,8 +596,8 @@ The command \Keyword{SURROUNDINGELEMENTS C 3 H 8} specifies elemental compositio
 defines the density of a density defined surrounding materiaL in g/ml. Only to be used when \Keyword{\textit{DENSITYBASED }} and \Keyword{\textit{CALCSURROUNDING}} are set to \Keyword{\textit{TRUE}}
 
 \subsection{\Keyword{DDM}}
-\label{subprogram}
-\noindent \Keyword{SURROUNDINGDENSITY \textit{S}}
+\label{DDM}
+\noindent \Keyword{DDM \textit{S}}
 specifies the dose decay model used by RADDOSE-3D.
 If no DDM is specified, no intensity decay is mdoelled by deault.
 
