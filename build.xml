@@ -24,7 +24,7 @@
   <echo message="Raddose3D git repository age is ${repository.revision}" />
 
   <!-- Write tree depth to Version.java -->
-  <exec executable="/bin/sed" failonerror="false">
+  <exec executable="sed" failonerror="false">
    <arg value="-i"/>
    <arg value="s/?---?/${repository.revision}/g"/>
    <arg value="src/se/raddo/raddose3D/Version.java"/>
