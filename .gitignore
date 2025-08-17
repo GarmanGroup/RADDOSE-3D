@@ -35,3 +35,6 @@ watch_*.py
 
 # Qt project user files
 *.pro.user*
+
+# IDE files
+.project
