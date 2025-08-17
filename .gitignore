@@ -4,3 +4,34 @@ Notes.txt
 raddose
 raddose.exe
 reports
+
+# macOS system files
+.DS_Store
+
+# Build directories
+build-*/
+
+# Input and output files
+*input*.txt
+output-*.csv
+output-*.txt
+output-*.R
+outputIonsPerAtom.CSV
+outputMC.CSV
+outputMicroED.CSV
+outputXFEL.CSV
+
+# Plot files
+plot_*.png
+
+# Object and model files
+*.obj
+
+# RTF files
+*.rtf
+
+# Python scripts (if temporary)
+watch_*.py
+
+# Qt project user files
+*.pro.user*
