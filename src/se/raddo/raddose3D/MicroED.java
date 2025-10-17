@@ -101,7 +101,8 @@ public class MicroED {
   private double stoppingPowerESTAR;
   private double MonteCarloRuntime;
   //to see if multislice is necessary at all
-  private final int numberSlices = 1;
+  private int numberSlices;
+  private double sliceThickness = 5; //nm
   
   private double MonteCarloDose;
   private double MonteCarloImageDose;
@@ -256,7 +257,7 @@ public class MicroED {
     populateRegionVolumes();
   }
   
-  public void getCSDArange(CoefCalc coefCalc) {
+  public double getCSDArange(CoefCalc coefCalc) {
     double en = 100; 
     int divisions = 100;
     double distance = 0;
@@ -268,6 +269,7 @@ public class MicroED {
     en -= energyStep;
     }
     distance = distance /1000;
+    return distance;
   }
   
   public void CalculateEM(Beam beam, Wedge wedge, CoefCalc coefCalc) { // also pass in crystal dimensions
@@ -275,7 +277,7 @@ public class MicroED {
  //   testingXFELQuick(beam, coefCalc);
     
     //get a CSDA range for any given electron energy
- //   getCSDArange(coefCalc);
+    double csdaDistance = getCSDArange(coefCalc);
     
     //getGOSinel
    // double test = coefCalc.getGOSInel(false);
@@ -304,9 +306,19 @@ public class MicroED {
     
     //calculate Sternheimer adjustment factor
     
-    double dose3 = EMStoppingPowerWay(beam, wedge, coefCalc);
+    double[] dose3Results = EMStoppingPowerWay(beam, wedge, coefCalc);
+    double dose3 = dose3Results[0]; // total dose
     System.out.print(String.format("\nThe Dose in the exposed area by stopping power: %.4e", dose3));
     System.out.println(" MGy");
+
+    System.out.println("The CSDA range is: " + df.format(csdaDistance) + " nm");
+    
+    // Print slice doses for debugging/analysis
+    //System.out.println("Dose per slice:");
+    //for (int i = 1; i < dose3Results.length; i++) {
+    //  System.out.print(String.format("  Slice %d: %.4e MGy", i, dose3Results[i]));
+    //  System.out.println();
+    //}
     
     //start the Monte carlo stuff
     //long start = System.nanoTime();
@@ -356,6 +368,21 @@ public class MicroED {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
+
+    // Write slice data to CSV
+    try {
+      se.raddo.raddose3D.WriterFile sliceWriter = new se.raddo.raddose3D.WriterFile("outputMicroED_slices.csv");
+      sliceWriter.write("Slice Number,Slice Thickness (nm),Slice Dose (MGy)\n");
+      for (int i = 1; i < dose3Results.length; i++) {
+        double sliceThicknessNm = i * sliceThickness;
+        sliceWriter.write(String.format("%d,%.4f,%.8e\n", i, sliceThicknessNm, dose3Results[i]));
+      }
+      sliceWriter.close();
+      System.out.println("Slice data written to outputMicroED_slices.csv");
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    
     System.exit(0);
   }
   
@@ -467,6 +494,7 @@ private double EMEquationWay(Beam beam, Wedge wedge, CoefCalc coefCalc, boolean 
   double elasticProb = 0;
   double inelProb = 0;
   double avgEnergy = beam.getPhotonEnergy();
+  numberSlices = (int)(sampleThickness/sliceThickness);
   double t = sampleThickness/numberSlices;
   /*
   for (int i = 1; i <= numberSlices; i++) {
@@ -560,7 +588,7 @@ private double EMEquationWay(Beam beam, Wedge wedge, CoefCalc coefCalc, boolean 
   return dose;
 }
 
-private double EMStoppingPowerWay(Beam beam, Wedge wedge, CoefCalc coefCalc) {
+private double[] EMStoppingPowerWay(Beam beam, Wedge wedge, CoefCalc coefCalc) {
   double exposedArea = 0;
   double exposure = beam.getExposure();
   if (beam.getIsCircular() == false) {
@@ -573,8 +601,12 @@ private double EMStoppingPowerWay(Beam beam, Wedge wedge, CoefCalc coefCalc) {
   
   double exposedVolume = exposedArea  * ((sampleThickness/1000)) * 1E-15; //exposed volume in dm^3
   double exposedMass = (((coefCalc.getDensity()*1000) * exposedVolume) / 1000);  //in Kg 
+  double exposedMassPerSlice = exposedMass / numberSlices;
   double stoppingPower = 0, energyDeposited = 0, dose = 0;
   double avgEnergy = beam.getPhotonEnergy();
+  numberSlices = (int)(sampleThickness/sliceThickness);
+  double[] allDoses = new double[numberSlices];
+  boolean end_loop = false;
   for (int i = 1; i <= numberSlices; i++) {
     // need to get the stopping power from coefcalc
     stoppingPower = coefCalc.getStoppingPower(avgEnergy, false); //send it electron energy
@@ -582,10 +614,25 @@ private double EMStoppingPowerWay(Beam beam, Wedge wedge, CoefCalc coefCalc) {
  
     double energyPerEl =  stoppingPower * (sampleThickness/numberSlices);
     avgEnergy -= energyPerEl; 
+    if (avgEnergy < 0.05) {
+      end_loop = true;
+      energyPerEl += avgEnergy; //deposit the remaining energy
+    }
+
     energyDeposited = electronNumber * energyPerEl * Beam.KEVTOJOULES;  //in J, currently per electron
-    dose += (energyDeposited/exposedMass) / 1E06; //dose in MGy 
+    double sliceDose = (energyDeposited/exposedMassPerSlice) / 1E06; //dose in MGy for this slice
+    allDoses[i-1] = sliceDose; // store dose for this slice (i-1 because array is 0-indexed)
+    dose += sliceDose; //total dose
+    if (end_loop == true) {
+      break;
+    }
   }
-  return dose;
+  
+  // Create result array: first element is total dose, followed by all slice doses
+  double[] result = new double[numberSlices + 1];
+  result[0] = dose / numberSlices; // total dose
+  System.arraycopy(allDoses, 0, result, 1, numberSlices); // copy slice doses
+  return result;
 }
 /**
  * Returns the exposed area in the x dimensions of the sample in um
