@@ -257,8 +257,8 @@ public class MicroED {
     populateRegionVolumes();
   }
   
-  public double getCSDArange(CoefCalc coefCalc) {
-    double en = 100; 
+  public double getCSDArange(CoefCalc coefCalc, Beam beam) {
+    double en = beam.getPhotonEnergy(); 
     int divisions = 100;
     double distance = 0;
     double energyStep = en/divisions;
@@ -268,7 +268,7 @@ public class MicroED {
     distance += energyStep/stoppingPower;
     en -= energyStep;
     }
-    distance = distance /1000;
+    distance = distance;
     return distance;
   }
   
@@ -277,7 +277,7 @@ public class MicroED {
  //   testingXFELQuick(beam, coefCalc);
     
     //get a CSDA range for any given electron energy
-    double csdaDistance = getCSDArange(coefCalc);
+    double csdaDistance = getCSDArange(coefCalc, beam);
     
     //getGOSinel
    // double test = coefCalc.getGOSInel(false);
@@ -372,9 +372,9 @@ public class MicroED {
     // Write slice data to CSV
     try {
       se.raddo.raddose3D.WriterFile sliceWriter = new se.raddo.raddose3D.WriterFile("outputMicroED_slices.csv");
-      sliceWriter.write("Slice Number,Slice Thickness (nm),Slice Dose (MGy)\n");
+      sliceWriter.write("Slice Number,Slice Depth (nm),Slice Dose (MGy)\n");
       for (int i = 1; i < dose3Results.length; i++) {
-        double sliceThicknessNm = i * sliceThickness;
+        double sliceThicknessNm = (i-1) * sliceThickness;
         sliceWriter.write(String.format("%d,%.4f,%.8e\n", i, sliceThicknessNm, dose3Results[i]));
       }
       sliceWriter.close();
