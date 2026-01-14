@@ -524,12 +524,14 @@ private double EMEquationWay(Beam beam, Wedge wedge, CoefCalc coefCalc, boolean 
   */
   
   double elasticLambda = coefCalc.getElectronElasticMFPL(avgEnergy, false);
+  System.out.println("Elastic Lambda: " + elasticLambda);
   elasticProb = (1 - Math.exp(-sampleThickness/elasticLambda));
   numberElastic = elasticProb * electronNumber;
   
   numberSingleElastic = electronNumber * 
                         Math.exp(-sampleThickness/elasticLambda) * (Math.pow(sampleThickness/elasticLambda, 1) / 1); 
   double gosInelasticLambda = coefCalc.getGOSInel(false, avgEnergy);
+  System.out.println("GOS Inelastic Lambda: " + gosInelasticLambda);
   inelProb = (1 - Math.exp(-sampleThickness/gosInelasticLambda));                
   numberInelastic = inelProb * electronNumber;
   numberProductive = numberSingleElastic * (1-inelProb);

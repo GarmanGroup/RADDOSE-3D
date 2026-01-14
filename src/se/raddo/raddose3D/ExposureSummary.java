@@ -352,9 +352,9 @@ public class ExposureSummary implements ExposeObserver {
 
     usedVolumeFraction = PERCENT * (double) exposedVoxels / occupiedVoxels;
 
-    doseInefficiency = getMaxDose() / (1000 * totalAbsorbedEnergy);
+    doseInefficiency = (getMaxDose()*1E6) / (1000 * totalAbsorbedEnergy);
     
-    doseInefficiencyPE = getMaxDose() / (1000 * totalEnergy);
+    doseInefficiencyPE = (getMaxDose()*1E6) / (1000 * totalEnergy);
 
     avgDoseWholeCrystal = totalDose / occupiedVoxels;
     
