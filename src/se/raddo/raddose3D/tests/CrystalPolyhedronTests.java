@@ -10,6 +10,47 @@ import se.raddo.raddose3D.CrystalPolyhedron;
 import se.raddo.raddose3D.Wedge;
 
 public class CrystalPolyhedronTests {
+
+  /**
+   * With WIREFRAME OBJ, mesh sets geometry; declared DIMENSION is optional.
+   * Same voxel grid as when dummy dimensions are supplied.
+   */
+  @Test
+  public static void testPolyhedronWithoutDeclaredDimensions() {
+    final double xdim = 60;
+    final double ydim = 20;
+    final double zdim = 40;
+    final Double resolution = 0.5d;
+    final String modelFile =
+        "src/se/raddo/raddose3D/tests/CrystalPolyhedron-cuboid-30-20-10.obj";
+    final String modelType = "obj";
+
+    final HashMap<Object, Object> withDims = new HashMap<Object, Object>();
+    withDims.put(Crystal.CRYSTAL_DIM_X, xdim);
+    withDims.put(Crystal.CRYSTAL_DIM_Y, ydim);
+    withDims.put(Crystal.CRYSTAL_DIM_Z, zdim);
+    withDims.put(Crystal.CRYSTAL_RESOLUTION, resolution);
+    withDims.put(Crystal.CRYSTAL_ANGLE_P, 0d);
+    withDims.put(Crystal.CRYSTAL_ANGLE_L, 0d);
+    withDims.put(CrystalPolyhedron.CRYSTAL_WIREFRAME_FILE, modelFile);
+    withDims.put(CrystalPolyhedron.CRYSTAL_WIREFRAME_TYPE, modelType);
+
+    final HashMap<Object, Object> noDims = new HashMap<Object, Object>();
+    noDims.put(Crystal.CRYSTAL_RESOLUTION, resolution);
+    noDims.put(Crystal.CRYSTAL_ANGLE_P, 0d);
+    noDims.put(Crystal.CRYSTAL_ANGLE_L, 0d);
+    noDims.put(CrystalPolyhedron.CRYSTAL_WIREFRAME_FILE, modelFile);
+    noDims.put(CrystalPolyhedron.CRYSTAL_WIREFRAME_TYPE, modelType);
+
+    final CrystalPolyhedron cWith = new CrystalPolyhedron(withDims);
+    final CrystalPolyhedron cNo = new CrystalPolyhedron(noDims);
+    final int[] a = cWith.getCrystSizeVoxels();
+    final int[] b = cNo.getCrystSizeVoxels();
+    Assertion.equals(a[0], b[0], "voxel nx");
+    Assertion.equals(a[1], b[1], "voxel ny");
+    Assertion.equals(a[2], b[2], "voxel nz");
+  }
+
   @Test
   public static void testFindDepthSimple() {
     double xdim = 60, ydim = 20, zdim = 40; // just like in the model file.

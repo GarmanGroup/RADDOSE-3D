@@ -288,6 +288,8 @@ public abstract class Crystal {
         }  
     }
 
+    normalizeWireframePlaceholderDimensions(properties);
+
     firstWedge = true;
 
     
@@ -326,6 +328,29 @@ public abstract class Crystal {
       }
     }
     
+  }
+
+  /**
+   * When a wireframe model file is set, mesh geometry defines extent; declared
+   * {@link #CRYSTAL_DIM_X} / {@link #CRYSTAL_DIM_Y} / {@link #CRYSTAL_DIM_Z}
+   * are optional placeholders for shared base-class logic. Coalesce missing
+   * values so the constructor does not infer sphere/cylinder or null-pointer.
+   */
+  private static void normalizeWireframePlaceholderDimensions(
+      final Map<Object, Object> properties) {
+    final Object wf = properties.get(CRYSTAL_WIREFRAME_FILE);
+    if (!(wf instanceof String) || ((String) wf).trim().isEmpty()) {
+      return;
+    }
+    final Double dimX = (Double) properties.get(CRYSTAL_DIM_X);
+    final Double dimY = (Double) properties.get(CRYSTAL_DIM_Y);
+    final Double dimZ = (Double) properties.get(CRYSTAL_DIM_Z);
+    final double x = dimX != null ? dimX : 1d;
+    final double y = dimY != null ? dimY : x;
+    final double z = dimZ != null ? dimZ : y;
+    properties.put(CRYSTAL_DIM_X, x);
+    properties.put(CRYSTAL_DIM_Y, y);
+    properties.put(CRYSTAL_DIM_Z, z);
   }
   
   /**
