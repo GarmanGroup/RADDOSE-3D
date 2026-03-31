@@ -964,23 +964,23 @@ public class XFEL {
     
     //print
     System.out.println(" ");
-    System.out.println(String.format("RADDOSE-3D style average dose whole crystal: %.3f", totRADDOSEdose)); 
-    System.out.println(String.format("RADDOSE-3D style average dose exposed region: %.3f", rdExposed)); 
+    System.out.println(String.format("RADDOSE-3D style average dose whole crystal (MGy): %.3f", totRADDOSEdose)); 
+    System.out.println(String.format("RADDOSE-3D style average dose exposed region (MGy): %.3f", rdExposed)); 
     
     //this should just be if XFEL
     if (doXFEL == true) {
-      System.out.println(String.format("RADDOSE-XFEL average dose whole crystal (ADWC): %.3f", voxDosevResolved)); 
-      System.out.println(String.format("RADDOSE-XFEL average dose exposed region (ADER): %.3f", voxDoseExposed)); 
+      System.out.println(String.format("RADDOSE-XFEL average dose whole crystal (ADWC) (MGy): %.3f", voxDosevResolved)); 
+      System.out.println(String.format("RADDOSE-XFEL average dose exposed region (ADER) (MGy): %.3f", voxDoseExposed)); 
     }
     else {
       //if it isn't XFEL but still GOS then the dose with no cutoff should be shown 
       if (simpleMC == false) {
-        System.out.println(String.format("RADDOSE-GOS average dose whole crystal (ADWC): %.3f", voxDoseNoCutoffvResolved)); 
-        System.out.println(String.format("RADDOSE-GOS average dose exposed region (ADER): %.3f", voxDoseExposedNoCutoff)); 
+        System.out.println(String.format("RADDOSE-GOS average dose whole crystal (ADWC) (MGy): %.3f", voxDoseNoCutoffvResolved)); 
+        System.out.println(String.format("RADDOSE-GOS average dose exposed region (ADER) (MGy): %.3f", voxDoseExposedNoCutoff)); 
       }
       else {
-        System.out.println(String.format("RADDOSE-MC average dose whole crystal (ADWC): %.3f", sumMCDose)); 
-        System.out.println(String.format("RADDOSE-MC average dose exposed region (ADER): %.3f", sumDoseNoCutOffExposed)); 
+        System.out.println(String.format("RADDOSE-MC average dose whole crystal (ADWC) (MGy): %.3f", sumMCDose)); 
+        System.out.println(String.format("RADDOSE-MC average dose exposed region (ADER) (MGy): %.3f", sumDoseNoCutOffExposed)); 
       }
       //unless just simpleMC in which case show diff dose
     }
