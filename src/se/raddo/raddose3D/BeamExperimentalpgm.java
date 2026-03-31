@@ -96,8 +96,10 @@ public class BeamExperimentalpgm extends BeamExperimental {
     // Discard the magic number
     scan.nextLine();
 
-    // Discard the comment line
-    scan.nextLine(); //TODO make a test to see if this is there
+    // Skip any number of comment lines (0, 1, or many)
+    while (scan.hasNext("#.*")) {
+      scan.nextLine(); 
+    }
     // Read pic width, height and max value
     int picWidth = scan.nextInt();
     int picHeight = scan.nextInt();
