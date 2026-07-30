@@ -3843,7 +3843,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     int[] subshells = {2, 2, 2, 4, 2, 2, 4, 10, 2, 30};
     int Z = e.getAtomicNumber();
     
-    int sumZ = 0;
+    double sumZ = 0;
     Set<Element> elementList = presentElements;
     double totNum = totalAtoms(e);
     if (surrounding == true) {
