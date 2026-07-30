@@ -136,7 +136,15 @@ public class CrystalPolyhedron extends Crystal {
    * The angle resolution is the number of tracks to send out the dose along per voxel.
    * This is 1*1 and is randomly chosen for each voxel
    */
-  private static final int   PE_ANGLE_RESOLUTION = 1;
+  private static final int   PE_ANGLE_RESOLUTION;
+  static {
+    String env = System.getenv("PE_ANGLE_RESOLUTION");
+    int val = 1;
+    if (env != null) {
+      try { val = Integer.parseInt(env); } catch (NumberFormatException ignored) { }
+    }
+    PE_ANGLE_RESOLUTION = val;
+  }
   private static final int   PE_ANGLE_RES_LIMIT = 100;
   
   private static final int   FL_ANGLE_RESOLUTION = 1;
