@@ -11,7 +11,7 @@ AbsCoefCalc  SMALLMOLE    # Tells RADDOSE-3D how to calculate the
                           # Absorption coefficients
 
 UnitCell   10.012  18.808  6.3340  # unit cell size: a, b, c
-SmallMoleAtoms Mg  O 3 
+SmallMoleAtoms Mg 1 O 3 
                                # alpha, beta and gamma angles default to 90°
 NumMonomers  8                 # number of monomers in unit cell - 
 
