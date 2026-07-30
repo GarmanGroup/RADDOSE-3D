@@ -148,11 +148,16 @@ public class CoefCalcSAXS extends CoefCalcFromParams {
 
     //Calculate molarity of solution as concentration divided by the total
     //molecular mass.
-    double molarity = proteinConcentration
-        / (AVG_RESIDUE_MASS * numberOfResidues
-            + AVG_DNA_MASS * numberOfDNAResidues
-            + AVG_RNA_MASS * numberOfRNAResidues
-            + AVG_CARB_MASS * numCarbResidues);
+    double molecularWeight = AVG_RESIDUE_MASS * numberOfResidues
+        + AVG_DNA_MASS * numberOfDNAResidues
+        + AVG_RNA_MASS * numberOfRNAResidues
+        + AVG_CARB_MASS * numCarbResidues;
+    if (molecularWeight <= 0) {
+      throw new IllegalArgumentException(
+          "SAXS AbsCoefCalc requires a positive monomer molecular weight. "
+          + "Set NumResidues, NumDNA, NumRNA, and/or NumCarb to a non-zero value.");
+    }
+    double molarity = proteinConcentration / molecularWeight;
 
     // Calculate volume in litres
     double volumeLitres = ANGSTROM_TO_LITRE_VOLUME_CONVERSION

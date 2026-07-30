@@ -167,6 +167,11 @@ public class CoefCalcFromSequenceSAXS extends CoefCalcFromSequence {
 
     //Calculate molarity of solution as concentration divided by the total
     //molecular mass.
+    if (this.totalMolecularWeight <= 0) {
+      throw new IllegalArgumentException(
+          "SAXS AbsCoefCalc requires a positive monomer molecular weight "
+          + "from the sequence file.");
+    }
     double molarity = proteinConcentration / (this.totalMolecularWeight);
 
     // Calculate volume in litres
