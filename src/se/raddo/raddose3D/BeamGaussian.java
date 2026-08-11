@@ -174,44 +174,28 @@ public class BeamGaussian implements Beam {
 
     NormalDistribution gx = new NormalDistribution(0, sx);
     NormalDistribution gy = new NormalDistribution(0, sy);
-// this needs to change for circular
     double cdf;
-//    double test;
- //   double Px = gx.cumulativeProbability(x2);
- //   double Py = gy.cumulativeProbability(y2);
     if (isCircular == false) {
       cdf = gx.cumulativeProbability(x2) * gy.cumulativeProbability(y2);
-      cdf -= gx.cumulativeProbability(x1) * gy.cumulativeProbability(y2);  
+      cdf -= gx.cumulativeProbability(x1) * gy.cumulativeProbability(y2);
       cdf -= gx.cumulativeProbability(x2) * gy.cumulativeProbability(y1);
       cdf += gx.cumulativeProbability(x1) * gy.cumulativeProbability(y1);
-
-//      test = (Px - (1-Px)) * (Py - (1 - Py));   // This makes so much more sense to me than what is above!!!
-    }
-    else {
-      //try and integrate it properly
-      double stepTheta = (2* Math.PI) / 100;
-      double A = 1 / (2* Math.PI * sx * sy);
-      double lastHeldHeight = 0, lastHeldTheta = 0;
-      double overallSum = 0;
-      for (double theta = 0; theta <= 2*Math.PI; theta += stepTheta) {
-        double r = (x2 * y2) / (Math.pow(Math.pow(y2 * Math.cos(theta), 2) + Math.pow(x2 * Math.sin(theta), 2), 0.5));
-        double cosSquared = Math.pow(Math.cos(theta), 2);
-        double sinSquared = Math.pow(Math.sin(theta), 2);
-        double cosSPlusSinSTerm = (cosSquared / (2*Math.pow(sx, 2))) + (sinSquared / (2*Math.pow(sy, 2)));
-        double oneOver = A / (2*cosSPlusSinSTerm);
-        double otherTerm = 1 - Math.exp(-Math.pow(r, 2) * cosSPlusSinSTerm);
-        double overallTerm = oneOver * otherTerm; 
-        
-        if (theta != 0) {
-          double area = (theta - lastHeldTheta) * ((lastHeldHeight + overallTerm) / 2);
-          overallSum += area;
-        }
-        lastHeldTheta = theta;
-        lastHeldHeight = overallTerm;
-
+    } else {
+      // Elliptical aperture: integrate phi_x(x) * [Phi_y(y_max) - Phi_y(-y_max)]
+      // with y_max = hy * sqrt(1 - (x/hx)^2). Exact in y via CDF; midpoint
+      // quadrature in x (replaces the previous 100-step polar trapezoid).
+      final double hx = x2;
+      final double hy = y2;
+      final int n = 1000;
+      final double dx = (2.0 * hx) / n;
+      double sum = 0.0;
+      for (int i = 0; i < n; i++) {
+        double x = -hx + (i + 0.5) * dx;
+        double yBound = hy * Math.sqrt(Math.max(0.0, 1.0 - (x * x) / (hx * hx)));
+        sum += gx.density(x)
+            * (gy.cumulativeProbability(yBound) - gy.cumulativeProbability(-yBound));
       }
-      cdf = overallSum;
-      
+      cdf = sum * dx;
     }
     return cdf;
   }
