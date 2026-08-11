@@ -1251,8 +1251,9 @@ public class CrystalPolyhedron extends Crystal {
         runningEscapeTotal = 0;
       if (fluorescenceProportionEvent[i][j] > 0) { //If j shell fluorescence possible
    //     if (fluorescenceProportionEvent[i] > 0) {
-  //      int muabsIndex = (4* j) + 4;
-          int muabsIndex = 4;
+        // Per-shell photoelectric mu_abs at the fluorescence energy:
+        // K=4, L1=8, L2=12, L3=16 in feFactors[element][...]
+          int muabsIndex = (4 * j) + 4;
         //Calculate distance at which escape probability = 5%
         double maxDistanceFl = -1 * (Math.log(0.05)/feFactors[i][muabsIndex]);
         double crystalMaxDistance = Math.pow(Math.pow(crystSizeUM[0], 2) + 
