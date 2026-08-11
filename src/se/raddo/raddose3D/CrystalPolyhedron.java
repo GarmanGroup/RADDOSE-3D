@@ -1031,9 +1031,16 @@ public class CrystalPolyhedron extends Crystal {
 
     Collections.sort(distancesFound);
 
-    for (int i = 0; i < distancesFound.size() - 1; i++) {
-      if (distancesFound.get(i + 1) == distancesFound.get(i)) {
+    // Compare double values (not boxed Double references): a ray that hits a
+    // shared triangle edge registers the same distance twice, and without
+    // removing those duplicates the even count trips the sanity-check below
+    // and incorrectly returns depth=0.
+    for (int i = 0; i < distancesFound.size() - 1; ) {
+      if (distancesFound.get(i + 1).doubleValue()
+          == distancesFound.get(i).doubleValue()) {
         distancesFound.remove(i + 1);
+      } else {
+        i++;
       }
     }
 
