@@ -174,3 +174,54 @@ was warranted.
   not. The only defence against that class is the regression tests now in
   place, which is an argument for extending them to `Crystal.expose` via
   golden files.
+
+---
+
+## Coverage baseline (2026-09-17)
+
+`ant coverage` runs the suite under JaCoCo and writes `reports/coverage/index.html`.
+
+| | overall | excluding MC/XFEL/MicroED |
+|---|---|---|
+| line | 24.9% (3830 / 15406) | **42.8%** (3830 / 8955) |
+| branch | 20.4% | |
+| method | 31.3% | |
+| class | 66.7% (66 / 99) | |
+
+The headline number is dominated by three near-duplicate subprograms --
+`MC`, `XFEL` and `MicroED`, 6,316 lines between them, all at 0%. They are
+separate entry points reached only via the `RUNS`/subprogram directives, they
+consume RNG heavily, and `MicroED` drives a real browser. Testing them needs
+seams, not more tests.
+
+The MX path itself is reasonably covered:
+
+| class | line coverage |
+|---|---|
+| `CoefCalcFromParams` | 100% |
+| `CrystalSphericalNew` | 100% |
+| `DDMBfactor` | 100% |
+| `Histogram` | 95% |
+| `ExposureSummary` | 92% |
+| `Element` | 87% |
+| `Crystal` | 84% |
+| `BeamGaussian` | 70% |
+| `CrystalPolyhedron` | 60% |
+
+### Where the remaining value is
+
+- **`CoefCalcCompute` 27.5%** (1,779 lines missed) is the largest genuine gap,
+  but most of the missed code is the GOS/Bethe/ELSEPA electron physics, which
+  an MX run never reaches -- confirmed by the golden-file tests being unchanged
+  when the integer-division constants were corrected.
+- **`RD3D` 0%** (205 lines) is command-line parsing and output wiring. Testable
+  if `parseOutputDestinations` were extracted.
+- **`CoefCalcFromPDB` 0%**, **`ContainerMixture`/`ContainerElemental` 0%** are
+  network-bound (RCSB, NIST). The attenuation arithmetic is already covered via
+  a stub subclass; the download paths are not, and arguably should not be.
+- **`CrystalCuboidOld` 0%**, **`CrystalSphericalOld` 0%**, **`CoefCalcRaddose`
+  0%** are legacy. `CoefCalcRaddose` shells out to an external `raddose` binary
+  that is not shipped. These are candidates for deletion rather than tests.
+- **`OutputFinalDoseStateRPreview` 0%** (110 lines) is the largest untested
+  output and would follow the pattern already established in
+  `OutputWriterTest`.
