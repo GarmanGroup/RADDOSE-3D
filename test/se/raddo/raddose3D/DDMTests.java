@@ -1,11 +1,8 @@
-package se.raddo.raddose3D.tests;
+package se.raddo.raddose3D;
 
-import static org.testng.Assert.*;
-import org.testng.annotations.Test;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
-import se.raddo.raddose3D.DDMLeal;
-import se.raddo.raddose3D.DDMLinear;
-import se.raddo.raddose3D.DDMSimple;
 
 public class DDMTests {
 
@@ -201,7 +198,7 @@ public class DDMTests {
     zeroDoseDecayValue = myLinearDDM.calcDecay(zeroDose);
 
     //Check that the decay value is equal to 1
-    assertEquals(zeroDoseDecayValue, 1, tolerance,"DDMLinear should be 1 at zero dose");
+    assertEquals(1, zeroDoseDecayValue, tolerance,"DDMLinear should be 1 at zero dose");
 
     System.out.println("@Test - testDDMLinearZeroDoseDecay");
   }
@@ -221,7 +218,7 @@ public class DDMTests {
     zeroDoseRDE = myLealDDM.getIntegratedIntensity(zeroDose) / zeroDoseIntegratedIntensity;
 
     //Check that the decay value is equal to 1
-    assertEquals(zeroDoseRDE, 1, tolerance,"DDMLeal should be 1 at zero dose");
+    assertEquals(1, zeroDoseRDE, tolerance,"DDMLeal should be 1 at zero dose");
 
     System.out.println("@Test - testDDMLealZeroDoseDecay");
   }

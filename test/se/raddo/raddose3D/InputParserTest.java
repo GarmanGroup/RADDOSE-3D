@@ -1,26 +1,16 @@
-package se.raddo.raddose3D.tests;
+package se.raddo.raddose3D;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import static org.testng.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-import org.testng.annotations.*;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 
-import se.raddo.raddose3D.Beam;
-import se.raddo.raddose3D.BeamFactory;
-import se.raddo.raddose3D.CoefCalcAverage;
-import se.raddo.raddose3D.Container;
-import se.raddo.raddose3D.Crystal;
-import se.raddo.raddose3D.CrystalFactory;
-import se.raddo.raddose3D.DDMSimple;
-import se.raddo.raddose3D.Initializer;
-import se.raddo.raddose3D.InputException;
-import se.raddo.raddose3D.InputParser;
-import se.raddo.raddose3D.InputParserString;
-import se.raddo.raddose3D.Wedge;
 
 /**
  * Test cases for InputParser and package raddoseParser
@@ -28,17 +18,19 @@ import se.raddo.raddose3D.Wedge;
 
 public class InputParserTest {
 
-  @Test(timeOut = 2000,expectedExceptions=InputException.class)
+  @Test
+  @Timeout(2)
   public void InputParserShouldFailOnInvalidFile() throws Exception {
     InputParser parser = new InputParserString("Crystals\nare\nfun\n");
     Initializer i = new InputParserTestInit();
 
     assertNotNull(parser);
 
-    parser.sendData(i);
+    assertThrows(InputException.class, () -> parser.sendData(i));
   }
 
-  @Test(timeOut = 2000)
+  @Test
+  @Timeout(2)
   public void InputParserReadEmptyFile() throws Exception {
     InputParser parser = new InputParserString("");
     InputParserTestInit init = new InputParserTestInit();
@@ -47,9 +39,9 @@ public class InputParserTest {
 
     parser.sendData(init);
 
-    assertEquals(init.crystals.size(), 0);
-    assertEquals(init.beams.size(), 0);
-    assertEquals(init.wedges.size(), 0);
+    assertEquals(0, init.crystals.size());
+    assertEquals(0, init.beams.size());
+    assertEquals(0, init.wedges.size());
   }
 
   private String sampleFile_Simple() {
@@ -69,7 +61,8 @@ public class InputParserTest {
         + "RotAxBeamOffset 5\n";
   }
 
-  @Test(timeOut = 3000)
+  @Test
+  @Timeout(3)
   public void InputParserReadValidSimpleFile() throws Exception {
     InputParser parser = new InputParserString(sampleFile_Simple());
     InputParserTestInit init = new InputParserTestInit();
@@ -80,15 +73,15 @@ public class InputParserTest {
 
     parser.sendData(init);
 
-    assertEquals(init.crystals.size(), 1);
-    assertEquals(init.beams.size(), 1);
-    assertEquals(init.wedges.size(), 1);
+    assertEquals(1, init.crystals.size());
+    assertEquals(1, init.beams.size());
+    assertEquals(1, init.wedges.size());
 
     assertTrue(
             init.crystals.get(0) instanceof CrystalDummy,
             "Crystal not stored");
-    assertEquals(testCF.createEvents, 1, "Seen more than one create event");
-    assertEquals(testCF.lastSeenType, "Cuboid",
+    assertEquals(1, testCF.createEvents, "Seen more than one create event");
+    assertEquals("Cuboid", testCF.lastSeenType,
         "Crystal type set incorrectly (" + testCF.lastSeenType + ")");
 
     Map<Object, Object> properties;
@@ -101,19 +94,19 @@ public class InputParserTest {
 
       Boolean match = false;
       if (me.getKey().equals(Crystal.CRYSTAL_DIM_X)) {
-        Assertion.equals((Double) me.getValue(), 100, "Crystal size X");
+        Tolerance.equals((Double) me.getValue(), 100, "Crystal size X");
         match = true;
       }
       if (me.getKey().equals(Crystal.CRYSTAL_DIM_Y)) {
-        Assertion.equals((Double) me.getValue(), 100, "Crystal size Y");
+        Tolerance.equals((Double) me.getValue(), 100, "Crystal size Y");
         match = true;
       }
       if (me.getKey().equals(Crystal.CRYSTAL_DIM_Z)) {
-        Assertion.equals((Double) me.getValue(), 100, "Crystal size Z");
+        Tolerance.equals((Double) me.getValue(), 100, "Crystal size Z");
         match = true;
       }
       if (me.getKey().equals(Crystal.CRYSTAL_RESOLUTION)) {
-        Assertion.equals((Double) me.getValue(), 0.73,
+        Tolerance.equals((Double) me.getValue(), 0.73,
             "Crystal resolution");
         match = true;
       }
@@ -141,9 +134,9 @@ public class InputParserTest {
     assertTrue(
         init.beams.get(0) instanceof BeamDummy,
         "Beam not stored");
-    assertEquals(testBF.createEvents, 1,
+    assertEquals(1, testBF.createEvents,
         "Seen more than one beam create event");
-    Assertion.equals(testBF.lastSeenType, "Gaussian", "Beam type");
+    Tolerance.equals(testBF.lastSeenType, "Gaussian", "Beam type");
 
     properties = testBF.getSeenProperties();
     iter = properties.entrySet().iterator();
@@ -152,29 +145,29 @@ public class InputParserTest {
 
       Entry<Object, Object> me = iter.next();
       if (me.getKey().equals(Beam.BEAM_FLUX)) {
-        Assertion.equals((Double) me.getValue(), 200000000000d,
+        Tolerance.equals((Double) me.getValue(), 200000000000d,
             "Beam flux");
         match = true;
       }
       if (me.getKey().equals(Beam.BEAM_FWHM_X)) {
-        Assertion.equals((Double) me.getValue(), 70, "Beam x FWHM");
+        Tolerance.equals((Double) me.getValue(), 70, "Beam x FWHM");
         match = true;
       }
       if (me.getKey().equals(Beam.BEAM_FWHM_Y)) {
-        Assertion.equals((Double) me.getValue(), 20, "Beam y FWHM");
+        Tolerance.equals((Double) me.getValue(), 20, "Beam y FWHM");
         match = true;
       }
       if (me.getKey().equals(Beam.BEAM_ENERGY)) {
-        Assertion.equals((Double) me.getValue(), 12.1, "Beam energy");
+        Tolerance.equals((Double) me.getValue(), 12.1, "Beam energy");
         match = true;
       }
       if (me.getKey().equals(Beam.BEAM_COLL_H)) {
-        Assertion.equals((Double) me.getValue(), 55,
+        Tolerance.equals((Double) me.getValue(), 55,
             "Beam horizontal collimation");
         match = true;
       }
       if (me.getKey().equals(Beam.BEAM_COLL_V)) {
-        Assertion.equals((Double) me.getValue(), 19,
+        Tolerance.equals((Double) me.getValue(), 19,
             "Beam vertical collimation");
         match = true;
       }
@@ -191,20 +184,20 @@ public class InputParserTest {
 
     Wedge w = init.wedges.get(0);
     assertNotNull(w, "Wedge not stored");
-    Assertion.equals(w.getAngRes(), Math.toRadians(2.6),
+    Tolerance.equals(w.getAngRes(), Math.toRadians(2.6),
         "Wedge angular resolution");
-    Assertion.equals(w.getStartAng(), Math.toRadians(0), "Wedge start angle");
-    Assertion.equals(w.getEndAng(), Math.toRadians(360), "Wedge end angle");
-    Assertion.equals(w.getTotSec(), 150, "Wedge total exposure time");
-    Assertion.equals(w.getStartX(), 17.3, "Wedge X start offset");
-    Assertion.equals(w.getStartY(), 24.1, "Wedge Y start offset");
-    Assertion.equals(w.getStartZ(), 0d, "Wedge Z start offset");
-    Assertion.equals(w.getTransX(), 1 / Math.toRadians(1 / 0.1),
+    Tolerance.equals(w.getStartAng(), Math.toRadians(0), "Wedge start angle");
+    Tolerance.equals(w.getEndAng(), Math.toRadians(360), "Wedge end angle");
+    Tolerance.equals(w.getTotSec(), 150, "Wedge total exposure time");
+    Tolerance.equals(w.getStartX(), 17.3, "Wedge X start offset");
+    Tolerance.equals(w.getStartY(), 24.1, "Wedge Y start offset");
+    Tolerance.equals(w.getStartZ(), 0d, "Wedge Z start offset");
+    Tolerance.equals(w.getTransX(), 1 / Math.toRadians(1 / 0.1),
         "Wedge X translation");
-    Assertion.equals(w.getTransY(), 0.0, "Wedge Y translation");
-    Assertion.equals(w.getTransZ(), 1 / Math.toRadians(1 / 0.3),
+    Tolerance.equals(w.getTransY(), 0.0, "Wedge Y translation");
+    Tolerance.equals(w.getTransZ(), 1 / Math.toRadians(1 / 0.3),
         "Wedge Z translation");
-    Assertion.equals(w.getOffAxisUm(), 5, "Wedge rotational axis offset");
+    Tolerance.equals(w.getOffAxisUm(), 5, "Wedge rotational axis offset");
   }
 
   private String sampleFile_Complex_1() {
@@ -242,7 +235,8 @@ public class InputParserTest {
         + "RotAxBeamOffset 5\n";
   }
 
-  @Test(timeOut = 3000)
+  @Test
+  @Timeout(3)
   public void InputParserReadValidComplexFile1() throws Exception {
     InputParser parser = new InputParserString(sampleFile_Complex_1());
     InputParserTestInit init = new InputParserTestInit();
@@ -253,16 +247,16 @@ public class InputParserTest {
 
     parser.sendData(init);
     
-    assertEquals(init.crystals.size(), 1);
-    assertEquals(init.beams.size(), 1);
-    assertEquals(init.wedges.size(), 1);
+    assertEquals(1, init.crystals.size());
+    assertEquals(1, init.beams.size());
+    assertEquals(1, init.wedges.size());
 
     assertTrue(
             init.crystals.get(0) instanceof CrystalDummy,
             "Crystal not stored");
-    assertEquals(testCF.createEvents, 1,
+    assertEquals(1, testCF.createEvents,
         "Seen more than one crystal create event");
-    assertEquals(testCF.lastSeenType, "Cuboid", "Crystal type");
+    assertEquals("Cuboid", testCF.lastSeenType, "Crystal type");
 
     Map<Object, Object> properties;
     Iterator<Map.Entry<Object, Object>> iter;
@@ -273,28 +267,28 @@ public class InputParserTest {
       Boolean match = false;
       Map.Entry<Object, Object> me = iter.next();
       if (me.getKey().equals(Crystal.CRYSTAL_DIM_X)) {
-        Assertion.equals((Double) me.getValue(), 75, "Crystal size X");
+        Tolerance.equals((Double) me.getValue(), 75, "Crystal size X");
         match = true;
       }
       if (me.getKey().equals(Crystal.CRYSTAL_DIM_Y)) {
-        Assertion.equals((Double) me.getValue(), 70, "Crystal size Y");
+        Tolerance.equals((Double) me.getValue(), 70, "Crystal size Y");
         match = true;
       }
       if (me.getKey().equals(Crystal.CRYSTAL_DIM_Z)) {
-        Assertion.equals((Double) me.getValue(), 60, "Crystal size Z");
+        Tolerance.equals((Double) me.getValue(), 60, "Crystal size Z");
         match = true;
       }
       if (me.getKey().equals(Crystal.CRYSTAL_RESOLUTION)) {
-        Assertion.equals((Double) me.getValue(), 0.273,
+        Tolerance.equals((Double) me.getValue(), 0.273,
             "Crystal resolution");
         match = true;
       }
       if (me.getKey().equals(Crystal.CRYSTAL_ANGLE_P)) {
-        Assertion.equals((Double) me.getValue(), 1, "Crystal angle P");
+        Tolerance.equals((Double) me.getValue(), 1, "Crystal angle P");
         match = true;
       }
       if (me.getKey().equals(Crystal.CRYSTAL_ANGLE_L)) {
-        Assertion.equals((Double) me.getValue(), 0.1, "Crystal angle L");
+        Tolerance.equals((Double) me.getValue(), 0.1, "Crystal angle L");
         match = true;
       }
       if (me.getKey().equals(Crystal.CRYSTAL_COEFCALC)) {
@@ -321,9 +315,9 @@ public class InputParserTest {
     assertTrue(
         init.beams.get(0) instanceof BeamDummy,
         "Beam not stored");
-    assertEquals(testBF.createEvents, 1,
+    assertEquals(1, testBF.createEvents,
         "Seen more than one beam create event");
-    assertEquals(testBF.lastSeenType, "Gaussian",
+    assertEquals("Gaussian", testBF.lastSeenType,
         "Beam type set incorrectly (" + testBF.lastSeenType + ")");
 
     properties = testBF.getSeenProperties();
@@ -332,24 +326,24 @@ public class InputParserTest {
       Boolean match = false;
       Map.Entry<Object, Object> me = iter.next();
       if (me.getKey().equals(Beam.BEAM_FLUX)) {
-        Assertion.equals((Double) me.getValue(), 200000000000d,
+        Tolerance.equals((Double) me.getValue(), 200000000000d,
             "Beam flux");
         match = true;
       }
       if (me.getKey().equals(Beam.BEAM_FWHM_X)) {
-        Assertion.equals((Double) me.getValue(), 70, "Beam x FWHM");
+        Tolerance.equals((Double) me.getValue(), 70, "Beam x FWHM");
         match = true;
       }
       if (me.getKey().equals(Beam.BEAM_FWHM_Y)) {
-        Assertion.equals((Double) me.getValue(), 20, "Beam y FWHM");
+        Tolerance.equals((Double) me.getValue(), 20, "Beam y FWHM");
         match = true;
       }
       if (me.getKey().equals(Beam.BEAM_ENERGY)) {
-        Assertion.equals((Double) me.getValue(), 12.1, "Beam energy");
+        Tolerance.equals((Double) me.getValue(), 12.1, "Beam energy");
         match = true;
       }
       if (me.getKey().equals(Beam.BEAM_COLL_H)) {
-        Assertion.equals((Double) me.getValue(), 41,
+        Tolerance.equals((Double) me.getValue(), 41,
             "Beam horizontal collimation");
         match = true;
       }
@@ -362,23 +356,24 @@ public class InputParserTest {
     Wedge w = init.wedges.get(0);
     assertNotNull(w, "Wedge not stored");
 
-    Assertion.equals(w.getAngRes(), Math.toRadians(2.6d),
+    Tolerance.equals(w.getAngRes(), Math.toRadians(2.6d),
         "Wedge angular resolution");
-    Assertion.equals(w.getStartAng(), Math.toRadians(0d), "Wedge start angle");
-    Assertion.equals(w.getEndAng(), Math.toRadians(360d), "Wedge end angle");
-    Assertion.equals(w.getTotSec(), 150d, "Wedge total exposure time");
-    Assertion.equals(w.getStartX(), 17.3d, "Wedge X start offset");
-    Assertion.equals(w.getStartY(), 24.1d, "Wedge Y start offset");
-    Assertion.equals(w.getStartZ(), 0.2d, "Wedge Z start offset");
-    Assertion.equals(w.getTransX(), 1 / Math.toRadians(1 / 0.1d),
+    Tolerance.equals(w.getStartAng(), Math.toRadians(0d), "Wedge start angle");
+    Tolerance.equals(w.getEndAng(), Math.toRadians(360d), "Wedge end angle");
+    Tolerance.equals(w.getTotSec(), 150d, "Wedge total exposure time");
+    Tolerance.equals(w.getStartX(), 17.3d, "Wedge X start offset");
+    Tolerance.equals(w.getStartY(), 24.1d, "Wedge Y start offset");
+    Tolerance.equals(w.getStartZ(), 0.2d, "Wedge Z start offset");
+    Tolerance.equals(w.getTransX(), 1 / Math.toRadians(1 / 0.1d),
         "Wedge X translation");
-    Assertion.equals(w.getTransY(), 0.0d, "Wedge Y translation");
-    Assertion.equals(w.getTransZ(), 1 / Math.toRadians(1 / 0.21d),
+    Tolerance.equals(w.getTransY(), 0.0d, "Wedge Y translation");
+    Tolerance.equals(w.getTransZ(), 1 / Math.toRadians(1 / 0.21d),
         "Wedge Z translation");
-    Assertion.equals(w.getOffAxisUm(), 5d, "Wedge rotational axis offset");
+    Tolerance.equals(w.getOffAxisUm(), 5d, "Wedge rotational axis offset");
   }
 
-  @Test(timeOut = 3000)
+  @Test
+  @Timeout(3)
   public void InputParserReadValidComplexFile2() throws Exception {
     InputParser parser = new InputParserString(sampleFile_Complex_2());
     InputParserTestInit init = new InputParserTestInit();
@@ -389,16 +384,16 @@ public class InputParserTest {
 
     parser.sendData(init);
 
-    assertEquals(init.crystals.size(), 1);
-    assertEquals(init.beams.size(), 1);
-    assertEquals(init.wedges.size(), 1);
+    assertEquals(1, init.crystals.size());
+    assertEquals(1, init.beams.size());
+    assertEquals(1, init.wedges.size());
 
     assertTrue(
             init.crystals.get(0) instanceof CrystalDummy,
             "Crystal not stored");
-    assertEquals(testCF.createEvents, 1,
+    assertEquals(1, testCF.createEvents,
         "Seen more than one create event");
-    assertEquals(testCF.lastSeenType, "SpHeRiCaL",
+    assertEquals("SpHeRiCaL", testCF.lastSeenType,
         "Crystal type set incorrectly (" + testCF.lastSeenType + ")");
     Map<Object, Object> properties;
 
@@ -409,11 +404,11 @@ public class InputParserTest {
       Boolean match = false;
       Map.Entry<Object, Object> me = entries.next();
       if (me.getKey().equals(Crystal.CRYSTAL_DIM_X)) {
-        Assertion.equals((Double) me.getValue(), 42, "Crystal size X");
+        Tolerance.equals((Double) me.getValue(), 42, "Crystal size X");
         match = true;
       }
       if (me.getKey().equals(Crystal.CRYSTAL_RESOLUTION)) {
-        Assertion
+        Tolerance
             .equals((Double) me.getValue(), 0.4, "Crystal resolution");
         match = true;
       }
@@ -441,9 +436,9 @@ public class InputParserTest {
     assertTrue(
         init.beams.get(0) instanceof BeamDummy,
         "Beam not stored");
-    assertEquals(testBF.createEvents, 1,
+    assertEquals(1, testBF.createEvents,
         "Seen more than one beam create event");
-    Assertion.equals(testBF.lastSeenType, "Tophat", "Beam type");
+    Tolerance.equals(testBF.lastSeenType, "Tophat", "Beam type");
 
     properties = testBF.getSeenProperties();
     entries = properties.entrySet().iterator();
@@ -451,24 +446,24 @@ public class InputParserTest {
       Boolean match = false;
       Map.Entry<Object, Object> me = entries.next();
       if (me.getKey().equals(Beam.BEAM_FLUX)) {
-        Assertion
+        Tolerance
             .equals((Double) me.getValue(), 10000000000d, "Beam flux");
         match = true;
       }
       if (me.getKey().equals(Beam.BEAM_FWHM_X)) {
-        Assertion.equals((Double) me.getValue(), 55, "Beam x FWHM");
+        Tolerance.equals((Double) me.getValue(), 55, "Beam x FWHM");
         match = true;
       }
       if (me.getKey().equals(Beam.BEAM_FWHM_Y)) {
-        Assertion.equals((Double) me.getValue(), 20, "Beam y FWHM");
+        Tolerance.equals((Double) me.getValue(), 20, "Beam y FWHM");
         match = true;
       }
       if (me.getKey().equals(Beam.BEAM_ENERGY)) {
-        Assertion.equals((Double) me.getValue(), 5, "Beam energy");
+        Tolerance.equals((Double) me.getValue(), 5, "Beam energy");
         match = true;
       }
       if (me.getKey().equals(Beam.BEAM_COLL_V)) {
-        Assertion.equals((Double) me.getValue(), 15,
+        Tolerance.equals((Double) me.getValue(), 15,
             "Beam vertical collimation");
         match = true;
       }
@@ -486,17 +481,17 @@ public class InputParserTest {
     Wedge w = init.wedges.get(0);
     assertNotNull(w, "Wedge not stored");
 
-    Assertion.equals(w.getAngRes(), Math.toRadians(2.6),
+    Tolerance.equals(w.getAngRes(), Math.toRadians(2.6),
         "Wedge angular resolution");
-    Assertion.equals(w.getStartAng(), Math.toRadians(0), "Wedge start angle");
-    Assertion.equals(w.getEndAng(), Math.toRadians(360), "Wedge end angle");
-    Assertion.equals(w.getTotSec(), 150, "Wedge total exposure time");
-    Assertion.equals(w.getStartX(), 17.3, "Wedge X start offset");
-    Assertion.equals(w.getStartY(), 24.1, "Wedge Y start offset");
-    Assertion.equals(w.getTransX(), 1 / Math.toRadians(1 / 0.1),
+    Tolerance.equals(w.getStartAng(), Math.toRadians(0), "Wedge start angle");
+    Tolerance.equals(w.getEndAng(), Math.toRadians(360), "Wedge end angle");
+    Tolerance.equals(w.getTotSec(), 150, "Wedge total exposure time");
+    Tolerance.equals(w.getStartX(), 17.3, "Wedge X start offset");
+    Tolerance.equals(w.getStartY(), 24.1, "Wedge Y start offset");
+    Tolerance.equals(w.getTransX(), 1 / Math.toRadians(1 / 0.1),
         "Wedge X translation");
-    Assertion.equals(w.getTransY(), 0.0, "Wedge Y translation");
-    Assertion.equals(w.getOffAxisUm(), 5, "Wedge rotational axis offset");
+    Tolerance.equals(w.getTransY(), 0.0, "Wedge Y translation");
+    Tolerance.equals(w.getOffAxisUm(), 5, "Wedge rotational axis offset");
   }
 
   private String sampleFile_Complex_2() {

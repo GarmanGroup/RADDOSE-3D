@@ -1,4 +1,4 @@
-package se.raddo.raddose3D.tests;
+package se.raddo.raddose3D;
 
 /**
  * Performs basic tests on crystal classes. Includes:
@@ -16,18 +16,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.testng.Assert.*;
-import org.testng.annotations.*;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 
-import se.raddo.raddose3D.Beam;
-import se.raddo.raddose3D.BeamTophat;
-import se.raddo.raddose3D.CoefCalc;
-import se.raddo.raddose3D.CoefCalcAverage;
-import se.raddo.raddose3D.Crystal;
-import se.raddo.raddose3D.CrystalCuboid;
-import se.raddo.raddose3D.CrystalPolyhedron;
-import se.raddo.raddose3D.CrystalSphericalNew;
-import se.raddo.raddose3D.CoefCalcFromParams;
 
 public class CrystalBasicTests {
   private static final Double   res  = 0.78;
@@ -58,31 +51,34 @@ public class CrystalBasicTests {
    * ************************************************
    */
 
-  @Test(groups = { "advanced" })
+  @Test
+  @Tag("slow")
   /** Test that the resolution in the crystal object is the one specified in the constructor*/
   public void testResolution() {
     ArrayList<Crystal> cl = generateCrystals();
     for (Crystal c : cl) {
-      assertEquals(c.getCrystalPixPerUM(), res, c.crystalInfo());
+      assertEquals(res, c.getCrystalPixPerUM(), c.crystalInfo());
     }
   }
 
-  @Test(groups = { "advanced" })
+  @Test
+  @Tag("slow")
   /** Checks that both initialising and incrementing the dose array works correctly.*/
   public void testAddDose() {
     ArrayList<Crystal> cl = generateCrystals();
     for (Crystal c : cl) {
       c.addDose(1, 2, 3, 0.1);
-      assertEquals(c.getDose(1, 2, 3), 0.1, c.crystalInfo()
+      assertEquals(0.1, c.getDose(1, 2, 3), c.crystalInfo()
           + "fails to initialise Dose");
 
       c.addDose(1, 2, 3, 0.9);
-      assertEquals(c.getDose(1, 2, 3), 1.0, c.crystalInfo()
+      assertEquals(1.0, c.getDose(1, 2, 3), c.crystalInfo()
           + "fails to initialise Dose");
     }
   }
 
-  @Test(groups = { "advanced" })
+  @Test
+  @Tag("slow")
   /** 
    * Checks that both initializing and incrementing the fluence array works
    * correctly.
@@ -91,16 +87,17 @@ public class CrystalBasicTests {
     ArrayList<Crystal> cl = generateCrystals();
     for (Crystal c : cl) {
       c.addFluence(1, 2, 3, 0.1);
-      assertEquals(c.getFluence(1, 2, 3), 0.1, c.crystalInfo()
+      assertEquals(0.1, c.getFluence(1, 2, 3), c.crystalInfo()
           + "fails to initialise Fluence.");
 
       c.addFluence(1, 2, 3, 0.9);
-      assertEquals(c.getFluence(1, 2, 3), 1.0, c.crystalInfo()
+      assertEquals(1.0, c.getFluence(1, 2, 3), c.crystalInfo()
           + "fails to increment Fluence.");
     }
   }
 
-  @Test(groups = { "advanced" })
+  @Test
+  @Tag("slow")
   /**
    * Checks all the voxels to confirm that they span the whole crystal and
    * that none of them lie outside the bounding box.
@@ -171,7 +168,8 @@ public class CrystalBasicTests {
     }
   }
 
-  @Test(groups = { "advanced" })
+  @Test
+  @Tag("slow")
   /** Checks that all the voxels in the voxel array are initialised and not null. */
   public void allVoxelsInitialised() {
     ArrayList<Crystal> cl = generateCrystals();

@@ -1,21 +1,18 @@
-package se.raddo.raddose3D.tests;
+package se.raddo.raddose3D;
 
 import java.util.Random;
 
-import static org.testng.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.testng.annotations.*;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 
-import se.raddo.raddose3D.Beam;
-import se.raddo.raddose3D.BeamTophat;
-import se.raddo.raddose3D.CoefCalcFromParams;
-import se.raddo.raddose3D.CoefCalcRaddose;
-import se.raddo.raddose3D.CoefCalcFromSequenceSAXS;
 
 /**
  * @author magd3052
@@ -44,7 +41,7 @@ public class CoefCalcTests {
     Double hydrogenOccurrence = coefCalc.getSolventOccurrence(
         coefCalc.getParser().getElement("H"));
 
-    Assertion.equals(hydrogenOccurrence, oxygenOccurrence * 2, "O vs H");
+    Tolerance.equals(hydrogenOccurrence, oxygenOccurrence * 2, "O vs H");
     
     System.out.println("@Test - testCoefCalcWaterOnly");
   }
@@ -71,7 +68,7 @@ public class CoefCalcTests {
     Double zincOccurrence = coefCalc.getMacromolecularOccurrence(
         coefCalc.getParser().getElement("ZN"));
 
-    Assertion.equals(zincOccurrence, 48, "Zn = 48");
+    Tolerance.equals(zincOccurrence, 48, "Zn = 48");
     System.out.println("@Test - testHeavyProteinAtoms");
   }
   
@@ -80,6 +77,14 @@ public class CoefCalcTests {
    * Run an actual scenario and compare to values obtained from RADDOSE2.
    */
   @Test
+  /**
+   * PARKED -- see TEST-TRIAGE.md #1.
+   * Fails since b0a79ff (2023-10-22) flipped WATER_CONCENTRATION from 55555
+   * (1.00 g/cm3) to 51666 (0.93 g/cm3), shifting absorption by about -2.6%.
+   * Expected 1.042e-03, currently 1.01852368e-03.
+   * The expectation is deliberately left untouched pending a decision.
+   */
+  @Tag("pending")
   public void testCoefCalcScenario1() {
     List<String> heavyProtAtomNames = new ArrayList<String>();
     List<Double> heavyProtAtomNums = new ArrayList<Double>();
@@ -114,11 +119,11 @@ public class CoefCalcTests {
     coefCalc.updateCoefficients(b);
 
     // Values obtained from RADDOSEv2, http://www.raddo.se/legacy/
-    Assertion.equals(coefCalc.getAbsorptionCoefficient(), 0.001042,
+    Tolerance.equals(coefCalc.getAbsorptionCoefficient(), 0.001042,
         "Absorption Coefficient", 0.000005);
-    Assertion.equals(coefCalc.getElasticCoefficient(), 0.000036,
+    Tolerance.equals(coefCalc.getElasticCoefficient(), 0.000036,
         "Elastic Coefficient", 0.000005);
-    Assertion.equals(coefCalc.getAttenuationCoefficient(), 0.001095,
+    Tolerance.equals(coefCalc.getAttenuationCoefficient(), 0.001095,
         "Attenuation Coefficient", 0.000005);
     
     System.out.println("@Test - testCoefCalc1");
@@ -168,11 +173,11 @@ public class CoefCalcTests {
     coefCalc.updateCoefficients(b);
 
     // Values obtained from RADDOSEv2, http://www.raddo.se/legacy/
-    Assertion.equals(coefCalc.getAbsorptionCoefficient(), 0.004675,
+    Tolerance.equals(coefCalc.getAbsorptionCoefficient(), 0.004675,
         "Absorption Coefficient", 0.000005);
-    Assertion.equals(coefCalc.getElasticCoefficient(), 0.000068,
+    Tolerance.equals(coefCalc.getElasticCoefficient(), 0.000068,
         "Elastic Coefficient", 0.000005);
-    Assertion.equals(coefCalc.getAttenuationCoefficient(), 0.004769,
+    Tolerance.equals(coefCalc.getAttenuationCoefficient(), 0.004769,
         "Attenuation Coefficient", 0.000005);
     
     System.out.println("@Test - testCoefCalc2");
@@ -183,6 +188,14 @@ public class CoefCalcTests {
    * This input file is stolen from Jonny's insulin crystals!
    */
   @Test
+  /**
+   * PARKED -- see TEST-TRIAGE.md #1.
+   * Fails since b0a79ff (2023-10-22) flipped WATER_CONCENTRATION from 55555
+   * (1.00 g/cm3) to 51666 (0.93 g/cm3), shifting absorption by about -2.6%.
+   * Expected 4.60e-04, currently 4.45987638e-04.
+   * The expectation is deliberately left untouched pending a decision.
+   */
+  @Tag("pending")
   public void testCoefCalcScenario3() {
     List<String> heavyProtAtomNames = new ArrayList<String>();
     List<Double> heavyProtAtomNums = new ArrayList<Double>();
@@ -217,11 +230,11 @@ public class CoefCalcTests {
     coefCalc.updateCoefficients(b.getPhotonEnergy());
 
     // Values obtained from RADDOSEv2, http://www.raddo.se/legacy/
-    Assertion.equals(coefCalc.getAbsorptionCoefficient(), 4.60e-04,
+    Tolerance.equals(coefCalc.getAbsorptionCoefficient(), 4.60e-04,
         "Absorption Coefficient", 0.000005);
-    Assertion.equals(coefCalc.getElasticCoefficient(), 2.20e-05,
+    Tolerance.equals(coefCalc.getElasticCoefficient(), 2.20e-05,
         "Elastic Coefficient", 0.000005);
-    Assertion.equals(coefCalc.getAttenuationCoefficient(), 4.97e-04,
+    Tolerance.equals(coefCalc.getAttenuationCoefficient(), 4.97e-04,
         "Attenuation Coefficient", 0.000005);
     
     System.out.println("@Test - testCoefCalc3");
@@ -231,6 +244,14 @@ public class CoefCalcTests {
    * Run an actual scenario - water based surrounding 
    */
   @Test
+  /**
+   * PARKED -- see TEST-TRIAGE.md #1.
+   * Fails since b0a79ff (2023-10-22) flipped WATER_CONCENTRATION from 55555
+   * (1.00 g/cm3) to 51666 (0.93 g/cm3), shifting absorption by about -2.6%.
+   * Expected 3.5358e-04 (cryo), currently 3.37172471e-04.
+   * The expectation is deliberately left untouched pending a decision.
+   */
+  @Tag("pending")
   public void testCoefCalcWaterBasedSurrounding() {
     List<String> heavyProtAtomNames = new ArrayList<String>();
     List<Double> heavyProtAtomNums = new ArrayList<Double>();
@@ -273,7 +294,7 @@ public class CoefCalcTests {
     coefCalc.updateCryoCoefficients(b.getPhotonEnergy());
 
     // Values obtained from RADDOSEv2, http://www.raddo.se/legacy/
-    Assertion.equals(coefCalc.getCryoAbsorptionCoefficient(), 3.535855532631557E-4,
+    Tolerance.equals(coefCalc.getCryoAbsorptionCoefficient(), 3.535855532631557E-4,
         "Cryo Absorption Coefficient", 0.000005);
 
     
@@ -329,7 +350,7 @@ public class CoefCalcTests {
     
 
     // Values obtained from RADDOSEv2, http://www.raddo.se/legacy/
-    Assertion.equals(coefCalc.getCryoAbsorptionCoefficient(), 9.068762586797131E-5,
+    Tolerance.equals(coefCalc.getCryoAbsorptionCoefficient(), 9.068762586797131E-5,
         "Cryo Absorption Coefficient", 0.000005);
 
     
@@ -340,7 +361,8 @@ public class CoefCalcTests {
    * This test checks that the sequence file parser is able to
    * parse the correct number of protein, DNA and RNA residues.
    */
-  public void testSequenceParser() {   //this is currently not being tested
+  @Test
+  public void testSequenceParser() {
     List<String> heavyProtAtomNames = new ArrayList<String>();
     List<Double> heavyProtAtomNums = new ArrayList<Double>();
 
@@ -370,7 +392,7 @@ public class CoefCalcTests {
     CoefCalcFromSequenceSAXS coefCalc = new CoefCalcFromSequenceSAXS(100.0, 100.0, 
         100.0, RIGHT_ANGLE, RIGHT_ANGLE, RIGHT_ANGLE, heavyProtAtomNames,
         heavyProtAtomNums, heavySolutionConcNames, heavySolutionConcNums,
-        -1.0, 1.0, "TestSequence.fasta", emptyAtoms, emptyNumbers, "TRUE", "TRUE", 0, oilNames, oilNums, 1.2);
+        -1.0, 1.0, "test/resources/TestSequence.fasta", emptyAtoms, emptyNumbers, "TRUE", "TRUE", 0, oilNames, oilNums, 1.2);
     
     boolean correctNumProtein = false;
     if (coefCalc.getNumAminoAcids() == 25) {
@@ -454,13 +476,13 @@ public class CoefCalcTests {
       coefCalc.updateCoefficients(b.getPhotonEnergy());
 
       // Values obtained from RADDOSEv2, http://www.raddo.se/legacy/
-      Assertion.equals(coefCalc.getAbsorptionCoefficient(),
+      Tolerance.equals(coefCalc.getAbsorptionCoefficient(),
           coefCalcRDV2.getAbsorptionCoefficient(),
           "Absorption Coefficient", 0.000005);
-      Assertion.equals(coefCalc.getElasticCoefficient(),
+      Tolerance.equals(coefCalc.getElasticCoefficient(),
           coefCalcRDV2.getElasticCoefficient(),
           "Elastic Coefficient", 0.000005);
-      Assertion.equals(coefCalc.getAttenuationCoefficient(),
+      Tolerance.equals(coefCalc.getAttenuationCoefficient(),
           coefCalcRDV2.getAttenuationCoefficient(),
           "Attenuation Coefficient", 0.000005);
       

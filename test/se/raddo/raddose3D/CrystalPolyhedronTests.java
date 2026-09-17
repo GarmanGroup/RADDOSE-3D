@@ -1,13 +1,9 @@
-package se.raddo.raddose3D.tests;
+package se.raddo.raddose3D;
 
 import java.util.HashMap;
 
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
 
-import se.raddo.raddose3D.Crystal;
-import se.raddo.raddose3D.CrystalCuboid;
-import se.raddo.raddose3D.CrystalPolyhedron;
-import se.raddo.raddose3D.Wedge;
 
 public class CrystalPolyhedronTests {
 
@@ -16,13 +12,13 @@ public class CrystalPolyhedronTests {
    * Same voxel grid as when dummy dimensions are supplied.
    */
   @Test
-  public static void testPolyhedronWithoutDeclaredDimensions() {
+  public void testPolyhedronWithoutDeclaredDimensions() {
     final double xdim = 60;
     final double ydim = 20;
     final double zdim = 40;
     final Double resolution = 0.5d;
     final String modelFile =
-        "src/se/raddo/raddose3D/tests/CrystalPolyhedron-cuboid-30-20-10.obj";
+        "test/resources/CrystalPolyhedron-cuboid-30-20-10.obj";
     final String modelType = "obj";
 
     final HashMap<Object, Object> withDims = new HashMap<Object, Object>();
@@ -46,17 +42,17 @@ public class CrystalPolyhedronTests {
     final CrystalPolyhedron cNo = new CrystalPolyhedron(noDims);
     final int[] a = cWith.getCrystSizeVoxels();
     final int[] b = cNo.getCrystSizeVoxels();
-    Assertion.equals(a[0], b[0], "voxel nx");
-    Assertion.equals(a[1], b[1], "voxel ny");
-    Assertion.equals(a[2], b[2], "voxel nz");
+    Tolerance.equals(a[0], b[0], "voxel nx");
+    Tolerance.equals(a[1], b[1], "voxel ny");
+    Tolerance.equals(a[2], b[2], "voxel nz");
   }
 
   @Test
-  public static void testFindDepthSimple() {
+  public void testFindDepthSimple() {
     double xdim = 60, ydim = 20, zdim = 40; // just like in the model file.
 
     Double resolution = 0.5d;
-    String modelFile = "src/se/raddo/raddose3D/tests/CrystalPolyhedron-cuboid-30-20-10.obj";
+    String modelFile = "test/resources/CrystalPolyhedron-cuboid-30-20-10.obj";
     String modelType = "obj";
 
     HashMap<Object, Object> properties = new HashMap<Object, Object>();
@@ -92,23 +88,23 @@ public class CrystalPolyhedronTests {
           for (int z = 1; z < zdim * resolution - 1; z++) {
             crystCoordsCub = cub.getCrystCoord(x, y, z);
             crystCoords = c.getCrystCoord(x, y, z);
-            Assertion.equals(crystCoords[0], -(xdim / 2) + (x / resolution),
+            Tolerance.equals(crystCoords[0], -(xdim / 2) + (x / resolution),
                 "crystal coordinate x axis for voxel (" + x + ", " + y + ", "
                     + z + ")", 0.01);
-            Assertion.equals(crystCoords[1], -(ydim / 2) + (y / resolution),
+            Tolerance.equals(crystCoords[1], -(ydim / 2) + (y / resolution),
                 "crystal coordinate y axis for voxel (" + x + ", " + y + ", "
                     + z + ")", 0.01);
-            Assertion.equals(crystCoords[2], -(zdim / 2) + (z / resolution),
+            Tolerance.equals(crystCoords[2], -(zdim / 2) + (z / resolution),
                 "crystal coordinate z axis for voxel (" + x + ", " + y + ", "
                     + z + ")", 0.01);
             
-            Assertion.equals(crystCoordsCub[0], -(xdim / 2) + (x / resolution),
+            Tolerance.equals(crystCoordsCub[0], -(xdim / 2) + (x / resolution),
                 "crystal coordinate x axis for voxel (" + x + ", " + y + ", "
                     + z + ")", 0.01);
-            Assertion.equals(crystCoordsCub[1], -(ydim / 2) + (y / resolution),
+            Tolerance.equals(crystCoordsCub[1], -(ydim / 2) + (y / resolution),
                 "crystal coordinate y axis for voxel (" + x + ", " + y + ", "
                     + z + ")", 0.01);
-            Assertion.equals(crystCoordsCub[2], -(zdim / 2) + (z / resolution),
+            Tolerance.equals(crystCoordsCub[2], -(zdim / 2) + (z / resolution),
                 "crystal coordinate z axis for voxel (" + x + ", " + y + ", "
                     + z + ")", 0.01);
 
@@ -138,10 +134,10 @@ public class CrystalPolyhedronTests {
             
             String axis = (angle == 0) ? "z" : "x";
             
-            Assertion.equals(depth, trueDepth, "depth at " + axis + " = " + trueDepth
+            Tolerance.equals(depth, trueDepth, "depth at " + axis + " = " + trueDepth
                 + " for crystCoord (" + crystCoords[0] + ", " + crystCoords[1]
                 + ", " + crystCoords[2] + ")", 2.0);
-            Assertion.equals(depthCub, trueDepth, "depth at " + axis + " = " + trueDepth
+            Tolerance.equals(depthCub, trueDepth, "depth at " + axis + " = " + trueDepth
                 + " for cuboid crystCoord (" + crystCoordsCub[0] + ", " + crystCoordsCub[1]
                 + ", " + crystCoordsCub[2] + ")", 2.0);
           }
@@ -156,10 +152,10 @@ public class CrystalPolyhedronTests {
   // is hit from the side, which may omit the middle bit
   // depending on the tested voxel.
   @Test
-  public static void testFindDepthConcave()
+  public void testFindDepthConcave()
   {
     Double resolution = 0.5d;
-    String modelFile = "src/se/raddo/raddose3D/tests/CrystalPolyhedron-concave_cuboid-30-20-10.obj";
+    String modelFile = "test/resources/CrystalPolyhedron-concave_cuboid-30-20-10.obj";
     String modelType = "obj";
 
     HashMap<Object, Object> properties = new HashMap<Object, Object>();
@@ -186,11 +182,11 @@ public class CrystalPolyhedronTests {
     c.setupDepthFinding(0, w);
 
     double thickDepth = c.findDepth(crystCoordThick, 0, w);
-    Assertion
+    Tolerance
         .equals(thickDepth, 60.0, "Thick part of crystal about 30 um", 1.0);
 
     double thinDepth = c.findDepth(crystCoordThin, 0, w);
-    Assertion.equals(thinDepth, 40.0, "Thin part of crystal about 20 um", 1.0);
+    Tolerance.equals(thinDepth, 40.0, "Thin part of crystal about 20 um", 1.0);
 
   }
 }

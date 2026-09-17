@@ -1,11 +1,10 @@
-package se.raddo.raddose3D.tests;
+package se.raddo.raddose3D;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
 
-import se.raddo.raddose3D.Element;
 import se.raddo.raddose3D.Element.CrossSection;
 import se.raddo.raddose3D.ElementDatabase.DatabaseFields;
 
@@ -19,9 +18,9 @@ public class ElementTest {
   public void checkElement() {
     Element s = new Element("S", 16, getSulphur());
 
-    Assertion.equals(s.getAtomicNumber(), 16, "atomic number");
-    Assertion.equals(s.getAtomicWeight(), 3.20660e+01, "atomic weight");
-    Assertion.equals(s.getAtomicWeightInGrams(), 5.3246841e-23,
+    Tolerance.equals(s.getAtomicNumber(), 16, "atomic number");
+    Tolerance.equals(s.getAtomicWeight(), 3.20660e+01, "atomic weight");
+    Tolerance.equals(s.getAtomicWeightInGrams(), 5.3246841e-23,
         "atomic weight (g)");   
     sulphurTests(s);
   }
@@ -79,12 +78,12 @@ public class ElementTest {
       final double conversionfactor, final double energy,
       final double photoelectric, final double coherent, final double total) {
     Map<CrossSection, Double> xs = e.getAbsCoefficients(energy);
-    Assertion.equals(xs.get(Element.CrossSection.PHOTOELECTRIC)
+    Tolerance.equals(xs.get(Element.CrossSection.PHOTOELECTRIC)
         / conversionfactor, photoelectric, "Photoelectric cross-section at "
         + energy + " keV", 0.001);
-    Assertion.equals(xs.get(Element.CrossSection.COHERENT) / conversionfactor,
+    Tolerance.equals(xs.get(Element.CrossSection.COHERENT) / conversionfactor,
         coherent, "Coherent cross-section at " + energy + " keV", 0.001);
-    Assertion.equals(xs.get(Element.CrossSection.TOTAL) / conversionfactor,
+    Tolerance.equals(xs.get(Element.CrossSection.TOTAL) / conversionfactor,
         total, "Total cross-section at " + energy + " keV", 0.001);
   }
 

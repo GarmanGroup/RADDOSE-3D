@@ -1,14 +1,14 @@
-package se.raddo.raddose3D.tests;
+package se.raddo.raddose3D;
 
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 
-import static org.testng.Assert.*;
-import org.testng.annotations.*;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 
-import se.raddo.raddose3D.Writer;
-import se.raddo.raddose3D.WriterString;
 
 public class WriterStringTest {
 
@@ -22,24 +22,28 @@ public class WriterStringTest {
     w.write("bla");
     w.close();
 
-    assertEquals(((WriterString) w).getDataString(), "asdf\nbla");
+    assertEquals("asdf\nbla", ((WriterString) w).getDataString());
     System.out.println("@Test - testWriterString");
   }
 
-  @Test(expectedExceptions = RuntimeException.class)
+  @Test
   public void testWritingAfterClosingShouldFailWithString() {
-    Writer w = new WriterString();
-    w.write("asdf");
-    w.close();
-    w.write("asdf");
+    assertThrows(RuntimeException.class, () -> {
+      Writer w = new WriterString();
+      w.write("asdf");
+      w.close();
+      w.write("asdf");
+    });
   }
 
-  @Test(expectedExceptions = RuntimeException.class)
+  @Test
   public void testWritingAfterClosingShouldFailWithStringBuffer() {
-    Writer w = new WriterString();
-    w.write("asdf");
-    w.close();
-    w.write(new StringBuffer("asdf"));
+    assertThrows(RuntimeException.class, () -> {
+      Writer w = new WriterString();
+      w.write("asdf");
+      w.close();
+      w.write(new StringBuffer("asdf"));
+    });
   }
 
   @Test
@@ -54,7 +58,7 @@ public class WriterStringTest {
     p.write("bla");
     p.close();
 
-    assertEquals(w.getDataString(), "asdf\nbla");
+    assertEquals("asdf\nbla", w.getDataString());
     System.out.println("@Test - testWriterStringAsOutputStream");
   }
 

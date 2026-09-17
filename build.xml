@@ -40,8 +40,6 @@
          debug="false" includes="**/*.java" includeantruntime="false"   source="1.8" target="1.8">
    <classpath refid="antlr" />
    <classpath refid="math3" />
-   <classpath refid="testng" />
-   <classpath refid="mockito" />
    <classpath refid="selenium" />
   </javac>
  </target>
@@ -55,8 +53,6 @@
          debug="true" includes="**/*.java" includeantruntime="false">
    <classpath refid="antlr" />
    <classpath refid="math3" />
-   <classpath refid="testng" />
-   <classpath refid="mockito" />
    <classpath refid="selenium" />
   </javac>
  </target>
@@ -72,8 +68,6 @@
    <compilerarg value="-Xlint"/>
    <classpath refid="antlr" />
    <classpath refid="math3" />
-   <classpath refid="testng" />
-   <classpath refid="mockito" />
    <classpath refid="selenium" />
   </javac>
  </target>
@@ -89,8 +83,6 @@
    <compilerarg value="-Xlint"/>
    <classpath refid="antlr" />
    <classpath refid="math3" />
-   <classpath refid="testng" />
-   <classpath refid="mockito" />
    <classpath refid="selenium" />
   </javac>
  </target>
@@ -244,39 +236,91 @@
    </fileset>
    <classpath refid="antlr" />
    <classpath refid="math3" />
-   <classpath refid="testng" />
-   <classpath refid="mockito" />
 
    <bottom><![CDATA[<br/>Documentation for source <em>revision ${repository.revision}, created on ${timestamp}</em>]]></bottom>
   </javadoc>
  </target>
 
 
- <!-- Directory for TestNG, checkstyle, PMD and FindBugs reports -->
+ <!-- Directory for checkstyle, PMD and FindBugs reports -->
  <property name="report.dir" value="reports"/>
 
- <target name="test">
-  <mkdir dir="${report.dir}"/>
-  <testng outputdir="${report.dir}" classpathref="classes" excludedgroups="advanced" haltOnfailure="true">
-   <xmlfileset dir="." includes="testng.xml"/>
+ <!-- Test reports go in their own subdirectory: ${report.dir} itself is also
+      used by hand to hold RADDOSE simulation output (reports/circular_test/
+      etc.), so we must not write over it. -->
+ <property name="test.report.dir" value="${report.dir}/tests"/>
+
+ <!-- Compile the tests. Separate source root (test/) and separate output
+      directory (bin-test/) so that test classes never reach the jars.
+      Deliberately does NOT depend on versionize. -->
+ <target name="build-tests">
+  <mkdir dir="${test.bin}"/>
+  <javac srcdir="test" destdir="${test.bin}"
+         debug="true" includes="**/*.java" includeantruntime="false"
+         source="1.8" target="1.8">
+   <classpath refid="classes" />
    <classpath refid="antlr" />
    <classpath refid="math3" />
-   <classpath refid="mockito" />
-  </testng>
+   <classpath refid="junit" />
+   <compilerarg value="-Xlint:-options"/>
+  </javac>
  </target>
 
+ <!-- Shared runner. Set ${test.exclusions} to a space separated list of
+      extra ConsoleLauncher arguments before calling. -->
+ <target name="-run-tests">
+  <mkdir dir="${test.report.dir}"/>
+  <!-- basedir is on the classpath so that constants/ and the .obj test
+       fixtures resolve, both via getResourceAsStream("/...") and via the
+       CWD-relative FileInputStream fallback. -->
+  <pathconvert property="test.runtime.classpath" refid="test.classpath"/>
+  <java fork="true" failonerror="true" dir="${basedir}"
+        classname="org.junit.platform.console.ConsoleLauncher">
+   <classpath refid="junit"/>
+   <arg value="execute"/>
+   <arg value="--class-path"/>
+   <arg value="${test.runtime.classpath}"/>
+   <arg value="--scan-class-path"/>
+   <arg value="${test.bin}"/>
+   <arg line="${test.exclusions}"/>
+   <arg value="--reports-dir"/>
+   <arg value="${test.report.dir}"/>
+   <arg value="--details=tree"/>
+   <arg value="--disable-ansi-colors"/>
+  </java>
+ </target>
+
+ <!-- Fast suite: skips the long-running geometry tests ("slow") and the
+      tests parked pending a decision in TEST-TRIAGE.md ("pending"). -->
+ <target name="test">
+  <property name="test.exclusions"
+            value="--exclude-tag slow --exclude-tag pending --exclude-tag network"/>
+  <antcall target="-run-tests" inheritall="true"/>
+ </target>
+
+ <!-- Everything except the parked tests. -->
  <target name="test-all">
-  <mkdir dir="${report.dir}"/>
-  <testng outputdir="${report.dir}" classpathref="classes" configFailurePolicy="continue" haltOnfailure="true">
-   <xmlfileset dir="." includes="testng.xml"/>
-   <classpath refid="antlr" />
-   <classpath refid="math3" />
-   <classpath refid="mockito" />
-  </testng>
+  <property name="test.exclusions"
+            value="--exclude-tag pending --exclude-tag network"/>
+  <antcall target="-run-tests" inheritall="true"/>
+ </target>
+
+ <!-- Tests that reach out to physics.nist.gov. Excluded everywhere else so
+      the suite stays hermetic and CI does not depend on a third party. -->
+ <target name="test-network">
+  <property name="test.exclusions" value="--include-tag network"/>
+  <antcall target="-run-tests" inheritall="true"/>
+ </target>
+
+ <!-- Including the parked tests: expected to fail until triaged. -->
+ <target name="test-pending">
+  <property name="test.exclusions" value="--include-tag pending"/>
+  <antcall target="-run-tests" inheritall="true"/>
  </target>
 
  <target name="checkstyle">
   <mkdir dir="${report.dir}"/>
+  <taskdef resource="checkstyletask.properties" classpath="lib/checkstyle-5.6/checkstyle-5.6-all.jar"/>
   <checkstyle config="lib/checkstyle-5.6/raddose_checks.xml" failOnViolation="false">
    <fileset dir="src">
     <include name="**/*.java"/>
@@ -321,16 +365,16 @@
    </fileset>
    <auxClasspath path="${basedir}/lib/antlr-3.4/antlr-3.4-cutdown.jar"/>
    <auxClasspath path="${basedir}/lib/commons-math3-3.6.1/commons-math3-3.6.1.jar"/>
-   <auxClasspath path="${basedir}/lib/testng-6.8/testng-6.8.jar"/>
-   <auxClasspath path="${basedir}/lib/mockito-1.9.5/mockito-all-1.9.5.jar"/>
    <auxClasspath path="${basedir}/bin"/>
    <sourcePath path="${basedir}/src" />
   </findbugs>
  </target>
 
 
- <taskdef resource="testngtasks" classpath="lib/testng-6.8/testng-6.8.jar"/>
- <taskdef resource="checkstyletask.properties" classpath="lib/checkstyle-5.6/checkstyle-5.6-all.jar"/>
+ <!-- NOTE: the checkstyle taskdef deliberately lives inside the checkstyle
+      target rather than at the top level. Task definitions at this level are
+      evaluated on *every* ant invocation, including `ant clean`, so a missing
+      or unreadable jar breaks the entire build file. -->
 
  <path id="math3">
   <fileset dir="lib/commons-math3-3.6.1">
@@ -344,18 +388,27 @@
   </fileset>
  </path>
 
- <path id="testng">
-  <fileset dir="lib/testng-6.8">
+ <!-- Output directory for compiled test classes. -->
+ <property name="test.bin" value="bin-test"/>
+
+ <!-- JUnit 5, as a single self-contained jar (engine + launcher + console).
+      Java 8 bytecode, runs on JDK 8 through 25. -->
+ <path id="junit">
+  <fileset dir="lib/junit5">
    <include name="*.jar"/>
   </fileset>
  </path>
 
- <path id="mockito">
-  <fileset dir="lib/mockito-1.9.5">
-   <include name="*.jar"/>
-  </fileset>
+ <!-- Classpath used when *running* the tests. basedir must be present so
+      that constants/ and the test .obj fixtures resolve. -->
+ <path id="test.classpath">
+  <pathelement location="bin"/>
+  <pathelement location="${test.bin}"/>
+  <pathelement location="${basedir}"/>
+  <path refid="antlr"/>
+  <path refid="math3"/>
  </path>
- 
+
   <path id="selenium">
   <fileset dir="lib/selenium">
    <include name="*.jar"/>

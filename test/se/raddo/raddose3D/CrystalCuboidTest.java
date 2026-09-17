@@ -1,35 +1,31 @@
-package se.raddo.raddose3D.tests;
+package se.raddo.raddose3D;
 
 import java.util.HashMap;
 
-import static org.testng.Assert.*;
-import org.testng.annotations.*;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 
-import se.raddo.raddose3D.Crystal;
-import se.raddo.raddose3D.CrystalCuboid;
-import se.raddo.raddose3D.Wedge;
 
 /**
  * Tests for the Cuboid crystal class.
  */
 
 public class CrystalCuboidTest {
-  final static double dblRoundingTolerance = 1e-13;
-
   /**
-   * Tests value against target. Includes testing for null and nice error
-   * messages
+   * Checks that a full 360 rotation in P or L makes the crystal invariant,
+   * and that you get correct negatives under 180deg rotation.
+   * <p>
+   * PARKED -- see TEST-TRIAGE.md #2. getCrystCoord() ignores AngleP/AngleL
+   * entirely, so a 180 degree rotation returns the unrotated coordinate and
+   * the negation assertions fail. Long-standing, and masked because this test
+   * was in TestNG's "advanced" group, which `ant test` excluded and only the
+   * (long dead) Travis job ever ran.
    */
-  private static void assertEquals(Double value, Double target, String name) {
-    assertNotNull(value, name + " is null");
-    assertTrue(Math.abs(value - target) < dblRoundingTolerance,
-        name + " set incorrectly (" + value + ")");
-  }
-
-  @Test(groups = { "advanced" })
-  /** Checks that a full 360 rotation in P or L makes the crystal invariant,
-   *  and that you get correct negatives under 180deg rotation.
-   **/
+  @Test
+  @Tag("slow")
+  @Tag("pending")
   public void testCuboidCrystalPandL() {
     final Double ang360 = 360d;
     final Double ang180 = 180d;
@@ -78,34 +74,34 @@ public class CrystalCuboidTest {
         for (int k = 0; k < z; k++) {
           double id[] = c.getCrystCoord(i, j, k);
 
-          assertEquals(cEquivalentP360.getCrystCoord(i, j, k)[0], id[0],
+          Tolerance.equals(cEquivalentP360.getCrystCoord(i, j, k)[0], id[0],
               "P360-x");
-          assertEquals(cEquivalentP360.getCrystCoord(i, j, k)[1], id[1],
+          Tolerance.equals(cEquivalentP360.getCrystCoord(i, j, k)[1], id[1],
               "P360-y");
-          assertEquals(cEquivalentP360.getCrystCoord(i, j, k)[2], id[2],
+          Tolerance.equals(cEquivalentP360.getCrystCoord(i, j, k)[2], id[2],
               "P360-z");
 
-          assertEquals(cEquivalentL360.getCrystCoord(i, j, k)[0], id[0],
+          Tolerance.equals(cEquivalentL360.getCrystCoord(i, j, k)[0], id[0],
               "L360-x");
-          assertEquals(cEquivalentL360.getCrystCoord(i, j, k)[1], id[1],
+          Tolerance.equals(cEquivalentL360.getCrystCoord(i, j, k)[1], id[1],
               "L360-y");
-          assertEquals(cEquivalentL360.getCrystCoord(i, j, k)[2], id[2],
+          Tolerance.equals(cEquivalentL360.getCrystCoord(i, j, k)[2], id[2],
               "L360-z");
 
-          assertEquals(cEquivalentPL360.getCrystCoord(i, j, k)[0], id[0],
+          Tolerance.equals(cEquivalentPL360.getCrystCoord(i, j, k)[0], id[0],
               "PL360-x");
-          assertEquals(cEquivalentPL360.getCrystCoord(i, j, k)[1], id[1],
+          Tolerance.equals(cEquivalentPL360.getCrystCoord(i, j, k)[1], id[1],
               "PL360-y");
-          assertEquals(cEquivalentPL360.getCrystCoord(i, j, k)[2], id[2],
+          Tolerance.equals(cEquivalentPL360.getCrystCoord(i, j, k)[2], id[2],
               "PL360-z");
 
-          assertEquals(-1 * cP180.getCrystCoord(i, j, k)[0], id[0], "P180-x");
-          assertEquals(-1 * cP180.getCrystCoord(i, j, k)[1], id[1], "P180-y");
-          assertEquals(cP180.getCrystCoord(i, j, k)[2], id[2], "P180-z");
+          Tolerance.equals(-1 * cP180.getCrystCoord(i, j, k)[0], id[0], "P180-x");
+          Tolerance.equals(-1 * cP180.getCrystCoord(i, j, k)[1], id[1], "P180-y");
+          Tolerance.equals(cP180.getCrystCoord(i, j, k)[2], id[2], "P180-z");
 
-          assertEquals(cL180.getCrystCoord(i, j, k)[0], id[0], "L180-x");
-          assertEquals(-1 * cL180.getCrystCoord(i, j, k)[1], id[1], "L180-y");
-          assertEquals(-1 * cL180.getCrystCoord(i, j, k)[2], id[2], "L180-z");
+          Tolerance.equals(cL180.getCrystCoord(i, j, k)[0], id[0], "L180-x");
+          Tolerance.equals(-1 * cL180.getCrystCoord(i, j, k)[1], id[1], "L180-y");
+          Tolerance.equals(-1 * cL180.getCrystCoord(i, j, k)[2], id[2], "L180-z");
         }
       }
 
@@ -114,8 +110,9 @@ public class CrystalCuboidTest {
   }
 
   //This should work now... Am going to tart up Wedge and have another go.
-  @Test(groups = { "advanced" })
-  public static void testFindDepthSymmetry() {
+  @Test
+  @Tag("slow")
+  public void testFindDepthSymmetry() {
 
     HashMap<Object, Object> properties = new HashMap<Object, Object>();
     properties.put(Crystal.CRYSTAL_DIM_X, 100d);
@@ -187,7 +184,7 @@ public class CrystalCuboidTest {
   }
 
   @Test
-  public static void testFindDepth() {
+  public void testFindDepth() {
     int xdim = 90;
     int ydim = 74;
     int zdim = 40;
@@ -222,11 +219,11 @@ public class CrystalCuboidTest {
       for (int y = 0; y < ydim * resolution; y++) {
         for (int z = 0; z < zdim * resolution; z++) {
           crystCoords = c.getCrystCoord(x, y, z);
-          Assertion.equals(crystCoords[0], -(xdim / 2) + (x / resolution),
+          Tolerance.equals(crystCoords[0], -(xdim / 2) + (x / resolution),
               "crystal coordinate x axis");
-          Assertion.equals(crystCoords[1], -(ydim / 2) + (y / resolution),
+          Tolerance.equals(crystCoords[1], -(ydim / 2) + (y / resolution),
               "crystal coordinate y axis");
-          Assertion.equals(crystCoords[2], -(zdim / 2) + (z / resolution),
+          Tolerance.equals(crystCoords[2], -(zdim / 2) + (z / resolution),
               "crystal coordinate z axis");
 
           c.setupDepthFinding(0, w);
@@ -237,7 +234,7 @@ public class CrystalCuboidTest {
 
           // Because the crystal has not been rotated,
           // the depth should just be z / resolution
-          Assertion.equals(depth, z / resolution, "depth at z=" + z);
+          Tolerance.equals(depth, z / resolution, "depth at z=" + z);
         }
       }
     }

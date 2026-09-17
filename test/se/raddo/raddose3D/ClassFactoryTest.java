@@ -1,15 +1,11 @@
-package se.raddo.raddose3D.tests;
+package se.raddo.raddose3D;
 
 import java.util.HashMap;
 
-import static org.testng.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
 
-import se.raddo.raddose3D.Beam;
-import se.raddo.raddose3D.BeamGaussian;
-import se.raddo.raddose3D.BeamTophat;
-import se.raddo.raddose3D.ClassFactory;
 
 /**
  * Tests of the different ClassFactory functions.
@@ -24,7 +20,7 @@ public class ClassFactoryTest {
 
     Beam b = bf.createObject(Beam.class, "Tophat", defaultProperties());
     assertTrue(b instanceof BeamTophat);
-    Assertion.equals(b.getPhotonEnergy(), BEAMENERGYMARKER,
+    Tolerance.equals(b.getPhotonEnergy(), BEAMENERGYMARKER,
         "Beam Energy");
 
     System.out.println("@Test - testClassFactoryBeamTopHat");
@@ -36,45 +32,53 @@ public class ClassFactoryTest {
 
     Beam b = bf.createObject(Beam.class, "Gaussian", defaultProperties());
     assertTrue(b instanceof BeamGaussian);
-    Assertion.equals(b.getPhotonEnergy(), BEAMENERGYMARKER,
+    Tolerance.equals(b.getPhotonEnergy(), BEAMENERGYMARKER,
         "Beam Energy");
 
     System.out.println("@Test - testClassFactoryBeamGaussian");
   }
 
-  @Test(expectedExceptions = RuntimeException.class)
+  @Test
   public void testClassFactoryShouldFailOnInvalidInput() {
-    ClassFactory cf = new ClassFactory();
-    cf.createObject(Beam.class, "invalid", defaultProperties());
+    assertThrows(RuntimeException.class, () -> {
+      ClassFactory cf = new ClassFactory();
+      cf.createObject(Beam.class, "invalid", defaultProperties());
+    });
   }
 
-  @Test(expectedExceptions = IllegalArgumentException.class)
+  @Test
   public void testClassFactoryShouldFailOnEmptyInput() {
-    ClassFactory cf = new ClassFactory();
-    cf.createObject(Beam.class, "", defaultProperties());
+    assertThrows(IllegalArgumentException.class, () -> {
+      ClassFactory cf = new ClassFactory();
+      cf.createObject(Beam.class, "", defaultProperties());
+    });
   }
 
-  @Test(expectedExceptions = IllegalArgumentException.class)
+  @Test
   public void testClassFactoryShouldFailOnNullInput() {
-    ClassFactory cf = new ClassFactory();
-    cf.createObject(Beam.class, null, defaultProperties());
+    assertThrows(IllegalArgumentException.class, () -> {
+      ClassFactory cf = new ClassFactory();
+      cf.createObject(Beam.class, null, defaultProperties());
+    });
   }
 
   @Test
   public void testClassFactoryDummy() {
     ClassFactory cf = new ClassFactory();
 
-    Beam b = cf.createObject(Beam.class, "se.raddo.raddose3D.tests.BeamDummy",
+    Beam b = cf.createObject(Beam.class, "se.raddo.raddose3D.BeamDummy",
         defaultProperties());
     assertTrue(b instanceof BeamDummy);
 
     System.out.println("@Test - testClassFactoryBeamDummy");
   }
 
-  @Test(expectedExceptions = IllegalArgumentException.class)
+  @Test
   public void testClassFactoryShouldFailOnNullClasses() {
-    ClassFactory cf = new ClassFactory();
-    cf.createObject(null, "se.raddo.raddose3D.Crystal", defaultProperties());
+    assertThrows(IllegalArgumentException.class, () -> {
+      ClassFactory cf = new ClassFactory();
+      cf.createObject(null, "se.raddo.raddose3D.Crystal", defaultProperties());
+    });
   }
 
   private HashMap<Object, Object> defaultProperties() {

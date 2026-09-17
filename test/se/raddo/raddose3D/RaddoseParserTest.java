@@ -1,7 +1,9 @@
-package se.raddo.raddose3D.tests;
+package se.raddo.raddose3D;
 
 import org.antlr.runtime.*;
-import org.testng.annotations.*;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 
 import se.raddo.raddose3D.parser.InputfileLexer;
 import se.raddo.raddose3D.parser.InputfileParser;

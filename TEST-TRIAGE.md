@@ -1,0 +1,226 @@
+# Test triage
+
+Findings from restoring the test suite. **Nothing here has been "fixed" by
+changing an expectation.** Each item is either a parked test (tagged
+`pending`, excluded from `ant test` / `ant test-all`, runnable with
+`ant test-pending`) or a latent defect pinned by a characterisation test.
+
+Every number below was reproduced by compiling the relevant commit in a
+throwaway git worktree and running a probe against it, not inferred from
+reading diffs.
+
+## How to run
+
+| command | what it runs |
+|---|---|
+| `ant build build-tests test` | the fast suite (162 tests, ~5 s from clean) |
+| `ant test-all` | adds the `slow` geometry tests (168) |
+| `ant test-pending` | only the parked tests below; **expected to fail** |
+| `ant test-network` | only the tests that contact physics.nist.gov |
+
+`JAVA_HOME` must point at a JDK (this machine has only Homebrew's JDK 25:
+`export JAVA_HOME=/opt/homebrew/opt/openjdk`).
+
+---
+
+## 1. Absorption coefficients shifted by −2.6% — a debug toggle left flipped
+
+**Parked tests:** `CoefCalcTests.testCoefCalcScenario1`, `testCoefCalcScenario3`,
+`testCoefCalcWaterBasedSurrounding`
+**Cause:** commit `b0a79ff` (2023-10-22, *"Tidied up MicroED. Almost ready for
+proper release"*)
+**Severity: this is the one to look at first.**
+
+That commit swapped which of two mutually-exclusive commented-out lines is
+active in `CoefCalcCompute.java:146-149`:
+
+```diff
+-  protected static final double WATER_CONCENTRATION = 55555;  // Density of 1 g/cm^3
+-//protected static final double WATER_CONCENTRATION = 51666;  // Density of 0.93 g/cm^3
++//protected static final double WATER_CONCENTRATION = 55555;  // Density of 1 g/cm^3
++  protected static final double WATER_CONCENTRATION = 51666;  // Density of 0.93 g/cm^3
+```
+
+51666 / 55555 = 0.93 exactly, i.e. the density of amorphous ice rather than
+liquid water. That is physically meaningful for cryo/EM work, and the commit
+was an EM commit — but it applies globally, so **every standard MX dose
+calculation has been ~2.6% low since October 2023**, and this is in the
+released `raddose3d.jar`.
+
+Measured, by bisecting compiled worktrees (absorption coefficient, scenario 1):
+
+| commit | date | value | vs RADDOSE-v2 ref 1.042e-3 (tol 5e-6) |
+|---|---|---|---|
+| `5e9b053` | 2023-10-18 | 1.04575543e-03 | +3.8e-6 — passes |
+| **`b0a79ff`** | **2023-10-22** | **1.01852368e-03** | **−2.3e-5 — fails** |
+| `34b8d25` … `HEAD` | → 2026 | 1.01852368e-03 | fails |
+
+Reverting only that constant on current HEAD restores all three scenarios
+exactly:
+
+| scenario | HEAD | with 55555 restored | RADDOSE-v2 ref |
+|---|---|---|---|
+| 1 @ 8.05 keV | 1.01852368e-03 | 1.04575543e-03 | 1.042e-03 |
+| 3 @ 12.1 keV | 4.45987638e-04 | 4.57617993e-04 | 4.60e-04 |
+| 2 @ 14.05 keV *(control, passes either way)* | 4.67194987e-03 | 4.67591258e-03 | 4.675e-03 |
+
+**Decision needed.** Either (a) 0.93 g/cm³ was intended globally, in which case
+the RADDOSE-v2 reference values in the tests are obsolete and should be
+re-derived and the change documented in the release notes; or (b) it was a
+local EM experiment that escaped, in which case it is a live bug affecting all
+MX users and the constant should be per-sample rather than a global toggle.
+
+---
+
+## 2. `getCrystCoord` ignores AngleP / AngleL entirely
+
+**Parked test:** `CrystalCuboidTest.testCuboidCrystalPandL`
+**Cause:** long-standing; predates the current branch.
+
+The test asserts that a 180° rotation in P or L negates the relevant
+coordinates. It does not, because the rotation is never applied. Probing
+`CrystalCuboid` directly at voxel (0,0,0):
+
+```
+identity  (AngleP=0,   AngleL=0)   : -50.000  -50.000  -50.000
+AngleP180 (AngleP=180, AngleL=0)   : -50.000  -50.000  -50.000
+AngleL180 (AngleP=0,   AngleL=180) : -50.000  -50.000  -50.000
+```
+
+All three are identical, so `-1 * P180.x` is +50 where the test expects −50.
+
+This was invisible because the test was in TestNG's `advanced` group, which
+`ant test` excluded; only `ant test-all` ran it, and only on Travis, which has
+been dead since 2021. It is very likely one of the "9 that need fixing"
+referenced in commit `163e159` (2017).
+
+**Decision needed:** is `getCrystCoord` supposed to return rotated coordinates
+(bug in `CrystalPolyhedron`), or unrotated ones with rotation applied elsewhere
+in the exposure path (bug in the test)? The four 360°-invariance assertions in
+the same test pass trivially under either reading, so they prove nothing.
+
+---
+
+## 3. The `findDepth` deduplication fix appears to be unreachable
+
+**Not parked** — no test fails. Recorded because the fix may be a no-op.
+**Commit:** `9a75719` "fix findDepth deduplication"
+
+The fix is correct in the abstract: the old code compared boxed `Double`
+references (`distancesFound.get(i+1) == distancesFound.get(i)`), which is never
+true for doubles outside the small-integer cache, and it also advanced `i` past
+an element after removing one. Both are genuine defects **as written**.
+
+However, no input could be found where the fix changes the output. Compiling
+both versions and diffing:
+
+- 98,051 sampled voxels across three meshes (100 µm cube, the convex `.obj`
+  fixture, the concave `.obj` fixture) at seven rotation settings → **0
+  differences**
+- rays aimed exactly at every vertex, edge midpoint and face centre, plus a
+  sub-voxel sweep along a face diagonal → **0 differences**
+
+The likely reason is `Vector.polygonInclusionTest`: the pnpoly crossing-number
+algorithm uses a half-open edge rule (`(v[i].y > p.y) != (v[j].y > p.y)`), which
+by construction assigns a point on an edge shared by two triangles to exactly
+one of them. The duplicate distances the filter exists to remove therefore never
+arise.
+
+**No action required**, but worth knowing that the bug it fixed was probably not
+the cause of whatever symptom prompted it — so if that symptom is still open,
+it has another cause. `FindDepthRegressionTest` documents this and keeps the
+underlying invariants covered.
+
+---
+
+## 4. `BEAM_CIRCULAR` is compared with `==` rather than `equals`
+
+**Pinned by:** `BeamGaussianCircularTest.circularFlagIsComparedByReferenceNotByValue`
+
+`BeamGaussian.java:115` reads:
+
+```java
+if (properties.get(Beam.BEAM_CIRCULAR) == "TRUE") {
+```
+
+This is reference equality on a `String`. It works only because the ANTLR parser
+stores the interned literal (`InputfileParser.java:4845`). Any caller building
+the property map programmatically — the server package, a test, a future API —
+gets a **rectangular** beam from an equal-but-not-identical `"TRUE"`, silently,
+with a different `normFactor` and therefore different doses everywhere.
+
+Same pattern at `BeamTophat.java:91` and `BeamExperimentalpgm.java:48`; also
+`Version.java:24` (`REVISION == "?---?"`).
+
+Not changed, per "flag, don't fix". The one-line fix is `"TRUE".equals(...)`.
+
+---
+
+## 5. The circular-beam rewrite reduced numerical accuracy
+
+**Pinned by:** `BeamGaussianCircularTest` (tolerances set to current behaviour)
+**Commit:** `d2fbcf1` "circular beam now uses more accurate cartesian approach"
+
+The commit replaced a 100-step polar trapezoid (with the radial integral done
+analytically) by a 1000-step cartesian midpoint rule. Measured against the exact
+Rayleigh closed form for the circular case, and a 2,000,001-point Simpson
+reference for the elliptical case:
+
+| | circular, σx=σy | elliptical, σ 20×60, aperture 25×70 |
+|---|---|---|
+| old polar trapezoid | ~1e-16 | ~5e-11 |
+| new cartesian midpoint | ~3.6e-6 | ~3.3e-6 |
+
+The old implementation was near machine-exact in both regimes. The new one is
+about five orders of magnitude less accurate, and is also no longer symmetric
+under swapping the x and y axes (the two orderings differ by ~3.5e-7).
+
+In absolute terms the error is ~7e-6 relative, i.e. under 0.001% on dose, so
+this is a precision regression rather than a correctness one — but the commit
+message's rationale is not borne out. If the rewrite was motivated by a
+suspected error in the polar version, that error did not show up in any case
+tested here.
+
+---
+
+## 6. A `BeamGaussian` is inert until a container is applied
+
+**Pinned by:** `BeamGaussianCircularTest.beamIsInertUntilContainerAttenuationIsApplied`
+
+`attenuatedPhotonsPerSec` (`BeamGaussian.java:49`) is not initialised by the
+constructor, so it defaults to 0 and `beamIntensity` returns 0 **everywhere**
+until `applyContainerAttenuation` (`:269`) or `setPhotonsPerfs` (`:347`) is
+called.
+
+Not a live bug — `Crystal.expose` calls it at `Crystal.java:869` — but the
+ordering is implicit and undocumented, and a fresh beam silently delivering zero
+dose is a sharp edge for anyone using `BeamGaussian` directly.
+
+---
+
+## Mutation checks
+
+The suite was validated by reverting each fix and confirming it goes red:
+
+| mutation | failures |
+|---|---|
+| `Vector.dotProduct` sign flipped | 8 |
+| `c0d0c3f` reverted (`muabsIndex = 4` for every shell) | 2 |
+| circular beam ellipse clip removed | 11 |
+| `WATER_CONCENTRATION` restored to 55555 | 0 in `ant test` — **by design**: the tests that detect it are parked. `ant test-pending` then reports all three `CoefCalc` scenarios **passing**, which is the end-to-end confirmation of item 1. |
+
+---
+
+## 7. Test-side defects found and fixed during the port
+
+These were bugs in the tests, not the production code, so they were fixed
+outright rather than parked:
+
+| what | where | was |
+|---|---|---|
+| `CrystalDummy()` threw NPE | now supplies dimensions | `Crystal.java:297` casts `properties.get(CRYSTAL_DIM_X)` to `double` unguarded, so an empty map unboxes null. The `YDim`/`ZDim` lines right after it *are* wrapped in try/catch — the asymmetry looks unintentional, but production code was left alone. This alone broke 3 of 5 `InputParserTest` cases. |
+| `ContainerTests` never ran | revived as `ContainerTest` | the file had **zero** `@Test` annotations, so TestNG silently ran none of it. The attenuation maths is now tested offline through a stub subclass of `ContainerSemiTransparent`; the two tests that genuinely need physics.nist.gov are tagged `network` and run only via `ant test-network`. |
+| `CoefCalcTests.testSequenceParser` never ran | annotation added | no `@Test`; the only thing referencing `TestSequence.fasta`. |
+| `setupDepthFinding` inside the innermost loop | hoisted | `CrystalCuboidTest.testFindDepth` re-rotated the whole polyhedron 33,300 times with constant arguments. Not in the `advanced` group, so it dominated `ant test`. |
+| stale `se.raddo.raddose3D.tests.*` class-name strings | updated | the factory tests load classes by name. |
+| `ContainerTests:90` one-sided comparison | `Math.abs` | `a - b < 1e-2` passes for any sufficiently negative difference. |

@@ -1,25 +1,39 @@
-package se.raddo.raddose3D.tests;
+package se.raddo.raddose3D;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import se.raddo.raddose3D.Beam;
-import se.raddo.raddose3D.CoefCalc;
-import se.raddo.raddose3D.Crystal;
-import se.raddo.raddose3D.Element;
-import se.raddo.raddose3D.Wedge;
 
 /**
  * A minimal implementation of the Crystal class, which does... nothing.
  * This class is only for test purposes.
  */
 public class CrystalDummy extends Crystal {
+  /**
+   * The no-argument constructor must still supply crystal dimensions.
+   * <p>
+   * {@code Crystal}'s constructor reads CRYSTAL_DIM_X with an unguarded cast
+   * ({@code XDim = (double) properties.get(Crystal.CRYSTAL_DIM_X)}), so an
+   * empty property map unboxes null and throws NullPointerException. Note the
+   * CRYSTAL_DIM_Y and CRYSTAL_DIM_Z lines immediately following it in
+   * Crystal.java <em>are</em> wrapped in try/catch, so the asymmetry looks
+   * unintentional -- see TEST-TRIAGE.md. This is worked around here rather than
+   * in production code, because a test should not change behaviour to pass.
+   */
   public CrystalDummy() {
-    super(new HashMap<Object, Object>());
+    super(dummyProperties());
   }
-  
+
   public CrystalDummy(Map<Object, Object> properties) {
     super(properties);
+  }
+
+  private static Map<Object, Object> dummyProperties() {
+    Map<Object, Object> properties = new HashMap<Object, Object>();
+    properties.put(Crystal.CRYSTAL_DIM_X, 0d);
+    properties.put(Crystal.CRYSTAL_DIM_Y, 0d);
+    properties.put(Crystal.CRYSTAL_DIM_Z, 0d);
+    return properties;
   }
 
   @Override

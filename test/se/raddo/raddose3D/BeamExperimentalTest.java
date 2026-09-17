@@ -1,13 +1,14 @@
-package se.raddo.raddose3D.tests;
+package se.raddo.raddose3D;
 
 /**
  * Performs basic tests on Experimental Beam classes.
  */
 
-import static org.testng.Assert.*;
-import org.testng.annotations.*;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 
-import se.raddo.raddose3D.BeamExperimental;
 
 public class BeamExperimentalTest {
 
@@ -115,25 +116,25 @@ public class BeamExperimentalTest {
    */
   @Test
   public void testInterpolation() {
-    Assertion.equals(BeamExperimental.bilinearInterpolate(0, 1, 2, 3, 0, 0),
+    Tolerance.equals(BeamExperimental.bilinearInterpolate(0, 1, 2, 3, 0, 0),
         0., "Bilinear Interpolation at x=0, y=0", tolerance);
-    Assertion.equals(BeamExperimental.bilinearInterpolate(0, 1, 2, 3, 1, 0),
+    Tolerance.equals(BeamExperimental.bilinearInterpolate(0, 1, 2, 3, 1, 0),
         1., "Bilinear Interpolation at x=1, y=0", tolerance);
-    Assertion.equals(BeamExperimental.bilinearInterpolate(0, 1, 2, 3, 0, 1),
+    Tolerance.equals(BeamExperimental.bilinearInterpolate(0, 1, 2, 3, 0, 1),
         2., "Bilinear Interpolation at x=0, y=1", tolerance);
-    Assertion.equals(BeamExperimental.bilinearInterpolate(0, 1, 2, 3, 1, 1),
+    Tolerance.equals(BeamExperimental.bilinearInterpolate(0, 1, 2, 3, 1, 1),
         3., "Bilinear Interpolation at x=1, y=1", tolerance);
 
-    Assertion.equals(
+    Tolerance.equals(
         BeamExperimental.bilinearInterpolate(0, 1, 2, 3, 0.3, 0.5),
         1.3, "Bilinear Interpolation at x=0.3, y=0.5", tolerance);
-    Assertion.equals(
+    Tolerance.equals(
         BeamExperimental.bilinearInterpolate(0, 1, 2, 3, 0.7, 0.5),
         1.7, "Bilinear Interpolation at x=0.7, y=0.5", tolerance);
-    Assertion.equals(
+    Tolerance.equals(
         BeamExperimental.bilinearInterpolate(0, 1, 2, 3, 0.7, 0.9),
         2.5, "Bilinear Interpolation at x=0.7, y=0.9", tolerance);
-    Assertion.equals(
+    Tolerance.equals(
         BeamExperimental.bilinearInterpolate(0, 1, 2, 3, 0.9, 0.9),
         2.7, "Bilinear Interpolation at x=0.9, y=0.9", tolerance);
   }

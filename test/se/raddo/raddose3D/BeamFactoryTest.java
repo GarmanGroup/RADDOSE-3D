@@ -1,14 +1,12 @@
-package se.raddo.raddose3D.tests;
+package se.raddo.raddose3D;
 
 import java.util.HashMap;
 
-import static org.testng.Assert.*;
-import org.testng.annotations.*;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 
-import se.raddo.raddose3D.Beam;
-import se.raddo.raddose3D.BeamFactory;
-import se.raddo.raddose3D.BeamGaussian;
-import se.raddo.raddose3D.BeamTophat;
 
 public class BeamFactoryTest {
 
@@ -20,7 +18,7 @@ public class BeamFactoryTest {
 
     Beam b = bf.createBeam("tophat", defaultProperties());
     assertTrue(b instanceof BeamTophat);
-    Assertion.equals(b.getPhotonEnergy(), BEAMENERGYMARKER,
+    Tolerance.equals(b.getPhotonEnergy(), BEAMENERGYMARKER,
         "Beam Energy");
 
     System.out.println("@Test - testBeamFactoryTopHat");
@@ -32,29 +30,33 @@ public class BeamFactoryTest {
 
     Beam b = bf.createBeam("gaussian", defaultProperties());
     assertTrue(b instanceof BeamGaussian);
-    Assertion.equals(b.getPhotonEnergy(), BEAMENERGYMARKER,
+    Tolerance.equals(b.getPhotonEnergy(), BEAMENERGYMARKER,
         "Beam Energy");
 
     System.out.println("@Test - testBeamFactoryGaussian");
   }
 
-  @Test(expectedExceptions = RuntimeException.class)
+  @Test
   public void testBeamFactoryShouldFailOnInvalidInput() {
-    BeamFactory bf = new BeamFactory();
-    bf.createBeam("invalid", defaultProperties());
+    assertThrows(RuntimeException.class, () -> {
+      BeamFactory bf = new BeamFactory();
+      bf.createBeam("invalid", defaultProperties());
+    });
   }
 
-  @Test(expectedExceptions = RuntimeException.class)
+  @Test
   public void testBeamFactoryShouldFailOnEmptyInput() {
-    BeamFactory bf = new BeamFactory();
-    bf.createBeam("", defaultProperties());
+    assertThrows(RuntimeException.class, () -> {
+      BeamFactory bf = new BeamFactory();
+      bf.createBeam("", defaultProperties());
+    });
   }
 
   @Test
   public void testBeamFactoryDummy() {
     BeamFactory bf = new BeamFactory();
 
-    Beam b = bf.createBeam("se.raddo.raddose3D.tests.BeamDummy",
+    Beam b = bf.createBeam("se.raddo.raddose3D.BeamDummy",
         defaultProperties());
 
     assertTrue(b instanceof BeamDummy);
