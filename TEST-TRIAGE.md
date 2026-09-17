@@ -352,6 +352,36 @@ Two things remain open, both reported rather than changed:
 Also unchanged: RD3D printed results for this file even while the parser was
 recording two errors, so a malformed input does not stop the run.
 
+### The same defect exists for PDB (found 2026-09-17)
+
+`AbsCoefCalc PDB` can never parse either, for exactly the same reason:
+
+```
+Inputfile.g:388   PDB     : ('E'|'e')('X'|'x')('P'|'p');          <- matches "EXP"
+Inputfile.g:505   PDBNAME : ('P'|'p')('D'|'d')('B'|'b');          <- matches "PDB"
+```
+
+The token *named* `PDB` matches the literal **"EXP"**. So the keyword for a
+PDB-based absorption calculation is `AbsCoefCalc EXP`, and the entry itself is
+given on a following `PDB <path-or-code>` line. Writing the natural
+`AbsCoefCalc PDB` produces:
+
+```
+line 5:12 no viable alternative at input 'PDB'
+line 6:0  no viable alternative at input 'PDB'
+```
+
+and RD3D then **prints a dose anyway**, computed from a default composition
+rather than the PDB file -- which is worse than failing, because the number
+looks plausible.
+
+Two of the nine `AbsCoefCalc` keywords are therefore unreachable under their
+obvious spelling. Renaming the `PDB` and `CIF` tokens to `EXP` and `EXPSM` (or
+better, renaming the *keywords* to match the tokens) would fix both and cost
+only a grammar regeneration. Confirmed working: `AbsCoefCalc EXP` with
+`PDB 3I40.pdb` reads the local file correctly -- unit cell 77.22 cubed, 24
+monomers, 64.05% solvent.
+
 ---
 
 ## Mutation checks
