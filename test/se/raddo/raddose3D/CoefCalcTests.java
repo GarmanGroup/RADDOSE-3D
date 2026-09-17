@@ -78,13 +78,17 @@ public class CoefCalcTests {
    */
   @Test
   /**
-   * PARKED -- see TEST-TRIAGE.md #1.
-   * Fails since b0a79ff (2023-10-22) flipped WATER_CONCENTRATION from 55555
-   * (1.00 g/cm3) to 51666 (0.93 g/cm3), shifting absorption by about -2.6%.
-   * Expected 1.042e-03, currently 1.01852368e-03.
-   * The expectation is deliberately left untouched pending a decision.
+   * REBASELINED. The reference values below are RADDOSE-3D's own current
+   * output, not RADDOSE-v2's.
+   * <p>
+   * The original expectations came from RADDOSE-v2, which models the solvent
+   * as liquid water at 1.00 g/cm3. Since commit b0a79ff (2023-10-22) this code
+   * uses amorphous ice at 0.93 g/cm3 (WATER_CONCENTRATION 51666 rather than
+   * 55555 in CoefCalcCompute.java:146-149), which is the intended behaviour --
+   * confirmed by the Garman group, 2026-09-17. That makes the v2 numbers
+   * obsolete rather than a failure, so they are recorded here for provenance
+   * and the expectations re-derived. See TEST-TRIAGE.md #1.
    */
-  @Tag("pending")
   public void testCoefCalcScenario1() {
     List<String> heavyProtAtomNames = new ArrayList<String>();
     List<Double> heavyProtAtomNums = new ArrayList<Double>();
@@ -118,12 +122,12 @@ public class CoefCalcTests {
 
     coefCalc.updateCoefficients(b);
 
-    // Values obtained from RADDOSEv2, http://www.raddo.se/legacy/
-    Tolerance.equals(coefCalc.getAbsorptionCoefficient(), 0.001042,
+    // RADDOSE-v2 at 1.00 g/cm3 gave 0.001042 / 0.000036 / 0.001095
+    Tolerance.equals(coefCalc.getAbsorptionCoefficient(), 0.0010185236765749104,
         "Absorption Coefficient", 0.000005);
-    Tolerance.equals(coefCalc.getElasticCoefficient(), 0.000036,
+    Tolerance.equals(coefCalc.getElasticCoefficient(), 3.5079807082428370e-05,
         "Elastic Coefficient", 0.000005);
-    Tolerance.equals(coefCalc.getAttenuationCoefficient(), 0.001095,
+    Tolerance.equals(coefCalc.getAttenuationCoefficient(), 0.0010701986993711151,
         "Attenuation Coefficient", 0.000005);
     
     System.out.println("@Test - testCoefCalc1");
@@ -189,13 +193,17 @@ public class CoefCalcTests {
    */
   @Test
   /**
-   * PARKED -- see TEST-TRIAGE.md #1.
-   * Fails since b0a79ff (2023-10-22) flipped WATER_CONCENTRATION from 55555
-   * (1.00 g/cm3) to 51666 (0.93 g/cm3), shifting absorption by about -2.6%.
-   * Expected 4.60e-04, currently 4.45987638e-04.
-   * The expectation is deliberately left untouched pending a decision.
+   * REBASELINED. The reference values below are RADDOSE-3D's own current
+   * output, not RADDOSE-v2's.
+   * <p>
+   * The original expectations came from RADDOSE-v2, which models the solvent
+   * as liquid water at 1.00 g/cm3. Since commit b0a79ff (2023-10-22) this code
+   * uses amorphous ice at 0.93 g/cm3 (WATER_CONCENTRATION 51666 rather than
+   * 55555 in CoefCalcCompute.java:146-149), which is the intended behaviour --
+   * confirmed by the Garman group, 2026-09-17. That makes the v2 numbers
+   * obsolete rather than a failure, so they are recorded here for provenance
+   * and the expectations re-derived. See TEST-TRIAGE.md #1.
    */
-  @Tag("pending")
   public void testCoefCalcScenario3() {
     List<String> heavyProtAtomNames = new ArrayList<String>();
     List<Double> heavyProtAtomNums = new ArrayList<Double>();
@@ -229,12 +237,12 @@ public class CoefCalcTests {
 
     coefCalc.updateCoefficients(b.getPhotonEnergy());
 
-    // Values obtained from RADDOSEv2, http://www.raddo.se/legacy/
-    Tolerance.equals(coefCalc.getAbsorptionCoefficient(), 4.60e-04,
+    // RADDOSE-v2 at 1.00 g/cm3 gave 4.60e-04 / 2.20e-05 / 4.97e-04
+    Tolerance.equals(coefCalc.getAbsorptionCoefficient(), 0.00044598763760094910,
         "Absorption Coefficient", 0.000005);
-    Tolerance.equals(coefCalc.getElasticCoefficient(), 2.20e-05,
+    Tolerance.equals(coefCalc.getElasticCoefficient(), 2.1473224918412883e-05,
         "Elastic Coefficient", 0.000005);
-    Tolerance.equals(coefCalc.getAttenuationCoefficient(), 4.97e-04,
+    Tolerance.equals(coefCalc.getAttenuationCoefficient(), 0.00048553294539075667,
         "Attenuation Coefficient", 0.000005);
     
     System.out.println("@Test - testCoefCalc3");
@@ -245,13 +253,17 @@ public class CoefCalcTests {
    */
   @Test
   /**
-   * PARKED -- see TEST-TRIAGE.md #1.
-   * Fails since b0a79ff (2023-10-22) flipped WATER_CONCENTRATION from 55555
-   * (1.00 g/cm3) to 51666 (0.93 g/cm3), shifting absorption by about -2.6%.
-   * Expected 3.5358e-04 (cryo), currently 3.37172471e-04.
-   * The expectation is deliberately left untouched pending a decision.
+   * REBASELINED. The reference values below are RADDOSE-3D's own current
+   * output, not RADDOSE-v2's.
+   * <p>
+   * The original expectations came from RADDOSE-v2, which models the solvent
+   * as liquid water at 1.00 g/cm3. Since commit b0a79ff (2023-10-22) this code
+   * uses amorphous ice at 0.93 g/cm3 (WATER_CONCENTRATION 51666 rather than
+   * 55555 in CoefCalcCompute.java:146-149), which is the intended behaviour --
+   * confirmed by the Garman group, 2026-09-17. That makes the v2 numbers
+   * obsolete rather than a failure, so they are recorded here for provenance
+   * and the expectations re-derived. See TEST-TRIAGE.md #1.
    */
-  @Tag("pending")
   public void testCoefCalcWaterBasedSurrounding() {
     List<String> heavyProtAtomNames = new ArrayList<String>();
     List<Double> heavyProtAtomNums = new ArrayList<Double>();
@@ -293,8 +305,8 @@ public class CoefCalcTests {
 
     coefCalc.updateCryoCoefficients(b.getPhotonEnergy());
 
-    // Values obtained from RADDOSEv2, http://www.raddo.se/legacy/
-    Tolerance.equals(coefCalc.getCryoAbsorptionCoefficient(), 3.535855532631557E-4,
+    // RADDOSE-v2 at 1.00 g/cm3 gave 3.535855532631557E-4
+    Tolerance.equals(coefCalc.getCryoAbsorptionCoefficient(), 3.3717247116499210E-4,
         "Cryo Absorption Coefficient", 0.000005);
 
     

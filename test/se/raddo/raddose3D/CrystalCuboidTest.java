@@ -31,6 +31,9 @@ public class CrystalCuboidTest {
    * the surrounding/cryo grid at :764-774 keeps its rotation -- so the two
    * grids are in different frames whenever AngleP or AngleL is non-zero.
    */
+  @Test
+  @Tag("slow")
+  @Tag("pending")
   public void testCuboidCrystalPandL() {
     final Double ang360 = 360d;
     final Double ang180 = 180d;
