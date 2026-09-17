@@ -21,8 +21,8 @@ public final class Version {
 
   /** The true build number (depending on REVISION). */
   @SuppressWarnings("unused")
-  public static final String  VERSION_BUILD  = (REVISION == "?-" + "-"
-                                                 + "-?") ? "head"
+  public static final String  VERSION_BUILD  = ("?-" + "-" + "-?")
+                                                 .equals(REVISION) ? "head"
                                                  : REVISION;
 
   /** A string built from version number plus build number. */

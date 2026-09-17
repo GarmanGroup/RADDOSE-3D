@@ -88,7 +88,7 @@ public class BeamTophat implements Beam {
     
 
     
-    if (properties.get(Beam.BEAM_CIRCULAR) == "TRUE") {
+    if ("TRUE".equals(properties.get(Beam.BEAM_CIRCULAR))) {
       isCircular = true;
     }
     else {

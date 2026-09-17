@@ -22,12 +22,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  *   CoefCalcCompute.java:3877   (2/3)  * ((fk*totNum)/sumZ) * plasmaEnergy^2
  *   MicroED.java:240            (4/3)  * PI * a * b * c
  * </pre>
- * All are in the electron/GOS code, so a standard MX run is unaffected. These
- * tests pin the current behaviour so the change is visible if the constants
- * are corrected to {@code 2.0/3.0} and so on.
- * <p>
- * The tests assert what the code does today. They are deliberately <em>not</em>
- * assertions that the behaviour is right.
+ * All five were corrected on 2026-09-17. These tests now assert that the terms
+ * contribute, so a regression back to integer division would be caught, and
+ * {@link #javaIntegerDivisionTruncatesTowardsZero()} keeps the underlying
+ * language hazard documented.
  */
 public class IntegerDivisionTest {
 
@@ -59,19 +57,18 @@ public class IntegerDivisionTest {
    * multiplied by zero.
    */
   @Test
-  public void wkMoleculeCollapsesToTheBindingTermBecauseTwoOverThreeIsZero() {
+  public void wkMoleculeIncludesThePlasmonTerm() {
     CoefCalcCompute c = coefCalc();
     Element sulphur = c.getParser().getElement("S");
     assertTrue(sulphur != null, "test needs sulphur in the element database (symbol lookup)");
 
     double a = 1.0;
     for (int shell = 0; shell < 4; shell++) {
-      double expected = a * c.getShellBindingSubshell(shell, sulphur) * 1000;
-      assertEquals(Math.abs(expected),
-          c.getWkMolecule(a, sulphur, shell, false), 1e-9,
-          "Wk should equal |a * binding * 1000| at shell " + shell
-              + "; any difference would mean the plasmon term is contributing, "
-              + "i.e. that (2/3) had been corrected to 2.0/3.0");
+      double bindingOnly = Math.abs(a * c.getShellBindingSubshell(shell, sulphur) * 1000);
+      assertTrue(c.getWkMolecule(a, sulphur, shell, false) > bindingOnly,
+          "Wk at shell " + shell + " should exceed |a * binding * 1000| ("
+              + bindingOnly + "), because the plasmon term is no longer "
+              + "multiplied by an integer-divided zero");
     }
   }
 
@@ -86,16 +83,17 @@ public class IntegerDivisionTest {
 
   /** Scaling a scales Wk exactly, which only holds while the other term is 0. */
   @Test
-  public void wkScalesLinearlyWithA() {
+  public void wkIsSubLinearInAOnceThePlasmonTermContributes() {
     CoefCalcCompute c = coefCalc();
     Element sulphur = c.getParser().getElement("S");
 
     double single = c.getWkMolecule(1.0, sulphur, 0, false);
     double triple = c.getWkMolecule(3.0, sulphur, 0, false);
 
-    assertEquals(3 * single, triple, 1e-9,
-        "exact linear scaling in a is only possible because the additive "
-            + "plasmon term is zero");
+    assertTrue(triple < 3 * single,
+        "with the plasmon term restored Wk is sub-linear in a: "
+            + "sqrt(9x^2 + p) < 3*sqrt(x^2 + p)");
+    assertTrue(triple > single, "Wk should still increase with a");
   }
 
   /** The language-level facts the above depend on. */
@@ -119,8 +117,9 @@ public class IntegerDivisionTest {
     double asCoded = ((4 / 3) * Math.PI * (x / 2) * (y / 2) * (z / 2));
     double correct = ((4 / 3.0) * Math.PI * (x / 2) * (y / 2) * (z / 2));
 
+    // Kept as a demonstration of the hazard: MicroED.java:240 now uses 4.0/3.0
+    // and no longer loses the third.
     assertEquals(correct * 0.75, asCoded, 1e-6,
-        "as coded the sphere volume is three quarters of the correct value");
-    assertTrue(asCoded < correct, "as-coded volume should be the smaller");
+        "integer (4/3) is 1, i.e. three quarters of the correct 4/3");
   }
 }

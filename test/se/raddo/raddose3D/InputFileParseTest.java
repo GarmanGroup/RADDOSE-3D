@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -74,7 +73,10 @@ public class InputFileParseTest {
     }
     List<Arguments> out = new ArrayList<Arguments>();
     for (File f : files) {
-      // Known broken -- see smxray2ExampleIsStillInvalid below.
+      // SMXray2 now parses (its AbsCoefCalc keyword was corrected from CIF to
+      // EXPSM), but it cannot be built: it names a CIF file, Fe3O4, that the
+      // project does not ship, and CoefCalcFromCIF reads from a local path
+      // only -- its download code is commented out. See TEST-TRIAGE.md #8.
       if (f.getName().equals("SMXray2_example_input.txt")) {
         continue;
       }
@@ -99,29 +101,23 @@ public class InputFileParseTest {
   }
 
   /**
-   * PARKED -- see TEST-TRIAGE.md #8. examples/SMXray2_example_input.txt does
-   * not parse: line 10 reads {@code AbsCoefCalc CIF}, but the grammar's
-   * keyword for a CIF-based absorption calculation is spelled {@code EXPSM}
-   * (Inputfile.g:393 defines the token *named* CIF as matching the literal
-   * "EXPSM", while Inputfile.g:509 defines CIFNAME as matching "CIF"). The
-   * lexer therefore produces CIFNAME and the parser reports "no viable
-   * alternative at input 'CIF'"; the second error on line 13 is recovery
-   * fallout.
-   * <p>
-   * Replacing line 10 with {@code AbsCoefCalc EXPSM} makes the file parse.
-   * This is the same class of defect as commit bc40d89, "fix: correct invalid
-   * SMX example" -- a shipped example that does not parse. Left for a decision
-   * because the confusing token naming may be worth fixing instead of, or as
-   * well as, the example.
+   * SMXray2 is excluded from the sweep above because it references an
+   * unshipped CIF file, but its grammar must still be valid -- that was the
+   * actual defect (AbsCoefCalc CIF, which can never parse, since the grammar
+   * token named CIF matches the literal "EXPSM").
    */
   @Test
-  @Tag("pending")
   @Timeout(10)
-  public void smxray2ExampleIsStillInvalid() throws Exception {
-    InputParser parser = new InputParserFile("examples/SMXray2_example_input.txt");
-    Collector init = new Collector();
-    assertDoesNotThrow(() -> parser.sendData(init),
-        "examples/SMXray2_example_input.txt does not parse");
+  public void smxray2ExampleUsesAValidAbsCoefCalcKeyword() throws Exception {
+    String text = new String(java.nio.file.Files.readAllBytes(
+        new File("examples/SMXray2_example_input.txt").toPath()),
+        java.nio.charset.Charset.forName("UTF-8"));
+
+    assertFalse(text.matches("(?s).*(?i)AbsCoefCalc\\s+CIF\\s.*"),
+        "AbsCoefCalc CIF can never parse; the keyword for a CIF-based "
+            + "calculation is EXPSM");
+    assertTrue(text.matches("(?s).*(?i)AbsCoefCalc\\s+EXPSM\\s.*"),
+        "expected AbsCoefCalc EXPSM in the SMXray2 example");
   }
 
   /** Guards against the examples directory quietly emptying. */

@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -205,19 +206,17 @@ public class OutputWriterTest {
   }
 
   /**
-   * ExposureSummary.exposureComplete() throws if no image ever completed: it
-   * indexes the per-image arrays at [count - 1], which is [-1] when the count
-   * is zero. An exposure whose angular resolution exceeds its wedge span would
-   * reach this. Pinned rather than fixed -- see TEST-TRIAGE.md #7.
+   * exposureComplete() used to index {@code imageDWD[-1]} when no image had
+   * completed -- reachable by an exposure whose angular resolution exceeds its
+   * wedge span. It is now guarded.
    */
   @Test
-  public void exposureCompleteThrowsIfNoImagesRan() {
+  public void exposureCompleteSurvivesAnExposureWithNoImages() {
     ExposureSummary summary = new ExposureSummary();
     summary.exposureStart(1, wedge(), new int[] {2, 2, 2});
 
-    assertThrows(ArrayIndexOutOfBoundsException.class,
-        () -> summary.exposureComplete(),
-        "expected the [-1] index; if this now passes, the guard was added");
+    assertDoesNotThrow(() -> summary.exposureComplete(),
+        "an exposure in which no image completed should not crash");
   }
 
   /** publishBeam is a no-op for the summary outputs and must not emit a row. */

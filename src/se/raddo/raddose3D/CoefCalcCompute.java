@@ -2381,7 +2381,7 @@ public class CoefCalcCompute extends CoefCalc {
     meanZoverA = 0.56;
     stoppingPower = K * (meanZoverA)* (1/betaSquared) * 
                     (Math.log((csquared*betaSquared*m*Math.pow(gamma-1, 0.5))/(meanJ * Math.pow(2, 0.5)))+ 
-                        0.5*(1-betaSquared)-((2*gamma-1)/(2*Math.pow(gamma, 2))) + (1/16)*Math.pow((gamma-1)/gamma, 2));
+                        0.5*(1-betaSquared)-((2*gamma-1)/(2*Math.pow(gamma, 2))) + (1.0/16.0)*Math.pow((gamma-1)/gamma, 2));
     stoppingPower = stoppingPower * 1000 * density /1E7;
     
     //without corrections
@@ -2560,7 +2560,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     double energy = avgEnergy * Beam.KEVTOJOULES;
     Fbeta = Math.log((m*csquared*(energy)* betaSquared) / (2*(1-betaSquared))) 
             - (2*Math.pow((1-betaSquared),0.5) - 1 + betaSquared)
-            * Math.log(2) + 1 - betaSquared + (1/8)*(1-Math.pow(1-betaSquared,0.5));
+            * Math.log(2) + 1 - betaSquared + (1.0/8.0)*(1-Math.pow(1-betaSquared,0.5));
     stoppingPower = (0.153536/betaSquared)*(sumZ/sumA)*(Fbeta - 2*Math.log(meanJ) - delta);
     stoppingPower = stoppingPower * 1000 * passedDensity /1E7;
     double radiativeStopping = ((KE_MeV*meanZ)/800)*stoppingPower;
@@ -3756,7 +3756,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
       //get Wi
       if (numInnerShells > 0) {
         for (int i = 0; i < numInnerShells; i++) { 
-          Wi[i] = Math.pow(Math.pow(a * getShellBinding(i, e)*1000,2) + (2/3)*(shells[i]/Z)*Math.pow(plasmaEnergy, 2), 0.5);
+          Wi[i] = Math.pow(Math.pow(a * getShellBinding(i, e)*1000,2) + (2.0/3.0)*((double) shells[i]/Z)*Math.pow(plasmaEnergy, 2), 0.5);
         }
       }
       
@@ -3874,7 +3874,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     }
     double plasmaEnergy = getPlasmaEnergyAll(surrounding);
   //  double Wk = Math.pow(Math.pow(a * getShellBinding(shellIndex, e)*1000,2) + (2/3)*((fk*totNum)/(sumZ))*Math.pow(plasmaEnergy, 2), 0.5);
-    double Wk = Math.pow(Math.pow(a * getShellBindingSubshell(shellIndex, e)*1000,2) + (2/3)*((fk*totNum)/(sumZ))*Math.pow(plasmaEnergy, 2), 0.5);
+    double Wk = Math.pow(Math.pow(a * getShellBindingSubshell(shellIndex, e)*1000,2) + (2.0/3.0)*((fk*totNum)/(sumZ))*Math.pow(plasmaEnergy, 2), 0.5);
     //I am really guessing the Lorenz Lorentz sumFk sum Z but just a hunch
     return Wk;
   }

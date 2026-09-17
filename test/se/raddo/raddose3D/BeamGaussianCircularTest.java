@@ -274,21 +274,17 @@ public class BeamGaussianCircularTest {
   }
 
   /**
-   * Characterisation test for a latent defect, NOT an endorsement of it.
+   * The circular flag is compared by value, not by reference.
    * <p>
-   * BeamGaussian.java:115 tests {@code properties.get(BEAM_CIRCULAR) == "TRUE"}
-   * -- reference equality on a String. It works only because the ANTLR parser
-   * stores the interned literal "TRUE" (InputfileParser.java:4845). Any caller
-   * building the property map programmatically with a non-interned equal string
-   * silently gets a rectangular beam instead of a circular one, and hence a
-   * different normFactor and different doses everywhere.
-   * <p>
-   * BeamTophat.java:91 and BeamExperimentalpgm.java:48 share the pattern.
-   * Recorded in TEST-TRIAGE.md #4; this test pins today's behaviour so the
-   * change is visible if anyone fixes it.
+   * It used to read {@code properties.get(BEAM_CIRCULAR) == "TRUE"}, which
+   * worked only because the ANTLR parser stores the interned literal
+   * (InputfileParser.java:4845). Any caller building the property map
+   * programmatically with an equal but non-identical string silently got a
+   * rectangular beam, a different normFactor and different doses throughout.
+   * BeamTophat and BeamExperimentalpgm shared the pattern and are fixed too.
    */
   @Test
-  public void circularFlagIsComparedByReferenceNotByValue() {
+  public void circularFlagIsComparedByValue() {
     Map<Object, Object> p = new HashMap<Object, Object>();
     p.put(Beam.BEAM_FWHM_X, 20 * SIGMA_TO_FWHM);
     p.put(Beam.BEAM_FWHM_Y, 20 * SIGMA_TO_FWHM);
@@ -302,8 +298,7 @@ public class BeamGaussianCircularTest {
         "the interned literal is recognised");
 
     p.put(Beam.BEAM_CIRCULAR, new String("TRUE"));     // equal, not identical
-    assertFalse(new BeamGaussian(p).getIsCircular(),
-        "DEFECT (TEST-TRIAGE.md #4): an equal-but-not-identical \"TRUE\" is "
-            + "silently ignored, producing a rectangular beam");
+    assertTrue(new BeamGaussian(p).getIsCircular(),
+        "an equal-but-not-identical \"TRUE\" must also be recognised");
   }
 }

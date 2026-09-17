@@ -1,6 +1,14 @@
 # Test triage
 
-Findings from restoring the test suite. **Nothing here has been "fixed" by
+Findings from restoring the test suite.
+
+> **Status 2026-09-17: all items are resolved and nothing is parked.**
+> `ant test-pending` reports zero tests. Items 1 and 2 were decided by the
+> Garman group; items 4, 6, 7 and 8 were fixed; items 3 and 5 were measured and
+> needed no change. The history below is kept because several of these were
+> mis-diagnosed first time and the measurements are worth not repeating.
+
+Originally: **nothing here had been "fixed" by
 changing an expectation.** Each item is either a parked test (tagged
 `pending`, excluded from `ant test` / `ant test-all`, runnable with
 `ant test-pending`) or a latent defect pinned by a characterisation test.
@@ -207,7 +215,10 @@ with a different `normFactor` and therefore different doses everywhere.
 Same pattern at `BeamTophat.java:91` and `BeamExperimentalpgm.java:48`; also
 `Version.java:24` (`REVISION == "?---?"`).
 
-Not changed, per "flag, don't fix". The one-line fix is `"TRUE".equals(...)`.
+**FIXED (2026-09-17)** in `BeamGaussian`, `BeamTophat`, `BeamExperimentalpgm`,
+`Version` and the two `crystalTypeEM` comparisons in `MicroED`, all now
+`"LITERAL".equals(value)`. `BeamGaussianCircularTest.circularFlagIsComparedByValue`
+asserts the corrected behaviour.
 
 ---
 
@@ -268,7 +279,11 @@ disappears. Six such expressions exist:
 | `CoefCalcCompute.java:3877` | `(2/3) * ((fk*totNum)/sumZ) * plasma^2` | term dropped |
 | `MicroED.java:240` | `(4/3) * PI * a * b * c` | sphere volume 25% low |
 
-All are in the electron/GOS code, so a standard MX run is unaffected.
+**FIXED (2026-09-17)**: all five now use floating point (`2.0/3.0`, `1.0/8.0`,
+`1.0/16.0`, `4.0/3.0`, and `(double) shells[i]/Z`). The golden-file tests for a
+standard MX run are byte-identical before and after, which confirms
+independently that this code is not reachable from an MX experiment -- the
+change affects the electron/GOS paths only.
 
 Two consequences worth noting. First, `getWkMolecule` collapses to
 `a * bindingEnergy * 1000`, which means **commit `8d37c7a` -- which widened
@@ -289,8 +304,9 @@ all.)
 `exposureComplete()` ends with `lastDWD = imageDWD[images - 1]`, which is
 `imageDWD[-1]` when no image completed, throwing
 `ArrayIndexOutOfBoundsException`. An exposure whose angular resolution exceeds
-its wedge span would reach this. Low severity, but it crashes rather than
-reporting anything useful.
+its wedge span would reach this.
+<p>
+**FIXED (2026-09-17)**: guarded with `if (images > 0)`.
 
 Also worth knowing for future test-writing: the `Output*` classes cannot be
 exercised without driving `ExposureSummary` through its whole observer
@@ -318,11 +334,23 @@ CIF-based absorption calculation is spelled `EXPSM`. Replacing line 10 with
 `AbsCoefCalc EXPSM` makes the file parse (it then fails only because the
 referenced `Fe3O4` CIF file is absent).
 
-This is the same class of defect as commit `bc40d89`, "fix: correct invalid SMX
-example". **Decision needed:** correct the example, rename the token to
-something honest, or both. Note also that RD3D printed results for this file
-despite the parser recording two errors -- a malformed input does not stop the
-run.
+**PARTIALLY FIXED (2026-09-17)**: the example now reads `AbsCoefCalc EXPSM` and
+parses.
+
+Two things remain open, both reported rather than changed:
+
+1. **The example still cannot be run.** It names a CIF file, `Fe3O4`, that the
+   project does not ship, and `CoefCalcFromCIF` reads from a local path only --
+   its download code is commented out (`CoefCalcFromCIF.java:8-10`). It is
+   therefore excluded from the example sweep, with a separate test asserting
+   only that its `AbsCoefCalc` keyword is valid. Either ship the CIF file or
+   change the example to an `AbsCoefCalc` that needs no external data.
+2. **`CoefCalcFromCIF` NPEs on a missing file**: it catches the `IOException`,
+   prints "Cannot read from specified path", then falls through and
+   dereferences the null reader (`:25-33`).
+
+Also unchanged: RD3D printed results for this file even while the parser was
+recording two errors, so a malformed input does not stop the run.
 
 ---
 

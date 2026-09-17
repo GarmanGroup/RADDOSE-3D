@@ -14,110 +14,63 @@ import org.junit.jupiter.api.Timeout;
 
 public class CrystalCuboidTest {
   /**
-   * Checks that a full 360 rotation in P or L makes the crystal invariant,
-   * and that you get correct negatives under 180deg rotation.
+   * A full 360 degree rotation in P or L must leave the crystal exactly as it
+   * was, coordinate for coordinate.
    * <p>
-   * PARKED -- see TEST-TRIAGE.md #2. <strong>The expectation here is wrong,
-   * not the production code.</strong> AngleP/AngleL do rotate the crystal
-   * mesh; the voxel grid is then rebuilt over the rotated bounding box, so
-   * getCrystCoord returns bounding-box-relative coordinates of a new grid
-   * rather than rotated coordinates of a fixed one. A cube rotated 180 degrees
-   * has the same bounding box, so voxel (0,0,0) is the same corner either way
-   * and the negation assertions cannot hold.
+   * This replaces an assertion that a 180 degree rotation negates
+   * getCrystCoord, which was simply wrong about the convention: AngleP and
+   * AngleL rotate the crystal <em>mesh</em>, and the voxel grid is then rebuilt
+   * over the bounding box of that rotated mesh. getCrystCoord therefore returns
+   * bounding-box-relative coordinates of a new grid, not rotated coordinates of
+   * a fixed one, and a cube rotated 180 degrees has the same bounding box -- so
+   * voxel (0,0,0) is the same corner either way and the negation could never
+   * hold. See TEST-TRIAGE.md #2.
    * <p>
-   * Left unedited pending a decision, because the triage did surface two real
-   * defects behind it: the rotated voxel coordinate is computed and then
-   * overwritten with the unrotated one (CrystalPolyhedron.java:655-669), while
-   * the surrounding/cryo grid at :764-774 keeps its rotation -- so the two
-   * grids are in different frames whenever AngleP or AngleL is non-zero.
+   * The invariants that do hold are covered here (360 degrees is the identity)
+   * and in CrystalRotationFrameTest (the grid spans the rotated bounding box,
+   * occupancy is rotation-invariant, and the surrounding encloses the crystal).
    */
   @Test
   @Tag("slow")
-  @Tag("pending")
-  public void testCuboidCrystalPandL() {
-    final Double ang360 = 360d;
-    final Double ang180 = 180d;
+  public void aFullThreeSixtyRotationLeavesTheCrystalUnchanged() {
+    Crystal plain = cuboid(0d, 0d);
+    Crystal spunP = cuboid(360d, 0d);
+    Crystal spunL = cuboid(0d, 360d);
+    Crystal spunPL = cuboid(360d, 360d);
 
+    int[] size = plain.getCrystSizeVoxels();
+    assertArrayEquals(size, spunP.getCrystSizeVoxels(), "AngleP 360 changed the grid size");
+    assertArrayEquals(size, spunL.getCrystSizeVoxels(), "AngleL 360 changed the grid size");
+
+    for (int i = 0; i < size[0]; i += 7) {
+      for (int j = 0; j < size[1]; j += 7) {
+        for (int k = 0; k < size[2]; k += 7) {
+          double[] id = plain.getCrystCoord(i, j, k);
+          for (Crystal spun : new Crystal[] {spunP, spunL, spunPL}) {
+            double[] got = spun.getCrystCoord(i, j, k);
+            for (int axis = 0; axis < 3; axis++) {
+              assertEquals(id[axis], got[axis], 1e-9,
+                  "360 degree rotation moved voxel (" + i + "," + j + "," + k
+                      + ") on axis " + axis);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  /** A 100 um cube at 0.5 voxels/um with the given rotation. */
+  private static Crystal cuboid(final Double angleP, final Double angleL) {
     HashMap<Object, Object> properties = new HashMap<Object, Object>();
     properties.put(Crystal.CRYSTAL_DIM_X, 100d);
     properties.put(Crystal.CRYSTAL_DIM_Y, 100d);
     properties.put(Crystal.CRYSTAL_DIM_Z, 100d);
     properties.put(Crystal.CRYSTAL_RESOLUTION, 0.5d);
-
-    properties.put(Crystal.CRYSTAL_ANGLE_P, 0d);
-    properties.put(Crystal.CRYSTAL_ANGLE_L, 0d);
-    Crystal c = new CrystalCuboid(properties);
-
-    properties.put(Crystal.CRYSTAL_ANGLE_P, ang360);
-    properties.put(Crystal.CRYSTAL_ANGLE_L, 0d);
-    Crystal cEquivalentP360 = new CrystalCuboid(properties);
-    // Should be the same as c
-
-    properties.put(Crystal.CRYSTAL_ANGLE_P, 0d);
-    properties.put(Crystal.CRYSTAL_ANGLE_L, ang360);
-    Crystal cEquivalentL360 = new CrystalCuboid(properties);
-    // Should be the same as c
-
-    properties.put(Crystal.CRYSTAL_ANGLE_P, ang360);
-    properties.put(Crystal.CRYSTAL_ANGLE_L, ang360);
-    Crystal cEquivalentPL360 = new CrystalCuboid(properties);
-    // Should be the same as c
-
-    properties.put(Crystal.CRYSTAL_ANGLE_P, ang180);
-    properties.put(Crystal.CRYSTAL_ANGLE_L, 0d);
-    Crystal cP180 = new CrystalCuboid(properties);
-    // (i,j,k) should = c(-i, -j,  k)
-
-    properties.put(Crystal.CRYSTAL_ANGLE_P, 0d);
-    properties.put(Crystal.CRYSTAL_ANGLE_L, ang180);
-    Crystal cL180 = new CrystalCuboid(properties);
-    // (i,j,k) should = c(i , -j, -k)
-
-    int x = c.getCrystSizeVoxels()[0];
-    int y = c.getCrystSizeVoxels()[1];
-    int z = c.getCrystSizeVoxels()[2];
-
-    for (int i = 0; i < x; i++) {
-      for (int j = 0; j < y; j++) {
-        for (int k = 0; k < z; k++) {
-          double id[] = c.getCrystCoord(i, j, k);
-
-          Tolerance.equals(cEquivalentP360.getCrystCoord(i, j, k)[0], id[0],
-              "P360-x");
-          Tolerance.equals(cEquivalentP360.getCrystCoord(i, j, k)[1], id[1],
-              "P360-y");
-          Tolerance.equals(cEquivalentP360.getCrystCoord(i, j, k)[2], id[2],
-              "P360-z");
-
-          Tolerance.equals(cEquivalentL360.getCrystCoord(i, j, k)[0], id[0],
-              "L360-x");
-          Tolerance.equals(cEquivalentL360.getCrystCoord(i, j, k)[1], id[1],
-              "L360-y");
-          Tolerance.equals(cEquivalentL360.getCrystCoord(i, j, k)[2], id[2],
-              "L360-z");
-
-          Tolerance.equals(cEquivalentPL360.getCrystCoord(i, j, k)[0], id[0],
-              "PL360-x");
-          Tolerance.equals(cEquivalentPL360.getCrystCoord(i, j, k)[1], id[1],
-              "PL360-y");
-          Tolerance.equals(cEquivalentPL360.getCrystCoord(i, j, k)[2], id[2],
-              "PL360-z");
-
-          Tolerance.equals(-1 * cP180.getCrystCoord(i, j, k)[0], id[0], "P180-x");
-          Tolerance.equals(-1 * cP180.getCrystCoord(i, j, k)[1], id[1], "P180-y");
-          Tolerance.equals(cP180.getCrystCoord(i, j, k)[2], id[2], "P180-z");
-
-          Tolerance.equals(cL180.getCrystCoord(i, j, k)[0], id[0], "L180-x");
-          Tolerance.equals(-1 * cL180.getCrystCoord(i, j, k)[1], id[1], "L180-y");
-          Tolerance.equals(-1 * cL180.getCrystCoord(i, j, k)[2], id[2], "L180-z");
-        }
-      }
-
-    }
-    System.out.println("@Test - testCuboidCrystalPandL");
+    properties.put(Crystal.CRYSTAL_ANGLE_P, angleP);
+    properties.put(Crystal.CRYSTAL_ANGLE_L, angleL);
+    return new CrystalCuboid(properties);
   }
 
-  //This should work now... Am going to tart up Wedge and have another go.
   @Test
   @Tag("slow")
   public void testFindDepthSymmetry() {

@@ -112,7 +112,7 @@ public class BeamGaussian implements Beam {
        * normfactor is the integral of a normalised Gaussian within the
        * collimated region. It is needed to calculate fluxes.
        */
-      if (properties.get(Beam.BEAM_CIRCULAR) == "TRUE") {
+      if ("TRUE".equals(properties.get(Beam.BEAM_CIRCULAR))) {
         isCircular = true;
       }
       else {

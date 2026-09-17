@@ -229,15 +229,15 @@ public class MicroED {
     
     
     crystalSurfaceArea = XDimension * YDimension * 1E02; //convert from nm^2 to A^2
-    if (crystalTypeEM == "CYLINDER") {
+    if ("CYLINDER".equals(crystalTypeEM)) {
       crystalSurfaceArea = (Math.PI * (XDimension/2) * (YDimension/2)) * 1E02;
      // ZDimension = 99.99999;
       ZDimension -= 0.001;
     }
     sampleThickness = ZDimension; //nm
     crystalVolume = (crystalSurfaceArea * (sampleThickness * 10) * 1E-27);    //A^3 to dm^3
-    if (crystalTypeEM == "SPHERICAL") {
-      crystalVolume = ((4/3) * Math.PI * (XDimension/2) * (YDimension/2) * (ZDimension/2)) * 1E-24; //nm^3
+    if ("SPHERICAL".equals(crystalTypeEM)) {
+      crystalVolume = ((4.0/3.0) * Math.PI * (XDimension/2) * (YDimension/2) * (ZDimension/2)) * 1E-24; //nm^3
     }
     //note the volume would need to be updated for a polyhedron!!! - currently just a cube or cylinder 
     //although it isn't used
