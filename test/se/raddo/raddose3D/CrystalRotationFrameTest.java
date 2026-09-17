@@ -4,7 +4,6 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -109,19 +108,18 @@ public class CrystalRotationFrameTest {
   }
 
   /**
-   * PARKED -- see TEST-TRIAGE.md #2. Fails at AngleP = 90.
-   * <p>
    * The surrounding medium exists to catch photoelectrons leaving the crystal,
    * so it must enclose the crystal. Both grids feed the same transform in the
-   * same exposure loop (Crystal.java:1087 and :1295), so they must share a
-   * frame. At AngleP = 90 the cryo grid comes out transposed -- x spans
-   * [-60, 60] where the crystal spans [-25, 25], and y spans [-35, 35] where
-   * the crystal spans [-50, 50] -- so the crystal protrudes from its own
-   * surrounding by 15 um.
+   * same exposure loop (Crystal.java:1088 and :1297), so they must share a
+   * frame.
+   * <p>
+   * This failed before the cryo grid stopped double-rotating its coordinates:
+   * at AngleP = 90 the surrounding spanned x[-60,60] y[-35,35] while the
+   * crystal spanned x[-25,25] y[-50,50], leaving the crystal protruding 15 um
+   * out of its own surrounding.
    */
   @ParameterizedTest
   @CsvSource({"0, 0", "45, 0", "90, 0", "0, 90", "0, 45"})
-  @Tag("pending")
   public void surroundingEnclosesTheCrystalAtEveryRotation(double angleP,
       double angleL) throws Exception {
     CrystalPolyhedron c = crystal(100, 50, 20, angleP, angleL);

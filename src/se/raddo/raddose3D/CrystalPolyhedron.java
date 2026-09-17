@@ -640,34 +640,19 @@ public class CrystalPolyhedron extends Crystal {
            * Set original coordinate. Temporary variables needed since we use
            * all of the previous xyz's to set each of the new ones.
            */
-          double x = -xshift + i / crystalPixPerUM;
-          double y = -yshift + j / crystalPixPerUM;
-          double z = -zshift + k / crystalPixPerUM;
-          
-          
-          //need to remember to add this back in for the main RADDOSE-3D
-          
           /*
-           * rotation in plane about [0 0 1] (P) Temporary variables needed
-           * since we use all of the previous xyz's to set each of the new ones.
+           * No rotation is applied here. AngleP and AngleL have already been
+           * applied to the mesh (see loadVertices above), and this grid spans
+           * the bounding box of that rotated mesh, so these coordinates are
+           * already in the lab frame. Rotating them again would rotate the
+           * voxels relative to the crystal they are meant to sample: at
+           * AngleP = 90 the occupied voxel count of a 100 x 50 x 20 um crystal
+           * drops from 12450 to 6500, and voxel (0,0,0) of a 45-degree cube
+           * lands outside its own bounding box.
            */
-          
-          double x2 = x * Math.cos(p) + y * Math.sin(p);
-          double y2 = -1 * x * Math.sin(p) + y * Math.cos(p);
-          double z2 = z;
-          
-          /*
-           * rotation loop about [1 0 0] (L)
-           */
-          
-          tempCrystCoords[i][j][k][0] = x2;
-          tempCrystCoords[i][j][k][1] = y2 * Math.cos(l) + z2 * Math.sin(l);
-          tempCrystCoords[i][j][k][2] = -1 * y2 * Math.sin(l) + z2
-              * Math.cos(l);
-          
-          tempCrystCoords[i][j][k][0] = x;
-          tempCrystCoords[i][j][k][1] = y;
-          tempCrystCoords[i][j][k][2] = z;
+          tempCrystCoords[i][j][k][0] = -xshift + i / crystalPixPerUM;
+          tempCrystCoords[i][j][k][1] = -yshift + j / crystalPixPerUM;
+          tempCrystCoords[i][j][k][2] = -zshift + k / crystalPixPerUM;
           
         }
       }
@@ -753,25 +738,22 @@ public class CrystalPolyhedron extends Crystal {
            * all of the previous xyz's to set each of the new ones.
            */
           
-            double x = -xshift + (i / pixelsPerMicron);
-            double y = -yshift + (j / pixelsPerMicron);
-            double z = -zshift + (k / pixelsPerMicron);
-
           /*
-           * rotation in plane about [0 0 1] (P) Temporary variables needed
-           * since we use all of the previous xyz's to set each of the new ones.
+           * As for the crystal grid above, no rotation is applied. This grid
+           * is built over the bounding box of the already-rotated mesh (see
+           * the minMaxVertices calls at the top of this method), so it is
+           * already in the lab frame, and both grids are handed to the same
+           * translateCrystalToPosition transform inside Crystal.expose
+           * (Crystal.java:1088 and :1297) -- they must therefore share a
+           * frame. Applying the rotation here used to transpose the
+           * surrounding relative to the crystal: at AngleP = 90 a
+           * 100 x 50 x 20 um crystal spanning x[-25,25] y[-50,50] was given a
+           * surrounding spanning x[-60,60] y[-35,35], so the crystal
+           * protruded 15 um out of its own surrounding medium.
            */
-          double x2 = x * Math.cos(p) + y * Math.sin(p);
-          double y2 = -1 * x * Math.sin(p) + y * Math.cos(p);
-          double z2 = z;
-
-          /*
-           * rotation loop about [1 0 0] (L)
-           */
-          tempCrystCoords[i][j][k][0] = x2;
-          tempCrystCoords[i][j][k][1] = y2 * Math.cos(l) + z2 * Math.sin(l);
-          tempCrystCoords[i][j][k][2] = -1 * y2 * Math.sin(l) + z2
-              * Math.cos(l); 
+          tempCrystCoords[i][j][k][0] = -xshift + (i / pixelsPerMicron);
+          tempCrystCoords[i][j][k][1] = -yshift + (j / pixelsPerMicron);
+          tempCrystCoords[i][j][k][2] = -zshift + (k / pixelsPerMicron); 
         }
       }
     }  

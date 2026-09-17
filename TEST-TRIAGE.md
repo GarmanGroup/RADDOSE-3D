@@ -143,11 +143,16 @@ surrounding — so they are meant to share a physical frame. Whenever a rotated
 crystal is combined with `CALCSURROUNDING` / cryo photoelectron escape, the two
 sets of voxels are mutually rotated.
 
-**Decision needed:** restore the rotation for `crystCoord` (as the comment
-intends) and check nothing downstream depended on the unrotated form, or
-remove it from `cryoCrystCoord` for consistency. Either way the dead lines
-should go, and the test expectation rewritten against whichever convention
-wins.
+**RESOLVED (2026-09-17).** The rotation was removed from `cryoCrystCoord` and
+the dead lines deleted from `crystCoord`. Restoring the rotation for
+`crystCoord`, which the in-code note suggests, was tested and rejected: it
+double-rotates, dropping occupancy of a 100x50x20 um crystal at AngleP=90 from
+12450 to 6500 voxels. `CrystalRotationFrameTest.surroundingEnclosesTheCrystalAtEveryRotation`
+now passes and is no longer parked.
+
+The remaining parked test, `CrystalCuboidTest.testCuboidCrystalPandL`, still
+has a wrong expectation and needs rewriting or deleting -- that is unrelated to
+this fix.
 
 ---
 
