@@ -312,6 +312,57 @@
   <antcall target="-run-tests" inheritall="true"/>
  </target>
 
+ <!-- Runs the suite under the JaCoCo agent and writes an HTML + XML report to
+      reports/coverage. Needs classes compiled with debug info, so it builds
+      via build-debug rather than build. -->
+ <target name="coverage">
+  <taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml"
+           classpathref="jacoco"/>
+  <mkdir dir="${test.report.dir}"/>
+  <mkdir dir="${report.dir}/coverage"/>
+  <pathconvert property="coverage.classpath" refid="test.classpath"/>
+
+  <jacoco:coverage xmlns:jacoco="antlib:org.jacoco.ant"
+                   destfile="${report.dir}/coverage/jacoco.exec"
+                   excludes="se/raddo/raddose3D/parser/*:se/raddo/raddose3D/server/*">
+   <java fork="true" failonerror="true" dir="${basedir}"
+         classname="org.junit.platform.console.ConsoleLauncher">
+    <classpath refid="junit"/>
+    <arg value="execute"/>
+    <arg value="--class-path"/>
+    <arg value="${coverage.classpath}"/>
+    <arg value="--scan-class-path"/>
+    <arg value="${test.bin}"/>
+    <arg value="--exclude-tag"/><arg value="pending"/>
+    <arg value="--exclude-tag"/><arg value="network"/>
+    <arg value="--details=summary"/>
+    <arg value="--disable-ansi-colors"/>
+   </java>
+  </jacoco:coverage>
+
+  <jacoco:report xmlns:jacoco="antlib:org.jacoco.ant">
+   <executiondata>
+    <file file="${report.dir}/coverage/jacoco.exec"/>
+   </executiondata>
+   <structure name="RADDOSE-3D">
+    <classfiles>
+     <fileset dir="bin">
+      <include name="se/raddo/raddose3D/**/*.class"/>
+      <exclude name="se/raddo/raddose3D/parser/**"/>
+      <exclude name="se/raddo/raddose3D/server/**"/>
+     </fileset>
+    </classfiles>
+    <sourcefiles encoding="UTF-8">
+     <fileset dir="src"/>
+    </sourcefiles>
+   </structure>
+   <html destdir="${report.dir}/coverage"/>
+   <xml destfile="${report.dir}/coverage/jacoco.xml"/>
+  </jacoco:report>
+
+  <echo message="Coverage report: ${report.dir}/coverage/index.html"/>
+ </target>
+
  <!-- Including the parked tests: expected to fail until triaged. -->
  <target name="test-pending">
   <property name="test.exclusions" value="--include-tag pending"/>
@@ -390,6 +441,13 @@
 
  <!-- Output directory for compiled test classes. -->
  <property name="test.bin" value="bin-test"/>
+
+ <!-- JaCoCo, for `ant coverage`. Agent plus the Ant task that reports on it. -->
+ <path id="jacoco">
+  <fileset dir="lib/jacoco">
+   <include name="*.jar"/>
+  </fileset>
+ </path>
 
  <!-- JUnit 5, as a single self-contained jar (engine + launcher + console).
       Java 8 bytecode, runs on JDK 8 through 25. -->

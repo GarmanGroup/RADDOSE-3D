@@ -30,8 +30,18 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * {@link RandomSource}.
  * <p>
  * <strong>They assert that behaviour has not changed, not that it is right.</strong>
- * A deliberate change will fail them; regenerate with
- * {@code GoldenRunTest.regenerate()} (see below) and review the diff.
+ * A deliberate change will fail them; regenerate with {@link #main(String[])}
+ * and review the diff.
+ * <p>
+ * Values are compared with a relative tolerance rather than exactly. The
+ * calculation uses {@link Math#pow}, {@link Math#exp} and {@link Math#log},
+ * none of which are required to be bit-reproducible across JVM
+ * implementations -- only {@link StrictMath} is. The same seed and input give
+ * an average DWD of 12.614139 on macOS/JDK 25, 12.614146 on Linux/JDK 8 and
+ * 12.614135 on Linux/JDK 21: agreement to about 1 part in 10^6. The tolerance
+ * below accommodates that while still being five orders of magnitude tighter
+ * than any physics regression these tests exist to catch -- reverting c0d0c3f,
+ * for instance, moves a field by a factor of four.
  */
 public class GoldenRunTest {
 
@@ -101,6 +111,15 @@ public class GoldenRunTest {
     return writer.getDataString();
   }
 
+  /** @return the field as a double, or null if it is not numeric. */
+  private static Double asDouble(final String field) {
+    try {
+      return Double.valueOf(field);
+    } catch (NumberFormatException e) {
+      return null;
+    }
+  }
+
   private static String readGolden(final String name) throws Exception {
     File f = new File(GOLDEN_DIR + name);
     assertTrue(f.isFile(),
@@ -110,8 +129,16 @@ public class GoldenRunTest {
   }
 
   /**
+   * Relative tolerance for numeric fields. See the class comment: this
+   * accommodates cross-JVM floating point variation in Math.pow/exp/log, not
+   * any variation in the physics.
+   */
+  private static final double RELATIVE_TOLERANCE = 1e-5;
+
+  /**
    * Compares field by field so a failure names the column that moved rather
-   * than dumping two long lines.
+   * than dumping two long lines. Numeric fields are compared with a relative
+   * tolerance; anything non-numeric must match exactly.
    */
   private static void assertMatchesGolden(final String goldenName,
       final String actual) throws Exception {
@@ -131,8 +158,25 @@ public class GoldenRunTest {
       for (int col = 0; col < expectedFields.length; col++) {
         String label = (col < columns.length ? columns[col].trim()
                                              : "column " + col);
-        assertEquals(expectedFields[col].trim(), actualFields[col].trim(),
-            goldenName + " row " + row + ": '" + label + "' changed");
+        String expectedField = expectedFields[col].trim();
+        String actualField = actualFields[col].trim();
+        String where = goldenName + " row " + row + ": '" + label + "'";
+
+        Double expectedValue = asDouble(expectedField);
+        Double actualValue = asDouble(actualField);
+
+        if (expectedValue == null || actualValue == null) {
+          assertEquals(expectedField, actualField, where + " changed");
+          continue;
+        }
+
+        double tolerance =
+            Math.max(Math.abs(expectedValue) * RELATIVE_TOLERANCE, 1e-12);
+        assertEquals(expectedValue.doubleValue(), actualValue.doubleValue(),
+            tolerance,
+            where + " changed beyond the " + RELATIVE_TOLERANCE
+                + " relative tolerance (expected " + expectedField + ", got "
+                + actualField + ")");
       }
     }
   }
@@ -157,6 +201,8 @@ public class GoldenRunTest {
   @Test
   @Tag("slow")
   public void theSameSeedReproducesTheSameRun() throws Exception {
+    // Exact equality is correct here: this is the same JVM, so the only thing
+    // being tested is that the seed determines the result.
     assertEquals(runSummary(MX_WITH_ESCAPE), runSummary(MX_WITH_ESCAPE),
         "a fixed seed must give the same summary twice");
   }
