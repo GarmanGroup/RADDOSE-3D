@@ -401,8 +401,33 @@ Database:
 | 1008123 | `C2 H8 F4 N4 O3 Sb2` | `Sb2` | works |
 
 Any formula ending in a lone C, H, N, O, S, P or F is affected, which is most
-organic compounds -- including urea, the textbook small-molecule example. The
-fix is to guard the length: `elements.length() > 1 && Character.isLetter(...)`.
+organic compounds -- including urea, the textbook small-molecule example.
+
+**FIXED (2026-09-17)**, together with a second defect that was concealing it.
+
+`readCIFFile` ends with
+
+```java
+if (chemicalSum == false) {
+  System.out.println("The CIF file must contain the chemical sum");
+  System.exit(0); //exit the program
+}
+```
+
+The crash above is caught by an enclosing `catch (IndexOutOfBoundsException)`,
+so `chemicalSum` is still false when control reaches this, and the program
+exits **with status zero** from inside a library class. Under Ant that reads as
+`BUILD SUCCESSFUL`: the JUnit runner is killed mid-suite and the exit code says
+everything passed. A regression test for the parser crash is worthless while
+that is there -- verified by writing one and watching the build go green with
+the bug present.
+
+Both are fixed: the length is guarded, and the exit is now an
+`IllegalArgumentException`. With only the length guard reverted, the new
+`CoefCalcFromCifTest` reports 7 failures instead of a silent green build.
+
+Note `MicroED.java:386` still calls `System.exit(0)` in the same way. It is not
+reached by any test today, but it is the same hazard.
 
 Two of the nine `AbsCoefCalc` keywords are therefore unreachable under their
 obvious spelling. Renaming the `PDB` and `CIF` tokens to `EXP` and `EXPSM` (or
