@@ -86,6 +86,10 @@ public final class RD3D {
       return false;
     }
 
+    // Photoelectron and fluorescence escape are Monte Carlo calculations, so
+    // report the seed: without it a run cannot be repeated.
+    System.out.println(RandomSource.describeSeed());
+
     // Add outputs to experiment.
     for (Output o : outputs) {
       exp.addObserver(o);
@@ -160,6 +164,11 @@ public final class RD3D {
   @SuppressWarnings({ "PMD.AvoidInstantiatingObjectsInLoops",
       "PMD.CyclomaticComplexity" })
   private void parseCommandLineParameters(final String[] cmdLineParams) {
+    // Printed once per run. This used to live at the top of Crystal.expose(),
+    // which runs once per wedge, so it was repeated throughout the output.
+    System.out.println("Current RADDOSE-3D version is: "
+        + Version.VERSION_MAJOR + "." + Version.VERSION_MINOR);
+
     OutputFactory of = new OutputFactory();
     String command;
     for (int i = 0; i < cmdLineParams.length; i++) {
@@ -193,6 +202,19 @@ public final class RD3D {
           i++;
           // prefix is assigned as a priority parameter,
           // so that it can affect earlier -o commands
+        }
+
+      } else if ("-s".equals(command) || "--seed".equals(command)) {
+        if ((i + 1) >= cmdLineParams.length) {
+          System.err.println("No random seed given");
+        } else {
+          i++;
+          try {
+            RandomSource.setSeed(Long.parseLong(cmdLineParams[i]));
+          } catch (NumberFormatException e) {
+            System.err.println("Random seed must be an integer, got '"
+                + cmdLineParams[i] + "'");
+          }
         }
 
       } else if ("-t".equals(command) || "--test".equals(command)) {
@@ -342,6 +364,10 @@ public final class RD3D {
     System.out.println(" -p   or --prefix name  prefix for output files");
     System.out.println(" -r   or --raddose path path to RaddoseV3 executable");
     System.out.println(" -t   or --test         test run with no simulation");
+    System.out.println(" -s   or --seed number  seed for the Monte Carlo"
+        + " calculations, for reproducible runs");
+    System.out.println("                        (or set RADDOSE_SEED in the"
+        + " environment)");
     System.out.println();
     System.out.println(" -o   or --out <output> for user-defined output");
     // System.out.println("      see manual or use -o? for complete syntax");

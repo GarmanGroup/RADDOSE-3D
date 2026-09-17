@@ -45,7 +45,7 @@ public class BeamExperimentalpgm extends BeamExperimental {
         (Double) properties.get(Beam.ENERGY_FWHM));
     file = (String) properties.get(Beam.BEAM_EXTFILE);
     
-    if (properties.get(Beam.BEAM_CIRCULAR) == "TRUE") {
+    if ("TRUE".equals(properties.get(Beam.BEAM_CIRCULAR))) {
       isCircular = true;
     }
     else {

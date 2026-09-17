@@ -1,5 +1,7 @@
 package se.raddo.raddose3D;
 
+import java.util.LinkedHashSet;
+import java.util.LinkedHashMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -2379,7 +2381,7 @@ public class CoefCalcCompute extends CoefCalc {
     meanZoverA = 0.56;
     stoppingPower = K * (meanZoverA)* (1/betaSquared) * 
                     (Math.log((csquared*betaSquared*m*Math.pow(gamma-1, 0.5))/(meanJ * Math.pow(2, 0.5)))+ 
-                        0.5*(1-betaSquared)-((2*gamma-1)/(2*Math.pow(gamma, 2))) + (1/16)*Math.pow((gamma-1)/gamma, 2));
+                        0.5*(1-betaSquared)-((2*gamma-1)/(2*Math.pow(gamma, 2))) + (1.0/16.0)*Math.pow((gamma-1)/gamma, 2));
     stoppingPower = stoppingPower * 1000 * density /1E7;
     
     //without corrections
@@ -2558,7 +2560,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     double energy = avgEnergy * Beam.KEVTOJOULES;
     Fbeta = Math.log((m*csquared*(energy)* betaSquared) / (2*(1-betaSquared))) 
             - (2*Math.pow((1-betaSquared),0.5) - 1 + betaSquared)
-            * Math.log(2) + 1 - betaSquared + (1/8)*(1-Math.pow(1-betaSquared,0.5));
+            * Math.log(2) + 1 - betaSquared + (1.0/8.0)*(1-Math.pow(1-betaSquared,0.5));
     stoppingPower = (0.153536/betaSquared)*(sumZ/sumA)*(Fbeta - 2*Math.log(meanJ) - delta);
     stoppingPower = stoppingPower * 1000 * passedDensity /1E7;
     double radiativeStopping = ((KE_MeV*meanZ)/800)*stoppingPower;
@@ -3754,7 +3756,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
       //get Wi
       if (numInnerShells > 0) {
         for (int i = 0; i < numInnerShells; i++) { 
-          Wi[i] = Math.pow(Math.pow(a * getShellBinding(i, e)*1000,2) + (2/3)*(shells[i]/Z)*Math.pow(plasmaEnergy, 2), 0.5);
+          Wi[i] = Math.pow(Math.pow(a * getShellBinding(i, e)*1000,2) + (2.0/3.0)*((double) shells[i]/Z)*Math.pow(plasmaEnergy, 2), 0.5);
         }
       }
       
@@ -3872,7 +3874,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     }
     double plasmaEnergy = getPlasmaEnergyAll(surrounding);
   //  double Wk = Math.pow(Math.pow(a * getShellBinding(shellIndex, e)*1000,2) + (2/3)*((fk*totNum)/(sumZ))*Math.pow(plasmaEnergy, 2), 0.5);
-    double Wk = Math.pow(Math.pow(a * getShellBindingSubshell(shellIndex, e)*1000,2) + (2/3)*((fk*totNum)/(sumZ))*Math.pow(plasmaEnergy, 2), 0.5);
+    double Wk = Math.pow(Math.pow(a * getShellBindingSubshell(shellIndex, e)*1000,2) + (2.0/3.0)*((fk*totNum)/(sumZ))*Math.pow(plasmaEnergy, 2), 0.5);
     //I am really guessing the Lorenz Lorentz sumFk sum Z but just a hunch
     return Wk;
   }
@@ -5113,7 +5115,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
   }
   
   public double getEnergyLossDistant(double Wdis, double Uk){ 
-    double RND = Math.random();
+    double RND = RandomSource.nextDouble();
     double W = Wdis - Math.pow(RND*Math.pow(Wdis-Uk, 2), 0.5);
     return W;
   }
@@ -5126,7 +5128,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     
     double Qminus = getQminusModified(EkeV, WakeV);
     double Qs = Qminus / (1+Qminus/(2*m*csquared));
-    double RND = Math.random();
+    double RND = RandomSource.nextDouble();
     //gotta make sure all these units are changed to Joules to be correct when I do it properly
     double Q = Qs * 1/(Math.pow((Qs/((Qak/1000)*Beam.KEVTOJOULES))*(1+(((Qak/1000)*Beam.KEVTOJOULES)/(2*m*csquared))), RND) - (Qs/(2*m*csquared)));
     if (Qak == 0) {
@@ -5160,7 +5162,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     double kc = Math.max(Qk, Wcc) / (E*1000);  //get units right ofc
     double k = 0;
     double a = getClosea(E);
-    double RND = Math.random();
+    double RND = RandomSource.nextDouble();
     double zeta = RND * (1+5*a*kc/2);
     if (zeta < 1) {
       k = kc / (1-zeta*(1-2*kc));
@@ -5179,7 +5181,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     int count = 0;
     while (exit == false) {
       k = getRandomk(E, Qk);
-      double RND = Math.random();
+      double RND = RandomSource.nextDouble();
       double LHS = RND * (1 + 5*a*Math.pow(k, 2));
       double RHS = Math.pow(k, 2) * getPDFk(E, k, Qk);
       if (LHS < RHS) {

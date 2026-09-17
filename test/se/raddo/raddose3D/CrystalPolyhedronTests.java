@@ -1,0 +1,192 @@
+package se.raddo.raddose3D;
+
+import java.util.HashMap;
+
+import org.junit.jupiter.api.Test;
+
+
+public class CrystalPolyhedronTests {
+
+  /**
+   * With WIREFRAME OBJ, mesh sets geometry; declared DIMENSION is optional.
+   * Same voxel grid as when dummy dimensions are supplied.
+   */
+  @Test
+  public void testPolyhedronWithoutDeclaredDimensions() {
+    final double xdim = 60;
+    final double ydim = 20;
+    final double zdim = 40;
+    final Double resolution = 0.5d;
+    final String modelFile =
+        "test/resources/CrystalPolyhedron-cuboid-30-20-10.obj";
+    final String modelType = "obj";
+
+    final HashMap<Object, Object> withDims = new HashMap<Object, Object>();
+    withDims.put(Crystal.CRYSTAL_DIM_X, xdim);
+    withDims.put(Crystal.CRYSTAL_DIM_Y, ydim);
+    withDims.put(Crystal.CRYSTAL_DIM_Z, zdim);
+    withDims.put(Crystal.CRYSTAL_RESOLUTION, resolution);
+    withDims.put(Crystal.CRYSTAL_ANGLE_P, 0d);
+    withDims.put(Crystal.CRYSTAL_ANGLE_L, 0d);
+    withDims.put(CrystalPolyhedron.CRYSTAL_WIREFRAME_FILE, modelFile);
+    withDims.put(CrystalPolyhedron.CRYSTAL_WIREFRAME_TYPE, modelType);
+
+    final HashMap<Object, Object> noDims = new HashMap<Object, Object>();
+    noDims.put(Crystal.CRYSTAL_RESOLUTION, resolution);
+    noDims.put(Crystal.CRYSTAL_ANGLE_P, 0d);
+    noDims.put(Crystal.CRYSTAL_ANGLE_L, 0d);
+    noDims.put(CrystalPolyhedron.CRYSTAL_WIREFRAME_FILE, modelFile);
+    noDims.put(CrystalPolyhedron.CRYSTAL_WIREFRAME_TYPE, modelType);
+
+    final CrystalPolyhedron cWith = new CrystalPolyhedron(withDims);
+    final CrystalPolyhedron cNo = new CrystalPolyhedron(noDims);
+    final int[] a = cWith.getCrystSizeVoxels();
+    final int[] b = cNo.getCrystSizeVoxels();
+    Tolerance.equals(a[0], b[0], "voxel nx");
+    Tolerance.equals(a[1], b[1], "voxel ny");
+    Tolerance.equals(a[2], b[2], "voxel nz");
+  }
+
+  @Test
+  public void testFindDepthSimple() {
+    double xdim = 60, ydim = 20, zdim = 40; // just like in the model file.
+
+    Double resolution = 0.5d;
+    String modelFile = "test/resources/CrystalPolyhedron-cuboid-30-20-10.obj";
+    String modelType = "obj";
+
+    HashMap<Object, Object> properties = new HashMap<Object, Object>();
+
+    properties.put(Crystal.CRYSTAL_DIM_X, xdim);
+    properties.put(Crystal.CRYSTAL_DIM_Y, ydim);
+    properties.put(Crystal.CRYSTAL_DIM_Z, zdim);
+    properties.put(Crystal.CRYSTAL_RESOLUTION, resolution);
+    properties.put(Crystal.CRYSTAL_ANGLE_P, 0d);
+    properties.put(Crystal.CRYSTAL_ANGLE_L, 0d);
+    properties.put(CrystalPolyhedron.CRYSTAL_WIREFRAME_FILE, modelFile);
+    properties.put(CrystalPolyhedron.CRYSTAL_WIREFRAME_TYPE, modelType);
+
+    Crystal c = new CrystalPolyhedron(properties);
+    Crystal cub = new CrystalCuboid(properties);
+    Wedge w = new Wedge(0d, 0d, 0d, 100d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 2d);
+
+    double[] crystCoords, crystCoordsCub;
+    // this coordinate is in voxel coordinates.
+    // this translates to bottom left corner of the crystal
+    // in crystCoords (-45, -37, -20)
+    // and should therefore be first to intercept the beam and have
+    // a depth of 0.
+    // taking voxels which are definitely within the crystal (starting
+    // from 1, 1, 1 to width - 1, height - 1, depth - 1)
+    // due to rounding errors because I still don't know how
+    // to deal with those. -- Helen
+
+    for (double angle = 0; angle <= 90; angle += 90)
+    {
+      for (int x = 1; x < xdim * resolution - 1; x++) {
+        for (int y = 1; y < ydim * resolution - 1; y++) {
+          for (int z = 1; z < zdim * resolution - 1; z++) {
+            crystCoordsCub = cub.getCrystCoord(x, y, z);
+            crystCoords = c.getCrystCoord(x, y, z);
+            Tolerance.equals(crystCoords[0], -(xdim / 2) + (x / resolution),
+                "crystal coordinate x axis for voxel (" + x + ", " + y + ", "
+                    + z + ")", 0.01);
+            Tolerance.equals(crystCoords[1], -(ydim / 2) + (y / resolution),
+                "crystal coordinate y axis for voxel (" + x + ", " + y + ", "
+                    + z + ")", 0.01);
+            Tolerance.equals(crystCoords[2], -(zdim / 2) + (z / resolution),
+                "crystal coordinate z axis for voxel (" + x + ", " + y + ", "
+                    + z + ")", 0.01);
+            
+            Tolerance.equals(crystCoordsCub[0], -(xdim / 2) + (x / resolution),
+                "crystal coordinate x axis for voxel (" + x + ", " + y + ", "
+                    + z + ")", 0.01);
+            Tolerance.equals(crystCoordsCub[1], -(ydim / 2) + (y / resolution),
+                "crystal coordinate y axis for voxel (" + x + ", " + y + ", "
+                    + z + ")", 0.01);
+            Tolerance.equals(crystCoordsCub[2], -(zdim / 2) + (z / resolution),
+                "crystal coordinate z axis for voxel (" + x + ", " + y + ", "
+                    + z + ")", 0.01);
+
+            cub.setupDepthFinding(Math.toRadians(angle), w);
+            c.setupDepthFinding(Math.toRadians(angle), w);
+
+            if (angle == 90)
+            {
+              // need to rotate the crystcoords round y axis 90 degrees
+              // like in the exposeAngle function.
+              double temp = crystCoords[0];
+              crystCoords[0] = crystCoords[2];
+              crystCoords[2] = temp;
+              
+              temp = crystCoordsCub[0];
+              crystCoordsCub[0] = crystCoordsCub[2];
+              crystCoordsCub[2] = temp;
+            }
+            
+            double depth = c.findDepth(crystCoords, 0, w);
+            double depthCub = cub.findDepth(crystCoordsCub, 0, w);
+
+            // Because the crystal has not been rotated,
+            // the depth should just be z / resolution
+            double trueDepth = (angle == 0) ? z : x;
+            trueDepth /= resolution;
+            
+            String axis = (angle == 0) ? "z" : "x";
+            
+            Tolerance.equals(depth, trueDepth, "depth at " + axis + " = " + trueDepth
+                + " for crystCoord (" + crystCoords[0] + ", " + crystCoords[1]
+                + ", " + crystCoords[2] + ")", 2.0);
+            Tolerance.equals(depthCub, trueDepth, "depth at " + axis + " = " + trueDepth
+                + " for cuboid crystCoord (" + crystCoordsCub[0] + ", " + crystCoordsCub[1]
+                + ", " + crystCoordsCub[2] + ")", 2.0);
+          }
+        }
+      }
+    }
+  }
+
+  // Test to work out whether concave crystals omit depths where
+  // there is missing crystal space.
+  // Object file has a horseshoe shape (like a magnet) which
+  // is hit from the side, which may omit the middle bit
+  // depending on the tested voxel.
+  @Test
+  public void testFindDepthConcave()
+  {
+    Double resolution = 0.5d;
+    String modelFile = "test/resources/CrystalPolyhedron-concave_cuboid-30-20-10.obj";
+    String modelType = "obj";
+
+    HashMap<Object, Object> properties = new HashMap<Object, Object>();
+
+    properties.put(Crystal.CRYSTAL_RESOLUTION, resolution);
+    properties.put(Crystal.CRYSTAL_ANGLE_P, 0d);
+    properties.put(Crystal.CRYSTAL_ANGLE_L, 0d);
+    properties.put(CrystalPolyhedron.CRYSTAL_WIREFRAME_FILE, modelFile);
+    properties.put(CrystalPolyhedron.CRYSTAL_WIREFRAME_TYPE, modelType);
+
+    Crystal c = new CrystalPolyhedron(properties);
+
+    Wedge w = new Wedge(0d, 0d, 0d, 100d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 2d);
+
+    // this is where the beam should be going through the thickest
+    // part of the crystal (pre-determined)
+    double[] crystCoordThick = { 3.5, -8.65, 29.9 };
+
+    // this coordinate should miss out the middle section of
+    // the horseshoe if hit by the beam.
+
+    double[] crystCoordThin = { 5, 6, 30.0 };
+
+    c.setupDepthFinding(0, w);
+
+    double thickDepth = c.findDepth(crystCoordThick, 0, w);
+    Tolerance
+        .equals(thickDepth, 60.0, "Thick part of crystal about 30 um", 1.0);
+
+    double thinDepth = c.findDepth(crystCoordThin, 0, w);
+    Tolerance.equals(thinDepth, 40.0, "Thin part of crystal about 20 um", 1.0);
+
+  }
+}

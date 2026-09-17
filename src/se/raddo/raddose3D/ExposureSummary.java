@@ -358,7 +358,12 @@ public class ExposureSummary implements ExposeObserver {
 
     avgDoseWholeCrystal = totalDose / occupiedVoxels;
     
-    lastDWD = imageDWD[images - 1];
+    // Guard against an exposure in which no image completed -- for instance
+    // one whose angular resolution exceeds its wedge span. Without this the
+    // index is [-1] and the run dies with ArrayIndexOutOfBoundsException.
+    if (images > 0) {
+      lastDWD = imageDWD[images - 1];
+    }
   }
 
   public Double getAvgDiffractedDose() {

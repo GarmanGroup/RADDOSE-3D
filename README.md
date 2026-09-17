@@ -1,7 +1,7 @@
 RADDOSE-3D - time- and space-resolved modelling of dose in macromolecular crystallography.
 ==========================================================================================  
 
-[![Build Status](https://travis-ci.org/GarmanGroup/RADDOSE-3D.svg?branch=master)](https://travis-ci.org/GarmanGroup/RADDOSE-3D)
+[![CI](https://github.com/GarmanGroup/RADDOSE-3D/actions/workflows/ci.yml/badge.svg)](https://github.com/GarmanGroup/RADDOSE-3D/actions/workflows/ci.yml)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.228172.svg)](https://doi.org/10.5281/zenodo.228172)
 
 RADDOSE-3D allows the macroscopic modelling of an X-ray diffraction
@@ -18,6 +18,21 @@ Brought to you by the Garman Lab at the University of Oxford.
 http://www.bioch.ox.ac.uk/garmangroup
 
 If you have any questions on how to run RADDOSE-3D or would like advice on what inputs to use please email j_dickerson80@yahoo.com.
+
+Running the tests
+-----------------
+
+```
+export JAVA_HOME=/path/to/jdk      # any JDK 8 or newer
+ant build build-tests test         # fast suite, a few seconds
+ant test-all                       # adds the slower geometry tests
+```
+
+Tests live in `test/`, use JUnit 5 (one vendored jar, `lib/junit5/`), and are
+run by the `test` target via the JUnit console launcher. Two further targets
+exist: `ant test-network` for the tests that contact physics.nist.gov, and
+`ant test-pending` for tests parked pending a decision -- these are **expected
+to fail** and are documented in [TEST-TRIAGE.md](TEST-TRIAGE.md).
 
 Usage
 ------
