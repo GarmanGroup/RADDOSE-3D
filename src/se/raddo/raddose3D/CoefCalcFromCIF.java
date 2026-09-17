@@ -64,8 +64,14 @@ public class CoefCalcFromCIF extends CoefCalcCompute{
     }
     
     if (chemicalSum == false) {
-      System.out.println("The CIF file must contain the chemical sum");
-      System.exit(0); //exit the program
+      /*
+       * Throw rather than System.exit(0). Exiting from inside a library class
+       * terminates whatever is hosting it -- including a test runner, which
+       * then reports success because the exit status is zero, hiding the very
+       * failure that caused it. It also skips every Writer.close() in flight.
+       */
+      throw new IllegalArgumentException(
+          "The CIF file must contain the chemical sum (_chemical_formula_sum)");
     }
     
   }
@@ -120,8 +126,19 @@ public class CoefCalcFromCIF extends CoefCalcCompute{
         firstSpace = elements.indexOf(" ");
       }
       
+      /*
+       * Element symbols are one or two letters. A two letter symbol is
+       * recognised by a letter in the second position -- but the remaining
+       * formula may be a single character at this point, so the length must
+       * be checked first.
+       *
+       * Only the final token can be that short: every earlier one is followed
+       * by a space, which is not a letter and so takes the one-letter branch.
+       * Indexing blindly therefore crashed on any formula ending in a bare
+       * single-letter symbol, such as urea's "C H4 N2 O".
+       */
       int elementLetterLength;
-      if (Character.isLetter(elements.charAt(1))) {
+      if (elements.length() > 1 && Character.isLetter(elements.charAt(1))) {
         elementLetterLength = 2;
       }
       else {

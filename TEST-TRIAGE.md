@@ -352,6 +352,90 @@ Two things remain open, both reported rather than changed:
 Also unchanged: RD3D printed results for this file even while the parser was
 recording two errors, so a malformed input does not stop the run.
 
+### The same defect exists for PDB (found 2026-09-17)
+
+`AbsCoefCalc PDB` can never parse either, for exactly the same reason:
+
+```
+Inputfile.g:388   PDB     : ('E'|'e')('X'|'x')('P'|'p');          <- matches "EXP"
+Inputfile.g:505   PDBNAME : ('P'|'p')('D'|'d')('B'|'b');          <- matches "PDB"
+```
+
+The token *named* `PDB` matches the literal **"EXP"**. So the keyword for a
+PDB-based absorption calculation is `AbsCoefCalc EXP`, and the entry itself is
+given on a following `PDB <path-or-code>` line. Writing the natural
+`AbsCoefCalc PDB` produces:
+
+```
+line 5:12 no viable alternative at input 'PDB'
+line 6:0  no viable alternative at input 'PDB'
+```
+
+and RD3D then **prints a dose anyway**, computed from a default composition
+rather than the PDB file -- which is worse than failing, because the number
+looks plausible.
+
+### `CoefCalcFromCIF` crashes on most small-molecule formulas (found 2026-09-17)
+
+Separately from the keyword problem, the CIF parser cannot read a large
+fraction of valid small-molecule CIFs. `parseChemicalFormula` does
+
+```java
+if (Character.isLetter(elements.charAt(1))) {
+```
+
+unconditionally, to decide whether an element symbol is one or two letters.
+When the final token of `_chemical_formula_sum` is a bare single-letter symbol
+with no count, that string has length 1 and `charAt(1)` throws
+`StringIndexOutOfBoundsException`. The exception is caught in `readCIFFile`,
+which prints "Line length error encounted in URL line", after which
+`chemicalSum` is still false and the program calls `System.exit(0)`.
+
+Measured against public-domain structures from the Crystallography Open
+Database:
+
+| COD entry | `_chemical_formula_sum` | last token | result |
+|---|---|---|---|
+| 1008775 (urea) | `C H4 N2 O` | `O` | crash |
+| 1010846 | `C4 H16 Ca N8 O8 S` | `S` | crash |
+| 1008123 | `C2 H8 F4 N4 O3 Sb2` | `Sb2` | works |
+
+Any formula ending in a lone C, H, N, O, S, P or F is affected, which is most
+organic compounds -- including urea, the textbook small-molecule example.
+
+**FIXED (2026-09-17)**, together with a second defect that was concealing it.
+
+`readCIFFile` ends with
+
+```java
+if (chemicalSum == false) {
+  System.out.println("The CIF file must contain the chemical sum");
+  System.exit(0); //exit the program
+}
+```
+
+The crash above is caught by an enclosing `catch (IndexOutOfBoundsException)`,
+so `chemicalSum` is still false when control reaches this, and the program
+exits **with status zero** from inside a library class. Under Ant that reads as
+`BUILD SUCCESSFUL`: the JUnit runner is killed mid-suite and the exit code says
+everything passed. A regression test for the parser crash is worthless while
+that is there -- verified by writing one and watching the build go green with
+the bug present.
+
+Both are fixed: the length is guarded, and the exit is now an
+`IllegalArgumentException`. With only the length guard reverted, the new
+`CoefCalcFromCifTest` reports 7 failures instead of a silent green build.
+
+Note `MicroED.java:386` still calls `System.exit(0)` in the same way. It is not
+reached by any test today, but it is the same hazard.
+
+Two of the nine `AbsCoefCalc` keywords are therefore unreachable under their
+obvious spelling. Renaming the `PDB` and `CIF` tokens to `EXP` and `EXPSM` (or
+better, renaming the *keywords* to match the tokens) would fix both and cost
+only a grammar regeneration. Confirmed working: `AbsCoefCalc EXP` with
+`PDB 3I40.pdb` reads the local file correctly -- unit cell 77.22 cubed, 24
+monomers, 64.05% solvent.
+
 ---
 
 ## Mutation checks
