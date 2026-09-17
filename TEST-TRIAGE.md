@@ -253,6 +253,79 @@ dose is a sharp edge for anyone using `BeamGaussian` directly.
 
 ---
 
+## 6. Integer division inside floating point physics expressions
+
+**Pinned by:** `IntegerDivisionTest`
+
+Java evaluates `(2/3)` as integer division, giving 0, so any term it multiplies
+disappears. Six such expressions exist:
+
+| location | expression | effect |
+|---|---|---|
+| `CoefCalcCompute.java:2384` | `(1/16) * ((gamma-1)/gamma)^2` | term dropped |
+| `CoefCalcCompute.java:2563` | `(1/8) * (1 - sqrt(1-beta^2))` | term dropped |
+| `CoefCalcCompute.java:3759` | `(2/3) * (shells[i]/Z) * plasma^2` | term dropped; `shells[i]/Z` is also integer division |
+| `CoefCalcCompute.java:3877` | `(2/3) * ((fk*totNum)/sumZ) * plasma^2` | term dropped |
+| `MicroED.java:240` | `(4/3) * PI * a * b * c` | sphere volume 25% low |
+
+All are in the electron/GOS code, so a standard MX run is unaffected.
+
+Two consequences worth noting. First, `getWkMolecule` collapses to
+`a * bindingEnergy * 1000`, which means **commit `8d37c7a` -- which widened
+`sumZ` from `int` to `double` to avoid a truncation -- cannot change any
+result**, because the quantity it feeds is multiplied by zero. Second,
+`MicroED.java:240` makes the spherical crystal volume three quarters of the
+correct value, and that volume clamps `exposedVolume` at `MicroED.java:1825`.
+(That branch is also guarded by `crystalTypeEM == "SPHERICAL"`, a String
+reference comparison -- the same pattern as item 4 -- so it may not fire at
+all.)
+
+---
+
+## 7. `ExposureSummary.exposureComplete()` throws if no image ran
+
+**Pinned by:** `OutputWriterTest.exposureCompleteThrowsIfNoImagesRan`
+
+`exposureComplete()` ends with `lastDWD = imageDWD[images - 1]`, which is
+`imageDWD[-1]` when no image completed, throwing
+`ArrayIndexOutOfBoundsException`. An exposure whose angular resolution exceeds
+its wedge span would reach this. Low severity, but it crashes rather than
+reporting anything useful.
+
+Also worth knowing for future test-writing: the `Output*` classes cannot be
+exercised without driving `ExposureSummary` through its whole observer
+lifecycle (`exposureStart`, `summaryObservation`, `imageComplete`,
+`exposureComplete`). A freshly constructed one returns null from every getter,
+so `publishWedge` throws.
+
+---
+
+## 8. `examples/SMXray2_example_input.txt` does not parse
+
+**Parked test:** `InputFileParseTest.smxray2ExampleIsStillInvalid`
+
+Line 10 reads `AbsCoefCalc CIF`, which the parser rejects with "no viable
+alternative at input 'CIF'" (the error on line 13 is recovery fallout). The
+cause is confusing token naming in `Inputfile.g`:
+
+```
+Inputfile.g:393   CIF     : ('E'|'e')('X'|'x')('P'|'p')('S'|'s')('M'|'m');   <- matches "EXPSM"
+Inputfile.g:509   CIFNAME : ('C'|'c')('I'|'i')('F'|'f');                      <- matches "CIF"
+```
+
+The token *named* `CIF` matches the literal **"EXPSM"**, so the keyword for a
+CIF-based absorption calculation is spelled `EXPSM`. Replacing line 10 with
+`AbsCoefCalc EXPSM` makes the file parse (it then fails only because the
+referenced `Fe3O4` CIF file is absent).
+
+This is the same class of defect as commit `bc40d89`, "fix: correct invalid SMX
+example". **Decision needed:** correct the example, rename the token to
+something honest, or both. Note also that RD3D printed results for this file
+despite the parser recording two errors -- a malformed input does not stop the
+run.
+
+---
+
 ## Mutation checks
 
 The suite was validated by reverting each fix and confirming it goes red:
