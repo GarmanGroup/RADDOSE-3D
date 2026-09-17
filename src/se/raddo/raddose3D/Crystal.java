@@ -1258,10 +1258,12 @@ public abstract class Crystal {
           // (= 1e-18/1e3) / [volume (um^-3) *density (g/ml)]
           * 1e-6; // MGy
 
-      energyPerFluence =
+      // Separate cryo absorption fraction so crystal energyPerFluence is
+      // preserved for the crystal absorbed-energy / DWD pass below.
+      final double cryoEnergyPerFluence =
           1 - Math.exp(-1 * coefCalc.getCryoAbsorptionCoefficient()
               / getCryoCrystalPixPerUM());
-      // absorption of the beam by a voxel
+      // absorption of the beam by a cryo voxel
       
       double energyToDoseFactor = (1e-15 * (Math.pow(getCrystalPixPerUM(), -3) * coefCalc     //energy absorbed by cryo voxel to dose in crystal voxel
           .getDensity()));
@@ -1323,7 +1325,7 @@ public abstract class Crystal {
                 double beamEnergy = (beam.getPhotonEnergy() * Beam.KEVTOJOULES);                       // just left as the beam energy (or mean energy for a gaussian pink beam)
                 double numberOfPhotons = cryoVoxImageFluence / beamEnergy;          
                 
-                double cryoVoxImageEnergy = energyPerFluence * cryoVoxImageFluence; 
+                double cryoVoxImageEnergy = cryoEnergyPerFluence * cryoVoxImageFluence; 
                 double cryoVoxImageDose= fluenceToDoseFactor * cryoVoxImageFluence;
                                                                              
                 if (cryoVoxImageEnergy > 0) {
@@ -1334,7 +1336,7 @@ public abstract class Crystal {
                   
                   double energyPE = 0;
                   double dosePE = 0;
-                  double totCryoAugerEnergy = cryoAugerEnergy * numberOfPhotons * energyPerFluence;
+                  double totCryoAugerEnergy = cryoAugerEnergy * numberOfPhotons * cryoEnergyPerFluence;
                   double totCryoAugerDose = cryoAugerEnergy * numberOfPhotons * fluenceToDoseFactor;
                   if (MC == false) {
                   if (fluorescentEscape == false) {
@@ -1344,7 +1346,7 @@ public abstract class Crystal {
                   else {
                     double totCryoFluorescenceEnergyRelease = cryoFluorescenceEnergyRelease * numberOfPhotons;
                     //convert this to a dose to be released
-                    double voxImageFlEnergyRelease = energyPerFluence * totCryoFluorescenceEnergyRelease;
+                    double voxImageFlEnergyRelease = cryoEnergyPerFluence * totCryoFluorescenceEnergyRelease;
                     double voxImageFlDoseRelease = fluenceToDoseFactor * totCryoFluorescenceEnergyRelease;
               //      energyPE = cryoVoxImageEnergy - totCryoAugerEnergy - voxImageFlEnergyRelease;
                     energyPE = cryoVoxImageEnergy - (cryoEnergyToSubtractFromPE/beam.getPhotonEnergy())*cryoVoxImageEnergy;

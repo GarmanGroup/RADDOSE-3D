@@ -1031,9 +1031,16 @@ public class CrystalPolyhedron extends Crystal {
 
     Collections.sort(distancesFound);
 
-    for (int i = 0; i < distancesFound.size() - 1; i++) {
-      if (distancesFound.get(i + 1) == distancesFound.get(i)) {
+    // Compare double values (not boxed Double references): a ray that hits a
+    // shared triangle edge registers the same distance twice, and without
+    // removing those duplicates the even count trips the sanity-check below
+    // and incorrectly returns depth=0.
+    for (int i = 0; i < distancesFound.size() - 1; ) {
+      if (distancesFound.get(i + 1).doubleValue()
+          == distancesFound.get(i).doubleValue()) {
         distancesFound.remove(i + 1);
+      } else {
+        i++;
       }
     }
 
@@ -1244,8 +1251,9 @@ public class CrystalPolyhedron extends Crystal {
         runningEscapeTotal = 0;
       if (fluorescenceProportionEvent[i][j] > 0) { //If j shell fluorescence possible
    //     if (fluorescenceProportionEvent[i] > 0) {
-  //      int muabsIndex = (4* j) + 4;
-          int muabsIndex = 4;
+        // Per-shell photoelectric mu_abs at the fluorescence energy:
+        // K=4, L1=8, L2=12, L3=16 in feFactors[element][...]
+          int muabsIndex = (4 * j) + 4;
         //Calculate distance at which escape probability = 5%
         double maxDistanceFl = -1 * (Math.log(0.05)/feFactors[i][muabsIndex]);
         double crystalMaxDistance = Math.pow(Math.pow(crystSizeUM[0], 2) + 
