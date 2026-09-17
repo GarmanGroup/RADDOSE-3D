@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
+import java.util.LinkedHashMap;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -450,7 +451,7 @@ public class XFEL {
             track = false;
           }
           if (track == true) {
-            s = -photonMFPLSurrounding*Math.log(Math.random());
+            s = -photonMFPLSurrounding*Math.log(RandomSource.nextDouble());
             //update Z
             previousZ = previousZ - distanceNM;
             //give it a negative timestamp
@@ -461,7 +462,7 @@ public class XFEL {
           }
         }
         else { // a photon that could interact before the crystal
-          s = -photonMFPLSurrounding*Math.log(Math.random());
+          s = -photonMFPLSurrounding*Math.log(RandomSource.nextDouble());
         //  if ((s < distanceNM) || (distanceNM + ZDimension < s && s < 2*distanceNM + ZDimension) ) { //then this photon will interact before or after hitting the crystal
             if ((s < distanceNM) ) { //photon interacts before hitting the crystal
             //need to give it a timestamp, I'm going to start it off with a negative one and if it is negative one put it on 0
@@ -483,7 +484,7 @@ public class XFEL {
             yn = previousY + s * yNorm;
             zn = previousZ + s * zNorm;
          
-            double RNDcompton = Math.random();
+            double RNDcompton = RandomSource.nextDouble();
             if (RNDcompton < probComptonSurrounding) {
               //produce a compton electron
               produceCompton(beam, coefCalc, timeStamp, xn, yn, zn, surrounding, energyOfPhoton, elementComptonProbs, angle, wedge);
@@ -505,8 +506,8 @@ public class XFEL {
       
       //the next step is to work out the distance s
       if (surrounding == false) {
-     //   s = -photonMFPL*Math.log(Math.random());
-        s = -totalMFPL*Math.log(Math.random());
+     //   s = -photonMFPL*Math.log(RandomSource.nextDouble());
+        s = -totalMFPL*Math.log(RandomSource.nextDouble());
       }
 
       xn = previousX + s * xNorm;
@@ -525,7 +526,7 @@ public class XFEL {
           int doseTime = (int) (timeStamp/PULSE_BIN_LENGTH); //rounding down so 0 = 0-0.99999, 1 - 1-1.99999 etc 
           
           //determine if elastic or inel
-          double RNDel = Math.random();
+          double RNDel = RandomSource.nextDouble();
           if (RNDel < elasticProb) {
             //do elastic
             int[] pixelCoord = convertToPixelCoordinates(xn, yn, zn, angle, wedge);
@@ -534,7 +535,7 @@ public class XFEL {
           }
           else {
           //determine if this was Compton scattering or photoelectric absorption
-          double RNDcompton = Math.random();
+          double RNDcompton = RandomSource.nextDouble();
           if (RNDcompton < probCompton) {
             ionisationsOld += 1;
             produceCompton(beam, coefCalc, timeStamp, xn, yn, zn, surrounding, energyOfPhoton, elementComptonProbs, angle, wedge);
@@ -569,7 +570,7 @@ public class XFEL {
                   double timeToPoint = ((1/c) * (s/1E9)); //in seconds
                   timeStamp += timeToPoint * 1E15; //time from start of pulse that this happened
                   int doseTime = (int) (timeStamp/PULSE_BIN_LENGTH); //rounding down so 0 = 0-0.99999, 1 - 1-1.99999 etc 
-                  double RNDcompton = Math.random();
+                  double RNDcompton = RandomSource.nextDouble();
                   if (RNDcompton < probComptonSurrounding) {
                     //produce a compton electron
                     produceCompton(beam, coefCalc, timeStamp, xn, yn, zn, surrounding, energyOfPhoton, elementComptonProbs, angle, wedge);
@@ -593,10 +594,10 @@ public class XFEL {
               if (silicon == true) {
                 Map<String, Double> siCoeffs = coefCalc.calculateCoefficientsSilicon(energyOfPhoton);
                 double siMFPL = (1/(siCoeffs.get("Photoelectric") + siCoeffs.get("Compton Attenuation")))*1000;
-                s = -siMFPL*Math.log(Math.random());
+                s = -siMFPL*Math.log(RandomSource.nextDouble());
               }
               else {
-                s = -photonMFPLSurrounding*Math.log(Math.random());
+                s = -photonMFPLSurrounding*Math.log(RandomSource.nextDouble());
               }
               
               
@@ -609,7 +610,7 @@ public class XFEL {
                 timeToPoint = (1/c) * (s/1E9);
                 timeStamp += timeToPoint * 1E15;
                 int doseTime = (int) (timeStamp/PULSE_BIN_LENGTH);
-                double RNDcompton = Math.random();
+                double RNDcompton = RandomSource.nextDouble();
                 if (RNDcompton < probComptonSurrounding) {
                   //produce a compton electron
                   produceCompton(beam, coefCalc, timeStamp, xn, yn, zn, surrounding, energyOfPhoton, elementComptonProbs, angle, wedge);
@@ -667,7 +668,7 @@ public class XFEL {
       //populate the relative shell cross sections
       Map<Element, double[]> ionisationProbs = getRelativeShellProbs(elementAbsorptionProbs, photonEnergy);
       
-      double s = -photonMFPL*Math.log(Math.random());
+      double s = -photonMFPL*Math.log(RandomSource.nextDouble());
       double xn = previousX + s * xNorm;
       double yn = previousY + s * yNorm;
       double zn = previousZ + s * zNorm;
@@ -683,7 +684,7 @@ public class XFEL {
         
         //only do the next step if time cares
         
-        double RNDcompton = Math.random();
+        double RNDcompton = RandomSource.nextDouble();
         if (RNDcompton < probCompton) {
           ionisationsOld += 1;
           produceCompton(beam, coefCalc, timeStamp, xn, yn, zn, surrounding, photonEnergy, elementComptonProbs, angle, wedge);
@@ -706,7 +707,7 @@ public class XFEL {
               //do nothing
             }
             else {
-              double RNDcompton = Math.random();
+              double RNDcompton = RandomSource.nextDouble();
               if (RNDcompton < probCompton) {
                 produceCompton(beam, coefCalc, timeStamp, xn, yn, zn, surrounding, photonEnergy, elementComptonProbs, angle, wedge);
               }
@@ -1160,7 +1161,7 @@ public class XFEL {
   }
   
   private Element getIonisedElement(Map<Element, Double> elementAbsorptionProbs) {
-    double elementRND = Math.random();
+    double elementRND = RandomSource.nextDouble();
     Element ionisedElement = null;
     for (Element e : elementAbsorptionProbs.keySet()) {
       double elementProb =  elementAbsorptionProbs.get(e);
@@ -1174,7 +1175,7 @@ public class XFEL {
   
   private int getIonisedShell(Element ionisedElement, Map<Element, double[]> ionisationProbs) {
     double[] shellProbs = ionisationProbs.get(ionisedElement);
-    double shellRND = Math.random();
+    double shellRND = RandomSource.nextDouble();
     int shellIndex = 0;
     for (int j = 0; j < shellProbs.length; j++) {
       if (shellProbs[j] > shellRND) {
@@ -1227,7 +1228,7 @@ public class XFEL {
     //get direction and angles assuming 100% polarisation in the X axis
     //if there is rootation need to add this in as well
     double thisAngle = 2*Math.PI - angle;
-    double polarised = Math.random();
+    double polarised = RandomSource.nextDouble();
     double xNorminit = 0, zNorminit = 0, xNorm = 0, yNorm = 0, zNorm = 0, phi = 0, theta = 0;
     //polarised 0 as asuming 100% polarised
     if (shellIndex == 0 && polarised > 0) { //then I want to send out in a biased direction
@@ -1235,12 +1236,12 @@ public class XFEL {
       if ((verticalGoni == true && verticalPol == false) || (verticalGoni == false && verticalPol == true)) {
         xNorminit = getCosAngleToX();
         //get yNorm and zNorm
-        yNorm = PosOrNeg() * Math.random() * Math.pow(1-Math.pow(xNorminit, 2), 0.5);
+        yNorm = PosOrNeg() * RandomSource.nextDouble() * Math.pow(1-Math.pow(xNorminit, 2), 0.5);
       }
       else {
         yNorm = getCosAngleToX();
         //get yNorm and zNorm
-        xNorminit = PosOrNeg() * Math.random() * Math.pow(1-Math.pow(yNorm, 2), 0.5);
+        xNorminit = PosOrNeg() * RandomSource.nextDouble() * Math.pow(1-Math.pow(yNorm, 2), 0.5);
       }
       zNorminit = PosOrNeg() * Math.pow(1 - Math.pow(xNorminit, 2) - Math.pow(yNorm, 2), 0.5);
       
@@ -1253,7 +1254,7 @@ public class XFEL {
       /*
       xNorm = getCosAngleToX();
       //get yNorm and zNorm
-      yNorm = PosOrNeg() * Math.random() * Math.pow(1-Math.pow(xNorm, 2), 0.5);
+      yNorm = PosOrNeg() * RandomSource.nextDouble() * Math.pow(1-Math.pow(xNorm, 2), 0.5);
       zNorm = PosOrNeg() * Math.pow(1 - Math.pow(xNorm, 2) - Math.pow(yNorm, 2), 0.5);
       //get theta and phi
       theta = Math.acos(zNorm);
@@ -1261,8 +1262,8 @@ public class XFEL {
       */
     }
     else { // send it out in a random direction
-      theta = Math.random() * 2 * Math.PI;
-      phi = Math.random() * 2 * Math.PI;
+      theta = RandomSource.nextDouble() * 2 * Math.PI;
+      phi = RandomSource.nextDouble() * 2 * Math.PI;
       xNorm = Math.sin(theta) * Math.cos(phi);
       yNorm = Math.sin(theta) * Math.sin(phi);
       zNorm = Math.cos(theta);
@@ -1299,7 +1300,7 @@ public class XFEL {
     if (shellIndex == 0 || (shellIndex < 2 && Z==11) || (shellIndex < 3 && Z==12) || (shellIndex < 4 && Z<=20 && Z>12) || (shellIndex < 7 && Z>=25 && Z<31) || (shellIndex < 9 && Z>32 && Z < 35)) {
       //only do for elements that are possible right now - C N O S
         double shellFluorescenceYield = getShellFluorescenceYield(ionisedElement, shellIndex);
-        double fluoresenceYieldRND = Math.random();
+        double fluoresenceYieldRND = RandomSource.nextDouble();
         
         if (fluoresenceYieldRND > shellFluorescenceYield) { //then this will emit and Auger electron 
           // determine which transition happened in the usual way from cumulative probs
@@ -1328,8 +1329,8 @@ public class XFEL {
         double augerEnergy = 6.5;
         double augerLifetime = 1E15*((h/(2*Math.PI)) / ((0.55/1000)*Beam.KEVTOJOULES));
         timeStamp += augerLifetime;
-        double theta = Math.random() * 2 * Math.PI;
-        double phi = Math.random() * 2 * Math.PI;
+        double theta = RandomSource.nextDouble() * 2 * Math.PI;
+        double phi = RandomSource.nextDouble() * 2 * Math.PI;
         double xNorm = Math.sin(theta) * Math.cos(phi);
         double yNorm = Math.sin(theta) * Math.sin(phi);
         double zNorm = Math.cos(theta);
@@ -1380,8 +1381,8 @@ public class XFEL {
     
     //send out the Auger
     //choose a random direction
-    double theta = Math.random() * 2 * Math.PI;
-    double phi = Math.random() * 2 * Math.PI;
+    double theta = RandomSource.nextDouble() * 2 * Math.PI;
+    double phi = RandomSource.nextDouble() * 2 * Math.PI;
     double xNorm = Math.sin(theta) * Math.cos(phi);
     double yNorm = Math.sin(theta) * Math.sin(phi);
     double zNorm = Math.cos(theta);
@@ -1430,8 +1431,8 @@ public class XFEL {
     
     //send out the fl
     //choose a random direction
-    double theta = Math.random() * 2 * Math.PI;
-    double phi = Math.random() * 2 * Math.PI;
+    double theta = RandomSource.nextDouble() * 2 * Math.PI;
+    double phi = RandomSource.nextDouble() * 2 * Math.PI;
     double xNorm = Math.sin(theta) * Math.cos(phi);
     double yNorm = Math.sin(theta) * Math.sin(phi);
     double zNorm = Math.cos(theta);
@@ -1453,7 +1454,7 @@ public class XFEL {
   private int getTransitionIndex(int Z, int shell, boolean auger) {
     double[] transitionProbs = getTranstionProbs(Z, shell, auger);
     int transitionIndex = 0;
-    double transitionRND = Math.random();
+    double transitionRND = RandomSource.nextDouble();
     for (int i = 0; i < transitionProbs.length; i++) {
       if (transitionRND < transitionProbs[i]) { // then it's this transition
         transitionIndex = i;
@@ -1503,7 +1504,7 @@ public class XFEL {
     //then the photon scattered by the compton effect
     //pick an angle theta
     int[] pixelCoord = convertToPixelCoordinates(xn, yn, zn, angle, wedge);
-    double photonTheta = Math.PI * Math.random();
+    double photonTheta = Math.PI * RandomSource.nextDouble();
     //now get the energy of the compton electron
     double mcSquared = m * Math.pow(c, 2);
     double incidentEnergy = photonEnergy * Beam.KEVTOJOULES;
@@ -1517,7 +1518,7 @@ public class XFEL {
     double electronPhi = Math.atan((1/Math.tan(photonTheta/2)) / (1 + (incidentEnergy/mcSquared)));
     //now get the angles and direction
     double zNorm = Math.cos(electronPhi);
-    double xNorm = PosOrNeg() * Math.random() * Math.pow(1-Math.pow(zNorm, 2), 0.5);
+    double xNorm = PosOrNeg() * RandomSource.nextDouble() * Math.pow(1-Math.pow(zNorm, 2), 0.5);
     double yNorm = PosOrNeg() * Math.pow(1 - Math.pow(xNorm, 2) - Math.pow(zNorm, 2), 0.5);
     double theta = Math.acos(zNorm);
     double phi = Math.acos(xNorm / Math.sin(theta));
@@ -1656,7 +1657,7 @@ public class XFEL {
       Pinner = (gosInelasticLambda/startingInnerShellLambda);
     }
     
-    double testRND = Math.random();
+    double testRND = RandomSource.nextDouble();
     double s = -lambdaT*Math.log(testRND);
     double Pinel = 1 - (lambdaT / startingLambda_el);
     
@@ -1778,7 +1779,7 @@ public class XFEL {
           Pinel = 1 - (lambdaT / startingLambda_el);
 
           //get a new s and xn, yn, zn
-          s = -lambdaT*Math.log(Math.random());
+          s = -lambdaT*Math.log(RandomSource.nextDouble());
           xn = previousX + s*xNorm;
           yn = previousY + s*yNorm;
           zn = previousZ + s*zNorm;
@@ -1832,7 +1833,7 @@ public class XFEL {
         previousZ = zn;
 
         //here would be where I check if elastic or inelastic collision
-        double RNDinelastic = Math.random();
+        double RNDinelastic = RandomSource.nextDouble();
         if (RNDinelastic  < Pinel) {
           
           //generate a charge if possible //this below is the FSE model
@@ -1841,7 +1842,7 @@ public class XFEL {
           double shellBindingEnergy = 0;
           Element collidedElement = null;
           int collidedShell = -1;
-          double elementRND = Math.random();
+          double elementRND = RandomSource.nextDouble();
           for (Element e : ionisationProbs.keySet()) {
             collidedShell = findIfElementIonised(e, ionisationProbs, elementRND);
             if (collidedShell >= 0) {
@@ -1871,7 +1872,7 @@ public class XFEL {
               sinSquaredGamma = 2*(1-epsilon) / (2 + tFSE*epsilon); 
             
               FSEtheta = Math.asin(Math.pow(sinSquaredGamma, 0.5));
-              FSEphi = 2 * Math.PI * Math.random();
+              FSEphi = 2 * Math.PI * RandomSource.nextDouble();
             
             
               FSEtheta = FSEpreviousTheta + FSEtheta;
@@ -1938,8 +1939,8 @@ public class XFEL {
           
           //I want to check if it's an inner shell ionisation and if it is use the proper inner shell cross sections
           //determine if the interaction was inner shell or outer shell
-          double RNDInner = Math.random();
-          double elementRND = Math.random();
+          double RNDInner = RandomSource.nextDouble();
+          double elementRND = RandomSource.nextDouble();
           if (RNDInner < Pinner) {
             //then this hit an inner shell
             for (Element e : ionisationProbs.keySet()) {
@@ -2084,7 +2085,7 @@ public class XFEL {
               }
               //get phi
               /*
-              SEPhi = 2 * Math.PI * Math.random();
+              SEPhi = 2 * Math.PI * RandomSource.nextDouble();
               SEPhi = SEPreviousPhi + SEPhi;
               if (SEPhi >= (2 * Math.PI)) {
                 SEPhi -= 2*Math.PI;
@@ -2097,7 +2098,7 @@ public class XFEL {
               //send it out with the correct timestamp
               */
               
-              SEdeflectionPhi = 2* Math.PI * Math.random();
+              SEdeflectionPhi = 2* Math.PI * RandomSource.nextDouble();
               
               //now get SE normals from SE scatter angle
               double[] newVector = getNewDirectionVector(xNorm, yNorm, zNorm, SEdeflectionTheta, SEdeflectionPhi);
@@ -2147,7 +2148,7 @@ public class XFEL {
             
           //I still need to add a cutoff in here and do dose time and ionisations
           
-          double deflectionPhi = 2* Math.PI * Math.random();
+          double deflectionPhi = 2* Math.PI * RandomSource.nextDouble();
           double[] newDirectionVector = getNewDirectionVector(xNorm, yNorm, zNorm, scatterTheta, deflectionPhi);
           
           xNorm = newDirectionVector[0];
@@ -2243,7 +2244,7 @@ public class XFEL {
         else {
           lambdaT = 1/(1/lambdaEl);
         }
-        s = -lambdaT*Math.log(Math.random());
+        s = -lambdaT*Math.log(RandomSource.nextDouble());
         elasticProbs = coefCalc.getElasticProbs(false);
         ionisationProbs = coefCalc.getAllShellProbs(false);
         //GOS ionisation probs
@@ -2344,7 +2345,7 @@ public class XFEL {
           else {
             lambdaT = 1/(1/lambdaEl);
           }
-          s = -lambdaT*Math.log(Math.random());
+          s = -lambdaT*Math.log(RandomSource.nextDouble());
           
           elasticProbs = coefCalc.getElasticProbs(surrounding);
           ionisationProbs = coefCalc.getAllShellProbs(false);
@@ -2483,7 +2484,7 @@ public class XFEL {
             lambdaEl = coefCalc.getElectronElasticMFPL(electronEnergy, surrounding);
             
             lambdaT = lambdaEl;
-            s = -lambdaT*Math.log(Math.random());
+            s = -lambdaT*Math.log(RandomSource.nextDouble());
             elasticProbs = coefCalc.getElasticProbs(surrounding);
             
             //update to new position
@@ -2553,7 +2554,7 @@ public class XFEL {
   }
   
   private ElementEM getElasticElement(Map<ElementEM, Double> elasticProbs) {
-    double elasticElementRND = Math.random();
+    double elasticElementRND = RandomSource.nextDouble();
     ElementEM elasticElement = null;
     for (ElementEM e : elasticProbs.keySet()) {
       if (elasticProbs.get(e) > elasticElementRND) { //Then this element is the one that was ionised
@@ -2565,7 +2566,7 @@ public class XFEL {
   }
   
   private double getElectronElasticPhi(double previousPhi) {
-    double phi = 2 * Math.PI * Math.random();
+    double phi = 2 * Math.PI * RandomSource.nextDouble();
     phi = previousPhi + phi;
     if (phi >= (2 * Math.PI)) {
       phi -= 2*Math.PI;
@@ -2579,7 +2580,7 @@ public class XFEL {
   }
   
   private double getScatteringPhi() {
-    double phi = 2 * Math.PI * Math.random();
+    double phi = 2 * Math.PI * RandomSource.nextDouble();
     return phi;
   }
   
@@ -2648,7 +2649,7 @@ public class XFEL {
   }
   
   private double getFSEEnergy(double electronEnergy, double shellBindingEnergy) {
-    double RNDFSEEnergy = Math.random();
+    double RNDFSEEnergy = RandomSource.nextDouble();
     double energyCutOff = (14.0/1000.0)/electronEnergy;
     
     double tau = electronEnergy/511;
@@ -2660,13 +2661,13 @@ public class XFEL {
                       (2*(omegaParam+alphaParam-2*betaParam));
     
     double omega = 1 / ((1/energyCutOff) - ((1/energyCutOff)-2)*RNDFSEEnergy);
-//      double omega = 1 / (100 - 98*Math.random());
+//      double omega = 1 / (100 - 98*RandomSource.nextDouble());
     return epsilon;
   }
   
 
   private double getCosAngleToX() {
-    double RNDangle = Math.random();
+    double RNDangle = RandomSource.nextDouble();
     double lastProb = 0;
     double angle = 0;
     for (int i = 0; i < numberAngularEmissionBins; i++) {
@@ -2683,7 +2684,7 @@ public class XFEL {
     return Math.cos(angle);
   }
   private double PosOrNeg() {
-    double RND = Math.random();
+    double RND = RandomSource.nextDouble();
     if (RND < 0.5) {
       return 1;
     }
@@ -2799,8 +2800,8 @@ private boolean testIfInsideExposedArea(double xPos, double yPos, Beam beam) { /
     
     if(beam.getType() == "Tophat") {
     
-      double RND1 = Math.random();
-      double RND2 = Math.random();
+      double RND1 = RandomSource.nextDouble();
+      double RND2 = RandomSource.nextDouble();
       
       double xCollimation = beam.getBeamX(); // fetch x collimation in um
       xyPos[0] = 1000*xCollimation*(RND1 - 0.5); // x position in nm
@@ -2840,8 +2841,8 @@ private boolean testIfInsideExposedArea(double xPos, double yPos, Beam beam) { /
           double upperCumulativeProbY = gy.cumulativeProbability(yCollimation/2);
           
           // Randomly select cumulative probabilities between those limits
-          double RCPx = lowerCumulativeProbX + Math.random()*(upperCumulativeProbX - lowerCumulativeProbX); // gets a random cumulative probability
-          double RCPy = lowerCumulativeProbY + Math.random()*(upperCumulativeProbY - lowerCumulativeProbY);
+          double RCPx = lowerCumulativeProbX + RandomSource.nextDouble()*(upperCumulativeProbX - lowerCumulativeProbX); // gets a random cumulative probability
+          double RCPy = lowerCumulativeProbY + RandomSource.nextDouble()*(upperCumulativeProbY - lowerCumulativeProbY);
           
           // Generate the coordinates, units nm
           xyPos[0] = gx.inverseCumulativeProbability(RCPx)*1000;
@@ -2850,8 +2851,8 @@ private boolean testIfInsideExposedArea(double xPos, double yPos, Beam beam) { /
         
         else if(beam.getIsCircular() == true) { // elliptical 2D Gaussian
           
-          double RND1 = Math.random();
-          double RND2 = Math.random();  
+          double RND1 = RandomSource.nextDouble();
+          double RND2 = RandomSource.nextDouble();  
  
 // First test if can use circular Gaussian because it is quicker to run (do not have to keep placing until you get a photon within the exposed area, as always places in exposed area)
           if(beam.getSx() == beam.getSy()) {
@@ -2862,7 +2863,7 @@ private boolean testIfInsideExposedArea(double xPos, double yPos, Beam beam) { /
           
             double lowerCumulativeProbR = gr.cumulativeProbability(-xCollimation/2);
             double upperCumulativeProbR = gr.cumulativeProbability(xCollimation/2);
-            double RCPr = lowerCumulativeProbR + Math.random()*(upperCumulativeProbR - lowerCumulativeProbR); // gets a random cumulative probability
+            double RCPr = lowerCumulativeProbR + RandomSource.nextDouble()*(upperCumulativeProbR - lowerCumulativeProbR); // gets a random cumulative probability
           
             rtPos[0] = gr.inverseCumulativeProbability(RCPr)*1000; // value of r
             rtPos[1] = 2*(Math.PI)*RND2; // angle anticlockwise from x-axis, using convention 0 <= theta < 2*pi, in radians
@@ -3387,7 +3388,7 @@ sumProb += energyAngleProbs[j];
 probPerAngle[j] = sumProb/totalProb;
 }
 
-double RND = Math.random();
+double RND = RandomSource.nextDouble();
 double index = 0;
 for (int k = 0; k < probPerAngle.length; k++) {
 if (probPerAngle[k] >= RND) {
@@ -3451,8 +3452,8 @@ return angleRadians;
 private Element chooseLowEnElement(CoefCalc coefCalc, double Pinner, Map<Element, Double> gosOuterIonisationProbs, Map<Element, double[]> ionisationProbs) {
   Element collidedElement = null;
   int collidedShell = -1;
-  double RNDInner = Math.random();
-  double elementRND = Math.random();
+  double RNDInner = RandomSource.nextDouble();
+  double elementRND = RandomSource.nextDouble();
   if (RNDInner < Pinner) {
     //then this hit an inner shell
     for (Element e : ionisationProbs.keySet()) {
@@ -3480,7 +3481,7 @@ private Element chooseLowEnElement(CoefCalc coefCalc, double Pinner, Map<Element
 
   private int getGOSInelasticType(double[][] shellProbs, int shellIndex) {
     double runningSum = 0;
-    double RND = Math.random();
+    double RND = RandomSource.nextDouble();
     int type = 0;
     for (int i = 0; i < 3; i++) {
       runningSum += shellProbs[shellIndex][i]/shellProbs[shellIndex][3];
@@ -3494,7 +3495,7 @@ private Element chooseLowEnElement(CoefCalc coefCalc, double Pinner, Map<Element
   
   private int getGOSInelasticTypePlasmon(double[] plasmonProbs) {
     double runningSum = 0;
-    double RND = Math.random();
+    double RND = RandomSource.nextDouble();
     int type = 0;
     for (int i = 0; i < 3; i++) {
       runningSum += plasmonProbs[i]/plasmonProbs[3];
@@ -3525,7 +3526,7 @@ private Element chooseLowEnElement(CoefCalc coefCalc, double Pinner, Map<Element
   }
   
   public double getEnergyLossDistant(double Wdis, double Uk){ 
-    double RND = Math.random();
+    double RND = RandomSource.nextDouble();
     double W = Wdis - Math.pow(RND*Math.pow(Wdis-Uk, 2), 0.5);
     return W; //returning eV
   }
@@ -3577,7 +3578,7 @@ private Element chooseLowEnElement(CoefCalc coefCalc, double Pinner, Map<Element
     double kc = Math.max(Qk, Wcc) / (E*1000 + Qk);  //get units right ofc
     double k = 0;
     double a = getClosea(E);
-    double RND = Math.random();
+    double RND = RandomSource.nextDouble();
     double zeta = RND * (1.0+5.0*a*kc/2.0);
     if (zeta < 1) {
       k = kc / (1-zeta*(1-2*kc));
@@ -3604,7 +3605,7 @@ private Element chooseLowEnElement(CoefCalc coefCalc, double Pinner, Map<Element
     int count = 0;
     while (exit == false) {
       k = getRandomk(E, Qk);
-      double RND = Math.random();
+      double RND = RandomSource.nextDouble();
       double LHS = RND * (1 + 5*a*Math.pow(k, 2));
       double RHS = Math.pow(k, 2) * getPDFk(E, k, Qk);
       if (LHS < RHS) {
@@ -4351,7 +4352,7 @@ private Element chooseLowEnElement(CoefCalc coefCalc, double Pinner, Map<Element
       elementProb.put(e, sumProb);
     }
     Element toReturn = null;
-    double RND = Math.random();
+    double RND = RandomSource.nextDouble();
     for (Element e: numElectrons.keySet()) {
       if (RND <= elementProb.get(e)) {
         toReturn = e;
@@ -4374,7 +4375,7 @@ private Element chooseLowEnElement(CoefCalc coefCalc, double Pinner, Map<Element
       elementProb.put(e, sumProb);
     }
     Element toReturn = null;
-    double RND = Math.random();
+    double RND = RandomSource.nextDouble();
     for (Element e: presentElements) {
       if (RND <= elementProb.get(e)) {
         toReturn = e;

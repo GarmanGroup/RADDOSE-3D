@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * @author magd3052
@@ -76,22 +75,35 @@ public class CrystalPolyhedron extends Crystal {
   /**
    * Constants for calculation of Gumbel distribution mu and beta parameters.
    */
-  private static  double[] GUMBEL_DISTN_CALC_LOC = {0.0121, 0.0405}; //initially set as 1.17, <20keV
-  private static  double[] GUMBEL_DISTN_CALC_SCALE = {0.002, 0.0076}; //initially set as 1.17, <20keV
-  private static  double[] CRYO_GUMBEL_DISTN_CALC_LOC = {0.0121, 0.0405}; //initially set as 1.17, <20keV
-  private static  double[] CRYO_GUMBEL_DISTN_CALC_SCALE = {0.002, 0.0076}; //initially set as 1.17, <20keV
+  /*
+   * Per-crystal, not per-JVM. These read like constants but are reassigned
+   * per beam from that crystal's density and photon energy. While they were
+   * static, a second Crystal or Beam block in one input file silently
+   * overwrote the first's values, making results depend on evaluation order.
+   */
+  private double[] gumbelLoc = {0.0121, 0.0405}; //initially set as 1.17, <20keV
+  private double[] gumbelScale = {0.002, 0.0076}; //initially set as 1.17, <20keV
+  /*
+   * Per-crystal, not per-JVM. These are named like constants but are
+   * reassigned for each beam by setCryoPEparamsForCurrentBeam, from that
+   * crystal's density and photon energy. While they were static, a second
+   * Crystal or Beam block in one input file silently overwrote the first's
+   * values, so results depended on the order blocks were evaluated in.
+   */
+  private double[] cryoGumbelLoc = {0.0121, 0.0405}; //initially set as 1.17, <20keV
+  private double[] cryoGumbelScale = {0.002, 0.0076}; //initially set as 1.17, <20keV
 
   /**
    * Constants for calculation of JohnsonSU distribution gamma and eta and loc/scale parameters.
    */
-  private static  double JSU_DISTN_CALC_LOC; //initially set as 1.17, <20keV
-  private static  double JSU_DISTN_CALC_SCALE; //initially set as 1.17, <20keV
-  private static  double JSU_DISTN_CALC_GAMMA; //initially set as 1.17, <20keV
-  private static  double JSU_DISTN_CALC_ETA; //initially set as 1.17, <20keV
-  private static  double CRYO_JSU_DISTN_CALC_LOC; //initially set as 1.17, <20keV
-  private static  double CRYO_JSU_DISTN_CALC_SCALE; //initially set as 1.17, <20keV
-  private static  double CRYO_JSU_DISTN_CALC_GAMMA; //initially set as 1.17, <20keV
-  private static  double CRYO_JSU_DISTN_CALC_ETA; //initially set as 1.17, <20keV
+  private double jsuLoc; //initially set as 1.17, <20keV
+  private double jsuScale; //initially set as 1.17, <20keV
+  private double jsuGamma; //initially set as 1.17, <20keV
+  private double jsuEta; //initially set as 1.17, <20keV
+  private double cryoJsuLoc; //initially set as 1.17, <20keV
+  private double cryoJsuScale; //initially set as 1.17, <20keV
+  private double cryoJsuGamma; //initially set as 1.17, <20keV
+  private double cryoJsuEta; //initially set as 1.17, <20keV
   
   /**
    * Distance bins travelled by a photoelectron.
@@ -1163,16 +1175,16 @@ public class CrystalPolyhedron extends Crystal {
     double peEnergy = beamEnergy - energyCorrection;
 
     if (cryo == false) {
-      gumbParams[0] = GUMBEL_DISTN_CALC_LOC[0]*Math.pow(peEnergy,2) 
-          + GUMBEL_DISTN_CALC_LOC[1]*(peEnergy);
-      gumbParams[1] = GUMBEL_DISTN_CALC_SCALE[0]*Math.pow(peEnergy,2) 
-          + GUMBEL_DISTN_CALC_SCALE[1]*(peEnergy);
+      gumbParams[0] = gumbelLoc[0]*Math.pow(peEnergy,2) 
+          + gumbelLoc[1]*(peEnergy);
+      gumbParams[1] = gumbelScale[0]*Math.pow(peEnergy,2) 
+          + gumbelScale[1]*(peEnergy);
     }
     else {
-      gumbParams[0] = CRYO_GUMBEL_DISTN_CALC_LOC[0]*Math.pow(peEnergy,2) 
-          + CRYO_GUMBEL_DISTN_CALC_LOC[1]*(peEnergy);
-      gumbParams[1] = CRYO_GUMBEL_DISTN_CALC_SCALE[0]*Math.pow(peEnergy,2) 
-          + CRYO_GUMBEL_DISTN_CALC_SCALE[1]*(peEnergy);
+      gumbParams[0] = cryoGumbelLoc[0]*Math.pow(peEnergy,2) 
+          + cryoGumbelLoc[1]*(peEnergy);
+      gumbParams[1] = cryoGumbelScale[0]*Math.pow(peEnergy,2) 
+          + cryoGumbelScale[1]*(peEnergy);
     }
     
   //  gumbParams[0] += 1;
@@ -1201,16 +1213,16 @@ public class CrystalPolyhedron extends Crystal {
     double peEnergy = beamEnergy - energyCorrection;
 
     if (cryo == false) {
-      johnsonParams[0] = JSU_DISTN_CALC_LOC;
-      johnsonParams[1] = JSU_DISTN_CALC_SCALE;
-      johnsonParams[2] = JSU_DISTN_CALC_GAMMA;
-      johnsonParams[3] = JSU_DISTN_CALC_ETA;
+      johnsonParams[0] = jsuLoc;
+      johnsonParams[1] = jsuScale;
+      johnsonParams[2] = jsuGamma;
+      johnsonParams[3] = jsuEta;
     }
     else {
-      johnsonParams[0] = CRYO_JSU_DISTN_CALC_LOC;
-      johnsonParams[1] = CRYO_JSU_DISTN_CALC_SCALE;
-      johnsonParams[2] = CRYO_JSU_DISTN_CALC_GAMMA;
-      johnsonParams[3] = CRYO_JSU_DISTN_CALC_ETA;
+      johnsonParams[0] = cryoJsuLoc;
+      johnsonParams[1] = cryoJsuScale;
+      johnsonParams[2] = cryoJsuGamma;
+      johnsonParams[3] = cryoJsuEta;
     }
     
     return johnsonParams;
@@ -1376,16 +1388,16 @@ public class CrystalPolyhedron extends Crystal {
     double locationParam = 0;
     double scaleParam = 0;
     if (cryo == false) {
-    locationParam = GUMBEL_DISTN_CALC_LOC[energyRange]*Math.pow(peEnergy,2) 
-        + GUMBEL_DISTN_CALC_LOC[energyRange+1]*(peEnergy); 
-    scaleParam = GUMBEL_DISTN_CALC_SCALE[energyRange]*Math.pow(peEnergy,2) 
-         + GUMBEL_DISTN_CALC_SCALE[energyRange+1]*(peEnergy);
+    locationParam = gumbelLoc[energyRange]*Math.pow(peEnergy,2) 
+        + gumbelLoc[energyRange+1]*(peEnergy); 
+    scaleParam = gumbelScale[energyRange]*Math.pow(peEnergy,2) 
+         + gumbelScale[energyRange+1]*(peEnergy);
     }//need to change for cryo
     else {
-      locationParam = CRYO_GUMBEL_DISTN_CALC_LOC[energyRange]*Math.pow(peEnergy,2) 
-          + CRYO_GUMBEL_DISTN_CALC_LOC[energyRange+1]*(peEnergy); 
-      scaleParam = CRYO_GUMBEL_DISTN_CALC_SCALE[energyRange]*Math.pow(peEnergy,2) 
-           + CRYO_GUMBEL_DISTN_CALC_SCALE[energyRange+1]*(peEnergy);
+      locationParam = cryoGumbelLoc[energyRange]*Math.pow(peEnergy,2) 
+          + cryoGumbelLoc[energyRange+1]*(peEnergy); 
+      scaleParam = cryoGumbelScale[energyRange]*Math.pow(peEnergy,2) 
+           + cryoGumbelScale[energyRange+1]*(peEnergy);
     }
     
 
@@ -1424,16 +1436,16 @@ public class CrystalPolyhedron extends Crystal {
     double gamma = 0;
     double eta = 0;
     if (cryo == false) {
-    locationParam = JSU_DISTN_CALC_LOC;
-    scaleParam = JSU_DISTN_CALC_SCALE;
-    gamma = JSU_DISTN_CALC_GAMMA;
-    eta = JSU_DISTN_CALC_ETA;
+    locationParam = jsuLoc;
+    scaleParam = jsuScale;
+    gamma = jsuGamma;
+    eta = jsuEta;
     }//need to change for cryo
     else {
-      locationParam = CRYO_JSU_DISTN_CALC_LOC;
-      scaleParam = CRYO_JSU_DISTN_CALC_SCALE;
-      gamma = CRYO_JSU_DISTN_CALC_GAMMA;
-      eta = CRYO_JSU_DISTN_CALC_ETA;
+      locationParam = cryoJsuLoc;
+      scaleParam = cryoJsuScale;
+      gamma = cryoJsuGamma;
+      eta = cryoJsuEta;
     }
     
 
@@ -1464,14 +1476,14 @@ public class CrystalPolyhedron extends Crystal {
     double density = coefCalc.getDensity();
   //  density = 1.17;
     double peEnergy = beamEnergy - EnergyToSubtractFromPE;
-    GUMBEL_DISTN_CALC_LOC = setGumbelLoc(density, peEnergy);
-    GUMBEL_DISTN_CALC_SCALE = setGumbelScale(density, peEnergy);
+    gumbelLoc = setGumbelLoc(density, peEnergy);
+    gumbelScale = setGumbelScale(density, peEnergy);
     
     double jsuParams[] = setJohnsonParams(density, peEnergy);
-    JSU_DISTN_CALC_LOC = jsuParams[0];
-    JSU_DISTN_CALC_SCALE = jsuParams[1];
-    JSU_DISTN_CALC_GAMMA = jsuParams[2];
-    JSU_DISTN_CALC_ETA = jsuParams[3];
+    jsuLoc = jsuParams[0];
+    jsuScale = jsuParams[1];
+    jsuGamma = jsuParams[2];
+    jsuEta = jsuParams[3];
     
     //first of all need to get PE distances 
     setMaxPEDistance(beamEnergy);
@@ -1489,16 +1501,16 @@ public class CrystalPolyhedron extends Crystal {
     double beamEnergy = beam.getPhotonEnergy();
   //  double density = coefCalc.getDensity();
     double peEnergy = beamEnergy - cryoEnergyToSubtractFromPE;
-    CRYO_GUMBEL_DISTN_CALC_LOC = setGumbelLoc(density, peEnergy);
-    CRYO_GUMBEL_DISTN_CALC_SCALE = setGumbelScale(density, peEnergy);
+    cryoGumbelLoc = setGumbelLoc(density, peEnergy);
+    cryoGumbelScale = setGumbelScale(density, peEnergy);
     //first of all need to get PE distances 
     setMaxPEDistanceCryo(beamEnergy, beam);
     
     //could recalculate cryo gumbel based on new density
     density = (coefCalc.getCryoDensity() * cryoAndCrystalDensity) + (coefCalc.getDensity() * (1-cryoAndCrystalDensity));
     // this density is pretty bad so I would need to think of something a bit more clever 
-    CRYO_GUMBEL_DISTN_CALC_LOC = setGumbelLoc(density, peEnergy);
-    CRYO_GUMBEL_DISTN_CALC_SCALE = setGumbelScale(density, peEnergy);
+    cryoGumbelLoc = setGumbelLoc(density, peEnergy);
+    cryoGumbelScale = setGumbelScale(density, peEnergy);
     //I'm not recalculating the max distance though :/ 
     
     
@@ -2078,7 +2090,7 @@ public class CrystalPolyhedron extends Crystal {
        
     double doseLostFromCrystalPE = 0;  
       for (int q = 0; q < PE_ANGLE_RESOLUTION*PE_ANGLE_RESOLUTION; q++) { //for every tracks i'm choosing
-        int randomIndex = ThreadLocalRandom.current().nextInt(0, trackNumberBias.length);
+        int randomIndex = RandomSource.nextInt(trackNumberBias.length);
         int randomTrack = trackNumberBias[randomIndex];
  
         for (int m = 0; m < peDistBins; m++) {   
@@ -2112,7 +2124,7 @@ public class CrystalPolyhedron extends Crystal {
       final double doseIncreaseFL) {
    double doseLostFromCrystalFL = 0;
    //choose a random track
-   int randomTrack = ThreadLocalRandom.current().nextInt(0, numberOfTracksFL);
+   int randomTrack = RandomSource.nextInt(numberOfTracksFL);
    
    //for every energy distribution
     for (int n = 0; n < fluorescenceProportionEvent.length; n++) { 
@@ -2170,8 +2182,8 @@ public class CrystalPolyhedron extends Crystal {
     double doseBackInCrystalPE = 0;
     
     for (int q = 0; q < PE_ANGLE_RESOLUTION*PE_ANGLE_RESOLUTION; q++) { //for every tracks i'm choosing
-    //     int randomTrack = ThreadLocalRandom.current().nextInt(0, numberOfTracksPE); //choose one at random
-      int randomIndex = ThreadLocalRandom.current().nextInt(0, trackNumberBias.length);
+    //     int randomTrack = RandomSource.nextInt(numberOfTracksPE); //choose one at random
+      int randomIndex = RandomSource.nextInt(trackNumberBias.length);
       int randomTrack = trackNumberBias[randomIndex];
 
       for (int m = 0; m < peDistBins; m++) { 
@@ -2485,15 +2497,15 @@ public class CrystalPolyhedron extends Crystal {
     if (shellIndex == 0) { //then I want to send out in a biased direction
       xNorm = getCosAngleToX(angularEmissionProbs);
       //get yNorm and zNorm
-      yNorm = PosOrNeg() * Math.random() * Math.pow(1-Math.pow(xNorm, 2), 0.5);
+      yNorm = PosOrNeg() * RandomSource.nextDouble() * Math.pow(1-Math.pow(xNorm, 2), 0.5);
       zNorm = PosOrNeg() * Math.pow(1 - Math.pow(xNorm, 2) - Math.pow(yNorm, 2), 0.5);
       //get theta and phi
       theta = Math.acos(zNorm);
       phi = Math.acos(xNorm / Math.sin(theta));
     }
     else { // send it out in a random direction
-      theta = Math.random() * 2 * Math.PI;
-      phi = Math.random() * 2 * Math.PI;
+      theta = RandomSource.nextDouble() * 2 * Math.PI;
+      phi = RandomSource.nextDouble() * 2 * Math.PI;
       xNorm = Math.sin(theta) * Math.cos(phi);
       yNorm = Math.sin(theta) * Math.sin(phi);
       zNorm = Math.cos(theta);
@@ -2512,7 +2524,7 @@ public class CrystalPolyhedron extends Crystal {
     lambdaT = startingLambda_el;
     
     //first distance
-    double testRND = Math.random();
+    double testRND = RandomSource.nextDouble();
     double s = -lambdaT*Math.log(testRND) / 1000; //um
  //   double Pinel = 1 - (lambdaT / startingLambda_el);
     double xn = previousX + s * xNorm;
@@ -2545,7 +2557,7 @@ public class CrystalPolyhedron extends Crystal {
         previousZ = zn;
         
         //update angle and stuff - for now it is always an elastic interaction
-        double elasticElementRND = Math.random();
+        double elasticElementRND = RandomSource.nextDouble();
         ElementEM elasticElement = null;
         for (ElementEM e : elasticProbs.keySet()) {
           if (elasticProbs.get(e) > elasticElementRND) { //Then this element is the one that was ionised
@@ -2566,7 +2578,7 @@ public class CrystalPolyhedron extends Crystal {
         if (theta >= (2 * Math.PI)) {
           theta -= 2*Math.PI;
         }
-        phi = 2 * Math.PI * Math.random();
+        phi = 2 * Math.PI * RandomSource.nextDouble();
         
         //testing a straight line
      //   phi = 0;
@@ -2587,7 +2599,7 @@ public class CrystalPolyhedron extends Crystal {
         //get new lambdaT
         double lambdaEl = coefCalc.getElectronElasticMFPL(electronEnergy, false);
         lambdaT = lambdaEl;
-        s = -lambdaT*Math.log(Math.random()) /1000;
+        s = -lambdaT*Math.log(RandomSource.nextDouble()) /1000;
         elasticProbs = coefCalc.getElasticProbs(false);
         
         //update to new position
@@ -2682,7 +2694,7 @@ public class CrystalPolyhedron extends Crystal {
   }
   
   private Element getIonisedElement(Map<Element, Double> elementAbsorptionProbs) {
-    double elementRND = Math.random();
+    double elementRND = RandomSource.nextDouble();
     Element ionisedElement = null;
     for (Element e : elementAbsorptionProbs.keySet()) {
       double elementProb =  elementAbsorptionProbs.get(e);
@@ -2696,7 +2708,7 @@ public class CrystalPolyhedron extends Crystal {
   
   private int getIonisedShell(Map<Element, double[]> ionisationProbs, Element ionisedElement) {
     double[] shellProbs = ionisationProbs.get(ionisedElement);
-    double shellRND = Math.random();
+    double shellRND = RandomSource.nextDouble();
     int shellIndex = 0;
     for (int j = 0; j < shellProbs.length; j++) {
       if (shellProbs[j] > shellRND) {
@@ -2733,7 +2745,7 @@ public class CrystalPolyhedron extends Crystal {
   }
   
   private double getCosAngleToX( double[] angularEmissionProbs) {
-    double RNDangle = Math.random();
+    double RNDangle = RandomSource.nextDouble();
     double lastProb = 0;
     double angle = 0;
     for (int i = 0; i < numberAngularEmissionBins; i++) {
@@ -2750,7 +2762,7 @@ public class CrystalPolyhedron extends Crystal {
     return Math.cos(angle);
   }
   private double PosOrNeg() {
-    double RND = Math.random();
+    double RND = RandomSource.nextDouble();
     if (RND < 0.5) {
       return 1;
     }
@@ -2920,7 +2932,7 @@ sumProb += energyAngleProbs[j];
 probPerAngle[j] = sumProb/totalProb;
 }
 
-double RND = Math.random();
+double RND = RandomSource.nextDouble();
 double index = 0;
 for (int k = 0; k < probPerAngle.length; k++) {
 if (probPerAngle[k] >= RND) {

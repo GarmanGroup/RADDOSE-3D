@@ -1,5 +1,7 @@
 package se.raddo.raddose3D;
 
+import java.util.LinkedHashSet;
+import java.util.LinkedHashMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -5113,7 +5115,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
   }
   
   public double getEnergyLossDistant(double Wdis, double Uk){ 
-    double RND = Math.random();
+    double RND = RandomSource.nextDouble();
     double W = Wdis - Math.pow(RND*Math.pow(Wdis-Uk, 2), 0.5);
     return W;
   }
@@ -5126,7 +5128,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     
     double Qminus = getQminusModified(EkeV, WakeV);
     double Qs = Qminus / (1+Qminus/(2*m*csquared));
-    double RND = Math.random();
+    double RND = RandomSource.nextDouble();
     //gotta make sure all these units are changed to Joules to be correct when I do it properly
     double Q = Qs * 1/(Math.pow((Qs/((Qak/1000)*Beam.KEVTOJOULES))*(1+(((Qak/1000)*Beam.KEVTOJOULES)/(2*m*csquared))), RND) - (Qs/(2*m*csquared)));
     if (Qak == 0) {
@@ -5160,7 +5162,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     double kc = Math.max(Qk, Wcc) / (E*1000);  //get units right ofc
     double k = 0;
     double a = getClosea(E);
-    double RND = Math.random();
+    double RND = RandomSource.nextDouble();
     double zeta = RND * (1+5*a*kc/2);
     if (zeta < 1) {
       k = kc / (1-zeta*(1-2*kc));
@@ -5179,7 +5181,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     int count = 0;
     while (exit == false) {
       k = getRandomk(E, Qk);
-      double RND = Math.random();
+      double RND = RandomSource.nextDouble();
       double LHS = RND * (1 + 5*a*Math.pow(k, 2));
       double RHS = Math.pow(k, 2) * getPDFk(E, k, Qk);
       if (LHS < RHS) {

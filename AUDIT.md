@@ -120,6 +120,9 @@ owns that code, since it silently overrides a configured value.
 
 ### D. Hygiene, unrelated to correctness
 
+**All four items below were fixed on 2026-09-17.** See the commit
+"fix: make runs reproducible, and stop expose() killing the JVM".
+
 - **`System.exit(0)` inside `Crystal.expose`** (`Crystal.java:759, 772, 782`)
   for the XFEL/MC/GOS branches. Terminating the JVM from a library method
   breaks the `server/` package and any embedding use.
@@ -127,7 +130,34 @@ owns that code, since it silently overrides a configured value.
   `expose()` call, not once per run.
 - **`private static` mutable state**: `CRYO_GUMBEL_DISTN_CALC_LOC` / `_SCALE`
   (`CrystalPolyhedron.java:81-82`) are static but reassigned per beam, so two
-  crystals in one input would clobber each other.
+  crystals in one input would clobber each other. On inspection there were 12
+  such fields, not 2 -- the Gumbel and Johnson SU distribution parameters for
+  both the crystal and the cryo-solution. All are now per-instance.
+
+### E. Non-determinism (found while verifying the cryoCrystCoord fix)
+
+The simulation could not reproduce its own results: the same binary on the same
+input gave a different answer every run, with average diffraction weighted dose
+spanning about 0.4%. The cause was 214 `Math.random()` calls and 4
+`ThreadLocalRandom.current()` calls, none of which can be seeded.
+
+All now draw from `RandomSource`, seeded from `--seed`, the `RADDOSE_SEED`
+environment variable, or the clock, and the seed is printed at the start of
+every run so any result can be repeated. With a fixed seed all six output files
+are byte-identical across separate JVM runs.
+
+**A wrong turn worth recording.** While investigating, the cumulative
+probability selection in `getIonisedElement` looked unsafe: the cumulative sums
+are built by iterating `presentElements` (a `HashSet`) and consumed by
+iterating `elementAbsorptionProbs.keySet()` (a different `HashMap`), and
+`Element` overrides neither `hashCode` nor `equals`. Converting the collections
+to insertion-ordered ones was tried and then reverted, because measurement
+showed the concern was unfounded on both counts: with the RNG seeded, hash
+ordering produced identical results across runs, and the two collections
+iterate in the same order anyway (a `HashSet` is backed by a `HashMap`, so the
+derived map inherits its ordering). Every consumption loop checked either
+iterates the same collection it was built from, or looks up by key. No change
+was warranted.
 
 ---
 

@@ -1,6 +1,7 @@
 package se.raddo.raddose3D;
 
 import java.io.IOException;
+import java.util.LinkedHashMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -736,9 +737,6 @@ public abstract class Crystal {
 
 
 
-    //start XFEL here, just comment and uncomment for now
-    System.out.println("Current RADDOSE-3D version is: " + Version.VERSION_MAJOR + "." + Version.VERSION_MINOR);
-    
     coefCalc.updateCoefficients(beam);
     boolean xfel = true;
     boolean gos = true;
@@ -755,8 +753,10 @@ public abstract class Crystal {
         int runNum = i+1;
         startXFEL(XDim, YDim, ZDim, beam, wedge, coefCalc, runNum, verticalGoniometer, xfel, gos, verticalPolarisation);
       }
-      //terminate the program
-      System.exit(0);
+      // Return rather than System.exit: expose() is a library method, and
+      // killing the JVM here skips Writer.close(), strands the server
+      // package's worker threads and takes any test runner down with it.
+      return;
     }
     else if (subprogram.equals("EMSP") || subprogram.equals("EMED")){
       startMicroED(XDim, YDim, ZDim, beam, wedge, coefCalc, crystalType);
@@ -769,8 +769,8 @@ public abstract class Crystal {
       int runNum = i+1;
       startMC(XDim, YDim, ZDim, beam, wedge, coefCalc, runNum, verticalGoniometer, xfel, gos, surrThickness, verticalPolarisation);
     }
-    //terminate the program
-    System.exit(0);
+    // Return rather than System.exit -- see above.
+    return;
     }
     else if (subprogram.equals("GOS")){
       xfel = false;
@@ -779,8 +779,10 @@ public abstract class Crystal {
         int runNum = i+1;
         startMC(XDim, YDim, ZDim, beam, wedge, coefCalc, runNum, verticalGoniometer, xfel, gos, surrThickness, verticalPolarisation);
       }
-      //terminate the program
-      System.exit(0);
+      // Return rather than System.exit: expose() is a library method, and
+      // killing the JVM here skips Writer.close(), strands the server
+      // package's worker threads and takes any test runner down with it.
+      return;
     }
     else {
   
