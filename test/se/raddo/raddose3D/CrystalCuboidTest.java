@@ -17,15 +17,20 @@ public class CrystalCuboidTest {
    * Checks that a full 360 rotation in P or L makes the crystal invariant,
    * and that you get correct negatives under 180deg rotation.
    * <p>
-   * PARKED -- see TEST-TRIAGE.md #2. getCrystCoord() ignores AngleP/AngleL
-   * entirely, so a 180 degree rotation returns the unrotated coordinate and
-   * the negation assertions fail. Long-standing, and masked because this test
-   * was in TestNG's "advanced" group, which `ant test` excluded and only the
-   * (long dead) Travis job ever ran.
+   * PARKED -- see TEST-TRIAGE.md #2. <strong>The expectation here is wrong,
+   * not the production code.</strong> AngleP/AngleL do rotate the crystal
+   * mesh; the voxel grid is then rebuilt over the rotated bounding box, so
+   * getCrystCoord returns bounding-box-relative coordinates of a new grid
+   * rather than rotated coordinates of a fixed one. A cube rotated 180 degrees
+   * has the same bounding box, so voxel (0,0,0) is the same corner either way
+   * and the negation assertions cannot hold.
+   * <p>
+   * Left unedited pending a decision, because the triage did surface two real
+   * defects behind it: the rotated voxel coordinate is computed and then
+   * overwritten with the unrotated one (CrystalPolyhedron.java:655-669), while
+   * the surrounding/cryo grid at :764-774 keeps its rotation -- so the two
+   * grids are in different frames whenever AngleP or AngleL is non-zero.
    */
-  @Test
-  @Tag("slow")
-  @Tag("pending")
   public void testCuboidCrystalPandL() {
     final Double ang360 = 360d;
     final Double ang180 = 180d;

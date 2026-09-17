@@ -72,32 +72,82 @@ MX users and the constant should be per-sample rather than a global toggle.
 
 ---
 
-## 2. `getCrystCoord` ignores AngleP / AngleL entirely
+## 2. Crystal voxel rotation is computed then thrown away
 
 **Parked test:** `CrystalCuboidTest.testCuboidCrystalPandL`
-**Cause:** long-standing; predates the current branch.
+**Cause:** `c2191eb` (2018-12-03, *"Added surrounding to XFEL"*)
 
-The test asserts that a 180° rotation in P or L negates the relevant
-coordinates. It does not, because the rotation is never applied. Probing
-`CrystalCuboid` directly at voxel (0,0,0):
+### The test's expectation is wrong
+
+`AngleP` / `AngleL` are not broken. The crystal *mesh* is rotated correctly at
+`CrystalPolyhedron.java:574-584`, and the voxel grid is then rebuilt over the
+rotated bounding box:
 
 ```
-identity  (AngleP=0,   AngleL=0)   : -50.000  -50.000  -50.000
-AngleP180 (AngleP=180, AngleL=0)   : -50.000  -50.000  -50.000
-AngleL180 (AngleP=0,   AngleL=180) : -50.000  -50.000  -50.000
+Non-cubic crystal 100 x 50 x 20 um:
+  AngleP=0    bbox = 100.0 x  50.0 x 20.0    51x26x11 voxels   12500 occupied
+  AngleP=45   bbox = 106.1 x 106.1 x 20.0    54x54x11 voxels   12420 occupied
+  AngleP=90   bbox =  50.0 x 100.0 x 20.0    26x51x11 voxels   12450 occupied
+  AngleL=90   bbox = 100.0 x  20.0 x 50.0    51x11x26 voxels   12500 occupied
 ```
 
-All three are identical, so `-1 * P180.x` is +50 where the test expects −50.
+106.1 µm is exactly (100+50)/sqrt(2), and occupancy is conserved to within
+discretisation. The feature works.
 
-This was invisible because the test was in TestNG's `advanced` group, which
-`ant test` excluded; only `ant test-all` ran it, and only on Travis, which has
-been dead since 2021. It is very likely one of the "9 that need fixing"
-referenced in commit `163e159` (2017).
+The test assumed `getCrystCoord(i,j,k)` returns *rotated coordinates of a fixed
+grid*, so that a 180° rotation negates them. It actually returns
+*bounding-box-relative coordinates of a rebuilt grid*. A cube rotated 180° has
+the same bounding box, so voxel (0,0,0) is the same corner either way and the
+negation assertion cannot hold. **The expectation needs rewriting or deleting;
+it is not evidence of a production bug.** Left parked rather than edited, per
+"flag, don't rebaseline".
 
-**Decision needed:** is `getCrystCoord` supposed to return rotated coordinates
-(bug in `CrystalPolyhedron`), or unrotated ones with rotation applied elsewhere
-in the exposure path (bug in the test)? The four 360°-invariance assertions in
-the same test pass trivially under either reading, so they prove nothing.
+Note the four 360°-invariance assertions in the same test pass trivially under
+either reading, so they prove nothing.
+
+### But two real defects sit underneath it
+
+**(a) Dead code.** `CrystalPolyhedron.java:655-669` computes the rotated voxel
+coordinate and then immediately overwrites all three components with the
+unrotated values:
+
+```java
+tempCrystCoords[i][j][k][0] = x2;                                  // rotated
+tempCrystCoords[i][j][k][1] = y2 * Math.cos(l) + z2 * Math.sin(l);
+tempCrystCoords[i][j][k][2] = -1 * y2 * Math.sin(l) + z2 * Math.cos(l);
+
+tempCrystCoords[i][j][k][0] = x;                                   // overwritten
+tempCrystCoords[i][j][k][1] = y;
+tempCrystCoords[i][j][k][2] = z;
+```
+
+`c2191eb` commented the rotation block out and added the unrotated assignment;
+a later commit un-commented the rotation but left the overwrite in place, so it
+now reads as "compute, then discard". Four lines above it sits the author's own
+note: `//need to remember to add this back in for the main RADDOSE-3D`. It was
+never added back.
+
+**(b) The crystal and cryo grids are in different frames — this one is live.**
+The surrounding/cryo grid at `CrystalPolyhedron.java:764-774` applies the same
+rotation and *keeps* it. So with `AngleP` or `AngleL` non-zero:
+
+| grid | rotated? |
+|---|---|
+| crystal mesh (`vertices`) | yes |
+| crystal voxels (`crystCoord`) | **no** |
+| surrounding voxels (`cryoCrystCoord`) | yes |
+
+Both feed the same transform in the same exposure loop —
+`Crystal.java:1087-1088` for the crystal and `Crystal.java:1295-1297` for the
+surrounding — so they are meant to share a physical frame. Whenever a rotated
+crystal is combined with `CALCSURROUNDING` / cryo photoelectron escape, the two
+sets of voxels are mutually rotated.
+
+**Decision needed:** restore the rotation for `crystCoord` (as the comment
+intends) and check nothing downstream depended on the unrotated form, or
+remove it from `cryoCrystCoord` for consistency. Either way the dead lines
+should go, and the test expectation rewritten against whichever convention
+wins.
 
 ---
 
