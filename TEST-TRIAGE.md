@@ -375,6 +375,35 @@ and RD3D then **prints a dose anyway**, computed from a default composition
 rather than the PDB file -- which is worse than failing, because the number
 looks plausible.
 
+### `CoefCalcFromCIF` crashes on most small-molecule formulas (found 2026-09-17)
+
+Separately from the keyword problem, the CIF parser cannot read a large
+fraction of valid small-molecule CIFs. `parseChemicalFormula` does
+
+```java
+if (Character.isLetter(elements.charAt(1))) {
+```
+
+unconditionally, to decide whether an element symbol is one or two letters.
+When the final token of `_chemical_formula_sum` is a bare single-letter symbol
+with no count, that string has length 1 and `charAt(1)` throws
+`StringIndexOutOfBoundsException`. The exception is caught in `readCIFFile`,
+which prints "Line length error encounted in URL line", after which
+`chemicalSum` is still false and the program calls `System.exit(0)`.
+
+Measured against public-domain structures from the Crystallography Open
+Database:
+
+| COD entry | `_chemical_formula_sum` | last token | result |
+|---|---|---|---|
+| 1008775 (urea) | `C H4 N2 O` | `O` | crash |
+| 1010846 | `C4 H16 Ca N8 O8 S` | `S` | crash |
+| 1008123 | `C2 H8 F4 N4 O3 Sb2` | `Sb2` | works |
+
+Any formula ending in a lone C, H, N, O, S, P or F is affected, which is most
+organic compounds -- including urea, the textbook small-molecule example. The
+fix is to guard the length: `elements.length() > 1 && Character.isLetter(...)`.
+
 Two of the nine `AbsCoefCalc` keywords are therefore unreachable under their
 obvious spelling. Renaming the `PDB` and `CIF` tokens to `EXP` and `EXPSM` (or
 better, renaming the *keywords* to match the tokens) would fix both and cost
