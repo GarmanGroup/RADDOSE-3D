@@ -16,7 +16,14 @@ public class CoefCalcSAXS extends CoefCalcFromParams {
 
   /**
    * Average molecular mass of a ribonucleotide monophosphate molecule (daltons
-   * = grams/mole)
+   * = grams/mole).
+   * <p>
+   * RNA is the heavier of the two, by the extra hydroxyl. Until this was
+   * fixed, calculateNumMonomers received the RNA and DNA counts in the
+   * opposite order to its declaration, so each was multiplied by the other's
+   * mass and an RNA sample was treated as the lighter one. The visible effect
+   * was that equal counts of RNA and DNA gave different monomer numbers, with
+   * RNA giving more molecules per gram than DNA rather than fewer.
    */
   private static final double AVG_RNA_MASS                        = 339.5;
 
@@ -135,15 +142,24 @@ public class CoefCalcSAXS extends CoefCalcFromParams {
   /**
    * Method that calculates the number of protein molecules in a given volume
    * in a solution for a SAXS experiment.
+   * <p>
+   * The RNA and DNA parameters are declared in the same order as the caller
+   * passes them, and as every other method here takes them. They were once
+   * the other way round, so each nucleic acid was weighed with the other's
+   * average residue mass; see the note on AVG_RNA_MASS.
    *
-   * @param numberOfResidues Number of residues per molecule unit (monomer)
+   * @param numberOfResidues Number of amino acid residues per molecule unit
+   *          (monomer)
+   * @param numberOfRNAResidues Number of RNA residues per monomer
+   * @param numberOfDNAResidues Number of DNA residues per monomer
    * @param proteinConcentration Concentration of the protein in the SAXS
    *          experiment
    * @param volumeAngstromsCubed Given volume considered for calculation
+   * @param numCarbResidues Number of carbohydrate residues per monomer
    * @return Number of monomers of the molecule in the given volume
    */
   private int calculateNumMonomers(final int numberOfResidues,
-      final int numberOfDNAResidues, final int numberOfRNAResidues,
+      final int numberOfRNAResidues, final int numberOfDNAResidues,
       final double proteinConcentration, final double volumeAngstromsCubed, final int numCarbResidues) {
 
     //Calculate molarity of solution as concentration divided by the total
