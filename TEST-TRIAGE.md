@@ -464,3 +464,66 @@ outright rather than parked:
 | `setupDepthFinding` inside the innermost loop | hoisted | `CrystalCuboidTest.testFindDepth` re-rotated the whole polyhedron 33,300 times with constant arguments. Not in the `advanced` group, so it dominated `ant test`. |
 | stale `se.raddo.raddose3D.tests.*` class-name strings | updated | the factory tests load classes by name. |
 | `ContainerTests:90` one-sided comparison | `Math.abs` | `a - b < 1e-2` passes for any sufficiently negative difference. |
+
+---
+
+## 9. SAXS weighed RNA and DNA with each other's masses
+
+Found while porting `CoefCalcSAXS` to Python, by noticing that equal counts of
+RNA and DNA gave different monomer numbers in the wrong direction.
+
+`calculateNumMonomers` was declared
+
+```java
+private int calculateNumMonomers(final int numberOfResidues,
+    final int numberOfDNAResidues, final int numberOfRNAResidues, ...)
+```
+
+and called
+
+```java
+calculateNumMonomers(numResidues, numRNA, numDNA, ...)
+```
+
+so the RNA count landed in the DNA parameter and vice versa. Each nucleic acid
+was then multiplied by the other's average residue mass:
+
+```java
++ AVG_DNA_MASS * numberOfDNAResidues   // 327.0, receiving the RNA count
++ AVG_RNA_MASS * numberOfRNAResidues   // 339.5, receiving the DNA count
+```
+
+**Effect.** The monomer count is what fills the unit cell, so it sets the whole
+composition: every atom count, the density, and all four coefficients. RNA is
+the heavier residue (339.5 against 327.0 — the extra hydroxyl), so a gram of it
+should contain *fewer* molecules. It contained more.
+
+Measured with 60 residues at 10 g/l in the default 1000 Å cell:
+
+| sample | before | after |
+|---|---|---|
+| 60 RNA | 307 monomers | **296** |
+| 60 DNA | 296 monomers | **307** |
+
+The two simply exchange, which is the cleanest possible confirmation of the
+diagnosis. About 3.8% on the nucleic-acid contribution to molecular weight.
+Protein-only SAXS runs are unaffected, and so is a sample with equal RNA and
+DNA, where the swap cancels.
+
+**Fixed** by declaring the parameters in the order the caller passes them —
+RNA then DNA, matching every other method here. The alternative, reordering the
+call, would have left the signature disagreeing with the rest of the class.
+
+**Guarded** by `CoefCalcSaxsMonomerTest`, which checks each count against an
+independently computed expectation, and separately that the heavier residue
+gives fewer monomers — a statement that needs neither constant. Two further
+tests pin protein-only and mixed samples, which are unaffected either way, so
+they hold the surrounding calculation still while the nucleic acid cases move.
+
+**Mutation check.** Restoring the original parameter order fails 3 of the 5:
+
+```
+theHeavierResidueGivesFewerMonomers() ✘ got 307 RNA against 296 DNA
+dnaUsesTheDnaMass()                   ✘ expected: <307> but was: <296>
+rnaUsesTheRnaMass()                   ✘ expected: <296> but was: <307>
+```
