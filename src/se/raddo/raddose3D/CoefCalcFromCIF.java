@@ -14,6 +14,23 @@ import java.util.Objects;
 public class CoefCalcFromCIF extends CoefCalcCompute{
   
   public boolean chemicalSum;
+
+  /**
+   * Number of formula units in the unit cell, from _cell_formula_units_Z.
+   * <p>
+   * _chemical_formula_sum gives the contents of one formula unit, not of the
+   * cell, so every count taken from it has to be multiplied by this. Until it
+   * was read, the cell was filled with a single formula unit however many it
+   * held, and the density -- with every absorption coefficient and every dose
+   * that follows from it -- came out low by exactly this factor.
+   * <p>
+   * Defaults to 1, which is both the correct value when the item is absent and
+   * the previous behaviour.
+   */
+  private int formulaUnitsZ = 1;
+
+  /** Whether _cell_formula_units_Z was present in the file. */
+  private boolean foundFormulaUnitsZ;
   
   public CoefCalcFromCIF(final String cifFilePath) {
     getCIFFile(cifFilePath);
@@ -73,7 +90,20 @@ public class CoefCalcFromCIF extends CoefCalcCompute{
       throw new IllegalArgumentException(
           "The CIF file must contain the chemical sum (_chemical_formula_sum)");
     }
-    
+
+    /*
+     * Applied here rather than in parseChemicalFormula, because a CIF may
+     * state _cell_formula_units_Z either side of _chemical_formula_sum and
+     * both orders have to give the same answer.
+     */
+    if (!foundFormulaUnitsZ) {
+      System.out.println("Warning: the CIF file does not state "
+          + "_cell_formula_units_Z. Assuming one formula unit per unit cell, "
+          + "which will understate the density if that is wrong.");
+    }
+    multiplyAtoms(formulaUnitsZ);
+
+    System.out.printf("Formula units per unit cell (Z): %d%n", formulaUnitsZ);
   }
   
   public void parseCIFLine(final String inputLine) {
@@ -103,7 +133,25 @@ public class CoefCalcFromCIF extends CoefCalcCompute{
       }
       cellVolume = theNumber; //currently in A^2
     }
-    
+
+    if (Objects.equals(directive, "_cell_formula_units_Z")) {
+      String theValue = inputLine.substring(spaceIndex).trim();
+      try {
+        // Defined as an integer in the CIF dictionary, but parse leniently
+        // and check, so that "4.0" is accepted and "4.5" is not.
+        double parsed = Double.parseDouble(theValue);
+        if (parsed >= 1 && parsed == Math.floor(parsed)) {
+          formulaUnitsZ = (int) parsed;
+          foundFormulaUnitsZ = true;
+        } else {
+          System.out.println("Warning: _cell_formula_units_Z is " + theValue
+              + ", which is not a positive whole number. Assuming 1.");
+        }
+      } catch (NumberFormatException e) {
+        System.out.println("Warning: _cell_formula_units_Z is not a number: "
+            + theValue + ". Assuming 1.");
+      }
+    }
 
   }
   

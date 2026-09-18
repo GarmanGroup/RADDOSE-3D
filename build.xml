@@ -17,6 +17,12 @@
 
  <target name="clean">
   <delete dir="bin"/>
+  <!-- Test classes live in their own output directory, so clean has to be
+       told about it. While it was not, a test class compiled on one branch
+       survived a checkout that removed its source and kept being discovered
+       and run: the suite reported failures for a test that no longer
+       existed. -->
+  <delete dir="${test.bin}"/>
   <delete dir="deploy"/>
  </target>
 

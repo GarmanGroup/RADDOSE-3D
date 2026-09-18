@@ -527,3 +527,69 @@ theHeavierResidueGivesFewerMonomers() ✘ got 307 RNA against 296 DNA
 dnaUsesTheDnaMass()                   ✘ expected: <307> but was: <296>
 rnaUsesTheRnaMass()                   ✘ expected: <296> but was: <307>
 ```
+
+---
+
+## 10. Small-molecule CIFs ignored the number of formula units per cell
+
+Found while porting `CoefCalcFromCIF` to Python: the computed density for two
+public structures was implausibly low for a solid, and low by exactly the Z
+stated in each file.
+
+`_chemical_formula_sum` gives the contents of **one formula unit**.
+`_cell_formula_units_Z` says how many the cell holds. The parser read the
+first and never the second, so it filled the whole unit cell with a single
+formula unit.
+
+**Effect.** Everything that scales with cell contents was low by a factor of
+Z — the density, all four absorption coefficients, and therefore every dose
+computed through `AbsCoefCalc EXPSM`. Z is typically 2 to 8 for small
+molecules, so this is a several-fold error, not a percentage one.
+
+Both test structures state a measured density, so the size of the error is
+measurable rather than inferred:
+
+| structure | Z | before | after | stated in the CIF |
+|---|---|---|---|---|
+| urea, COD 1008775 | 2 | 0.683 g/cm³ | **1.367** | 1.367 (`_exptl_crystal_density_diffrn`) |
+| COD 1008123 | 8 | 0.364 g/cm³ | **2.913** | 2.9 (`_exptl_crystal_density_meas`) |
+
+The ratio was exactly Z in both cases, and the corrected values agree with the
+published densities to better than 0.5%.
+
+**Fixed** by parsing `_cell_formula_units_Z` and applying it with
+`multiplyAtoms` *after* the whole file is read, rather than as each formula
+token is parsed. CIF items may appear in any order and Z is commonly written
+above the formula, so applying it inline would have made the result depend on
+field order.
+
+A CIF with no Z keeps the previous behaviour of one formula unit, which is
+also the correct reading when the item is genuinely absent; a warning says so.
+A Z that is not a positive whole number is refused and falls back to one,
+rather than silently scaling the cell by a fraction.
+
+**Guarded** by `CoefCalcCifFormulaUnitsTest`. The two strongest tests compare
+against the crystal density stated in the CIF itself — a quantity RADDOSE-3D
+does not read — so they are evidence that the calculation is right rather than
+merely self-consistent.
+
+**Mutation check.** Removing the multiplication fails 6 of the 8:
+
+```
+ureaDensityMatchesTheValueInItsCif(Path)            ✘ expected: <1.367> but was: <0.683>
+antimonateDensityMatchesTheValueInItsCif(Path)      ✘ expected: <2.9>   but was: <0.364>
+formulaUnitsMultiplyTheCellContents(Path)           ✘ carbon: expected <2.0> but was <1.0>
+omittingFormulaUnitsUnderstatesDensityByThatFactor  ✘ expected: <2.0>   but was: <1.0>
+formulaUnitsMayPrecedeTheFormula(Path)              ✘ expected: <4.0>   but was: <1.0>
+formulaUnitsMayBeWrittenWithADecimalPoint(Path)     ✘ expected: <4.0>   but was: <1.0>
+```
+
+The two that still pass are the fallback cases, which are unaffected by
+design.
+
+### Also in this change: `ant clean` left test classes behind
+
+`clean` deleted `bin/` and `deploy/` but not `${test.bin}`, so a test class
+compiled on one branch survived a checkout that removed its source and kept
+being discovered and run. During this work the suite reported three failures
+for a test that no longer existed on the branch. One line.
