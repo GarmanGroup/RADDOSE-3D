@@ -1370,8 +1370,15 @@ public class CoefCalcCompute extends CoefCalc {
     // on reduction of solvent accessible space.
 
     for (Element e : heteroAtomOccurrence.keySet()) {
-      if (e.getAtomicNumber() < Element.LIGHT_ATOM_MAX_NUM) {
-        // TODO: Is this < or <= ?!
+      /*
+       * Inclusive, matching the constant's own description: "Light/heavy
+       * element threshold, 29 is treated as light atom". This was "<", which
+       * excluded copper -- disagreeing both with that comment and with the
+       * only other use of the constant, the commented-out "<=" in
+       * Element.getPhotoelectricXSForEnergy. The "TODO: Is this < or <= ?!"
+       * that stood here was asking exactly this.
+       */
+      if (e.getAtomicNumber() <= Element.LIGHT_ATOM_MAX_NUM) {
 
         hetatmMass += heteroAtomOccurrence.get(e)
             * e.getAtomicWeightInGrams();

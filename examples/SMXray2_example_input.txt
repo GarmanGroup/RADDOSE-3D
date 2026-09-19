@@ -10,7 +10,10 @@ PixelsPerMicron 0.5       #the number of voxel per micron in the crystal
 AbsCoefCalc  EXPSM    # Tells RADDOSE-3D how to calculate the
                           # Absorption coefficients
 
-CIF Fe3O4
+CIF examples/Fe3O4.cif   # Path to the structure, relative to where
+                         # RADDOSE-3D is run. Magnetite, from the
+                         # Crystallography Open Database entry
+                         # 1011032 (public domain).
 
 
 ###############################################################################

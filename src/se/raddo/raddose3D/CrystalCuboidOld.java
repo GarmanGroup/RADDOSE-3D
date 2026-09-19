@@ -608,13 +608,6 @@ public class CrystalCuboidOld extends Crystal {
   }
   
 
-  @Override
-  public double trackPhotoelectron(int i, int j, int k, double doseIncreasePE,
-      CoefCalc coefCalc, Map<Element, Double> elementAbsorptionProbs, Map<Element, double[]> ionisationProbs, double[] angularEmissionProbs,
-      Beam beam, boolean surrounding) {
-    // TODO Auto-generated method stub
-    return 0;
-  }
 
   /*
   @Override

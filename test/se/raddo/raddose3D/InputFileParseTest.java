@@ -73,13 +73,6 @@ public class InputFileParseTest {
     }
     List<Arguments> out = new ArrayList<Arguments>();
     for (File f : files) {
-      // SMXray2 now parses (its AbsCoefCalc keyword was corrected from CIF to
-      // EXPSM), but it cannot be built: it names a CIF file, Fe3O4, that the
-      // project does not ship, and CoefCalcFromCIF reads from a local path
-      // only -- its download code is commented out. See TEST-TRIAGE.md #8.
-      if (f.getName().equals("SMXray2_example_input.txt")) {
-        continue;
-      }
       out.add(Arguments.of(f.getPath()));
     }
     return out.stream();

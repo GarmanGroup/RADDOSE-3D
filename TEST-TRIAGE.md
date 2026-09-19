@@ -691,3 +691,94 @@ expectation computed independently of the class under test.
 Guarded by `MalformedInputTest`. The cylinder keeps its current behaviour
 deliberately: a cylinder is described by a diameter and a length, so the
 third value has nothing to mean. Only the silence was the problem.
+
+
+---
+
+## 12. The silent no-ops, and the rest of the cosmetic list
+
+Everything left on the register after item 11, cleared in one pass. All are
+guarded by `SilentNoOpTest` except where noted.
+
+### 12a. `SolventHeavyConc` under `AbsCoefCalc SmallMole` did nothing
+
+The concentrations reached `solventConcentration`, whose only reader is
+`calculateSolventWater` — guarded in `CoefCalcSmallMolecules` by a hardcoded
+`boolean fillRestWithWater = false`. Not one atom of the solute ever reached
+the cell, and nothing said so.
+
+**Refused** rather than modelled. The reason for the guard is sound: a
+small-molecule crystal has voids, not bulk solvent, so there is nothing for a
+concentration to be a concentration *of*. The error names the species and
+suggests removing the line or choosing a different `AbsCoefCalc`.
+
+### 12b. Carbohydrates did not count towards the solvent fraction
+
+`CoefCalcFromSequence` recorded the count in `addCarbs`, which ran *after*
+`calculateSolventFractionFromNums` had already used it — so the estimate saw
+zero however many were specified, and the solvent fraction was overestimated
+by the volume they occupy. `setNumCarb` is now called before the estimate.
+Only the sequence path was affected; `CoefCalcFromParams` passes the count
+straight in.
+
+**Changes results** for sequence-based inputs specifying `NumCarb`.
+
+### 12c. The light-atom threshold was used against its own documentation
+
+```java
+/** Light/heavy element threshold, 29 is treated as light atom. */
+public static final int LIGHT_ATOM_MAX_NUM = 29;
+```
+
+The only live use was `<`, which **excludes** 29. The only other use, a
+commented-out line in `Element`, is `<=`. The `// TODO: Is this < or <= ?!`
+against it was asking exactly this. Now `<=`, so copper counts as a light
+atom in the heteroatom mass, as documented.
+
+**Changes results** for structures with copper heteroatoms.
+
+### 12d. The PDB "nothing found" diagnostic could not fire
+
+`foundHetatm`, `foundSeqres`, `foundRemark` and `foundMtrix1` were cleared by
+an `else` on every non-matching line, so they described only the last line
+read — and a well-formed PDB ends `END`, which matches none of them. The
+composite check therefore collapsed to `!foundCryst1`, repeating the message
+three lines above it. The flags are now sticky.
+
+No effect on results; one dead message revived.
+
+### 12e. 229 lines of dead photoelectron tracking removed
+
+`Crystal.trackPhotoelectron` was abstract, implemented in five classes and a
+test double, and its only call site — `Crystal.java:1195` — had been
+commented out. Verified before removal that no helper it called becomes
+unreferenced. `MC.java` and `XFEL.java` have live methods of the same name;
+those are different methods and were not touched. A comment at the old call
+site records the `git log -S` incantation that finds them.
+
+### 12f. `versionize` works again
+
+Two independent faults: the `?---?` placeholder had been overwritten by a
+literal, leaving nothing to substitute, and the target shelled out to
+`sed -i` with no suffix — which GNU sed accepts and BSD/macOS sed does not.
+With `failonerror="false"` it reported nothing and did nothing for years,
+while the revision number was maintained by hand and went stale.
+
+The placeholder is restored and the substitution is now a pure Ant
+`replaceregexp`. A paired `unversionize` puts the placeholder back after the
+compile, so a build no longer leaves the working tree modified — verified
+stable over repeated builds.
+
+### 12g. The small-molecule example can be run
+
+`SMXray2_example_input.txt` named a CIF, `Fe3O4`, that the project did not
+ship, so it was the one example `InputFileParseTest` skipped.
+
+`examples/Fe3O4.cif` is now shipped: magnetite, Crystallography Open Database
+entry 1011032 (Bragg's 1915 structure), released to the public domain. The
+skip is removed and the example runs end to end.
+
+It also makes a quiet check of the Z fix from item 10: the CIF states a
+measured density of 5.2 g/cm³ and RADDOSE-3D computes 5.339, which is 2.7%
+apart — about what a 1915 measurement deserves. Before that fix it would have
+computed 0.667.

@@ -53,15 +53,33 @@
   <echo message="Parser regenerated. Review the diff before committing."/>
  </target>
 
+ <property name="version.file" value="src/se/raddo/raddose3D/Version.java"/>
+ <property name="version.placeholder" value="?---?"/>
+
+ <!--
+   Stamps the repository commit count into Version.java.
+
+   Uses replaceregexp rather than shelling out to sed: the previous version
+   passed `-i` with no suffix, which GNU sed accepts and BSD/macOS sed does
+   not, and ran with failonerror="false" so it reported nothing when it
+   failed. Combined with the placeholder having been overwritten by a literal
+   at some point, it had been doing nothing at all for years.
+ -->
  <target name="versionize">
   <echo message="Raddose3D git repository age is ${repository.revision}" />
+  <replaceregexp file="${version.file}" flags="g"
+                 match="&quot;\?---\?&quot;"
+                 replace="&quot;${repository.revision}&quot;"/>
+ </target>
 
-  <!-- Write tree depth to Version.java -->
-  <exec executable="sed" failonerror="false">
-   <arg value="-i"/>
-   <arg value="s/?---?/${repository.revision}/g"/>
-   <arg value="src/se/raddo/raddose3D/Version.java"/>
-  </exec>
+ <!--
+   Puts the placeholder back, so a build does not leave the working tree
+   modified. Paired with versionize around each compile.
+ -->
+ <target name="unversionize">
+  <replaceregexp file="${version.file}" flags="g"
+                 match="REVISION( *)= &quot;[0-9]+&quot;"
+                 replace="REVISION\1= &quot;${version.placeholder}&quot;"/>
  </target>
 
  <target name="build">
@@ -75,6 +93,8 @@
    <classpath refid="math3" />
    <classpath refid="selenium" />
   </javac>
+
+  <antcall target="unversionize"/>
  </target>
 
  <target name="build-debug">

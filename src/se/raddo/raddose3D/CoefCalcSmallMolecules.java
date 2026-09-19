@@ -132,10 +132,25 @@ public class CoefCalcSmallMolecules extends CoefCalcCompute {
       }
     }
 
-    // Combine concentrations of heavy atoms in the
-    // solvent and add these to the unit cell.
-    if (heavySolvConcNames != null) {
-      addSolventConcentrations(heavySolvConcNames, heavySolvConcNums);
+    /*
+     * Refused rather than ignored. These concentrations used to be collected
+     * into solventConcentration, whose only reader is calculateSolventWater
+     * -- and that is guarded below by a hardcoded
+     * `boolean fillRestWithWater = false`, so not one atom of the solute ever
+     * reached the cell. Specifying it changed nothing, silently.
+     *
+     * Saying so is better than starting to model it. The reason the guard is
+     * there is sound: a small-molecule crystal has voids rather than bulk
+     * solvent, so there is nothing for a concentration to be a concentration
+     * of.
+     */
+    if (heavySolvConcNames != null && !heavySolvConcNames.isEmpty()) {
+      throw new IllegalArgumentException(
+          "SolventHeavyConc is not modelled for AbsCoefCalc SmallMole: a "
+              + "small molecule crystal is treated as having voids rather "
+              + "than solvent, so there is nothing to dissolve "
+              + heavySolvConcNames + " in. Remove the line, or use a "
+              + "different AbsCoefCalc.");
     }
     
     //check whether a surrounding should be calculated 

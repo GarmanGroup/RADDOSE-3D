@@ -164,6 +164,16 @@ public class CoefCalcFromSequence extends CoefCalcCompute{
       System.out.printf("Number of RNA Residues: %.0f%n", this.getNumRNA());
     }
 
+    /*
+     * Recorded before the solvent fraction is estimated, not after. addCarbs
+     * used to set it, and addCarbs ran below -- so
+     * calculateSolventFractionFromNums saw zero carbohydrate however many
+     * were specified, and the solvent fraction was overestimated by the
+     * volume they occupy. Only this path was affected;
+     * CoefCalcFromParams passes the count straight in.
+     */
+    this.setNumCarb(numCarb);
+
     // If the solvent fraction has not been specified.
     double newSolventFraction = solventFraction;
 
@@ -177,8 +187,8 @@ public class CoefCalcFromSequence extends CoefCalcCompute{
   }
   
   public void addCarbs(final int numCarb) {
-    //add in carbs 
-    this.setNumCarb(numCarb);
+    //add in carbs. The count itself is recorded by the caller, before the
+    //solvent fraction is estimated from it.
     Element hydrogen = getParser().getElement("H");
     Element oxygen = getParser().getElement("O");
     Element carbon = getParser().getElement("C");
