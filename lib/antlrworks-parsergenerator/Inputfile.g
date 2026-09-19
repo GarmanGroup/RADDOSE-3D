@@ -374,12 +374,25 @@ crystalCoefcalcKeyword returns [int value]
 	| RDJAVA	{ $value = 2;}
 	| RDFORTAN	{ $value = 3;}
 	| PDB	  	{ $value = 4;}
+	| PDBNAME	{ $value = 4;}
 	| SAXS		{ $value = 5;}
 	| SEQUENCE	{ $value = 6;}
 	| SAXSSEQ	{ $value = 7;}
 	| SMALLMOLE     { $value = 8;}
 	| CIF	  	{ $value = 9;}
+	| CIFNAME	{ $value = 9;}
 	;
+// The tokens named PDB and CIF match the literals "EXP" and "EXPSM", while
+// "PDB" and "CIF" are matched by PDBNAME and CIFNAME -- which name the file,
+// two lines further down. So "AbsCoefCalc PDB" read as naturally as anything
+// in this file and could never match, and until the parser learned to refuse
+// input it could not read, it silently fell back to a dummy composition and
+// printed a dose.
+//
+// Accepting PDBNAME and CIFNAME here as well costs nothing: they are only
+// reachable after ABSCOEFCALC, which the file-name rules require not to
+// precede them. Both spellings now work, so no existing input changes
+// meaning.
 DUMMY : ('D'|'d')('U'|'u')('M'|'m')('M'|'m')('Y'|'y') ;
 DEFAULT	: ('D'|'d')('E'|'e')('F'|'f')('A'|'a')('U'|'u')('L'|'l')('T'|'t');
 AVERAGE : ('A'|'a')('V'|'v')('E'|'e')('R'|'r')('A'|'a')('G'|'g')('E'|'e') ;

@@ -642,9 +642,15 @@ reaches the initializer — checking only that an exception is thrown would
 have passed all along. Reverting the deferral fails it with
 `expected: <0> but was: <3>`.
 
-The token naming itself is unchanged; renaming it means regenerating 700 KB
-of ANTLR 3.4 output and deserves its own change. It is much less urgent now
-that the mistake is refused loudly instead of answered wrongly.
+The token naming is also fixed now. `crystalCoefcalcKeyword` accepts
+`PDBNAME` and `CIFNAME` -- the tokens that match the literals `"PDB"` and
+`"CIF"` -- alongside the existing `PDB` and `CIF` tokens, which match `"EXP"`
+and `"EXPSM"`. Both spellings work and no existing input changes meaning.
+They are only reachable after `ABSCOEFCALC`, so there is no ambiguity with
+the file-name rules two lines further down, and ANTLR reports none.
+
+Regenerating the parser was an undocumented manual step, which is part of why
+this went unfixed for so long. `ant antlr` now does it.
 
 ### 11b. Protein density: Fischer et al. (2004) adopted
 

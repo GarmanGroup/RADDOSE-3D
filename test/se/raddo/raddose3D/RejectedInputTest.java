@@ -18,15 +18,17 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * anyone had checked whether the input parsed. The number that appeared was
  * computed from whatever defaults applied to the parts that had failed.
  * <p>
- * {@code AbsCoefCalc PDB} was the case that exposed it, and it is worth
- * spelling out because it looks like valid input. The grammar token
- * <em>named</em> {@code PDB} matches the literal {@code "EXP"}
- * ({@code Inputfile.g:388}), so {@code AbsCoefCalc PDB} can never match. The
- * line was skipped, no absorption coefficient calculator was set, and
- * {@code Crystal.java:231} substituted {@code CoefCalcAverage} -- which is
- * correct when {@code AbsCoefCalc} is genuinely omitted, and wrong when it
- * was given and misunderstood. The run then printed a dose identical to an
- * explicit {@code AbsCoefCalc Dummy} run and exited with status zero.
+ * {@code AbsCoefCalc PDB} was the case that exposed it. The token
+ * <em>named</em> {@code PDB} matched the literal {@code "EXP"}, so the most
+ * natural spelling could never match: the line was skipped, no absorption
+ * coefficient calculator was set, {@code Crystal.java:231} substituted
+ * {@code CoefCalcAverage}, and the run printed a dose identical to an
+ * explicit {@code AbsCoefCalc Dummy} run and exited zero.
+ * <p>
+ * That spelling is now accepted, so the tests here use a keyword that names
+ * nothing at all. Both halves matter and are covered separately: the parser
+ * understands more than it did, <em>and</em> still refuses what it does not
+ * understand.
  */
 public class RejectedInputTest {
 
@@ -91,9 +93,9 @@ public class RejectedInputTest {
           + "Wedge 0 90\n"
           + "ExposureTime 50\n";
 
-  /** The same input with the AbsCoefCalc keyword the grammar cannot match. */
+  /** The same input with an AbsCoefCalc keyword that names nothing. */
   private static final String UNPARSEABLE =
-      VALID.replace("AbsCoefCalc Dummy", "AbsCoefCalc PDB\nPDB 3I40");
+      VALID.replace("AbsCoefCalc Dummy", "AbsCoefCalc Nonsense");
 
   /**
    * Parses a string and returns what reached the initializer.
@@ -148,17 +150,65 @@ public class RejectedInputTest {
             + "beam: anything it reaches can print a dose");
   }
 
-  /** The error names every problem, not just the first. */
+  /** The error names the line at fault. */
   @Test
-  public void allSyntaxErrorsAreReportedTogether() {
+  public void theOffendingLineIsNamed() {
     InputException e = assertThrows(InputException.class,
         () -> parse(UNPARSEABLE));
 
     assertTrue(e.toString().contains("line 5"),
         "the offending line should be named: " + e);
+  }
+
+  /**
+   * Every syntax error is reported in one pass, so a file with several
+   * mistakes can be fixed in one go rather than one run per mistake.
+   */
+  @Test
+  public void allSyntaxErrorsAreReportedTogether() {
+    // Both must be syntax errors. A bad beam Type, for instance, parses
+    // fine and is rejected later by the factory, so it would not do.
+    String twoMistakes = VALID.replace("AbsCoefCalc Dummy",
+        "AbsCoefCalc Nonsense\nDDM Nonsense");
+
+    InputException e = assertThrows(InputException.class,
+        () -> parse(twoMistakes));
+
     assertTrue(e.toString().contains("Parser found 2 errors"),
-        "both errors should be reported in one pass, so that a file with "
-            + "several mistakes can be fixed in one go: " + e);
+        "both mistakes should be reported together: " + e);
+  }
+
+  /**
+   * The spelling that started all this now works.
+   * <p>
+   * {@code AbsCoefCalc PDB} and {@code AbsCoefCalc CIF} are accepted
+   * alongside the existing {@code EXP} and {@code EXPSM}. Nothing that
+   * parsed before changes meaning; input that used to be silently
+   * misunderstood now does what it says.
+   *
+   * @param dir temporary directory for the structure file
+   * @throws Exception if the fixture cannot be written
+   */
+  @org.junit.jupiter.api.Test
+  public void pdbAndCifSpellingsAreAccepted(
+      @org.junit.jupiter.api.io.TempDir final java.nio.file.Path dir)
+      throws Exception {
+    java.nio.file.Path pdb = dir.resolve("tiny.pdb");
+    java.nio.file.Files.write(pdb,
+        ("CRYST1   78.270   78.270   78.270  90.00  90.00  90.00 P 1\n"
+            + "REMARK 290   SMTRY1   1  1.000000  0.000000  0.000000     0.00000\n"
+            + "SEQRES   1 A    3  ALA GLY SER\n"
+            + "END\n").getBytes("US-ASCII"));
+
+    Collector viaPdb = parse(VALID.replace("AbsCoefCalc Dummy",
+        "AbsCoefCalc PDB\nPDB " + pdb.toString()));
+    Collector viaExp = parse(VALID.replace("AbsCoefCalc Dummy",
+        "AbsCoefCalc EXP\nPDB " + pdb.toString()));
+
+    assertEquals(1, viaPdb.crystals.size(),
+        "AbsCoefCalc PDB should now build a crystal from the file");
+    assertEquals(viaExp.crystals.size(), viaPdb.crystals.size(),
+        "PDB and EXP should be two spellings of the same thing");
   }
 
   /** The message says the run produced nothing, so it cannot be misread. */
