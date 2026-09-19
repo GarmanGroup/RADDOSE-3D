@@ -123,11 +123,17 @@ public class CoefCalcTests {
     coefCalc.updateCoefficients(b);
 
     // RADDOSE-v2 at 1.00 g/cm3 gave 0.001042 / 0.000036 / 0.001095
-    Tolerance.equals(coefCalc.getAbsorptionCoefficient(), 0.0010185236765749104,
+    // Rebaselined for the Fischer et al. (2004) protein density, which
+    // replaced a flat 1.35 g/cm^3 and raised the solvent fraction. The
+    // superseded expectation is kept alongside each value.
+    // was 0.0010185236765749104 at a flat 1.35 g/cm^3
+    Tolerance.equals(coefCalc.getAbsorptionCoefficient(), 0.0010622170683689536,
         "Absorption Coefficient", 0.000005);
-    Tolerance.equals(coefCalc.getElasticCoefficient(), 3.5079807082428370e-05,
+    // was 3.5079807082428370e-05
+    Tolerance.equals(coefCalc.getElasticCoefficient(), 3.6481868842745220e-05,
         "Elastic Coefficient", 0.000005);
-    Tolerance.equals(coefCalc.getAttenuationCoefficient(), 0.0010701986993711151,
+    // was 0.0010701986993711151
+    Tolerance.equals(coefCalc.getAttenuationCoefficient(), 0.0011158517874672877,
         "Attenuation Coefficient", 0.000005);
     
     System.out.println("@Test - testCoefCalc1");
@@ -177,11 +183,17 @@ public class CoefCalcTests {
     coefCalc.updateCoefficients(b);
 
     // Values obtained from RADDOSEv2, http://www.raddo.se/legacy/
-    Tolerance.equals(coefCalc.getAbsorptionCoefficient(), 0.004675,
+    // Rebaselined for the Fischer et al. (2004) protein density, which
+    // replaced a flat 1.35 g/cm^3 and raised the solvent fraction. The
+    // superseded expectation is kept alongside each value.
+    // was 0.004675
+    Tolerance.equals(coefCalc.getAbsorptionCoefficient(), 0.0046848760011952670,
         "Absorption Coefficient", 0.000005);
-    Tolerance.equals(coefCalc.getElasticCoefficient(), 0.000068,
+    // was 0.000068
+    Tolerance.equals(coefCalc.getElasticCoefficient(), 6.8541784783468460e-05,
         "Elastic Coefficient", 0.000005);
-    Tolerance.equals(coefCalc.getAttenuationCoefficient(), 0.004769,
+    // was 0.004769
+    Tolerance.equals(coefCalc.getAttenuationCoefficient(), 0.0047794487074642490,
         "Attenuation Coefficient", 0.000005);
     
     System.out.println("@Test - testCoefCalc2");
@@ -238,11 +250,17 @@ public class CoefCalcTests {
     coefCalc.updateCoefficients(b.getPhotonEnergy());
 
     // RADDOSE-v2 at 1.00 g/cm3 gave 4.60e-04 / 2.20e-05 / 4.97e-04
-    Tolerance.equals(coefCalc.getAbsorptionCoefficient(), 0.00044598763760094910,
+    // Rebaselined for the Fischer et al. (2004) protein density, which
+    // replaced a flat 1.35 g/cm^3 and raised the solvent fraction. The
+    // superseded expectation is kept alongside each value.
+    // was 0.00044598763760094910
+    Tolerance.equals(coefCalc.getAbsorptionCoefficient(), 0.00045533119259170496,
         "Absorption Coefficient", 0.000005);
-    Tolerance.equals(coefCalc.getElasticCoefficient(), 2.1473224918412883e-05,
+    // was 2.1473224918412883e-05
+    Tolerance.equals(coefCalc.getElasticCoefficient(), 2.2133284571274426e-05,
         "Elastic Coefficient", 0.000005);
-    Tolerance.equals(coefCalc.getAttenuationCoefficient(), 0.00048553294539075667,
+    // was 0.00048553294539075667
+    Tolerance.equals(coefCalc.getAttenuationCoefficient(), 0.00049608392871641300,
         "Attenuation Coefficient", 0.000005);
     
     System.out.println("@Test - testCoefCalc3");

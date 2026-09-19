@@ -26,6 +26,9 @@ public final class RD3D {
   /** Common prefix for output files. */
   private String            prefix               = "output-";
 
+  /** Set when any input could not be parsed; drives a non-zero exit. */
+  private boolean           inputRejected;
+
   /**
    * Private class constructor. Only the class itself needs to instantiate it.
    * 
@@ -69,6 +72,22 @@ public final class RD3D {
           (double) ManagementFactory.getThreadMXBean()
               .getCurrentThreadUserTime() / NANOSECONDSPERSECOND));
     }
+
+    /*
+     * An input that could not be parsed is a failed run and must be reported
+     * as one: a mistyped keyword used to give exit status 0, so a script
+     * driving RADDOSE-3D could not tell a rejected input from a completed
+     * calculation.
+     *
+     * Deliberately distinct from runExperiment() returning false, which also
+     * covers "nothing to do" -- printing the version or the help text is a
+     * success. Exiting non-zero is safe here in a way it is not inside the
+     * library: this is the process entry point, Experiment.close() has
+     * already run, and there is nothing left to strand.
+     */
+    if (raddose.inputRejected) {
+      System.exit(1);
+    }
   }
 
   /**
@@ -102,6 +121,7 @@ public final class RD3D {
         exp.process(i);
       } catch (InputException e) {
         System.err.println("Unhandled input exception " + e);
+        inputRejected = true;
       }
     }
     inputs = null;

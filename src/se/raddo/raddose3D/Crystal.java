@@ -442,9 +442,6 @@ public abstract class Crystal {
   public abstract double addDoseAfterPE(int i, int j, int k, double doseIncreasePE);
   public abstract double addDoseAfterPECryo(double i, double j, double k, double doseIncreasePE, double energyToDoseFactor);
   
-  public abstract double trackPhotoelectron(int i, int j, int k, double doseIncreasePE, CoefCalc coefCalc, 
-                                            Map<Element, Double> elementAbsorptionProbs, Map<Element, double[]> ionisationProbs, double[] angularEmissionProbs,
-                                            Beam beam, boolean surrounding);
   
   /**
    * This accounts for FL energy transfer to nearby voxels and caluclates release
@@ -1194,8 +1191,21 @@ public abstract class Crystal {
                 //  double dosePE = voxImageDose[i][j][k] - totAugerDose; //change this to binding energy fraction
                   double dosePE = voxImageDose[i][j][k] - (EnergyToSubtractFromPE/beam.getPhotonEnergy())*voxImageDose[i][j][k];
                   double doseLostFromCrystalPE = addDoseAfterPE(i, j, k, dosePE);
-                  
-            //      double doseLostFromCrystalPE = trackPhotoelectron(i, j, k, dosePE, coefCalc, elementAbsorptionProbs, ionisationProbs, angularEmissionProbs, beam, false);
+
+                  /*
+                   * An alternative to addDoseAfterPE that tracked each
+                   * photoelectron individually stood here, commented out. Its
+                   * implementations -- 222 lines across Crystal and five
+                   * subclasses -- were removed, since this was the only call
+                   * site and it had been disabled for years. `git log -S
+                   * trackPhotoelectron -- src/se/raddo/raddose3D/Crystal.java`
+                   * finds them if they are ever wanted.
+                   *
+                   * Note that MC.java and XFEL.java have live methods of the
+                   * same name. They are different methods and were not
+                   * touched.
+                   */
+
                   
                   totalEscapedDosePE +=  doseLostFromCrystalPE;
                   totalEscapedDose += doseLostFromCrystalPE;

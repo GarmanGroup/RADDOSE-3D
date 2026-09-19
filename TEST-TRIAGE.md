@@ -593,3 +593,192 @@ design.
 compiled on one branch survived a checkout that removed its source and kept
 being discovered and run. During this work the suite reported three failures
 for a test that no longer existed on the branch. One line.
+
+---
+
+## 11. Silent wrong answers and unhelpful crashes
+
+A batch found by re-reading everything turned up while porting to Python.
+Grouped because they share a shape: the program had something useful to say
+and said nothing, or said the wrong thing.
+
+### 11a. A file that did not parse still printed a dose, and exited 0
+
+`AbsCoefCalc PDB` looks like valid input. It is not: the grammar token
+*named* `PDB` matches the literal `"EXP"` (`Inputfile.g:388`), so the line can
+never match. What happened then:
+
+```
+Average Diffraction Weighted Dose  : 14.827656 MGy      <- printed FIRST
+Max Dose                           : 42.095861 MGy
+InputException: Parser found 2 errors in input:
+bad.txt line 5:12 no viable alternative at input 'PDB'
+---- exit status: 0 ----
+```
+
+That number is **identical to the digit** to an explicit `AbsCoefCalc Dummy`
+run. The `AbsCoefCalc` line was skipped, no calculator was set, and
+`Crystal.java:231` substituted `CoefCalcAverage` — which is correct when
+`AbsCoefCalc` is genuinely omitted, and wrong when it was given and
+misunderstood.
+
+Two independent faults:
+
+1. **The parser runs its actions as it reads**, and ANTLR's error recovery
+   lets it carry on past a syntax error, so wedges were exposed before anyone
+   checked whether the input parsed. `InputParser.sendData` now hands the
+   parser a `DeferredInitializer` that records `setCrystal`/`setBeam`/
+   `exposeWedge` and replays them onto the real initializer only after a
+   clean parse. All errors are still collected and reported together rather
+   than stopping at the first, and the message now ends "No dose was
+   calculated."
+2. **A rejected input exited 0**, so a script could not tell it from a
+   completed run. `RD3D.main` now exits 1. Deliberately distinct from
+   `runExperiment()` returning false, which also covers `--help` and `-V`;
+   those are still successes.
+
+Guarded by `RejectedInputTest`. The assertion that matters is that *nothing*
+reaches the initializer — checking only that an exception is thrown would
+have passed all along. Reverting the deferral fails it with
+`expected: <0> but was: <3>`.
+
+The token naming is also fixed now. `crystalCoefcalcKeyword` accepts
+`PDBNAME` and `CIFNAME` -- the tokens that match the literals `"PDB"` and
+`"CIF"` -- alongside the existing `PDB` and `CIF` tokens, which match `"EXP"`
+and `"EXPSM"`. Both spellings work and no existing input changes meaning.
+They are only reachable after `ABSCOEFCALC`, so there is no ambiguity with
+the file-name rules two lines further down, and ANTLR reports none.
+
+Regenerating the parser was an undocumented manual step, which is part of why
+this went unfixed for so long. `ant antlr` now does it.
+
+### 11b. Protein density: Fischer et al. (2004) adopted
+
+`calculateSolventFractionFromNums` used a flat `proteinDensity = 1.35`,
+directly above a commented-out copy of the Fischer formula and a comment
+saying to use it. Now:
+
+> rho = 1.410 + 0.145 exp(-M/13), with M in kDa — Fischer et al. (2004),
+> Protein Science **13**, 2825-2828
+
+Small proteins pack less efficiently and are correspondingly denser, which a
+single constant cannot express. For a 129-residue protein the density rises
+from 1.35 to 1.459, so the protein occupies less of the cell:
+
+| | before | after |
+|---|---|---|
+| solvent fraction, 129 residues x 8 in a 78.27 Å cube | 0.70889 | **0.73058** |
+| crystal density | 1.0563 | **1.0765** |
+
+**This changes results** for every input that does not state
+`SolventFraction` explicitly. The three `CoefCalcTests` scenarios are
+rebaselined, each keeping its superseded value in a comment beside the new
+one. Nothing else moved — including the golden-file test, which specifies
+`SolventFraction 0.641` and so never reached this code. That gap is now
+covered by `ProteinDensityTest`, which checks the solvent fraction against an
+expectation computed independently of the class under test.
+
+### 11c. Crashes and unhelpful diagnostics
+
+| where | was | now |
+|---|---|---|
+| `CoefCalcFromCIF.getCIFFile` | caught the `IOException`, printed "Cannot read from specified path", then wrapped the null reader on the next line — so the user got a `NullPointerException` stack trace with the real message scrolled above it | throws, naming the path |
+| `MicroED.java:386` | `System.exit(0)` — the last one in the codebase. Terminated the JVM from a library method, stranding open `Writer`s and the `server` package's worker threads, and killing any test runner while reporting success | returns; it was the last statement anyway |
+| `CoefCalcFromPDB.readPDBFile` | caught `IndexOutOfBoundsException` **outside** the read loop, so the first line too short for a fixed-column slice abandoned the rest of the file and built a composition from whatever had been read | catches per line, counts what it skipped, and says so |
+| `CoefCalcFromSequence.parseSequenceLine` | looked up every character including whitespace, so a FASTA written on Windows looked up each carriage return, got null, and threw on the next statement. The null check one method later printed a warning and then dereferenced the null anyway | skips whitespace; an unrecognised code is rejected naming the character, its position, and the sequence type |
+| `CrystalCylinder` | read `CRYSTAL_DIM_Z` and discarded it silently, so `Dimensions 40 40 20` gave a 40 µm long cylinder — twice the volume — with nothing on screen | behaviour unchanged, but says which two values it used and which it ignored |
+
+Guarded by `MalformedInputTest`. The cylinder keeps its current behaviour
+deliberately: a cylinder is described by a diameter and a length, so the
+third value has nothing to mean. Only the silence was the problem.
+
+
+---
+
+## 12. The silent no-ops, and the rest of the cosmetic list
+
+Everything left on the register after item 11, cleared in one pass. All are
+guarded by `SilentNoOpTest` except where noted.
+
+### 12a. `SolventHeavyConc` under `AbsCoefCalc SmallMole` did nothing
+
+The concentrations reached `solventConcentration`, whose only reader is
+`calculateSolventWater` — guarded in `CoefCalcSmallMolecules` by a hardcoded
+`boolean fillRestWithWater = false`. Not one atom of the solute ever reached
+the cell, and nothing said so.
+
+**Refused** rather than modelled. The reason for the guard is sound: a
+small-molecule crystal has voids, not bulk solvent, so there is nothing for a
+concentration to be a concentration *of*. The error names the species and
+suggests removing the line or choosing a different `AbsCoefCalc`.
+
+### 12b. Carbohydrates did not count towards the solvent fraction
+
+`CoefCalcFromSequence` recorded the count in `addCarbs`, which ran *after*
+`calculateSolventFractionFromNums` had already used it — so the estimate saw
+zero however many were specified, and the solvent fraction was overestimated
+by the volume they occupy. `setNumCarb` is now called before the estimate.
+Only the sequence path was affected; `CoefCalcFromParams` passes the count
+straight in.
+
+**Changes results** for sequence-based inputs specifying `NumCarb`.
+
+### 12c. The light-atom threshold was used against its own documentation
+
+```java
+/** Light/heavy element threshold, 29 is treated as light atom. */
+public static final int LIGHT_ATOM_MAX_NUM = 29;
+```
+
+The only live use was `<`, which **excludes** 29. The only other use, a
+commented-out line in `Element`, is `<=`. The `// TODO: Is this < or <= ?!`
+against it was asking exactly this. Now `<=`, so copper counts as a light
+atom in the heteroatom mass, as documented.
+
+**Changes results** for structures with copper heteroatoms.
+
+### 12d. The PDB "nothing found" diagnostic could not fire
+
+`foundHetatm`, `foundSeqres`, `foundRemark` and `foundMtrix1` were cleared by
+an `else` on every non-matching line, so they described only the last line
+read — and a well-formed PDB ends `END`, which matches none of them. The
+composite check therefore collapsed to `!foundCryst1`, repeating the message
+three lines above it. The flags are now sticky.
+
+No effect on results; one dead message revived.
+
+### 12e. 229 lines of dead photoelectron tracking removed
+
+`Crystal.trackPhotoelectron` was abstract, implemented in five classes and a
+test double, and its only call site — `Crystal.java:1195` — had been
+commented out. Verified before removal that no helper it called becomes
+unreferenced. `MC.java` and `XFEL.java` have live methods of the same name;
+those are different methods and were not touched. A comment at the old call
+site records the `git log -S` incantation that finds them.
+
+### 12f. `versionize` works again
+
+Two independent faults: the `?---?` placeholder had been overwritten by a
+literal, leaving nothing to substitute, and the target shelled out to
+`sed -i` with no suffix — which GNU sed accepts and BSD/macOS sed does not.
+With `failonerror="false"` it reported nothing and did nothing for years,
+while the revision number was maintained by hand and went stale.
+
+The placeholder is restored and the substitution is now a pure Ant
+`replaceregexp`. A paired `unversionize` puts the placeholder back after the
+compile, so a build no longer leaves the working tree modified — verified
+stable over repeated builds.
+
+### 12g. The small-molecule example can be run
+
+`SMXray2_example_input.txt` named a CIF, `Fe3O4`, that the project did not
+ship, so it was the one example `InputFileParseTest` skipped.
+
+`examples/Fe3O4.cif` is now shipped: magnetite, Crystallography Open Database
+entry 1011032 (Bragg's 1915 structure), released to the public domain. The
+skip is removed and the example runs end to end.
+
+It also makes a quiet check of the Z fix from item 10: the CIF states a
+measured density of 5.2 g/cm³ and RADDOSE-3D computes 5.339, which is 2.7%
+apart — about what a 1915 measurement deserves. Before that fix it would have
+computed 0.667.

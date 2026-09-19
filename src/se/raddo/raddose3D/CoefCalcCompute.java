@@ -121,6 +121,18 @@ public class CoefCalcCompute extends CoefCalc {
   protected static final double      AMINO_ACID_AVE_MASS          = 110.0;
 
   /**
+   * Asymptotic protein density in g/cm^3 for a large molecule, from Fischer
+   * et al. (2004), Protein Science 13, 2825-2828.
+   */
+  protected static final double      FISCHER_DENSITY_LIMIT        = 1.410;
+
+  /** Additional density approached as a protein gets smaller, g/cm^3. */
+  protected static final double      FISCHER_DENSITY_RANGE        = 0.145;
+
+  /** Molecular weight in kDa over which the Fischer term decays by 1/e. */
+  protected static final double      FISCHER_DECAY_KDA            = 13.0;
+
+  /**
    * Average weight of a DNA nucleotide.
    */
   protected static final double      DNA_NUCLEOTIDE_MASS          = 312.0;
@@ -1313,11 +1325,26 @@ public class CoefCalcCompute extends CoefCalc {
     // Protein, RNA, DNA masses are calculated and
     // then weighted to fit the unit cell.
 
-    //change protein density to that calculated by Fischer et al 2004
-    double proteinDensity = 1.35;
- //   double mW = (AMINO_ACID_AVE_MASS * numAminoAcids)/1000;
- //   proteinDensity = 1.410 + 0.145 * Math.exp(-mW/13);
-  
+    /*
+     * Protein density from Fischer et al. (2004), Protein Science 13,
+     * 2825-2828: rho = 1.410 + 0.145 exp(-M/13), with M the molecular weight
+     * of one molecule in kDa. Small proteins pack less efficiently and are
+     * correspondingly denser, which a single constant cannot express.
+     *
+     * This replaces a flat 1.35 g/cm^3, which sat directly above a
+     * commented-out copy of this formula and a comment saying to use it. The
+     * two differ by about 8% for a 129-residue protein and more for a
+     * smaller one, so the solvent fraction -- and every composition,
+     * coefficient and dose derived from it -- moves with this change.
+     *
+     * numAminoAcids is per monomer, matching the proteinMass expression
+     * below, which multiplies by numMonomers separately.
+     */
+    double molecularWeightKDa = AMINO_ACID_AVE_MASS * numAminoAcids
+        / UNITSPERMILLIUNIT;
+    double proteinDensity = FISCHER_DENSITY_LIMIT
+        + FISCHER_DENSITY_RANGE * Math.exp(-molecularWeightKDa / FISCHER_DECAY_KDA);
+
     double proteinMass = ATOMIC_MASS_UNIT * AMINO_ACID_AVE_MASS
         * numAminoAcids * numMonomers;
     proteinMass /= cellVolume * proteinDensity * ANGSTROMS_TO_ML;
@@ -1343,8 +1370,15 @@ public class CoefCalcCompute extends CoefCalc {
     // on reduction of solvent accessible space.
 
     for (Element e : heteroAtomOccurrence.keySet()) {
-      if (e.getAtomicNumber() < Element.LIGHT_ATOM_MAX_NUM) {
-        // TODO: Is this < or <= ?!
+      /*
+       * Inclusive, matching the constant's own description: "Light/heavy
+       * element threshold, 29 is treated as light atom". This was "<", which
+       * excluded copper -- disagreeing both with that comment and with the
+       * only other use of the constant, the commented-out "<=" in
+       * Element.getPhotoelectricXSForEnergy. The "TODO: Is this < or <= ?!"
+       * that stood here was asking exactly this.
+       */
+      if (e.getAtomicNumber() <= Element.LIGHT_ATOM_MAX_NUM) {
 
         hetatmMass += heteroAtomOccurrence.get(e)
             * e.getAtomicWeightInGrams();

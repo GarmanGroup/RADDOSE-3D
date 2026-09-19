@@ -37,18 +37,39 @@ public class CoefCalcFromCIF extends CoefCalcCompute{
     super.calculateDensity(); //again, to fill the present elements
   }
   
+  /**
+   * Opens a CIF file and reads it.
+   * <p>
+   * The failure here used to be caught, reported to stdout, and then ignored:
+   * the null reader was wrapped and dereferenced on the next line, so a
+   * missing or unreadable file produced a NullPointerException and a stack
+   * trace rather than the message that had just been printed. Throwing
+   * carries the same information to the caller, which reports it as an input
+   * error like any other.
+   *
+   * @param cifFilePath
+   *          path to the CIF file
+   */
   public void getCIFFile(final String cifFilePath) {
-    BufferedReader in = null;
-    InputStreamReader isr = null;
+    File file = new File(cifFilePath);
+    InputStreamReader isr;
     try {
-      File file = new File (cifFilePath); 
       isr = new InputStreamReader(new FileInputStream(file));
     } catch (IOException e) {
-      // TODO Auto-generated catch block
-      System.out.println("Cannot read from specified path.");
+      throw new IllegalArgumentException(
+          "Cannot read the CIF file at " + file.getAbsolutePath(), e);
     }
-    in = new BufferedReader(isr);
-    readCIFFile(in);
+
+    BufferedReader in = new BufferedReader(isr);
+    try {
+      readCIFFile(in);
+    } finally {
+      try {
+        in.close();
+      } catch (IOException e) {
+        System.out.println("Warning: could not close " + cifFilePath);
+      }
+    }
   }
   
   public void readCIFFile(BufferedReader in) {

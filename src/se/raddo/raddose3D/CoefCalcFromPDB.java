@@ -403,6 +403,19 @@ public class CoefCalcFromPDB extends CoefCalcCompute {
    * 
    * @param inputLine line from pdb
    */
+  /**
+   * Dispatches one line of a PDB file to the parser for its record type.
+   * <p>
+   * The found* flags record whether a record type was seen <em>anywhere</em>
+   * in the file. They used to be cleared by an else branch on every
+   * non-matching line, so they described only the last line read -- and a
+   * well-formed PDB ends with END, which matches none of them. The check at
+   * the end of readPDBFile therefore collapsed to !foundCryst1 and merely
+   * repeated the message three lines above it.
+   *
+   * @param inputLine
+   *          one line of the file
+   */
   public void parsePDBLine(final String inputLine) {
     String directive = inputLine.substring(0, DIRECTIVE_END_POS);
     // TODO: a check that the parsing was successful in lines other than CRYST1?
@@ -415,30 +428,21 @@ public class CoefCalcFromPDB extends CoefCalcCompute {
     if ("HETATM".equals(directive)) {
       parseHetAtomLine(inputLine);
       foundHetatm = true;
-    } else {
-      foundHetatm = false;
     }
 
     if ("SEQRES".equals(directive)) {
       parseSeqResLine(inputLine);
       foundSeqres = true;
-    } else {
-      foundSeqres = false;
     }
 
     if ("REMARK".equals(directive)) {
       parseRemarkLine(inputLine);
       foundRemark = true;
-    } else {
-      foundRemark = false;
     }
 
     if ("MTRIX1".equals(directive)) {
       parseMatrixLine(inputLine);
       foundMtrix1 = true;
-    }
-    else {
-      foundMtrix1 = false;
     }
   }
 
@@ -507,17 +511,42 @@ public class CoefCalcFromPDB extends CoefCalcCompute {
 
     String inputLine;
 
+    /*
+     * The IndexOutOfBoundsException catch used to sit outside this loop, so
+     * the first line too short for one of the fixed-column slices abandoned
+     * the rest of the file -- and a composition was then built from however
+     * much had been read, with no indication that most of the structure was
+     * missing. Well-formed PDB files are padded to 80 columns so it rarely
+     * fired, but files from tools that do not pad are silently truncated.
+     *
+     * Catching per line keeps a malformed record from costing the rest of
+     * the file, and counting them means the run says how much it skipped.
+     */
+    int malformedLines = 0;
+    String firstMalformedLine = null;
     try {
       while ((inputLine = in.readLine()) != null) {
-        parsePDBLine(inputLine);
+        try {
+          parsePDBLine(inputLine);
+        } catch (IndexOutOfBoundsException e) {
+          malformedLines++;
+          if (firstMalformedLine == null) {
+            firstMalformedLine = inputLine;
+          }
+        }
       }
     } catch (IOException e) {
       // TODO Auto-generated catch block
       System.out.println("Cannot read from URL.");
       e.printStackTrace();
-    } catch (IndexOutOfBoundsException e) {
-      System.out.println("Line length error encounted in URL line");
-      e.printStackTrace();
+    }
+
+    if (malformedLines > 0) {
+      System.out.println(String.format(
+          "Warning: skipped %d PDB line(s) too short to read the columns this "
+              + "parser needs. The composition below is built from the rest "
+              + "of the file. First one: %s",
+          malformedLines, firstMalformedLine));
     }
     
     try {
