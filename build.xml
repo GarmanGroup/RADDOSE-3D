@@ -26,6 +26,33 @@
   <delete dir="deploy"/>
  </target>
 
+ <!--
+   Regenerates the input-file parser from its grammar.
+
+   Not part of the default build: the generated sources are committed, and
+   regenerating them is a deliberate act. Run it after editing
+   lib/antlrworks-parsergenerator/Inputfile.g and commit the result.
+
+   The grammar is passed by bare filename rather than by path, because ANTLR
+   embeds whatever it is given into ~370 comments and into
+   getGrammarFileName(). Using the filename keeps the output identical
+   whoever regenerates it and wherever the checkout lives; the committed
+   files previously carried one contributor's absolute home directory.
+ -->
+ <target name="antlr">
+  <mkdir dir="src/se/raddo/raddose3D/parser"/>
+  <java classname="org.antlr.Tool" fork="true" failonerror="true"
+        dir="lib/antlrworks-parsergenerator">
+   <classpath>
+    <pathelement location="lib/antlrworks-parsergenerator/antlrworks-1.4.3.jar"/>
+   </classpath>
+   <arg value="-o"/>
+   <arg value="${basedir}/src/se/raddo/raddose3D/parser"/>
+   <arg value="Inputfile.g"/>
+  </java>
+  <echo message="Parser regenerated. Review the diff before committing."/>
+ </target>
+
  <target name="versionize">
   <echo message="Raddose3D git repository age is ${repository.revision}" />
 
