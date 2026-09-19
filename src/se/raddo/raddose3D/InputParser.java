@@ -70,9 +70,23 @@ public class InputParser implements Input {
   @Override
   public void sendData(final Initializer i) throws InputException {
     InputfileParser parser = new InputfileParser(tokens);
-    parser.setInitializer(i);
     parser.setCrystalFactory(cf);
     parser.setBeamFactory(bf);
+
+    /*
+     * The parser runs its actions as it reads, and ANTLR's error recovery
+     * lets it carry on past a syntax error. Handing it the real initializer
+     * therefore exposed wedges and printed a dose before anyone had checked
+     * whether the input parsed -- so a file with one mistyped keyword still
+     * produced a plausible-looking number, computed from the defaults that
+     * applied to the parts that had failed.
+     *
+     * Recording the calls and replaying them only after a clean parse keeps
+     * reading the input separate from running the experiment, while still
+     * collecting every syntax error rather than stopping at the first.
+     */
+    DeferredInitializer deferred = new DeferredInitializer();
+    parser.setInitializer(deferred);
 
     try {
       parser.configfile();
@@ -87,7 +101,11 @@ public class InputParser implements Input {
       for (String e : errors) {
         errorString.append(LINEENDING).append(e);
       }
+      errorString.append(LINEENDING).append(LINEENDING)
+          .append("No dose was calculated. Fix the input and run again.");
       throw new InputException(errorString.toString());
     }
+
+    deferred.replayOn(i);
   }
 }

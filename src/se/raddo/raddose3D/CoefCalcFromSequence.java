@@ -263,18 +263,59 @@ public class CoefCalcFromSequence extends CoefCalcCompute{
    * 
    * @param line String containing the current line of the sequence file.
    */
+  /**
+   * Reads one line of residue codes from a sequence file.
+   * <p>
+   * Whitespace is skipped rather than looked up. The line arrives untrimmed,
+   * so a file written on Windows ends every line with a carriage return, and
+   * looking that up returned null and threw a NullPointerException on the
+   * next statement -- a crash with no indication that line endings were the
+   * problem.
+   * <p>
+   * A character that is genuinely not a residue code is an error worth
+   * stopping for: the alternative is a protein quietly short of a residue,
+   * and a dose computed for a molecule the user did not describe.
+   *
+   * @param line
+   *          one line of the sequence file
+   */
   public void parseSequenceLine(String line) {
     String resID;
     for (int i = 0; i < line.length(); i++) {
+      if (Character.isWhitespace(line.charAt(i))) {
+        continue;
+      }
       resID = line.substring(i, i + 1);
       Residue residue = ResidueDatabase.getInstance().getResidue(resID,
           this.residueType);
+
+      if (residue == null) {
+        throw new IllegalArgumentException(String.format(
+            "'%s' at position %d of the sequence is not a recognised %s "
+                + "residue code.", resID, i + 1, residueTypeName()));
+      }
 
       this.totalMolecularWeight = this.totalMolecularWeight
           + residue.getMolecularWeight();
       
       updateAtomicAndMacromolecularOccurrences(residue);
     }
+  }
+
+  /**
+   * The sequence type in words, for error messages.
+   *
+   * @return
+   *         "protein", "RNA" or "DNA"
+   */
+  private String residueTypeName() {
+    if (this.residueType == ResidueDatabase.TYPE_RNA) {
+      return "RNA";
+    }
+    if (this.residueType == ResidueDatabase.TYPE_DNA) {
+      return "DNA";
+    }
+    return "protein";
   }
   
   /**
@@ -285,11 +326,11 @@ public class CoefCalcFromSequence extends CoefCalcCompute{
    * @param residue Amino acid, RNA or DNA residue object.
    */
   public void updateAtomicAndMacromolecularOccurrences(Residue residue) {
-    
-    if (residue == null) {
-      System.out.println("Warning: could not identify the sequence in the file");
-    }
-
+    // The null check that used to be here printed a warning and then let
+    // control fall through to dereference the null on the next statement --
+    // and the caller had already dereferenced it before getting this far.
+    // Unrecognised codes are now rejected in parseSequenceLine, where the
+    // offending character is still in hand and can be named.
     if (residue.getResidueType() == ResidueDatabase.TYPE_PROTEIN) {
       this.incrementNumAminoAcids(1);
     } else if (residue.getResidueType() == ResidueDatabase.TYPE_RNA) {

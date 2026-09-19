@@ -141,6 +141,26 @@ public class CrystalCylinder extends CrystalPolyhedron {
 
     Double radius = (Double) mergedProperties.get(Crystal.CRYSTAL_DIM_X) / 2;
     Double height = (Double) mergedProperties.get(Crystal.CRYSTAL_DIM_Y);
+
+    /*
+     * A cylinder needs two numbers, not three: the diameter of its circular
+     * cross-section and its axial length. Those are taken from the first two
+     * values of Dimensions, so a third is meaningless here.
+     *
+     * It used to be read and silently discarded, so "Dimensions 40 40 20"
+     * gave a 40 um tall cylinder rather than the 20 um the third value
+     * suggests -- twice the volume, with nothing on screen to say so. Saying
+     * which value was used costs nothing and removes the trap.
+     */
+    Double unusedDepth = (Double) mergedProperties.get(Crystal.CRYSTAL_DIM_Z);
+    if (unusedDepth != null && !unusedDepth.equals(height)) {
+      System.out.println(String.format(
+          "Warning: a cylinder is described by two dimensions, so the third "
+              + "value of Dimensions (%.2f um) is ignored. The cylinder is "
+              + "%.2f um across and %.2f um long, taken from the first two.",
+          unusedDepth, radius * 2, height));
+    }
+
     double[][] tempVertices = createCylinderVertices(radius, height);
     rotateVertices(tempVertices, 90, "z");
 

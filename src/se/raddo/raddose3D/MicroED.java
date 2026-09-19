@@ -382,8 +382,17 @@ public class MicroED {
     } catch (IOException e) {
       e.printStackTrace();
     }
-    
-    System.exit(0);
+
+    /*
+     * Returning rather than System.exit(0). This is a library method: exiting
+     * here terminated the JVM from inside the calculation, so every Writer
+     * still open was never closed, the server package's worker threads were
+     * stranded, and any test runner was killed mid-suite -- reporting success,
+     * because the status was zero. The same fix was applied to Crystal.expose.
+     *
+     * It was the last statement in the method, so returning normally reaches
+     * the same place, and now lets the caller finish its work.
+     */
   }
   
   private double getWavelength(Beam beam) {
