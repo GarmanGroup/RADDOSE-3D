@@ -306,7 +306,7 @@
  <!-- Compile the tests. Separate source root (test/) and separate output
       directory (bin-test/) so that test classes never reach the jars.
       Deliberately does NOT depend on versionize. -->
- <target name="build-tests">
+ <target name="build-tests" depends="build">
   <mkdir dir="${test.bin}"/>
   <javac srcdir="test" destdir="${test.bin}"
          debug="true" includes="**/*.java" includeantruntime="false"
@@ -320,8 +320,12 @@
  </target>
 
  <!-- Shared runner. Set ${test.exclusions} to a space separated list of
-      extra ConsoleLauncher arguments before calling. -->
- <target name="-run-tests">
+      extra ConsoleLauncher arguments before calling.
+
+      Depends on build-tests because without it "ant clean test" scans an
+      empty bin-test/, finds nothing, reports "0 tests successful" and exits
+      zero: a green run that tested nothing. -->
+ <target name="-run-tests" depends="build-tests">
   <mkdir dir="${test.report.dir}"/>
   <!-- basedir is on the classpath so that constants/ and the .obj test
        fixtures resolve, both via getResourceAsStream("/...") and via the
