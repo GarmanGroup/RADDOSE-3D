@@ -1,7 +1,6 @@
 package se.raddo.raddose3D;
 
 import java.util.Map;
-import java.util.Objects;
 
 public class CrystalCylinder extends CrystalPolyhedron {
 
@@ -162,7 +161,6 @@ public class CrystalCylinder extends CrystalPolyhedron {
     }
 
     double[][] tempVertices = createCylinderVertices(radius, height);
-    rotateVertices(tempVertices, 90, "z");
 
     setIndices(tempIndices);
 
@@ -185,10 +183,10 @@ public class CrystalCylinder extends CrystalPolyhedron {
     // Set the default number of half the amount of vertices for the cylinder
     int numOfVertices = 32;
 
-    //Create x Coordinates for the base and the top of the cylinder
+    //Create y Coordinates for the base and the top of the cylinder
     double midPoint = height / 2;
-    double xCoordBase = -midPoint;
-    double xCoordTop = midPoint;
+    double yCoordBase = -midPoint;
+    double yCoordTop = midPoint;
 
     // Calculate angular step around circle.
     // The negative sign is used to go anti clockwise around the circle to be
@@ -200,125 +198,50 @@ public class CrystalCylinder extends CrystalPolyhedron {
     //at the top. Hence the total number of vertices is 2 * numOfVertices
     double[][] vertices = new double[2 * numOfVertices][3];
 
-    //Loop through each vertex of a circle
+    /*
+     * The circle is laid out directly in the xz plane, with the axis along y.
+     *
+     * It used to be built about x and then turned a quarter turn about z.
+     * That turn is exact in algebra and not in arithmetic: Math.cos of
+     * Math.toRadians(90) is 6.12e-17, not zero, so every vertex picked up a
+     * y displacement of that times its distance from the axis. The two flat
+     * caps came out tilted by 6e-17 radians instead of lying flat.
+     *
+     * A tilt that small sounds harmless and is not. calculateCrystalOccupancy
+     * traces a ray along z and skips any face the ray runs parallel to; a cap
+     * that is tilted is no longer parallel, so it stops being skipped and
+     * starts returning an intersection distance computed as one rounding
+     * error divided by another. The voxels whose centres sit exactly on a cap
+     * -- a whole plane of them whenever the height is a round multiple of the
+     * voxel size -- then get an arbitrary extra crossing, and an arbitrary
+     * half of them fall out of the crystal.
+     *
+     * For "Type Cylinder / Dimensions 20 16" at 0.5 voxels/um that was 42 of
+     * 518 voxels, 8% of the crystal, and 6% on the absorbed energy and the
+     * elastic yield. Worse, Math.cos and Math.sin are not required to be
+     * bit-reproducible across JVMs, so which voxels were lost varied between
+     * platforms. Laying the circle out in xz directly makes the caps exactly
+     * flat, and the ray parallel to them again.
+     */
     for (int vertex = 0; vertex < numOfVertices; vertex++){
       //Calculate points around the circle
-      double yCoord = radius * Math.cos(vertex * angleToVertex);
-      double ZCoord = radius * Math.sin(vertex * angleToVertex);
+      double xCoord = -radius * Math.cos(vertex * angleToVertex);
+      double zCoord = radius * Math.sin(vertex * angleToVertex);
 
       //Add points to the vertices array for the Base
-      vertices[2 * vertex][0] = xCoordBase;
-      vertices[2 * vertex][1] = yCoord;
-      vertices[2 * vertex][2] = ZCoord;
+      vertices[2 * vertex][0] = xCoord;
+      vertices[2 * vertex][1] = yCoordBase;
+      vertices[2 * vertex][2] = zCoord;
 
       //Add points to the vertices array for the Top
-      vertices[2 * vertex + 1][0] = xCoordTop;
-      vertices[2 * vertex + 1][1] = yCoord;
-      vertices[2 * vertex + 1][2] = ZCoord;
+      vertices[2 * vertex + 1][0] = xCoord;
+      vertices[2 * vertex + 1][1] = yCoordTop;
+      vertices[2 * vertex + 1][2] = zCoord;
     }
 
     return vertices;
   }
   
-  /**
-   * Rotates the vertices of the cylinder given an angle (in degrees) and 
-   * the axis around which the rotation is performed.
-   * @param vertices
-   *            2D array of the vertices to be rotated.
-   * @param angle
-   *            Angle of rotation in degrees.
-   * @param axis
-   *            axis about which the rotation is performed. Either "x", "y"
-   *            or "z". 
-   */
-  private void rotateVertices(double[][] vertices, double angle, String axis) {
-    double[][] rotationMatrix = createRotationMatrix(angle, axis);
-    for (int vertex = 0; vertex < vertices.length; vertex++) {
-      double[] point = {vertices[vertex][0], vertices[vertex][1], vertices[vertex][2]};
-      double[] rotatedPoint = rotatePoint(rotationMatrix, point);
-      vertices[vertex][0] = rotatedPoint[0];
-      vertices[vertex][1] = rotatedPoint[1];
-      vertices[vertex][2] = rotatedPoint[2];
-    }
-  }
-  
-  /**
-   * Rotates rotate a point 
-   * @param matrix
-   *            3x3 rotation matrix.
-   * @param point
-   *            3x1 array containing the x, y, z coordinates of a point.
-   * @return rotatedPoint
-   *            3x1 array containing the rotated x, y, z coordinates of 
-   *            the input point.
-   */
-  private double[] rotatePoint(double[][] matrix, double[] point) {
-    double[] rotatedPoint = new double[3];
-    for (int i = 0; i < rotatedPoint.length; i++) {
-      rotatedPoint[i] = matrix[i][0] * point[0] + matrix[i][1] * point[1] + matrix[i][2] * point[2];
-    }
-    return rotatedPoint;
-  }
-  
-  /**
-   * Creates the 3x3 rotation matrix to rotate a 3 dimensional point around
-   * the x, y, or z axis. If none of these axes are given then the 
-   * returned matrix is the identity.
-   * @param angle
-   *            Angle of rotation in degrees.
-   * @param axis
-   *            axis about which the rotation is performed. Either "x", "y"
-   *            or "z".
-   * @return rotationMatrix
-   *            3x3 rotation matrix.
-   */
-  private double[][] createRotationMatrix(double angle, String axis) {
-    final double[][] rotationMatrix = new double[3][3];
-    double angleInRadians = Math.toRadians(angle);
-    if (Objects.equals(axis, "x")) {
-      rotationMatrix[0][0] = 1;
-      rotationMatrix[0][1] = 0;
-      rotationMatrix[0][2] = 0;
-      rotationMatrix[1][0] = 0;
-      rotationMatrix[1][1] = Math.cos(angleInRadians);
-      rotationMatrix[1][2] = -Math.sin(angleInRadians);
-      rotationMatrix[2][0] = 0;
-      rotationMatrix[2][1] = Math.sin(angleInRadians);
-      rotationMatrix[2][2] = Math.cos(angleInRadians);
-    } else if (Objects.equals(axis, "y")) {
-      rotationMatrix[0][0] = Math.cos(angleInRadians);
-      rotationMatrix[0][1] = 0;
-      rotationMatrix[0][2] = Math.sin(angleInRadians);
-      rotationMatrix[1][0] = 0;
-      rotationMatrix[1][1] = 1;
-      rotationMatrix[1][2] = 0;
-      rotationMatrix[2][0] = -Math.sin(angleInRadians);
-      rotationMatrix[2][1] = 0;
-      rotationMatrix[2][2] = Math.cos(angleInRadians);
-    } else if (Objects.equals(axis, "z")) {
-      rotationMatrix[0][0] = Math.cos(angleInRadians);
-      rotationMatrix[0][1] = -Math.sin(angleInRadians);
-      rotationMatrix[0][2] = 0;
-      rotationMatrix[1][0] = Math.sin(angleInRadians);
-      rotationMatrix[1][1] = Math.cos(angleInRadians);
-      rotationMatrix[1][2] = 0;
-      rotationMatrix[2][0] = 0;
-      rotationMatrix[2][1] = 0;
-      rotationMatrix[2][2] = 1;
-    } else { 
-      System.out.println("No suitable axis value has been given. No rotation applied (using identity matrix)");
-      rotationMatrix[0][0] = 1;
-      rotationMatrix[0][1] = 0;
-      rotationMatrix[0][2] = 0;
-      rotationMatrix[1][0] = 0;
-      rotationMatrix[1][1] = 1;
-      rotationMatrix[1][2] = 0;
-      rotationMatrix[2][0] = 0;
-      rotationMatrix[2][1] = 0;
-      rotationMatrix[2][2] = 1;
-    }
-    return rotationMatrix;
-  }
 
   public CrystalCylinder(final Map<Object, Object> properties) {
     super(properties);
