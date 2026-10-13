@@ -2,11 +2,15 @@ package se.raddo.raddose3D;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -188,6 +192,43 @@ public class FluorescenceEscapeTest {
     for (int shell = 1; shell < 4; shell++) {
       assertEquals(0.0, distances[0][shell][distances[0][shell].length - 1], 0.0,
           "shell " + shell + " cannot fluoresce and should stay zero");
+    }
+  }
+
+  /**
+   * Elements without a tabulated L emission energy give no NaN factors.
+   * <p>
+   * Mg to Co have L fluorescence yields but an L emission energy of 0 keV,
+   * where the absorption coefficient is NaN. The escape distances built from
+   * it were NaN, the fluorescence went to voxel (0, 0, 0), outside the
+   * crystal, and the escape totals printed NaN. Such a shell now has no
+   * fluorescence yield for escape, so it relaxes locally.
+   */
+  @Test
+  public void untabulatedLShellFluorescenceIsNotNaN() {
+    List<String> atoms = Arrays.asList("FE", "CA", "S");
+    List<Double> numbers = Arrays.asList(2.0, 2.0, 6.0);
+    List<String> none = new ArrayList<String>();
+    List<Double> noNumbers = new ArrayList<Double>();
+    CoefCalcFromParams coefCalc = new CoefCalcFromParams(78.02, 78.02, 78.02,
+        90.0, 90.0, 90.0, 24, 51, 0, 0, atoms, numbers, none, noNumbers, none,
+        noNumbers, 0.64, null, null, 0, none, noNumbers, 0, 0);
+
+    HashMap<Object, Object> beamProperties = new HashMap<Object, Object>();
+    beamProperties.put(Beam.BEAM_ENERGY, 12.1);
+    beamProperties.put(Beam.BEAM_FLUX, 2e12);
+    beamProperties.put(Beam.BEAM_FWHM_X, 20d);
+    beamProperties.put(Beam.BEAM_FWHM_Y, 20d);
+    Beam beam = new BeamGaussian(beamProperties);
+    // As Crystal.expose does before asking for the factors.
+    coefCalc.updateCoefficients(beam);
+    double[][] factors = coefCalc.getFluorescentEscapeFactors(beam);
+
+    for (double[] row : factors) {
+      for (int column = 0; column < row.length; column++) {
+        assertFalse(Double.isNaN(row[column]),
+            "column " + column + " of " + Arrays.toString(row));
+      }
     }
   }
 }

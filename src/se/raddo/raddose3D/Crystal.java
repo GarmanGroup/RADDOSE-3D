@@ -1000,13 +1000,15 @@ public abstract class Crystal {
       eo.exposureComplete();
     }
     
+    // These totals are voxel doses summed over the crystal and the wedge.
+    // They were labelled as energies in joules.
     if (photoElectronEscape) {
-      System.out.print(String.format("\nEnergy that may escape by Photoelectron Escape: %.2e", totalEscapedDosePE));
-      System.out.println(" J.\n");
+      System.out.print(String.format("\nDose that may escape by Photoelectron Escape, summed over voxels: %.2e", totalEscapedDosePE));
+      System.out.println(" MGy.\n");
     }
     if (fluorescentEscape) {
-      System.out.print(String.format("Total energy that may escape by Fluorescent Escape: %.2e", totalEscapedDoseFL));
-      System.out.println(" J.\n");
+      System.out.print(String.format("Dose that may escape by Fluorescent Escape, summed over voxels: %.2e", totalEscapedDoseFL));
+      System.out.println(" MGy.\n");
     }
     
     

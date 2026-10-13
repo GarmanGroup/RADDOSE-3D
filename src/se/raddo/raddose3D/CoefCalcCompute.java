@@ -814,14 +814,18 @@ public class CoefCalcCompute extends CoefCalc {
         //Probability of K shell ionization: checked worked out in element class
         kFactorA = e.getKShellIonisationProb(); //this is probability of K relative to other shells              
         //K shell fluorescent yield: checked from element database class
-        kFactorB = e.getKShellFluorescenceYield();
-        //This gives difference between the edge energies needed for fluorescent escape probability.
-
-        photonMuAbsK = calculateCoefficientsAll(e.getKFluorescenceAverage());
-
         //Fluorescent escape probability. This takes muabs as mupe. 
         //Fluorescence too low energy to consider compton in muabs
-        escapeMuAbsK = photonMuAbsK.get(PHOTOELECTRIC);
+        //As for the L shells below: a shell with no tabulated emission
+        //energy -- hydrogen's -- has no fluorescence to place.
+        if (e.getKFluorescenceAverage() > 0) {
+          kFactorB = e.getKShellFluorescenceYield();
+          photonMuAbsK = calculateCoefficientsAll(e.getKFluorescenceAverage());
+          escapeMuAbsK = photonMuAbsK.get(PHOTOELECTRIC);
+        } else {
+          kFactorB = 0.0;
+          escapeMuAbsK = 0.0;
+        }
       } 
       else {
         kShellEnergy = 0.0;
@@ -835,10 +839,23 @@ public class CoefCalcCompute extends CoefCalc {
           e.getAtomicNumber() >= 12) {
         l1ShellEnergy = e.getL1Edge();
         l1FactorA = (e.getL1ShellIonisationProb()) * (1-kFactorA);
-        l1FactorB = e.getL1ShellFluorescenceYield();
-               
-        photonMuAbsL1 = calculateCoefficientsAll(e.getLFluorescenceAverage());       
-        escapeMuAbsL1 = photonMuAbsL1.get(PHOTOELECTRIC);       
+        /*
+         * Mg to Co have L fluorescence yields but no tabulated L emission
+         * energy: it is 0 keV, where the absorption coefficient is NaN. Their
+         * escape distances were NaN, which StrictMath.round turned into voxel
+         * (0, 0, 0), outside the crystal, so the energy was lost and the
+         * escape totals printed NaN. A shell whose emission cannot be placed
+         * is treated as relaxing locally instead: no fluorescence yield here,
+         * so the escape accounting deposits its energy where it was absorbed.
+         */
+        if (e.getLFluorescenceAverage() > 0) {
+          l1FactorB = e.getL1ShellFluorescenceYield();
+          photonMuAbsL1 = calculateCoefficientsAll(e.getLFluorescenceAverage());
+          escapeMuAbsL1 = photonMuAbsL1.get(PHOTOELECTRIC);
+        } else {
+          l1FactorB = 0.0;
+          escapeMuAbsL1 = 0.0;
+        }       
       } 
       else {
         l1ShellEnergy = 0.0;
@@ -852,10 +869,14 @@ public class CoefCalcCompute extends CoefCalc {
           e.getAtomicNumber() >= 12) {
         l2ShellEnergy = e.getL2Edge();
         l2FactorA = e.getL2ShellIonisationProb() * (1-kFactorA - l1FactorA);
-        l2FactorB = e.getL2ShellFluorescenceYield();
-
-        photonMuAbsL2 = calculateCoefficientsAll(e.getLFluorescenceAverage());       
-        escapeMuAbsL2 = photonMuAbsL2.get(PHOTOELECTRIC);
+        if (e.getLFluorescenceAverage() > 0) {
+          l2FactorB = e.getL2ShellFluorescenceYield();
+          photonMuAbsL2 = calculateCoefficientsAll(e.getLFluorescenceAverage());
+          escapeMuAbsL2 = photonMuAbsL2.get(PHOTOELECTRIC);
+        } else {
+          l2FactorB = 0.0;
+          escapeMuAbsL2 = 0.0;
+        }
       } 
       else {
         l2ShellEnergy = 0.0;
@@ -869,10 +890,14 @@ public class CoefCalcCompute extends CoefCalc {
           e.getAtomicNumber() >= 12) {
         l3ShellEnergy = e.getL3Edge();
         l3FactorA = e.getL3ShellIonisationProb() * (1-kFactorA - l1FactorA - l2FactorA);
-        l3FactorB = e.getL3ShellFluorescenceYield();
-
-        photonMuAbsL3 = calculateCoefficientsAll(e.getLFluorescenceAverage());       
-        escapeMuAbsL3 = photonMuAbsL3.get(PHOTOELECTRIC);
+        if (e.getLFluorescenceAverage() > 0) {
+          l3FactorB = e.getL3ShellFluorescenceYield();
+          photonMuAbsL3 = calculateCoefficientsAll(e.getLFluorescenceAverage());
+          escapeMuAbsL3 = photonMuAbsL3.get(PHOTOELECTRIC);
+        } else {
+          l3FactorB = 0.0;
+          escapeMuAbsL3 = 0.0;
+        }
       } 
       else {
         l3ShellEnergy = 0.0;
