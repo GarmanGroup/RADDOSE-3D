@@ -117,8 +117,6 @@ public abstract class Crystal {
   public double[] xMinAndMax;
   public double[] yMinAndMax;
   public double[] zMinAndMax;
-  public double[] minimumDimensions;
-  public double[] maximumDimensions;
   
   /**
    * Cumulative dose both remaining in crystal and lost through photoelectron escape
@@ -397,6 +395,21 @@ public abstract class Crystal {
    */
   public abstract double findDepth(double[] voxCoord, double deltaPhi,
       Wedge myWedge);
+
+  /**
+   * The path through the crystal between a point and the source, whether
+   * the point is inside the crystal or not. This default is findDepth, which
+   * is exact only inside; CrystalPolyhedron measures it for any point.
+   *
+   * @param coord the point
+   * @param deltaPhi the rotation angle
+   * @param myWedge the wedge
+   * @return micrometres of crystal in front of the point
+   */
+  public double findPathInFront(final double[] coord, final double deltaPhi,
+      final Wedge myWedge) {
+    return findDepth(coord, deltaPhi, myWedge);
+  }
 
   // TODO change the deltaphi from absolute to how far along
   // the wedge, since this is more general.
@@ -1321,7 +1334,6 @@ public abstract class Crystal {
       final int[] cryoCrystalSize = getCryoCrystSizeVoxels();
  //     final int extraVoxels = getExtraVoxels(int maxPEDistance);
       double[] cryoCrystCoord;
-      double[] depthCoords = new double[3];
       double ppmRatio = (getCrystalPixPerUM() / getCryoCrystalPixPerUM());
       int extraVoxels = getCryoExtraVoxels();
       for (int i = 0; i < cryoCrystalSize[0]; i++) {
@@ -1349,20 +1361,10 @@ public abstract class Crystal {
                   wedge.getOffAxisUm());
               
               if (unattenuatedBeamIntensity > 0d) {
-                //Set the depth coordinates based on crystal depth
-                for(int m = 0; m < 3; m++) {
-                  if (translateRotateCoords[m] < minimumDimensions[m]) {
-                    depthCoords[m] = minimumDimensions[m];
-                  }
-                  else if (translateRotateCoords[m] > maximumDimensions[m]) {
-                    depthCoords[m] = maximumDimensions[m];
-                  }
-                  else {
-                    depthCoords[m] = translateRotateCoords[m];
-                  }
-                }
-                
-                double depth = findDepth(depthCoords, angle, wedge);
+                // How much crystal the beam crossed to get here. It used to be
+                // estimated from a point clamped onto the crystal's box before
+                // its rotations, which at any angle but zero was the wrong box.
+                double depth = findPathInFront(translateRotateCoords, angle, wedge);
                 
                 double cryoVoxImageFluence =     // Attenuates the beam for absorption in joules 
                     unattenuatedBeamIntensity * beamAttenuationFactor
@@ -1527,14 +1529,6 @@ public abstract class Crystal {
     xMinAndMax = xMinMax;
     yMinAndMax = yMinMax;
     zMinAndMax = zMinMax;
-    minimumDimensions = new double[3];
-    maximumDimensions = new double[3];
-    minimumDimensions[0] = xMinMax[0];
-    minimumDimensions[1] = yMinMax[0];
-    minimumDimensions[2]=  zMinMax[0];
-    maximumDimensions[0] = xMinMax[1];
-    maximumDimensions[1] = yMinMax[1];
-    maximumDimensions[2]=  zMinMax[1];
   }
   
   public boolean getPEEscapeBool() {

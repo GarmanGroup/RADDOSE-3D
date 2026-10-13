@@ -174,4 +174,29 @@ public class FindDepthRegressionTest {
         "the solid part of the horseshoe should be thicker than the open part "
             + "(thick=" + thick + ", thin=" + thin + ")");
   }
+
+  /**
+   * The path in front of a point is measured whether the point is inside the
+   * crystal or not. The beam travels along +z, so for this 100 um cube about
+   * the origin a point beyond its -z face has nothing in front of it, and one
+   * beyond its +z face has the whole cube. findDepth gives 0 for both; the
+   * surrounding's attenuation used to be estimated by clamping the point onto
+   * a box that did not turn with the crystal.
+   */
+  @Test
+  public void thePathInFrontIsMeasuredOutsideTheCrystalToo() {
+    Crystal c = cube();
+    Wedge w = wedge();
+    c.setupDepthFinding(0, w);
+
+    assertEquals(0.0, c.findPathInFront(new double[] {10, 10, -70}, 0, w),
+        1e-9, "upstream of the crystal");
+    assertEquals(DIM, c.findPathInFront(new double[] {10, 10, 70}, 0, w),
+        1e-9, "downstream of the crystal");
+    assertEquals(0.0, c.findPathInFront(new double[] {70, 10, 70}, 0, w),
+        1e-9, "beside the crystal");
+    double[] inside = {10, 10, 20};
+    assertEquals(c.findDepth(inside, 0, w), c.findPathInFront(inside, 0, w),
+        0.0, "inside, it is findDepth");
+  }
 }

@@ -1002,6 +1002,62 @@ public class CrystalPolyhedron extends Crystal {
   @Override
   public double findDepth(final double[] voxCoord, final double deltaPhi,
       final Wedge myWedge) {
+    List<Double> distancesFound = crossingsInFront(voxCoord);
+
+    // sanity check that point is within crystal
+    if (distancesFound.isEmpty() || distancesFound.size() % 2 == 0) {
+      return 0;
+    }
+
+    double depth = distancesFound.get(0).doubleValue();
+
+    for (int i = 1; i < distancesFound.size(); i += 2) {
+      Double addition = distancesFound.get(i + 1) - distancesFound.get(i);
+
+      depth += addition.doubleValue();
+    }
+    return depth;
+  }
+
+  /**
+   * The path through the crystal between a point and the source, whether
+   * the point is inside the crystal or not.
+   * <p>
+   * findDepth answers only for points inside, and returns 0 for one outside.
+   * The surrounding's voxels are all outside, so the attenuation of the
+   * beam reaching them used to be estimated by clamping each one onto the
+   * crystal's bounding box first -- a box taken before the AngleP and
+   * AngleL rotations and never turned with the goniometer, so at any angle
+   * but zero it was the wrong box. This measures the path itself: a point
+   * upstream of the crystal has none, one downstream the whole chord.
+   *
+   * @param coord the point, in the frame findDepth uses
+   * @param deltaPhi the rotation angle
+   * @param myWedge the wedge
+   * @return micrometres of crystal in front of the point
+   */
+  @Override
+  public double findPathInFront(final double[] coord, final double deltaPhi,
+      final Wedge myWedge) {
+    List<Double> distancesFound = crossingsInFront(coord);
+    if (distancesFound.size() % 2 == 1) {
+      return findDepth(coord, deltaPhi, myWedge);
+    }
+    double path = 0;
+    for (int i = 0; i + 1 < distancesFound.size(); i += 2) {
+      path += distancesFound.get(i + 1) - distancesFound.get(i);
+    }
+    return path;
+  }
+
+  /**
+   * Where a ray from a point towards the source crosses the crystal's
+   * surface: the distances, sorted, each counted once.
+   *
+   * @param voxCoord the point
+   * @return distances in micrometres
+   */
+  private List<Double> crossingsInFront(final double[] voxCoord) {
     double[] zAxis = { 0, 0, 1 };
 
     List<Double> distancesFound = new ArrayList<Double>();
@@ -1033,8 +1089,8 @@ public class CrystalPolyhedron extends Crystal {
 
     // Compare double values (not boxed Double references): a ray that hits a
     // shared triangle edge registers the same distance twice, and without
-    // removing those duplicates the even count trips the sanity-check below
-    // and incorrectly returns depth=0.
+    // removing those duplicates the even count trips the sanity-check in
+    // findDepth and incorrectly returns depth=0.
     for (int i = 0; i < distancesFound.size() - 1; ) {
       if (distancesFound.get(i + 1).doubleValue()
           == distancesFound.get(i).doubleValue()) {
@@ -1043,26 +1099,7 @@ public class CrystalPolyhedron extends Crystal {
         i++;
       }
     }
-
-    // sanity check that point is within crystal
-    if (distancesFound.isEmpty() || distancesFound.size() % 2 == 0) {
-      return 0;
-    }
-
-    double depth = distancesFound.get(0).doubleValue();
-
-    for (int i = 1; i < distancesFound.size(); i += 2) {
-      Double addition = distancesFound.get(i + 1) - distancesFound.get(i);
-
-      depth += addition.doubleValue();
-    }
-    /*
-     * if (deltaPhi == 0) {
-     * System.out.println(voxCoord[0] + "\t" + voxCoord[1] + "\t" + voxCoord[2]
-     * + "\t" + depth);
-     * }
-     */
-    return depth;
+    return distancesFound;
   }
   
   /**
