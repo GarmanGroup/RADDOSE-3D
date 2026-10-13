@@ -637,13 +637,15 @@ Specifies the number of photons to use in the simulations. \SB
 
 \noindent \Keyword{SUBPROGRAM EMED}
 
-Specifies that the RADDOSE-ED subprogram should be run, which calcualtes doses for MicroED experiments.
+Specifies that the RADDOSE-ED subprogram should be run, which calculates doses for MicroED experiments. \Keyword{SUBPROGRAM EMSP} runs the same calculation.
 
-In the beam block, a further input is required:
+The beam must be \Keyword{TYPE TOPHAT}, with a \Keyword{COLLIMATION}, and needs one further input:
 
 \noindent \Keyword{EXPOSURE \textit{F}}
  
 Specifies the total fluence in e\textsuperscript{-}/{\AA}\textsuperscript{2}\SB
+
+Any other beam type, or a top-hat beam without \Keyword{EXPOSURE}, is refused. The subprogram writes \Keyword{outputMicroED.CSV}, with the dose, the scattering counts, the information coefficient and the optimal voltage and thickness, and \Keyword{outputMicroED\_slices.csv}, with the dose in each slice, to the working directory.\SB
 
 \label{RDv3End}
 
