@@ -1,8 +1,13 @@
 package se.raddo.raddose3D;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Tests that {@link Experiment} fans events out to its subscribers in the right
@@ -87,5 +92,85 @@ public class ExperimentTest {
     three.assertCallCount("publishBeam", 1);
     three.assertNeverCalled("publishWedge");
     three.assertCallCount("close", 1);
+  }
+
+  /**
+   * The subprograms write their own files and leave the wedge's exposure
+   * summary empty. Publishing the wedge made OutputSummaryText read it and
+   * throw NullPointerException at the end of every MicroED, XFEL or Monte
+   * Carlo run.
+   */
+  @Test
+  public void testSubprogramWedgeIsNotPublished() {
+    for (String program : new String[] {"EMED", "emsp", "XFEL", "MonteCarlo", "GOS"}) {
+      Crystal crystal = crystalRunning(program);
+      assertTrue(crystal.runsSubprogram(), program);
+
+      Experiment e = new Experiment();
+      RecordingOutput subscriber = new RecordingOutput();
+      e.addObserver(subscriber);
+      e.setCrystal(crystal);
+      e.setBeam(b);
+      e.exposeWedge(w);
+      e.close();
+
+      subscriber.assertCalls("publishCrystal", "publishBeam", "close");
+    }
+  }
+
+  /**
+   * Every writer RD3D turns on by default closes cleanly after a subprogram.
+   * OutputVoxelDose and OutputVoxelFluences counted the images of the last
+   * wedge they were sent, and threw NullPointerException when there was
+   * none.
+   */
+  @Test
+  public void testDefaultWritersCloseAfterASubprogram() throws Exception {
+    Map<Object, Object> properties = new HashMap<Object, Object>();
+    properties.put(Crystal.CRYSTAL_DIM_X, 2d);
+    properties.put(Crystal.CRYSTAL_DIM_Y, 2d);
+    properties.put(Crystal.CRYSTAL_DIM_Z, 1d);
+    properties.put(Crystal.CRYSTAL_RESOLUTION, 1d);
+    properties.put(Crystal.CRYSTAL_PROGRAM, "EMED");
+    // MicroED itself writes to the working directory; this is about what
+    // happens around it.
+    Crystal crystal = new CrystalCuboid(properties) {
+      @Override
+      public void startMicroED(double xDim, double yDim, double zDim,
+          Beam beam, Wedge wedge, CoefCalc coefCalc, String crystalType) {
+      }
+    };
+    Map<Object, Object> beamProperties = new HashMap<Object, Object>();
+    beamProperties.put(Beam.BEAM_ENERGY, 300d);
+    beamProperties.put(Beam.BEAM_COLL_H, 4d);
+    beamProperties.put(Beam.BEAM_COLL_V, 4d);
+    beamProperties.put(Beam.BEAM_EXPOSURE, 1d);
+
+    Experiment e = new Experiment();
+    OutputFactory factory = new OutputFactory();
+    for (String module : new String[] {"SummaryCSV", "SummaryText",
+        "FinalDoseStateCSV", "FinalDoseStateR", "RDECSV", "DWDs", "VoxelDose",
+        "VoxelFluences", "ProgressIndicator"}) {
+      e.addObserver(factory.createOutputSimple(module, new WriterString()));
+    }
+    e.setCrystal(crystal);
+    e.setBeam(new BeamTophat(beamProperties));
+    e.exposeWedge(w);
+    e.close();
+  }
+
+  @Test
+  public void testMXWedgeIsStillPublished() {
+    assertFalse(c.runsSubprogram());
+    assertFalse(crystalRunning("rd3d").runsSubprogram());
+  }
+
+  private static Crystal crystalRunning(final String program) {
+    Map<Object, Object> properties = new HashMap<Object, Object>();
+    properties.put(Crystal.CRYSTAL_DIM_X, 0d);
+    properties.put(Crystal.CRYSTAL_DIM_Y, 0d);
+    properties.put(Crystal.CRYSTAL_DIM_Z, 0d);
+    properties.put(Crystal.CRYSTAL_PROGRAM, program);
+    return new CrystalDummy(properties);
   }
 }

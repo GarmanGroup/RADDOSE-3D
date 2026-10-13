@@ -90,7 +90,10 @@ public class Experiment implements Initializer {
 
   /**
    * Exposes wedge of crystal to the beam.
-   * Notifies all subscribers after wedge exposure.
+   * Notifies all subscribers after wedge exposure, unless the crystal ran
+   * one of the subprograms instead. Those write their own files and leave
+   * the wedge's exposure summary empty, so the summary writers would only
+   * crash reading it.
    * 
    * @param w
    *          Wedge object for exposure
@@ -99,7 +102,9 @@ public class Experiment implements Initializer {
   public void exposeWedge(final Wedge w) {
     if (w != null) {
       currentCrystal.expose(currentBeam, w);
-      notifyObserver(w);
+      if (!currentCrystal.runsSubprogram()) {
+        notifyObserver(w);
+      }
     }
   }
 

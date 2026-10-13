@@ -2,6 +2,7 @@ package se.raddo.raddose3D;
 
 import java.util.Set;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -193,6 +194,18 @@ public abstract class CoefCalc {
   public abstract void getDifferentialInlasticxSection(double electronEnergy, boolean surrounding);
   
   public abstract double getGOSInel(boolean surrounding, double E);
+
+  /**
+   * The elements in the crystal for which the element tables lack a binding
+   * energy that getGOSInel reads: zero or blank for one of the subshells up
+   * to and including the valence one. getGOSInel cannot give a meaningful
+   * answer for a crystal containing any of them.
+   *
+   * @return their names, empty when the model has every binding energy
+   */
+  public List<String> getElementsLackingBindingEnergies() {
+    return new ArrayList<String>();
+  }
   
   public abstract Map<Element, double[]> getGOSShellProbs(boolean surrounding, double totLambda);
   

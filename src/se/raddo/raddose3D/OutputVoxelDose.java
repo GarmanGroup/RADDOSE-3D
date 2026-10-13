@@ -82,7 +82,13 @@ public class OutputVoxelDose implements Output{
   //  double[][][][] voxDoses = expSummary.getVoxelDoses();
     HashMap<Integer, double[][][]> voxDoses = expSummary.getVoxelDoses();
     
-    for (int l = 0; l < crystal.getNumImages(wedge);l++) {
+    // No wedge was published when the crystal ran a subprogram instead of
+    // the MX calculation: then there are no images to write.
+    double images = 0;
+    if (wedge != null) {
+      images = crystal.getNumImages(wedge);
+    }
+    for (int l = 0; l < images;l++) {
       double imageDoses[][][] = voxDoses.get(l);
       for (int i = 0; i < crystal.getCrystSizeVoxels()[0]; i++) {
         for (int j = 0; j < crystal.getCrystSizeVoxels()[1]; j++) {

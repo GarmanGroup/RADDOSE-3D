@@ -3,6 +3,8 @@ package se.raddo.raddose3D;
 import java.util.LinkedHashSet;
 import java.util.LinkedHashMap;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -280,12 +282,7 @@ public class CoefCalcCompute extends CoefCalc {
   
   private final Map<Element, Double> cryoConcentration;
   
-  /** Number of atoms (all) per monomer. */
-  private final Map<ElementEM, Double> macromolecularOccurrenceEM;
-  private final Map<ElementEM, Double> solventOccurrenceEM;
-  private final Map<ElementEM, Double> heteroAtomOccurrenceEM;
-  private final Map<ElementEM, Double> solventConcentrationEM;
-  
+  /** The surrounding's atoms, for the electron calculations. */
   private final Map<ElementEM, Double> cryoOccurrenceEM;
   private final Map<ElementEM, Double> cryoConcentrationEM;
   
@@ -333,11 +330,6 @@ public class CoefCalcCompute extends CoefCalc {
     cryoOccurrence = new HashMap<Element, Double>();
     cryoConcentration = new HashMap<Element, Double>();
     
-    macromolecularOccurrenceEM = new HashMap<ElementEM, Double>();
-    solventOccurrenceEM = new HashMap<ElementEM, Double>();
-    heteroAtomOccurrenceEM = new HashMap<ElementEM, Double>();
-    solventConcentrationEM = new HashMap<ElementEM, Double>();
-    
     cryoOccurrenceEM = new HashMap<ElementEM, Double>();
     cryoConcentrationEM = new HashMap<ElementEM, Double>();
     
@@ -357,10 +349,13 @@ public class CoefCalcCompute extends CoefCalc {
     presentElements = new HashSet<Element>();
     presentElements.addAll(solventOccurrence.keySet());
     presentElements.addAll(macromolecularOccurrence.keySet());
-    
+
+    // The electron cross sections are looked up per ElementEM, but the atoms
+    // are the ones counted above: see totalAtomsEM.
     presentElementsEM = new HashSet<ElementEM>();
-    presentElementsEM.addAll(solventOccurrenceEM.keySet());
-    presentElementsEM.addAll(macromolecularOccurrenceEM.keySet());
+    for (Element e : presentElements) {
+      presentElementsEM.add(elementDBEM.getElement(e.getAtomicNumber()));
+    }
 
     for (Element e : presentElements) {
       mass += totalAtoms(e) * e.getAtomicWeightInGrams();
@@ -1454,14 +1449,6 @@ public class CoefCalcCompute extends CoefCalc {
       incrementSolventOccurrence(e, atomCount);
       nonWaterAtoms += atomCount;
     }
-    //same for EM
-    for (ElementEM eM : solventConcentrationEM.keySet()) {
-      double conc = solventConcentrationEM.get(eM);
-      double atomCount = conc * AVOGADRO_NUM * cellVolume * solventFraction
-          * 1E-3 * 1E-27;
-      incrementSolventOccurrenceEM(eM, atomCount);
-    }
-    
 
     // Calculating number of water molecules.
     // NOTE: using updated value for concentration of water,
@@ -1484,14 +1471,6 @@ public class CoefCalcCompute extends CoefCalc {
 
     Element oxygen = elementDB.getElement("O");
     setSolventOccurrence(oxygen, getSolventOccurrence(oxygen) + waterMolecules);
-    
-    ElementEM hydrogenEM = elementDBEM.getElement("H");
-    setSolventOccurrenceEM(hydrogenEM, getSolventOccurrenceEM(hydrogenEM)
-        + waterMolecules * 2);
-
-    ElementEM oxygenEM = elementDBEM.getElement("O");
-    setSolventOccurrenceEM(oxygenEM, getSolventOccurrenceEM(oxygenEM) + waterMolecules);
-
   }
 
   /**
@@ -1509,10 +1488,6 @@ public class CoefCalcCompute extends CoefCalc {
       
       setSolventConcentration(heavyAtom, heavySolvConcNums.get(i)
           + getSolventConcentration(heavyAtom));
-      
-      ElementEM heavyAtomEM = elementDBEM.getElement(heavySolvConcNames.get(i));
-      setSolventConcentrationEM(heavyAtomEM, heavySolvConcNums.get(i)
-          + getSolventConcentrationEM(heavyAtomEM));
     }
   }
   
@@ -1670,24 +1645,9 @@ public class CoefCalcCompute extends CoefCalc {
     solventConcentration.put(element, newsolventConcentration);
   }
   
-  public void setSolventConcentrationEM(final ElementEM element,
-      final Double newsolventConcentration) {
-    solventConcentrationEM.put(element, newsolventConcentration);
-  }
-  
-  
-
   public double getSolventConcentration(final Element element) {
     if (solventConcentration.containsKey(element)) {
       return solventConcentration.get(element);
-    } else {
-      return 0.;
-    }
-  }
-  
-  public double getSolventConcentrationEM(final ElementEM element) {
-    if (solventConcentrationEM.containsKey(element)) {
-      return solventConcentrationEM.get(element);
     } else {
       return 0.;
     }
@@ -1729,19 +1689,7 @@ public class CoefCalcCompute extends CoefCalc {
   
   @Override
   public Double getSolventAtoms(final ElementEM element) {
-    if (solventOccurrenceEM.containsKey(element)) {
-      return solventOccurrenceEM.get(element);
-    } else {
-      return 0.;
-    }
-  }
-  
-  public Double getSolventOccurrenceEM(final ElementEM element) {
-    if (solventOccurrenceEM.containsKey(element)) {
-      return solventOccurrenceEM.get(element);
-    } else {
-      return 0.;
-    }
+    return getSolventOccurrence(elementDB.getElement(element.getAtomicNumber()));
   }
 
   public void incrementSolventOccurrence(final Element element,
@@ -1759,21 +1707,6 @@ public class CoefCalcCompute extends CoefCalc {
     solventOccurrence.put(element, newsolventOccurrence);
   }
   
-  public void incrementSolventOccurrenceEM(final ElementEM element,
-      final Double increment) {
-    if (solventOccurrenceEM.containsKey(element)) {
-      solventOccurrenceEM.put(element,
-          increment + solventOccurrenceEM.get(element));
-    } else {
-      solventOccurrenceEM.put(element, increment);
-    }
-  }
-
-  public void setSolventOccurrenceEM(final ElementEM element,
-      final Double newsolventOccurrence) {
-    solventOccurrenceEM.put(element, newsolventOccurrence);
-  }
-
   
   public Double getCryoOccurrence(final Element element) {
     if (cryoOccurrence.containsKey(element)) {
@@ -1844,29 +1777,6 @@ public class CoefCalcCompute extends CoefCalc {
   }
   
   
-  public Double getHetatmOccurrenceEM(final ElementEM element) {
-    if (heteroAtomOccurrenceEM.containsKey(element)) {
-      return heteroAtomOccurrenceEM.get(element);
-    } else {
-      return 0.;
-    }
-  }
-
-  public void incrementHetatmOccurrenceEM(final ElementEM element,
-      final Double increment) {
-    if (heteroAtomOccurrenceEM.containsKey(element)) {
-      heteroAtomOccurrenceEM.put(element,
-          increment + heteroAtomOccurrenceEM.get(element));
-    } else {
-      heteroAtomOccurrenceEM.put(element, increment);
-    }
-  }
-
-  public void setHetatmOccurrenceEM(final ElementEM element, final Double haOcc) {
-    heteroAtomOccurrenceEM.put(element, haOcc);
-  }
-  
-
   public Double getMacromolecularOccurrence(final Element element) {
     if (macromolecularOccurrence.containsKey(element)) {
       return macromolecularOccurrence.get(element);
@@ -1877,11 +1787,8 @@ public class CoefCalcCompute extends CoefCalc {
   
   @Override
   public Double getProteinAtoms(final ElementEM element) {
-    if (macromolecularOccurrenceEM.containsKey(element)) {
-      return macromolecularOccurrenceEM.get(element);
-    } else {
-      return 0.;
-    }
+    return getMacromolecularOccurrence(
+        elementDB.getElement(element.getAtomicNumber()));
   }
 
   public void incrementMacromolecularOccurrence(final Element element,
@@ -1898,30 +1805,6 @@ public class CoefCalcCompute extends CoefCalc {
   public void setMacromolecularOccurrence(final Element element,
       final Double mmOcc) {
     macromolecularOccurrence.put(element, mmOcc);
-  }
-  
-  public Double getMacromolecularOccurrenceEM(final ElementEM element) {
-    if (macromolecularOccurrenceEM.containsKey(element)) {
-      return macromolecularOccurrenceEM.get(element);
-    } else {
-      return 0.;
-    }
-  }
-
-  public void incrementMacromolecularOccurrenceEM(final ElementEM element,
-      final Double increment) {
-    if (macromolecularOccurrenceEM.containsKey(element)) {
-      macromolecularOccurrenceEM.put(element,
-          increment + macromolecularOccurrenceEM.get(element));
-    } else {
-      macromolecularOccurrenceEM.put(element, increment);
-    }
- //   System.out.println("test");
-  }
-
-  public void setMacromolecularOccurrenceEM(final ElementEM element,
-      final Double mmOcc) {
-    macromolecularOccurrenceEM.put(element, mmOcc);
   }
 
   /**
@@ -1941,18 +1824,6 @@ public class CoefCalcCompute extends CoefCalc {
     for (Element e : heteroAtomOccurrence.keySet()) {
       setHetatmOccurrence(e,
           getHetatmOccurrence(e) * num);
-    }
-  }
-  
-  public void multiplyAtomsEM(final int num) {
-    for (ElementEM e : macromolecularOccurrenceEM.keySet()) {
-      setMacromolecularOccurrenceEM(e,
-          getMacromolecularOccurrenceEM(e) * num);
-    }
-
-    for (ElementEM e : heteroAtomOccurrenceEM.keySet()) {
-      setHetatmOccurrenceEM(e,
-          getHetatmOccurrenceEM(e) * num);
     }
   }
   
@@ -1987,8 +1858,19 @@ public class CoefCalcCompute extends CoefCalc {
     return totalAtoms;   
   }
   
+  /**
+   * The atoms of an element in the unit cell, for the electron calculations.
+   * These are the same atoms totalAtoms counts: the composition routes fill
+   * one set of maps, and the ElementEM only selects the electron cross
+   * sections. (The routes used to fill a second, electron-only set of maps
+   * alongside, which the PDB route never multiplied by the number of
+   * molecules and the sequence and CIF routes never filled at all.)
+   *
+   * @param element element in the electron database
+   * @return atoms of that element per unit cell
+   */
   public double totalAtomsEM(final ElementEM element) {
-    return getSolventOccurrenceEM(element) + getMacromolecularOccurrenceEM(element);
+    return totalAtoms(elementDB.getElement(element.getAtomicNumber()));
   }
   
   
@@ -3550,6 +3432,30 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     }
   }
   public double getShellBindingSubshell(int shellIndex, Element e) {
+    Double binding = subshellBinding(shellIndex, e);
+    if (binding == null) {
+      throw new IllegalStateException("The element tables have no binding "
+          + "energy for subshell " + shellIndex + " of " + e.getElementName());
+    }
+    return binding;
+  }
+
+  /**
+   * The binding energy of a subshell, as the element tables give it.
+   * <p>
+   * MuCalcConstants.txt used to give zero or nothing for some subshells the
+   * GOS model reads: Na L2 and L3; Ca, Sc, Ti and V M2 and M3; Cr M2, M3
+   * and M4; Ga and Ge M2 to M5; and the M1 binding energy of Al. They come
+   * from the X-ray Data Booklet, Table 1-1, as the table's neighbouring M1
+   * binding energies do -- except Al 3s and Cr 3d, which it does not list,
+   * from T.A. Carlson, Photoelectron and Auger Spectroscopy (Plenum, 1975),
+   * as Geant4's G4AtomicShells tabulates them.
+   *
+   * @param shellIndex K, L1, L2, L3, M1, M2, M3, M4, M5, N1 from 0 to 9
+   * @param e element
+   * @return binding energy in keV; null where the tables leave it blank
+   */
+  private Double subshellBinding(int shellIndex, Element e) {
     if (shellIndex == 0) {
       return e.getKEdge();
     }
@@ -3581,8 +3487,31 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
       return e.getN1Binding();
     }
     else {
-      return 0;     //I need to add in more for iron here!
+      return 0.0;     //I need to add in more for iron here!
     }
+  }
+
+  @Override
+  public List<String> getElementsLackingBindingEnergies() {
+    List<Element> elements = new ArrayList<Element>(presentElements);
+    Collections.sort(elements, new Comparator<Element>() {
+      @Override
+      public int compare(final Element a, final Element b) {
+        return a.getAtomicNumber() - b.getAtomicNumber();
+      }
+    });
+    List<String> lacking = new ArrayList<String>();
+    for (Element e : elements) {
+      int valenceSubshell = getNumValenceElectronsSubshells(e)[1];
+      for (int i = 0; i <= valenceSubshell; i++) {
+        Double binding = subshellBinding(i, e);
+        if (binding == null || binding <= 0) {
+          lacking.add(e.getElementName());
+          break;
+        }
+      }
+    }
+    return lacking;
   }
   
   public double getAdjustmentFactor(Element e, int fcb, double Wcb, double sumfilnU) {
@@ -4725,7 +4654,10 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
   
   public double integrateDist(double E, double Uk, int n, int i, Element e, double a, boolean surrounding) {
     double Wmax = (getEdash(E, Uk)/2)*Beam.KEVTOJOULES;
-    double binding = getShellBinding(i, e)*Beam.KEVTOJOULES;
+    // Subshell i, as Uk is. This read getShellBinding, whose index counts
+    // shells (K, L1, M1), so the integral for an L2 subshell started at the
+    // M1 edge.
+    double binding = getShellBindingSubshell(i, e)*Beam.KEVTOJOULES;
  //   int bins = 100;
     
     double W = 0, previousY = 0, thisY = 0, sumIntegral = 0;
@@ -4757,7 +4689,8 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
   }
   
   public double getpDisW(double E, double W, double a, Element e, int i, boolean surrounding) {
-    double Uk = getShellBinding(i, e)*1000;
+    // Subshell i, for the reason given in integrateDist.
+    double Uk = getShellBindingSubshell(i, e)*1000;
     //get Wk
     double Wk = getWkMolecule(a, e, i, surrounding);
     //modify Wk

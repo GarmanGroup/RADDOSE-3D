@@ -752,6 +752,20 @@ public abstract class Crystal {
   }
   
   /**
+   * Whether exposing this crystal runs one of the subprograms (XFEL,
+   * MicroED or Monte Carlo) rather than the MX dose calculation. The
+   * subprograms write their own output files and never fill in the
+   * exposure summary that the wedge writers read.
+   *
+   * @return true for Subprogram XFEL, EMSP, EMED, MONTECARLO or GOS
+   */
+  public boolean runsSubprogram() {
+    return subprogram.equals("XFEL") || subprogram.equals("EMSP")
+        || subprogram.equals("EMED") || subprogram.equals("MONTECARLO")
+        || subprogram.equals("GOS");
+  }
+
+  /**
    * Expose this crystal to a given beam according to a strategy.
    *
    * @param beam
