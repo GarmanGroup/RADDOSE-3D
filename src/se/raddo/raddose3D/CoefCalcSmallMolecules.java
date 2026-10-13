@@ -119,16 +119,6 @@ public class CoefCalcSmallMolecules extends CoefCalcCompute {
         incrementMacromolecularOccurrence(smallMoleAtom,
             smallMoleAtomNums.get(i)
                 * monomers);
-        
-        ElementEM smallMoleAtomEM = getParserEM()
-            .getElement(smallMoleAtomNames.get(i));
-        
-
-        // note: heavy atoms are provided per monomer,
-        // so multiply by number of monomers.
-        incrementMacromolecularOccurrenceEM(smallMoleAtomEM,
-            smallMoleAtomNums.get(i)
-                * monomers);
       }
     }
 

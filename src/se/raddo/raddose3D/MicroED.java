@@ -2,6 +2,7 @@ package se.raddo.raddose3D;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -11,22 +12,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.Keys;
-//import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.interactions.Actions;
-
-//import javafx.util.Pair;
-
-import org.openqa.selenium.chrome.ChromeDriver;
-//import org.openqa.selenium.support.ui.ExpectedCondition;
-//import org.openqa.selenium.support.ui.WebDriverWait;
-
 import java.text.*;
-import java.awt.Toolkit;
-import java.awt.datatransfer.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -98,11 +84,16 @@ public class MicroED {
   private double numberNotInelasticEqu;
   private double numberNotInelasticRatio;
   private double numberProductive;
-  private double stoppingPowerESTAR;
   private double MonteCarloRuntime;
   //to see if multislice is necessary at all
   private int numberSlices;
   private double sliceThickness = 5; //nm
+
+  /** Where outputMicroED.CSV and outputMicroED_slices.csv are written. */
+  private File outputDirectory = new File(".");
+
+  /** Elements the GOS inelastic model has no binding energies for. */
+  private List<String> lackingBindings = new ArrayList<String>();
   
   private double MonteCarloDose;
   private double MonteCarloImageDose;
@@ -272,7 +263,69 @@ public class MicroED {
     return distance;
   }
   
+  /**
+   * Writes the two output files into the given directory rather than the
+   * working directory.
+   *
+   * @param directory an existing directory
+   */
+  void setOutputDirectory(final File directory) {
+    outputDirectory = directory;
+  }
+
+  /**
+   * MicroED reads an exposure, in electrons per square Angstrom, that only a
+   * TopHat beam carries. A Gaussian beam used to report an exposure of zero,
+   * so the dose came out as zero and the information coefficient as NaN, and
+   * an Experimental beam crashed.
+   *
+   * @param beam the beam MicroED was given
+   */
+  private static void checkBeam(final Beam beam) {
+    if (!(beam instanceof BeamTophat)) {
+      throw new IllegalArgumentException("MicroED (Subprogram EMED or EMSP) "
+          + "needs a TopHat beam with an Exposure in electrons per square "
+          + "Angstrom, and this beam is " + beam.getType() + ".");
+    }
+    beam.getExposure(); // throws if the TopHat beam was given none
+  }
+
+  /**
+   * The GOS inelastic mean free path, or NaN for a crystal containing an
+   * element it has no binding energies for (see
+   * CoefCalc.getElementsLackingBindingEnergies). Those used to give NaN for
+   * a zero binding energy anyway, and crash for a blank one.
+   */
+  private double getInelasticLambda(final CoefCalc coefCalc,
+      final double energy) {
+    if (!lackingBindings.isEmpty()) {
+      return Double.NaN;
+    }
+    return coefCalc.getGOSInel(false, energy);
+  }
+
+  /** A count, or NaN, which DecimalFormat writes as U+FFFD on Java 8. */
+  private static String format(final DecimalFormat format,
+      final double value) {
+    return Double.isNaN(value) ? "NaN" : format.format(value);
+  }
+
   public void CalculateEM(Beam beam, Wedge wedge, CoefCalc coefCalc) { // also pass in crystal dimensions
+    checkBeam(beam);
+    lackingBindings = coefCalc.getElementsLackingBindingEnergies();
+    if (!lackingBindings.isEmpty()) {
+      System.out.println("Warning: the element tables have no binding energy "
+          + "for one or more of the subshells of "
+          + String.join(", ", lackingBindings) + ", which the inelastic "
+          + "(GOS) model needs. The inelastic and productive counts, the "
+          + "information coefficient and the optimal voltage and thickness "
+          + "are reported as NaN. The dose and the elastic counts are "
+          + "unaffected.");
+    }
+    // At least one slice: a crystal thinner than a slice used to have none,
+    // and its dose came out as 0/0.
+    numberSlices = Math.max(1, (int) (sampleThickness / sliceThickness));
+
     // Just to be clear these are all dose of the exposed volume
  //   testingXFELQuick(beam, coefCalc);
     
@@ -332,20 +385,13 @@ public class MicroED {
     //System.out.println(String.format("The Monte Carlo runtime in seconds was: %.8e", runtime/1E9));
     //MonteCarloRuntime = runtime/1E9;
     
-    /*
-    accessESTAR(coefCalc, beam.getPhotonEnergy());
-    double dose4 = getESTARDose(coefCalc, beam);
-    System.out.print(String.format("\nThe Dose in the exposed area by ESTAR: %.8e", dose4));
-    System.out.println(" MGy\n");
-    */
-    
-    System.out.println("\nNumber elastic events: " + df.format(numberElastic));
-    System.out.println("Number single elastic events: " + df.format(numberSingleElastic));
-    System.out.println("Number Inelastic events: " + df.format(numberInelastic));
-    System.out.println("Number productive events: " + df.format(numberProductive));
+    System.out.println("\nNumber elastic events: " + format(df, numberElastic));
+    System.out.println("Number single elastic events: " + format(df, numberSingleElastic));
+    System.out.println("Number Inelastic events: " + format(df, numberInelastic));
+    System.out.println("Number productive events: " + format(df, numberProductive));
     
     double information_coef = numberProductive / dose3;
-    System.out.println("Information Coefficient (productive/MGy): " + df.format(information_coef));
+    System.out.println("Information Coefficient (productive/MGy): " + format(df, information_coef));
     
     //System.out.println("Number elastic events Monte Carlo: " + MonteCarloTotElasticCount);
     //System.out.println("Number single elastic events Monte Carlo: " + MonteCarloSingleElasticCount);
@@ -356,14 +402,26 @@ public class MicroED {
     
     
     //Now I want to add in an optimal thickness and optimal beam energy bit 
-    double optimalEn = getOptimalEnergy(beam, wedge, coefCalc);
-    System.out.println("\nThe optimal accelerating voltage is: " + df2.format(optimalEn) + " kV");
-    double optimalT = getOptimalThickness(beam, wedge, coefCalc);
-    System.out.println("The optimal thickness is: " + df2.format(optimalT) + " nm\n");
+    // Both searches stop where the information coefficient falls, which a
+    // NaN never does: they used to run to the end of the grid and report
+    // its last point.
+    double optimalEn = Double.NaN;
+    double optimalT = Double.NaN;
+    if (lackingBindings.isEmpty()) {
+      optimalEn = getOptimalEnergy(beam, wedge, coefCalc);
+      System.out.println("\nThe optimal accelerating voltage is: " + df2.format(optimalEn) + " kV");
+      optimalT = getOptimalThickness(beam, wedge, coefCalc);
+      System.out.println("The optimal thickness is: " + df2.format(optimalT) + " nm\n");
+    }
+    else {
+      System.out.println("\nThe optimal accelerating voltage and thickness "
+          + "need the inelastic model, so were not searched for.\n");
+    }
     
     
     try {
-      WriterFile("outputMicroED.CSV", dose3, beam, optimalEn, optimalT, information_coef);
+      WriterFile(new File(outputDirectory, "outputMicroED.CSV").getPath(),
+          dose3, beam, optimalEn, optimalT, information_coef);
     } catch (IOException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
@@ -371,10 +429,15 @@ public class MicroED {
 
     // Write slice data to CSV
     try {
-      se.raddo.raddose3D.WriterFile sliceWriter = new se.raddo.raddose3D.WriterFile("outputMicroED_slices.csv");
+      se.raddo.raddose3D.WriterFile sliceWriter = new se.raddo.raddose3D.WriterFile(
+          new File(outputDirectory, "outputMicroED_slices.csv").getPath());
       sliceWriter.write("Slice Number,Slice Depth (nm),Slice Dose (MGy)\n");
       for (int i = 1; i < dose3Results.length; i++) {
-        double sliceThicknessNm = (i-1) * sliceThickness;
+        // Where the slice starts. The slices share the crystal's thickness
+        // equally, so they are at least sliceThickness wide but rarely
+        // exactly; this used to count in steps of sliceThickness, which put
+        // every slice but the first up to 5 nm shallower than it is.
+        double sliceThicknessNm = (i-1) * (sampleThickness / numberSlices);
         sliceWriter.write(String.format("%d,%.4f,%.8e\n", i, sliceThicknessNm, dose3Results[i]));
       }
       sliceWriter.close();
@@ -503,8 +566,6 @@ private double EMEquationWay(Beam beam, Wedge wedge, CoefCalc coefCalc, boolean 
   double elasticProb = 0;
   double inelProb = 0;
   double avgEnergy = beam.getPhotonEnergy();
-  numberSlices = (int)(sampleThickness/sliceThickness);
-  double t = sampleThickness/numberSlices;
   /*
   for (int i = 1; i <= numberSlices; i++) {
   
@@ -539,7 +600,7 @@ private double EMEquationWay(Beam beam, Wedge wedge, CoefCalc coefCalc, boolean 
   
   numberSingleElastic = electronNumber * 
                         Math.exp(-sampleThickness/elasticLambda) * (Math.pow(sampleThickness/elasticLambda, 1) / 1); 
-  double gosInelasticLambda = coefCalc.getGOSInel(false, avgEnergy);
+  double gosInelasticLambda = getInelasticLambda(coefCalc, avgEnergy);
   System.out.println("GOS Inelastic Lambda: " + gosInelasticLambda);
   inelProb = (1 - Math.exp(-sampleThickness/gosInelasticLambda));                
   numberInelastic = inelProb * electronNumber;
@@ -615,7 +676,6 @@ private double[] EMStoppingPowerWay(Beam beam, Wedge wedge, CoefCalc coefCalc) {
   double exposedMassPerSlice = exposedMass / numberSlices;
   double stoppingPower = 0, energyDeposited = 0, dose = 0;
   double avgEnergy = beam.getPhotonEnergy();
-  numberSlices = (int)(sampleThickness/sliceThickness);
   double[] allDoses = new double[numberSlices];
   boolean end_loop = false;
   for (int i = 1; i <= numberSlices; i++) {
@@ -810,7 +870,7 @@ private double getInfoCoef(CoefCalc coefCalc, double testEnergy, double electron
       double elasticLambda = coefCalc.getElectronElasticMFPL(testEnergy, false);
       double elasticProb = (1 - Math.exp(-thisThickness/elasticLambda));
       //inelastic
-      double gosInelasticLambda = coefCalc.getGOSInel(false, testEnergy);
+      double gosInelasticLambda = getInelasticLambda(coefCalc, testEnergy);
       double inelProb = (1 - Math.exp(-thisThickness/gosInelasticLambda));
       //productive
       double numberSingleElastic = electronNumber * 
@@ -905,137 +965,6 @@ private void writeAngleCSV(HashMap<Double, Double> EnAngles, double startEn, Arr
     System.err.println("WriterFile: Could not close file " + filename);
   }
   
-}
-
-public void accessESTAR(CoefCalc coefCalc, double avgElectronEnergy) {
-  String exePath = "lib\\selenium\\chromedriver.exe";
-  System.setProperty("webdriver.chrome.driver", exePath);
-// Create a new instance of the Firefox driver
-  WebDriver driver = new ChromeDriver();
-  //Launch the Website
-  driver.get("https://physics.nist.gov/PhysRefData/Star/Text/ESTAR-u.html");
-  
-  //Enter material name
-  WebElement name = driver.findElement(By.name("Name"));
-  name.sendKeys("Protein");
-  
-  //Enter density
-  double densityNum = coefCalc.getDensity();
-  String densityString = Double.toString(densityNum);
-  WebElement density = driver.findElement(By.name("Density"));
-  density.sendKeys(densityString);
-  
-  //Enter element fractions
-  Map<String, Double> fractionElementEM = new HashMap<String, Double>();
-  fractionElementEM = coefCalc.getFractionElementEM();
-  WebElement fractions = driver.findElement(By.name("Formulae"));
-  NumberFormat formatNoSF = new DecimalFormat();
-  formatNoSF = new DecimalFormat("0.000000"); //will break if in standard form
-  
-  for (String elementName : fractionElementEM.keySet()) {
-    String fractionElement = formatNoSF.format(fractionElementEM.get(elementName));
-    String toSend = (elementName + " " + fractionElement); 
-    //Write this in the textbox
-    fractions.sendKeys(toSend);
-    fractions.sendKeys(Keys.RETURN);
-  }
-  
-  //submit this information
-  WebElement submit = driver.findElement(By.cssSelector("input[value='Submit']"));
-  submit.click();
-  
-  
-  //enter the beam energy
-  String beamMeV = Double.toString((avgElectronEnergy / 1000));
-  WebElement energy = driver.findElement(By.name("Energies"));
-  energy.sendKeys(beamMeV);
-  //uncheck default energies
-  WebElement checkBox = driver.findElement(By.cssSelector("input[value='on']"));
-  checkBox.click();
-  //remove the graph as unnecessary
-  WebElement radioButton = driver.findElement(By.cssSelector("input[value='None']"));
-  radioButton.click();
-  //submit this page
-  submit = driver.findElement(By.cssSelector("input[value='Submit']"));
-  submit.click();
-  
-  //select to output total stopping power
-  checkBox = driver.findElement(By.name("total"));
-  checkBox.click();
-  //Download data
-  submit = driver.findElement(By.cssSelector("input[value='Download data']"));
-  submit.click();
-  
-  //copy and paste whole page
-  Actions action = new Actions(driver); 
-  action.keyDown(Keys.CONTROL).sendKeys(String.valueOf('\u0061')).perform();
-  action.keyUp(Keys.CONTROL).perform();
-  action.keyDown(Keys.CONTROL).sendKeys(String.valueOf('\u0063')).perform();
-  String wholeTable = getSysClipboardText();
-
-  //get beam energy in a string
-  double MeV = avgElectronEnergy/1000;
-  NumberFormat formatter = new DecimalFormat();
-  formatter = new DecimalFormat("0.000E00");
-  String beamEnergy = formatter.format(MeV); 
-  // search using beam energy
-  int beamEnergyIndex = wholeTable.indexOf(beamEnergy);
-  String numbers = wholeTable.substring(beamEnergyIndex);
-  //find stopping power by the space
-  int spaceIndex = numbers.indexOf(" ");
-  String stoppingPowerString = numbers.substring(spaceIndex + 1);
-  stoppingPowerString = stoppingPowerString.trim();
-  
-  stoppingPowerESTAR = Double.parseDouble(stoppingPowerString);
-  driver.quit(); // close all windows opened by selenium
-   
-}
-
-/**
-* get string from Clipboard
-*/
-public static String getSysClipboardText() {
-   String ret = "";
-   Clipboard sysClip = Toolkit.getDefaultToolkit().getSystemClipboard();
-
-   Transferable clipTf = sysClip.getContents(null);
-
-   if (clipTf != null) {
-
-       if (clipTf.isDataFlavorSupported(DataFlavor.stringFlavor)) {
-           try {
-               ret = (String) clipTf
-                       .getTransferData(DataFlavor.stringFlavor);
-           } catch (Exception e) {
-               e.printStackTrace();
-           }
-       }
-   }
-
-   return ret;
-}
-
-private double getESTARDose(CoefCalc coefCalc, Beam beam) {
-  double exposedArea = 0;
-  if (beam.getIsCircular() == false) {
-    exposedArea = (getExposedX(beam) * getExposedY(beam)); //um^2
-  }
-  else {
-    exposedArea = Math.PI * ((getExposedX(beam)/2) * (getExposedY(beam)/2)); //um^2
-  }
-  
-  double exposedVolume = exposedArea  * (sampleThickness/1000) * 1E-15; //exposed volume in dm^3
-  double exposure = beam.getExposure();
-  double electronNumber = exposure * (exposedArea * 1E08);
-  
-  double stoppingPower = (stoppingPowerESTAR * coefCalc.getDensity() * 1000) / 1E7; //keV/nm
-  
-  double energyDeposited = electronNumber * stoppingPower * sampleThickness * Beam.KEVTOJOULES;  //in J, currently per electron
-  
-  double exposedMass = (((coefCalc.getDensity()*1000) * exposedVolume) / 1000);  //in Kg 
-  double dose = (energyDeposited/exposedMass) / 1E06; //dose in MGy 
-  
-  return dose;
 }
 
 // Everything below will be the Monte Carlo section of the code

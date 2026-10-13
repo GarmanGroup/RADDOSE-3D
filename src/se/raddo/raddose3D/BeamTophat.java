@@ -141,6 +141,10 @@ public class BeamTophat implements Beam {
   
   @Override
   public double getExposure() {
+    if (exposure == null) {
+      throw new IllegalStateException("This TopHat beam was given no "
+          + "Exposure, which MicroED needs: electrons per square Angstrom.");
+    }
     return exposure;
   }
 
