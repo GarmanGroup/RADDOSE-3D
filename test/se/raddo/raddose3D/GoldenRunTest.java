@@ -5,8 +5,11 @@ import java.io.File;
 import java.io.PrintStream;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -42,6 +45,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * below accommodates that while still being five orders of magnitude tighter
  * than any physics regression these tests exist to catch -- reverting c0d0c3f,
  * for instance, moves a field by a factor of four.
+ * <p>
+ * Fields that follow a single voxel, rather than averaging over many, vary
+ * more between JVMs once escape is modelled, and have a tolerance of their
+ * own: see {@link #SINGLE_VOXEL_TOLERANCE}.
  */
 public class GoldenRunTest {
 
@@ -136,6 +143,27 @@ public class GoldenRunTest {
   private static final double RELATIVE_TOLERANCE = 1e-5;
 
   /**
+   * Relative tolerance for the fields that follow a single voxel: the
+   * maximum dose, the dose threshold -- the dose of the voxel at which the
+   * cumulative dose crosses the quantile -- and the three fields computed
+   * from them.
+   * <p>
+   * With escape modelled, individual voxel doses differ between JVMs by much
+   * more than their averages do. In the escape run, Java 21 on x86-64 and
+   * JDK 25 on arm64 disagree on about half of the 120 voxels, by up to
+   * 1.5e-4, while the averaged fields agree to 5e-6. That was already so
+   * before the escape fixes; when they redrew the realisation, the dose
+   * threshold landed on a voxel the two disagree on, 1.05e-5 apart, beyond
+   * {@link #RELATIVE_TOLERANCE}.
+   */
+  private static final double SINGLE_VOXEL_TOLERANCE = 1e-3;
+
+  /** The columns that follow a single voxel. */
+  private static final Set<String> SINGLE_VOXEL_COLUMNS =
+      new HashSet<String>(Arrays.asList("Max Dose", "Dose Threshold",
+          "Dose Contrast", "Dose Inefficiency", "Dose Inefficiency PE"));
+
+  /**
    * Compares field by field so a failure names the column that moved rather
    * than dumping two long lines. Numeric fields are compared with a relative
    * tolerance; anything non-numeric must match exactly.
@@ -170,11 +198,12 @@ public class GoldenRunTest {
           continue;
         }
 
-        double tolerance =
-            Math.max(Math.abs(expectedValue) * RELATIVE_TOLERANCE, 1e-12);
+        double relative = SINGLE_VOXEL_COLUMNS.contains(label)
+            ? SINGLE_VOXEL_TOLERANCE : RELATIVE_TOLERANCE;
+        double tolerance = Math.max(Math.abs(expectedValue) * relative, 1e-12);
         assertEquals(expectedValue.doubleValue(), actualValue.doubleValue(),
             tolerance,
-            where + " changed beyond the " + RELATIVE_TOLERANCE
+            where + " changed beyond the " + relative
                 + " relative tolerance (expected " + expectedField + ", got "
                 + actualField + ")");
       }
