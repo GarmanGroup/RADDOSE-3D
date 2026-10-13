@@ -105,6 +105,13 @@ public class WriterAndFactoryTest {
       "fluenceperdosehistcsv,   OutputFluencePerDoseHistCSV",
       "summarycsv,              OutputSummaryCSV",
       "summarytext,             OutputSummaryText",
+      "rdecsv,                  OutputRDECSV",
+      "dwds,                    OutputDWDs",
+      "voxeldose,               OutputVoxelDose",
+      // Never matched: the line that should have read "voxelfluences" read
+      // "voxeldose" a second time.
+      "voxelfluences,           OutputVoxelFluences",
+      "VoxelFluences,           OutputVoxelFluences",
   })
   public void outputFactoryResolvesNamesCaseInsensitively(String name,
       String expectedClass) {

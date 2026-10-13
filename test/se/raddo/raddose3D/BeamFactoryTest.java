@@ -36,6 +36,19 @@ public class BeamFactoryTest {
     System.out.println("@Test - testBeamFactoryGaussian");
   }
 
+  /**
+   * Type Experimental names the base class of the image readers, which no
+   * input file can construct. It is refused with what to write instead,
+   * rather than failing in ClassFactory with "does not have a property
+   * constructor".
+   */
+  @Test
+  public void typeExperimentalPointsToExperimentalPGM() {
+    IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
+        () -> new BeamFactory().createBeam("Experimental", defaultProperties()));
+    assertTrue(e.getMessage().contains("ExperimentalPGM"), e.getMessage());
+  }
+
   @Test
   public void testBeamFactoryShouldFailOnInvalidInput() {
     assertThrows(RuntimeException.class, () -> {
