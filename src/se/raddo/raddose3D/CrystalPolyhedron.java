@@ -173,7 +173,14 @@ public class CrystalPolyhedron extends Crystal {
   /**
    * Stores the indexes of the tracks, biased so a more likely tracks is stored proportionally more times
    */
+  /**
+   * Photoelectron directions, each repeated by its weight under the beam's
+   * polarisation, for drawing from: the crystal's, and the surrounding's.
+   * They used to share one field, which the surrounding wrote last, so the
+   * crystal's photoelectrons were drawn with the surrounding's weights.
+   */
   private int [] trackNumberBias;
+  private int [] cryoTrackNumberBias;
   
   /**
    * 3d array for voxels where photoelectrons can reach
@@ -1865,19 +1872,11 @@ public class CrystalPolyhedron extends Crystal {
     else {
       distribution = cryoAngularDistribution;
     }
-    //sum
-    int numbersInArray = 0;
-    for (int i = 0; i < distribution.length; i++){
-      numbersInArray += distribution[i];
-    }
-    numbersInArray *= PE_ANGLE_RES_LIMIT;
-    
-    numbersInArray *= 1.5;  // This is a messy fix to index out of bounds change properly later
-    
     double step = 2*Math.PI / PE_ANGLE_RES_LIMIT;
     int counter = -1;
-    int bigArrayIndex = 0;
-    int[] theBigArray = new int[numbersInArray];
+    // Grown as needed. A fixed array, sized at one and a half times an
+    // estimate and then scanned for its trailing zeros, stood here.
+    java.util.List<Integer> bias = new java.util.ArrayList<Integer>();
     
     for (double theta = 0*Math.PI; theta < 2*Math.PI; theta += step) {
       for (double phi = 0; phi <= PE_ANGLE_LIMIT/2 ; phi += step) {
@@ -1920,9 +1919,8 @@ public class CrystalPolyhedron extends Crystal {
           
           if (distribution[place] > 0) {
             while (runningCheck < distribution[place]) {
-              theBigArray[bigArrayIndex] = counter;
+              bias.add(counter);
               runningCheck += 1;
-              bigArrayIndex += 1;
             }
           }
           
@@ -1951,26 +1949,15 @@ public class CrystalPolyhedron extends Crystal {
       }
     }
     
-    //count numbers in array, not zeroes at the end - a stupid way of doing it so clean up later
-    boolean pastFirst = false;
-    int actualNumber = 0;
-    for (int j = 0; j < theBigArray.length; j++) {
-        if (pastFirst == true) {
-          if (theBigArray[j] == 0) { //if it goes back to nought this is junk at the end
-            actualNumber = j;
-            break;
-          }
-        }        
-        if (theBigArray[j] > 0) {
-          pastFirst = true;
-        }
+    int[] actualTrackBias = new int[bias.size()];
+    for (int i = 0; i < actualTrackBias.length; i++) {
+      actualTrackBias[i] = bias.get(i);
     }
-    int[] actualTrackBias = new int[actualNumber];
-    for (int i = 0; i < actualNumber; i++) {
-      actualTrackBias[i] = theBigArray[i];
+    if (cryo) {
+      cryoTrackNumberBias = actualTrackBias;
+    } else {
+      trackNumberBias = actualTrackBias;
     }
-    
-    trackNumberBias = actualTrackBias;
   }
 
   /**
@@ -2150,8 +2137,8 @@ public class CrystalPolyhedron extends Crystal {
     
     for (int q = 0; q < PE_ANGLE_RESOLUTION*PE_ANGLE_RESOLUTION; q++) { //for every tracks i'm choosing
     //     int randomTrack = RandomSource.nextInt(numberOfTracksPE); //choose one at random
-      int randomIndex = RandomSource.nextInt(trackNumberBias.length);
-      int randomTrack = trackNumberBias[randomIndex];
+      int randomIndex = RandomSource.nextInt(cryoTrackNumberBias.length);
+      int randomTrack = cryoTrackNumberBias[randomIndex];
 
       for (int m = 0; m < peDistBins; m++) { 
      
