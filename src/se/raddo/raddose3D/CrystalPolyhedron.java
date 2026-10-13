@@ -2064,9 +2064,11 @@ public class CrystalPolyhedron extends Crystal {
      * the poles -- and only its first direction, straight along +z, was ever
      * used, whatever direction was drawn.
      *
-     * The azimuth is reduced to [0, 2 pi) before its cosine and sine are
-     * taken, so that the directions do not depend on how a maths library
-     * reduces large arguments.
+     * The azimuth is reduced to [0, 2 pi), and its cosine and sine taken with
+     * StrictMath, so that a seeded run draws the same directions on every
+     * JVM. Math.cos and Math.sin may differ between JVMs in the last bit,
+     * which is enough to move a fluorescence track's end into the next
+     * voxel.
      */
     numberOfTracksFL = FL_ANGLE_RES_LIMIT * FL_ANGLE_RES_LIMIT;
     flRelativeVoxXYZ = new double[feFactors.length][4][flDistBins][numberOfTracksFL][3];
@@ -2075,8 +2077,8 @@ public class CrystalPolyhedron extends Crystal {
       double zNorm = 1 - (2.0 * track + 1) / numberOfTracksFL;
       double radius = Math.sqrt(1 - zNorm * zNorm);
       double phi = (track * goldenAngle) % (2 * Math.PI);
-      double xNorm = radius * Math.cos(phi);
-      double yNorm = radius * Math.sin(phi);
+      double xNorm = radius * StrictMath.cos(phi);
+      double yNorm = radius * StrictMath.sin(phi);
       for (int i = 0; i < feFactors.length; i++) { //for every element
         for (int j = 0; j < 4; j++) { //for each shell
           for (int m = 0; m < flDistBins; m++) {
