@@ -154,6 +154,10 @@ public class BeamTophat implements Beam {
   }
   
   public double getPulseEnergy() {
+    if (pulseEnergy == null) {
+      throw new IllegalStateException("This beam was given no PulseEnergy, "
+          + "which the XFEL subprogram needs, in mJ.");
+    }
     return pulseEnergy;
   }
   

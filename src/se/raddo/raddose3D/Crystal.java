@@ -752,6 +752,22 @@ public abstract class Crystal {
   }
   
   /**
+   * Where the subprograms write their files: the working directory, unless
+   * a test says otherwise.
+   */
+  java.io.File subprogramOutputDirectory = new java.io.File(".");
+
+  /**
+   * Writes the subprograms' files into the given directory rather than the
+   * working directory.
+   *
+   * @param directory an existing directory
+   */
+  void setSubprogramOutputDirectory(final java.io.File directory) {
+    subprogramOutputDirectory = directory;
+  }
+
+  /**
    * Whether exposing this crystal runs one of the subprograms (XFEL,
    * MicroED or Monte Carlo) rather than the MX dose calculation. The
    * subprograms write their own output files and never fill in the

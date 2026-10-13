@@ -3,6 +3,7 @@ package se.raddo.raddose3D;
 import java.util.LinkedHashSet;
 import java.util.LinkedHashMap;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -323,15 +324,15 @@ public class CoefCalcCompute extends CoefCalc {
   public CoefCalcCompute() {
     elementDB = ElementDatabase.getInstance();
     elementDBEM = ElementDatabaseEM.getInstance();
-    macromolecularOccurrence = new HashMap<Element, Double>();
-    heteroAtomOccurrence = new HashMap<Element, Double>();
-    solventOccurrence = new HashMap<Element, Double>();
-    solventConcentration = new HashMap<Element, Double>();
-    cryoOccurrence = new HashMap<Element, Double>();
-    cryoConcentration = new HashMap<Element, Double>();
+    macromolecularOccurrence = new LinkedHashMap<Element, Double>();
+    heteroAtomOccurrence = new LinkedHashMap<Element, Double>();
+    solventOccurrence = new LinkedHashMap<Element, Double>();
+    solventConcentration = new LinkedHashMap<Element, Double>();
+    cryoOccurrence = new LinkedHashMap<Element, Double>();
+    cryoConcentration = new LinkedHashMap<Element, Double>();
     
-    cryoOccurrenceEM = new HashMap<ElementEM, Double>();
-    cryoConcentrationEM = new HashMap<ElementEM, Double>();
+    cryoOccurrenceEM = new LinkedHashMap<ElementEM, Double>();
+    cryoConcentrationEM = new LinkedHashMap<ElementEM, Double>();
     
     fractionElementEM = new HashMap<String, Double>();
     
@@ -346,13 +347,15 @@ public class CoefCalcCompute extends CoefCalc {
     // then express as g / cm-3.
     double mass = 0;
 
-    presentElements = new HashSet<Element>();
-    presentElements.addAll(solventOccurrence.keySet());
-    presentElements.addAll(macromolecularOccurrence.keySet());
+    Set<Element> elements = new HashSet<Element>();
+    elements.addAll(solventOccurrence.keySet());
+    elements.addAll(macromolecularOccurrence.keySet());
+    presentElements = inAtomicNumberOrder(elements);
+    sternheimerCache[0] = null;
 
     // The electron cross sections are looked up per ElementEM, but the atoms
     // are the ones counted above: see totalAtomsEM.
-    presentElementsEM = new HashSet<ElementEM>();
+    presentElementsEM = new LinkedHashSet<ElementEM>();
     for (Element e : presentElements) {
       presentElementsEM.add(elementDBEM.getElement(e.getAtomicNumber()));
     }
@@ -645,7 +648,7 @@ public class CoefCalcCompute extends CoefCalc {
   
   @Override
   public Map<Element, Double> getPhotoElectricProbsElement(double beamEnergy) {
-    Map<Element, Double> elementAbsorptionProbs = new HashMap<Element, Double>(); 
+    Map<Element, Double> elementAbsorptionProbs = new LinkedHashMap<Element, Double>(); 
     double runnningSumProb = 0;
     for (Element e : this.presentElements) {
       Map<String, Double> absCoeffs = calculateCoefficientsElement(beamEnergy, e);
@@ -658,7 +661,7 @@ public class CoefCalcCompute extends CoefCalc {
   
   @Override
   public Map<Element, Double> getComptonProbsElement(double beamEnergy) {
-    Map<Element, Double> elementComptonProbs = new HashMap<Element, Double>(); 
+    Map<Element, Double> elementComptonProbs = new LinkedHashMap<Element, Double>(); 
     double runnningSumProb = 0;
     for (Element e : this.presentElements) {
       Map<String, Double> absCoeffs = calculateCoefficientsElement(beamEnergy, e);
@@ -671,7 +674,7 @@ public class CoefCalcCompute extends CoefCalc {
   
   @Override
   public Map<Element, Double> getPhotoElectricProbsElementSurrounding(double beamEnergy) {
-    Map<Element, Double> elementAbsorptionProbs = new HashMap<Element, Double>(); 
+    Map<Element, Double> elementAbsorptionProbs = new LinkedHashMap<Element, Double>(); 
     double runnningSumProb = 0;
     for (Element e : cryoElements) {
       Map<String, Double> absCoeffs = calculateCoefficientsCryoElement(beamEnergy, e);
@@ -1588,11 +1591,47 @@ public class CoefCalcCompute extends CoefCalc {
       setCryoOccurrenceEM(oxygenEM, getCryoOccurrenceEM(oxygenEM) + waterMolecules);
     }
     
-    cryoElements = new HashSet<Element>();
-    cryoElements.addAll(cryoOccurrence.keySet());
-    
-    cryoElementsEM = new HashSet<ElementEM>();
-    cryoElementsEM.addAll(cryoOccurrenceEM.keySet());
+    cryoElements = inAtomicNumberOrder(cryoOccurrence.keySet());
+    sternheimerCache[1] = null;
+
+    List<ElementEM> electronElements =
+        new ArrayList<ElementEM>(cryoOccurrenceEM.keySet());
+    Collections.sort(electronElements, new Comparator<ElementEM>() {
+      @Override
+      public int compare(final ElementEM a, final ElementEM b) {
+        return a.getAtomicNumber() - b.getAtomicNumber();
+      }
+    });
+    cryoElementsEM = new LinkedHashSet<ElementEM>(electronElements);
+  }
+
+  /**
+   * The elements, in order of atomic number.
+   * <p>
+   * Element has no hashCode of its own, so a HashSet of elements used to
+   * iterate in an order that could change from one JVM to the next. The
+   * Monte Carlo and XFEL subprograms pick an element by walking cumulative
+   * probabilities in that order, so the same seed did not reproduce a run.
+   *
+   * @param elements elements, one per atomic number
+   * @return the same elements, iterating by atomic number
+   */
+  private static Set<Element> inAtomicNumberOrder(
+      final Collection<Element> elements) {
+    List<Element> sorted = new ArrayList<Element>(elements);
+    Collections.sort(sorted, new Comparator<Element>() {
+      @Override
+      public int compare(final Element a, final Element b) {
+        return a.getAtomicNumber() - b.getAtomicNumber();
+      }
+    });
+    for (int i = 1; i < sorted.size(); i++) {
+      if (sorted.get(i).getAtomicNumber() == sorted.get(i - 1).getAtomicNumber()) {
+        throw new IllegalStateException("Two Element objects for Z = "
+            + sorted.get(i).getAtomicNumber());
+      }
+    }
+    return new LinkedHashSet<Element>(sorted);
   }
 
   /**
@@ -1959,8 +1998,8 @@ public class CoefCalcCompute extends CoefCalc {
     double xSectionTotPerElement = 0;
     ElasticxSectionTotPerElement = 0;
     ElasticxSectionTotPerElementSurrounding = 0;
-    elasticXSections = new HashMap<ElementEM, Double>();
-    elasticXSectionsSurrounding = new HashMap<ElementEM, Double>();
+    elasticXSections = new LinkedHashMap<ElementEM, Double>();
+    elasticXSectionsSurrounding = new LinkedHashMap<ElementEM, Double>();
 
     
     for (ElementEM e : elementList) {
@@ -2123,7 +2162,7 @@ public class CoefCalcCompute extends CoefCalc {
   
   @Override
   public Map<ElementEM, Double> getElasticProbs(boolean surrounding){
-    Map<ElementEM, Double> elasticProbs = new HashMap<ElementEM, Double>();
+    Map<ElementEM, Double> elasticProbs = new LinkedHashMap<ElementEM, Double>();
     double runningSumFraction = 0;  //should equal 1 by the end
     if (surrounding == false) {
       for (ElementEM e : elasticXSections.keySet()) {
@@ -2373,7 +2412,11 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     double meanJ = 0, meanlnI = 0;
     double stoppingPower = 0;
     double sumA = 0, meanZoverA = 0, meanZ=0;
-    long sumZ = 0;
+    // A double: as a long, each element's Z times its atom count was
+    // truncated into the running total, so a count one ulp below a whole
+    // number lost a whole electron or not depending on the order the
+    // elements were summed in, and the stopping power moved by about 1e-6.
+    double sumZ = 0;
     for (Element e : elements) { 
       
       //calculate meanJ (mean excitation energy) for this material
@@ -2608,10 +2651,10 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     double elXSection = 0, partLambda = 0;
     double bi = 0, ci = 0;
     boolean calculate = true;
-    betheXSections= new HashMap<Element, Double>();
-    shellXSections= new HashMap<Element, double[]>();
+    betheXSections= new LinkedHashMap<Element, Double>();
+    shellXSections= new LinkedHashMap<Element, double[]>();
     BethexSectionTotPerElement = 0;
-    shellXSectionsSurrounding= new HashMap<Element, double[]>();
+    shellXSectionsSurrounding= new LinkedHashMap<Element, double[]>();
     BethexSectionTotPerElementSurrounding = 0;
   //  double xSectionTotPerElement = 0;
     double molWeight = molecularWeight;
@@ -2777,7 +2820,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
   /*
   @Override
   public Map<Element, Double> getInnerShellProbs(){
-    Map<Element, Double> ionisationProbs = new HashMap<Element, Double>();
+    Map<Element, Double> ionisationProbs = new LinkedHashMap<Element, Double>();
     
 //    double totalLambda = 0;
 //    for (Element e : betheXSections.keySet()) {
@@ -2803,7 +2846,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
   
   @Override
   public Map<Element, double[]> getAllShellProbs(boolean surrounding){
-    Map<Element, double[]> ionisationProbs = new HashMap<Element, double[]>();
+    Map<Element, double[]> ionisationProbs = new LinkedHashMap<Element, double[]>();
     double runningSumFraction = 0;  //should equal 1 by the end
     if (surrounding == false) {
       for (Element e : shellXSections.keySet()) {
@@ -2867,6 +2910,12 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
   
   @Override
   public void populateCrossSectionCoefficients(){
+    // The tables never change, and the Monte Carlo and XFEL subprograms ask
+    // for them once per electron: reading them from disk each time was the
+    // largest single cost of a run.
+    if (lowOvervoltages != null && highOvervoltages != null) {
+      return;
+    }
     try {
       populateLowOvervoltageCoefficeints();
     } catch (IOException e) {
@@ -4792,7 +4841,23 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     return a;
   }
   
+  /**
+   * getSturnheimera's answer, for the crystal [0] and the surrounding [1].
+   * It depends on the composition alone -- checkMeanI and getZlnI take the
+   * electron energy but never use it -- and the GOS model used to search for
+   * it again after every inelastic event.
+   */
+  private final Double[] sternheimerCache = new Double[2];
+
   public double getSturnheimera(double E, boolean surrounding) {
+    int region = surrounding ? 1 : 0;
+    if (sternheimerCache[region] == null) {
+      sternheimerCache[region] = searchSternheimera(E, surrounding);
+    }
+    return sternheimerCache[region];
+  }
+
+  private double searchSternheimera(double E, boolean surrounding) {
     double a = 1.5;
     boolean tooHigh = false;
     if (E < 0.1) {
@@ -4930,10 +4995,10 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
   
   public double populateGOSInel(double E, int n, double a, boolean surrounding) {
     if (surrounding == false) {
-      GOSinelastic = new HashMap<Element, double[][]>();
+      GOSinelastic = new LinkedHashMap<Element, double[][]>();
     }
     else {
-      GOSinelasticSurrounding = new HashMap<Element, double[][]>();
+      GOSinelasticSurrounding = new LinkedHashMap<Element, double[][]>();
     }
     int[] shells = {2, 8, 18, 32};
  //   int[] subshells = {2, 2, 2, 4, 18, 32};
@@ -5229,7 +5294,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
   @Override
   public Map<Element, double[]> getGOSShellProbs(boolean surrounding, double totLambda){
     double totInel = 1/totLambda;  //nm^-1
-    Map<Element, double[]> ionisationProbs = new HashMap<Element, double[]>();
+    Map<Element, double[]> ionisationProbs = new LinkedHashMap<Element, double[]>();
     double runningSumFraction = 0;  //should equal 1 by the end
     if (surrounding == false) {
       for (Element e : GOSinelastic.keySet()) {
@@ -5268,7 +5333,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
   @Override
   public Map<Element, Double> getGOSOuterShellProbs(boolean surrounding, double totLambda){
     double totInel = 1/totLambda;  //nm^-1
-    Map<Element, Double> ionisationProbs = new HashMap<Element, Double>();
+    Map<Element, Double> ionisationProbs = new LinkedHashMap<Element, Double>();
     double runningSumFraction = 0;  //should equal 1 by the end
     if (surrounding == false) {
       for (Element e : GOSinelastic.keySet()) {

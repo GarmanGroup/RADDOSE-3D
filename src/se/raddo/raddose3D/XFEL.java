@@ -1,5 +1,6 @@
 package se.raddo.raddose3D;
 
+import java.io.File;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileInputStream;
@@ -13,6 +14,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.LinkedHashMap;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
@@ -22,7 +24,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.math3.distribution.MultivariateNormalDistribution;
 import org.apache.commons.math3.distribution.NormalDistribution;
 
 
@@ -184,16 +185,9 @@ public class XFEL {
     
     
     int[] maxVoxel = getMaxPixelCoordinates();
-  //  voxelEnergy = new double[maxVoxel[0]][maxVoxel[1]][maxVoxel[2]][(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (500/PULSE_BIN_LENGTH) + 1000)];
-    voxelEnergyvResolved = new double[maxVoxel[0]][maxVoxel[1]][maxVoxel[2]][(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (500/PULSE_BIN_LENGTH) + 10000)];
-    voxelIonisationsvResolved = new double[maxVoxel[0]][maxVoxel[1]][maxVoxel[2]][(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (500/PULSE_BIN_LENGTH) + 10000)];
     voxelElastic = new double[maxVoxel[0]][maxVoxel[1]][maxVoxel[2]];
     lastTimeVox = new double[maxVoxel[2]];
-    doseSimple = new double[maxVoxel[0]][maxVoxel[1]][maxVoxel[2]][(int) (PULSE_LENGTH/PULSE_BIN_LENGTH + (500/PULSE_BIN_LENGTH) + 10000)];
-    
-    //these break way way too easily so need a more permanent solution
-    //need somw safety as last time is more than the pulse length, could calculate here
-    
+
     PULSE_LENGTH = StrictMath.round(wedge.getTotSec()); //fs
     if (PULSE_LENGTH <= 1) {
       PULSE_BIN_LENGTH = 0.01;
@@ -211,6 +205,25 @@ public class XFEL {
     
     
     dose = new double[(int) (Math.ceil(lastTime/PULSE_BIN_LENGTH) + (safetyOne/PULSE_BIN_LENGTH) + safetyTwo)];
+
+    // The voxel arrays need only as many time bins as dose: every write to
+    // them also writes a one-dimensional array of that length at the same
+    // index. They used to be sized before the pulse was known, at 15,300
+    // bins, which wasted memory for long bins and was too few for 0.01 fs
+    // bins through a thick crystal.
+    int timeBins = dose.length;
+    double bytes = 3.0 * 8 * maxVoxel[0] * maxVoxel[1] * maxVoxel[2] * timeBins;
+    if (bytes > 0.8 * Runtime.getRuntime().maxMemory()) {
+      throw new IllegalArgumentException(String.format(Locale.ROOT,
+          "The XFEL simulation needs about %.1f GB for %d voxels and %d time "
+          + "bins of %.2f fs, more than the %.1f GB Java may use. Use fewer "
+          + "pixels per micron, or give Java more memory with -Xmx.",
+          bytes / 1E9, maxVoxel[0] * maxVoxel[1] * maxVoxel[2], timeBins,
+          PULSE_BIN_LENGTH, Runtime.getRuntime().maxMemory() / 1E9));
+    }
+    voxelEnergyvResolved = new double[maxVoxel[0]][maxVoxel[1]][maxVoxel[2]][timeBins];
+    voxelIonisationsvResolved = new double[maxVoxel[0]][maxVoxel[1]][maxVoxel[2]][timeBins];
+    doseSimple = new double[maxVoxel[0]][maxVoxel[1]][maxVoxel[2]][timeBins];
     photonDose = new double[(int) (Math.ceil(lastTime/PULSE_BIN_LENGTH) + (safetyOne/PULSE_BIN_LENGTH) + safetyTwo)];
     electronDose = new double[(int) (Math.ceil(lastTime/PULSE_BIN_LENGTH) + (safetyOne/PULSE_BIN_LENGTH) + safetyTwo)];
     gosElectronDose = new double[(int) (Math.ceil(lastTime/PULSE_BIN_LENGTH) + (safetyOne/PULSE_BIN_LENGTH) + safetyTwo)];
@@ -286,6 +299,7 @@ public class XFEL {
     else {
     SampleNormalEnergyDistribution SamplePhotonEnergies = new SampleNormalEnergyDistribution(meanEnergy, energyFWHM, (NUM_PHOTONS)); //eventually need to not reply on assumption it is normal   
     photonEnergyArray = SamplePhotonEnergies.getSampledEnergies();}                     
+    SubprogramInputs.check("XFEL", beam, coefCalc, photonEnergyArray);
     
     // for testing
     
@@ -308,7 +322,7 @@ public class XFEL {
     processDose(beam, coefCalc);
     RD3Dcheck(beam, wedge, coefCalc);
     long runtime = System.nanoTime() - start;
-    System.out.println(String.format("RADDOSE-XFEL simulation complete, runtime in seconds was: %.8e", runtime/1E9));
+    System.out.println(String.format(Locale.ROOT, "RADDOSE-XFEL simulation complete, runtime in seconds was: %.8e", runtime/1E9));
     
 
   }
@@ -965,37 +979,37 @@ public class XFEL {
     
     //print
     System.out.println(" ");
-    System.out.println(String.format("RADDOSE-3D style average dose whole crystal (MGy): %.3f", totRADDOSEdose)); 
-    System.out.println(String.format("RADDOSE-3D style average dose exposed region (MGy): %.3f", rdExposed)); 
+    System.out.println(String.format(Locale.ROOT, "RADDOSE-3D style average dose whole crystal (MGy): %.3f", totRADDOSEdose)); 
+    System.out.println(String.format(Locale.ROOT, "RADDOSE-3D style average dose exposed region (MGy): %.3f", rdExposed)); 
     
     //this should just be if XFEL
     if (doXFEL == true) {
-      System.out.println(String.format("RADDOSE-XFEL average dose whole crystal (ADWC) (MGy): %.3f", voxDosevResolved)); 
-      System.out.println(String.format("RADDOSE-XFEL average dose exposed region (ADER) (MGy): %.3f", voxDoseExposed)); 
+      System.out.println(String.format(Locale.ROOT, "RADDOSE-XFEL average dose whole crystal (ADWC) (MGy): %.3f", voxDosevResolved)); 
+      System.out.println(String.format(Locale.ROOT, "RADDOSE-XFEL average dose exposed region (ADER) (MGy): %.3f", voxDoseExposed)); 
     }
     else {
       //if it isn't XFEL but still GOS then the dose with no cutoff should be shown 
       if (simpleMC == false) {
-        System.out.println(String.format("RADDOSE-GOS average dose whole crystal (ADWC) (MGy): %.3f", voxDoseNoCutoffvResolved)); 
-        System.out.println(String.format("RADDOSE-GOS average dose exposed region (ADER) (MGy): %.3f", voxDoseExposedNoCutoff)); 
+        System.out.println(String.format(Locale.ROOT, "RADDOSE-GOS average dose whole crystal (ADWC) (MGy): %.3f", voxDoseNoCutoffvResolved)); 
+        System.out.println(String.format(Locale.ROOT, "RADDOSE-GOS average dose exposed region (ADER) (MGy): %.3f", voxDoseExposedNoCutoff)); 
       }
       else {
-        System.out.println(String.format("RADDOSE-MC average dose whole crystal (ADWC) (MGy): %.3f", sumMCDose)); 
-        System.out.println(String.format("RADDOSE-MC average dose exposed region (ADER) (MGy): %.3f", sumDoseNoCutOffExposed)); 
+        System.out.println(String.format(Locale.ROOT, "RADDOSE-MC average dose whole crystal (ADWC) (MGy): %.3f", sumMCDose)); 
+        System.out.println(String.format(Locale.ROOT, "RADDOSE-MC average dose exposed region (ADER) (MGy): %.3f", sumDoseNoCutOffExposed)); 
       }
       //unless just simpleMC in which case show diff dose
     }
    
     
     
- //   System.out.println(String.format("RADDOSE-XFEL diffraction weighted dose (DWD): %.3f", DWDcoarse)); 
+ //   System.out.println(String.format(Locale.ROOT, "RADDOSE-XFEL diffraction weighted dose (DWD): %.3f", DWDcoarse)); 
     if (voxDoseExposed > 400) { //change to exposed
       System.out.println("Warning, damage may begin to be seen at these doses");
     }
-    System.out.println(String.format("Diffraction Efficiency (number elastic/ADER): %.3f", diffractionEfficiency)); 
+    System.out.println(String.format(Locale.ROOT, "Diffraction Efficiency (number elastic/ADER): %.3f", diffractionEfficiency)); 
     System.out.println(" ");
-    System.out.println(String.format("Average ionisations per atom exposed region: %.3f", totIonsperAtomExposed)); 
-    System.out.println(String.format("Average ionisations per non-hydrogen atom exposed region: %.3f", ionisationsPerNonHExposed)); 
+    System.out.println(String.format(Locale.ROOT, "Average ionisations per atom exposed region: %.3f", totIonsperAtomExposed)); 
+    System.out.println(String.format(Locale.ROOT, "Average ionisations per non-hydrogen atom exposed region: %.3f", ionisationsPerNonHExposed)); 
     System.out.println(" ");
     
     avgW = 1000*(avgW/avgWNum);
@@ -1050,17 +1064,17 @@ public class XFEL {
     BufferedWriter outFile;
     if (runNumber == 1) {
     outFile = new BufferedWriter(new OutputStreamWriter(
-        new FileOutputStream(filename), "UTF-8"));
+        new FileOutputStream(new File(outputDirectory, filename)), "UTF-8"));
     }
     else {
       outFile = new BufferedWriter(new OutputStreamWriter(
-          new FileOutputStream(filename, true), "UTF-8"));
+          new FileOutputStream(new File(outputDirectory, filename), true), "UTF-8"));
     }
     try {
       if (runNumber == 1) {
         outFile.write("Run Number, RD3D-ADWC,RD3D-ADER,XFEL-ADWC,XFEL-ADER,Diffraction efficiency,ions per atom, ions per non-H atom, vResolvedNoCut, DWDcoarse, DWD\n");
       }
-      outFile.write(String.format(
+      outFile.write(String.format(Locale.ROOT, 
           " %d, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f%n", runNumber, totRADDOSEdose, rdExposed, voxDosevResolved,voxDoseExposed,diffractionEfficiency,ionisationsPerAtomvResolvedExposed, ionisationsPerNonHExposed, vResolvedNoCut, DWDcoarse, DWD));
     } catch (IOException e) {
       e.printStackTrace();
@@ -1078,7 +1092,7 @@ public class XFEL {
   private void WriteElements(final String filename)throws IOException {
     BufferedWriter outFile;
     outFile = new BufferedWriter(new OutputStreamWriter(
-        new FileOutputStream(filename), "UTF-8"));
+        new FileOutputStream(new File(outputDirectory, filename)), "UTF-8"));
     try {
       outFile.write("Atomic number,ionisationsPerAtom\n");
     } catch (IOException e) {
@@ -1088,7 +1102,7 @@ public class XFEL {
     
     for (Element e: atomicIonisationsPerAtomExposed.keySet()) {
       try {
-      outFile.write(String.format(
+      outFile.write(String.format(Locale.ROOT, 
           " %d, %f%n", e.getAtomicNumber(), atomicIonisationsPerAtomExposed.get(e)));
       }catch (IOException e1) {
         e1.printStackTrace();
@@ -1108,17 +1122,17 @@ public class XFEL {
     BufferedWriter outFile;
     if (runNumber == 1) {
       outFile = new BufferedWriter(new OutputStreamWriter(
-          new FileOutputStream(filename), "UTF-8"));
+          new FileOutputStream(new File(outputDirectory, filename)), "UTF-8"));
     }
     else {
       outFile = new BufferedWriter(new OutputStreamWriter(
-          new FileOutputStream(filename, true), "UTF-8"));
+          new FileOutputStream(new File(outputDirectory, filename), true), "UTF-8"));
     }
     try {
     if (runNumber == 1) {
     outFile.write("Run Number, RD3D-ADWC,RD3D-ADER,MC-ADWC\n");
     }
-    outFile.write(String.format(
+    outFile.write(String.format(Locale.ROOT, 
     " %d, %f, %f, %f%n", runNumber, totRADDOSEdose, rdExposed, MCdose));
     } catch (IOException e) {
     e.printStackTrace();
@@ -2795,6 +2809,26 @@ private boolean testIfInsideExposedArea(double xPos, double yPos, Beam beam) { /
  * @param wedge
  * @return the initial xy position of the photon
  */
+  /** Where the output files are written: the working directory, by default. */
+  private File outputDirectory = new File(".");
+
+  /**
+   * Writes the output files into the given directory rather than the
+   * working directory.
+   *
+   * @param directory an existing directory
+   */
+  void setOutputDirectory(final File directory) {
+    outputDirectory = directory;
+  }
+
+  /**
+   * The Gaussian beam's profiles, built once per run: the beam does not
+   * change within one, and each NormalDistribution seeds its own generator.
+   * Only their cumulative distributions are used.
+   */
+  private NormalDistribution beamProfileX, beamProfileY;
+
   private double[] getPhotonBeamXYPos(Beam beam, Wedge wedge) { //TODO need to change some more here; getPhotonBeamXYPos method
     double[] xyPos = new double[2];
     
@@ -2831,8 +2865,12 @@ private boolean testIfInsideExposedArea(double xPos, double yPos, Beam beam) { /
       //    double sy = beam.getSy()*1000;
           double sx = beam.getSx(); // beam.getSx() is in um - same as collimation
           double sy = beam.getSy();
-          NormalDistribution gx = new NormalDistribution(0, sx); // have assumed no offset so do not need to use wedge.getOffAxisUm(); units are nm
-          NormalDistribution gy = new NormalDistribution(0, sy);
+          if (beamProfileX == null) {
+            beamProfileX = new NormalDistribution(0, sx); // have assumed no offset so do not need to use wedge.getOffAxisUm(); units are nm
+            beamProfileY = new NormalDistribution(0, sy);
+          }
+          NormalDistribution gx = beamProfileX;
+          NormalDistribution gy = beamProfileY;
           
           // Find cumulative probabilities at collimation limits
           double lowerCumulativeProbX = gx.cumulativeProbability(-xCollimation/2);
@@ -2859,7 +2897,10 @@ private boolean testIfInsideExposedArea(double xPos, double yPos, Beam beam) { /
             double[] rtPos = new double[2]; //Polar coordinates
          //   double sr = beam.getSx()*1000; // noting sx == sy
             double sr = beam.getSx(); // noting sx == sy
-            NormalDistribution gr = new NormalDistribution(0, sr); //units of nm
+            if (beamProfileX == null) {
+              beamProfileX = new NormalDistribution(0, sr); //units of nm
+            }
+            NormalDistribution gr = beamProfileX;
           
             double lowerCumulativeProbR = gr.cumulativeProbability(-xCollimation/2);
             double upperCumulativeProbR = gr.cumulativeProbability(xCollimation/2);
@@ -2874,25 +2915,17 @@ private boolean testIfInsideExposedArea(double xPos, double yPos, Beam beam) { /
 
 // Else use full equation for bivariate Gaussian in Cartesian coordinates (slow to run if FWHMs >> collimations)
           else if(beam.getSx() != beam.getSy()) {
-            double[] means = {0.0, 0.0};
-            double[][] covarianceMatrix = new double[2][2];
-          
        //     double sx = beam.getSx()*1000;
        //     double sy = beam.getSy()*1000;
             double sx = beam.getSx();
             double sy = beam.getSy();
-            double rho = 0; // we want rho == 0; note that when sx == sy this case simplifies to the above 
-            covarianceMatrix[0][0] = Math.pow(sx, 2);
-            covarianceMatrix[1][1] = Math.pow(sy, 2);
-            covarianceMatrix[0][1] = rho*sx*sy;
-            covarianceMatrix[1][0] = rho*sx*sy;
-          
-            MultivariateNormalDistribution gr = new MultivariateNormalDistribution(means, covarianceMatrix);
-          
+            // With no correlation the bivariate normal is two independent
+            // normals. They are drawn from RandomSource, so --seed reaches
+            // them: MultivariateNormalDistribution seeded a generator of its
+            // own from the clock, so no two runs were alike.
             do {
-              xyPos = gr.sample();
-              xyPos[0] *= 1000;
-              xyPos[1] *= 1000;
+              xyPos[0] = RandomSource.nextGaussian() * sx * 1000;
+              xyPos[1] = RandomSource.nextGaussian() * sy * 1000;
             } while(((Math.pow((xyPos[0]/1000), 2)/Math.pow(xCollimation/2, 2)) + (Math.pow((xyPos[1]/1000), 2)/Math.pow(yCollimation/2, 2))) > 1);
           }
         }
@@ -3866,15 +3899,13 @@ private Element chooseLowEnElement(CoefCalc coefCalc, double Pinner, Map<Element
       return false;
     }
     
-    boolean[] occ = crystOccXFEL[pixelCoords[0]][pixelCoords[1]][pixelCoords[2]];  //This means that if has already been done don't do it again
-                                          // Really needed to speed up Monte Carlo
-
-    if (!occ[0]) {
-      occ[1] = calculateCrystalOccupancy(x, y, z);
-      occ[0] = true;
-    }
-
-    return occ[1];
+    // Tested at the point itself, as MC does. This used to keep the answer
+    // for the first point tested in each voxel and give it to every later
+    // point there, so a voxel the surface cuts through was inside or outside
+    // depending on which particle reached it first. Electrons start inside,
+    // so such voxels leant inside: on a 5 um cylinder the dose came out
+    // about 6% high. The exact test costs no measurable time.
+    return calculateCrystalOccupancy(x, y, z);
   }
   
   private int[] convertToPixelCoordinates(final double x, final double y, final double z, final double angle, Wedge wedge) {

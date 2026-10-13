@@ -2432,6 +2432,7 @@ public class CrystalPolyhedron extends Crystal {
     //to be safe for now
     MicroED microED = new MicroED(vertices, indices, crystCoord, 
                                   crystalPixPerUM, crystSizeVoxels, crystOcc, crystalType);
+    microED.setOutputDirectory(subprogramOutputDirectory);
     microED.CalculateEM(beam, wedge, coefCalc);
   }
   @Override
@@ -2441,6 +2442,7 @@ public class CrystalPolyhedron extends Crystal {
     //to be safe for now
     XFEL xfel = new XFEL(vertices, indices, crystCoord, 
                                   crystalPixPerUM, crystSizeVoxels, crystOcc, runNum, verticalGoniometer, xfelTrue, gos, wedge, verticalPolarisation);
+    xfel.setOutputDirectory(subprogramOutputDirectory);
     xfel.CalculateXFEL(beam, wedge, coefCalc);
   }
   
@@ -2451,6 +2453,7 @@ public class CrystalPolyhedron extends Crystal {
     //to be safe for now
     MC mc = new MC(vertices, indices, crystCoord, 
                                   crystalPixPerUM, crystSizeVoxels, crystOcc, runNum, verticalGoniometer, xfelTrue, gos, surrThickness, verticalPolarisation);
+    mc.setOutputDirectory(subprogramOutputDirectory);
     mc.CalculateXFEL(beam, wedge, coefCalc);
   }
   

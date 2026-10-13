@@ -82,6 +82,20 @@ public class ElementEM {
   public int getAtomicNumber() {
     return atomicNumberEM;
   }
+
+  /**
+   * Hashes by atomic number, so that a HashMap or HashSet of elements
+   * iterates in the same order on every JVM. Identity hashes did not, and
+   * the Monte Carlo and XFEL subprograms choose elements by iterating them.
+   * Equality stays identity: the element database holds one object per
+   * atomic number.
+   *
+   * @return the atomic number
+   */
+  @Override
+  public int hashCode() {
+    return atomicNumberEM;
+  }
   
   /**
    * @return the atomicWeight
