@@ -413,6 +413,32 @@ public abstract class Crystal {
   public abstract double[] getCrystCoord(int i, int j, int k);
   public abstract double[] getCryoCrystCoord(int i, int j, int k);
   public abstract double getNumImages(Wedge wedge);
+
+  /**
+   * How many images a rotating wedge is exposed in: one per step, both ends
+   * included, in either direction. The exposure and the per-voxel outputs
+   * both ask, so they cannot disagree.
+   * <p>
+   * A count within 1e-9 of a whole number of steps is that number: computed
+   * in radians, 30 degrees at 2 came to 14.999999999999998 steps, truncated
+   * to 15 images rather than 16. And the span is taken as a size: a reversed
+   * wedge took sign * (int)(span / step + 1) of its negative span, and so
+   * had two images fewer than the same wedge run forwards.
+   *
+   * @param start the first angle, radians
+   * @param end the last angle, radians
+   * @param step the angular step, radians
+   * @return the number of images
+   */
+  public static int rotationImageCount(final double start, final double end,
+      final double step) {
+    double steps = Math.abs(end - start) / step;
+    double nearest = Math.rint(steps);
+    if (Math.abs(steps - nearest) < 1e-9) {
+      steps = nearest;
+    }
+    return (int) steps + 1;
+  }
   
   /**
    * returns TRUE if there is a crystal at the coordinates i, j, k.
@@ -903,9 +929,8 @@ public abstract class Crystal {
       if (wedgeEndAngle < wedgeStartAngle) {
         sign = -1;
       }
-      angles = new double[sign
-          * (int) ((wedgeEndAngle - wedgeStartAngle)
-              / wedge.getAngRes() + 1)];
+      angles = new double[rotationImageCount(wedgeStartAngle, wedgeEndAngle,
+          wedge.getAngRes())];
       for (int i = 0; i < angles.length; i++) {
         angles[i] = wedgeStartAngle + sign * i * wedge.getAngRes();
       }

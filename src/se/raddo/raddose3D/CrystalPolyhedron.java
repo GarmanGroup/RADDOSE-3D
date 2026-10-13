@@ -2426,13 +2426,8 @@ public class CrystalPolyhedron extends Crystal {
       return Crystal.STATICEXPOSURE;
     }
     else {
-      Integer sign = 1;
-      if (wedge.getEndAng() < wedge.getStartAng()) {
-        sign = -1;
-      }
-      return (sign
-          * (int) ((wedge.getEndAng() - wedge.getStartAng())
-              / wedge.getAngRes() + 1));
+      return rotationImageCount(wedge.getStartAng(), wedge.getEndAng(),
+          wedge.getAngRes());
     }
   }
 

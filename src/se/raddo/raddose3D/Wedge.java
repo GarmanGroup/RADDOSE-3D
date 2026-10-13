@@ -132,7 +132,9 @@ public class Wedge {
     wedgeProperties.put(WedgeProperties.ANGLE_END, Math.toRadians(endAngle));
     wedgeProperties.put(WedgeProperties.EXPOSURE_TIME, totalSecondsExposure);
     /* Optional variables */
-    if (angularResolution != null && ((endAngle - startAngle) / angularResolution) > 10) {   // I've added an extra bit to check the angular resolution is not too big
+    // The span is taken as a size, so that a wedge running backwards keeps
+    // the step it asks for. Its negative span used to fail the test always.
+    if (angularResolution != null && (Math.abs(endAngle - startAngle) / angularResolution) > 10) {   // I've added an extra bit to check the angular resolution is not too big
       wedgeProperties.put(WedgeProperties.ANGULAR_RESOLUTION,
       Math.toRadians(angularResolution));
     }
