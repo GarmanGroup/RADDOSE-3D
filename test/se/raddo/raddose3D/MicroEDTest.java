@@ -145,38 +145,71 @@ public class MicroEDTest {
     }
   }
 
-  @Test
-  public void elementsLackingBindingEnergiesAreListedInOrder() {
-    assertTrue(insulin().getElementsLackingBindingEnergies().isEmpty());
-    assertEquals(Arrays.asList("NA", "AL", "CA"),
-        insulin(Arrays.asList("CA", "ZN", "AL", "S", "NA"),
-            Arrays.asList(1.0, 1.0, 1.0, 1.0, 1.0))
-            .getElementsLackingBindingEnergies());
-  }
-
   /**
-   * Aluminium's M1 binding energy is blank in the tables, and MicroED threw
-   * NullPointerException reading it. Sodium's L2 is zero, which gave NaN
-   * for the inelastic path -- and the grid searches, which stop where the
-   * information coefficient falls, never stopped, and reported the last
-   * point of their grids (1990 kV, 1995 nm). Both now report NaN for
-   * everything the inelastic model feeds, and the dose as before.
+   * Every element has the binding energies the GOS model reads. Nine did
+   * not: Na, Ca, Sc, Ti, V, Cr, Ga and Ge had zeros, and Al a blank, which
+   * gave NaN or a crash.
    */
   @Test
-  public void elementsLackingBindingEnergiesGiveNaN(@TempDir final Path dir)
+  public void everyElementHasTheBindingEnergiesTheGosModelReads() {
+    List<String> names = new ArrayList<String>();
+    List<Double> amounts = new ArrayList<Double>();
+    ElementDatabase elements = ElementDatabase.getInstance();
+    for (int z = 1; z <= 100; z++) {
+      Element e = elements.getElement(z);
+      if (e != null) {
+        names.add(e.getElementName());
+        amounts.add(1.0);
+      }
+    }
+    assertTrue(names.size() > 80, "elements: " + names.size());
+    assertEquals(new ArrayList<String>(),
+        insulin(names, amounts).getElementsLackingBindingEnergies());
+  }
+
+  /** Sodium gave NaN, aluminium a crash; both now give answers. */
+  @Test
+  public void sodiumAndAluminiumHaveAnInelasticPath(@TempDir final Path dir)
       throws IOException {
-    for (String element : new String[] {"AL", "NA"}) {
+    for (String element : new String[] {"NA", "AL"}) {
       Path out = Files.createDirectory(dir.resolve(element));
       Map<String, Double> row = run(0.3, insulin(Arrays.asList(element),
           Arrays.asList(1.0)), tophat(1.0), out);
-
-      assertTrue(row.get("Dose") > 0, element);
-      assertTrue(row.get("Elastic") > 0, element);
-      assertTrue(row.get("Single_elastic") > 0, element);
-      for (String name : new String[] {"Inelastic", "Productive", "Info_coef",
-          "Best_en", "Best_t"}) {
-        assertTrue(Double.isNaN(row.get(name)), element + " " + name);
+      for (String name : row.keySet()) {
+        assertFalse(Double.isNaN(row.get(name)), element + " " + name);
       }
+      assertTrue(row.get("Best_en") < 1990, element);
+    }
+  }
+
+  /**
+   * For an element the tables give no binding energy for, MicroED reports
+   * NaN for everything the inelastic model feeds, and the dose as before.
+   * No element lacks one now, so this one is made to.
+   */
+  @Test
+  public void anElementLackingBindingEnergiesGivesNaN(@TempDir final Path dir)
+      throws IOException {
+    CoefCalcCompute lacking = new CoefCalcFromParams(78.02, 78.02, 78.02,
+        90.0, 90.0, 90.0, 24, 51, 0, 0, Arrays.asList("ZN", "S"),
+        Arrays.asList(0.333, 6.0), Arrays.asList("P"), Arrays.asList(425.0),
+        NONE, NO_AMOUNTS, 0.64, null, null, 0, NONE, NO_AMOUNTS, 0, 0) {
+      @Override
+      public List<String> getElementsLackingBindingEnergies() {
+        return Arrays.asList("ZN");
+      }
+    };
+    Map<String, Double> row = run(0.3, lacking, tophat(1.0), dir);
+    Map<String, Double> baseline = run(0.3, insulin(), tophat(1.0),
+        Files.createDirectory(dir.resolve("baseline")));
+
+    assertEquals(baseline.get("Dose"), row.get("Dose"), 0.0);
+    assertEquals(baseline.get("Elastic"), row.get("Elastic"), 0.0);
+    assertEquals(baseline.get("Single_elastic"), row.get("Single_elastic"),
+        0.0);
+    for (String name : new String[] {"Inelastic", "Productive", "Info_coef",
+        "Best_en", "Best_t"}) {
+      assertTrue(Double.isNaN(row.get(name)), name);
     }
   }
 

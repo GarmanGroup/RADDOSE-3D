@@ -3442,6 +3442,14 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
 
   /**
    * The binding energy of a subshell, as the element tables give it.
+   * <p>
+   * MuCalcConstants.txt used to give zero or nothing for some subshells the
+   * GOS model reads: Na L2 and L3; Ca, Sc, Ti and V M2 and M3; Cr M2, M3
+   * and M4; Ga and Ge M2 to M5; and the M1 binding energy of Al. They come
+   * from the X-ray Data Booklet, Table 1-1, as the table's neighbouring M1
+   * binding energies do -- except Al 3s and Cr 3d, which it does not list,
+   * from T.A. Carlson, Photoelectron and Auger Spectroscopy (Plenum, 1975),
+   * as Geant4's G4AtomicShells tabulates them.
    *
    * @param shellIndex K, L1, L2, L3, M1, M2, M3, M4, M5, N1 from 0 to 9
    * @param e element
