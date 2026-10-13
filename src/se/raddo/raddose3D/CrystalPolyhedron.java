@@ -1912,8 +1912,12 @@ public class CrystalPolyhedron extends Crystal {
     double step = 2*Math.PI / PE_ANGLE_RES_LIMIT;
     int counter = -1;
     // Grown as needed. A fixed array, sized at one and a half times an
-    // estimate and then scanned for its trailing zeros, stood here.
-    java.util.List<Integer> bias = new java.util.ArrayList<Integer>();
+    // estimate and then scanned for its trailing zeros, stood here. Kept
+    // primitive: the table is rebuilt for every angle and every energy a
+    // pink beam is sampled at, and a list of boxed integers made photoelectron
+    // escape six times slower.
+    int[] bias = new int[1024];
+    int biasSize = 0;
     
     for (double theta = 0*Math.PI; theta < 2*Math.PI; theta += step) {
       for (double phi = 0; phi <= PE_ANGLE_LIMIT/2 ; phi += step) {
@@ -1956,7 +1960,10 @@ public class CrystalPolyhedron extends Crystal {
           
           if (distribution[place] > 0) {
             while (runningCheck < distribution[place]) {
-              bias.add(counter);
+              if (biasSize == bias.length) {
+                bias = Arrays.copyOf(bias, 2 * bias.length);
+              }
+              bias[biasSize++] = counter;
               runningCheck += 1;
             }
           }
@@ -1986,10 +1993,7 @@ public class CrystalPolyhedron extends Crystal {
       }
     }
     
-    int[] actualTrackBias = new int[bias.size()];
-    for (int i = 0; i < actualTrackBias.length; i++) {
-      actualTrackBias[i] = bias.get(i);
-    }
+    int[] actualTrackBias = Arrays.copyOf(bias, biasSize);
     if (cryo) {
       cryoTrackNumberBias = actualTrackBias;
     } else {
