@@ -157,6 +157,54 @@ public class BeamExperimentalTest {
   }
 
   /**
+   * An aperture clips the profile with its own sizes, and the pixels it lets
+   * through carry the whole flux, which the user guide defines as the flux
+   * after collimation. The sizes used to be ignored.
+   */
+  @Test
+  public void anApertureClipsTheProfileAndCarriesTheFlux() {
+    BeamExperimental b = new BeamExperimental(evenBeamBothChange, defaultFlux,
+        defaultE, defaultHorizSize, defaultVertSize, defaultP, defaultFWHM);
+    // 10 um square: lets through the four central pixels, of 4, 5, 5 and 6.
+    b.setCollimation(10.0, 10.0, false);
+    b.applyContainerAttenuation(new ContainerTransparent());
+    b.generateBeamArray();
+
+    double inside = 4 + 5 + 5 + 6;
+    double perUnit = Beam.KEVTOJOULES * defaultE * defaultFlux
+        / (inside * defaultHorizSize * defaultVertSize);
+    assertEquals(4 * perUnit, b.beamIntensity(-2.5, -2.5, 0),
+        tolerance * perUnit);
+    assertEquals(6 * perUnit, b.beamIntensity(2.5, 2.5, 0),
+        tolerance * perUnit);
+    assertEquals(0.0, b.beamIntensity(5.001, 0, 0));
+    assertEquals(0.0, b.beamIntensity(0, -7.5, 0));
+  }
+
+  /** A circular aperture is the ellipse of the sizes given. */
+  @Test
+  public void aCircularApertureIsTheEllipseItsSizesGive() {
+    BeamExperimental b = new BeamExperimental(evenBeamBothChange, defaultFlux,
+        defaultE, defaultHorizSize, defaultVertSize, defaultP, defaultFWHM);
+    b.setCollimation(16.0, 16.0, true);
+    b.applyContainerAttenuation(new ContainerTransparent());
+    b.generateBeamArray();
+
+    assertTrue(b.beamIntensity(7.5, 0, 0) > 0, "inside the circle");
+    assertEquals(0.0, b.beamIntensity(7.5, 7.5, 0), "outside it");
+  }
+
+  /** An aperture that admits none of the image is refused. */
+  @Test
+  public void anApertureAdmittingNothingIsRefused() {
+    BeamExperimental b = new BeamExperimental(evenBeamBothChange, defaultFlux,
+        defaultE, defaultHorizSize, defaultVertSize, defaultP, defaultFWHM);
+    b.setCollimation(1.0, 1.0, false);
+    b.applyContainerAttenuation(new ContainerTransparent());
+    assertThrows(IllegalArgumentException.class, b::generateBeamArray);
+  }
+
+  /**
    * Explicitly test the bilinear interpolation routine.
    * Values obtained from
    * *
