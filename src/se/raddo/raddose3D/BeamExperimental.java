@@ -23,6 +23,14 @@ public class BeamExperimental implements Beam {
   private final Double[][] dataStructure;
   
   public boolean isCircular;
+
+  /**
+   * The aperture's full widths along x and y, in micrometres, or null for
+   * none. The aperture clips the measured profile, and the flux -- which the
+   * user guide defines as the flux after collimation -- is spread over the
+   * part of the profile it lets through.
+   */
+  private Double collXum, collYum;
   
 
   /**
@@ -66,6 +74,46 @@ public class BeamExperimental implements Beam {
   }
 
   /**
+   * Sets the aperture in front of the measured profile.
+   * <p>
+   * It used to be ignored: Collimation Circular clipped the profile to the
+   * ellipse inscribed in the whole image whatever sizes it gave, and any
+   * other collimation did nothing.
+   *
+   * @param collX full width along x in micrometres, or null for none
+   * @param collY full width along y in micrometres, or null for none
+   * @param circular whether the aperture is elliptical
+   */
+  public void setCollimation(final Double collX, final Double collY,
+      final boolean circular) {
+    if ((collX == null) != (collY == null)) {
+      throw new IllegalArgumentException(
+          "An experimental beam's collimation needs both sizes.");
+    }
+    collXum = collX;
+    collYum = collY;
+    isCircular = circular;
+  }
+
+  /**
+   * Whether a point, relative to the beam axis, passes the aperture.
+   *
+   * @param x micrometres along x
+   * @param y micrometres along y
+   * @return true if there is no aperture or the point is inside it
+   */
+  private boolean insideAperture(final double x, final double y) {
+    if (collXum == null) {
+      return true;
+    }
+    if (isCircular) {
+      return (Math.pow(x, 2) / Math.pow(collXum / 2, 2))
+          + (Math.pow(y, 2) / Math.pow(collYum / 2, 2)) <= 1;
+    }
+    return Math.abs(x) <= collXum / 2 && Math.abs(y) <= collYum / 2;
+  }
+
+  /**
    * Generate the beam array from the other instance variables
    */
   @Override
@@ -83,9 +131,19 @@ public class BeamExperimental implements Beam {
           beamArrayWithBorders[i][j] = 0;
         } else {
           beamArrayWithBorders[i][j] = dataStructure[i - 1][j - 1];
-          beamSum += dataStructure[i - 1][j - 1];
+          // Only the pixels the aperture lets through carry the flux.
+          double x = (j + 0.5) * pixXSize - beamXSize / 2;
+          double y = (i + 0.5) * pixYSize - beamYSize / 2;
+          if (insideAperture(x, y)) {
+            beamSum += dataStructure[i - 1][j - 1];
+          }
         }
       }
+    }
+    if (beamSum <= 0) {
+      throw new IllegalArgumentException(
+          "The experimental beam's collimation lets none of its image "
+              + "through.");
     }
 
     // Dividing by beamSum gives normalised flux/pixelsize
@@ -108,23 +166,12 @@ public class BeamExperimental implements Beam {
   public double beamIntensity(final double coordX, final double coordY,
       final double offAxisUM) {
     beamArray = beamArrayWithBorders;
-   if (isCircular == false) {
     if (Math.abs(coordX - offAxisUM) <= beamXSize / 2 - pixXSize
-        && Math.abs(coordY) <= beamYSize / 2 - pixYSize) {
+        && Math.abs(coordY) <= beamYSize / 2 - pixYSize
+        && insideAperture(coordX - offAxisUM, coordY)) {
       return bilinearInterpolation(coordX, coordY, offAxisUM);
-    } else {
-      return 0d;
     }
-   }
-   else { // circular collimation
-     if (((Math.pow(coordX - offAxisUM, 2)/Math.pow(beamXSize / 2 - pixXSize, 2)) + 
-         (Math.pow(coordY, 2)/Math.pow(beamYSize / 2 - pixYSize, 2))) <= 1) {  // if in the ellipse
-       return bilinearInterpolation(coordX, coordY, offAxisUM);
-     }
-     else {
-       return 0d;
-     }
-   }
+    return 0d;
   }
   
   private double bilinearInterpolation(final double coordX, final double coordY,

@@ -44,13 +44,13 @@ public class BeamExperimentalpgm extends BeamExperimental {
 
         (Double) properties.get(Beam.ENERGY_FWHM));
     file = (String) properties.get(Beam.BEAM_EXTFILE);
-    
-    if ("TRUE".equals(properties.get(Beam.BEAM_CIRCULAR))) {
-      isCircular = true;
-    }
-    else {
-      isCircular = false;
-    }
+
+    // The collimation's sizes now count, as the user guide says they do.
+    // Only its shape used to: Circular meant the ellipse inscribed in the
+    // whole image, and the other shapes nothing.
+    setCollimation((Double) properties.get(Beam.BEAM_COLL_H),
+        (Double) properties.get(Beam.BEAM_COLL_V),
+        "TRUE".equals(properties.get(Beam.BEAM_CIRCULAR)));
   }
 
   @Override
