@@ -46,6 +46,9 @@ public class FluorescenceEscapeTest {
     // calcFluorescenceDistribution allocates zero-length bin arrays.
     p.put(Crystal.CRYSTAL_FLUORESCENT_ESCAPE, "TRUE");
     p.put(Crystal.CRYSTAL_FLUORESCENT_RESOLUTION, BINS);
+    // Any composition but Average, for which escape is refused. The tests
+    // supply their own escape factors, so which one does not matter.
+    p.put(Crystal.CRYSTAL_COEFCALC, new CoefCalcFromParams());
     return new CrystalCuboid(p);
   }
 

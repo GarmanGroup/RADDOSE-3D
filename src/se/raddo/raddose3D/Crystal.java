@@ -251,7 +251,22 @@ public abstract class Crystal {
       fE = fE.toUpperCase();
     }
     fluorescentEscape = ("TRUE".equals(fE));
-    
+
+    /*
+     * Escape modelling needs the crystal's elements, and AbsCoefCalc Average
+     * has none: its getPresentElements returns null. Photoelectron escape
+     * dereferenced that and failed with a NullPointerException; fluorescence
+     * escape printed a warning and modelled nothing. Neither is an answer to
+     * what was asked, so both are refused here, where the reason is known.
+     */
+    if ((photoElectronEscape || fluorescentEscape)
+        && coefCalc instanceof CoefCalcAverage) {
+      throw new IllegalArgumentException(
+          "Photoelectron and fluorescence escape need the crystal's elements, "
+              + "and AbsCoefCalc Average has none. Describe the composition "
+              + "with another AbsCoefCalc, or turn escape off.");
+    }
+
     //Get the goniometer axis
     String goniometer =  String.valueOf(properties.get(CRYSTAL_GONIOMETER_AXIS));
     verticalGoniometer = ("90.0".equals(goniometer)); //so horizontal is default 

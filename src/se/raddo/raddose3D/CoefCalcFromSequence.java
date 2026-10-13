@@ -1,7 +1,6 @@
 package se.raddo.raddose3D;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
@@ -21,8 +20,23 @@ public class CoefCalcFromSequence extends CoefCalcCompute{
   /**
    * An identifier for the residue type that is being read in the current line
    * if the sequence file.
+   * <p>
+   * Protein until a header says otherwise. It used to start at 0, which names
+   * no residue type, so a file whose residues came before any '&gt;' header
+   * failed on its first residue -- reported as "not a recognised protein
+   * residue code", whatever the residue was.
    */
-  int residueType;
+  int residueType = ResidueDatabase.TYPE_PROTEIN;
+
+  /**
+   * Chains this long or longer, read as protein but made only of the
+   * nucleotide codes A, C, G, T and U, are reported as probably mislabelled.
+   * Shorter ones could well be peptides.
+   */
+  static final int NUCLEOTIDE_LOOKALIKE_LENGTH = 10;
+
+  /** The residue codes of the chain being read, while it is read as protein. */
+  private final StringBuilder currentProteinChain = new StringBuilder();
   
   /**
    * Simple Constructor that does nothing.
@@ -210,23 +224,40 @@ public class CoefCalcFromSequence extends CoefCalcCompute{
    */
   public void parseSequenceFile(String sequenceFile) {
     String sequenceLine;
-    //Try to read the file
-    try {
-      FileReader fr = new FileReader(sequenceFile);
-      BufferedReader textReader = new BufferedReader(fr);
-      //Try to read the contents of the file
-      try {
-        //Read each line of the file.
-        while ((sequenceLine = textReader.readLine()) != null) {
-          parseLine(sequenceLine);
-        }
-      } catch (IOException e) {
-        System.out.println("Could not read sequence file.");
-        e.printStackTrace();
+    /*
+     * A file that cannot be read is an error. It used to print "Could not
+     * read sequence file." and carry on with no residues at all, which gave a
+     * dose for a crystal of solvent alone.
+     */
+    try (BufferedReader textReader =
+        new BufferedReader(new FileReader(sequenceFile))) {
+      //Read each line of the file.
+      while ((sequenceLine = textReader.readLine()) != null) {
+        parseLine(sequenceLine);
       }
-    } catch (FileNotFoundException e) {
-      System.out.println("Could not read sequence file.");
-      e.printStackTrace();
+    } catch (IOException e) {
+      throw new IllegalArgumentException(
+          "Could not read sequence file " + sequenceFile + ": "
+              + e.getMessage(), e);
+    }
+    warnIfNucleotides();
+  }
+
+  /**
+   * Warns when the chain just read as protein looks like DNA or RNA.
+   * <p>
+   * Every nucleotide code is also an amino acid code, so a nucleic acid chain
+   * whose header lacks ISDNA or ISRNA is read as protein without any error.
+   */
+  private void warnIfNucleotides() {
+    String chain = currentProteinChain.toString();
+    currentProteinChain.setLength(0);
+    if (chain.length() >= NUCLEOTIDE_LOOKALIKE_LENGTH
+        && chain.matches("[ACGTU]+")) {
+      System.out.println("*************** WARNING ***************");
+      System.out.println("A chain of " + chain.length() + " residues was "
+          + "read as protein, but every residue is A, C, G, T or U. If it is "
+          + "DNA or RNA, put ISDNA or ISRNA in its '>' header line.");
     }
   }
 
@@ -256,6 +287,7 @@ public class CoefCalcFromSequence extends CoefCalcCompute{
    * @param line String containing the current line of the sequence file.
    */
   public void parseCommentLine(String line) {
+    warnIfNucleotides();
     if (line.toUpperCase().contains("ISDNA")) {
       this.residueType = ResidueDatabase.TYPE_DNA;
     } else if (line.toUpperCase().contains("ISRNA")) {
@@ -309,6 +341,9 @@ public class CoefCalcFromSequence extends CoefCalcCompute{
           + residue.getMolecularWeight();
       
       updateAtomicAndMacromolecularOccurrences(residue);
+      if (this.residueType == ResidueDatabase.TYPE_PROTEIN) {
+        currentProteinChain.append(resID.toUpperCase());
+      }
     }
   }
 
