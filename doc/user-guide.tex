@@ -404,6 +404,8 @@ Only sequence files in the \href{https://en.wikipedia.org/wiki/Protein_Data_Bank
 \Keyword{SEQFILE \textit{FILENAME}} specifies the location of the file that contains the sequence of the chosen sample.
 Only sequence files in the \href{https://en.wikipedia.org/wiki/FASTA_format}{\textbf{FASTA}} format can be read. \SB
 
+A file may hold several chains, each after a header line beginning \texttt{>}. The residues after a header are read as protein unless the header contains \texttt{ISDNA} or \texttt{ISRNA}, in any case, which mark DNA and RNA. Residues before any header are read as protein. Every nucleotide letter is also an amino acid letter, so a DNA or RNA chain whose header lacks its marker is read as protein without error; RADDOSE-3D prints a warning when a chain of ten or more residues read as protein consists only of A, C, G, T and U. \SB
+
 \subsection{\Keyword{CIF}}
 \label{cif}
 
@@ -708,7 +710,9 @@ specifies the location of the .pgm file that describes the beam profile. NOTE: t
 
 \noindent \Keyword{PIXELSIZE \textit{X Y}}.
 
-\Keyword{\textit{X}} and \Keyword{\textit{Y}} specify the horizontal and vertical size of the pixels in micrometers in the .pgm file respectively.
+\Keyword{\textit{X}} and \Keyword{\textit{Y}} specify the size of the pixels in micrometers along the RADDOSE-3D \textit{x} and \textit{y} axes respectively, as for \hyperref[beamfwhm]{the \Keyword{FWHM} keyword} and \Keyword{COLLIMATION}.
+
+RADDOSE-3D lays the image's horizontal axis along \textit{y}, the goniometer axis, and its vertical axis along \textit{x}, both reversed: a feature right of the image's centre is at negative \textit{y}, and one above it at positive \textit{x}. So \Keyword{\textit{X}} is the pixels' size down the image and \Keyword{\textit{Y}} their size across it. For square pixels the two are the same.
 
 \subsection{\Keyword{COLLIMATION}}
 

@@ -44,67 +44,116 @@ public class BeamExperimentalTest {
     }
   }
 
-  @Test
-  /** Checks that the halfway points between nodes are correct */
-  public void testHorizontal() {
-    BeamExperimental evenVert = new BeamExperimental(evenBeamVerticalChange,
-        defaultFlux, defaultE, defaultHorizSize, defaultVertSize, defaultP, defaultFWHM);
-
-    // Intensity profile should be constant across rows, 
-    // change from 0 to 4 across columns
-    evenVert.generateBeamArray();
-    double normF = defaultFlux
-        / (sumHoriz * defaultHorizSize * defaultVertSize);
-
-    // Check along X
-    assertTrue(evenVert.beamIntensity(0, 0, 0) - 2.5 * normF < tolerance);
-    assertTrue(evenVert.beamIntensity(5, 8, 0) - 3.5 * normF < tolerance);
-    assertTrue(evenVert.beamIntensity(0, -10, 0) - 1.25 * normF < tolerance);
-    // Check along Y
-    assertTrue(evenVert.beamIntensity(5, 0, 0) - 3.5 * normF < tolerance);
-    assertTrue(evenVert.beamIntensity(-2.5, 5, 0) - 2 * normF < tolerance);
+  /**
+   * Builds a beam from a profile, as a run builds one: a transparent
+   * container applied first, so the beam carries its flux.
+   * <p>
+   * The tests here used to skip that step. The attenuated flux then stayed 0,
+   * every intensity was 0, and assertions of the form
+   * {@code intensity - expected < tolerance} held whatever the code did.
+   *
+   * @param profile relative intensities, [y][x]
+   * @return the beam, ready to be asked for intensities
+   */
+  private BeamExperimental beam(final Double[][] profile) {
+    BeamExperimental beam = new BeamExperimental(profile, defaultFlux,
+        defaultE, defaultHorizSize, defaultVertSize, defaultP, defaultFWHM);
+    beam.applyContainerAttenuation(new ContainerTransparent());
+    beam.generateBeamArray();
+    return beam;
   }
 
-  @Test
-  /** Checks that the halfway points between nodes are correct */
-  public void testVertical() {
-    BeamExperimental evenHoriz = new BeamExperimental(evenBeamHorizontalChange,
-        defaultFlux, defaultE, defaultHorizSize, defaultVertSize, defaultP, defaultFWHM);
-    // Intensity profile should be constant across rows, 
-    // change from 0 to 4 across columns
-    evenHoriz.generateBeamArray();
-    double normF = defaultFlux / (sumVert * defaultHorizSize * defaultVertSize);
-    // Check along X
-    //assertTrue(evenHoriz.beamIntensity(0, 0, 0) - 2.5 * normF < tolerance);
-    assertTrue(evenHoriz.beamIntensity(8, 5, 0) - 3.5 * normF < tolerance);
-    assertTrue(evenHoriz.beamIntensity(-10, 0, 0) - 1.25 * normF < tolerance);
-    // Check along Y
-    assertTrue(evenHoriz.beamIntensity(0, 5, 0) - 3.5 * normF < tolerance);
-    assertTrue(evenHoriz.beamIntensity(5, -2.5, 0) - 2 * normF < tolerance);
+  /**
+   * One pixel's energy flux, as generateBeamArray scales it.
+   *
+   * @param value the pixel's relative intensity
+   * @param sum the profile's total
+   * @return J/um^2/s
+   */
+  private double perPixel(final double value, final double sum) {
+    return value * Beam.KEVTOJOULES * defaultE * defaultFlux
+        / (sum * defaultHorizSize * defaultVertSize);
   }
 
+  /**
+   * A 4 by 4 profile of 5 um pixels, with a border of zeros one pixel wide,
+   * is centred on the beam axis: pixel [i][j] is centred at x = 5j - 7.5,
+   * y = 5i - 7.5. This one varies along y only.
+   */
   @Test
-  /** Checks that the halfway points between nodes are correct */
-  public void testBoth() {
-    BeamExperimental evenBoth = new BeamExperimental(evenBeamBothChange,
-        defaultFlux, defaultE, defaultHorizSize, defaultVertSize, defaultP, defaultFWHM); // Intensity profile should be constant across rows, 
-    evenBoth.generateBeamArray();
-    double normF = defaultFlux / (sumBoth * defaultHorizSize * defaultVertSize);
+  public void aProfileVaryingAlongY() {
+    BeamExperimental b = beam(evenBeamVerticalChange);
 
-    // Check along X
-    assertTrue(evenBoth.beamIntensity(0, 0, 0) - 5 * normF < tolerance);
-    assertTrue(evenBoth.beamIntensity(5, 0, 0) - 6 * normF < tolerance);
-    assertTrue(evenBoth.beamIntensity(2.5, 0, 0) - 5.5 * normF < tolerance);
+    assertEquals(perPixel(1, sumVert), b.beamIntensity(0, -7.5, 0),
+        tolerance * perPixel(1, sumVert));
+    assertEquals(perPixel(3, sumVert), b.beamIntensity(0, 2.5, 0),
+        tolerance * perPixel(3, sumVert));
+    assertEquals(perPixel(4, sumVert), b.beamIntensity(-7.5, 7.5, 0),
+        tolerance * perPixel(4, sumVert));
+    // Halfway between the rows of 2 and of 3.
+    assertEquals(perPixel(2.5, sumVert), b.beamIntensity(0, 0, 0),
+        tolerance * perPixel(2.5, sumVert));
+  }
 
-    // Check along Y
-    assertTrue(evenBoth.beamIntensity(0, -5, 0) - 4 * normF < tolerance);
-    assertTrue(evenBoth.beamIntensity(0, -2.5, 0) - 4.5 * normF < tolerance);
+  /** The same, varying along x only. */
+  @Test
+  public void aProfileVaryingAlongX() {
+    BeamExperimental b = beam(evenBeamHorizontalChange);
 
-    // Check along both
-    assertTrue(evenBoth.beamIntensity(5, -5, 0) - 5.5 * normF < tolerance);
-    assertTrue(evenBoth.beamIntensity(7.5, -2.5, 0) - 6 * normF < tolerance);
+    assertEquals(perPixel(1, sumHoriz), b.beamIntensity(-7.5, 0, 0),
+        tolerance * perPixel(1, sumHoriz));
+    assertEquals(perPixel(4, sumHoriz), b.beamIntensity(7.5, -7.5, 0),
+        tolerance * perPixel(4, sumHoriz));
+    assertEquals(perPixel(2.5, sumHoriz), b.beamIntensity(0, 0, 0),
+        tolerance * perPixel(2.5, sumHoriz));
+  }
 
-    System.out.print("ok");
+  /** Varying along both, read at centres, midpoints and the corners. */
+  @Test
+  public void aProfileVaryingAlongBoth() {
+    BeamExperimental b = beam(evenBeamBothChange);
+
+    assertEquals(perPixel(2, sumBoth), b.beamIntensity(-7.5, -7.5, 0),
+        tolerance * perPixel(2, sumBoth));
+    assertEquals(perPixel(8, sumBoth), b.beamIntensity(7.5, 7.5, 0),
+        tolerance * perPixel(8, sumBoth));
+    assertEquals(perPixel(5, sumBoth), b.beamIntensity(0, 0, 0),
+        tolerance * perPixel(5, sumBoth));
+    assertEquals(perPixel(5, sumBoth), b.beamIntensity(2.5, -2.5, 0),
+        tolerance * perPixel(5, sumBoth));
+    // The middle of four pixels, of 4, 5, 5 and 6.
+    assertEquals(perPixel(5, sumBoth), b.beamIntensity(5, -5, 0),
+        tolerance * perPixel(5, sumBoth));
+  }
+
+  /**
+   * The profile fades into its border of zeros, and stops one pixel short of
+   * the image's edge.
+   */
+  @Test
+  public void theProfileFadesIntoItsBorder() {
+    BeamExperimental b = beam(evenBeamBothChange);
+
+    // Halfway from the corner pixel's centre to the border's.
+    assertEquals(perPixel(4, sumBoth), b.beamIntensity(10, 7.5, 0),
+        tolerance * perPixel(4, sumBoth));
+    assertEquals(0.0, b.beamIntensity(10.001, 0, 0));
+    assertEquals(0.0, b.beamIntensity(0, -10.001, 0));
+  }
+
+  /** Summed over the pixel centres, the profile carries the beam's power. */
+  @Test
+  public void theProfileCarriesTheBeamsPower() {
+    BeamExperimental b = beam(evenBeamBothChange);
+    double power = 0;
+    for (int i = 0; i < 4; i++) {
+      for (int j = 0; j < 4; j++) {
+        power += b.beamIntensity(5 * j - 7.5, 5 * i - 7.5, 0)
+            * defaultHorizSize * defaultVertSize;
+      }
+    }
+    double expected = Beam.KEVTOJOULES * defaultE * defaultFlux;
+    assertEquals(expected, power, tolerance * expected);
   }
 
   /**

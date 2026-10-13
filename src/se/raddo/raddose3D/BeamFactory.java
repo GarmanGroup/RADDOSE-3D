@@ -35,7 +35,16 @@ public class BeamFactory extends ClassFactory {
     String revisedBeamName;
 
     if ("experimental".equalsIgnoreCase(beamName)) {
-      revisedBeamName = "se.raddo.raddose3D.BeamExperimental";
+      /*
+       * BeamExperimental is the base class of the image readers. It has no
+       * constructor that takes the property map, so this used to fail inside
+       * ClassFactory with "does not have a property constructor", which says
+       * nothing about what to write instead.
+       */
+      throw new IllegalArgumentException(
+          "Beam Type Experimental cannot be built from an input file. For a "
+              + "beam profile read from a PGM image, use Type ExperimentalPGM "
+              + "with File and PixelSize.");
     } else if ("experimentalpgm".equalsIgnoreCase(beamName)) {
       revisedBeamName = "se.raddo.raddose3D.BeamExperimentalpgm";
     } else if ("gaussian".equalsIgnoreCase(beamName)) {

@@ -83,6 +83,17 @@ public class CoefCalcFromSequenceSAXS extends CoefCalcFromSequence {
     if (this.getNumRNA() > 0) {
       System.out.printf("Number of RNA Residues: %.0f%n", this.getNumRNA());
     }
+
+    /*
+     * Carbohydrate is part of the monomer, so it counts in the weight that
+     * sets how many monomers the concentration implies, at the mass
+     * CoefCalcSAXS gives it. Recorded here, before the solvent fraction is
+     * estimated, it also counts in the volume the monomers occupy. NumCarb
+     * used to be read and then ignored: addCarbs adds getNumCarb() residues,
+     * and nothing on this path set it.
+     */
+    this.setNumCarb(numCarb);
+    this.totalMolecularWeight += CoefCalcSAXS.AVG_CARB_MASS * numCarb;
     System.out.printf("The total molecular weight is: %.2f g/mol%n",
         this.totalMolecularWeight);
 

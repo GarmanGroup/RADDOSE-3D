@@ -395,10 +395,18 @@ public final class RD3D {
     //        param can be anything (not containing :)
     //        dest can be anything (not containing : or ,)
     //        dest = '-'  => STDOUT
+    // These name real modules. The text used to give Summary and
+    // DoseStateCSV, which name none, so copying it failed.
     System.out.println("     Default output corresponds to");
-    System.out.println("       -o SummaryCSV:SummaryCSV.csv");
-    System.out.println("       -o Summary:Summary.txt,-");
-    System.out.println("       -o DoseStateCSV:DoseState.csv");
+    System.out.println("       -o SummaryCSV:Summary.csv");
+    System.out.println("       -o SummaryText:Summary.txt,-");
+    System.out.println("       -o FinalDoseStateCSV:DoseState.csv");
+    System.out.println("       -o FinalDoseStateR:DoseState.R");
+    System.out.println("       -o RDECSV:RDE.csv");
+    System.out.println("       -o DWDs:DWDs.csv");
+    System.out.println("       -o VoxelDose:VoxelDose.csv");
+    System.out.println("       -o VoxelFluences:VoxelFluences.csv");
+    System.out.println("       -o ProgressIndicator:-");
 
     System.out.println();
     System.out

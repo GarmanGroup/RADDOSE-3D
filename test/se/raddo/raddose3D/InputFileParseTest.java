@@ -128,7 +128,9 @@ public class InputFileParseTest {
         + "Type Cuboid\n"
         + "Dimensions 20 20 20\n"
         + "PixelsPerMicron 0.5\n"
-        + "AbsCoefCalc Dummy\n"
+        // RD3D rather than Dummy: escape modelling, one of the directives
+        // tried here, is refused for the Average composition.
+        + "AbsCoefCalc RD3D\n"
         + "UnitCell 78.02 78.02 78.02\n"
         + "NumMonomers 24\n"
         + "NumResidues 51\n"
