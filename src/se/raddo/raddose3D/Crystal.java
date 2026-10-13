@@ -631,30 +631,6 @@ public abstract class Crystal {
     }
   }
   
-  /**
-   * Calculates the general Auger energy at each angle that is later applied to each voxel using number of photons
-   * 
-   * @param fluorescentEscapeFactors
-   * @return auger energy
-   */
-  public double getAugerEnergy(double[][] fluorescentEscapeFactors) {
-    //Similar to the fluorescence energy below. Copy and pasting a bit so can make it tidier
-    //Gets the Auger energy without number of photons
-    double augerEnergy = 0;
-    for (int i = 0; i < fluorescentEscapeFactors.length; i++){   //loops over each atom type
-     double muratio = fluorescentEscapeFactors[i][0]; // uj/upe
-     double K1 = fluorescentEscapeFactors[i][1] * fluorescentEscapeFactors[i][2] * (1-fluorescentEscapeFactors[i][3]); 
-     /*
-     double L1 = fluorescentEscapeFactors[i][5] * fluorescentEscapeFactors[i][6] * (1-fluorescentEscapeFactors[i][7]);
-     double L2 = fluorescentEscapeFactors[i][9] * fluorescentEscapeFactors[i][10] * (1-fluorescentEscapeFactors[i][11]);
-     double L3 = fluorescentEscapeFactors[i][13] * fluorescentEscapeFactors[i][14] * (1-fluorescentEscapeFactors[i][15]);
-     */
-  //   augerEnergy += (K1 + L1 + L2 + L3) * muratio;
-     augerEnergy += K1 * muratio;
-    }
-    augerEnergy = augerEnergy * Beam.KEVTOJOULES;
-    return augerEnergy;
-  }
   
   /**
    * Gets the energy of each fluorescent event at a given angle
@@ -833,9 +809,6 @@ public abstract class Crystal {
       }  
       
     double fluorescenceEnergyRelease = 0;
-    double augerEnergy = 0;   
-    double cryoAugerEnergy = 0;
-    double cryoFluorescenceEnergyRelease = 0;
     double[][] cryoFeFactors = null;
     // Update coefficients in case the beam energy has changed.
     coefCalc.updateCoefficients(beam);
@@ -860,9 +833,6 @@ public abstract class Crystal {
     angularEmissionProbs = getAngularEmissionProbs();
     //elastic electron angle setup
     coefCalc.populateCrossSectionCoefficients();
-    
-    //Calc Auger
-    augerEnergy = getAugerEnergy(feFactors);
     
     //populate ELSEPA for MC
     if (MC == true) {
@@ -894,10 +864,6 @@ public abstract class Crystal {
      coefCalc.updateCryoCoefficients(beam.getPhotonEnergy());
      cryoFeFactors = coefCalc.getCryoFluorescentEscapeFactors(beam);
      calculateCryoSolutionParameters(beam, cryoFeFactors); //crystal and everhting set here 
-     cryoAugerEnergy = getAugerEnergy(cryoFeFactors);
-       if (fluorescentEscape) {
-         cryoFluorescenceEnergyRelease = calcFluorescence(beam, cryoFeFactors);
-       }
    }
    
     //Calculate the attenuation due to the sample container
@@ -984,7 +950,7 @@ public abstract class Crystal {
         
       // Expose one angle ... at one energy
         exposeAngle(angles[n], beam, wedge, n, angles.length, fluorescenceEnergyRelease, 
-            augerEnergy, cryoAugerEnergy, cryoFluorescenceEnergyRelease, feFactors, cryoFeFactors,
+            feFactors, cryoFeFactors,
             elementAbsorptionProbs, ionisationProbs, angularEmissionProbs, photonEnergy);
 
       } // end of looping through energies
@@ -1054,8 +1020,7 @@ public abstract class Crystal {
 
   private void exposeAngle(final double angle, final Beam beam,
       final Wedge wedge, final int anglenum, final int anglecount,  
-      double fluorescenceEnergyRelease, double augerEnergy, double cryoAugerEnergy,
-      double cryoFluorescenceEnergyRelease, double[][] feFactors, double[][] cryoFeFactors,
+      double fluorescenceEnergyRelease, double[][] feFactors, double[][] cryoFeFactors,
       Map<Element, Double> elementAbsorptionProbs, Map<Element, double[]> ionisationProbs, double[] angularEmissionProbs, double photonEnergy) {
     
     final int[] crystalSize = getCrystSizeVoxels();
@@ -1195,23 +1160,30 @@ public abstract class Crystal {
                   double totFluorescenceEnergyRelease = fluorescenceEnergyRelease * numberofphotons;
                 //convert this to a dose to be released
                   double voxImageFlDoseRelease = fluenceToDoseFactor * totFluorescenceEnergyRelease;
-                                  
-                  //auger part
-                  //Dose in voxel
-                  double totAugerDose = augerEnergy * numberofphotons * fluenceToDoseFactor;
-                  
+
+                  /*
+                   * The photoelectron leaves with the photon's energy less
+                   * the binding energy, B. The atom releases B as it relaxes:
+                   * the fluorescence, tracked above, and the rest -- Auger
+                   * electrons -- here. The rest used to be the K-shell Auger
+                   * energy alone, so the photoelectron was handed the L and M
+                   * shells' Auger energy too.
+                   */
+                  double doseRelaxation = (EnergyToSubtractFromPE / photonEnergy)
+                      * voxImageDose[i][j][k];
+                  double doseRelaxedLocally = doseRelaxation - voxImageFlDoseRelease;
+
                   double doseLostFromCrytsalFL = 0;
                   if (voxImageFlDoseRelease > 0) { //necessary to prevent error when 0
                   doseLostFromCrytsalFL = addDoseAfterFL(i, j, k, voxImageFlDoseRelease);
                   }
-                  if(totAugerDose > 0) {
-                  addDose(i, j, k, totAugerDose);
+                  if (doseRelaxedLocally > 0) {
+                  addDose(i, j, k, doseRelaxedLocally);
                   }
                   if (MC == false) {
                   //Do PE
-                  double dosePE = voxImageDose[i][j][k] - voxImageFlDoseRelease - totAugerDose;
-             //     double dosePE = voxImageDose[i][j][k] - (EnergyToSubtractFromPE/beam.getPhotonEnergy())*voxImageDose[i][j][k];
-                   
+                  double dosePE = voxImageDose[i][j][k] - doseRelaxation;
+
                   double doseLostFromCrystalPE = addDoseAfterPE(i, j, k, dosePE); //to run with new photoelectron escape
                   
 
@@ -1222,7 +1194,7 @@ public abstract class Crystal {
                   //These to test
                   totalFlEnergyToRelease += voxImageFlDoseRelease;
                   totalPEEnergyToRelease += dosePE;
-                  totalAugerEnergyToRelease += totAugerDose;
+                  totalAugerEnergyToRelease += doseRelaxedLocally;
                   
                   //add Auger to Voxel
 
@@ -1235,11 +1207,19 @@ public abstract class Crystal {
                 } 
                 else if (photoElectronEscape == true && fluorescentEscape == false) { //only do PE escape
                   if (MC == false) {
-                  //Dose in voxel
-                  double totAugerDose = augerEnergy * numberofphotons * fluenceToDoseFactor;
+                  /*
+                   * The photoelectron leaves with the photon's energy less
+                   * the binding energy, B, and with fluorescence escape off
+                   * all of B is released here as the atom relaxes. Only the
+                   * K-shell Auger part used to be, so the K-shell
+                   * fluorescence and all L and M relaxation vanished: 3% of
+                   * the absorbed energy for a protein crystal, 15% for SeMet
+                   * just above the Se K edge.
+                   */
+                  double doseRelaxation = (EnergyToSubtractFromPE / photonEnergy)
+                      * voxImageDose[i][j][k];
                   //Do PE
-                //  double dosePE = voxImageDose[i][j][k] - totAugerDose; //change this to binding energy fraction
-                  double dosePE = voxImageDose[i][j][k] - (EnergyToSubtractFromPE/beam.getPhotonEnergy())*voxImageDose[i][j][k];
+                  double dosePE = voxImageDose[i][j][k] - doseRelaxation;
                   double doseLostFromCrystalPE = addDoseAfterPE(i, j, k, dosePE);
 
                   /*
@@ -1259,9 +1239,8 @@ public abstract class Crystal {
                   
                   totalEscapedDosePE +=  doseLostFromCrystalPE;
                   totalEscapedDose += doseLostFromCrystalPE;
-                  //add Auger to Voxel
-                  if(totAugerDose > 0) {
-                  addDose(i, j, k, totAugerDose);
+                  if (doseRelaxation > 0) {
+                  addDose(i, j, k, doseRelaxation);
                   }
                 }
                   else {
@@ -1386,12 +1365,9 @@ public abstract class Crystal {
                 double cryoVoxImageFluence =     // Attenuates the beam for absorption in joules 
                     unattenuatedBeamIntensity * beamAttenuationFactor
                         * Math.exp(depth * beamAttenuationExpFactor); 
-                //For Auger
                 double beamEnergy = (beam.getPhotonEnergy() * Beam.KEVTOJOULES);                       // just left as the beam energy (or mean energy for a gaussian pink beam)
-                double numberOfPhotons = cryoVoxImageFluence / beamEnergy;          
-                
+
                 double cryoVoxImageEnergy = cryoEnergyPerFluence * cryoVoxImageFluence; 
-                double cryoVoxImageDose= fluenceToDoseFactor * cryoVoxImageFluence;
                                                                              
                 if (cryoVoxImageEnergy > 0) {
             //    if (cryoVoxImageDose > 0) { 
@@ -1399,25 +1375,15 @@ public abstract class Crystal {
                   //get numAbsorbed photons
                   double numAbsorbedPhotons = cryoVoxImageEnergy/beamEnergy;
                   
-                  double energyPE = 0;
-                  double dosePE = 0;
-                  double totCryoAugerEnergy = cryoAugerEnergy * numberOfPhotons * cryoEnergyPerFluence;
-                  double totCryoAugerDose = cryoAugerEnergy * numberOfPhotons * fluenceToDoseFactor;
                   if (MC == false) {
-                  if (fluorescentEscape == false) {
-                    energyPE = cryoVoxImageEnergy - totCryoAugerEnergy;
-                    dosePE = cryoVoxImageDose - totCryoAugerDose;
-                  }
-                  else {
-                    double totCryoFluorescenceEnergyRelease = cryoFluorescenceEnergyRelease * numberOfPhotons;
-                    //convert this to a dose to be released
-                    double voxImageFlEnergyRelease = cryoEnergyPerFluence * totCryoFluorescenceEnergyRelease;
-                    double voxImageFlDoseRelease = fluenceToDoseFactor * totCryoFluorescenceEnergyRelease;
-              //      energyPE = cryoVoxImageEnergy - totCryoAugerEnergy - voxImageFlEnergyRelease;
-                    energyPE = cryoVoxImageEnergy - (cryoEnergyToSubtractFromPE/beam.getPhotonEnergy())*cryoVoxImageEnergy;
-                  //  dosePE = cryoVoxImageDose - totCryoAugerDose - voxImageFlDoseRelease;
-                    dosePE = cryoVoxImageDose - (cryoEnergyToSubtractFromPE/beam.getPhotonEnergy())*cryoVoxImageDose;
-                  }
+                  /*
+                   * The surrounding's photoelectrons leave with the photon's
+                   * energy less the binding energy, whether or not
+                   * fluorescence escape is on. With it off, they used to keep
+                   * everything but the K-shell Auger energy.
+                   */
+                  double energyPE = cryoVoxImageEnergy
+                      - (cryoEnergyToSubtractFromPE / photonEnergy) * cryoVoxImageEnergy;
                   double doseAddedBack = addDoseAfterPECryo(iCryst, jCryst, kCryst, energyPE, energyToDoseFactor);
               //    double doseAddedBack = addDoseAfterPECryo(iconverted, jconverted, kconverted, dosePE, energyToDoseFactor);
                   totalDoseFromSurrounding += doseAddedBack;
