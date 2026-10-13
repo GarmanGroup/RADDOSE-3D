@@ -159,7 +159,6 @@ public class CrystalPolyhedron extends Crystal {
   }
   private static final int   PE_ANGLE_RES_LIMIT = 100;
   
-  private static final int   FL_ANGLE_RESOLUTION = 1;
   private static final int   FL_ANGLE_RES_LIMIT = 16;
 
 //  private final int numberAngularEmissionBins = 10;
@@ -2029,54 +2028,39 @@ public class CrystalPolyhedron extends Crystal {
    * @param feFactors
    */
   private void findVoxelsReachedByFL(final double feFactors[][]) {
-    double step = PE_ANGLE_LIMIT / FL_ANGLE_RES_LIMIT;  
-    flRelativeVoxXYZ = new double[feFactors.length][4][flDistBins][FL_ANGLE_RES_LIMIT * FL_ANGLE_RES_LIMIT][3];
-   // flRelativeVoxXYZ = new double[feFactors.length][flDistBins][FL_ANGLE_RES_LIMIT * FL_ANGLE_RES_LIMIT][3];
-    int counter = -1;
-    for (double phi = 0; phi < PE_ANGLE_LIMIT; phi += step) {
-      for (double theta = 0; theta <= PE_ANGLE_LIMIT / 2; theta += step) {
-        // calculate x, y, z coordinates of voxel[i][j][k]
-        // plus the polar coordinates for r, theta, phi
-        
-        boolean replicateTrack = false;
-        if (theta == 0 || theta == (PE_ANGLE_LIMIT / 2)) {
-          if (phi == 0) {
-            replicateTrack = false;
-          }
-          else {
-            replicateTrack = true;
-          }
-        }
-        if (replicateTrack == false) {
-        counter += 1;
-        double xNorm = Math.sin(theta) * Math.cos(phi);
-        double yNorm = Math.sin(theta) * Math.sin(phi);
-        double zNorm = Math.cos(theta);
-        
-       
-        for (int i = 0; i < feFactors.length; i++) { //for every element
-          for (int j = 0; j < 4; j++) { //for each shell
-            for (int m = 0; m < flDistBins; m++) { 
-          // calculate r in voxel coordinates rather than pixels
-              
-          double r = flDistancesTravelled[i][j][m] * this.crystalPixPerUM; 
-          flRelativeVoxXYZ[i][j][m][counter][0] = r * xNorm;
-          flRelativeVoxXYZ[i][j][m][counter][1] = r * yNorm;
-          flRelativeVoxXYZ[i][j][m][counter][2] = r * zNorm;
-          
-              
-            //  double r = flDistancesTravelled[i][m] * this.crystalPixPerUM; 
-           //   flRelativeVoxXYZ[i][m][counter][0] = r * xNorm;
-           //   flRelativeVoxXYZ[i][m][counter][1] = r * yNorm;
-           //   flRelativeVoxXYZ[i][m][counter][2] = r * zNorm;
-              
-            }
+    /*
+     * Fluorescence is emitted with equal probability in every direction, so
+     * its directions are spread evenly over the sphere: a Fibonacci lattice,
+     * each point standing for the same solid angle. The grid that stood here
+     * was uniform in polar and azimuthal angle, which crowds directions at
+     * the poles -- and only its first direction, straight along +z, was ever
+     * used, whatever direction was drawn.
+     *
+     * The azimuth is reduced to [0, 2 pi) before its cosine and sine are
+     * taken, so that the directions do not depend on how a maths library
+     * reduces large arguments.
+     */
+    numberOfTracksFL = FL_ANGLE_RES_LIMIT * FL_ANGLE_RES_LIMIT;
+    flRelativeVoxXYZ = new double[feFactors.length][4][flDistBins][numberOfTracksFL][3];
+    final double goldenAngle = Math.PI * (3 - Math.sqrt(5));
+    for (int track = 0; track < numberOfTracksFL; track++) {
+      double zNorm = 1 - (2.0 * track + 1) / numberOfTracksFL;
+      double radius = Math.sqrt(1 - zNorm * zNorm);
+      double phi = (track * goldenAngle) % (2 * Math.PI);
+      double xNorm = radius * Math.cos(phi);
+      double yNorm = radius * Math.sin(phi);
+      for (int i = 0; i < feFactors.length; i++) { //for every element
+        for (int j = 0; j < 4; j++) { //for each shell
+          for (int m = 0; m < flDistBins; m++) {
+            // calculate r in voxel coordinates rather than pixels
+            double r = flDistancesTravelled[i][j][m] * this.crystalPixPerUM;
+            flRelativeVoxXYZ[i][j][m][track][0] = r * xNorm;
+            flRelativeVoxXYZ[i][j][m][track][1] = r * yNorm;
+            flRelativeVoxXYZ[i][j][m][track][2] = r * zNorm;
           }
         }
       }
-      }
-    } 
-    numberOfTracksFL = counter + 1;
+    }
   }
   
   /*
@@ -2123,55 +2107,38 @@ public class CrystalPolyhedron extends Crystal {
   public double addDoseAfterFL(final int i, final int j, final int k, 
       final double doseIncreaseFL) {
    double doseLostFromCrystalFL = 0;
-   //choose a random track
+   // One direction per voxel, drawn at random. It used to be drawn and then
+   // ignored, every voxel's fluorescence going along +z.
    int randomTrack = RandomSource.nextInt(numberOfTracksFL);
-   
-   //for every energy distribution
+
+   //for every element, shell and distance
     for (int n = 0; n < fluorescenceProportionEvent.length; n++) { 
       for (int l = 0; l < 4; l++) { // 0 = K, 1 = L1, 2 = L2, 3 = L3
-    for (int m = 0; m < flDistBins; m++) {   
-      for (int q = 0; q < FL_ANGLE_RESOLUTION*FL_ANGLE_RESOLUTION; q++) { //One loop for now
-
-        double flPartialDose = 0;
-        // get dose transferred to these located voxels 
-        // at the distance r away (due to PE movement)
-        
-          if(fluorescenceProportionEvent[n][l] != 0) {
-     //       if(fluorescenceProportionEvent[n] != 0) {
-        flPartialDose = doseIncreaseFL  * fluorescenceProportionEvent[n][l] * flDistanceDistribution[n][l][m] 
-            / Math.pow(FL_ANGLE_RESOLUTION,2);
-   //       flPartialDose = doseIncreaseFL  * fluorescenceProportionEvent[n] * flDistanceDistribution[n][m] 
-   //           / Math.pow(FL_ANGLE_RESOLUTION,2);
-              
-        //TO TEST
-         fldose += flPartialDose;
-      
-        double x = flRelativeVoxXYZ[n][l][m][q][0];
-        double y = flRelativeVoxXYZ[n][l][m][q][1];
-        double z = flRelativeVoxXYZ[n][l][m][q][2];
-        
-         
-         //change q for a random number between 0 and 35. 
-        /*
-         double x = flRelativeVoxXYZ[n][m][randomTrack][0];
-         double y = flRelativeVoxXYZ[n][m][randomTrack][1];  
-         double z = flRelativeVoxXYZ[n][m][randomTrack][2];
-         */
-        // add counts to total & total within crystal in order to
-        // calculate the proportion for a given r.     
-        if (isCrystalAt((int) StrictMath.round(i + x), (int) StrictMath.round(j + y),
-            (int) StrictMath.round(k + z))) {              
-          // get dose transferred to this new voxel (due to FL movement)
-          addDose((int) StrictMath.round(i + x), (int) StrictMath.round(j + y),
-          (int) StrictMath.round(k + z), flPartialDose);
-        } else {
-          doseLostFromCrystalFL += flPartialDose;
-          flRelease += flPartialDose;
+        if (fluorescenceProportionEvent[n][l] == 0) {
+          continue;
         }
+        for (int m = 0; m < flDistBins; m++) {
+          // get dose transferred to these located voxels 
+          // at the distance r away (due to FL movement)
+          double flPartialDose = doseIncreaseFL * fluorescenceProportionEvent[n][l]
+              * flDistanceDistribution[n][l][m];
+          fldose += flPartialDose;
+
+          double x = flRelativeVoxXYZ[n][l][m][randomTrack][0];
+          double y = flRelativeVoxXYZ[n][l][m][randomTrack][1];
+          double z = flRelativeVoxXYZ[n][l][m][randomTrack][2];
+
+          if (isCrystalAt((int) StrictMath.round(i + x), (int) StrictMath.round(j + y),
+              (int) StrictMath.round(k + z))) {              
+            // get dose transferred to this new voxel (due to FL movement)
+            addDose((int) StrictMath.round(i + x), (int) StrictMath.round(j + y),
+            (int) StrictMath.round(k + z), flPartialDose);
+          } else {
+            doseLostFromCrystalFL += flPartialDose;
+            flRelease += flPartialDose;
           }
         }
       }
-    }
     }
     return doseLostFromCrystalFL;
   }  

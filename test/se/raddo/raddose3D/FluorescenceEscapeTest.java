@@ -231,4 +231,48 @@ public class FluorescenceEscapeTest {
       }
     }
   }
+
+  /**
+   * Fluorescence directions cover the sphere evenly.
+   * <p>
+   * The directions used to be a grid uniform in polar and azimuthal angle,
+   * crowded at the poles, of which only the first -- straight along +z -- was
+   * ever used. They are now a Fibonacci lattice: unit vectors whose mean is
+   * close to zero and of which half point up.
+   */
+  @Test
+  public void fluorescenceDirectionsCoverTheSphereEvenly() throws Exception {
+    CrystalPolyhedron c = cube();
+    maxEscapeDistancePerShell(c, new double[] {0.01, 0.01, 0.01, 0.01});
+
+    Method m = CrystalPolyhedron.class.getDeclaredMethod(
+        "findVoxelsReachedByFL", double[][].class);
+    m.setAccessible(true);
+    m.invoke(c, (Object) new double[1][20]);
+
+    Field f = CrystalPolyhedron.class.getDeclaredField("flRelativeVoxXYZ");
+    f.setAccessible(true);
+    double[][][][][] offsets = (double[][][][][]) f.get(c);
+    double[][] tracks = offsets[0][0][BINS - 1];
+
+    double[] mean = new double[3];
+    int up = 0;
+    double length = Math.sqrt(tracks[0][0] * tracks[0][0]
+        + tracks[0][1] * tracks[0][1] + tracks[0][2] * tracks[0][2]);
+    for (double[] t : tracks) {
+      double norm = Math.sqrt(t[0] * t[0] + t[1] * t[1] + t[2] * t[2]);
+      assertEquals(length, norm, 1e-9 * length, "every track is as long");
+      for (int axis = 0; axis < 3; axis++) {
+        mean[axis] += t[axis] / norm / tracks.length;
+      }
+      if (t[2] > 0) {
+        up++;
+      }
+    }
+    assertEquals(256, tracks.length);
+    assertEquals(tracks.length / 2, up, "half the directions point up");
+    for (int axis = 0; axis < 3; axis++) {
+      assertEquals(0.0, mean[axis], 1e-2, "mean direction, axis " + axis);
+    }
+  }
 }
