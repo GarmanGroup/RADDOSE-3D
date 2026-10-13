@@ -38,6 +38,13 @@ public class ExposureSummary implements ExposeObserver {
   private int                                 exposedVoxels;
   /** Total number of exposed voxels in a particular image */
   private int                                 imageExposedVoxels;
+
+  /**
+   * Observations of exposed voxels in the current image. A pink beam
+   * observes each voxel once for each energy it is sampled at, so this can
+   * exceed imageExposedVoxels; the averages over observations divide by it.
+   */
+  private int                                 imageObservations;
   private double[] imageVol;
   /** Total number of occupied (= non-empty) voxels in the crystal. */
   private int                                 occupiedVoxels;
@@ -232,7 +239,10 @@ public class ExposureSummary implements ExposeObserver {
  //   voxFluenceImage[i][j][k][wedgeImage] = fluence;
     
     imageDoses[i][j][k] = totalVoxDose + (addedDose);
-    imageFluences[i][j][k] = fluence;
+    // Summed over a pink beam's energies, each observed separately. It used
+    // to be overwritten, keeping the last energy's share of the fluence.
+    boolean firstThisImage = imageFluences[i][j][k] == 0;
+    imageFluences[i][j][k] += fluence;
 
 
     // updating the diffracted intensity for this image/iteration equation
@@ -253,7 +263,13 @@ public class ExposureSummary implements ExposeObserver {
     
     //for RDE
     if (fluence > 0) {
-      imageExposedVoxels += 1;
+      // A voxel counts once an image, however many energies observe it. It
+      // used to count once per observation, so a pink beam's exposed volume
+      // was 200 times too large.
+      if (firstThisImage) {
+        imageExposedVoxels += 1;
+      }
+      imageObservations += 1;
       runningSumRDE += doseDecay;
       fluenceSum += fluence;
       fluenceWeightedRunningSumRDE += fluence * doseDecay;
@@ -291,7 +307,7 @@ public class ExposureSummary implements ExposeObserver {
     
 
     if (fluenceSum > 0) {
-      averageRDE = runningSumRDE / imageExposedVoxels;
+      averageRDE = runningSumRDE / imageObservations;
       fluenceWeightedAvgRDE = fluenceWeightedRunningSumRDE / fluenceSum;
       fluenceWeightedRDEArray[image][0] = angle;
       fluenceWeightedRDEArray[image][1] = fluenceWeightedAvgRDE;
@@ -308,6 +324,7 @@ public class ExposureSummary implements ExposeObserver {
     runningSumRDE = 0d;
     fluenceWeightedRunningSumRDE = 0d;
     imageExposedVoxels = 0;
+    imageObservations = 0;
     fluenceSum = 0d;
     fluenceWeightedAvgRDE = 0d;
     averageRDE = 0d;

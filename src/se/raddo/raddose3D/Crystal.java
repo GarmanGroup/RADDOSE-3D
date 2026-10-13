@@ -974,6 +974,16 @@ public abstract class Crystal {
       }     
 
     } // end of looping over angles
+
+    // Leave the coefficients at the beam's energy, as for a monochromatic
+    // beam. A pink beam left them at the last energy sampled -- the highest,
+    // a FWHM above the mean -- and that is what the summary printed.
+    if (sampleEnergiesArray.length > 1) {
+      coefCalc.updateCoefficients(beam.getPhotonEnergy());
+      if (coefCalc.isCryo()) {
+        coefCalc.updateCryoCoefficients(beam.getPhotonEnergy());
+      }
+    }
          
     
     
@@ -1295,8 +1305,11 @@ public abstract class Crystal {
       double energyToDoseFactor = (1e-15 * (Math.pow(getCrystalPixPerUM(), -3) * coefCalc     //energy absorbed by cryo voxel to dose in crystal voxel
           .getDensity()));
       
+      // Shared between a pink beam's energies, as the crystal's is above.
+      // It was not, so the surrounding had its whole exposure at every one
+      // of the 200 energies, and gave the crystal 200 times its dose.
       beamAttenuationFactor = Math.pow(getCryoCrystalPixPerUM(), -2)
-          * wedge.getTotSec() / anglecount;
+          * wedge.getTotSec() / (anglecount * energiesPerAngle);
       
       
       final int[] cryoCrystalSize = getCryoCrystSizeVoxels();
