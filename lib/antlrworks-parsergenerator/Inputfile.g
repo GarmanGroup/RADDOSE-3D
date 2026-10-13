@@ -7,6 +7,7 @@ import se.raddo.raddose3D.*;
 import java.util.Vector;
 import java.util.HashMap;
 import java.util.Map;
+import java.math.BigDecimal;
 }
 
 @lexer::header {
@@ -35,6 +36,25 @@ package se.raddo.raddose3D.parser;
     }
     public void emitErrorMessage(String msg) {
         parsingErrors.add(msg);
+    }
+
+    /**
+     * A whole number, in any notation the lexer reads as a FLOAT: 1000000,
+     * 1e6 or 1000000.0. Long.parseLong took only the first, and its
+     * NumberFormatException escaped the parser and ended the run.
+     */
+    private long wholeNumber(Token t, String keyword, long max) {
+        try {
+            long value = new BigDecimal(t.getText()).longValueExact();
+            if (value >= 1 && value <= max) {
+                return value;
+            }
+        } catch (ArithmeticException e) {
+            // a fraction, or too large for a long
+        }
+        emitErrorMessage("line " + t.getLine() + ": " + keyword
+            + " needs a whole number from 1 to " + max + ", not " + t.getText());
+        return 1;
     }
 }
 	
@@ -627,7 +647,7 @@ oilDensity returns [double oildens]
 SURROUNDINGDENSITY : ('S'|'s')('U'|'u')('R'|'r')('R'|'r')('O'|'o')('U'|'u')('N'|'n')('D'|'d')('I'|'i')('N'|'n')('G'|'g')('D'|'d')('E'|'e')('N'|'n')('S'|'s')('I'|'i')('T'|'t')('Y'|'y') ;
 
 simElectrons returns [long simel]
-	: (SIMELECTRONS | SIMPHOTONS) a=FLOAT {$simel = Long.parseLong($a.text);};
+	: (SIMELECTRONS | SIMPHOTONS) a=FLOAT {$simel = wholeNumber($a, "SimPhotons", Long.MAX_VALUE);};
 SIMELECTRONS :	('S'|'s')('I'|'i')('M'|'m')('E'|'e')('L'|'l')('E'|'e')('C'|'c')('T'|'t')('R'|'r')('O'|'o')('N'|'n')('S'|'s');
 SIMPHOTONS   :	('S'|'s')('I'|'i')('M'|'m')('P'|'p')('H'|'h')('O'|'o')('T'|'t')('O'|'o')('N'|'n')('S'|'s');
 
@@ -637,7 +657,7 @@ SUBPROGRAM
 	:	 ('S'|'s')('U'|'u')('B'|'b')('P'|'p')('R'|'r')('O'|'o')('G'|'g')('R'|'r')('A'|'a')('M'|'m') ;
 
 runs returns [int value]
-	: RUNS a=FLOAT {$value = Integer.parseInt($a.text);};
+	: RUNS a=FLOAT {$value = (int) wholeNumber($a, "Runs", Integer.MAX_VALUE);};
 RUNS  
 	:	 ('R'|'r')('U'|'u')('N'|'n')('S'|'s') ;
 

@@ -1,10 +1,11 @@
-// $ANTLR 3.4 Inputfile.g 2026-09-18 21:34:45
+// $ANTLR 3.4 Inputfile.g 2026-10-13 14:37:50
 
 package se.raddo.raddose3D.parser;
 import se.raddo.raddose3D.*;
 import java.util.Vector;
 import java.util.HashMap;
 import java.util.Map;
+import java.math.BigDecimal;
 
 
 import org.antlr.runtime.*;
@@ -164,10 +165,29 @@ public class InputfileParser extends Parser {
             parsingErrors.add(msg);
         }
 
+        /**
+         * A whole number, in any notation the lexer reads as a FLOAT: 1000000,
+         * 1e6 or 1000000.0. Long.parseLong took only the first, and its
+         * NumberFormatException escaped the parser and ended the run.
+         */
+        private long wholeNumber(Token t, String keyword, long max) {
+            try {
+                long value = new BigDecimal(t.getText()).longValueExact();
+                if (value >= 1 && value <= max) {
+                    return value;
+                }
+            } catch (ArithmeticException e) {
+                // a fraction, or too large for a long
+            }
+            emitErrorMessage("line " + t.getLine() + ": " + keyword
+                + " needs a whole number from 1 to " + max + ", not " + t.getText());
+            return 1;
+        }
+
 
 
     // $ANTLR start "configfile"
-    // Inputfile.g:41:1: configfile : (a= crystal |b= wedge |c= beam )* EOF ;
+    // Inputfile.g:61:1: configfile : (a= crystal |b= wedge |c= beam )* EOF ;
     public final void configfile() throws RecognitionException {
         Crystal a =null;
 
@@ -177,10 +197,10 @@ public class InputfileParser extends Parser {
 
 
         try {
-            // Inputfile.g:41:11: ( (a= crystal |b= wedge |c= beam )* EOF )
-            // Inputfile.g:42:11: (a= crystal |b= wedge |c= beam )* EOF
+            // Inputfile.g:61:11: ( (a= crystal |b= wedge |c= beam )* EOF )
+            // Inputfile.g:62:11: (a= crystal |b= wedge |c= beam )* EOF
             {
-            // Inputfile.g:42:11: (a= crystal |b= wedge |c= beam )*
+            // Inputfile.g:62:11: (a= crystal |b= wedge |c= beam )*
             loop1:
             do {
                 int alt1=4;
@@ -205,7 +225,7 @@ public class InputfileParser extends Parser {
 
                 switch (alt1) {
             	case 1 :
-            	    // Inputfile.g:42:13: a= crystal
+            	    // Inputfile.g:62:13: a= crystal
             	    {
             	    pushFollow(FOLLOW_crystal_in_configfile47);
             	    a=crystal();
@@ -218,7 +238,7 @@ public class InputfileParser extends Parser {
             	    }
             	    break;
             	case 2 :
-            	    // Inputfile.g:43:13: b= wedge
+            	    // Inputfile.g:63:13: b= wedge
             	    {
             	    pushFollow(FOLLOW_wedge_in_configfile65);
             	    b=wedge();
@@ -231,7 +251,7 @@ public class InputfileParser extends Parser {
             	    }
             	    break;
             	case 3 :
-            	    // Inputfile.g:44:13: c= beam
+            	    // Inputfile.g:64:13: c= beam
             	    {
             	    pushFollow(FOLLOW_beam_in_configfile85);
             	    c=beam();
@@ -321,7 +341,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "crystal"
-    // Inputfile.g:49:1: crystal returns [Crystal cObj] : CRYSTAL ( crystalLine )+ ;
+    // Inputfile.g:69:1: crystal returns [Crystal cObj] : CRYSTAL ( crystalLine )+ ;
     public final Crystal crystal() throws RecognitionException {
         crystal_stack.push(new crystal_scope());
         Crystal cObj = null;
@@ -332,12 +352,12 @@ public class InputfileParser extends Parser {
         		((crystal_scope)crystal_stack.peek()).crystalProperties = new HashMap<Object, Object>();
 
         try {
-            // Inputfile.g:273:2: ( CRYSTAL ( crystalLine )+ )
-            // Inputfile.g:273:4: CRYSTAL ( crystalLine )+
+            // Inputfile.g:293:2: ( CRYSTAL ( crystalLine )+ )
+            // Inputfile.g:293:4: CRYSTAL ( crystalLine )+
             {
             match(input,CRYSTAL,FOLLOW_CRYSTAL_in_crystal134); 
 
-            // Inputfile.g:273:12: ( crystalLine )+
+            // Inputfile.g:293:12: ( crystalLine )+
             int cnt2=0;
             loop2:
             do {
@@ -351,7 +371,7 @@ public class InputfileParser extends Parser {
 
                 switch (alt2) {
             	case 1 :
-            	    // Inputfile.g:273:12: crystalLine
+            	    // Inputfile.g:293:12: crystalLine
             	    {
             	    pushFollow(FOLLOW_crystalLine_in_crystal136);
             	    crystalLine();
@@ -562,7 +582,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "crystalLine"
-    // Inputfile.g:276:1: crystalLine : (a= crystalType |b= crystalDDM |c= crystalCoefcalc |d= crystalDim |e= crystalPPM |f= crystalAngP |g= crystalAngL |h= crystalDecayParam |i= containerThickness |j= containerDensity |k= crystalContainerMaterial |l= containerMaterialMixture |m= unitcell |n= nummonomers |o= numresidues |p= numRNA |q= numDNA |qa= numcarb |r= heavyProteinAtoms |s= heavySolutionConc |t= solventFraction |u= pdb |v= wireframeType |w= modelFile |x= calculatePEEscape |y= proteinConcentration |z= containerMaterialElements |aa= sequenceFile |ab= smallMoleAtoms |ac= cif |bb= calculateFLEscape |cc= flResolution |dd= peResolution |ee= surroundingHeavyConc |ff= oilBased |gg= goniometerAxis |hh= calcSurrounding |ii= oilElements |jj= oilDensity |kk= program |ll= simElectrons |mm= runs |nn= surroundingThickness |pp= polarisationDirection );
+    // Inputfile.g:296:1: crystalLine : (a= crystalType |b= crystalDDM |c= crystalCoefcalc |d= crystalDim |e= crystalPPM |f= crystalAngP |g= crystalAngL |h= crystalDecayParam |i= containerThickness |j= containerDensity |k= crystalContainerMaterial |l= containerMaterialMixture |m= unitcell |n= nummonomers |o= numresidues |p= numRNA |q= numDNA |qa= numcarb |r= heavyProteinAtoms |s= heavySolutionConc |t= solventFraction |u= pdb |v= wireframeType |w= modelFile |x= calculatePEEscape |y= proteinConcentration |z= containerMaterialElements |aa= sequenceFile |ab= smallMoleAtoms |ac= cif |bb= calculateFLEscape |cc= flResolution |dd= peResolution |ee= surroundingHeavyConc |ff= oilBased |gg= goniometerAxis |hh= calcSurrounding |ii= oilElements |jj= oilDensity |kk= program |ll= simElectrons |mm= runs |nn= surroundingThickness |pp= polarisationDirection );
     public final void crystalLine() throws RecognitionException {
         String a =null;
 
@@ -654,7 +674,7 @@ public class InputfileParser extends Parser {
 
 
         try {
-            // Inputfile.g:277:2: (a= crystalType |b= crystalDDM |c= crystalCoefcalc |d= crystalDim |e= crystalPPM |f= crystalAngP |g= crystalAngL |h= crystalDecayParam |i= containerThickness |j= containerDensity |k= crystalContainerMaterial |l= containerMaterialMixture |m= unitcell |n= nummonomers |o= numresidues |p= numRNA |q= numDNA |qa= numcarb |r= heavyProteinAtoms |s= heavySolutionConc |t= solventFraction |u= pdb |v= wireframeType |w= modelFile |x= calculatePEEscape |y= proteinConcentration |z= containerMaterialElements |aa= sequenceFile |ab= smallMoleAtoms |ac= cif |bb= calculateFLEscape |cc= flResolution |dd= peResolution |ee= surroundingHeavyConc |ff= oilBased |gg= goniometerAxis |hh= calcSurrounding |ii= oilElements |jj= oilDensity |kk= program |ll= simElectrons |mm= runs |nn= surroundingThickness |pp= polarisationDirection )
+            // Inputfile.g:297:2: (a= crystalType |b= crystalDDM |c= crystalCoefcalc |d= crystalDim |e= crystalPPM |f= crystalAngP |g= crystalAngL |h= crystalDecayParam |i= containerThickness |j= containerDensity |k= crystalContainerMaterial |l= containerMaterialMixture |m= unitcell |n= nummonomers |o= numresidues |p= numRNA |q= numDNA |qa= numcarb |r= heavyProteinAtoms |s= heavySolutionConc |t= solventFraction |u= pdb |v= wireframeType |w= modelFile |x= calculatePEEscape |y= proteinConcentration |z= containerMaterialElements |aa= sequenceFile |ab= smallMoleAtoms |ac= cif |bb= calculateFLEscape |cc= flResolution |dd= peResolution |ee= surroundingHeavyConc |ff= oilBased |gg= goniometerAxis |hh= calcSurrounding |ii= oilElements |jj= oilDensity |kk= program |ll= simElectrons |mm= runs |nn= surroundingThickness |pp= polarisationDirection )
             int alt3=44;
             switch ( input.LA(1) ) {
             case TYPE:
@@ -894,7 +914,7 @@ public class InputfileParser extends Parser {
 
             switch (alt3) {
                 case 1 :
-                    // Inputfile.g:277:4: a= crystalType
+                    // Inputfile.g:297:4: a= crystalType
                     {
                     pushFollow(FOLLOW_crystalType_in_crystalLine192);
                     a=crystalType();
@@ -907,7 +927,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // Inputfile.g:278:4: b= crystalDDM
+                    // Inputfile.g:298:4: b= crystalDDM
                     {
                     pushFollow(FOLLOW_crystalDDM_in_crystalLine203);
                     b=crystalDDM();
@@ -920,7 +940,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 3 :
-                    // Inputfile.g:279:4: c= crystalCoefcalc
+                    // Inputfile.g:299:4: c= crystalCoefcalc
                     {
                     pushFollow(FOLLOW_crystalCoefcalc_in_crystalLine215);
                     c=crystalCoefcalc();
@@ -933,7 +953,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 4 :
-                    // Inputfile.g:280:4: d= crystalDim
+                    // Inputfile.g:300:4: d= crystalDim
                     {
                     pushFollow(FOLLOW_crystalDim_in_crystalLine225);
                     d=crystalDim();
@@ -948,7 +968,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 5 :
-                    // Inputfile.g:283:4: e= crystalPPM
+                    // Inputfile.g:303:4: e= crystalPPM
                     {
                     pushFollow(FOLLOW_crystalPPM_in_crystalLine236);
                     e=crystalPPM();
@@ -961,7 +981,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 6 :
-                    // Inputfile.g:284:4: f= crystalAngP
+                    // Inputfile.g:304:4: f= crystalAngP
                     {
                     pushFollow(FOLLOW_crystalAngP_in_crystalLine247);
                     f=crystalAngP();
@@ -974,7 +994,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 7 :
-                    // Inputfile.g:285:4: g= crystalAngL
+                    // Inputfile.g:305:4: g= crystalAngL
                     {
                     pushFollow(FOLLOW_crystalAngL_in_crystalLine258);
                     g=crystalAngL();
@@ -987,7 +1007,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 8 :
-                    // Inputfile.g:286:4: h= crystalDecayParam
+                    // Inputfile.g:306:4: h= crystalDecayParam
                     {
                     pushFollow(FOLLOW_crystalDecayParam_in_crystalLine269);
                     h=crystalDecayParam();
@@ -1002,7 +1022,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 9 :
-                    // Inputfile.g:289:4: i= containerThickness
+                    // Inputfile.g:309:4: i= containerThickness
                     {
                     pushFollow(FOLLOW_containerThickness_in_crystalLine279);
                     i=containerThickness();
@@ -1015,7 +1035,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 10 :
-                    // Inputfile.g:290:4: j= containerDensity
+                    // Inputfile.g:310:4: j= containerDensity
                     {
                     pushFollow(FOLLOW_containerDensity_in_crystalLine289);
                     j=containerDensity();
@@ -1028,7 +1048,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 11 :
-                    // Inputfile.g:291:4: k= crystalContainerMaterial
+                    // Inputfile.g:311:4: k= crystalContainerMaterial
                     {
                     pushFollow(FOLLOW_crystalContainerMaterial_in_crystalLine299);
                     k=crystalContainerMaterial();
@@ -1041,7 +1061,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 12 :
-                    // Inputfile.g:292:4: l= containerMaterialMixture
+                    // Inputfile.g:312:4: l= containerMaterialMixture
                     {
                     pushFollow(FOLLOW_containerMaterialMixture_in_crystalLine308);
                     l=containerMaterialMixture();
@@ -1054,7 +1074,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 13 :
-                    // Inputfile.g:293:4: m= unitcell
+                    // Inputfile.g:313:4: m= unitcell
                     {
                     pushFollow(FOLLOW_unitcell_in_crystalLine317);
                     m=unitcell();
@@ -1072,7 +1092,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 14 :
-                    // Inputfile.g:299:4: n= nummonomers
+                    // Inputfile.g:319:4: n= nummonomers
                     {
                     pushFollow(FOLLOW_nummonomers_in_crystalLine328);
                     n=nummonomers();
@@ -1085,7 +1105,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 15 :
-                    // Inputfile.g:300:4: o= numresidues
+                    // Inputfile.g:320:4: o= numresidues
                     {
                     pushFollow(FOLLOW_numresidues_in_crystalLine339);
                     o=numresidues();
@@ -1098,7 +1118,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 16 :
-                    // Inputfile.g:301:4: p= numRNA
+                    // Inputfile.g:321:4: p= numRNA
                     {
                     pushFollow(FOLLOW_numRNA_in_crystalLine350);
                     p=numRNA();
@@ -1111,7 +1131,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 17 :
-                    // Inputfile.g:302:4: q= numDNA
+                    // Inputfile.g:322:4: q= numDNA
                     {
                     pushFollow(FOLLOW_numDNA_in_crystalLine363);
                     q=numDNA();
@@ -1124,7 +1144,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 18 :
-                    // Inputfile.g:303:4: qa= numcarb
+                    // Inputfile.g:323:4: qa= numcarb
                     {
                     pushFollow(FOLLOW_numcarb_in_crystalLine376);
                     qa=numcarb();
@@ -1137,7 +1157,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 19 :
-                    // Inputfile.g:304:4: r= heavyProteinAtoms
+                    // Inputfile.g:324:4: r= heavyProteinAtoms
                     {
                     pushFollow(FOLLOW_heavyProteinAtoms_in_crystalLine389);
                     r=heavyProteinAtoms();
@@ -1151,7 +1171,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 20 :
-                    // Inputfile.g:306:4: s= heavySolutionConc
+                    // Inputfile.g:326:4: s= heavySolutionConc
                     {
                     pushFollow(FOLLOW_heavySolutionConc_in_crystalLine398);
                     s=heavySolutionConc();
@@ -1165,7 +1185,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 21 :
-                    // Inputfile.g:308:4: t= solventFraction
+                    // Inputfile.g:328:4: t= solventFraction
                     {
                     pushFollow(FOLLOW_solventFraction_in_crystalLine407);
                     t=solventFraction();
@@ -1178,7 +1198,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 22 :
-                    // Inputfile.g:309:4: u= pdb
+                    // Inputfile.g:329:4: u= pdb
                     {
                     pushFollow(FOLLOW_pdb_in_crystalLine417);
                     u=pdb();
@@ -1191,7 +1211,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 23 :
-                    // Inputfile.g:310:4: v= wireframeType
+                    // Inputfile.g:330:4: v= wireframeType
                     {
                     pushFollow(FOLLOW_wireframeType_in_crystalLine430);
                     v=wireframeType();
@@ -1204,7 +1224,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 24 :
-                    // Inputfile.g:311:4: w= modelFile
+                    // Inputfile.g:331:4: w= modelFile
                     {
                     pushFollow(FOLLOW_modelFile_in_crystalLine441);
                     w=modelFile();
@@ -1217,7 +1237,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 25 :
-                    // Inputfile.g:312:4: x= calculatePEEscape
+                    // Inputfile.g:332:4: x= calculatePEEscape
                     {
                     pushFollow(FOLLOW_calculatePEEscape_in_crystalLine453);
                     x=calculatePEEscape();
@@ -1230,7 +1250,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 26 :
-                    // Inputfile.g:313:4: y= proteinConcentration
+                    // Inputfile.g:333:4: y= proteinConcentration
                     {
                     pushFollow(FOLLOW_proteinConcentration_in_crystalLine463);
                     y=proteinConcentration();
@@ -1243,7 +1263,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 27 :
-                    // Inputfile.g:314:4: z= containerMaterialElements
+                    // Inputfile.g:334:4: z= containerMaterialElements
                     {
                     pushFollow(FOLLOW_containerMaterialElements_in_crystalLine472);
                     z=containerMaterialElements();
@@ -1257,7 +1277,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 28 :
-                    // Inputfile.g:316:4: aa= sequenceFile
+                    // Inputfile.g:336:4: aa= sequenceFile
                     {
                     pushFollow(FOLLOW_sequenceFile_in_crystalLine481);
                     aa=sequenceFile();
@@ -1270,7 +1290,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 29 :
-                    // Inputfile.g:317:4: ab= smallMoleAtoms
+                    // Inputfile.g:337:4: ab= smallMoleAtoms
                     {
                     pushFollow(FOLLOW_smallMoleAtoms_in_crystalLine492);
                     ab=smallMoleAtoms();
@@ -1284,7 +1304,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 30 :
-                    // Inputfile.g:319:4: ac= cif
+                    // Inputfile.g:339:4: ac= cif
                     {
                     pushFollow(FOLLOW_cif_in_crystalLine513);
                     ac=cif();
@@ -1297,7 +1317,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 31 :
-                    // Inputfile.g:321:4: bb= calculateFLEscape
+                    // Inputfile.g:341:4: bb= calculateFLEscape
                     {
                     pushFollow(FOLLOW_calculateFLEscape_in_crystalLine527);
                     bb=calculateFLEscape();
@@ -1310,7 +1330,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 32 :
-                    // Inputfile.g:322:4: cc= flResolution
+                    // Inputfile.g:342:4: cc= flResolution
                     {
                     pushFollow(FOLLOW_flResolution_in_crystalLine537);
                     cc=flResolution();
@@ -1323,7 +1343,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 33 :
-                    // Inputfile.g:323:4: dd= peResolution
+                    // Inputfile.g:343:4: dd= peResolution
                     {
                     pushFollow(FOLLOW_peResolution_in_crystalLine548);
                     dd=peResolution();
@@ -1336,7 +1356,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 34 :
-                    // Inputfile.g:325:4: ee= surroundingHeavyConc
+                    // Inputfile.g:345:4: ee= surroundingHeavyConc
                     {
                     pushFollow(FOLLOW_surroundingHeavyConc_in_crystalLine560);
                     ee=surroundingHeavyConc();
@@ -1350,7 +1370,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 35 :
-                    // Inputfile.g:327:4: ff= oilBased
+                    // Inputfile.g:347:4: ff= oilBased
                     {
                     pushFollow(FOLLOW_oilBased_in_crystalLine577);
                     ff=oilBased();
@@ -1363,7 +1383,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 36 :
-                    // Inputfile.g:328:4: gg= goniometerAxis
+                    // Inputfile.g:348:4: gg= goniometerAxis
                     {
                     pushFollow(FOLLOW_goniometerAxis_in_crystalLine602);
                     gg=goniometerAxis();
@@ -1376,7 +1396,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 37 :
-                    // Inputfile.g:329:4: hh= calcSurrounding
+                    // Inputfile.g:349:4: hh= calcSurrounding
                     {
                     pushFollow(FOLLOW_calcSurrounding_in_crystalLine612);
                     hh=calcSurrounding();
@@ -1389,7 +1409,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 38 :
-                    // Inputfile.g:330:4: ii= oilElements
+                    // Inputfile.g:350:4: ii= oilElements
                     {
                     pushFollow(FOLLOW_oilElements_in_crystalLine636);
                     ii=oilElements();
@@ -1403,7 +1423,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 39 :
-                    // Inputfile.g:332:4: jj= oilDensity
+                    // Inputfile.g:352:4: jj= oilDensity
                     {
                     pushFollow(FOLLOW_oilDensity_in_crystalLine660);
                     jj=oilDensity();
@@ -1416,7 +1436,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 40 :
-                    // Inputfile.g:333:4: kk= program
+                    // Inputfile.g:353:4: kk= program
                     {
                     pushFollow(FOLLOW_program_in_crystalLine685);
                     kk=program();
@@ -1429,7 +1449,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 41 :
-                    // Inputfile.g:334:4: ll= simElectrons
+                    // Inputfile.g:354:4: ll= simElectrons
                     {
                     pushFollow(FOLLOW_simElectrons_in_crystalLine710);
                     ll=simElectrons();
@@ -1442,7 +1462,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 42 :
-                    // Inputfile.g:335:4: mm= runs
+                    // Inputfile.g:355:4: mm= runs
                     {
                     pushFollow(FOLLOW_runs_in_crystalLine720);
                     mm=runs();
@@ -1455,7 +1475,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 43 :
-                    // Inputfile.g:336:4: nn= surroundingThickness
+                    // Inputfile.g:356:4: nn= surroundingThickness
                     {
                     pushFollow(FOLLOW_surroundingThickness_in_crystalLine745);
                     nn=surroundingThickness();
@@ -1470,7 +1490,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 44 :
-                    // Inputfile.g:339:11: pp= polarisationDirection
+                    // Inputfile.g:359:11: pp= polarisationDirection
                     {
                     pushFollow(FOLLOW_polarisationDirection_in_crystalLine763);
                     pp=polarisationDirection();
@@ -1500,7 +1520,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "crystalType"
-    // Inputfile.g:344:1: crystalType returns [String crystalType] : TYPE e= STRING ;
+    // Inputfile.g:364:1: crystalType returns [String crystalType] : TYPE e= STRING ;
     public final String crystalType() throws RecognitionException {
         String crystalType = null;
 
@@ -1508,8 +1528,8 @@ public class InputfileParser extends Parser {
         Token e=null;
 
         try {
-            // Inputfile.g:345:2: ( TYPE e= STRING )
-            // Inputfile.g:345:4: TYPE e= STRING
+            // Inputfile.g:365:2: ( TYPE e= STRING )
+            // Inputfile.g:365:4: TYPE e= STRING
             {
             match(input,TYPE,FOLLOW_TYPE_in_crystalType796); 
 
@@ -1535,7 +1555,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "crystalDDM"
-    // Inputfile.g:348:1: crystalDDM returns [int value] : ( DIFFRACTIONDECAYMODEL | DDM ) e= crystalDDMKeyword ;
+    // Inputfile.g:368:1: crystalDDM returns [int value] : ( DIFFRACTIONDECAYMODEL | DDM ) e= crystalDDMKeyword ;
     public final int crystalDDM() throws RecognitionException {
         int value = 0;
 
@@ -1544,8 +1564,8 @@ public class InputfileParser extends Parser {
 
 
         try {
-            // Inputfile.g:349:2: ( ( DIFFRACTIONDECAYMODEL | DDM ) e= crystalDDMKeyword )
-            // Inputfile.g:349:4: ( DIFFRACTIONDECAYMODEL | DDM ) e= crystalDDMKeyword
+            // Inputfile.g:369:2: ( ( DIFFRACTIONDECAYMODEL | DDM ) e= crystalDDMKeyword )
+            // Inputfile.g:369:4: ( DIFFRACTIONDECAYMODEL | DDM ) e= crystalDDMKeyword
             {
             if ( input.LA(1)==DDM||input.LA(1)==DIFFRACTIONDECAYMODEL ) {
                 input.consume();
@@ -1583,13 +1603,13 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "crystalDDMKeyword"
-    // Inputfile.g:352:1: crystalDDMKeyword returns [int value] : ( SIMPLE | LINEAR | LEAL | BFACTOR );
+    // Inputfile.g:372:1: crystalDDMKeyword returns [int value] : ( SIMPLE | LINEAR | LEAL | BFACTOR );
     public final int crystalDDMKeyword() throws RecognitionException {
         int value = 0;
 
 
         try {
-            // Inputfile.g:353:2: ( SIMPLE | LINEAR | LEAL | BFACTOR )
+            // Inputfile.g:373:2: ( SIMPLE | LINEAR | LEAL | BFACTOR )
             int alt4=4;
             switch ( input.LA(1) ) {
             case SIMPLE:
@@ -1622,7 +1642,7 @@ public class InputfileParser extends Parser {
 
             switch (alt4) {
                 case 1 :
-                    // Inputfile.g:353:4: SIMPLE
+                    // Inputfile.g:373:4: SIMPLE
                     {
                     match(input,SIMPLE,FOLLOW_SIMPLE_in_crystalDDMKeyword1002); 
 
@@ -1631,7 +1651,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // Inputfile.g:354:4: LINEAR
+                    // Inputfile.g:374:4: LINEAR
                     {
                     match(input,LINEAR,FOLLOW_LINEAR_in_crystalDDMKeyword1009); 
 
@@ -1640,7 +1660,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 3 :
-                    // Inputfile.g:355:4: LEAL
+                    // Inputfile.g:375:4: LEAL
                     {
                     match(input,LEAL,FOLLOW_LEAL_in_crystalDDMKeyword1016); 
 
@@ -1649,7 +1669,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 4 :
-                    // Inputfile.g:356:4: BFACTOR
+                    // Inputfile.g:376:4: BFACTOR
                     {
                     match(input,BFACTOR,FOLLOW_BFACTOR_in_crystalDDMKeyword1025); 
 
@@ -1681,7 +1701,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "crystalDecayParam"
-    // Inputfile.g:363:1: crystalDecayParam returns [Double gammaParam, Double b0Param, Double betaParam] : DECAYPARAM a= FLOAT b= FLOAT c= FLOAT ;
+    // Inputfile.g:383:1: crystalDecayParam returns [Double gammaParam, Double b0Param, Double betaParam] : DECAYPARAM a= FLOAT b= FLOAT c= FLOAT ;
     public final InputfileParser.crystalDecayParam_return crystalDecayParam() throws RecognitionException {
         InputfileParser.crystalDecayParam_return retval = new InputfileParser.crystalDecayParam_return();
         retval.start = input.LT(1);
@@ -1692,8 +1712,8 @@ public class InputfileParser extends Parser {
         Token c=null;
 
         try {
-            // Inputfile.g:364:2: ( DECAYPARAM a= FLOAT b= FLOAT c= FLOAT )
-            // Inputfile.g:364:4: DECAYPARAM a= FLOAT b= FLOAT c= FLOAT
+            // Inputfile.g:384:2: ( DECAYPARAM a= FLOAT b= FLOAT c= FLOAT )
+            // Inputfile.g:384:4: DECAYPARAM a= FLOAT b= FLOAT c= FLOAT
             {
             match(input,DECAYPARAM,FOLLOW_DECAYPARAM_in_crystalDecayParam1187); 
 
@@ -1726,7 +1746,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "crystalCoefcalc"
-    // Inputfile.g:367:1: crystalCoefcalc returns [int value] : ABSCOEFCALC a= crystalCoefcalcKeyword ;
+    // Inputfile.g:387:1: crystalCoefcalc returns [int value] : ABSCOEFCALC a= crystalCoefcalcKeyword ;
     public final int crystalCoefcalc() throws RecognitionException {
         int value = 0;
 
@@ -1735,8 +1755,8 @@ public class InputfileParser extends Parser {
 
 
         try {
-            // Inputfile.g:368:2: ( ABSCOEFCALC a= crystalCoefcalcKeyword )
-            // Inputfile.g:368:4: ABSCOEFCALC a= crystalCoefcalcKeyword
+            // Inputfile.g:388:2: ( ABSCOEFCALC a= crystalCoefcalcKeyword )
+            // Inputfile.g:388:4: ABSCOEFCALC a= crystalCoefcalcKeyword
             {
             match(input,ABSCOEFCALC,FOLLOW_ABSCOEFCALC_in_crystalCoefcalc1271); 
 
@@ -1766,13 +1786,13 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "crystalCoefcalcKeyword"
-    // Inputfile.g:370:1: crystalCoefcalcKeyword returns [int value] : ( DUMMY | AVERAGE | DEFAULT | RDJAVA | RDFORTAN | PDB | PDBNAME | SAXS | SEQUENCE | SAXSSEQ | SMALLMOLE | CIF | CIFNAME );
+    // Inputfile.g:390:1: crystalCoefcalcKeyword returns [int value] : ( DUMMY | AVERAGE | DEFAULT | RDJAVA | RDFORTAN | PDB | PDBNAME | SAXS | SEQUENCE | SAXSSEQ | SMALLMOLE | CIF | CIFNAME );
     public final int crystalCoefcalcKeyword() throws RecognitionException {
         int value = 0;
 
 
         try {
-            // Inputfile.g:371:2: ( DUMMY | AVERAGE | DEFAULT | RDJAVA | RDFORTAN | PDB | PDBNAME | SAXS | SEQUENCE | SAXSSEQ | SMALLMOLE | CIF | CIFNAME )
+            // Inputfile.g:391:2: ( DUMMY | AVERAGE | DEFAULT | RDJAVA | RDFORTAN | PDB | PDBNAME | SAXS | SEQUENCE | SAXSSEQ | SMALLMOLE | CIF | CIFNAME )
             int alt5=13;
             switch ( input.LA(1) ) {
             case DUMMY:
@@ -1850,7 +1870,7 @@ public class InputfileParser extends Parser {
 
             switch (alt5) {
                 case 1 :
-                    // Inputfile.g:371:4: DUMMY
+                    // Inputfile.g:391:4: DUMMY
                     {
                     match(input,DUMMY,FOLLOW_DUMMY_in_crystalCoefcalcKeyword1354); 
 
@@ -1859,7 +1879,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // Inputfile.g:372:4: AVERAGE
+                    // Inputfile.g:392:4: AVERAGE
                     {
                     match(input,AVERAGE,FOLLOW_AVERAGE_in_crystalCoefcalcKeyword1364); 
 
@@ -1868,7 +1888,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 3 :
-                    // Inputfile.g:373:4: DEFAULT
+                    // Inputfile.g:393:4: DEFAULT
                     {
                     match(input,DEFAULT,FOLLOW_DEFAULT_in_crystalCoefcalcKeyword1372); 
 
@@ -1877,7 +1897,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 4 :
-                    // Inputfile.g:374:4: RDJAVA
+                    // Inputfile.g:394:4: RDJAVA
                     {
                     match(input,RDJAVA,FOLLOW_RDJAVA_in_crystalCoefcalcKeyword1380); 
 
@@ -1886,7 +1906,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 5 :
-                    // Inputfile.g:375:4: RDFORTAN
+                    // Inputfile.g:395:4: RDFORTAN
                     {
                     match(input,RDFORTAN,FOLLOW_RDFORTAN_in_crystalCoefcalcKeyword1387); 
 
@@ -1895,7 +1915,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 6 :
-                    // Inputfile.g:376:4: PDB
+                    // Inputfile.g:396:4: PDB
                     {
                     match(input,PDB,FOLLOW_PDB_in_crystalCoefcalcKeyword1394); 
 
@@ -1904,7 +1924,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 7 :
-                    // Inputfile.g:377:4: PDBNAME
+                    // Inputfile.g:397:4: PDBNAME
                     {
                     match(input,PDBNAME,FOLLOW_PDBNAME_in_crystalCoefcalcKeyword1404); 
 
@@ -1913,7 +1933,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 8 :
-                    // Inputfile.g:378:4: SAXS
+                    // Inputfile.g:398:4: SAXS
                     {
                     match(input,SAXS,FOLLOW_SAXS_in_crystalCoefcalcKeyword1411); 
 
@@ -1922,7 +1942,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 9 :
-                    // Inputfile.g:379:4: SEQUENCE
+                    // Inputfile.g:399:4: SEQUENCE
                     {
                     match(input,SEQUENCE,FOLLOW_SEQUENCE_in_crystalCoefcalcKeyword1419); 
 
@@ -1931,7 +1951,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 10 :
-                    // Inputfile.g:380:4: SAXSSEQ
+                    // Inputfile.g:400:4: SAXSSEQ
                     {
                     match(input,SAXSSEQ,FOLLOW_SAXSSEQ_in_crystalCoefcalcKeyword1426); 
 
@@ -1940,7 +1960,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 11 :
-                    // Inputfile.g:381:4: SMALLMOLE
+                    // Inputfile.g:401:4: SMALLMOLE
                     {
                     match(input,SMALLMOLE,FOLLOW_SMALLMOLE_in_crystalCoefcalcKeyword1433); 
 
@@ -1949,7 +1969,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 12 :
-                    // Inputfile.g:382:4: CIF
+                    // Inputfile.g:402:4: CIF
                     {
                     match(input,CIF,FOLLOW_CIF_in_crystalCoefcalcKeyword1444); 
 
@@ -1958,7 +1978,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 13 :
-                    // Inputfile.g:383:4: CIFNAME
+                    // Inputfile.g:403:4: CIFNAME
                     {
                     match(input,CIFNAME,FOLLOW_CIFNAME_in_crystalCoefcalcKeyword1454); 
 
@@ -1984,7 +2004,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "crystalDim"
-    // Inputfile.g:408:1: crystalDim returns [Map<Object, Object> properties] : DIMENSION (a= FLOAT b= FLOAT c= FLOAT |e= FLOAT f= FLOAT |d= FLOAT ) ;
+    // Inputfile.g:428:1: crystalDim returns [Map<Object, Object> properties] : DIMENSION (a= FLOAT b= FLOAT c= FLOAT |e= FLOAT f= FLOAT |d= FLOAT ) ;
     public final Map<Object, Object> crystalDim() throws RecognitionException {
         Map<Object, Object> properties = null;
 
@@ -2000,12 +2020,12 @@ public class InputfileParser extends Parser {
         		properties = new HashMap<Object, Object>();
 
         try {
-            // Inputfile.g:411:3: ( DIMENSION (a= FLOAT b= FLOAT c= FLOAT |e= FLOAT f= FLOAT |d= FLOAT ) )
-            // Inputfile.g:411:5: DIMENSION (a= FLOAT b= FLOAT c= FLOAT |e= FLOAT f= FLOAT |d= FLOAT )
+            // Inputfile.g:431:3: ( DIMENSION (a= FLOAT b= FLOAT c= FLOAT |e= FLOAT f= FLOAT |d= FLOAT ) )
+            // Inputfile.g:431:5: DIMENSION (a= FLOAT b= FLOAT c= FLOAT |e= FLOAT f= FLOAT |d= FLOAT )
             {
             match(input,DIMENSION,FOLLOW_DIMENSION_in_crystalDim1871); 
 
-            // Inputfile.g:412:2: (a= FLOAT b= FLOAT c= FLOAT |e= FLOAT f= FLOAT |d= FLOAT )
+            // Inputfile.g:432:2: (a= FLOAT b= FLOAT c= FLOAT |e= FLOAT f= FLOAT |d= FLOAT )
             int alt6=3;
             int LA6_0 = input.LA(1);
 
@@ -2049,7 +2069,7 @@ public class InputfileParser extends Parser {
             }
             switch (alt6) {
                 case 1 :
-                    // Inputfile.g:413:7: a= FLOAT b= FLOAT c= FLOAT
+                    // Inputfile.g:433:7: a= FLOAT b= FLOAT c= FLOAT
                     {
                     a=(Token)match(input,FLOAT,FOLLOW_FLOAT_in_crystalDim1884); 
 
@@ -2064,7 +2084,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // Inputfile.g:416:7: e= FLOAT f= FLOAT
+                    // Inputfile.g:436:7: e= FLOAT f= FLOAT
                     {
                     e=(Token)match(input,FLOAT,FOLLOW_FLOAT_in_crystalDim1904); 
 
@@ -2076,7 +2096,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 3 :
-                    // Inputfile.g:418:7: d= FLOAT
+                    // Inputfile.g:438:7: d= FLOAT
                     {
                     d=(Token)match(input,FLOAT,FOLLOW_FLOAT_in_crystalDim1920); 
 
@@ -2106,7 +2126,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "crystalAngP"
-    // Inputfile.g:422:1: crystalAngP returns [double value] : ANGLEP a= FLOAT ;
+    // Inputfile.g:442:1: crystalAngP returns [double value] : ANGLEP a= FLOAT ;
     public final double crystalAngP() throws RecognitionException {
         double value = 0.0;
 
@@ -2114,8 +2134,8 @@ public class InputfileParser extends Parser {
         Token a=null;
 
         try {
-            // Inputfile.g:423:2: ( ANGLEP a= FLOAT )
-            // Inputfile.g:423:4: ANGLEP a= FLOAT
+            // Inputfile.g:443:2: ( ANGLEP a= FLOAT )
+            // Inputfile.g:443:4: ANGLEP a= FLOAT
             {
             match(input,ANGLEP,FOLLOW_ANGLEP_in_crystalAngP1997); 
 
@@ -2141,7 +2161,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "crystalAngL"
-    // Inputfile.g:427:1: crystalAngL returns [double value] : ANGLEL a= FLOAT ;
+    // Inputfile.g:447:1: crystalAngL returns [double value] : ANGLEL a= FLOAT ;
     public final double crystalAngL() throws RecognitionException {
         double value = 0.0;
 
@@ -2149,8 +2169,8 @@ public class InputfileParser extends Parser {
         Token a=null;
 
         try {
-            // Inputfile.g:428:2: ( ANGLEL a= FLOAT )
-            // Inputfile.g:428:4: ANGLEL a= FLOAT
+            // Inputfile.g:448:2: ( ANGLEL a= FLOAT )
+            // Inputfile.g:448:4: ANGLEL a= FLOAT
             {
             match(input,ANGLEL,FOLLOW_ANGLEL_in_crystalAngL2056); 
 
@@ -2176,7 +2196,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "crystalPPM"
-    // Inputfile.g:432:1: crystalPPM returns [double ppm] : PIXELSPERMICRON FLOAT ;
+    // Inputfile.g:452:1: crystalPPM returns [double ppm] : PIXELSPERMICRON FLOAT ;
     public final double crystalPPM() throws RecognitionException {
         double ppm = 0.0;
 
@@ -2184,8 +2204,8 @@ public class InputfileParser extends Parser {
         Token FLOAT1=null;
 
         try {
-            // Inputfile.g:433:2: ( PIXELSPERMICRON FLOAT )
-            // Inputfile.g:433:4: PIXELSPERMICRON FLOAT
+            // Inputfile.g:453:2: ( PIXELSPERMICRON FLOAT )
+            // Inputfile.g:453:4: PIXELSPERMICRON FLOAT
             {
             match(input,PIXELSPERMICRON,FOLLOW_PIXELSPERMICRON_in_crystalPPM2114); 
 
@@ -2220,7 +2240,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "unitcell"
-    // Inputfile.g:436:1: unitcell returns [Double dimA, Double dimB, Double dimC, Double angA, Double angB, Double angC] : UNITCELL a= FLOAT b= FLOAT c= FLOAT (al= FLOAT be= FLOAT ga= FLOAT )? ;
+    // Inputfile.g:456:1: unitcell returns [Double dimA, Double dimB, Double dimC, Double angA, Double angB, Double angC] : UNITCELL a= FLOAT b= FLOAT c= FLOAT (al= FLOAT be= FLOAT ga= FLOAT )? ;
     public final InputfileParser.unitcell_return unitcell() throws RecognitionException {
         InputfileParser.unitcell_return retval = new InputfileParser.unitcell_return();
         retval.start = input.LT(1);
@@ -2234,8 +2254,8 @@ public class InputfileParser extends Parser {
         Token ga=null;
 
         try {
-            // Inputfile.g:437:2: ( UNITCELL a= FLOAT b= FLOAT c= FLOAT (al= FLOAT be= FLOAT ga= FLOAT )? )
-            // Inputfile.g:437:4: UNITCELL a= FLOAT b= FLOAT c= FLOAT (al= FLOAT be= FLOAT ga= FLOAT )?
+            // Inputfile.g:457:2: ( UNITCELL a= FLOAT b= FLOAT c= FLOAT (al= FLOAT be= FLOAT ga= FLOAT )? )
+            // Inputfile.g:457:4: UNITCELL a= FLOAT b= FLOAT c= FLOAT (al= FLOAT be= FLOAT ga= FLOAT )?
             {
             match(input,UNITCELL,FOLLOW_UNITCELL_in_unitcell2214); 
 
@@ -2249,7 +2269,7 @@ public class InputfileParser extends Parser {
             		 retval.dimB = Double.parseDouble((b!=null?b.getText():null));
             		 retval.dimC = Double.parseDouble((c!=null?c.getText():null)); 
 
-            // Inputfile.g:441:7: (al= FLOAT be= FLOAT ga= FLOAT )?
+            // Inputfile.g:461:7: (al= FLOAT be= FLOAT ga= FLOAT )?
             int alt7=2;
             int LA7_0 = input.LA(1);
 
@@ -2258,7 +2278,7 @@ public class InputfileParser extends Parser {
             }
             switch (alt7) {
                 case 1 :
-                    // Inputfile.g:441:8: al= FLOAT be= FLOAT ga= FLOAT
+                    // Inputfile.g:461:8: al= FLOAT be= FLOAT ga= FLOAT
                     {
                     al=(Token)match(input,FLOAT,FOLLOW_FLOAT_in_unitcell2241); 
 
@@ -2297,7 +2317,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "surroundingThickness"
-    // Inputfile.g:450:1: surroundingThickness returns [Map<Object, Object> properties] : SURROUNDINGTHICKNESS (a= FLOAT b= FLOAT c= FLOAT ) ;
+    // Inputfile.g:470:1: surroundingThickness returns [Map<Object, Object> properties] : SURROUNDINGTHICKNESS (a= FLOAT b= FLOAT c= FLOAT ) ;
     public final Map<Object, Object> surroundingThickness() throws RecognitionException {
         Map<Object, Object> properties = null;
 
@@ -2310,13 +2330,13 @@ public class InputfileParser extends Parser {
         		properties = new HashMap<Object, Object>();
 
         try {
-            // Inputfile.g:453:3: ( SURROUNDINGTHICKNESS (a= FLOAT b= FLOAT c= FLOAT ) )
-            // Inputfile.g:453:5: SURROUNDINGTHICKNESS (a= FLOAT b= FLOAT c= FLOAT )
+            // Inputfile.g:473:3: ( SURROUNDINGTHICKNESS (a= FLOAT b= FLOAT c= FLOAT ) )
+            // Inputfile.g:473:5: SURROUNDINGTHICKNESS (a= FLOAT b= FLOAT c= FLOAT )
             {
             match(input,SURROUNDINGTHICKNESS,FOLLOW_SURROUNDINGTHICKNESS_in_surroundingThickness2331); 
 
-            // Inputfile.g:454:2: (a= FLOAT b= FLOAT c= FLOAT )
-            // Inputfile.g:455:2: a= FLOAT b= FLOAT c= FLOAT
+            // Inputfile.g:474:2: (a= FLOAT b= FLOAT c= FLOAT )
+            // Inputfile.g:475:2: a= FLOAT b= FLOAT c= FLOAT
             {
             a=(Token)match(input,FLOAT,FOLLOW_FLOAT_in_surroundingThickness2341); 
 
@@ -2349,7 +2369,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "proteinConcentration"
-    // Inputfile.g:462:1: proteinConcentration returns [Double proteinConc] : ( PROTEINCONCENTRATION | PROTEINCONC ) a= FLOAT ;
+    // Inputfile.g:482:1: proteinConcentration returns [Double proteinConc] : ( PROTEINCONCENTRATION | PROTEINCONC ) a= FLOAT ;
     public final Double proteinConcentration() throws RecognitionException {
         Double proteinConc = null;
 
@@ -2357,8 +2377,8 @@ public class InputfileParser extends Parser {
         Token a=null;
 
         try {
-            // Inputfile.g:463:2: ( ( PROTEINCONCENTRATION | PROTEINCONC ) a= FLOAT )
-            // Inputfile.g:463:4: ( PROTEINCONCENTRATION | PROTEINCONC ) a= FLOAT
+            // Inputfile.g:483:2: ( ( PROTEINCONCENTRATION | PROTEINCONC ) a= FLOAT )
+            // Inputfile.g:483:4: ( PROTEINCONCENTRATION | PROTEINCONC ) a= FLOAT
             {
             if ( (input.LA(1) >= PROTEINCONC && input.LA(1) <= PROTEINCONCENTRATION) ) {
                 input.consume();
@@ -2392,7 +2412,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "nummonomers"
-    // Inputfile.g:467:1: nummonomers returns [int value] : NUMMONOMERS a= FLOAT ;
+    // Inputfile.g:487:1: nummonomers returns [int value] : NUMMONOMERS a= FLOAT ;
     public final int nummonomers() throws RecognitionException {
         int value = 0;
 
@@ -2400,8 +2420,8 @@ public class InputfileParser extends Parser {
         Token a=null;
 
         try {
-            // Inputfile.g:468:2: ( NUMMONOMERS a= FLOAT )
-            // Inputfile.g:468:4: NUMMONOMERS a= FLOAT
+            // Inputfile.g:488:2: ( NUMMONOMERS a= FLOAT )
+            // Inputfile.g:488:4: NUMMONOMERS a= FLOAT
             {
             match(input,NUMMONOMERS,FOLLOW_NUMMONOMERS_in_nummonomers2667); 
 
@@ -2427,7 +2447,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "numresidues"
-    // Inputfile.g:471:1: numresidues returns [int value] : NUMRESIDUES a= FLOAT ;
+    // Inputfile.g:491:1: numresidues returns [int value] : NUMRESIDUES a= FLOAT ;
     public final int numresidues() throws RecognitionException {
         int value = 0;
 
@@ -2435,8 +2455,8 @@ public class InputfileParser extends Parser {
         Token a=null;
 
         try {
-            // Inputfile.g:472:2: ( NUMRESIDUES a= FLOAT )
-            // Inputfile.g:472:4: NUMRESIDUES a= FLOAT
+            // Inputfile.g:492:2: ( NUMRESIDUES a= FLOAT )
+            // Inputfile.g:492:4: NUMRESIDUES a= FLOAT
             {
             match(input,NUMRESIDUES,FOLLOW_NUMRESIDUES_in_numresidues2748); 
 
@@ -2462,7 +2482,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "numRNA"
-    // Inputfile.g:475:1: numRNA returns [int value] : NUMRNA a= FLOAT ;
+    // Inputfile.g:495:1: numRNA returns [int value] : NUMRNA a= FLOAT ;
     public final int numRNA() throws RecognitionException {
         int value = 0;
 
@@ -2470,8 +2490,8 @@ public class InputfileParser extends Parser {
         Token a=null;
 
         try {
-            // Inputfile.g:476:2: ( NUMRNA a= FLOAT )
-            // Inputfile.g:476:4: NUMRNA a= FLOAT
+            // Inputfile.g:496:2: ( NUMRNA a= FLOAT )
+            // Inputfile.g:496:4: NUMRNA a= FLOAT
             {
             match(input,NUMRNA,FOLLOW_NUMRNA_in_numRNA2830); 
 
@@ -2497,7 +2517,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "numDNA"
-    // Inputfile.g:479:1: numDNA returns [int value] : NUMDNA a= FLOAT ;
+    // Inputfile.g:499:1: numDNA returns [int value] : NUMDNA a= FLOAT ;
     public final int numDNA() throws RecognitionException {
         int value = 0;
 
@@ -2505,8 +2525,8 @@ public class InputfileParser extends Parser {
         Token a=null;
 
         try {
-            // Inputfile.g:480:2: ( NUMDNA a= FLOAT )
-            // Inputfile.g:480:4: NUMDNA a= FLOAT
+            // Inputfile.g:500:2: ( NUMDNA a= FLOAT )
+            // Inputfile.g:500:4: NUMDNA a= FLOAT
             {
             match(input,NUMDNA,FOLLOW_NUMDNA_in_numDNA2887); 
 
@@ -2532,7 +2552,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "numcarb"
-    // Inputfile.g:483:1: numcarb returns [int value] : NUMCARB a= FLOAT ;
+    // Inputfile.g:503:1: numcarb returns [int value] : NUMCARB a= FLOAT ;
     public final int numcarb() throws RecognitionException {
         int value = 0;
 
@@ -2540,8 +2560,8 @@ public class InputfileParser extends Parser {
         Token a=null;
 
         try {
-            // Inputfile.g:484:2: ( NUMCARB a= FLOAT )
-            // Inputfile.g:484:4: NUMCARB a= FLOAT
+            // Inputfile.g:504:2: ( NUMCARB a= FLOAT )
+            // Inputfile.g:504:4: NUMCARB a= FLOAT
             {
             match(input,NUMCARB,FOLLOW_NUMCARB_in_numcarb2943); 
 
@@ -2572,7 +2592,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "heavyProteinAtoms"
-    // Inputfile.g:487:1: heavyProteinAtoms returns [List<String> names, List<Double> num;] : PROTEINHEAVYATOMS (a= ELEMENT b= FLOAT )+ ;
+    // Inputfile.g:507:1: heavyProteinAtoms returns [List<String> names, List<Double> num;] : PROTEINHEAVYATOMS (a= ELEMENT b= FLOAT )+ ;
     public final InputfileParser.heavyProteinAtoms_return heavyProteinAtoms() throws RecognitionException {
         InputfileParser.heavyProteinAtoms_return retval = new InputfileParser.heavyProteinAtoms_return();
         retval.start = input.LT(1);
@@ -2586,12 +2606,12 @@ public class InputfileParser extends Parser {
         retval.num = new ArrayList<Double>();
 
         try {
-            // Inputfile.g:492:2: ( PROTEINHEAVYATOMS (a= ELEMENT b= FLOAT )+ )
-            // Inputfile.g:492:4: PROTEINHEAVYATOMS (a= ELEMENT b= FLOAT )+
+            // Inputfile.g:512:2: ( PROTEINHEAVYATOMS (a= ELEMENT b= FLOAT )+ )
+            // Inputfile.g:512:4: PROTEINHEAVYATOMS (a= ELEMENT b= FLOAT )+
             {
             match(input,PROTEINHEAVYATOMS,FOLLOW_PROTEINHEAVYATOMS_in_heavyProteinAtoms3008); 
 
-            // Inputfile.g:492:22: (a= ELEMENT b= FLOAT )+
+            // Inputfile.g:512:22: (a= ELEMENT b= FLOAT )+
             int cnt8=0;
             loop8:
             do {
@@ -2605,7 +2625,7 @@ public class InputfileParser extends Parser {
 
                 switch (alt8) {
             	case 1 :
-            	    // Inputfile.g:492:23: a= ELEMENT b= FLOAT
+            	    // Inputfile.g:512:23: a= ELEMENT b= FLOAT
             	    {
             	    a=(Token)match(input,ELEMENT,FOLLOW_ELEMENT_in_heavyProteinAtoms3013); 
 
@@ -2652,7 +2672,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "smallMoleAtoms"
-    // Inputfile.g:496:1: smallMoleAtoms returns [List<String> names, List<Double> num;] : SMALLMOLEATOMS (a= ELEMENT b= FLOAT )+ ;
+    // Inputfile.g:516:1: smallMoleAtoms returns [List<String> names, List<Double> num;] : SMALLMOLEATOMS (a= ELEMENT b= FLOAT )+ ;
     public final InputfileParser.smallMoleAtoms_return smallMoleAtoms() throws RecognitionException {
         InputfileParser.smallMoleAtoms_return retval = new InputfileParser.smallMoleAtoms_return();
         retval.start = input.LT(1);
@@ -2666,12 +2686,12 @@ public class InputfileParser extends Parser {
         retval.num = new ArrayList<Double>();
 
         try {
-            // Inputfile.g:501:2: ( SMALLMOLEATOMS (a= ELEMENT b= FLOAT )+ )
-            // Inputfile.g:501:4: SMALLMOLEATOMS (a= ELEMENT b= FLOAT )+
+            // Inputfile.g:521:2: ( SMALLMOLEATOMS (a= ELEMENT b= FLOAT )+ )
+            // Inputfile.g:521:4: SMALLMOLEATOMS (a= ELEMENT b= FLOAT )+
             {
             match(input,SMALLMOLEATOMS,FOLLOW_SMALLMOLEATOMS_in_smallMoleAtoms3164); 
 
-            // Inputfile.g:501:19: (a= ELEMENT b= FLOAT )+
+            // Inputfile.g:521:19: (a= ELEMENT b= FLOAT )+
             int cnt9=0;
             loop9:
             do {
@@ -2685,7 +2705,7 @@ public class InputfileParser extends Parser {
 
                 switch (alt9) {
             	case 1 :
-            	    // Inputfile.g:501:20: a= ELEMENT b= FLOAT
+            	    // Inputfile.g:521:20: a= ELEMENT b= FLOAT
             	    {
             	    a=(Token)match(input,ELEMENT,FOLLOW_ELEMENT_in_smallMoleAtoms3169); 
 
@@ -2732,7 +2752,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "heavySolutionConc"
-    // Inputfile.g:504:1: heavySolutionConc returns [List<String> names, List<Double> num;] : SOLVENTHEAVYCONC (a= ELEMENT b= FLOAT )+ ;
+    // Inputfile.g:524:1: heavySolutionConc returns [List<String> names, List<Double> num;] : SOLVENTHEAVYCONC (a= ELEMENT b= FLOAT )+ ;
     public final InputfileParser.heavySolutionConc_return heavySolutionConc() throws RecognitionException {
         InputfileParser.heavySolutionConc_return retval = new InputfileParser.heavySolutionConc_return();
         retval.start = input.LT(1);
@@ -2746,12 +2766,12 @@ public class InputfileParser extends Parser {
         retval.num = new ArrayList<Double>();
 
         try {
-            // Inputfile.g:509:2: ( SOLVENTHEAVYCONC (a= ELEMENT b= FLOAT )+ )
-            // Inputfile.g:509:4: SOLVENTHEAVYCONC (a= ELEMENT b= FLOAT )+
+            // Inputfile.g:529:2: ( SOLVENTHEAVYCONC (a= ELEMENT b= FLOAT )+ )
+            // Inputfile.g:529:4: SOLVENTHEAVYCONC (a= ELEMENT b= FLOAT )+
             {
             match(input,SOLVENTHEAVYCONC,FOLLOW_SOLVENTHEAVYCONC_in_heavySolutionConc3275); 
 
-            // Inputfile.g:509:21: (a= ELEMENT b= FLOAT )+
+            // Inputfile.g:529:21: (a= ELEMENT b= FLOAT )+
             int cnt10=0;
             loop10:
             do {
@@ -2765,7 +2785,7 @@ public class InputfileParser extends Parser {
 
                 switch (alt10) {
             	case 1 :
-            	    // Inputfile.g:509:22: a= ELEMENT b= FLOAT
+            	    // Inputfile.g:529:22: a= ELEMENT b= FLOAT
             	    {
             	    a=(Token)match(input,ELEMENT,FOLLOW_ELEMENT_in_heavySolutionConc3280); 
 
@@ -2807,7 +2827,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "solventFraction"
-    // Inputfile.g:512:1: solventFraction returns [double solFrac] : SOLVENTFRACTION a= FLOAT ;
+    // Inputfile.g:532:1: solventFraction returns [double solFrac] : SOLVENTFRACTION a= FLOAT ;
     public final double solventFraction() throws RecognitionException {
         double solFrac = 0.0;
 
@@ -2815,8 +2835,8 @@ public class InputfileParser extends Parser {
         Token a=null;
 
         try {
-            // Inputfile.g:513:2: ( SOLVENTFRACTION a= FLOAT )
-            // Inputfile.g:513:4: SOLVENTFRACTION a= FLOAT
+            // Inputfile.g:533:2: ( SOLVENTFRACTION a= FLOAT )
+            // Inputfile.g:533:4: SOLVENTFRACTION a= FLOAT
             {
             match(input,SOLVENTFRACTION,FOLLOW_SOLVENTFRACTION_in_solventFraction3390); 
 
@@ -2842,7 +2862,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "pdb"
-    // Inputfile.g:516:1: pdb returns [String pdb] : PDBNAME (a= STRING |a= FLOAT ) ;
+    // Inputfile.g:536:1: pdb returns [String pdb] : PDBNAME (a= STRING |a= FLOAT ) ;
     public final String pdb() throws RecognitionException {
         String pdb = null;
 
@@ -2850,12 +2870,12 @@ public class InputfileParser extends Parser {
         Token a=null;
 
         try {
-            // Inputfile.g:517:2: ( PDBNAME (a= STRING |a= FLOAT ) )
-            // Inputfile.g:517:4: PDBNAME (a= STRING |a= FLOAT )
+            // Inputfile.g:537:2: ( PDBNAME (a= STRING |a= FLOAT ) )
+            // Inputfile.g:537:4: PDBNAME (a= STRING |a= FLOAT )
             {
             match(input,PDBNAME,FOLLOW_PDBNAME_in_pdb3491); 
 
-            // Inputfile.g:517:12: (a= STRING |a= FLOAT )
+            // Inputfile.g:537:12: (a= STRING |a= FLOAT )
             int alt11=2;
             int LA11_0 = input.LA(1);
 
@@ -2874,14 +2894,14 @@ public class InputfileParser extends Parser {
             }
             switch (alt11) {
                 case 1 :
-                    // Inputfile.g:517:13: a= STRING
+                    // Inputfile.g:537:13: a= STRING
                     {
                     a=(Token)match(input,STRING,FOLLOW_STRING_in_pdb3496); 
 
                     }
                     break;
                 case 2 :
-                    // Inputfile.g:517:22: a= FLOAT
+                    // Inputfile.g:537:22: a= FLOAT
                     {
                     a=(Token)match(input,FLOAT,FOLLOW_FLOAT_in_pdb3500); 
 
@@ -2911,7 +2931,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "cif"
-    // Inputfile.g:520:1: cif returns [String cif] : CIFNAME a= STRING ;
+    // Inputfile.g:540:1: cif returns [String cif] : CIFNAME a= STRING ;
     public final String cif() throws RecognitionException {
         String cif = null;
 
@@ -2919,8 +2939,8 @@ public class InputfileParser extends Parser {
         Token a=null;
 
         try {
-            // Inputfile.g:521:2: ( CIFNAME a= STRING )
-            // Inputfile.g:521:4: CIFNAME a= STRING
+            // Inputfile.g:541:2: ( CIFNAME a= STRING )
+            // Inputfile.g:541:4: CIFNAME a= STRING
             {
             match(input,CIFNAME,FOLLOW_CIFNAME_in_cif3538); 
 
@@ -2946,7 +2966,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "wireframeType"
-    // Inputfile.g:524:1: wireframeType returns [String value] : WIREFRAMETYPE a= STRING ;
+    // Inputfile.g:544:1: wireframeType returns [String value] : WIREFRAMETYPE a= STRING ;
     public final String wireframeType() throws RecognitionException {
         String value = null;
 
@@ -2954,8 +2974,8 @@ public class InputfileParser extends Parser {
         Token a=null;
 
         try {
-            // Inputfile.g:525:2: ( WIREFRAMETYPE a= STRING )
-            // Inputfile.g:525:4: WIREFRAMETYPE a= STRING
+            // Inputfile.g:545:2: ( WIREFRAMETYPE a= STRING )
+            // Inputfile.g:545:4: WIREFRAMETYPE a= STRING
             {
             match(input,WIREFRAMETYPE,FOLLOW_WIREFRAMETYPE_in_wireframeType3579); 
 
@@ -2981,7 +3001,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "modelFile"
-    // Inputfile.g:528:1: modelFile returns [String value] : MODELFILE a= STRING ;
+    // Inputfile.g:548:1: modelFile returns [String value] : MODELFILE a= STRING ;
     public final String modelFile() throws RecognitionException {
         String value = null;
 
@@ -2989,8 +3009,8 @@ public class InputfileParser extends Parser {
         Token a=null;
 
         try {
-            // Inputfile.g:529:2: ( MODELFILE a= STRING )
-            // Inputfile.g:529:4: MODELFILE a= STRING
+            // Inputfile.g:549:2: ( MODELFILE a= STRING )
+            // Inputfile.g:549:4: MODELFILE a= STRING
             {
             match(input,MODELFILE,FOLLOW_MODELFILE_in_modelFile3671); 
 
@@ -3016,7 +3036,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "calculatePEEscape"
-    // Inputfile.g:532:1: calculatePEEscape returns [String value] : CALCULATEPEESCAPE a= STRING ;
+    // Inputfile.g:552:1: calculatePEEscape returns [String value] : CALCULATEPEESCAPE a= STRING ;
     public final String calculatePEEscape() throws RecognitionException {
         String value = null;
 
@@ -3024,8 +3044,8 @@ public class InputfileParser extends Parser {
         Token a=null;
 
         try {
-            // Inputfile.g:533:2: ( CALCULATEPEESCAPE a= STRING )
-            // Inputfile.g:533:4: CALCULATEPEESCAPE a= STRING
+            // Inputfile.g:553:2: ( CALCULATEPEESCAPE a= STRING )
+            // Inputfile.g:553:4: CALCULATEPEESCAPE a= STRING
             {
             match(input,CALCULATEPEESCAPE,FOLLOW_CALCULATEPEESCAPE_in_calculatePEEscape3742); 
 
@@ -3051,7 +3071,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "goniometerAxis"
-    // Inputfile.g:537:1: goniometerAxis returns [double value] : GONIOMETERAXIS a= FLOAT ;
+    // Inputfile.g:557:1: goniometerAxis returns [double value] : GONIOMETERAXIS a= FLOAT ;
     public final double goniometerAxis() throws RecognitionException {
         double value = 0.0;
 
@@ -3059,8 +3079,8 @@ public class InputfileParser extends Parser {
         Token a=null;
 
         try {
-            // Inputfile.g:538:2: ( GONIOMETERAXIS a= FLOAT )
-            // Inputfile.g:538:4: GONIOMETERAXIS a= FLOAT
+            // Inputfile.g:558:2: ( GONIOMETERAXIS a= FLOAT )
+            // Inputfile.g:558:4: GONIOMETERAXIS a= FLOAT
             {
             match(input,GONIOMETERAXIS,FOLLOW_GONIOMETERAXIS_in_goniometerAxis3858); 
 
@@ -3086,7 +3106,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "polarisationDirection"
-    // Inputfile.g:542:1: polarisationDirection returns [double value] : POLARISATIONDIRECTION a= FLOAT ;
+    // Inputfile.g:562:1: polarisationDirection returns [double value] : POLARISATIONDIRECTION a= FLOAT ;
     public final double polarisationDirection() throws RecognitionException {
         double value = 0.0;
 
@@ -3094,8 +3114,8 @@ public class InputfileParser extends Parser {
         Token a=null;
 
         try {
-            // Inputfile.g:543:2: ( POLARISATIONDIRECTION a= FLOAT )
-            // Inputfile.g:543:4: POLARISATIONDIRECTION a= FLOAT
+            // Inputfile.g:563:2: ( POLARISATIONDIRECTION a= FLOAT )
+            // Inputfile.g:563:4: POLARISATIONDIRECTION a= FLOAT
             {
             match(input,POLARISATIONDIRECTION,FOLLOW_POLARISATIONDIRECTION_in_polarisationDirection3959); 
 
@@ -3121,7 +3141,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "crystalContainerMaterial"
-    // Inputfile.g:547:1: crystalContainerMaterial returns [int value] : ( CONTAINERMATERIALTYPE | MATERIALTYPE ) e= crystalContainerKeyword ;
+    // Inputfile.g:567:1: crystalContainerMaterial returns [int value] : ( CONTAINERMATERIALTYPE | MATERIALTYPE ) e= crystalContainerKeyword ;
     public final int crystalContainerMaterial() throws RecognitionException {
         int value = 0;
 
@@ -3130,8 +3150,8 @@ public class InputfileParser extends Parser {
 
 
         try {
-            // Inputfile.g:548:2: ( ( CONTAINERMATERIALTYPE | MATERIALTYPE ) e= crystalContainerKeyword )
-            // Inputfile.g:548:4: ( CONTAINERMATERIALTYPE | MATERIALTYPE ) e= crystalContainerKeyword
+            // Inputfile.g:568:2: ( ( CONTAINERMATERIALTYPE | MATERIALTYPE ) e= crystalContainerKeyword )
+            // Inputfile.g:568:4: ( CONTAINERMATERIALTYPE | MATERIALTYPE ) e= crystalContainerKeyword
             {
             if ( input.LA(1)==CONTAINERMATERIALTYPE||input.LA(1)==MATERIALTYPE ) {
                 input.consume();
@@ -3169,13 +3189,13 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "crystalContainerKeyword"
-    // Inputfile.g:551:1: crystalContainerKeyword returns [int value] : ( NONE | MIXTURE | ELEMENTAL );
+    // Inputfile.g:571:1: crystalContainerKeyword returns [int value] : ( NONE | MIXTURE | ELEMENTAL );
     public final int crystalContainerKeyword() throws RecognitionException {
         int value = 0;
 
 
         try {
-            // Inputfile.g:552:2: ( NONE | MIXTURE | ELEMENTAL )
+            // Inputfile.g:572:2: ( NONE | MIXTURE | ELEMENTAL )
             int alt12=3;
             switch ( input.LA(1) ) {
             case NONE:
@@ -3203,7 +3223,7 @@ public class InputfileParser extends Parser {
 
             switch (alt12) {
                 case 1 :
-                    // Inputfile.g:552:4: NONE
+                    // Inputfile.g:572:4: NONE
                     {
                     match(input,NONE,FOLLOW_NONE_in_crystalContainerKeyword4300); 
 
@@ -3212,7 +3232,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // Inputfile.g:553:4: MIXTURE
+                    // Inputfile.g:573:4: MIXTURE
                     {
                     match(input,MIXTURE,FOLLOW_MIXTURE_in_crystalContainerKeyword4309); 
 
@@ -3221,7 +3241,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 3 :
-                    // Inputfile.g:554:4: ELEMENTAL
+                    // Inputfile.g:574:4: ELEMENTAL
                     {
                     match(input,ELEMENTAL,FOLLOW_ELEMENTAL_in_crystalContainerKeyword4317); 
 
@@ -3247,7 +3267,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "containerThickness"
-    // Inputfile.g:560:1: containerThickness returns [double value] : CONTAINERTHICKNESS a= FLOAT ;
+    // Inputfile.g:580:1: containerThickness returns [double value] : CONTAINERTHICKNESS a= FLOAT ;
     public final double containerThickness() throws RecognitionException {
         double value = 0.0;
 
@@ -3255,8 +3275,8 @@ public class InputfileParser extends Parser {
         Token a=null;
 
         try {
-            // Inputfile.g:561:2: ( CONTAINERTHICKNESS a= FLOAT )
-            // Inputfile.g:561:4: CONTAINERTHICKNESS a= FLOAT
+            // Inputfile.g:581:2: ( CONTAINERTHICKNESS a= FLOAT )
+            // Inputfile.g:581:4: CONTAINERTHICKNESS a= FLOAT
             {
             match(input,CONTAINERTHICKNESS,FOLLOW_CONTAINERTHICKNESS_in_containerThickness4457); 
 
@@ -3282,7 +3302,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "containerMaterialMixture"
-    // Inputfile.g:564:1: containerMaterialMixture returns [String value] : ( CONTAINERMATERIALMIXTURE | MATERIALMIXTURE ) a= STRING ;
+    // Inputfile.g:584:1: containerMaterialMixture returns [String value] : ( CONTAINERMATERIALMIXTURE | MATERIALMIXTURE ) a= STRING ;
     public final String containerMaterialMixture() throws RecognitionException {
         String value = null;
 
@@ -3290,8 +3310,8 @@ public class InputfileParser extends Parser {
         Token a=null;
 
         try {
-            // Inputfile.g:565:2: ( ( CONTAINERMATERIALMIXTURE | MATERIALMIXTURE ) a= STRING )
-            // Inputfile.g:565:4: ( CONTAINERMATERIALMIXTURE | MATERIALMIXTURE ) a= STRING
+            // Inputfile.g:585:2: ( ( CONTAINERMATERIALMIXTURE | MATERIALMIXTURE ) a= STRING )
+            // Inputfile.g:585:4: ( CONTAINERMATERIALMIXTURE | MATERIALMIXTURE ) a= STRING
             {
             if ( input.LA(1)==CONTAINERMATERIALMIXTURE||input.LA(1)==MATERIALMIXTURE ) {
                 input.consume();
@@ -3330,7 +3350,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "containerMaterialElements"
-    // Inputfile.g:569:1: containerMaterialElements returns [List<String> names, List<Double> num;] : ( CONTAINERMATERIALELEMENTS | MATERIALELEMENTS ) (a= ELEMENT b= FLOAT )+ ;
+    // Inputfile.g:589:1: containerMaterialElements returns [List<String> names, List<Double> num;] : ( CONTAINERMATERIALELEMENTS | MATERIALELEMENTS ) (a= ELEMENT b= FLOAT )+ ;
     public final InputfileParser.containerMaterialElements_return containerMaterialElements() throws RecognitionException {
         InputfileParser.containerMaterialElements_return retval = new InputfileParser.containerMaterialElements_return();
         retval.start = input.LT(1);
@@ -3344,8 +3364,8 @@ public class InputfileParser extends Parser {
         retval.num = new ArrayList<Double>();
 
         try {
-            // Inputfile.g:574:2: ( ( CONTAINERMATERIALELEMENTS | MATERIALELEMENTS ) (a= ELEMENT b= FLOAT )+ )
-            // Inputfile.g:574:4: ( CONTAINERMATERIALELEMENTS | MATERIALELEMENTS ) (a= ELEMENT b= FLOAT )+
+            // Inputfile.g:594:2: ( ( CONTAINERMATERIALELEMENTS | MATERIALELEMENTS ) (a= ELEMENT b= FLOAT )+ )
+            // Inputfile.g:594:4: ( CONTAINERMATERIALELEMENTS | MATERIALELEMENTS ) (a= ELEMENT b= FLOAT )+
             {
             if ( input.LA(1)==CONTAINERMATERIALELEMENTS||input.LA(1)==MATERIALELEMENTS ) {
                 input.consume();
@@ -3357,7 +3377,7 @@ public class InputfileParser extends Parser {
             }
 
 
-            // Inputfile.g:574:51: (a= ELEMENT b= FLOAT )+
+            // Inputfile.g:594:51: (a= ELEMENT b= FLOAT )+
             int cnt13=0;
             loop13:
             do {
@@ -3371,7 +3391,7 @@ public class InputfileParser extends Parser {
 
                 switch (alt13) {
             	case 1 :
-            	    // Inputfile.g:574:52: a= ELEMENT b= FLOAT
+            	    // Inputfile.g:594:52: a= ELEMENT b= FLOAT
             	    {
             	    a=(Token)match(input,ELEMENT,FOLLOW_ELEMENT_in_containerMaterialElements4818); 
 
@@ -3413,7 +3433,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "containerDensity"
-    // Inputfile.g:578:1: containerDensity returns [double value] : CONTAINERDENSITY a= FLOAT ;
+    // Inputfile.g:598:1: containerDensity returns [double value] : CONTAINERDENSITY a= FLOAT ;
     public final double containerDensity() throws RecognitionException {
         double value = 0.0;
 
@@ -3421,8 +3441,8 @@ public class InputfileParser extends Parser {
         Token a=null;
 
         try {
-            // Inputfile.g:579:2: ( CONTAINERDENSITY a= FLOAT )
-            // Inputfile.g:579:4: CONTAINERDENSITY a= FLOAT
+            // Inputfile.g:599:2: ( CONTAINERDENSITY a= FLOAT )
+            // Inputfile.g:599:4: CONTAINERDENSITY a= FLOAT
             {
             match(input,CONTAINERDENSITY,FOLLOW_CONTAINERDENSITY_in_containerDensity5057); 
 
@@ -3448,7 +3468,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "sequenceFile"
-    // Inputfile.g:582:1: sequenceFile returns [String value] : ( SEQUENCEFILE | SEQFILE ) a= STRING ;
+    // Inputfile.g:602:1: sequenceFile returns [String value] : ( SEQUENCEFILE | SEQFILE ) a= STRING ;
     public final String sequenceFile() throws RecognitionException {
         String value = null;
 
@@ -3456,8 +3476,8 @@ public class InputfileParser extends Parser {
         Token a=null;
 
         try {
-            // Inputfile.g:583:2: ( ( SEQUENCEFILE | SEQFILE ) a= STRING )
-            // Inputfile.g:583:4: ( SEQUENCEFILE | SEQFILE ) a= STRING
+            // Inputfile.g:603:2: ( ( SEQUENCEFILE | SEQFILE ) a= STRING )
+            // Inputfile.g:603:4: ( SEQUENCEFILE | SEQFILE ) a= STRING
             {
             if ( input.LA(1)==SEQFILE||input.LA(1)==SEQUENCEFILE ) {
                 input.consume();
@@ -3491,7 +3511,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "calculateFLEscape"
-    // Inputfile.g:587:1: calculateFLEscape returns [String value] : CALCULATEFLESCAPE a= STRING ;
+    // Inputfile.g:607:1: calculateFLEscape returns [String value] : CALCULATEFLESCAPE a= STRING ;
     public final String calculateFLEscape() throws RecognitionException {
         String value = null;
 
@@ -3499,8 +3519,8 @@ public class InputfileParser extends Parser {
         Token a=null;
 
         try {
-            // Inputfile.g:588:2: ( CALCULATEFLESCAPE a= STRING )
-            // Inputfile.g:588:4: CALCULATEFLESCAPE a= STRING
+            // Inputfile.g:608:2: ( CALCULATEFLESCAPE a= STRING )
+            // Inputfile.g:608:4: CALCULATEFLESCAPE a= STRING
             {
             match(input,CALCULATEFLESCAPE,FOLLOW_CALCULATEFLESCAPE_in_calculateFLEscape5295); 
 
@@ -3526,7 +3546,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "flResolution"
-    // Inputfile.g:592:1: flResolution returns [int value] : FLRESOLUTION a= FLOAT ;
+    // Inputfile.g:612:1: flResolution returns [int value] : FLRESOLUTION a= FLOAT ;
     public final int flResolution() throws RecognitionException {
         int value = 0;
 
@@ -3534,8 +3554,8 @@ public class InputfileParser extends Parser {
         Token a=null;
 
         try {
-            // Inputfile.g:593:2: ( FLRESOLUTION a= FLOAT )
-            // Inputfile.g:593:4: FLRESOLUTION a= FLOAT
+            // Inputfile.g:613:2: ( FLRESOLUTION a= FLOAT )
+            // Inputfile.g:613:4: FLRESOLUTION a= FLOAT
             {
             match(input,FLRESOLUTION,FOLLOW_FLRESOLUTION_in_flResolution5410); 
 
@@ -3561,7 +3581,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "peResolution"
-    // Inputfile.g:596:1: peResolution returns [int value] : PERESOLUTION a= FLOAT ;
+    // Inputfile.g:616:1: peResolution returns [int value] : PERESOLUTION a= FLOAT ;
     public final int peResolution() throws RecognitionException {
         int value = 0;
 
@@ -3569,8 +3589,8 @@ public class InputfileParser extends Parser {
         Token a=null;
 
         try {
-            // Inputfile.g:597:2: ( PERESOLUTION a= FLOAT )
-            // Inputfile.g:597:4: PERESOLUTION a= FLOAT
+            // Inputfile.g:617:2: ( PERESOLUTION a= FLOAT )
+            // Inputfile.g:617:4: PERESOLUTION a= FLOAT
             {
             match(input,PERESOLUTION,FOLLOW_PERESOLUTION_in_peResolution5496); 
 
@@ -3601,7 +3621,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "surroundingHeavyConc"
-    // Inputfile.g:600:1: surroundingHeavyConc returns [List<String> names, List<Double> num;] : SURROUNDINGHEAVYCONC (a= ELEMENT b= FLOAT )+ ;
+    // Inputfile.g:620:1: surroundingHeavyConc returns [List<String> names, List<Double> num;] : SURROUNDINGHEAVYCONC (a= ELEMENT b= FLOAT )+ ;
     public final InputfileParser.surroundingHeavyConc_return surroundingHeavyConc() throws RecognitionException {
         InputfileParser.surroundingHeavyConc_return retval = new InputfileParser.surroundingHeavyConc_return();
         retval.start = input.LT(1);
@@ -3615,12 +3635,12 @@ public class InputfileParser extends Parser {
         retval.num = new ArrayList<Double>();
 
         try {
-            // Inputfile.g:605:2: ( SURROUNDINGHEAVYCONC (a= ELEMENT b= FLOAT )+ )
-            // Inputfile.g:605:4: SURROUNDINGHEAVYCONC (a= ELEMENT b= FLOAT )+
+            // Inputfile.g:625:2: ( SURROUNDINGHEAVYCONC (a= ELEMENT b= FLOAT )+ )
+            // Inputfile.g:625:4: SURROUNDINGHEAVYCONC (a= ELEMENT b= FLOAT )+
             {
             match(input,SURROUNDINGHEAVYCONC,FOLLOW_SURROUNDINGHEAVYCONC_in_surroundingHeavyConc5586); 
 
-            // Inputfile.g:605:25: (a= ELEMENT b= FLOAT )+
+            // Inputfile.g:625:25: (a= ELEMENT b= FLOAT )+
             int cnt14=0;
             loop14:
             do {
@@ -3634,7 +3654,7 @@ public class InputfileParser extends Parser {
 
                 switch (alt14) {
             	case 1 :
-            	    // Inputfile.g:605:26: a= ELEMENT b= FLOAT
+            	    // Inputfile.g:625:26: a= ELEMENT b= FLOAT
             	    {
             	    a=(Token)match(input,ELEMENT,FOLLOW_ELEMENT_in_surroundingHeavyConc5591); 
 
@@ -3676,7 +3696,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "oilBased"
-    // Inputfile.g:608:1: oilBased returns [String value] : DENSITYBASED a= STRING ;
+    // Inputfile.g:628:1: oilBased returns [String value] : DENSITYBASED a= STRING ;
     public final String oilBased() throws RecognitionException {
         String value = null;
 
@@ -3684,8 +3704,8 @@ public class InputfileParser extends Parser {
         Token a=null;
 
         try {
-            // Inputfile.g:609:2: ( DENSITYBASED a= STRING )
-            // Inputfile.g:609:4: DENSITYBASED a= STRING
+            // Inputfile.g:629:2: ( DENSITYBASED a= STRING )
+            // Inputfile.g:629:4: DENSITYBASED a= STRING
             {
             match(input,DENSITYBASED,FOLLOW_DENSITYBASED_in_oilBased5723); 
 
@@ -3711,7 +3731,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "calcSurrounding"
-    // Inputfile.g:612:1: calcSurrounding returns [String value] : CALCSURROUNDING a= STRING ;
+    // Inputfile.g:632:1: calcSurrounding returns [String value] : CALCSURROUNDING a= STRING ;
     public final String calcSurrounding() throws RecognitionException {
         String value = null;
 
@@ -3719,8 +3739,8 @@ public class InputfileParser extends Parser {
         Token a=null;
 
         try {
-            // Inputfile.g:613:2: ( CALCSURROUNDING a= STRING )
-            // Inputfile.g:613:4: CALCSURROUNDING a= STRING
+            // Inputfile.g:633:2: ( CALCSURROUNDING a= STRING )
+            // Inputfile.g:633:4: CALCSURROUNDING a= STRING
             {
             match(input,CALCSURROUNDING,FOLLOW_CALCSURROUNDING_in_calcSurrounding5809); 
 
@@ -3751,7 +3771,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "oilElements"
-    // Inputfile.g:617:1: oilElements returns [List<String> names, List<Double> num;] : SURROUNDINGELEMENTS (a= ELEMENT b= FLOAT )+ ;
+    // Inputfile.g:637:1: oilElements returns [List<String> names, List<Double> num;] : SURROUNDINGELEMENTS (a= ELEMENT b= FLOAT )+ ;
     public final InputfileParser.oilElements_return oilElements() throws RecognitionException {
         InputfileParser.oilElements_return retval = new InputfileParser.oilElements_return();
         retval.start = input.LT(1);
@@ -3765,12 +3785,12 @@ public class InputfileParser extends Parser {
         retval.num = new ArrayList<Double>();
 
         try {
-            // Inputfile.g:622:2: ( SURROUNDINGELEMENTS (a= ELEMENT b= FLOAT )+ )
-            // Inputfile.g:622:4: SURROUNDINGELEMENTS (a= ELEMENT b= FLOAT )+
+            // Inputfile.g:642:2: ( SURROUNDINGELEMENTS (a= ELEMENT b= FLOAT )+ )
+            // Inputfile.g:642:4: SURROUNDINGELEMENTS (a= ELEMENT b= FLOAT )+
             {
             match(input,SURROUNDINGELEMENTS,FOLLOW_SURROUNDINGELEMENTS_in_oilElements5916); 
 
-            // Inputfile.g:622:24: (a= ELEMENT b= FLOAT )+
+            // Inputfile.g:642:24: (a= ELEMENT b= FLOAT )+
             int cnt15=0;
             loop15:
             do {
@@ -3784,7 +3804,7 @@ public class InputfileParser extends Parser {
 
                 switch (alt15) {
             	case 1 :
-            	    // Inputfile.g:622:25: a= ELEMENT b= FLOAT
+            	    // Inputfile.g:642:25: a= ELEMENT b= FLOAT
             	    {
             	    a=(Token)match(input,ELEMENT,FOLLOW_ELEMENT_in_oilElements5921); 
 
@@ -3826,7 +3846,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "oilDensity"
-    // Inputfile.g:625:1: oilDensity returns [double oildens] : SURROUNDINGDENSITY a= FLOAT ;
+    // Inputfile.g:645:1: oilDensity returns [double oildens] : SURROUNDINGDENSITY a= FLOAT ;
     public final double oilDensity() throws RecognitionException {
         double oildens = 0.0;
 
@@ -3834,8 +3854,8 @@ public class InputfileParser extends Parser {
         Token a=null;
 
         try {
-            // Inputfile.g:626:2: ( SURROUNDINGDENSITY a= FLOAT )
-            // Inputfile.g:626:4: SURROUNDINGDENSITY a= FLOAT
+            // Inputfile.g:646:2: ( SURROUNDINGDENSITY a= FLOAT )
+            // Inputfile.g:646:4: SURROUNDINGDENSITY a= FLOAT
             {
             match(input,SURROUNDINGDENSITY,FOLLOW_SURROUNDINGDENSITY_in_oilDensity6048); 
 
@@ -3861,7 +3881,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "simElectrons"
-    // Inputfile.g:629:1: simElectrons returns [long simel] : ( SIMELECTRONS | SIMPHOTONS ) a= FLOAT ;
+    // Inputfile.g:649:1: simElectrons returns [long simel] : ( SIMELECTRONS | SIMPHOTONS ) a= FLOAT ;
     public final long simElectrons() throws RecognitionException {
         long simel = 0;
 
@@ -3869,8 +3889,8 @@ public class InputfileParser extends Parser {
         Token a=null;
 
         try {
-            // Inputfile.g:630:2: ( ( SIMELECTRONS | SIMPHOTONS ) a= FLOAT )
-            // Inputfile.g:630:4: ( SIMELECTRONS | SIMPHOTONS ) a= FLOAT
+            // Inputfile.g:650:2: ( ( SIMELECTRONS | SIMPHOTONS ) a= FLOAT )
+            // Inputfile.g:650:4: ( SIMELECTRONS | SIMPHOTONS ) a= FLOAT
             {
             if ( (input.LA(1) >= SIMELECTRONS && input.LA(1) <= SIMPHOTONS) ) {
                 input.consume();
@@ -3884,7 +3904,7 @@ public class InputfileParser extends Parser {
 
             a=(Token)match(input,FLOAT,FOLLOW_FLOAT_in_simElectrons6174); 
 
-            simel = Long.parseLong((a!=null?a.getText():null));
+            simel = wholeNumber(a, "SimPhotons", Long.MAX_VALUE);
 
             }
 
@@ -3904,7 +3924,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "program"
-    // Inputfile.g:634:1: program returns [String value] : SUBPROGRAM a= STRING ;
+    // Inputfile.g:654:1: program returns [String value] : SUBPROGRAM a= STRING ;
     public final String program() throws RecognitionException {
         String value = null;
 
@@ -3912,8 +3932,8 @@ public class InputfileParser extends Parser {
         Token a=null;
 
         try {
-            // Inputfile.g:635:2: ( SUBPROGRAM a= STRING )
-            // Inputfile.g:635:4: SUBPROGRAM a= STRING
+            // Inputfile.g:655:2: ( SUBPROGRAM a= STRING )
+            // Inputfile.g:655:4: SUBPROGRAM a= STRING
             {
             match(input,SUBPROGRAM,FOLLOW_SUBPROGRAM_in_program6313); 
 
@@ -3939,7 +3959,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "runs"
-    // Inputfile.g:639:1: runs returns [int value] : RUNS a= FLOAT ;
+    // Inputfile.g:659:1: runs returns [int value] : RUNS a= FLOAT ;
     public final int runs() throws RecognitionException {
         int value = 0;
 
@@ -3947,14 +3967,14 @@ public class InputfileParser extends Parser {
         Token a=null;
 
         try {
-            // Inputfile.g:640:2: ( RUNS a= FLOAT )
-            // Inputfile.g:640:4: RUNS a= FLOAT
+            // Inputfile.g:660:2: ( RUNS a= FLOAT )
+            // Inputfile.g:660:4: RUNS a= FLOAT
             {
             match(input,RUNS,FOLLOW_RUNS_in_runs6393); 
 
             a=(Token)match(input,FLOAT,FOLLOW_FLOAT_in_runs6397); 
 
-            value = Integer.parseInt((a!=null?a.getText():null));
+            value = (int) wholeNumber(a, "Runs", Integer.MAX_VALUE);
 
             }
 
@@ -3981,7 +4001,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "beam"
-    // Inputfile.g:646:1: beam returns [Beam bObj] : BEAM ( beamLine )+ ;
+    // Inputfile.g:666:1: beam returns [Beam bObj] : BEAM ( beamLine )+ ;
     public final Beam beam() throws RecognitionException {
         beam_stack.push(new beam_scope());
         Beam bObj = null;
@@ -3991,12 +4011,12 @@ public class InputfileParser extends Parser {
         		((beam_scope)beam_stack.peek()).beamProperties = new HashMap<Object, Object>();
 
         try {
-            // Inputfile.g:657:2: ( BEAM ( beamLine )+ )
-            // Inputfile.g:657:4: BEAM ( beamLine )+
+            // Inputfile.g:677:2: ( BEAM ( beamLine )+ )
+            // Inputfile.g:677:4: BEAM ( beamLine )+
             {
             match(input,BEAM,FOLLOW_BEAM_in_beam6460); 
 
-            // Inputfile.g:657:9: ( beamLine )+
+            // Inputfile.g:677:9: ( beamLine )+
             int cnt16=0;
             loop16:
             do {
@@ -4010,7 +4030,7 @@ public class InputfileParser extends Parser {
 
                 switch (alt16) {
             	case 1 :
-            	    // Inputfile.g:657:9: beamLine
+            	    // Inputfile.g:677:9: beamLine
             	    {
             	    pushFollow(FOLLOW_beamLine_in_beam6462);
             	    beamLine();
@@ -4053,7 +4073,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "beamLine"
-    // Inputfile.g:660:1: beamLine : ( TYPE a= STRING |b= beamFlux |c= beamFWHM |d= beamEnergy |e= beamCollimation |f= beamFile |g= beamPixelSize |h= beamExposure |i= beamSemiAngle |j= beamApertureRadius |k= imageDimensions |l= pulseEnergy |m= energyFWHM );
+    // Inputfile.g:680:1: beamLine : ( TYPE a= STRING |b= beamFlux |c= beamFWHM |d= beamEnergy |e= beamCollimation |f= beamFile |g= beamPixelSize |h= beamExposure |i= beamSemiAngle |j= beamApertureRadius |k= imageDimensions |l= pulseEnergy |m= energyFWHM );
     public final void beamLine() throws RecognitionException {
         Token a=null;
         Double b =null;
@@ -4082,7 +4102,7 @@ public class InputfileParser extends Parser {
 
 
         try {
-            // Inputfile.g:661:2: ( TYPE a= STRING |b= beamFlux |c= beamFWHM |d= beamEnergy |e= beamCollimation |f= beamFile |g= beamPixelSize |h= beamExposure |i= beamSemiAngle |j= beamApertureRadius |k= imageDimensions |l= pulseEnergy |m= energyFWHM )
+            // Inputfile.g:681:2: ( TYPE a= STRING |b= beamFlux |c= beamFWHM |d= beamEnergy |e= beamCollimation |f= beamFile |g= beamPixelSize |h= beamExposure |i= beamSemiAngle |j= beamApertureRadius |k= imageDimensions |l= pulseEnergy |m= energyFWHM )
             int alt17=13;
             switch ( input.LA(1) ) {
             case TYPE:
@@ -4164,7 +4184,7 @@ public class InputfileParser extends Parser {
 
             switch (alt17) {
                 case 1 :
-                    // Inputfile.g:661:4: TYPE a= STRING
+                    // Inputfile.g:681:4: TYPE a= STRING
                     {
                     match(input,TYPE,FOLLOW_TYPE_in_beamLine6501); 
 
@@ -4175,7 +4195,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // Inputfile.g:662:4: b= beamFlux
+                    // Inputfile.g:682:4: b= beamFlux
                     {
                     pushFollow(FOLLOW_beamFlux_in_beamLine6523);
                     b=beamFlux();
@@ -4188,7 +4208,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 3 :
-                    // Inputfile.g:663:4: c= beamFWHM
+                    // Inputfile.g:683:4: c= beamFWHM
                     {
                     pushFollow(FOLLOW_beamFWHM_in_beamLine6535);
                     c=beamFWHM();
@@ -4202,7 +4222,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 4 :
-                    // Inputfile.g:665:4: d= beamEnergy
+                    // Inputfile.g:685:4: d= beamEnergy
                     {
                     pushFollow(FOLLOW_beamEnergy_in_beamLine6547);
                     d=beamEnergy();
@@ -4215,7 +4235,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 5 :
-                    // Inputfile.g:666:4: e= beamCollimation
+                    // Inputfile.g:686:4: e= beamCollimation
                     {
                     pushFollow(FOLLOW_beamCollimation_in_beamLine6559);
                     e=beamCollimation();
@@ -4230,7 +4250,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 6 :
-                    // Inputfile.g:669:4: f= beamFile
+                    // Inputfile.g:689:4: f= beamFile
                     {
                     pushFollow(FOLLOW_beamFile_in_beamLine6570);
                     f=beamFile();
@@ -4243,7 +4263,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 7 :
-                    // Inputfile.g:670:4: g= beamPixelSize
+                    // Inputfile.g:690:4: g= beamPixelSize
                     {
                     pushFollow(FOLLOW_beamPixelSize_in_beamLine6591);
                     g=beamPixelSize();
@@ -4256,7 +4276,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 8 :
-                    // Inputfile.g:672:4: h= beamExposure
+                    // Inputfile.g:692:4: h= beamExposure
                     {
                     pushFollow(FOLLOW_beamExposure_in_beamLine6608);
                     h=beamExposure();
@@ -4269,7 +4289,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 9 :
-                    // Inputfile.g:673:4: i= beamSemiAngle
+                    // Inputfile.g:693:4: i= beamSemiAngle
                     {
                     pushFollow(FOLLOW_beamSemiAngle_in_beamLine6620);
                     i=beamSemiAngle();
@@ -4282,7 +4302,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 10 :
-                    // Inputfile.g:674:4: j= beamApertureRadius
+                    // Inputfile.g:694:4: j= beamApertureRadius
                     {
                     pushFollow(FOLLOW_beamApertureRadius_in_beamLine6629);
                     j=beamApertureRadius();
@@ -4295,7 +4315,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 11 :
-                    // Inputfile.g:675:4: k= imageDimensions
+                    // Inputfile.g:695:4: k= imageDimensions
                     {
                     pushFollow(FOLLOW_imageDimensions_in_beamLine6638);
                     k=imageDimensions();
@@ -4309,7 +4329,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 12 :
-                    // Inputfile.g:677:4: l= pulseEnergy
+                    // Inputfile.g:697:4: l= pulseEnergy
                     {
                     pushFollow(FOLLOW_pulseEnergy_in_beamLine6648);
                     l=pulseEnergy();
@@ -4322,7 +4342,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 13 :
-                    // Inputfile.g:678:4: m= energyFWHM
+                    // Inputfile.g:698:4: m= energyFWHM
                     {
                     pushFollow(FOLLOW_energyFWHM_in_beamLine6660);
                     m=energyFWHM();
@@ -4352,7 +4372,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "beamFlux"
-    // Inputfile.g:682:1: beamFlux returns [Double flux] : FLUX a= FLOAT ;
+    // Inputfile.g:702:1: beamFlux returns [Double flux] : FLUX a= FLOAT ;
     public final Double beamFlux() throws RecognitionException {
         Double flux = null;
 
@@ -4360,8 +4380,8 @@ public class InputfileParser extends Parser {
         Token a=null;
 
         try {
-            // Inputfile.g:683:2: ( FLUX a= FLOAT )
-            // Inputfile.g:683:4: FLUX a= FLOAT
+            // Inputfile.g:703:2: ( FLUX a= FLOAT )
+            // Inputfile.g:703:4: FLUX a= FLOAT
             {
             match(input,FLUX,FOLLOW_FLUX_in_beamFlux6690); 
 
@@ -4387,7 +4407,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "beamExposure"
-    // Inputfile.g:686:1: beamExposure returns [Double exposure] : EXPOSURE a= FLOAT ;
+    // Inputfile.g:706:1: beamExposure returns [Double exposure] : EXPOSURE a= FLOAT ;
     public final Double beamExposure() throws RecognitionException {
         Double exposure = null;
 
@@ -4395,8 +4415,8 @@ public class InputfileParser extends Parser {
         Token a=null;
 
         try {
-            // Inputfile.g:687:2: ( EXPOSURE a= FLOAT )
-            // Inputfile.g:687:4: EXPOSURE a= FLOAT
+            // Inputfile.g:707:2: ( EXPOSURE a= FLOAT )
+            // Inputfile.g:707:4: EXPOSURE a= FLOAT
             {
             match(input,EXPOSURE,FOLLOW_EXPOSURE_in_beamExposure6736); 
 
@@ -4427,7 +4447,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "imageDimensions"
-    // Inputfile.g:690:1: imageDimensions returns [Double xImage, Double yImage] : IMAGEDIM a= FLOAT b= FLOAT ;
+    // Inputfile.g:710:1: imageDimensions returns [Double xImage, Double yImage] : IMAGEDIM a= FLOAT b= FLOAT ;
     public final InputfileParser.imageDimensions_return imageDimensions() throws RecognitionException {
         InputfileParser.imageDimensions_return retval = new InputfileParser.imageDimensions_return();
         retval.start = input.LT(1);
@@ -4437,8 +4457,8 @@ public class InputfileParser extends Parser {
         Token b=null;
 
         try {
-            // Inputfile.g:691:2: ( IMAGEDIM a= FLOAT b= FLOAT )
-            // Inputfile.g:691:4: IMAGEDIM a= FLOAT b= FLOAT
+            // Inputfile.g:711:2: ( IMAGEDIM a= FLOAT b= FLOAT )
+            // Inputfile.g:711:4: IMAGEDIM a= FLOAT b= FLOAT
             {
             match(input,IMAGEDIM,FOLLOW_IMAGEDIM_in_imageDimensions6802); 
 
@@ -4474,7 +4494,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "beamFWHM"
-    // Inputfile.g:695:1: beamFWHM returns [Double x, Double y] : FWHM a= FLOAT b= FLOAT ;
+    // Inputfile.g:715:1: beamFWHM returns [Double x, Double y] : FWHM a= FLOAT b= FLOAT ;
     public final InputfileParser.beamFWHM_return beamFWHM() throws RecognitionException {
         InputfileParser.beamFWHM_return retval = new InputfileParser.beamFWHM_return();
         retval.start = input.LT(1);
@@ -4484,8 +4504,8 @@ public class InputfileParser extends Parser {
         Token b=null;
 
         try {
-            // Inputfile.g:696:2: ( FWHM a= FLOAT b= FLOAT )
-            // Inputfile.g:696:4: FWHM a= FLOAT b= FLOAT
+            // Inputfile.g:716:2: ( FWHM a= FLOAT b= FLOAT )
+            // Inputfile.g:716:4: FWHM a= FLOAT b= FLOAT
             {
             match(input,FWHM,FOLLOW_FWHM_in_beamFWHM6875); 
 
@@ -4516,7 +4536,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "beamEnergy"
-    // Inputfile.g:699:1: beamEnergy returns [Double energy] : ENERGY a= FLOAT ( KEV )? ;
+    // Inputfile.g:719:1: beamEnergy returns [Double energy] : ENERGY a= FLOAT ( KEV )? ;
     public final Double beamEnergy() throws RecognitionException {
         Double energy = null;
 
@@ -4524,8 +4544,8 @@ public class InputfileParser extends Parser {
         Token a=null;
 
         try {
-            // Inputfile.g:700:2: ( ENERGY a= FLOAT ( KEV )? )
-            // Inputfile.g:700:4: ENERGY a= FLOAT ( KEV )?
+            // Inputfile.g:720:2: ( ENERGY a= FLOAT ( KEV )? )
+            // Inputfile.g:720:4: ENERGY a= FLOAT ( KEV )?
             {
             match(input,ENERGY,FOLLOW_ENERGY_in_beamEnergy6925); 
 
@@ -4533,7 +4553,7 @@ public class InputfileParser extends Parser {
 
             energy = Double.parseDouble((a!=null?a.getText():null));
 
-            // Inputfile.g:701:2: ( KEV )?
+            // Inputfile.g:721:2: ( KEV )?
             int alt18=2;
             int LA18_0 = input.LA(1);
 
@@ -4542,7 +4562,7 @@ public class InputfileParser extends Parser {
             }
             switch (alt18) {
                 case 1 :
-                    // Inputfile.g:701:4: KEV
+                    // Inputfile.g:721:4: KEV
                     {
                     match(input,KEV,FOLLOW_KEV_in_beamEnergy6936); 
 
@@ -4570,7 +4590,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "pulseEnergy"
-    // Inputfile.g:706:1: pulseEnergy returns [Double pulse] : PULSEENERGY a= FLOAT ;
+    // Inputfile.g:726:1: pulseEnergy returns [Double pulse] : PULSEENERGY a= FLOAT ;
     public final Double pulseEnergy() throws RecognitionException {
         Double pulse = null;
 
@@ -4578,8 +4598,8 @@ public class InputfileParser extends Parser {
         Token a=null;
 
         try {
-            // Inputfile.g:707:2: ( PULSEENERGY a= FLOAT )
-            // Inputfile.g:707:4: PULSEENERGY a= FLOAT
+            // Inputfile.g:727:2: ( PULSEENERGY a= FLOAT )
+            // Inputfile.g:727:4: PULSEENERGY a= FLOAT
             {
             match(input,PULSEENERGY,FOLLOW_PULSEENERGY_in_pulseEnergy7014); 
 
@@ -4605,7 +4625,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "beamSemiAngle"
-    // Inputfile.g:711:1: beamSemiAngle returns [Double semiAngle] : SEMIANGLE a= FLOAT ;
+    // Inputfile.g:731:1: beamSemiAngle returns [Double semiAngle] : SEMIANGLE a= FLOAT ;
     public final Double beamSemiAngle() throws RecognitionException {
         Double semiAngle = null;
 
@@ -4613,8 +4633,8 @@ public class InputfileParser extends Parser {
         Token a=null;
 
         try {
-            // Inputfile.g:712:2: ( SEMIANGLE a= FLOAT )
-            // Inputfile.g:712:4: SEMIANGLE a= FLOAT
+            // Inputfile.g:732:2: ( SEMIANGLE a= FLOAT )
+            // Inputfile.g:732:4: SEMIANGLE a= FLOAT
             {
             match(input,SEMIANGLE,FOLLOW_SEMIANGLE_in_beamSemiAngle7096); 
 
@@ -4640,7 +4660,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "beamApertureRadius"
-    // Inputfile.g:716:1: beamApertureRadius returns [Double apertureRadius] : APERTURERADIUS a= FLOAT ;
+    // Inputfile.g:736:1: beamApertureRadius returns [Double apertureRadius] : APERTURERADIUS a= FLOAT ;
     public final Double beamApertureRadius() throws RecognitionException {
         Double apertureRadius = null;
 
@@ -4648,8 +4668,8 @@ public class InputfileParser extends Parser {
         Token a=null;
 
         try {
-            // Inputfile.g:717:2: ( APERTURERADIUS a= FLOAT )
-            // Inputfile.g:717:4: APERTURERADIUS a= FLOAT
+            // Inputfile.g:737:2: ( APERTURERADIUS a= FLOAT )
+            // Inputfile.g:737:4: APERTURERADIUS a= FLOAT
             {
             match(input,APERTURERADIUS,FOLLOW_APERTURERADIUS_in_beamApertureRadius7169); 
 
@@ -4675,7 +4695,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "beamFile"
-    // Inputfile.g:721:1: beamFile returns [String filename] : FILE a= STRING ;
+    // Inputfile.g:741:1: beamFile returns [String filename] : FILE a= STRING ;
     public final String beamFile() throws RecognitionException {
         String filename = null;
 
@@ -4683,8 +4703,8 @@ public class InputfileParser extends Parser {
         Token a=null;
 
         try {
-            // Inputfile.g:722:2: ( FILE a= STRING )
-            // Inputfile.g:722:4: FILE a= STRING
+            // Inputfile.g:742:2: ( FILE a= STRING )
+            // Inputfile.g:742:4: FILE a= STRING
             {
             match(input,FILE,FOLLOW_FILE_in_beamFile7265); 
 
@@ -4710,7 +4730,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "beamPixelSize"
-    // Inputfile.g:726:1: beamPixelSize returns [Map<Object, Object> properties] : PIXELSIZE a= FLOAT b= FLOAT ;
+    // Inputfile.g:746:1: beamPixelSize returns [Map<Object, Object> properties] : PIXELSIZE a= FLOAT b= FLOAT ;
     public final Map<Object, Object> beamPixelSize() throws RecognitionException {
         Map<Object, Object> properties = null;
 
@@ -4719,8 +4739,8 @@ public class InputfileParser extends Parser {
         Token b=null;
 
         try {
-            // Inputfile.g:727:5: ( PIXELSIZE a= FLOAT b= FLOAT )
-            // Inputfile.g:727:7: PIXELSIZE a= FLOAT b= FLOAT
+            // Inputfile.g:747:5: ( PIXELSIZE a= FLOAT b= FLOAT )
+            // Inputfile.g:747:7: PIXELSIZE a= FLOAT b= FLOAT
             {
             match(input,PIXELSIZE,FOLLOW_PIXELSIZE_in_beamPixelSize7316); 
 
@@ -4750,7 +4770,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "energyFWHM"
-    // Inputfile.g:734:1: energyFWHM returns [Double eFWHM] : ENERGYFWHM a= FLOAT ;
+    // Inputfile.g:754:1: energyFWHM returns [Double eFWHM] : ENERGYFWHM a= FLOAT ;
     public final Double energyFWHM() throws RecognitionException {
         Double eFWHM = null;
 
@@ -4758,8 +4778,8 @@ public class InputfileParser extends Parser {
         Token a=null;
 
         try {
-            // Inputfile.g:735:2: ( ENERGYFWHM a= FLOAT )
-            // Inputfile.g:735:4: ENERGYFWHM a= FLOAT
+            // Inputfile.g:755:2: ( ENERGYFWHM a= FLOAT )
+            // Inputfile.g:755:4: ENERGYFWHM a= FLOAT
             {
             match(input,ENERGYFWHM,FOLLOW_ENERGYFWHM_in_energyFWHM7399); 
 
@@ -4785,7 +4805,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "beamCollimation"
-    // Inputfile.g:740:1: beamCollimation returns [Map<Object, Object> properties] : ( COLLIMATION | RECTANGULAR a= FLOAT b= FLOAT | CIRCULAR c= FLOAT f= FLOAT | HORIZONTAL d= FLOAT | VERTICAL e= FLOAT );
+    // Inputfile.g:760:1: beamCollimation returns [Map<Object, Object> properties] : ( COLLIMATION | RECTANGULAR a= FLOAT b= FLOAT | CIRCULAR c= FLOAT f= FLOAT | HORIZONTAL d= FLOAT | VERTICAL e= FLOAT );
     public final Map<Object, Object> beamCollimation() throws RecognitionException {
         Map<Object, Object> properties = null;
 
@@ -4801,7 +4821,7 @@ public class InputfileParser extends Parser {
         		properties = new HashMap<Object, Object>();
 
         try {
-            // Inputfile.g:744:2: ( COLLIMATION | RECTANGULAR a= FLOAT b= FLOAT | CIRCULAR c= FLOAT f= FLOAT | HORIZONTAL d= FLOAT | VERTICAL e= FLOAT )
+            // Inputfile.g:764:2: ( COLLIMATION | RECTANGULAR a= FLOAT b= FLOAT | CIRCULAR c= FLOAT f= FLOAT | HORIZONTAL d= FLOAT | VERTICAL e= FLOAT )
             int alt19=5;
             switch ( input.LA(1) ) {
             case COLLIMATION:
@@ -4839,14 +4859,14 @@ public class InputfileParser extends Parser {
 
             switch (alt19) {
                 case 1 :
-                    // Inputfile.g:744:4: COLLIMATION
+                    // Inputfile.g:764:4: COLLIMATION
                     {
                     match(input,COLLIMATION,FOLLOW_COLLIMATION_in_beamCollimation7483); 
 
                     }
                     break;
                 case 2 :
-                    // Inputfile.g:745:4: RECTANGULAR a= FLOAT b= FLOAT
+                    // Inputfile.g:765:4: RECTANGULAR a= FLOAT b= FLOAT
                     {
                     match(input,RECTANGULAR,FOLLOW_RECTANGULAR_in_beamCollimation7489); 
 
@@ -4860,7 +4880,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 3 :
-                    // Inputfile.g:747:4: CIRCULAR c= FLOAT f= FLOAT
+                    // Inputfile.g:767:4: CIRCULAR c= FLOAT f= FLOAT
                     {
                     match(input,CIRCULAR,FOLLOW_CIRCULAR_in_beamCollimation7504); 
 
@@ -4875,7 +4895,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 4 :
-                    // Inputfile.g:750:4: HORIZONTAL d= FLOAT
+                    // Inputfile.g:770:4: HORIZONTAL d= FLOAT
                     {
                     match(input,HORIZONTAL,FOLLOW_HORIZONTAL_in_beamCollimation7519); 
 
@@ -4886,7 +4906,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 5 :
-                    // Inputfile.g:751:4: VERTICAL e= FLOAT
+                    // Inputfile.g:771:4: VERTICAL e= FLOAT
                     {
                     match(input,VERTICAL,FOLLOW_VERTICAL_in_beamCollimation7530); 
 
@@ -4931,7 +4951,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "wedge"
-    // Inputfile.g:761:1: wedge returns [Wedge wObj] : WEDGE a= FLOAT b= FLOAT ( wedgeLine )+ ;
+    // Inputfile.g:781:1: wedge returns [Wedge wObj] : WEDGE a= FLOAT b= FLOAT ( wedgeLine )+ ;
     public final Wedge wedge() throws RecognitionException {
         wedge_stack.push(new wedge_scope());
         Wedge wObj = null;
@@ -4943,8 +4963,8 @@ public class InputfileParser extends Parser {
          
 
         try {
-            // Inputfile.g:781:2: ( WEDGE a= FLOAT b= FLOAT ( wedgeLine )+ )
-            // Inputfile.g:781:4: WEDGE a= FLOAT b= FLOAT ( wedgeLine )+
+            // Inputfile.g:801:2: ( WEDGE a= FLOAT b= FLOAT ( wedgeLine )+ )
+            // Inputfile.g:801:4: WEDGE a= FLOAT b= FLOAT ( wedgeLine )+
             {
             match(input,WEDGE,FOLLOW_WEDGE_in_wedge7847); 
 
@@ -4955,7 +4975,7 @@ public class InputfileParser extends Parser {
             ((wedge_scope)wedge_stack.peek()).startAng = Double.parseDouble((a!=null?a.getText():null));
             							 ((wedge_scope)wedge_stack.peek()).endAng = Double.parseDouble((b!=null?b.getText():null)); 
 
-            // Inputfile.g:783:4: ( wedgeLine )+
+            // Inputfile.g:803:4: ( wedgeLine )+
             int cnt20=0;
             loop20:
             do {
@@ -4969,7 +4989,7 @@ public class InputfileParser extends Parser {
 
                 switch (alt20) {
             	case 1 :
-            	    // Inputfile.g:783:4: wedgeLine
+            	    // Inputfile.g:803:4: wedgeLine
             	    {
             	    pushFollow(FOLLOW_wedgeLine_in_wedge7862);
             	    wedgeLine();
@@ -5012,7 +5032,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "wedgeLine"
-    // Inputfile.g:786:1: wedgeLine : (a= wedgeExposure |b= wedgeAngRes |c= wedgeStartOffset |d= wedgeTranslate |e= wedgeRotAxBeamOffset |f= wedgeMaxRes );
+    // Inputfile.g:806:1: wedgeLine : (a= wedgeExposure |b= wedgeAngRes |c= wedgeStartOffset |d= wedgeTranslate |e= wedgeRotAxBeamOffset |f= wedgeMaxRes );
     public final void wedgeLine() throws RecognitionException {
         double a =0.0;
 
@@ -5028,7 +5048,7 @@ public class InputfileParser extends Parser {
 
 
         try {
-            // Inputfile.g:787:2: (a= wedgeExposure |b= wedgeAngRes |c= wedgeStartOffset |d= wedgeTranslate |e= wedgeRotAxBeamOffset |f= wedgeMaxRes )
+            // Inputfile.g:807:2: (a= wedgeExposure |b= wedgeAngRes |c= wedgeStartOffset |d= wedgeTranslate |e= wedgeRotAxBeamOffset |f= wedgeMaxRes )
             int alt21=6;
             switch ( input.LA(1) ) {
             case EXPOSURETIME:
@@ -5071,7 +5091,7 @@ public class InputfileParser extends Parser {
 
             switch (alt21) {
                 case 1 :
-                    // Inputfile.g:787:4: a= wedgeExposure
+                    // Inputfile.g:807:4: a= wedgeExposure
                     {
                     pushFollow(FOLLOW_wedgeExposure_in_wedgeLine7906);
                     a=wedgeExposure();
@@ -5084,7 +5104,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // Inputfile.g:788:4: b= wedgeAngRes
+                    // Inputfile.g:808:4: b= wedgeAngRes
                     {
                     pushFollow(FOLLOW_wedgeAngRes_in_wedgeLine7916);
                     b=wedgeAngRes();
@@ -5097,7 +5117,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 3 :
-                    // Inputfile.g:789:4: c= wedgeStartOffset
+                    // Inputfile.g:809:4: c= wedgeStartOffset
                     {
                     pushFollow(FOLLOW_wedgeStartOffset_in_wedgeLine7927);
                     c=wedgeStartOffset();
@@ -5112,7 +5132,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 4 :
-                    // Inputfile.g:792:4: d= wedgeTranslate
+                    // Inputfile.g:812:4: d= wedgeTranslate
                     {
                     pushFollow(FOLLOW_wedgeTranslate_in_wedgeLine7937);
                     d=wedgeTranslate();
@@ -5127,7 +5147,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 5 :
-                    // Inputfile.g:795:4: e= wedgeRotAxBeamOffset
+                    // Inputfile.g:815:4: e= wedgeRotAxBeamOffset
                     {
                     pushFollow(FOLLOW_wedgeRotAxBeamOffset_in_wedgeLine7947);
                     e=wedgeRotAxBeamOffset();
@@ -5140,7 +5160,7 @@ public class InputfileParser extends Parser {
                     }
                     break;
                 case 6 :
-                    // Inputfile.g:796:4: f= wedgeMaxRes
+                    // Inputfile.g:816:4: f= wedgeMaxRes
                     {
                     pushFollow(FOLLOW_wedgeMaxRes_in_wedgeLine7956);
                     f=wedgeMaxRes();
@@ -5170,7 +5190,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "wedgeExposure"
-    // Inputfile.g:799:1: wedgeExposure returns [double value] : EXPOSURETIME a= FLOAT ;
+    // Inputfile.g:819:1: wedgeExposure returns [double value] : EXPOSURETIME a= FLOAT ;
     public final double wedgeExposure() throws RecognitionException {
         double value = 0.0;
 
@@ -5178,8 +5198,8 @@ public class InputfileParser extends Parser {
         Token a=null;
 
         try {
-            // Inputfile.g:800:2: ( EXPOSURETIME a= FLOAT )
-            // Inputfile.g:800:4: EXPOSURETIME a= FLOAT
+            // Inputfile.g:820:2: ( EXPOSURETIME a= FLOAT )
+            // Inputfile.g:820:4: EXPOSURETIME a= FLOAT
             {
             match(input,EXPOSURETIME,FOLLOW_EXPOSURETIME_in_wedgeExposure7973); 
 
@@ -5205,7 +5225,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "wedgeAngRes"
-    // Inputfile.g:803:1: wedgeAngRes returns [double res] : ANGULARRESOLUTION a= FLOAT ;
+    // Inputfile.g:823:1: wedgeAngRes returns [double res] : ANGULARRESOLUTION a= FLOAT ;
     public final double wedgeAngRes() throws RecognitionException {
         double res = 0.0;
 
@@ -5213,8 +5233,8 @@ public class InputfileParser extends Parser {
         Token a=null;
 
         try {
-            // Inputfile.g:804:2: ( ANGULARRESOLUTION a= FLOAT )
-            // Inputfile.g:804:4: ANGULARRESOLUTION a= FLOAT
+            // Inputfile.g:824:2: ( ANGULARRESOLUTION a= FLOAT )
+            // Inputfile.g:824:4: ANGULARRESOLUTION a= FLOAT
             {
             match(input,ANGULARRESOLUTION,FOLLOW_ANGULARRESOLUTION_in_wedgeAngRes8059); 
 
@@ -5246,7 +5266,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "wedgeStartOffset"
-    // Inputfile.g:807:1: wedgeStartOffset returns [Double x, Double y, Double z] : STARTOFFSET a= FLOAT b= FLOAT (c= FLOAT )? ;
+    // Inputfile.g:827:1: wedgeStartOffset returns [Double x, Double y, Double z] : STARTOFFSET a= FLOAT b= FLOAT (c= FLOAT )? ;
     public final InputfileParser.wedgeStartOffset_return wedgeStartOffset() throws RecognitionException {
         InputfileParser.wedgeStartOffset_return retval = new InputfileParser.wedgeStartOffset_return();
         retval.start = input.LT(1);
@@ -5257,8 +5277,8 @@ public class InputfileParser extends Parser {
         Token c=null;
 
         try {
-            // Inputfile.g:808:2: ( STARTOFFSET a= FLOAT b= FLOAT (c= FLOAT )? )
-            // Inputfile.g:808:4: STARTOFFSET a= FLOAT b= FLOAT (c= FLOAT )?
+            // Inputfile.g:828:2: ( STARTOFFSET a= FLOAT b= FLOAT (c= FLOAT )? )
+            // Inputfile.g:828:4: STARTOFFSET a= FLOAT b= FLOAT (c= FLOAT )?
             {
             match(input,STARTOFFSET,FOLLOW_STARTOFFSET_in_wedgeStartOffset8170); 
 
@@ -5268,7 +5288,7 @@ public class InputfileParser extends Parser {
 
             retval.x = Double.parseDouble((a!=null?a.getText():null)); retval.y = Double.parseDouble((b!=null?b.getText():null));
 
-            // Inputfile.g:809:17: (c= FLOAT )?
+            // Inputfile.g:829:17: (c= FLOAT )?
             int alt22=2;
             int LA22_0 = input.LA(1);
 
@@ -5277,7 +5297,7 @@ public class InputfileParser extends Parser {
             }
             switch (alt22) {
                 case 1 :
-                    // Inputfile.g:809:17: c= FLOAT
+                    // Inputfile.g:829:17: c= FLOAT
                     {
                     c=(Token)match(input,FLOAT,FOLLOW_FLOAT_in_wedgeStartOffset8199); 
 
@@ -5316,7 +5336,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "wedgeTranslate"
-    // Inputfile.g:813:1: wedgeTranslate returns [Double x, Double y, Double z] : TRANSLATEPERDEGREE a= FLOAT b= FLOAT (c= FLOAT )? ;
+    // Inputfile.g:833:1: wedgeTranslate returns [Double x, Double y, Double z] : TRANSLATEPERDEGREE a= FLOAT b= FLOAT (c= FLOAT )? ;
     public final InputfileParser.wedgeTranslate_return wedgeTranslate() throws RecognitionException {
         InputfileParser.wedgeTranslate_return retval = new InputfileParser.wedgeTranslate_return();
         retval.start = input.LT(1);
@@ -5327,8 +5347,8 @@ public class InputfileParser extends Parser {
         Token c=null;
 
         try {
-            // Inputfile.g:814:2: ( TRANSLATEPERDEGREE a= FLOAT b= FLOAT (c= FLOAT )? )
-            // Inputfile.g:814:4: TRANSLATEPERDEGREE a= FLOAT b= FLOAT (c= FLOAT )?
+            // Inputfile.g:834:2: ( TRANSLATEPERDEGREE a= FLOAT b= FLOAT (c= FLOAT )? )
+            // Inputfile.g:834:4: TRANSLATEPERDEGREE a= FLOAT b= FLOAT (c= FLOAT )?
             {
             match(input,TRANSLATEPERDEGREE,FOLLOW_TRANSLATEPERDEGREE_in_wedgeTranslate8293); 
 
@@ -5338,7 +5358,7 @@ public class InputfileParser extends Parser {
 
             retval.x = Double.parseDouble((a!=null?a.getText():null)); retval.y = Double.parseDouble((b!=null?b.getText():null));
 
-            // Inputfile.g:815:24: (c= FLOAT )?
+            // Inputfile.g:835:24: (c= FLOAT )?
             int alt23=2;
             int LA23_0 = input.LA(1);
 
@@ -5347,7 +5367,7 @@ public class InputfileParser extends Parser {
             }
             switch (alt23) {
                 case 1 :
-                    // Inputfile.g:815:24: c= FLOAT
+                    // Inputfile.g:835:24: c= FLOAT
                     {
                     c=(Token)match(input,FLOAT,FOLLOW_FLOAT_in_wedgeTranslate8329); 
 
@@ -5380,7 +5400,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "wedgeRotAxBeamOffset"
-    // Inputfile.g:819:1: wedgeRotAxBeamOffset returns [double delta] : ROTAXBEAMOFFSET a= FLOAT ;
+    // Inputfile.g:839:1: wedgeRotAxBeamOffset returns [double delta] : ROTAXBEAMOFFSET a= FLOAT ;
     public final double wedgeRotAxBeamOffset() throws RecognitionException {
         double delta = 0.0;
 
@@ -5388,8 +5408,8 @@ public class InputfileParser extends Parser {
         Token a=null;
 
         try {
-            // Inputfile.g:820:2: ( ROTAXBEAMOFFSET a= FLOAT )
-            // Inputfile.g:820:4: ROTAXBEAMOFFSET a= FLOAT
+            // Inputfile.g:840:2: ( ROTAXBEAMOFFSET a= FLOAT )
+            // Inputfile.g:840:4: ROTAXBEAMOFFSET a= FLOAT
             {
             match(input,ROTAXBEAMOFFSET,FOLLOW_ROTAXBEAMOFFSET_in_wedgeRotAxBeamOffset8465); 
 
@@ -5415,7 +5435,7 @@ public class InputfileParser extends Parser {
 
 
     // $ANTLR start "wedgeMaxRes"
-    // Inputfile.g:823:1: wedgeMaxRes returns [double res] : MAXRESOLUTION a= FLOAT ;
+    // Inputfile.g:843:1: wedgeMaxRes returns [double res] : MAXRESOLUTION a= FLOAT ;
     public final double wedgeMaxRes() throws RecognitionException {
         double res = 0.0;
 
@@ -5423,8 +5443,8 @@ public class InputfileParser extends Parser {
         Token a=null;
 
         try {
-            // Inputfile.g:824:2: ( MAXRESOLUTION a= FLOAT )
-            // Inputfile.g:824:4: MAXRESOLUTION a= FLOAT
+            // Inputfile.g:844:2: ( MAXRESOLUTION a= FLOAT )
+            // Inputfile.g:844:4: MAXRESOLUTION a= FLOAT
             {
             match(input,MAXRESOLUTION,FOLLOW_MAXRESOLUTION_in_wedgeMaxRes8566); 
 
