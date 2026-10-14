@@ -1154,16 +1154,40 @@ public class MC {
   }
   
   private int getIonisedShell(Element ionisedElement, Map<Element, double[]> ionisationProbs) {
-    double[] shellProbs = ionisationProbs.get(ionisedElement);
-    double shellRND = RandomSource.nextDouble();
-    int shellIndex = 0;
+    return ionisedShell(ionisationProbs.get(ionisedElement),
+        RandomSource.nextDouble());
+  }
+
+  /**
+   * A photoelectric absorption by a shell the model leaves out: by an outer
+   * shell, bound too weakly to matter. getRelativeShellProbs gives running
+   * chances for K, then L1-L3 from magnesium up, then M1-M5 from tantalum
+   * up, and the rest of the absorption is by the shells beyond them.
+   */
+  static final int OUTER_SHELL = -1;
+
+  /**
+   * The shell a photoelectric absorption ionises: the first whose running
+   * chance passes the draw, or OUTER_SHELL past them all.
+   *
+   * A draw past them all used to take the K shell. Below the K edge it
+   * freed a photoelectron of negative energy: iodine's L shells take 78% of
+   * its absorption at 12.1 keV, and the rest gave photoelectrons of
+   * 12.1 - 33.2 = -21 keV, the K binding energy then deposited where the
+   * atom relaxed. Above it, it gave the K binding energy to an absorption
+   * by an outer shell, as for 8% of sodium's.
+   *
+   * @param shellProbs running chances, K to M5, from getRelativeShellProbs
+   * @param draw a uniform random number
+   * @return the shell, 0 = K to 8 = M5, or OUTER_SHELL
+   */
+  static int ionisedShell(final double[] shellProbs, final double draw) {
     for (int j = 0; j < shellProbs.length; j++) {
-      if (shellProbs[j] > shellRND) {
-        shellIndex = j;
-        break;
+      if (shellProbs[j] > draw) {
+        return j;
       }
     }
-    return shellIndex;
+    return OUTER_SHELL;
   }
   
   private void producePhotoElectron(Beam beam, CoefCalc coefCalc, Map<Element, Double> elementAbsorptionProbs, Map<Element, double[]> ionisationProbs,
@@ -1184,7 +1208,7 @@ public class MC {
     }
     //shell
     int shellIndex = getIonisedShell(ionisedElement, ionisationProbs);
-    //get the shell binding energy
+    //get the shell binding energy: none for an outer shell
     double shellBindingEnergy = getShellBindingEnergy(ionisedElement, shellIndex);
     double photoelectronEnergy = photonEnergy - shellBindingEnergy;
     
@@ -1259,7 +1283,9 @@ public class MC {
     */
     //relax the atom and see if an auger electron was produced
   //  if (simpleMC == false){
-      if (surrounding == false) { //only want to track Auger if in the crystal for now
+      // An outer shell's vacancy is not relaxed: it has no Auger or
+      // fluorescence transitions, and no binding energy to deposit.
+      if (surrounding == false && shellIndex != OUTER_SHELL) { //only want to track Auger if in the crystal for now
         produceAugerElectron(coefCalc, timeStamp, shellIndex, ionisedElement, xn, yn, zn, surrounding, beam, angle, wedge);
       }
   //  }
@@ -3165,6 +3191,7 @@ private boolean testIfInsideExposedArea(double xPos, double yPos, Beam beam) { /
   }
   
   private double getShellBindingEnergy(Element collidedElement, int collidedShell) {
+    // 0 for OUTER_SHELL, which no case matches.
     double shellBindingEnergy = 0;
     switch (collidedShell) {
       case 0: shellBindingEnergy = collidedElement.getKEdge();
