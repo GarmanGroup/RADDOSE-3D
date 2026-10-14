@@ -384,17 +384,7 @@ public class MC {
       }
       
       //need to get the angle if there is any rotation 
-      if ((Math.abs(wedge.getStartAng() - wedge.getEndAng()) < wedge.getAngRes()) || (wedge.getEndAng() == 0)) {
-        angle = 0;
-      }
-      else {
-        //choose angle dependent on angular resolution and how far in the photon is
-        Integer sign = 1;
-        if (wedge.getEndAng() < wedge.getStartAng()) {
-          sign = -1;
-        }
-        angle = wedge.getStartAng() + (progress * ((double)sign * (wedge.getEndAng() - wedge.getStartAng())));
-      }
+      angle = photonAngle(wedge, progress);
       //convert to 0-2pi
       int timesOver = (int) (angle/(2*Math.PI));
       angle = angle - (timesOver * 2 *Math.PI);
@@ -415,7 +405,7 @@ public class MC {
       double photonMFPL = (1/(absCoef + comptonCoef))*1000; //including Compton
       double probCompton = 1 - (photonMFPL/((1/absCoef)*1000));
       double totalMFPL = (1/(absCoef + comptonCoef + elasticCoef))*1000;
-      double elasticProb = elasticCoef / (absCoef + comptonCoef);
+      double elasticProb = elasticChance(absCoef, comptonCoef, elasticCoef);
       
       //populate the relative element cross sections here 
       Map<Element, Double> elementAbsorptionProbs = coefCalc.getPhotoElectricProbsElement(energyOfPhoton);
@@ -523,7 +513,7 @@ public class MC {
         else {
           surrounding = true;
         }
-        if (crystalZ == 0.0) { // this is a photon that I want to track but will never hit the crystal
+        if (Double.isNaN(crystalZ)) { // this is a photon that I want to track but will never hit the crystal
           hitting = false;
         }
       }
@@ -532,7 +522,7 @@ public class MC {
         previousZ = getStartingZ(angle, wedge, coord, true); 
         surrounding = false;
       }
-      if (previousZ == 0.0) {
+      if (Double.isNaN(previousZ)) {
         track = false; //outside tracked area
         exited = true;
         missCount += 1;
@@ -1137,6 +1127,40 @@ public class MC {
   }
   
   /**
+   * The crystal's angle for a photon this far through the wedge. A still
+   * sits at its start angle, and a rotation turns from its start to its
+   * end, as MX's wedges do. A wedge ending at 0 was taken for a still, a
+   * still sat at 0 whatever its start, and a rotation with end < start
+   * turned away from its end.
+   *
+   * @param wedge the wedge
+   * @param progress the photon's index over the number of photons
+   * @return the angle in radians
+   */
+  static double photonAngle(final Wedge wedge, final double progress) {
+    if (Math.abs(wedge.getStartAng() - wedge.getEndAng()) < wedge.getAngRes()) {
+      return wedge.getStartAng();
+    }
+    return wedge.getStartAng()
+        + (progress * (wedge.getEndAng() - wedge.getStartAng()));
+  }
+
+  /**
+   * The chance a photon's interaction is elastic scattering. The distance
+   * to it is drawn from all three coefficients, so it is the elastic one
+   * over their sum; it was divided by photoelectric and Compton alone.
+   *
+   * @param photoelectric the photoelectric coefficient
+   * @param compton the Compton coefficient
+   * @param elastic the elastic coefficient
+   * @return the chance
+   */
+  static double elasticChance(final double photoelectric,
+      final double compton, final double elastic) {
+    return elastic / (photoelectric + compton + elastic);
+  }
+
+  /**
    * A direction drawn uniformly over the sphere: the cosine of its polar
    * angle uniform on [-1, 1].
    *
@@ -1339,7 +1363,9 @@ public class MC {
     int[] pixelCoord = convertToPixelCoordinates(xn, yn, zn, angle, wedge);
     int shell = (int) shellIndex;
     int Z = ionisedElement.getAtomicNumber();
-    if (Z == 6 || Z == 7 || Z == 8 || Z == 11 || Z == 12 || Z == 14 || Z == 16 || Z == 17 || Z == 19 || Z == 20 || Z == 25 || Z == 26 || Z == 27 || Z == 28 || Z == 29 || Z == 30 || Z == 33 || Z == 34) {
+    // Every element with relaxation tables. Phosphorus has them, and was
+    // left out of the list this was.
+    if (Arrays.binarySearch(augerElements, Z) >= 0) {
     if (shellIndex == 0 || (shellIndex < 2 && Z==11) || (shellIndex < 3 && Z==12) || (shellIndex < 4 && Z<=20 && Z>12) || (shellIndex < 7 && Z>=25 && Z<31) || (shellIndex < 9 && Z>32 && Z < 35)) {
       //only do for elements that are possible right now - C N O S
         double shellFluorescenceYield = getShellFluorescenceYield(ionisedElement, shellIndex);
@@ -1462,7 +1488,9 @@ public class MC {
   }
   
   private int getTransitionIndex(int Z, int shell, boolean auger) {
-    double[] transitionProbs = cumulativeTransitionProbabilities.get(Z).get(shell);
+    // From the fluorescence table for fluorescence, as XFEL has it: it drew
+    // from the Auger table either way.
+    double[] transitionProbs = getTranstionProbs(Z, shell, auger);
     int transitionIndex = 0;
     double transitionRND = RandomSource.nextDouble();
     for (int i = 0; i < transitionProbs.length; i++) {
@@ -4549,8 +4577,9 @@ private Element chooseLowEnElement(CoefCalc coefCalc, double Pinner, Map<Element
     }
 
     Collections.sort(distancesFound);
+    // NaN for a miss. It was 0, which a face at z = 0 also gives.
     if (distancesFound.isEmpty()) {
-      return 0.0;
+      return Double.NaN;
     }
     else {
       //then it does cross - return the most negative value
@@ -4593,8 +4622,9 @@ private Element chooseLowEnElement(CoefCalc coefCalc, double Pinner, Map<Element
     if (front == false) {
       index = 1;
     }
+    // NaN for a miss. It was 0, which a face at z = 0 also gives.
     if (distancesFound.isEmpty()) {
-      return 0.0;
+      return Double.NaN;
     }
     else {
       //then it does cross - return the most negative value
