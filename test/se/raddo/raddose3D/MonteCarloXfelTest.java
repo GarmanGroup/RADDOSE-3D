@@ -494,6 +494,79 @@ public class MonteCarloXfelTest {
     assertTrue(files.containsKey("outputMC.CSV"));
   }
 
+  // ---------------------------------------------------------------- beams
+
+  private static Beam circular(final String type, final double fwhm,
+      final double aperture) {
+    Map<Object, Object> p = new HashMap<Object, Object>();
+    p.put(Beam.BEAM_ENERGY, 12.1);
+    p.put(Beam.BEAM_FLUX, 2e12);
+    p.put(Beam.BEAM_COLL_H, aperture);
+    p.put(Beam.BEAM_COLL_V, aperture);
+    p.put(Beam.BEAM_CIRCULAR, "TRUE");
+    if ("Gaussian".equals(type)) {
+      p.put(Beam.BEAM_FWHM_X, fwhm);
+      p.put(Beam.BEAM_FWHM_Y, fwhm);
+      return new BeamGaussian(p);
+    }
+    return new BeamTophat(p);
+  }
+
+  private static double[][] positions(final Beam beam, final int n)
+      throws Exception {
+    MC mc = cuboidMC();
+    RandomSource.setSeed(11);
+    double[][] xy = new double[n][];
+    for (int i = 0; i < n; i++) {
+      xy[i] = (double[]) call(mc, "getPhotonBeamXYPos",
+          new Class<?>[] {Beam.class, Wedge.class}, beam, still(10));
+    }
+    return xy;
+  }
+
+  /** A 5 um circle's area is pi 2.5^2 um^2, not pi 5^2. */
+  @Test
+  public void aCircularExposedAreaIsTheEllipses() throws Exception {
+    assertEquals(Math.PI * 2500 * 2500,
+        cuboidMC().getExposedArea(circular("Tophat", 0, 5)), 1e-3);
+  }
+
+  /**
+   * A circular top-hat fills its circle: half its photons have |y| > |x|.
+   * It filled a bow tie, |y| <= |x|.
+   */
+  @Test
+  public void aCircularTophatFillsItsCircle() throws Exception {
+    double[][] xy = positions(circular("Tophat", 0, 5), 20000);
+    int steep = 0;
+    for (double[] p : xy) {
+      assertTrue(MC.insideEllipse(p, 5, 5), Arrays.toString(p));
+      if (Math.abs(p[1]) > Math.abs(p[0])) {
+        steep++;
+      }
+    }
+    assertEquals(0.5, steep / 20000.0, 0.02);
+  }
+
+  /**
+   * A circular Gaussian's radii follow the two-dimensional normal: 1 -
+   * exp(-1/2) = 39.3% within one sigma, through an aperture far wider than
+   * the beam. Its radius was drawn from a one-dimensional normal, which put
+   * 68% there.
+   */
+  @Test
+  public void aCircularGaussiansRadiiAreTwoDimensional() throws Exception {
+    double sigma = 20 / (2 * Math.sqrt(2 * Math.log(2)));
+    double[][] xy = positions(circular("Gaussian", 20, 200), 20000);
+    int within = 0;
+    for (double[] p : xy) {
+      if (Math.hypot(p[0], p[1]) / 1000 < sigma) {
+        within++;
+      }
+    }
+    assertEquals(1 - Math.exp(-0.5), within / 20000.0, 0.015);
+  }
+
   private static Object field(final Object owner, final String name)
       throws Exception {
     Field f = CrystalPolyhedron.class.getDeclaredField(name);
