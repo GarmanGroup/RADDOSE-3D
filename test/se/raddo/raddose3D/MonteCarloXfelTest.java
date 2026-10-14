@@ -409,6 +409,91 @@ public class MonteCarloXfelTest {
     }
   }
 
+  // ------------------------------------------------------------- geometry
+
+  /** An MC run's geometry, for a 4 x 6 x 8 um cuboid at 2 voxels per um. */
+  private static MC cuboidMC() throws Exception {
+    Crystal cuboid = cuboid("MONTECARLO", insulin(100), 4, 6, 8, 2);
+    CrystalPolyhedron c = (CrystalPolyhedron) cuboid;
+    return new MC(c.vertices, c.indices,
+        (double[][][][]) field(c, "crystCoord"), c.crystalPixPerUM,
+        (int[]) field(c, "crystSizeVoxels"), c.crystOcc, 1, false, false,
+        false, new double[3], false);
+  }
+
+  private static Object call(final MC mc, final String name,
+      final Class<?>[] types, final Object... args) throws Exception {
+    java.lang.reflect.Method m = MC.class.getDeclaredMethod(name, types);
+    m.setAccessible(true);
+    return m.invoke(mc, args);
+  }
+
+  private static final Class<?>[] SIX_DOUBLES = {double.class, double.class,
+      double.class, double.class, double.class, double.class};
+
+  /**
+   * From the centre of a 4 x 6 x 8 um crystal rotated through 90 degrees,
+   * along x: 4 um to its surface, half its 8 um z, now along x. The
+   * unrotated crystal's planes gave 2 um.
+   */
+  @Test
+  public void escapeDistancesAreToTheRotatedCrystal() throws Exception {
+    MC mc = cuboidMC();
+    call(mc, "setUpRotatedVertices", new Class<?>[] {double.class, Wedge.class},
+        Math.PI / 2, still(10));
+    double distance = (Double) call(mc, "getIntersectionDistance", SIX_DOUBLES,
+        0.0, 0.0, 0.0, 1.0, 0.0, 0.0);
+    assertEquals(4.0, distance, 1e-9);
+  }
+
+  /**
+   * From outside, past a corner: the nearest plane ahead, y = 3, is crossed
+   * beyond the crystal, at x = -3; the face the ray enters by is x = -2.
+   */
+  @Test
+  public void entryDistancesAreToTheFaceCrossed() throws Exception {
+    MC mc = cuboidMC();
+    call(mc, "setUpRotatedVertices", new Class<?>[] {double.class, Wedge.class},
+        0.0, still(10));
+    double norm = Math.sqrt(1.25);
+    double distance = (Double) call(mc, "getIntersectionDistance", SIX_DOUBLES,
+        -5000.0, 4000.0, 0.0, 1 / norm, -0.5 / norm, 0.0);
+    assertEquals(3 * norm, distance, 1e-9);
+  }
+
+  /**
+   * A point just inside a corner of a crystal offset by 0.5 um and rotated
+   * through 90 degrees is in the corner voxel. Translating back before
+   * rotating back put it a voxel past the grid, and the run failed with an
+   * ArrayIndexOutOfBoundsException.
+   */
+  @Test
+  public void anOffsetRotatedCrystalsPointsFindTheirVoxels() throws Exception {
+    MC mc = cuboidMC();
+    Wedge offset = new Wedge(2d, 0d, 90d, 10d, 0.5, 0d, 0d, null, null, null,
+        null, null);
+    double angle = Math.PI / 2;
+    // The corner (1.99, 2.99, 3.99) um, offset, then rotated: x' = x cos a
+    // + z sin a, z' = -x sin a + z cos a.
+    double[] corner = {1.99 + 0.5, 2.99, 3.99};
+    double x = corner[0] * Math.cos(angle) + corner[2] * Math.sin(angle);
+    double z = -corner[0] * Math.sin(angle) + corner[2] * Math.cos(angle);
+    int[] voxel = (int[]) call(mc, "convertToPixelCoordinates",
+        new Class<?>[] {double.class, double.class, double.class, double.class,
+            Wedge.class}, x * 1000, corner[1] * 1000, z * 1000, angle, offset);
+    assertArrayEquals(new int[] {8, 12, 16}, voxel);
+  }
+
+  /** And a run of one no longer fails. */
+  @Test
+  public void anOffsetRotatedCrystalRuns(@TempDir final Path dir)
+      throws IOException {
+    Map<String, String> files = run(cuboid("MONTECARLO", insulin(20000), 4, 6,
+        8, 2), gaussian(12.1, null, false), new Wedge(2d, 0d, 90d, 10d, 0.5, 0d,
+        0d, null, null, null, null, null), dir, 3);
+    assertTrue(files.containsKey("outputMC.CSV"));
+  }
+
   private static Object field(final Object owner, final String name)
       throws Exception {
     Field f = CrystalPolyhedron.class.getDeclaredField(name);
