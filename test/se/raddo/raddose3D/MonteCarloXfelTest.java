@@ -567,6 +567,48 @@ public class MonteCarloXfelTest {
     assertEquals(1 - Math.exp(-0.5), within / 20000.0, 0.015);
   }
 
+  // --------------------------------------------------------- elastic angles
+
+  /**
+   * Scattering the same per unit solid angle in every direction: a quarter
+   * of deflections are under 60 degrees, where (1 - cos theta) / 2 = 1/4.
+   * Taking the table's values as the chances themselves put a quarter under
+   * 45.
+   */
+  @Test
+  public void elasticAnglesAreWeightedBySinTheta() {
+    double[] degrees = new double[181];
+    double[] flat = new double[181];
+    for (int k = 0; k <= 180; k++) {
+      degrees[k] = k;
+      flat[k] = 1;
+    }
+    double quarter = Math.toDegrees(MC.deflectionAngle(flat, degrees, 0.25));
+    assertEquals(60, quarter, 1);
+    assertEquals(quarter, Math.toDegrees(
+        XFEL.deflectionAngle(flat, degrees, 0.25)), 0);
+  }
+
+  /**
+   * Above 20 keV, column 146 is 1.1 degrees, as the table's header says.
+   * The angle was worked out from the index, which gave 1.0 from there on.
+   */
+  @Test
+  public void elasticAnglesAreTheTablesOwn() throws Exception {
+    java.io.BufferedReader header = new java.io.BufferedReader(
+        new java.io.FileReader("constants/above_20000/6.csv"));
+    String[] columns = header.readLine().split(",");
+    header.close();
+    double[] degrees = new double[columns.length - 1];
+    for (int k = 1; k < columns.length; k++) {
+      degrees[k - 1] = Double.parseDouble(columns[k]);
+    }
+    double[] one = new double[degrees.length];
+    one[146] = 1;
+    assertEquals(1.1, Math.toDegrees(MC.deflectionAngle(one, degrees, 0.5)),
+        1e-12);
+  }
+
   private static Object field(final Object owner, final String name)
       throws Exception {
     Field f = CrystalPolyhedron.class.getDeclaredField(name);
