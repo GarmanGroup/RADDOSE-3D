@@ -856,6 +856,127 @@ public class MonteCarloXfelTest {
     assertTrue(Double.isNaN(miss));
   }
 
+  // ----------------------------------------------------------- surrounding
+
+  /** Insulin in a surrounding with the given solutes, mM (CalcSurrounding). */
+  private static CoefCalcCompute insulinIn(final List<String> solutes,
+      final List<Double> concentrations, final long photons) {
+    return new CoefCalcFromParams(78.02, 78.02, 78.02, 90.0, 90.0, 90.0, 24,
+        51, 0, 0, Arrays.asList("ZN", "S"), Arrays.asList(0.333, 6.0),
+        Arrays.asList("P"), Arrays.asList(425.0), solutes, concentrations,
+        0.64, null, "TRUE", 0, NONE, NO_AMOUNTS, 0, photons);
+  }
+
+  /** An MC run's geometry for a crystal, with a surrounding of the thickness given, um. */
+  private static MC mcFor(final CrystalPolyhedron c, final double[][] vertices,
+      final double[] thickness) throws Exception {
+    return new MC(vertices, c.indices,
+        (double[][][][]) field(c, "crystCoord"), c.crystalPixPerUM,
+        (int[]) field(c, "crystSizeVoxels"), c.crystOcc, 1, false, false,
+        false, thickness, false);
+  }
+
+  /**
+   * A cylinder 5 um across in a surrounding 1 um thick: its side is 1 um
+   * thick all round, as are its ends. Each vertex was pushed out 1 um along
+   * each axis, which made the side 1.14 to 1.41 um thick.
+   */
+  @Test
+  public void aCylindersSurroundingIsAsThickAllRound() throws Exception {
+    Map<Object, Object> p = new HashMap<Object, Object>();
+    p.put(Crystal.CRYSTAL_DIM_X, 5d);
+    p.put(Crystal.CRYSTAL_DIM_Y, 5d);
+    p.put(Crystal.CRYSTAL_DIM_Z, 1d);
+    p.put(Crystal.CRYSTAL_RESOLUTION, 1d);
+    p.put(Crystal.CRYSTAL_ANGLE_P, 0d);
+    p.put(Crystal.CRYSTAL_ANGLE_L, 0d);
+    CrystalCylinder cylinder = new CrystalCylinder(p);
+    MC mc = mcFor(cylinder, cylinder.vertices, new double[] {1, 1, 1});
+    call(mc, "setupSurroundingVolume", new Class<?>[0]);
+    for (int i = 0; i < cylinder.vertices.length; i++) {
+      double[] v = cylinder.vertices[i];
+      double[] w = mc.verticesSurrounding[i];
+      assertEquals(Math.hypot(v[0], v[2]) * 3.5 / 2.5, Math.hypot(w[0], w[2]),
+          1e-9, "vertex " + i);
+      assertEquals(Math.signum(v[1]) * 3.5, w[1], 1e-9, "vertex " + i);
+    }
+  }
+
+  /**
+   * A crystal not centred on the origin is enclosed: a 4 um cube whose
+   * corners all have x > 0, in a surrounding 1 um thick, has it from x = 7
+   * to 13. Pushed away from the origin, every vertex moved to larger x, and
+   * the surrounding began at 9, inside the crystal.
+   */
+  @Test
+  public void aCrystalOffTheOriginIsEnclosed() throws Exception {
+    CrystalPolyhedron cube = (CrystalPolyhedron) cuboid("MONTECARLO",
+        insulin(100), 4, 4, 4, 1);
+    double[][] moved = new double[cube.vertices.length][];
+    for (int i = 0; i < moved.length; i++) {
+      moved[i] = new double[] {cube.vertices[i][0] + 10, cube.vertices[i][1],
+          cube.vertices[i][2]};
+    }
+    MC mc = mcFor(cube, moved, new double[] {1, 1, 1});
+    call(mc, "setupSurroundingVolume", new Class<?>[0]);
+    double[] x = mc.minMaxVertices(0, mc.verticesSurrounding);
+    assertEquals(7, x[0], 1e-9);
+    assertEquals(13, x[1], 1e-9);
+  }
+
+  /**
+   * The thickness is capped once, by the reach of the most energetic
+   * photon's photoelectron; 0 takes the cap. It was capped photon by photon,
+   * by overwriting it, so a pink beam, whose photons come in order of
+   * energy, left it at the first, least energetic photon's reach.
+   */
+  @Test
+  public void theSurroundingIsCappedByTheMostEnergeticPhoton() throws Exception {
+    CoefCalcCompute salt = insulinIn(Arrays.asList("NA", "CL"),
+        Arrays.asList(500.0, 500.0), 100);
+    MC mc = mcFor((CrystalPolyhedron) cuboidCrystal(), cuboidCrystal().vertices,
+        new double[] {0, 0.1, 100});
+    mc.capSurroundingThickness(salt, new double[] {8, 10, 12.1});
+    double reach = 12.1 / salt.getStoppingPower(12.1, true);
+    assertTrue(reach > 100 && reach < 100000, "reach " + reach);
+    Field f = MC.class.getDeclaredField("surroundingThickness");
+    f.setAccessible(true);
+    assertArrayEquals(new double[] {reach, 100, reach}, (double[]) f.get(mc),
+        1e-9);
+  }
+
+  private static CrystalPolyhedron cuboidCrystal() {
+    return (CrystalPolyhedron) cuboid("MONTECARLO", insulin(100), 4, 4, 4, 1);
+  }
+
+  /**
+   * As many photons are absorbed in the surrounding behind the crystal as
+   * in front: a 2 um slab barely attenuates the beam. One that crossed the
+   * crystal was given its chance behind it only if the distance drawn for
+   * the crystal happened to end in the surrounding, so almost none were.
+   */
+  @Test
+  public void photonsReachTheSurroundingBehindTheCrystal(@TempDir final Path dir)
+      throws Exception {
+    CoefCalcCompute iodide = insulinIn(Arrays.asList("I"),
+        Arrays.asList(2000.0), 200000);
+    CrystalPolyhedron slab = (CrystalPolyhedron) cuboid("MONTECARLO", iodide,
+        4, 4, 2, 1);
+    MC mc = mcFor(slab, slab.vertices, new double[] {0, 0, 0});
+    mc.setOutputDirectory(dir.toFile());
+    Map<Object, Object> p = new HashMap<Object, Object>();
+    p.put(Beam.BEAM_ENERGY, 12.1);
+    p.put(Beam.BEAM_FLUX, 2e12);
+    p.put(Beam.BEAM_COLL_H, 4.0);
+    p.put(Beam.BEAM_COLL_V, 4.0);
+    RandomSource.setSeed(19);
+    mc.CalculateXFEL(new BeamTophat(p), still(10), iodide);
+    long front = mc.photonsInSurroundingInFront;
+    long behind = mc.photonsInSurroundingBehind;
+    assertTrue(front > 500, "front " + front);
+    assertEquals(1, (double) behind / front, 0.15, behind + " behind, " + front + " in front");
+  }
+
   private static Object mcField(final MC mc, final String name)
       throws Exception {
     Field f = MC.class.getDeclaredField(name);

@@ -180,6 +180,9 @@ public class MC {
 //private double totalNumberOfPhotons = PULSE_ENERGY / meanEnergy; // need to check where this is computed elsewhere and change 
   
   private double[] surroundingThickness;
+
+  /** Photons that interacted in the surrounding in front of the crystal, and behind it. */
+  long photonsInSurroundingInFront, photonsInSurroundingBehind;
   
   public MC(double vertices[][], int[][] indices, double[][][][] crystCoord, 
       double crystalPixPerUM, int[] crystSizeVoxels, boolean[][][][] crystOcc, int runNum, boolean verticalGoniometer,
@@ -259,20 +262,51 @@ public class MC {
     
   }
   
+  /**
+   * The surrounding: the crystal scaled about the centre of its bounding
+   * box, so that it extends the thickness on each side. For a cuboid that is
+   * the box it was; for a cylinder or a sphere, a shell as thick all round.
+   * Each vertex was pushed away from the origin by the thickness along each
+   * axis, which gave a cylinder 5 um across a side 1.14 to 1.41 times as
+   * thick as asked, and moved a crystal not centred on the origin rather
+   * than enclosing it.
+   */
   private void setupSurroundingVolume() {
-    
-    for (int i = 0; i < verticesXFEL.length; i++) {
-      for (int j = 0; j < 3; j++) {
-        if (verticesXFEL[i][j] < 0) {
-          verticesSurrounding[i][j] = verticesXFEL[i][j] - surroundingThickness[j]/1000;
-        }
-        else {
-          verticesSurrounding[i][j] = verticesXFEL[i][j] + surroundingThickness[j]/1000;
-        }
+    for (int j = 0; j < 3; j++) {
+      double[] minMax = minMaxVertices(j, verticesXFEL);
+      double centre = (minMax[0] + minMax[1]) / 2;
+      double half = (minMax[1] - minMax[0]) / 2;
+      double scale = (half + surroundingThickness[j] / 1000) / half;
+      for (int i = 0; i < verticesXFEL.length; i++) {
+        verticesSurrounding[i][j] = centre + (verticesXFEL[i][j] - centre) * scale;
       }
     }
-    
     indicesSurrounding = indicesXFEL;
+  }
+
+  /**
+   * The surrounding's thickness on each axis: as asked, but no more than a
+   * photoelectron of the most energetic photon could travel in it -- E over
+   * the surrounding's stopping power at E, a little more than its range --
+   * and that where none is asked. It was capped photon by photon, by
+   * overwriting the thickness, so it ended at the least energetic photon's
+   * reach so far: under a pink beam, whose photons come in order of energy,
+   * the first photon's.
+   *
+   * @param coefCalc the coefficients, with the surrounding's
+   * @param energies every photon's energy, keV
+   */
+  void capSurroundingThickness(final CoefCalc coefCalc, final double[] energies) {
+    double highest = 0;
+    for (double energy : energies) {
+      highest = Math.max(highest, energy);
+    }
+    double reach = highest / coefCalc.getStoppingPower(highest, true);
+    for (int axis = 0; axis < 3; axis++) {
+      if (surroundingThickness[axis] <= 0.0 || surroundingThickness[axis] > reach) {
+        surroundingThickness[axis] = reach;
+      }
+    }
   }
   
   
@@ -374,6 +408,10 @@ public class MC {
     //Decide a starting time stamp for the photons
     double photonDivisions =  NUM_PHOTONS / (PULSE_LENGTH/PULSE_BIN_LENGTH);
      
+    if (coefCalc.isCryo()) {
+      capSurroundingThickness(coefCalc, photonEnergyArray);
+      setupSurroundingVolume();
+    }
     double xn = 0, yn = 0, zn = 0, progress = 0, lastProgress = 0;
     for (int i = 0; i < NUM_PHOTONS; i++) { //for every photon to simulate
       double energyOfPhoton = photonEnergyArray[i];
@@ -417,7 +455,7 @@ public class MC {
       // AND SOME MORE STUFF MOVED IN
       
       //set up the surrounding stuff if there is one
-      double absCoefSurrounding = 0, comptonCoefSurrounding = 0, photonMFPLSurrounding = 0, probComptonSurrounding = 0, distanceNM = 0, wickTest = 0;
+      double absCoefSurrounding = 0, comptonCoefSurrounding = 0, photonMFPLSurrounding = 0, probComptonSurrounding = 0;
       Map<Element, Double> elementAbsorptionProbsSurrounding = null;
       Map<Element, double[]> ionisationProbsSurrounding = null;
       if (coefCalc.isCryo() == true) { //user wants to simulate a surrounding
@@ -430,19 +468,7 @@ public class MC {
         ionisationProbsSurrounding = getRelativeShellProbs(elementAbsorptionProbsSurrounding, energyOfPhoton);
         //just use the same angular emission probs
         
-        //get the maximum photoelectron travel distance (based on photon energy) for tracking purposes   
-        //take the max using the CSDA without integration so a little bit of an overestimate 
-        double stoppingPower = coefCalc.getStoppingPower(energyOfPhoton, true);
-        distanceNM = (energyOfPhoton/stoppingPower);      
-        wickTest = distanceNM;
-        for (int test = 0; test < 3; test++) {
-          if (surroundingThickness[test] <= 0.0 || surroundingThickness[test] > wickTest) {
-            surroundingThickness[test] = wickTest;
-          }
-        }
-        
-        setupSurroundingVolume();
-        //rotateSurrounding
+        // Its thickness is capped, and its volume set up, before the photons.
         setUpRotatedVerticesSurrounding(angle, wedge);
         //space here to change the wickTest distance
         //wickTest = 1000;
@@ -555,6 +581,13 @@ public class MC {
               }           
               // set exited to true so this photon is no longer tracked 
               exited = true;
+              photonsInSurroundingInFront += 1;
+            }
+            else {
+              // It reaches the crystal, and its distance in it is drawn from
+              // there. It was measured from the surrounding's front face, so
+              // a photon could come to rest in the surrounding in front.
+              previousZ = crystalZ;
             }
           }
         }
@@ -605,10 +638,9 @@ public class MC {
         }
         else { // this photon didn't hit the crystal
           if (coefCalc.isCryo()) {
-            //first thing to check if it interacted in the tracked area
-            if (calculateCrystalOccupancySurrounding(xn, yn, zn) == true) {
-              surrounding = true;
-              if (hitting == false) {//it's gone through the edge
+            surrounding = true;
+            if (hitting == false) { //it's gone through the edge
+              if (calculateCrystalOccupancySurrounding(xn, yn, zn) == true) {
                   double timeToPoint = ((1/c) * (s/1E9)); //in seconds
                   timeStamp += timeToPoint * 1E15; //time from start of pulse that this happened
                   int doseTime = (int) (timeStamp/PULSE_BIN_LENGTH); //rounding down so 0 = 0-0.99999, 1 - 1-1.99999 etc 
@@ -621,61 +653,52 @@ public class MC {
                     //produce a photoelectron
                     producePhotoElectron(beam, coefCalc, elementAbsorptionProbsSurrounding, ionisationProbsSurrounding, timeStamp, doseTime, xn, yn, zn, surrounding, energyOfPhoton, angle, wedge);
                   }           
-                }
-              else {
-                //it's gone through the crystal and come out the back - check if it will interact with the behind surrounding
-                surrounding = true;
-                //update timeStamp
-                double timeToPoint = (1/c) * (ZDimension/1E9);
-                timeStamp += timeToPoint * 1E15;
-                
-                //would need to make changes here if silicon is going at the back 
-                
-                if (silicon == true) {
-                  Map<String, Double> siCoeffs = coefCalc.calculateCoefficientsSilicon(energyOfPhoton);
-                  double siMFPL = (1/(siCoeffs.get("Photoelectric") + siCoeffs.get("Compton Attenuation")))*1000;
-                  s = -siMFPL*Math.log(RandomSource.nextDouble());
-                }
-                else {
-                  s = -photonMFPLSurrounding*Math.log(RandomSource.nextDouble());
-                }
-                
-                //set the Z to the point at the back of the crystal!!!
-              //  previousZ = ZDimension/2;
-                
-                previousZ = getStartingZ(angle, wedge, coord, false);
-                
-                
-                
-                xn = previousX + s * xNorm;
-                yn = previousY + s * yNorm;
-                zn = previousZ + s * zNorm;
-                //if (zn < wickTest + ZDimension/2) {
-                if(calculateCrystalOccupancySurrounding(xn, yn, zn) == true) {
-                  //then it has interacted with the surrounding behind the crystal
-                  timeToPoint = (1/c) * (s/1E9);
-                  timeStamp += timeToPoint * 1E15;
-                  int doseTime = (int) (timeStamp/PULSE_BIN_LENGTH);
-                  double RNDcompton = RandomSource.nextDouble();
-                  if (RNDcompton < probComptonSurrounding) {
-                    //produce a compton electron
-                    produceCompton(beam, coefCalc, timeStamp, xn, yn, zn, surrounding, energyOfPhoton, elementComptonProbs, angle, wedge);
-                  }
-                  else {
-                    //produce a photoelectron
-                    producePhotoElectron(beam, coefCalc, elementAbsorptionProbsSurrounding, ionisationProbsSurrounding, timeStamp, doseTime, xn, yn, zn, surrounding, energyOfPhoton, angle, wedge);
-                  }           
-                }
               }
             }
-            
-            
-            
-
+            else {
+              // It has crossed the crystal: from its back face, its distance
+              // in the surrounding behind. That was drawn only if the
+              // distance drawn in the crystal happened to end in the
+              // surrounding, a chance of its thickness over the photon's
+              // mean free path in the crystal.
+              //update timeStamp
+              double timeToPoint = (1/c) * (ZDimension/1E9);
+              timeStamp += timeToPoint * 1E15;
+              
+              //would need to make changes here if silicon is going at the back 
+              
+              if (silicon == true) {
+                Map<String, Double> siCoeffs = coefCalc.calculateCoefficientsSilicon(energyOfPhoton);
+                double siMFPL = (1/(siCoeffs.get("Photoelectric") + siCoeffs.get("Compton Attenuation")))*1000;
+                s = -siMFPL*Math.log(RandomSource.nextDouble());
+              }
+              else {
+                s = -photonMFPLSurrounding*Math.log(RandomSource.nextDouble());
+              }
+              
+              previousZ = getStartingZ(angle, wedge, coord, false);
+              
+              xn = previousX + s * xNorm;
+              yn = previousY + s * yNorm;
+              zn = previousZ + s * zNorm;
+              if(calculateCrystalOccupancySurrounding(xn, yn, zn) == true) {
+                //then it has interacted with the surrounding behind the crystal
+                photonsInSurroundingBehind += 1;
+                timeToPoint = (1/c) * (s/1E9);
+                timeStamp += timeToPoint * 1E15;
+                int doseTime = (int) (timeStamp/PULSE_BIN_LENGTH);
+                double RNDcompton = RandomSource.nextDouble();
+                if (RNDcompton < probComptonSurrounding) {
+                  //produce a compton electron
+                  produceCompton(beam, coefCalc, timeStamp, xn, yn, zn, surrounding, energyOfPhoton, elementComptonProbs, angle, wedge);
+                }
+                else {
+                  //produce a photoelectron
+                  producePhotoElectron(beam, coefCalc, elementAbsorptionProbsSurrounding, ionisationProbsSurrounding, timeStamp, doseTime, xn, yn, zn, surrounding, energyOfPhoton, angle, wedge);
+                }           
+              }
+            }
           }
-
-          
-
         }
         exited = true; // because the photon is absorbed, also not tracking compton electrons after they scatter as unlikely to scatter again
       }
@@ -1772,8 +1795,14 @@ public class MC {
           //update energy to this point and coefficients
           if (simpleMC == true) {
             electronEnergy -= intersectionDistance * stoppingPower;
-            //might need to sort it out if less than 0.05 here
+            // With under 0.05 keV left it stops where it came in, and leaves
+            // that there. It was lost.
             if (electronEnergy < 0.05) {
+              if (electronEnergy > 0) {
+                int[] pixelCoord = convertToPixelCoordinates(previousX, previousY, previousZ, angle, wedge);
+                dose += electronEnergy;
+                doseSimple[pixelCoord[0]][pixelCoord[1]][pixelCoord[2]] += electronEnergy;
+              }
               break; 
             }
           }
@@ -2353,10 +2382,16 @@ public class MC {
 
             }
             
-            //if drops below 0.05 keV deposit it all
+            // With under 0.05 keV left it stops, and what it has is left
+            // where it left from, as it is with no surrounding -- negative,
+            // if the way out took more than it had. It was added to the
+            // crystal's dose, but to none of its voxels.
             if (electronEnergy < 0.05) {
               dose += electronEnergy;
-              // doseSimple[0][0][0][doseTime] += energyLost;
+              if (isMicrocrystalAt(previousX, previousY, previousZ, angle, wedge) == true) {
+                int[] pixelCoord = convertToPixelCoordinates(previousX, previousY, previousZ, angle, wedge);
+                doseSimple[pixelCoord[0]][pixelCoord[1]][pixelCoord[2]] += electronEnergy;
+              }
               electronEnergy = 0;
               exited = true;
             }
