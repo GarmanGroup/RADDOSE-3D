@@ -1188,16 +1188,9 @@ public class XFEL {
   }
   
   private int getIonisedShell(Element ionisedElement, Map<Element, double[]> ionisationProbs) {
-    double[] shellProbs = ionisationProbs.get(ionisedElement);
-    double shellRND = RandomSource.nextDouble();
-    int shellIndex = 0;
-    for (int j = 0; j < shellProbs.length; j++) {
-      if (shellProbs[j] > shellRND) {
-        shellIndex = j;
-        break;
-      }
-    }
-    return shellIndex;
+    // As MC chooses it: past every shell's running chance, an outer shell.
+    return MC.ionisedShell(ionisationProbs.get(ionisedElement),
+        RandomSource.nextDouble());
   }
   
   private void producePhotoElectron(Beam beam, CoefCalc coefCalc, Map<Element, Double> elementAbsorptionProbs, Map<Element, double[]> ionisationProbs,
@@ -1294,7 +1287,9 @@ public class XFEL {
     */
     //relax the atom and see if an auger electron was produced
     if (simpleMC == false){
-      if (surrounding == false) { //only want to track Auger if in the crystal for now
+      // An outer shell's vacancy is not relaxed: it has no Auger or
+      // fluorescence transitions, and no binding energy to deposit.
+      if (surrounding == false && shellIndex != MC.OUTER_SHELL) { //only want to track Auger if in the crystal for now
         produceAugerElectron(coefCalc, timeStamp, shellIndex, ionisedElement, xn, yn, zn, surrounding, beam, angle, wedge);
       }
     }
@@ -3220,6 +3215,7 @@ private boolean testIfInsideExposedArea(double xPos, double yPos, Beam beam) { /
   }
   
   private double getShellBindingEnergy(Element collidedElement, int collidedShell) {
+    // 0 for MC.OUTER_SHELL, which no case matches.
     double shellBindingEnergy = 0;
     switch (collidedShell) {
       case 0: shellBindingEnergy = collidedElement.getKEdge();

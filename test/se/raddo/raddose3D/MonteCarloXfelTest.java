@@ -326,6 +326,89 @@ public class MonteCarloXfelTest {
     assertTrue((Boolean) inside.invoke(xfel, 1100.0, 0.0, 1100.0, 0.0, wedge));
   }
 
+  // ----------------------------------------------------- photoelectric shell
+
+  /** An MC run's shell model, for a 5 um insulin cuboid. */
+  @SuppressWarnings("unchecked")
+  private static double[] shellChances(final Element element,
+      final double energy) throws Exception {
+    Map<Object, Object> p = new HashMap<Object, Object>();
+    p.put(Crystal.CRYSTAL_DIM_X, 5d);
+    p.put(Crystal.CRYSTAL_DIM_Y, 5d);
+    p.put(Crystal.CRYSTAL_DIM_Z, 5d);
+    p.put(Crystal.CRYSTAL_RESOLUTION, 1d);
+    p.put(Crystal.CRYSTAL_ANGLE_P, 0d);
+    p.put(Crystal.CRYSTAL_ANGLE_L, 0d);
+    p.put(Crystal.CRYSTAL_PROGRAM, "MONTECARLO");
+    p.put(Crystal.CRYSTAL_COEFCALC, insulin(100));
+    CrystalCuboid cuboid = new CrystalCuboid(p);
+    MC mc = new MC(cuboid.vertices, cuboid.indices,
+        (double[][][][]) field(cuboid, "crystCoord"), cuboid.crystalPixPerUM,
+        (int[]) field(cuboid, "crystSizeVoxels"), cuboid.crystOcc, 1, false,
+        false, false, new double[3], false);
+    java.lang.reflect.Method shells = MC.class.getDeclaredMethod(
+        "getRelativeShellProbs", Map.class, double.class);
+    shells.setAccessible(true);
+    Map<Element, Double> absorbing = new HashMap<Element, Double>();
+    absorbing.put(element, 1.0);
+    return ((Map<Element, double[]>) shells.invoke(mc, absorbing, energy))
+        .get(element);
+  }
+
+  /**
+   * Iodine in a 12.1 keV beam, below its 33.2 keV K edge. Its L shells take
+   * 78% of its absorption, and M shells are modelled only from tantalum up.
+   * A draw past the L shells took the K shell, and freed a photoelectron of
+   * 12.1 - 33.2 = -21 keV. It now ionises an outer shell: no binding energy,
+   * and a photoelectron with the photon's whole energy.
+   */
+  @Test
+  public void belowTheKEdgeAPhotoelectronNeverTakesTheKShell()
+      throws Exception {
+    Element iodine = ElementDatabase.getInstance().getElement("I");
+    double[] chances = shellChances(iodine, 12.1);
+    assertEquals(0.0, chances[0]);
+    double modelled = chances[3];
+    assertEquals(0.78, modelled, 0.01, Arrays.toString(chances));
+    for (double draw : new double[] {0.0, modelled * 0.5, modelled, 0.999999}) {
+      assertTrue(MC.ionisedShell(chances, draw) != 0, "draw " + draw);
+    }
+    assertEquals(1, MC.ionisedShell(chances, 0.0));
+    assertEquals(MC.OUTER_SHELL, MC.ionisedShell(chances, modelled));
+    assertEquals(MC.OUTER_SHELL, MC.ionisedShell(chances, 0.999999));
+  }
+
+  /**
+   * Sodium, whose L shells the model leaves out (it has them only from
+   * magnesium up): 8.4% of its absorption, which took the K shell's binding
+   * energy, is by its outer shells.
+   */
+  @Test
+  public void aDrawPastEveryShellIonisesAnOuterShell() throws Exception {
+    Element sodium = ElementDatabase.getInstance().getElement("NA");
+    double[] chances = shellChances(sodium, 12.1);
+    assertEquals(1 - 1 / 11.9, chances[0], 1e-12, Arrays.toString(chances));
+    assertEquals(0, MC.ionisedShell(chances, chances[0] * 0.99));
+    assertEquals(MC.OUTER_SHELL, MC.ionisedShell(chances, chances[0]));
+  }
+
+  /**
+   * Where the last shell modelled has an edge ratio of 0 -- carbon's K,
+   * zinc's L3 -- it takes the rest, and no draw is past it.
+   */
+  @Test
+  public void mostElementsHaveAShellForEveryDraw() throws Exception {
+    ElementDatabase elements = ElementDatabase.getInstance();
+    for (String symbol : new String[] {"H", "C", "N", "O", "S", "P", "ZN"}) {
+      double[] chances = shellChances(elements.getElement(symbol), 12.1);
+      double last = 0;
+      for (double chance : chances) {
+        last = Math.max(last, chance);
+      }
+      assertEquals(1.0, last, 1e-12, symbol + " " + Arrays.toString(chances));
+    }
+  }
+
   private static Object field(final Object owner, final String name)
       throws Exception {
     Field f = CrystalPolyhedron.class.getDeclaredField(name);
