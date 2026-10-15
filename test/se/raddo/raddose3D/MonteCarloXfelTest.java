@@ -742,6 +742,120 @@ public class MonteCarloXfelTest {
     }
   }
 
+  // ----------------------------------------------------------- bookkeeping
+
+  private static final Class<?>[] AUGER = {CoefCalc.class, double.class,
+      double.class, Element.class, double.class, double.class, double.class,
+      boolean.class, Beam.class, double.class, Wedge.class};
+
+  /** An MC with its relaxation tables read. */
+  private static MC relaxingMC() throws Exception {
+    MC mc = cuboidMC();
+    call(mc, "populateAugerLinewidths", new Class<?>[0]);
+    call(mc, "populateFluorescenceLinewidths", new Class<?>[0]);
+    return mc;
+  }
+
+  /**
+   * Phosphorus has relaxation tables, but was left out of the list of
+   * elements that use them, so in simple mode its K holes deposited their
+   * whole binding energy: none ever fluoresced. About 6% do, and their
+   * photons take most of it away.
+   */
+  @Test
+  public void phosphorusRelaxes() throws Exception {
+    MC mc = relaxingMC();
+    Wedge wedge = still(30);
+    call(mc, "setUpRotatedVertices", new Class<?>[] {double.class, Wedge.class},
+        0.0, wedge);
+    Element phosphorus = ElementDatabase.getInstance().getElement("P");
+    RandomSource.setSeed(13);
+    int n = 4000;
+    for (int i = 0; i < n; i++) {
+      call(mc, "produceAugerElectron", AUGER, null, 0.0, 0.0, phosphorus,
+          0.0, 0.0, 0.0, false, null, 0.0, wedge);
+    }
+    double perHole = (Double) mcField(mc, "dose") / n;
+    double kEdge = phosphorus.getKEdge();
+    assertTrue(perHole < 0.97 * kEdge, perHole + " of " + kEdge);
+    assertTrue(perHole > 0.9 * kEdge, perHole + " of " + kEdge);
+  }
+
+  /**
+   * A fluorescence transition is drawn from the fluorescence table. MC
+   * drew it from the Auger table, and read the fluorescence energy at the
+   * Auger transition's index.
+   */
+  @Test
+  @SuppressWarnings("unchecked")
+  public void fluorescenceTransitionsAreTheFluorescenceTables()
+      throws Exception {
+    MC mc = relaxingMC();
+    double[] cumulative = ((Map<Integer, Map<Integer, double[]>>) mcField(mc,
+        "flCumulativeTransitionProbabilities")).get(16).get(0);
+    Class<?>[] types = {int.class, int.class, boolean.class};
+    RandomSource.setSeed(17);
+    int n = 20000;
+    double[] share = new double[cumulative.length];
+    for (int i = 0; i < n; i++) {
+      int index = (Integer) call(mc, "getTransitionIndex", types, 16, 0, false);
+      share[index] += 1.0 / n;
+    }
+    // The table is padded with zeros after its last transition.
+    double last = 0;
+    for (int k = 0; k < cumulative.length; k++) {
+      double chance = Math.max(0, cumulative[k] - last);
+      assertEquals(chance, share[k], 0.01, "transition " + k);
+      last = Math.max(last, cumulative[k]);
+    }
+  }
+
+  /** A still at its start angle; a rotation from its start to its end. */
+  @Test
+  public void wedgesTurnFromTheirStartToTheirEnd() {
+    Wedge still = new Wedge(2d, 30d, 30d, 10d, null, null, null, null, null,
+        null, null, null);
+    assertEquals(30, Math.toDegrees(MC.photonAngle(still, 0.5)), 1e-9);
+    Wedge down = new Wedge(2d, 90d, 0d, 10d, null, null, null, null, null,
+        null, null, null);
+    assertEquals(90, Math.toDegrees(MC.photonAngle(down, 0)), 1e-9);
+    assertEquals(67.5, Math.toDegrees(MC.photonAngle(down, 0.25)), 1e-9);
+    Wedge up = new Wedge(2d, 10d, 50d, 10d, null, null, null, null, null,
+        null, null, null);
+    assertEquals(20, Math.toDegrees(MC.photonAngle(up, 0.25)), 1e-9);
+  }
+
+  /** Elastic, photoelectric and Compton 2 : 1 : 1: half the interactions
+   * are elastic. It was 2 / (1 + 1), every one. */
+  @Test
+  public void theElasticChanceIsOfEveryInteraction() {
+    assertEquals(0.5, MC.elasticChance(1, 1, 2), 0);
+  }
+
+  /**
+   * A crystal offset so its front face is at z = 0 is crossed at z = 0.
+   * That was the value for a miss, so every photon missed it.
+   */
+  @Test
+  public void aFaceAtZeroIsNotAMiss() throws Exception {
+    MC mc = cuboidMC();
+    Wedge offset = new Wedge(2d, 0d, 0d, 10d, 0d, 0d, 4d, null, null, null,
+        null, null);
+    call(mc, "setUpRotatedVertices", new Class<?>[] {double.class, Wedge.class},
+        0.0, offset);
+    Class<?>[] types = {double.class, Wedge.class, double[].class,
+        boolean.class};
+    double front = (Double) call(mc, "getStartingZ", types, 0.0, offset,
+        new double[] {0, 0, 0}, true);
+    assertEquals(0, front, 1e-9);
+    double back = (Double) call(mc, "getStartingZ", types, 0.0, offset,
+        new double[] {0, 0, 0}, false);
+    assertEquals(8000, back, 1e-6);
+    double miss = (Double) call(mc, "getStartingZ", types, 0.0, offset,
+        new double[] {5, 0, 0}, true);
+    assertTrue(Double.isNaN(miss));
+  }
+
   private static Object mcField(final MC mc, final String name)
       throws Exception {
     Field f = MC.class.getDeclaredField(name);

@@ -402,7 +402,7 @@ public class XFEL {
       double photonMFPL = (1/(absCoef + comptonCoef))*1000; //including Compton
       double probCompton = 1 - (photonMFPL/((1/absCoef)*1000));
       double totalMFPL = (1/(absCoef + comptonCoef + elasticCoef))*1000;
-      double elasticProb = elasticCoef / (absCoef + comptonCoef);
+      double elasticProb = MC.elasticChance(absCoef, comptonCoef, elasticCoef);
       
       //populate the relative element cross sections here 
       Map<Element, Double> elementAbsorptionProbs = coefCalc.getPhotoElectricProbsElement(energyOfPhoton);
@@ -679,7 +679,7 @@ public class XFEL {
       //double photonMFPL = (1/absCoef)*1000; //just photoelectric absorption for now can put in Compton later
       double photonMFPL = (1/(absCoef + comptonCoef))*1000; //including Compton
       double probCompton = 1 - (photonMFPL/((1/absCoef)*1000));
-      double elasticProb = elasticCoef / (absCoef + comptonCoef);
+      double elasticProb = MC.elasticChance(absCoef, comptonCoef, elasticCoef);
 
       //populate the relative element cross sections here 
       Map<Element, Double> elementAbsorptionProbs = coefCalc.getPhotoElectricProbsElement(photonEnergy);
@@ -1292,7 +1292,9 @@ public class XFEL {
     int shell = (int) shellIndex;
     int Z = ionisedElement.getAtomicNumber();
     if (timeStamp < lastTime) {
-    if (Z == 6 || Z == 7 || Z == 8 || Z == 11 || Z == 12 || Z == 14 || Z == 16 || Z == 17 || Z == 19 || Z == 20 || Z == 25 || Z == 26 || Z == 27 || Z == 28 || Z == 29 || Z == 30 || Z == 33 || Z == 34) {
+    // Every element with relaxation tables. Phosphorus has them, and was
+    // left out of the list this was.
+    if (Arrays.binarySearch(augerElements, Z) >= 0) {
     if (shellIndex == 0 || (shellIndex < 2 && Z==11) || (shellIndex < 3 && Z==12) || (shellIndex < 4 && Z<=20 && Z>12) || (shellIndex < 7 && Z>=25 && Z<31) || (shellIndex < 9 && Z>32 && Z < 35)) {
       //only do for elements that are possible right now - C N O S
         double shellFluorescenceYield = getShellFluorescenceYield(ionisedElement, shellIndex);
