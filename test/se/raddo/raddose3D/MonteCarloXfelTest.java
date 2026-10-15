@@ -437,9 +437,10 @@ public class MonteCarloXfelTest {
   // ------------------------------------------------------------------ XFEL
 
   /**
-   * A 1 fs pulse through a 60 um crystal needs about 20,000 time bins of
-   * 0.01 fs. They were allocated at 15,300 whatever the pulse, so a deposit
-   * deeper than about 46 um threw ArrayIndexOutOfBoundsException.
+   * A 1 fs pulse through a 60 um crystal, about 20,000 time bins of 0.01 fs.
+   * They were allocated at 15,300 whatever the pulse, so a deposit deeper
+   * than about 46 um threw ArrayIndexOutOfBoundsException; now a deposit is
+   * sorted by its bin as it is made, and none is kept.
    */
   @Test
   public void xfelTimeBinsFollowThePulse(@TempDir final Path dir)
@@ -450,35 +451,38 @@ public class MonteCarloXfelTest {
   }
 
   /**
-   * XFEL tests whether a point is in the crystal at the point itself. It
-   * used to keep the answer for the first point tested in each voxel, so in
-   * a voxel the surface cuts through, a point inside the crystal was outside
-   * if a point outside had been tested there first.
+   * An XFEL pulse lasts femtoseconds, so the crystal stands still through it,
+   * at the wedge's start: a wedge that rotates gives what a still at its
+   * start does. XFEL turned the voxels the dose is tallied in, but not the
+   * crystal, by whole radians of the wedge.
    */
   @Test
-  public void xfelTestsOccupancyAtEachPoint() throws Exception {
-    Map<Object, Object> p = new HashMap<Object, Object>();
-    p.put(Crystal.CRYSTAL_DIM_X, 5d);
-    p.put(Crystal.CRYSTAL_DIM_Y, 5d);
-    p.put(Crystal.CRYSTAL_RESOLUTION, 1d);
-    p.put(Crystal.CRYSTAL_ANGLE_P, 0d);
-    p.put(Crystal.CRYSTAL_ANGLE_L, 0d);
-    p.put(Crystal.CRYSTAL_PROGRAM, "XFEL");
-    p.put(Crystal.CRYSTAL_COEFCALC, insulin(100));
-    CrystalCylinder cylinder = new CrystalCylinder(p);
-    Wedge wedge = still(30);
-    XFEL xfel = new XFEL(cylinder.vertices, cylinder.indices,
-        (double[][][][]) field(cylinder, "crystCoord"),
-        cylinder.crystalPixPerUM, (int[]) field(cylinder, "crystSizeVoxels"),
-        cylinder.crystOcc, 1, false, true, true, wedge, false);
-    java.lang.reflect.Method inside = XFEL.class.getDeclaredMethod(
-        "isMicrocrystalAt", double.class, double.class, double.class,
-        double.class, Wedge.class);
-    inside.setAccessible(true);
-    // The circle of radius 2500 nm lies in x and z. Both points are in the
-    // voxel from 1000 to 2000 nm along x and z.
-    assertFalse((Boolean) inside.invoke(xfel, 1900.0, 0.0, 1900.0, 0.0, wedge));
-    assertTrue((Boolean) inside.invoke(xfel, 1100.0, 0.0, 1100.0, 0.0, wedge));
+  public void anXfelPulseIsAStillAtTheWedgesStart(@TempDir final Path dir)
+      throws IOException {
+    Map<String, String> turned = run(cuboid("XFEL", insulin(2000)),
+        gaussian(12.1, 1.0, false), new Wedge(2d, 30d, 120d, 10d, null, null,
+            null, null, null, null, null, null),
+        Files.createDirectory(dir.resolve("turned")), 3);
+    Map<String, String> still = run(cuboid("XFEL", insulin(2000)),
+        gaussian(12.1, 1.0, false), new Wedge(2d, 30d, 30d, 10d, null, null,
+            null, null, null, null, null, null),
+        Files.createDirectory(dir.resolve("still")), 3);
+    assertEquals(still.get("outputXFEL.CSV"), turned.get("outputXFEL.CSV"));
+  }
+
+  /**
+   * XFEL runs in a surrounding as the Monte Carlo does: XFEL had a model of
+   * its own, a box around the crystal's bounding dimensions that ignored
+   * SurroundingThickness.
+   */
+  @Test
+  public void anXfelPulseRunsInASurrounding(@TempDir final Path dir)
+      throws IOException {
+    Map<String, String> files = run(cuboid("XFEL", insulinIn(
+        Arrays.asList("NA", "CL"), Arrays.asList(500.0, 500.0), 20000)),
+        gaussian(12.1, 1.0, false), still(10), dir, 3);
+    String[] row = files.get("outputXFEL.CSV").split("\\n")[1].split(",");
+    assertTrue(Double.parseDouble(row[3].trim()) > 0, files.get("outputXFEL.CSV"));
   }
 
   // ----------------------------------------------------- photoelectric shell
@@ -740,8 +744,6 @@ public class MonteCarloXfelTest {
     }
     double quarter = Math.toDegrees(MC.deflectionAngle(flat, degrees, 0.25));
     assertEquals(60, quarter, 1);
-    assertEquals(quarter, Math.toDegrees(
-        XFEL.deflectionAngle(flat, degrees, 0.25)), 0);
   }
 
   /**
