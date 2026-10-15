@@ -21,7 +21,9 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.apache.commons.math3.distribution.NormalDistribution;
@@ -754,6 +756,18 @@ public class MC {
     double sumDoseNoCutOffExposed = 0, sumMCDose = 0;
     double sumGOSvResolved = 0, sumGOSvResolvedNoCutoff = 0;
     double totIonsvResolved = 0, totIonsvResolvedExposed = 0;
+    if (simpleMC) {
+      // outputXFEL.CSV's doses are the Monte Carlo's own in simple mode: the
+      // GOS model's tally held only the binding energies of atoms that do
+      // not relax and the energy of electrons freed with under 0.05 keV.
+      for (int a = 0; a < maxVoxel[0]; a++) {
+        for (int b = 0; b < maxVoxel[1]; b++) {
+          for (int c = 0; c < maxVoxel[2]; c++) {
+            voxelEnergyvResolved[a][b][c] = doseSimple[a][b][c];
+          }
+        }
+      }
+    }
     for (int i = 0; i < 1; i++) {
       dose = ((dose * (numberOfPhotons/NUM_PHOTONS) * Beam.KEVTOJOULES) / sampleMass) /1E6; //in MGy
       electronDose = ((electronDose * (numberOfPhotons/NUM_PHOTONS) * Beam.KEVTOJOULES) / sampleMass) /1E6; //in MGy
@@ -1083,7 +1097,7 @@ public class MC {
       System.err.println("WriterFile: Could not write to file " + filename);
     }
     
-    for (Element e: atomicIonisationsPerAtomExposed.keySet()) {
+    for (Element e: byAtomicNumber(atomicIonisationsPerAtomExposed.keySet())) {
       try {
       outFile.write(String.format(Locale.ROOT, 
           " %d, %f%n", e.getAtomicNumber(), atomicIonisationsPerAtomExposed.get(e)));
@@ -3372,6 +3386,30 @@ private boolean testIfInsideExposedArea(double xPos, double yPos, Beam beam) { /
    */
   static double innerShellChance(final double inelastic, final double inner) {
     return inner > 0 ? inelastic / inner : 0;
+  }
+
+  /**
+   * The elements ionised, in atomic-number order, for outputIonsPerAtom.CSV.
+   * They were written in the order of a HashMap's buckets: sulfur first, and
+   * elements sharing a bucket in the order they were first ionised.
+   *
+   * @param elements the elements
+   * @return them, sorted by atomic number
+   */
+  static List<Element> byAtomicNumber(final Collection<Element> elements) {
+    List<Element> sorted = new ArrayList<Element>();
+    for (Element e : elements) {
+      if (e != null) {
+        sorted.add(e);
+      }
+    }
+    Collections.sort(sorted, new Comparator<Element>() {
+      @Override
+      public int compare(final Element a, final Element b) {
+        return Integer.compare(a.getAtomicNumber(), b.getAtomicNumber());
+      }
+    });
+    return sorted;
   }
 
   private static double getShellBindingEnergy(Element collidedElement, int collidedShell) {

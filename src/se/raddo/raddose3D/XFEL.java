@@ -1105,7 +1105,7 @@ public class XFEL {
       System.err.println("WriterFile: Could not write to file " + filename);
     }
     
-    for (Element e: atomicIonisationsPerAtomExposed.keySet()) {
+    for (Element e: MC.byAtomicNumber(atomicIonisationsPerAtomExposed.keySet())) {
       try {
       outFile.write(String.format(Locale.ROOT, 
           " %d, %f%n", e.getAtomicNumber(), atomicIonisationsPerAtomExposed.get(e)));
