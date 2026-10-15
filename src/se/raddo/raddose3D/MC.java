@@ -170,7 +170,7 @@ public class MC {
   
   private double numFluxPhotons;
   protected long NUM_PHOTONS = 100000;
-  protected  long PULSE_LENGTH = 30; //length in fs
+  protected  double PULSE_LENGTH = 30; //length in fs
   protected double PULSE_BIN_LENGTH = 0.1; //length in fs
   protected double PULSE_ENERGY = 1.4E-3; //energy in J
   protected static final double c = 299792458; //m/s
@@ -334,7 +334,9 @@ public class MC {
       PULSE_ENERGY = numPhotons * (beam.getPhotonEnergy()*Beam.KEVTOJOULES);
     }
      
-    PULSE_LENGTH = StrictMath.round(wedge.getTotSec()); //fs
+    // As given. It was rounded to whole femtoseconds, so a pulse under
+    // 0.5 fs had none.
+    PULSE_LENGTH = wedge.getTotSec(); //fs
     if (PULSE_LENGTH <= 1) {
       PULSE_BIN_LENGTH = 0.01;
     }
@@ -974,9 +976,11 @@ public class MC {
     //get diffraction efficiency
     double fractionElastic = getFractionElasticallyScattered(coefCalc);
    // double numberElastic = numberOfPhotons * fractionElastic;
-    // XFEL counts the elastic photons as the share of the pulse's that the
-    // elastic coefficient scatters in the crystal's depth.
-    double numberElastic = doXFEL ? numberOfPhotons * fractionElastic : totElastic;
+    // The elastic photons simulated. XFEL counted the share of the pulse's
+    // that the elastic coefficient scatters in the crystal's whole depth,
+    // whether or not they crossed the crystal, at the last photon's energy:
+    // for a pink beam, the hardest.
+    double numberElastic = totElastic;
     double numberInelastic = numberOfPhotons * getFractionComptonScattered(coefCalc);
     
     double elasticMolecule = numberOfPhotons * getFractionElasticallyScatteredMacro(coefCalc);
@@ -1465,6 +1469,12 @@ public class MC {
           
           double augerLinewidth = linewidths[transitionIndex];
           double augerLifetime = 1E15*((h/(2*Math.PI)) / ((augerLinewidth/1000)*Beam.KEVTOJOULES));
+          if (doXFEL) {
+            // A transition happens a time after the vacancy is made drawn
+            // from the exponential its lifetime is the mean of. It came at
+            // the lifetime itself, every time.
+            augerLifetime *= -Math.log(1 - RandomSource.nextDouble());
+          }
           timeStamp += augerLifetime;
           //add a charge 
           
@@ -1519,6 +1529,9 @@ public class MC {
           
           double flLinewidth = linewidths[transitionIndex];
           double flLifetime = 1E15*((h/(2*Math.PI)) / ((flLinewidth/1000)*Beam.KEVTOJOULES));
+          if (doXFEL) {
+            flLifetime *= -Math.log(1 - RandomSource.nextDouble());
+          }
           timeStamp += flLifetime;
           produceAugerElectron(coefCalc, timeStamp, dropIndex, ionisedElement, xn, yn, zn, surrounding, beam, angle, wedge);
           }

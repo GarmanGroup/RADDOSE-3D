@@ -471,6 +471,23 @@ public class MonteCarloXfelTest {
   }
 
   /**
+   * A pulse's length is as given: 0.2 fs and 0.4 fs are different pulses.
+   * It was rounded to whole femtoseconds, so both had none, and gave the
+   * same files.
+   */
+  @Test
+  public void anXfelPulseIsAsLongAsGiven(@TempDir final Path dir)
+      throws IOException {
+    Map<String, String> shorter = run(cuboid("XFEL", insulin(20000)),
+        gaussian(12.1, 1.0, false), still(0.2),
+        Files.createDirectory(dir.resolve("shorter")), 3);
+    Map<String, String> longer = run(cuboid("XFEL", insulin(20000)),
+        gaussian(12.1, 1.0, false), still(0.4),
+        Files.createDirectory(dir.resolve("longer")), 3);
+    assertFalse(shorter.get("outputXFEL.CSV").equals(longer.get("outputXFEL.CSV")));
+  }
+
+  /**
    * XFEL runs in a surrounding as the Monte Carlo does: XFEL had a model of
    * its own, a box around the crystal's bounding dimensions that ignored
    * SurroundingThickness.
