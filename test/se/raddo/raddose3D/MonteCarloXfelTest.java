@@ -262,6 +262,66 @@ public class MonteCarloXfelTest {
   }
 
   /**
+   * The distant collisions' integral, as it was: at each of its thousand
+   * steps, getpDisW found the distribution's ends again.
+   */
+  private static double distantStepByStep(final CoefCalcCompute coefCalc,
+      final double energy, final int n, final int i, final Element e,
+      final double a) {
+    double uk = coefCalc.getShellBindingSubshell(i, e) * 1000;
+    double w = coefCalc.getShellBindingSubshell(i, e) * Beam.KEVTOJOULES;
+    double wk = coefCalc.getWkMolecule(a, e, i, false);
+    double wdis = 3 * coefCalc.getWak(energy, wk, uk) - 2 * uk;
+    wdis = (wdis / 1000) * Beam.KEVTOJOULES;
+    double step = wdis / coefCalc.Wbins;
+    double previous = 0;
+    double sum = 0;
+    int count = 0;
+    while (w <= wdis) {
+      double y = w == 0 ? 0
+          : Math.pow(w, n - 1) * coefCalc.getpDisW(energy, w, a, e, i, false);
+      if (count > 0) {
+        sum += step * ((y + previous) / 2);
+      }
+      count += 1;
+      w += step;
+      previous = y;
+    }
+    return sum;
+  }
+
+  /**
+   * The distant collisions' integral finds its distribution's ends once,
+   * not at every step, where they were nearly all of the GOS model's time.
+   * Every subshell's integral is the same to the last bit.
+   */
+  @Test
+  public void theDistantIntegralIsTheSumItWas() {
+    CoefCalcCompute coefCalc = insulin(Arrays.asList("ZN", "S", "SE"),
+        Arrays.asList(0.333, 6.0, 4.0), 100);
+    double a = coefCalc.getSturnheimera(12.1, false);
+    int compared = 0;
+    for (String name : Arrays.asList("H", "C", "N", "O", "P", "S", "ZN",
+        "SE")) {
+      Element e = coefCalc.getParser().getElement(name);
+      int valence = coefCalc.getNumValenceElectronsSubshells(e)[1];
+      for (int i = 0; i <= valence; i++) {
+        double uk = coefCalc.getShellBindingSubshell(i, e) * 1000;
+        for (double energy : new double[] {0.06, 0.5, 2.0, 12.1, 30.0}) {
+          for (int n = 0; n <= 1; n++) {
+            double expected = distantStepByStep(coefCalc, energy, n, i, e, a);
+            assertEquals(expected,
+                coefCalc.integrateDist(energy, uk, n, i, e, a, false), 0.0,
+                name + " subshell " + i + " at " + energy + " keV, n = " + n);
+            compared += expected != 0 ? 1 : 0;
+          }
+        }
+      }
+    }
+    assertTrue(compared > 100, "only " + compared + " integrals were not 0");
+  }
+
+  /**
    * The stopping power's total charge was a long, into which each element's
    * Z times its atom count was truncated: a count one ulp below a whole
    * number lost a whole electron, and the stopping power moved by about
