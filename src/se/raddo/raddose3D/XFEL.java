@@ -75,6 +75,11 @@ public class XFEL {
   
   private TreeMap<Double, double[]>[]  lowEnergyAngles;
   private TreeMap<Double, double[]>[]  highEnergyAngles;
+  /**
+   * The angles, in degrees, of the tables' columns: every element's table
+   * has the same, read from its header.
+   */
+  private double[] lowEnergyColumnAngles, highEnergyColumnAngles;
   
   private HashMap<Integer, HashMap<Integer, double[]>> augerTransitionLinewidths;
   private HashMap<Integer, HashMap<Integer, double[]>> augerTransitionProbabilities;
@@ -3328,6 +3333,18 @@ int count = -1;
 while ((line = br.readLine()) != null) {
 count +=1 ;
 components = line.split(",");
+if (count == 0) { // the header: "energy", then each column's angle in degrees
+  double[] columnAngles = new double[components.length - 1];
+  for (int i = 1; i < components.length; i++) {
+    columnAngles[i - 1] = Double.parseDouble(components[i]);
+  }
+  if (highEnergy) {
+    highEnergyColumnAngles = columnAngles;
+  }
+  else {
+    lowEnergyColumnAngles = columnAngles;
+  }
+}
 if (count > 0) { //if this is not the first line
   Double energy = Double.valueOf(components[0]);
   String[] angleProbsString = Arrays.copyOfRange(components, 1, components.length);
@@ -3377,76 +3394,47 @@ return nearestEnergy;
 }
 
 private double returnDeflectionAngle(boolean highEnergy, double[] energyAngleProbs) {
-double totalProb = 0;
-for (int i = 0; i < energyAngleProbs.length; i++) {
-totalProb += energyAngleProbs[i];
-}
-double[] probPerAngle = new double[energyAngleProbs.length];
-double sumProb = 0;
-for (int j = 0; j < energyAngleProbs.length; j++) {
-sumProb += energyAngleProbs[j];
-probPerAngle[j] = sumProb/totalProb;
+  return deflectionAngle(energyAngleProbs,
+      highEnergy ? highEnergyColumnAngles : lowEnergyColumnAngles,
+      RandomSource.nextDouble());
 }
 
-double RND = RandomSource.nextDouble();
-double index = 0;
-for (int k = 0; k < probPerAngle.length; k++) {
-if (probPerAngle[k] >= RND) {
-  index = k;
-  break;
-}
-}
-//convert the index to an angle
-double angleDegrees = 0;
-if (highEnergy == true) {
-double startFactor = 0.;
-int factor = 0;
-double divideFactor = 4;
-double minusFactor = 0;
-double modFactor = 0;
-if (index >=1 && index < 146) {
-  minusFactor = 1;
-  modFactor = 36;
-  factor = (int) ((int) (index - minusFactor)/modFactor);
-  startFactor = Math.pow(10, factor) * 0.0001;
-  divideFactor = 4;
-}
-else if (index >= 146 && index < 236) {
-//   factor = (int) (index-146)/100;
-  startFactor = 1;
-  divideFactor = 10;
-  minusFactor = 146;
-  modFactor = 90;
-}
-else if (index >= 236 && index <= 296) {
-  startFactor = 10;  //go until 25
-  divideFactor = 40;
-  minusFactor = 236;
-  modFactor = 60;
-}
-else if (index > 296) {
-  startFactor = 25;
-  divideFactor = 50;
-  minusFactor = 296;
-  modFactor = 1000000; //just anything super high as all but first one
-}
-angleDegrees = startFactor + (((index-minusFactor)%modFactor)*(startFactor/divideFactor));
-if (Double.isNaN(angleDegrees)){
-//   System.out.println("test");
-  angleDegrees = 0;
-}
-}
-else {
-angleDegrees = 1.0 * index;
-}
-double angleRadians = angleDegrees * Math.PI/180;
-/*
-if (index > 296 && highEnergy == true) {
-System.out.println("test");
-}
-*/
-
-return angleRadians;
+/**
+ * An elastic deflection, drawn from one row of ELSEPA's table.
+ *
+ * The table gives the differential cross-section per unit solid angle at
+ * each column's angle, so the chance of deflecting through about theta is
+ * that value times sin theta times the column's share of the angles: half
+ * the span to its neighbours. The row's values were taken as the chances
+ * themselves, which made small deflections far too likely. And the angle
+ * was worked out from the column's index by a formula which, above 20 keV,
+ * fell a column behind the table's from 1 degree on; it is now the
+ * table's own.
+ *
+ * @param probabilities the row: the cross-section at each column's angle
+ * @param degrees each column's angle, in degrees
+ * @param draw a uniform random number
+ * @return the deflection in radians: the first column whose running chance
+ *         reaches the draw
+ */
+static double deflectionAngle(final double[] probabilities,
+    final double[] degrees, final double draw) {
+  int n = probabilities.length;
+  double[] cumulative = new double[n];
+  double total = 0;
+  for (int k = 0; k < n; k++) {
+    double before = degrees[Math.max(k - 1, 0)];
+    double after = degrees[Math.min(k + 1, n - 1)];
+    double width = Math.toRadians(after - before) / 2;
+    total += probabilities[k] * Math.sin(Math.toRadians(degrees[k])) * width;
+    cumulative[k] = total;
+  }
+  for (int k = 0; k < n; k++) {
+    if (cumulative[k] >= draw * total) {
+      return Math.toRadians(degrees[k]);
+    }
+  }
+  return Math.toRadians(degrees[n - 1]);
 }
   
 private Element chooseLowEnElement(CoefCalc coefCalc, double Pinner, Map<Element, Double> gosOuterIonisationProbs, Map<Element, double[]> ionisationProbs) {
