@@ -3480,6 +3480,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
       return 0;
     }
   }
+  @Override
   public double getShellBindingSubshell(int shellIndex, Element e) {
     Double binding = subshellBinding(shellIndex, e);
     if (binding == null) {

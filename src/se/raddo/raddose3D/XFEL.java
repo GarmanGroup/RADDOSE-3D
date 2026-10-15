@@ -1285,8 +1285,19 @@ public class XFEL {
   
   private void produceAugerElectron(CoefCalc coefCalc, double timeStamp, double shellIndex, Element ionisedElement,
                                     double xn, double yn, double zn, boolean surrounding, Beam beam, double angle, Wedge wedge) {
+    produceAugerElectron(coefCalc, timeStamp, shellIndex, ionisedElement,
+        getShellBindingEnergy(ionisedElement, (int) shellIndex), xn, yn, zn,
+        surrounding, beam, angle, wedge);
+  }
+
+  /**
+   * Relax a vacancy that holds the given binding energy, keV: a collision's
+   * may not be the photoelectric edge (collisionBindingEnergy).
+   */
+  private void produceAugerElectron(CoefCalc coefCalc, double timeStamp, double shellIndex, Element ionisedElement,
+                                    double shellBindingEnergy, double xn, double yn, double zn, boolean surrounding,
+                                    Beam beam, double angle, Wedge wedge) {
     //only do if from a K shell for now
-    double shellBindingEnergy = getShellBindingEnergy(ionisedElement, (int)shellIndex);
     int doseTime = (int) (timeStamp/PULSE_BIN_LENGTH);
     int[] pixelCoord = convertToPixelCoordinates(xn, yn, zn, angle, wedge);
     int shell = (int) shellIndex;
@@ -1940,6 +1951,7 @@ public class XFEL {
           
           double shellBindingEnergy = 0;
           boolean plasmon = false;
+          boolean valence = false;
           Element collidedElement = null;
           int collidedShell = -1;
           
@@ -1959,6 +1971,7 @@ public class XFEL {
           }
           else {
             //hit an outer shell
+            valence = true;
             for (Element e : gosOuterIonisationProbs.keySet()) {
               int[] electrons = coefCalc.getNumValenceElectronsSubshells(e);
               int numInnerShells = electrons[1];
@@ -1986,7 +1999,7 @@ public class XFEL {
           }
           else {
             //shellBindingEnergy = getShellBindingEnergyGOS(collidedElement, collidedShell);
-            shellBindingEnergy = getShellBindingEnergy(collidedElement, collidedShell);
+            shellBindingEnergy = MC.collisionBindingEnergy(coefCalc, collidedElement, collidedShell, valence);
           }
           
           
@@ -2149,7 +2162,8 @@ public class XFEL {
           //  electronEnergy -= W; 
             lossSinceLastUpdate += W;
             //produce Auger electon should only be if it is from an inner shell of an element more than 2
-            produceAugerElectron(coefCalc, timeStamp, collidedShell, collidedElement, xn, yn, zn, surrounding, beam, angle, wedge);
+            // The vacancy holds the binding energy the collision gave it.
+            produceAugerElectron(coefCalc, timeStamp, collidedShell, collidedElement, shellBindingEnergy, xn, yn, zn, surrounding, beam, angle, wedge);
           }
             
           //I still need to add a cutoff in here and do dose time and ionisations

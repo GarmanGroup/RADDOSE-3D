@@ -352,6 +352,11 @@ public class CoefCalcAverage extends CoefCalc {
   }
 
   @Override
+  public double getShellBindingSubshell(int shellIndex, Element e) {
+    return 0;
+  }
+
+  @Override
   public double getWcbAll(boolean surrounding) {
     // TODO Auto-generated method stub
     return 0;

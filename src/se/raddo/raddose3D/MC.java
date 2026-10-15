@@ -1380,8 +1380,19 @@ public class MC {
   
   private void produceAugerElectron(CoefCalc coefCalc, double timeStamp, double shellIndex, Element ionisedElement,
                                     double xn, double yn, double zn, boolean surrounding, Beam beam, double angle, Wedge wedge) {
+    produceAugerElectron(coefCalc, timeStamp, shellIndex, ionisedElement,
+        getShellBindingEnergy(ionisedElement, (int) shellIndex), xn, yn, zn,
+        surrounding, beam, angle, wedge);
+  }
+
+  /**
+   * Relax a vacancy that holds the given binding energy, keV: a collision's
+   * may not be the photoelectric edge (collisionBindingEnergy).
+   */
+  private void produceAugerElectron(CoefCalc coefCalc, double timeStamp, double shellIndex, Element ionisedElement,
+                                    double shellBindingEnergy, double xn, double yn, double zn, boolean surrounding,
+                                    Beam beam, double angle, Wedge wedge) {
     //only do if from a K shell for now
-    double shellBindingEnergy = getShellBindingEnergy(ionisedElement, (int)shellIndex);
     int doseTime = (int) (timeStamp/PULSE_BIN_LENGTH);
     int[] pixelCoord = convertToPixelCoordinates(xn, yn, zn, angle, wedge);
     int shell = (int) shellIndex;
@@ -1993,6 +2004,7 @@ public class MC {
           }
           double shellBindingEnergy = 0;
           boolean plasmon = false;
+          boolean valence = false;
           Element collidedElement = null;
           int collidedShell = -1;
           
@@ -2012,6 +2024,7 @@ public class MC {
           }
           else {
             //hit an outer shell
+            valence = true;
             for (Element e : gosOuterIonisationProbs.keySet()) {
               int[] electrons = coefCalc.getNumValenceElectronsSubshells(e);
               int numInnerShells = electrons[1];
@@ -2039,7 +2052,7 @@ public class MC {
           }
           else {
             //shellBindingEnergy = getShellBindingEnergyGOS(collidedElement, collidedShell);
-            shellBindingEnergy = getShellBindingEnergy(collidedElement, collidedShell);
+            shellBindingEnergy = collisionBindingEnergy(coefCalc, collidedElement, collidedShell, valence);
           }
           
           
@@ -2201,7 +2214,8 @@ public class MC {
           //  electronEnergy -= W; 
             lossSinceLastUpdate += W;
             //produce Auger electon should only be if it is from an inner shell of an element more than 2
-            produceAugerElectron(coefCalc, timeStamp, collidedShell, collidedElement, xn, yn, zn, surrounding, beam, angle, wedge);
+            // The vacancy holds the binding energy the collision gave it.
+            produceAugerElectron(coefCalc, timeStamp, collidedShell, collidedElement, shellBindingEnergy, xn, yn, zn, surrounding, beam, angle, wedge);
           }
             
           //I still need to add a cutoff in here and do dose time and ionisations
@@ -3283,7 +3297,38 @@ private boolean testIfInsideExposedArea(double xPos, double yPos, Beam beam) { /
     return height;
   }
   
-  private double getShellBindingEnergy(Element collidedElement, int collidedShell) {
+  /**
+   * The binding energy an inelastic collision in the GOS model frees its
+   * electron from, keV.
+   *
+   * A collision with an element's valence subshell takes that subshell's
+   * binding energy from the table the model's cross-sections and resonance
+   * energies are built with (getShellBindingSubshell), so the energy it
+   * loses, its recoil and its deflection are drawn from the distributions
+   * that chose it. It took the photoelectric edge (getShellBindingEnergy),
+   * which has none for the valence subshells of aluminium, silicon,
+   * phosphorus, arsenic and selenium. There Uk was 0, so the recoil Q was
+   * 0, a longitudinal collision's deflection the arccosine of a number over
+   * 1, and the electron, its direction NaN, was taken to have left the
+   * crystal with what energy it had. Sulfur, chlorine, argon and potassium
+   * had an edge up to 8 eV from the subshell's. A collision with an inner
+   * shell, which Bethe's cross-sections choose by edge, keeps its edge.
+   *
+   * @param coefCalc the medium
+   * @param element the element collided with
+   * @param shell the shell or subshell
+   * @param valence whether it is the element's valence subshell
+   * @return the binding energy, keV
+   */
+  static double collisionBindingEnergy(final CoefCalc coefCalc,
+      final Element element, final int shell, final boolean valence) {
+    if (valence) {
+      return coefCalc.getShellBindingSubshell(shell, element);
+    }
+    return getShellBindingEnergy(element, shell);
+  }
+
+  private static double getShellBindingEnergy(Element collidedElement, int collidedShell) {
     // 0 for OUTER_SHELL, which no case matches.
     double shellBindingEnergy = 0;
     switch (collidedShell) {
