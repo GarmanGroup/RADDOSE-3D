@@ -322,6 +322,35 @@ public class MonteCarloXfelTest {
   }
 
   /**
+   * A collision with a valence subshell takes its binding energy from the
+   * table the GOS model's cross-sections are built with. Phosphorus's and
+   * selenium's valence subshells have no photoelectric edge, and took 0:
+   * the recoil was 0, a longitudinal deflection NaN, and the electron lost.
+   */
+  @Test
+  public void aValenceCollisionHasItsSubshellsBindingEnergy() {
+    CoefCalcCompute coefCalc = insulin(Arrays.asList("ZN", "S", "SE"),
+        Arrays.asList(0.333, 6.0, 4.0), 100);
+    double a = coefCalc.getSturnheimera(12.1, false);
+    for (String name : Arrays.asList("P", "SE", "S", "C")) {
+      Element e = coefCalc.getParser().getElement(name);
+      int valence = coefCalc.getNumValenceElectronsSubshells(e)[1];
+      double uk = MC.collisionBindingEnergy(coefCalc, e, valence, true);
+      assertEquals(coefCalc.getShellBindingSubshell(valence, e), uk, 0.0, name);
+      assertTrue(uk > 0, name);
+      // At 12.1 keV the recoil's limit is Uk itself, and Wak is Wk.
+      double wk = coefCalc.getWkMolecule(a, e, valence, false);
+      double recoil = coefCalc.getRecoilEnergyDistant(12.1, wk, uk * 1000);
+      assertTrue(recoil > 0 && !Double.isInfinite(recoil),
+          name + ": recoil " + recoil);
+    }
+    // An inner shell, which Bethe's cross-sections choose, keeps its edge.
+    Element p = coefCalc.getParser().getElement("P");
+    assertEquals(p.getKEdge(), MC.collisionBindingEnergy(coefCalc, p, 0, false),
+        0.0);
+  }
+
+  /**
    * The stopping power's total charge was a long, into which each element's
    * Z times its atom count was truncated: a count one ulp below a whole
    * number lost a whole electron, and the stopping power moved by about

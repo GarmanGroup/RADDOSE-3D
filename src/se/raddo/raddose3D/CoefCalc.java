@@ -218,6 +218,15 @@ public abstract class CoefCalc {
   public abstract double returnAdjustment();
   
   public abstract double getWkMolecule(double a, Element e, int shellIndex, boolean surrounding);
+
+  /**
+   * A subshell's binding energy as the GOS model has it, keV.
+   *
+   * @param shellIndex the subshell: K, L1 to L3, M1 to M5, then the next
+   * @param e the element
+   * @return the binding energy, keV
+   */
+  public abstract double getShellBindingSubshell(int shellIndex, Element e);
   
   public abstract double getWcbAll(boolean surrounding);
   
