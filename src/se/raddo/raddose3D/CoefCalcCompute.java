@@ -3990,8 +3990,15 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
   public double getZlnI(double electronEnergy, boolean surrounding) {
     double sumZ = 0, sumA = 0, meanJ = 0, meanlnI = 0;
     Set<Element> elementList = presentElements;
+    // Each element's weight is its share of the medium's own molecular
+    // weight. The surrounding's elements were weighed against the crystal's.
+    double mediumWeight = molecularWeight;
     if (surrounding == true) {
       elementList = cryoElements;
+      mediumWeight = 0;
+      for (Element e : elementList) {
+        mediumWeight += totalAtomsSurr(e) * e.getAtomicWeight();
+      }
     }
     for (Element e : elementList) { 
       double atomNum = 0;
@@ -4006,7 +4013,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
       double A = e.getAtomicWeight();
       double molWeightFraction = 0;
       int Z = e.getAtomicNumber();
-      molWeightFraction = (atomNum * A) / molecularWeight; //issue with surr here!!!
+      molWeightFraction = (atomNum * A) / mediumWeight;
       sumZ += Z * atomNum;
       sumA += A * atomNum;
       double J = 0, Jstar = 0, k = 0;

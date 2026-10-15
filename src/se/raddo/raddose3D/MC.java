@@ -1694,7 +1694,11 @@ public class MC {
     
     //Inner shell ionisation x section
     coefCalc.populateCrossSectionCoefficients();
-    double startingInnerShellLambda = coefCalc.betheIonisationxSection(startingEnergy, surrounding);
+    // The inner shells' mean free path at the electron's energy, kept up to
+    // date with it. It was kept at the starting energy in the inelastic
+    // mean free path, and brought up to date only in the chance of an
+    // inner-shell collision, so the two disagreed once the electron slowed.
+    double innerShellLamda = coefCalc.betheIonisationxSection(startingEnergy, surrounding);
     Map<Element, double[]> ionisationProbs = coefCalc.getAllShellProbs(surrounding); //Really need to make sure that these are in the same order
     
     double gosInelasticLambda = 0, gosInnerLambda = 0, gosOuterLambda = 0;
@@ -1707,12 +1711,7 @@ public class MC {
       gosOuterLambda = coefCalc.getGOSOuterLambda(surrounding);
       gosOuterIonisationProbs = coefCalc.getGOSOuterShellProbs(surrounding, gosOuterLambda); //note atm this does not work with plasma in this way
       gosIonisationProbs = coefCalc.getGOSShellProbs(surrounding, gosInelasticLambda);
-      if (startingInnerShellLambda > 0) {
-        gosInelasticLambda = 1/(1/gosOuterLambda + 1/startingInnerShellLambda);
-      }
-      else {
-        gosInelasticLambda = 1/gosOuterLambda;
-      }
+      gosInelasticLambda = MC.gosInelasticLambda(gosOuterLambda, innerShellLamda);
      
     }
     
@@ -1732,9 +1731,7 @@ public class MC {
     else {
       lambdaT = startingLambda_el;
     }
-    if (startingInnerShellLambda > 0) {
-      Pinner = (gosInelasticLambda/startingInnerShellLambda);
-    }
+    Pinner = MC.innerShellChance(gosInelasticLambda, innerShellLamda);
     
     double testRND = RandomSource.nextDouble();
     double s = -lambdaT*Math.log(testRND);
@@ -1749,7 +1746,7 @@ public class MC {
     double zn = previousZ + s * zNorm;
     
     double lambdaEl = coefCalc.getElectronElasticMFPL(electronEnergy, surrounding);
-    double FSELambda = 0, FSExSection = 0, innerShellLamda = 0;;
+    double FSELambda = 0, FSExSection = 0;
     
     
     boolean exited = false;
@@ -1830,25 +1827,16 @@ public class MC {
           double newFSExSection = getFSEXSection(startingEnergy);
           double newFSELambda = coefCalc.getFSELambda(startingFSExSection, false);
           if (simpleMC == false) {
-          startingInnerShellLambda = coefCalc.betheIonisationxSection(startingEnergy, surrounding);
+          // At the energy it has now, not the one it started with.
+          innerShellLamda = coefCalc.betheIonisationxSection(electronEnergy, surrounding);
           ionisationProbs = coefCalc.getAllShellProbs(surrounding);
           gosInelasticLambda = coefCalc.getGOSInel(surrounding, electronEnergy);
           gosInnerLambda = coefCalc.getGOSInnerLambda(surrounding);
           gosOuterLambda = coefCalc.getGOSOuterLambda(surrounding);
           gosOuterIonisationProbs = coefCalc.getGOSOuterShellProbs(surrounding, gosOuterLambda); //note atm this does not work with plasma in this way
-          if (startingInnerShellLambda > 0) {
-            gosInelasticLambda = 1/(1/gosOuterLambda + 1/startingInnerShellLambda);
-          }
-          else {
-            gosInelasticLambda = 1/gosOuterLambda;
-          }
+          gosInelasticLambda = MC.gosInelasticLambda(gosOuterLambda, innerShellLamda);
           gosIonisationProbs = coefCalc.getGOSShellProbs(surrounding, gosInelasticLambda);
-          if (startingInnerShellLambda > 0) {
-            Pinner = (gosInelasticLambda/startingInnerShellLambda);
-          }
-          else {
-            Pinner = 0;
-          }
+          Pinner = MC.innerShellChance(gosInelasticLambda, innerShellLamda);
           }
         //  lambdaT = 1/(1/coefCalc.getElectronElasticMFPL(electronEnergy, surrounding) + 1/newFSELambda);
           startingLambda_el = coefCalc.getElectronElasticMFPL(electronEnergy, surrounding);
@@ -2288,12 +2276,7 @@ public class MC {
             gosOuterLambda = coefCalc.getGOSOuterLambda(surrounding);
             gosOuterIonisationProbs = coefCalc.getGOSOuterShellProbs(surrounding, gosOuterLambda);
             gosIonisationProbs = coefCalc.getGOSShellProbs(false, gosInelasticLambda);
-            if (startingInnerShellLambda > 0) {
-              gosInelasticLambda = 1/(1/gosOuterLambda + 1/startingInnerShellLambda);
-            }
-            else {
-              gosInelasticLambda = 1/gosOuterLambda;
-            }
+            gosInelasticLambda = MC.gosInelasticLambda(gosOuterLambda, innerShellLamda);
             }
             lossSinceLastUpdate = 0;
           }
@@ -2306,12 +2289,7 @@ public class MC {
           gosOuterLambda = coefCalc.getGOSOuterLambda(surrounding);
           gosOuterIonisationProbs = coefCalc.getGOSOuterShellProbs(surrounding, gosOuterLambda);
           gosIonisationProbs = coefCalc.getGOSShellProbs(false, gosInelasticLambda);
-          if (startingInnerShellLambda > 0) {
-            gosInelasticLambda = 1/(1/gosOuterLambda + 1/startingInnerShellLambda);
-          }
-          else {
-            gosInelasticLambda = gosOuterLambda;
-          }
+          gosInelasticLambda = MC.gosInelasticLambda(gosOuterLambda, innerShellLamda);
           }
           lossSinceLastUpdate = 0;
         }
@@ -2336,9 +2314,7 @@ public class MC {
         ionisationProbs = coefCalc.getAllShellProbs(false);
         //GOS ionisation probs
         Pinel = 1 - (lambdaT / lambdaEl);
-        if (innerShellLamda > 0) {
-          Pinner = gosInelasticLambda / innerShellLamda;
-        }
+        Pinner = MC.innerShellChance(gosInelasticLambda, innerShellLamda);
         //update to new position
         xn = previousX + s * xNorm;
         yn = previousY + s * yNorm;
@@ -2426,19 +2402,12 @@ public class MC {
 
           //update cross section and probs and stuff for the surrounding
           if (electronEnergy > 0.05) {
-          if (simpleMC == false) {
-            gosInelasticLambda = coefCalc.getGOSInel(surrounding, electronEnergy);
-            innerShellLamda = coefCalc.betheIonisationxSection(electronEnergy, surrounding);
-            gosOuterLambda = coefCalc.getGOSOuterLambda(surrounding);
-            gosOuterIonisationProbs = coefCalc.getGOSOuterShellProbs(surrounding, gosOuterLambda);
-            gosIonisationProbs = coefCalc.getGOSShellProbs(surrounding, gosInelasticLambda);
-            if (startingInnerShellLambda > 0) {
-              gosInelasticLambda = 1/(1/gosOuterLambda + 1/startingInnerShellLambda);
-            }
-            else {
-              gosInelasticLambda = 1/gosOuterLambda;
-            }
-          }
+          // Out of the crystal the GOS model is not used: the electron
+          // scatters elastically and slows by its stopping power, from its
+          // first step. That step took the surrounding's inelastic mean free
+          // path too, with the crystal's inner-shell one, though no inelastic
+          // collision happens out here, and the crystal's shell chances.
+          gosInelasticLambda = 0;
           
           stoppingPower = coefCalc.getStoppingPower(electronEnergy, surrounding);
           //get new lambdaT
@@ -2456,9 +2425,7 @@ public class MC {
           ionisationProbs = coefCalc.getAllShellProbs(false);
           //GOS ionisation probs
           Pinel = 1 - (lambdaT / lambdaEl);
-          if (innerShellLamda > 0) {
-            Pinner = gosInelasticLambda / innerShellLamda;
-          }
+          Pinner = MC.innerShellChance(gosInelasticLambda, innerShellLamda);
           
           //update to new position
           xn = previousX + s * xNorm;
@@ -3378,6 +3345,33 @@ private boolean testIfInsideExposedArea(double xPos, double yPos, Beam beam) { /
   static double fluorescenceLeft(final Element element, final double binding,
       final double photonEnergy, final int drop) {
     return binding - photonEnergy - getShellBindingEnergy(element, drop);
+  }
+
+  /**
+   * The GOS model's inelastic mean free path, nm: the outer subshells' and
+   * the inner shells' together, both at the electron's energy now. The inner
+   * shells' was the one at the energy the electron started with, never
+   * brought up to date; and with none open there, the outer subshells'
+   * inverse was taken for a length.
+   *
+   * @param outer the outer subshells' mean free path, nm
+   * @param inner the inner shells', nm, or 0 if none is open
+   * @return the mean free path, nm
+   */
+  static double gosInelasticLambda(final double outer, final double inner) {
+    return inner > 0 ? 1 / (1 / outer + 1 / inner) : outer;
+  }
+
+  /**
+   * The chance an inelastic collision is with an inner shell: 0 if none is
+   * open. It was left as it was when none was open.
+   *
+   * @param inelastic the inelastic mean free path, nm
+   * @param inner the inner shells', nm, or 0
+   * @return the chance
+   */
+  static double innerShellChance(final double inelastic, final double inner) {
+    return inner > 0 ? inelastic / inner : 0;
   }
 
   private static double getShellBindingEnergy(Element collidedElement, int collidedShell) {
