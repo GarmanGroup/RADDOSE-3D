@@ -1688,7 +1688,7 @@ public class MC {
           entered = true;
           surrounding = false;
           //need to check where it intersects
-          double intersectionDistance = 1000*getIntersectionDistance(previousX, previousY, previousZ, xNorm, yNorm, zNorm, true); //nm 
+          double intersectionDistance = 1000*getIntersectionDistance(previousX, previousY, previousZ, xNorm, yNorm, zNorm); //nm 
           double[] intersectionPoint = getIntersectionPoint(intersectionDistance, previousX, previousY, previousZ, xNorm, yNorm, zNorm); 
           //set this to previous positions
           previousX = 1000*intersectionPoint[0];
@@ -2223,7 +2223,7 @@ public class MC {
         if (surrounding == false) {
           surrounding = true;  //will need to try and see what happens when it comes back in the crystal in both models
           
-          double escapeDistance = 1000 * getIntersectionDistance(previousX, previousY, previousZ, xNorm, yNorm, zNorm, true); //nm
+          double escapeDistance = 1000 * getIntersectionDistance(previousX, previousY, previousZ, xNorm, yNorm, zNorm); //nm
           
           
           //testing no re-entry
@@ -3959,34 +3959,33 @@ private Element chooseLowEnElement(CoefCalc coefCalc, double Pinner, Map<Element
     return cartesianCoords;
   }
   
+  /**
+   * A point in the lab, in the frame of the crystal as it was given: the
+   * inverse of setUpRotatedVertices, which translates the crystal by the
+   * wedge's start offset and translation and then rotates it. So this
+   * rotates back, then translates back.
+   *
+   * It translated back first. With both an offset and a rotation the two
+   * frames then differed by the offset rotated, and a point near a face of
+   * the crystal fell outside the voxel grid: an
+   * ArrayIndexOutOfBoundsException.
+   */
   private double[] translateInteractionToPosition(double x, double y, double z, Double[] wedgeStart, Double[] wedgeTranslation,
       double angle) {
     double[] translateRotateCoords = new double[3];
- // Translate Y
-    translateRotateCoords[1] = y
-    - 1000*wedgeStart[1] - 1000*wedgeTranslation[1];
-    // Translate X
-    double translateCoordX = x
-    - 1000*wedgeStart[0] - 1000*wedgeTranslation[0];
-    // Translate Z
-    double translateCoordZ = z
-    - 1000*wedgeStart[2] - 1000*wedgeTranslation[2];
-    /* Rotate clockwise when y axis points away from observer */
-    // Rotate X
-    
-    //now do the reverse translation 
-    //this is the same but anglecos and anglesin are 2pi minus
     double anglecos = Math.cos(2*Math.PI - angle);
     double anglesin = Math.sin(2*Math.PI - angle);
-    translateRotateCoords[0] = translateCoordX * anglecos
-    + translateCoordZ * anglesin;
-    // Rotate Z
-    translateRotateCoords[2] = -1 * translateCoordX * anglesin
-    + translateCoordZ * anglecos;
-
+    double rotatedX = x * anglecos + z * anglesin;
+    double rotatedZ = -1 * x * anglesin + z * anglecos;
+    translateRotateCoords[0] = rotatedX
+        - 1000*wedgeStart[0] - 1000*wedgeTranslation[0];
+    translateRotateCoords[1] = y
+        - 1000*wedgeStart[1] - 1000*wedgeTranslation[1];
+    translateRotateCoords[2] = rotatedZ
+        - 1000*wedgeStart[2] - 1000*wedgeTranslation[2];
     return translateRotateCoords;
-}
-  
+  }
+
   public boolean calculateCrystalOccupancy(final double x, final double y, final double z)
   {
     
@@ -4162,50 +4161,78 @@ private Element chooseLowEnElement(CoefCalc coefCalc, double Pinner, Map<Element
     return result;
   }
   
-  private double getIntersectionDistance(double x, double y, double z, double ca, double cb, double cc, boolean minVal) {
-    if (normals == null) {
-      calculateNormals(false);
-    }
-
-    double[] directionVector = {ca, cb, cc}; //the actual direction vector
-    double minIntersect = 0;
-    double[] origin = new double[3];
-    origin[0] = x/1000;
-    origin[1] = y/1000;
-    origin[2] = z/1000;
-    
-    double intersectionDistance = 0;
+  /**
+   * How far a point is from leaving the crystal along a direction -- or,
+   * from outside it, from entering -- in um: the nearest face of the crystal
+   * as it stands for this photon that the ray crosses. 0 if it crosses none.
+   *
+   * This took the planes of the unrotated crystal, whether or not the ray
+   * crossed them within a face. A rotated crystal's electrons were then
+   * given the wrong distance to its surface, and the energy they deposited
+   * on the way out with it: on a 4 x 6 x 8 um crystal rotated through 90
+   * degrees, about 13% too much dose. From outside, the nearest plane need
+   * not be a face the ray crosses at all.
+   *
+   * @return the distance in um, or 0
+   */
+  private double getIntersectionDistance(double x, double y, double z, double ca, double cb, double cc) {
+    double[] origin = {x / 1000, y / 1000, z / 1000};
+    double[] direction = {ca, cb, cc};
+    double nearest = 0;
     for (int l = 0; l < indicesXFEL.length; l++) {
-      intersectionDistance = Vector.rayTraceDistance(normals[l],
-          directionVector, origin, originDistances[l]);
-
-      Double distanceObject = Double.valueOf(intersectionDistance);
-
-      if (intersectionDistance < 0 || distanceObject.isNaN()
-          || distanceObject.isInfinite()) {
-          //do nothing
+      double t = rayTriangleDistance(origin, direction, expandedRotatedVerticesXFEL[l]);
+      if (t > 0 && (nearest == 0 || t < nearest)) {
+        nearest = t;
       }
-      else {
-    //    break; //maybe should just be closest, or an issue with the rayTRace
-        if (minIntersect == 0) {
-          minIntersect = intersectionDistance;
-        }
-        else {
-          double min = Math.min(minIntersect, intersectionDistance);
-          double max = Math.max(minIntersect, intersectionDistance);
-          if (minVal == true) {
-            minIntersect = min;
-          }
-          else {
-            minIntersect = max;
-          }
-        }
-      }
-
     }
-    return minIntersect;
+    return nearest;
   }
-  
+
+  /**
+   * Where a ray meets a triangle, by Moller and Trumbore's method.
+   *
+   * @param origin the ray's start
+   * @param direction its direction, a unit vector
+   * @param triangle the triangle's three corners
+   * @return the distance along the ray to the triangle, negative if behind,
+   *         or NaN if the ray's line misses it
+   */
+  static double rayTriangleDistance(final double[] origin,
+      final double[] direction, final double[][] triangle) {
+    double[] edge1 = new double[3];
+    double[] edge2 = new double[3];
+    double[] toOrigin = new double[3];
+    for (int i = 0; i < 3; i++) {
+      edge1[i] = triangle[1][i] - triangle[0][i];
+      edge2[i] = triangle[2][i] - triangle[0][i];
+      toOrigin[i] = origin[i] - triangle[0][i];
+    }
+    double[] p = cross(direction, edge2);
+    double det = dot(edge1, p);
+    if (det == 0) {
+      return Double.NaN;
+    }
+    double u = dot(toOrigin, p) / det;
+    if (u < 0 || u > 1) {
+      return Double.NaN;
+    }
+    double[] q = cross(toOrigin, edge1);
+    double v = dot(direction, q) / det;
+    if (v < 0 || u + v > 1) {
+      return Double.NaN;
+    }
+    return dot(edge2, q) / det;
+  }
+
+  private static double[] cross(final double[] a, final double[] b) {
+    return new double[] {a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2],
+        a[0] * b[1] - a[1] * b[0]};
+  }
+
+  private static double dot(final double[] a, final double[] b) {
+    return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+  }
+
   private double getIntersectionDistanceSurrounding(double x, double y, double z, double ca, double cb, double cc, boolean minVal) {
     if (normalsSurrounding == null) {
       calculateNormalsSurrounding(false);
