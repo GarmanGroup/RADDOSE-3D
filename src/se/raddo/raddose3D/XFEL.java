@@ -1239,47 +1239,29 @@ public class XFEL {
     
     //get direction and angles assuming 100% polarisation in the X axis
     //if there is rootation need to add this in as well
-    double thisAngle = 2*Math.PI - angle;
+    // Polarisation is the beam's, fixed in the lab: rotating the crystal does
+    // not turn it. It was turned by the crystal's angle. A K-shell
+    // photoelectron leaves at an angle to it drawn from the dipole
+    // distribution, uniformly around it; any other, uniformly over the
+    // sphere. One component was a uniform fraction of what the other left,
+    // which is not uniform around the axis, and "random" directions had
+    // their polar angle uniform on [0, 2 pi), too many along the beam.
     double polarised = RandomSource.nextDouble();
-    double xNorminit = 0, zNorminit = 0, xNorm = 0, yNorm = 0, zNorm = 0, phi = 0, theta = 0;
-    //polarised 0 as asuming 100% polarised
+    double xNorm = 0, yNorm = 0, zNorm = 0, phi = 0, theta = 0;
+    double[] direction;
     if (shellIndex == 0 && polarised > 0) { //then I want to send out in a biased direction
-      //will need to change this with polarisation input to match polarisation and goniometer
-      if ((verticalGoni == true && verticalPol == false) || (verticalGoni == false && verticalPol == true)) {
-        xNorminit = getCosAngleToX();
-        //get yNorm and zNorm
-        yNorm = PosOrNeg() * RandomSource.nextDouble() * Math.pow(1-Math.pow(xNorminit, 2), 0.5);
-      }
-      else {
-        yNorm = getCosAngleToX();
-        //get yNorm and zNorm
-        xNorminit = PosOrNeg() * RandomSource.nextDouble() * Math.pow(1-Math.pow(yNorm, 2), 0.5);
-      }
-      zNorminit = PosOrNeg() * Math.pow(1 - Math.pow(xNorminit, 2) - Math.pow(yNorm, 2), 0.5);
-      
-      //now apply the rotation matrix
-      xNorm = xNorminit * Math.cos(thisAngle) + zNorminit * Math.sin(thisAngle);
-      zNorm = -1 * xNorminit * Math.sin(thisAngle) + zNorminit * Math.cos(thisAngle);
-
-      theta = Math.acos(zNorm);
-      phi = Math.acos(xNorm / Math.sin(theta));
-      /*
-      xNorm = getCosAngleToX();
-      //get yNorm and zNorm
-      yNorm = PosOrNeg() * RandomSource.nextDouble() * Math.pow(1-Math.pow(xNorm, 2), 0.5);
-      zNorm = PosOrNeg() * Math.pow(1 - Math.pow(xNorm, 2) - Math.pow(yNorm, 2), 0.5);
-      //get theta and phi
-      theta = Math.acos(zNorm);
-      phi = Math.acos(xNorm / Math.sin(theta));
-      */
+      int axis = ((verticalGoni == true && verticalPol == false)
+          || (verticalGoni == false && verticalPol == true)) ? 0 : 1;
+      direction = MC.aboutAxis(getCosAngleToX(), axis);
     }
-    else { // send it out in a random direction
-      theta = RandomSource.nextDouble() * 2 * Math.PI;
-      phi = RandomSource.nextDouble() * 2 * Math.PI;
-      xNorm = Math.sin(theta) * Math.cos(phi);
-      yNorm = Math.sin(theta) * Math.sin(phi);
-      zNorm = Math.cos(theta);
+    else {
+      direction = MC.isotropicDirection();
     }
+    xNorm = direction[0];
+    yNorm = direction[1];
+    zNorm = direction[2];
+    theta = Math.acos(zNorm);
+    phi = Math.acos(xNorm / Math.sin(theta));
     
     trackPhotoelectron(coefCalc, timeStamp, photoelectronEnergy, xn, yn, zn, xNorm, yNorm, zNorm, theta, phi, surrounding, true, beam, angle, wedge);
     if (surrounding == false) {
@@ -1395,11 +1377,13 @@ public class XFEL {
     
     //send out the Auger
     //choose a random direction
-    double theta = RandomSource.nextDouble() * 2 * Math.PI;
-    double phi = RandomSource.nextDouble() * 2 * Math.PI;
-    double xNorm = Math.sin(theta) * Math.cos(phi);
-    double yNorm = Math.sin(theta) * Math.sin(phi);
-    double zNorm = Math.cos(theta);
+    // Uniformly over the sphere.
+    double[] direction = MC.isotropicDirection();
+    double xNorm = direction[0];
+    double yNorm = direction[1];
+    double zNorm = direction[2];
+    double theta = Math.acos(zNorm);
+    double phi = Math.atan2(yNorm, xNorm);
     int ionisationTime = (int) (timeStamp/PULSE_BIN_LENGTH);
     
     
@@ -1445,11 +1429,13 @@ public class XFEL {
     
     //send out the fl
     //choose a random direction
-    double theta = RandomSource.nextDouble() * 2 * Math.PI;
-    double phi = RandomSource.nextDouble() * 2 * Math.PI;
-    double xNorm = Math.sin(theta) * Math.cos(phi);
-    double yNorm = Math.sin(theta) * Math.sin(phi);
-    double zNorm = Math.cos(theta);
+    // Uniformly over the sphere.
+    double[] direction = MC.isotropicDirection();
+    double xNorm = direction[0];
+    double yNorm = direction[1];
+    double zNorm = direction[2];
+    double theta = Math.acos(zNorm);
+    double phi = Math.atan2(yNorm, xNorm);
     int ionisationTime = (int) (timeStamp/PULSE_BIN_LENGTH);
     
     
@@ -1518,7 +1504,9 @@ public class XFEL {
     //then the photon scattered by the compton effect
     //pick an angle theta
     int[] pixelCoord = convertToPixelCoordinates(xn, yn, zn, angle, wedge);
-    double photonTheta = Math.PI * RandomSource.nextDouble();
+    // By Klein and Nishina. It was drawn uniformly from 0 to pi.
+    double photonTheta = Math.acos(MC.kleinNishinaCosine(
+        photonEnergy * Beam.KEVTOJOULES / (m * Math.pow(c, 2))));
     //now get the energy of the compton electron
     double mcSquared = m * Math.pow(c, 2);
     double incidentEnergy = photonEnergy * Beam.KEVTOJOULES;
@@ -1531,9 +1519,11 @@ public class XFEL {
     //now get phi - this is the angle to Z
     double electronPhi = Math.atan((1/Math.tan(photonTheta/2)) / (1 + (incidentEnergy/mcSquared)));
     //now get the angles and direction
+    // At electronPhi to the beam, uniformly around it.
     double zNorm = Math.cos(electronPhi);
-    double xNorm = PosOrNeg() * RandomSource.nextDouble() * Math.pow(1-Math.pow(zNorm, 2), 0.5);
-    double yNorm = PosOrNeg() * Math.pow(1 - Math.pow(xNorm, 2) - Math.pow(zNorm, 2), 0.5);
+    double around = 2 * Math.PI * RandomSource.nextDouble();
+    double xNorm = Math.sin(electronPhi) * Math.cos(around);
+    double yNorm = Math.sin(electronPhi) * Math.sin(around);
     double theta = Math.acos(zNorm);
     double phi = Math.acos(xNorm / Math.sin(theta));
 
@@ -2600,17 +2590,27 @@ public class XFEL {
   
   private double[] getNewDirectionVector(double xNorm, double yNorm, double zNorm, 
                                        double scatterTheta, double scatterPhi) {
-
-    double AN = -(xNorm/yNorm);
-    double AM = 1/ Math.pow(1+AN*AN, 0.5);
-    double V1 = AN*Math.sin(scatterTheta);
-    double V2 = AN*AM*Math.sin(scatterTheta);
-    double V3 = Math.cos(scatterPhi);
-    double V4 = Math.sin(scatterPhi);
-    double ca = (xNorm*Math.cos(scatterTheta))+(V1*V3)+(yNorm*V2*V4);
-    double cb = (yNorm*Math.cos(scatterTheta))+(V4*(zNorm*V1-xNorm*V2));
-    double cc = (zNorm*Math.cos(scatterTheta))+(V2*V3)-(yNorm*V1*V4);
-    double[] newVector = {ca, cb, cc};
+    // Turned through scatterTheta, at scatterPhi around the old direction.
+    // The formula used was not a rotation through scatterTheta: its
+    // AN = -(x/y) and V1 = AN sin theta, where Joy's has -(cx/cz) and
+    // AM sin theta. From directions uniform over the sphere, a 30 degree
+    // deflection came out anywhere from 0 to 180 degrees, 25 at the median.
+    double sinT = Math.sin(scatterTheta);
+    double cosT = Math.cos(scatterTheta);
+    double sinP = Math.sin(scatterPhi);
+    double cosP = Math.cos(scatterPhi);
+    double[] newVector;
+    if (Math.abs(zNorm) > 0.99999) {
+      newVector = new double[] {sinT * cosP, sinT * sinP,
+          Math.signum(zNorm) * cosT};
+    }
+    else {
+      double s = Math.sqrt(1 - zNorm * zNorm);
+      newVector = new double[] {
+          sinT * (xNorm * zNorm * cosP - yNorm * sinP) / s + xNorm * cosT,
+          sinT * (yNorm * zNorm * cosP + xNorm * sinP) / s + yNorm * cosT,
+          -sinT * cosP * s + zNorm * cosT};
+    }
     double[] normalVector = Vector.normaliseVector(newVector);
     return normalVector;
   }
@@ -3158,11 +3158,14 @@ private boolean testIfInsideExposedArea(double xPos, double yPos, Beam beam) { /
       //integrate under the whole curve
       double lastHeight = 0;
       double totalArea = 0;
-      for (int i = 0; i <= 100; i++) {
-        double angle = ((Math.PI)/100)*i;
-        double height = solvePolarisationEquationForAngle(angle, 1, 2);
+      // Over the bins the table accumulates, so it ends at 1. It was over
+      // 100: with the sin, the table would end at 0.9993.
+      for (int i = 0; i <= numberAngularEmissionBins; i++) {
+        double angle = ((Math.PI)/numberAngularEmissionBins)*i;
+        // Per unit angle, not per unit solid angle: times sin of the angle.
+        double height = solvePolarisationEquationForAngle(angle, 1, 2) * Math.sin(angle);
         if (i > 0) {
-          double area = ((lastHeight + height)/2) * ((Math.PI)/100);
+          double area = ((lastHeight + height)/2) * ((Math.PI)/numberAngularEmissionBins);
           totalArea += area;
         }
         lastHeight = height;
@@ -3173,7 +3176,8 @@ private boolean testIfInsideExposedArea(double xPos, double yPos, Beam beam) { /
       double cumulativeProb = 0;
       for (int i = 0; i <= numberAngularEmissionBins; i++) {
         double angle = ((Math.PI)/numberAngularEmissionBins)*i;
-        double height = solvePolarisationEquationForAngle(angle, 1, 2);
+        // Per unit angle, not per unit solid angle: times sin of the angle.
+        double height = solvePolarisationEquationForAngle(angle, 1, 2) * Math.sin(angle);
         if (i > 0) {
           double area = ((lastHeight + height)/2) * ((Math.PI)/numberAngularEmissionBins);
           cumulativeProb += area / totalArea;

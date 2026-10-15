@@ -609,6 +609,146 @@ public class MonteCarloXfelTest {
         1e-12);
   }
 
+  // ------------------------------------------------------------ directions
+
+  /** Uniform over the sphere: cos theta uniform, so its square averages 1/3.
+   * The polar angle was uniform on [0, 2 pi): 1/2. */
+  @Test
+  public void isotropicDirectionsAreUniformOverTheSphere() {
+    RandomSource.setSeed(3);
+    int n = 200000;
+    double[] mean = new double[3];
+    double[] meanSquare = new double[3];
+    for (int i = 0; i < n; i++) {
+      double[] d = MC.isotropicDirection();
+      assertEquals(1, d[0] * d[0] + d[1] * d[1] + d[2] * d[2], 1e-12);
+      for (int k = 0; k < 3; k++) {
+        mean[k] += d[k] / n;
+        meanSquare[k] += d[k] * d[k] / n;
+      }
+    }
+    for (int k = 0; k < 3; k++) {
+      assertEquals(0, mean[k], 0.005);
+      assertEquals(1.0 / 3, meanSquare[k], 0.005);
+    }
+  }
+
+  /** At the angle to the axis, uniformly around it: the other components'
+   * squares average half of what the axis leaves. One was a uniform
+   * fraction of it, and averaged a third. */
+  @Test
+  public void polarisedDirectionsAreUniformAroundTheAxis() {
+    RandomSource.setSeed(5);
+    int n = 200000;
+    double cos = 0.6;
+    for (int axis = 0; axis < 2; axis++) {
+      double[] meanSquare = new double[3];
+      for (int i = 0; i < n; i++) {
+        double[] d = MC.aboutAxis(cos, axis);
+        assertEquals(cos, d[axis], 0);
+        assertEquals(1, d[0] * d[0] + d[1] * d[1] + d[2] * d[2], 1e-12);
+        for (int k = 0; k < 3; k++) {
+          meanSquare[k] += d[k] * d[k] / n;
+        }
+      }
+      for (int k = 0; k < 3; k++) {
+        if (k != axis) {
+          assertEquals((1 - cos * cos) / 2, meanSquare[k], 0.003);
+        }
+      }
+    }
+  }
+
+  /** The K-shell photoelectron's angle to the polarisation, from the dipole
+   * distribution 1 + beta P2(cos) with beta = 2: cos squared per solid
+   * angle, so the cosine's square averages 3/5. Without the sin of the
+   * angle, cos squared per unit angle: 3/4. */
+  @Test
+  public void photoelectronAnglesFollowTheDipoleDistribution()
+      throws Exception {
+    MC mc = cuboidMC();
+    call(mc, "populateAngularEmissionProbs", new Class<?>[0]);
+    double[] table = (double[]) mcField(mc, "angularEmissionProbs");
+    assertEquals(1, table[table.length - 1], 1e-12);
+    RandomSource.setSeed(7);
+    int n = 200000;
+    double meanSquare = 0;
+    for (int i = 0; i < n; i++) {
+      double cos = (Double) call(mc, "getCosAngleToX", new Class<?>[0]);
+      meanSquare += cos * cos / n;
+    }
+    assertEquals(0.6, meanSquare, 0.005);
+  }
+
+  /** Klein and Nishina's cross-section: Thomson's 1 + cos^2 at low energy,
+   * where cos^2 averages 2/5, and forward at high, where cos averages what
+   * the cross-section gives. Compton angles were uniform from 0 to pi. */
+  @Test
+  public void comptonAnglesFollowKleinAndNishina() {
+    RandomSource.setSeed(9);
+    int n = 200000;
+    double meanSquare = 0;
+    for (int i = 0; i < n; i++) {
+      double mu = MC.kleinNishinaCosine(1e-9);
+      meanSquare += mu * mu / n;
+    }
+    assertEquals(0.4, meanSquare, 0.004);
+
+    double k = 1;
+    double weighted = 0;
+    double total = 0;
+    int steps = 20000;
+    for (int i = 0; i <= steps; i++) {
+      double mu = -1 + 2.0 * i / steps;
+      double p = 1 / (1 + k * (1 - mu));
+      double f = p * p * (p + 1 / p - (1 - mu * mu));
+      double w = (i == 0 || i == steps) ? 0.5 : 1;
+      weighted += w * mu * f;
+      total += w * f;
+    }
+    double mean = 0;
+    for (int i = 0; i < n; i++) {
+      mean += MC.kleinNishinaCosine(k) / n;
+    }
+    assertEquals(weighted / total, mean, 0.005);
+  }
+
+  /** A deflection turns a direction through the angle, around it. The
+   * formula used divided by y -- so a direction in the xz plane became NaN
+   * -- and missed the angle: from directions uniform over the sphere, 30
+   * degrees came out anywhere from 0 to 180. */
+  @Test
+  public void deflectionsTurnThroughTheirAngle() throws Exception {
+    MC mc = cuboidMC();
+    Class<?>[] five = {double.class, double.class, double.class,
+        double.class, double.class};
+    double[][] directions = {{0.36, 0.48, 0.8}, {0.6, 0, 0.8}, {1, 0, 0},
+        {0, 0, 1}, {0, 0, -1}, {0, 0.6, -0.8}, {-0.48, -0.36, 0.8}};
+    double theta = Math.toRadians(30);
+    for (double[] d : directions) {
+      for (double phi = 0; phi < 2 * Math.PI; phi += 0.7) {
+        double[] v = (double[]) call(mc, "getNewDirectionVector", five,
+            d[0], d[1], d[2], theta, phi);
+        double[] w = (double[]) call(mc, "getNewDirectionVector", five,
+            d[0], d[1], d[2], theta, phi + Math.PI);
+        assertEquals(Math.cos(theta), v[0] * d[0] + v[1] * d[1] + v[2] * d[2],
+            1e-9, Arrays.toString(d));
+        for (int k = 0; k < 3; k++) {
+          // Opposite sides of the cone: their sum is along the direction.
+          assertEquals(2 * Math.cos(theta) * d[k], v[k] + w[k], 1e-9,
+              Arrays.toString(d));
+        }
+      }
+    }
+  }
+
+  private static Object mcField(final MC mc, final String name)
+      throws Exception {
+    Field f = MC.class.getDeclaredField(name);
+    f.setAccessible(true);
+    return f.get(mc);
+  }
+
   private static Object field(final Object owner, final String name)
       throws Exception {
     Field f = CrystalPolyhedron.class.getDeclaredField(name);
