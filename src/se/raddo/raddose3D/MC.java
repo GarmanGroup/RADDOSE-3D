@@ -1238,6 +1238,25 @@ public class MC {
   }
 
   /**
+   * A photoelectron's direction. A K-shell one leaves at an angle to the
+   * beam's polarisation drawn from the dipole distribution, uniformly around
+   * it: every one, as XFEL has had it since 2019 (88fc976), for a beam
+   * polarised wholly. A quarter were sent uniformly instead. Any other
+   * leaves uniformly over the sphere.
+   *
+   * @param shellIndex the shell it was freed from
+   * @return its direction, a unit vector
+   */
+  private double[] photoelectronDirection(final int shellIndex) {
+    if (shellIndex == 0) {
+      int axis = ((verticalGoni == true && verticalPol == false)
+          || (verticalGoni == false && verticalPol == true)) ? 0 : 1;
+      return MC.aboutAxis(getCosAngleToX(), axis);
+    }
+    return MC.isotropicDirection();
+  }
+
+  /**
    * A direction at a given angle to the x or the y axis, uniformly around it.
    *
    * @param cosToAxis the cosine of the angle to the axis
@@ -1381,19 +1400,8 @@ public class MC {
     // sphere. One component was a uniform fraction of what the other left,
     // which is not uniform around the axis, and "random" directions had
     // their polar angle uniform on [0, 2 pi), too many along the beam.
-    double polarised = RandomSource.nextDouble();
     double xNorm = 0, yNorm = 0, zNorm = 0, phi = 0, theta = 0;
-    double[] direction;
-    // XFEL sends every K-shell photoelectron so (88fc976); the Monte Carlo
-    // three in four.
-    if (shellIndex == 0 && polarised > (doXFEL ? 0 : 0.25)) { //then I want to send out in a biased direction
-      int axis = ((verticalGoni == true && verticalPol == false)
-          || (verticalGoni == false && verticalPol == true)) ? 0 : 1;
-      direction = MC.aboutAxis(getCosAngleToX(), axis);
-    }
-    else {
-      direction = MC.isotropicDirection();
-    }
+    double[] direction = photoelectronDirection(shellIndex);
     xNorm = direction[0];
     yNorm = direction[1];
     zNorm = direction[2];

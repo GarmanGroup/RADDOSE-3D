@@ -854,6 +854,36 @@ public class MonteCarloXfelTest {
     assertEquals(0.6, meanSquare, 0.005);
   }
 
+  /**
+   * Every K-shell photoelectron leaves along the dipole distribution about
+   * the polarisation, so its component along it squares to 3/5 on average;
+   * three in four did, and the rest uniformly, which gives 8/15. Any other
+   * shell's leaves uniformly: a third along each axis.
+   */
+  @Test
+  public void everyKShellPhotoelectronFollowsThePolarisation()
+      throws Exception {
+    MC mc = cuboidMC();
+    call(mc, "populateAngularEmissionProbs", new Class<?>[0]);
+    RandomSource.setSeed(13);
+    int n = 200000;
+    double[][] meanSquare = new double[2][3];
+    for (int shell = 0; shell < 2; shell++) {
+      for (int i = 0; i < n; i++) {
+        double[] d = (double[]) call(mc, "photoelectronDirection",
+            new Class<?>[] {int.class}, shell);
+        for (int k = 0; k < 3; k++) {
+          meanSquare[shell][k] += d[k] * d[k] / n;
+        }
+      }
+    }
+    double along = Math.max(meanSquare[0][0], meanSquare[0][1]);
+    assertEquals(0.6, along, 0.005);
+    for (int k = 0; k < 3; k++) {
+      assertEquals(1.0 / 3, meanSquare[1][k], 0.005);
+    }
+  }
+
   /** Klein and Nishina's cross-section: Thomson's 1 + cos^2 at low energy,
    * where cos^2 averages 2/5, and forward at high, where cos averages what
    * the cross-section gives. Compton angles were uniform from 0 to pi. */
