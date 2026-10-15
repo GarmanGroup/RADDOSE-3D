@@ -305,6 +305,16 @@ public class CoefCalcCompute extends CoefCalc {
   public TreeMap<Double, Double> dsimgaOverdW;
   public final int Wbins = 1000;
   public final double fcbCutoff = 0.0;
+  /**
+   * Electrons in each subshell the GOS model can treat as inner: K, L1, L2,
+   * L3, M1, M2, M3, M4, M5 and N1. An element's valence subshell, the first
+   * it does not treat as inner, holds all its other electrons instead
+   * (getNumValenceElectronsSubshells), so the N1 entry is never used. M4 and
+   * M5 held 10 and 2, the whole 3d shell and then 4s, so arsenic and
+   * selenium, whose 4s is in their valence subshell, had two electrons more
+   * than their atomic number.
+   */
+  static final int[] SUBSHELL_ELECTRONS = {2, 2, 2, 4, 2, 2, 4, 4, 6, 2};
   public final double Wcc = 0.0;
   public Map<Element, double[][]> GOSinelastic; //double is shell : 0 = longitudinal, 1 - transverse, 2 = close
   public Map<Element, double[][]> GOSinelasticInner; //double is shell : 0 = longitudinal, 1 - transverse, 2 = close
@@ -3117,7 +3127,6 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
   //with subShells
   @Override
   public int[] getNumValenceElectronsSubshells(Element e) {
-    int[] subshells = {2, 2, 2, 4, 2, 2, 4, 10, 2, 30};
     int Z = e.getAtomicNumber();
     int valence = Z;
     int numInnerShells = 0;
@@ -3149,7 +3158,9 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
       numInnerShells = 7;
       valence -= 18;
     }
-    else if (Z >= 33 && Z <= 34) {
+    else if (Z >= 33) {
+      // From Z = 35 every electron was valence, so a collision with one took
+      // the K edge as its binding energy, and below it there was none.
       numInnerShells = 9;
       valence -= 28;
     }
@@ -3500,6 +3511,16 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
    * binding energies do -- except Al 3s and Cr 3d, which it does not list,
    * from T.A. Carlson, Photoelectron and Auger Spectroscopy (Plenum, 1975),
    * as Geant4's G4AtomicShells tabulates them.
+   * <p>
+   * From bromine (Z = 35) on, index 9 is not N1 but the valence subshell,
+   * which holds every electron outside the M shell: for iodine 4s to 5p,
+   * bound by 193 to 10 eV. Its binding energy is the geometric mean of
+   * their binding energies, Carlson's as Geant4 tabulates them, weighted by
+   * occupancy, so the subshell adds to the mean excitation energy what its
+   * electrons would. The L1 and M1 binding energies from xenon
+   * on, and the M2 to M5 edges from bromine to hafnium and of rhenium,
+   * thallium, bismuth, radon, thorium and plutonium, were blank or zero and
+   * are from the X-ray Data Booklet, Table 1-1.
    *
    * @param shellIndex K, L1, L2, L3, M1, M2, M3, M4, M5, N1 from 0 to 9
    * @param e element
@@ -3534,6 +3555,9 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
       return e.getM5Edge();
     }
     else if (shellIndex == 9) {
+      if (e.getAtomicNumber() >= 35) {
+        return e.getValenceBinding();
+      }
       return e.getN1Binding();
     }
     else {
@@ -3880,7 +3904,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
   public double getWkMolecule(double a, Element e, int shellIndex, boolean surrounding) {
     int[] shells = {2, 8, 18, 32};
   //  int[] subshells = {2, 2, 2, 4, 18, 32};
-    int[] subshells = {2, 2, 2, 4, 2, 2, 4, 10, 2, 30};
+    int[] subshells = SUBSHELL_ELECTRONS;
     int Z = e.getAtomicNumber();
     
     double sumZ = 0;
@@ -3920,7 +3944,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
   public double[] checkMeanI(double electronEnergy, double a, boolean surrounding) {
     int[] shells = {2, 8, 18, 32};
    // int[] subshells = {2, 2, 2, 4, 18, 32};
-    int[] subshells = {2, 2, 2, 4, 2, 2, 4, 10, 2, 30};
+    int[] subshells = SUBSHELL_ELECTRONS;
     //just a start for a test
     double ZlnI = getZlnI(electronEnergy, surrounding);
     double sumfcb = 0;
@@ -5030,7 +5054,7 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     }
     int[] shells = {2, 8, 18, 32};
  //   int[] subshells = {2, 2, 2, 4, 18, 32};
-    int[] subshells = {2, 2, 2, 4, 2, 2, 4, 10, 2, 30};
+    int[] subshells = SUBSHELL_ELECTRONS;
     double elementaryCharge = 4.80320425E-10; //units = esu = g^0.5 cm^1.5 s^-1
     double m = 9.10938356E-31; // in Kg
     double c = 299792458;

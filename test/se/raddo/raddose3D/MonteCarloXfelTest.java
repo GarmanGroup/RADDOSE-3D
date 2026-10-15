@@ -380,6 +380,93 @@ public class MonteCarloXfelTest {
   }
 
   /**
+   * The GOS model gives each element as many electrons as its atomic
+   * number: its inner subshells' and its valence subshell's. Arsenic and
+   * selenium had two more, their 4s counted in M5 and again as valence.
+   */
+  @Test
+  public void everyElementHasAsManyElectronsAsItsAtomicNumber() {
+    CoefCalcCompute coefCalc = insulin(100);
+    ElementDatabase elements = ElementDatabase.getInstance();
+    for (int z = 1; z <= 100; z++) {
+      Element e = elements.getElement(z);
+      if (e == null) {
+        continue;
+      }
+      int[] electrons = coefCalc.getNumValenceElectronsSubshells(e);
+      int total = electrons[0];
+      for (int i = 0; i < electrons[1]; i++) {
+        total += CoefCalcCompute.SUBSHELL_ELECTRONS[i];
+      }
+      assertEquals(z, total, e.getElementName());
+    }
+  }
+
+  /**
+   * From bromine on, an element has the K to M5 subshells inner and every
+   * other electron in a valence subshell, bound more weakly than M5. Every
+   * electron was valence, bound by the K edge, so below it no collision
+   * with one could happen.
+   */
+  @Test
+  public void heavyAtomsHaveInnerSubshellsAndAValenceSubshell() {
+    CoefCalcCompute coefCalc = insulin(100);
+    ElementDatabase elements = ElementDatabase.getInstance();
+    for (int z = 35; z <= 100; z++) {
+      Element e = elements.getElement(z);
+      if (e == null) {
+        continue;
+      }
+      assertArrayEquals(new int[] {z - 28, 9},
+          coefCalc.getNumValenceElectronsSubshells(e), e.getElementName());
+      for (int i = 0; i < 9; i++) {
+        assertTrue(coefCalc.getShellBindingSubshell(i, e)
+            > coefCalc.getShellBindingSubshell(i + 1, e),
+            e.getElementName() + " subshell " + i);
+      }
+    }
+    // Iodine's valence electrons, 4s to 5p, are bound by 193 to 10 eV.
+    double iodine = coefCalc.getShellBindingSubshell(9,
+        elements.getElement("I"));
+    assertTrue(iodine > 0.010 && iodine < 0.193, "iodine " + iodine);
+  }
+
+  /**
+   * A heavy atom leaves the Sternheimer factor, which matches the model's
+   * mean excitation energy to the tables', to the rest of the composition.
+   * Iodide at 1 M, its 53 electrons bound by its K edge, took it from 1.65
+   * to 1.2, and so every resonance energy in the crystal down with it; and
+   * iodine had no collisions with electrons below 33 keV.
+   */
+  @Test
+  public void aHeavyAtomLeavesTheSternheimerFactorToTheComposition() {
+    CoefCalcCompute iodide = new CoefCalcFromParams(78.02, 78.02, 78.02, 90.0,
+        90.0, 90.0, 24, 51, 0, 0, Arrays.asList("ZN", "S"),
+        Arrays.asList(0.333, 6.0), Arrays.asList("P", "I"),
+        Arrays.asList(425.0, 1000.0), NONE, NO_AMOUNTS, 0.64, null, null, 0,
+        NONE, NO_AMOUNTS, 0, 100);
+    double a = insulin(100).getSturnheimera(10, false);
+    assertEquals(a, iodide.getSturnheimera(10, false), 0.02);
+    iodide.getGOSInel(false, 10);
+    Element iodine = iodide.getParser().getElement("I");
+    assertTrue(iodide.GOSinelastic.get(iodine)[9][3] > 0);
+  }
+
+  /**
+   * Xenon and every heavier element but gadolinium had no L1 or M1 binding
+   * energy, so a photoelectron from platinum's L1 shell stopped any Monte
+   * Carlo run with a NullPointerException.
+   */
+  @Test
+  public void aPlatinumCrystalRuns(@TempDir final Path dir) throws IOException {
+    CoefCalcCompute coefCalc = insulin(Arrays.asList("ZN", "S", "PT"),
+        Arrays.asList(0.333, 6.0, 20.0), 20000);
+    Map<String, String> files = run(cuboid("MONTECARLO", coefCalc),
+        gaussian(15.0, null, false), still(10), dir, 3);
+    assertTrue(files.containsKey("outputMC.CSV"), files.keySet().toString());
+  }
+
+  /**
    * GOS mode deposits no more energy than the crystal absorbs: the
    * RADDOSE-3D-style dose, every absorbed photon's whole energy. A
    * relaxing vacancy deposited the binding energy less the Auger

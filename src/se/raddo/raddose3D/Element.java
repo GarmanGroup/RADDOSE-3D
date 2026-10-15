@@ -494,6 +494,18 @@ public class Element {
   public Double getN1Binding() {
     return elementData.get(DatabaseFields.N1);
   }
+
+  /**
+   * The binding energy the GOS model gives the valence subshell of an
+   * element from bromine (Z = 35) on, which holds every electron outside
+   * the M shell.
+   *
+   * @return
+   *         the binding energy in keV; null below bromine
+   */
+  public Double getValenceBinding() {
+    return elementData.get(DatabaseFields.VALENCE_BINDING);
+  }
   
   /**
    * Return the M1 edge energy in keV of the element

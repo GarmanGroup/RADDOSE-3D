@@ -96,7 +96,9 @@ public class ElementDatabase {
     /**Mean ionisation potential**/
     I(71), L1(72), M1(73), N1(74), 
     /**more Fl yields**/
-    FLUORESCENCE_YIELD_M1(75), FLUORESCENCE_YIELD_M2(76),FLUORESCENCE_YIELD_M3(77),FLUORESCENCE_YIELD_M4(78),FLUORESCENCE_YIELD_M5(79);
+    FLUORESCENCE_YIELD_M1(75), FLUORESCENCE_YIELD_M2(76),FLUORESCENCE_YIELD_M3(77),FLUORESCENCE_YIELD_M4(78),FLUORESCENCE_YIELD_M5(79),
+    /** The GOS model's valence binding energy, from Z = 35, in keV. */
+    VALENCE_BINDING(80);
 
     
     /**
