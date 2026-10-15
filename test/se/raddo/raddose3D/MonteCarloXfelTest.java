@@ -351,6 +351,28 @@ public class MonteCarloXfelTest {
   }
 
   /**
+   * GOS mode deposits no more energy than the crystal absorbs: the
+   * RADDOSE-3D-style dose, every absorbed photon's whole energy. A
+   * relaxing vacancy deposited the binding energy less the Auger
+   * electron's, and the two vacancies it left then deposited theirs again;
+   * a fluorescing one deposited the photon's energy too. In a selenium
+   * crystal at 13 keV that came to more than the photons brought.
+   */
+  @Test
+  public void gosDepositsNoMoreThanIsAbsorbed(@TempDir final Path dir)
+      throws IOException {
+    CoefCalcCompute coefCalc = insulin(Arrays.asList("ZN", "S", "SE"),
+        Arrays.asList(0.333, 6.0, 10.0), 10000);
+    Map<String, String> files = run(cuboid("GOS", coefCalc),
+        gaussian(13.0, null, false), still(10), dir, 11);
+    String[] row = files.get("outputXFEL.CSV").split("\n")[1].split(",");
+    double raddoseStyle = Double.parseDouble(row[1].trim());
+    double gos = Double.parseDouble(row[8].trim());
+    assertTrue(gos > 0 && gos < raddoseStyle,
+        "GOS " + gos + " MGy against RADDOSE-3D-style " + raddoseStyle);
+  }
+
+  /**
    * The stopping power's total charge was a long, into which each element's
    * Z times its atom count was truncated: a count one ulp below a whole
    * number lost a whole electron, and the stopping power moved by about

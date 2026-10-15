@@ -1375,9 +1375,11 @@ public class XFEL {
     int transitionIndex = getTransitionIndex(Z, shell, true);
     //could actually get a proper energy from this... Also get a linewidth and therefore lifetime 
     double augerEnergy = energies[transitionIndex];
-    //can add the energy difference to the dose here
-    gosElectronDosevResolved[doseTime] += shellBindingEnergy - augerEnergy; 
-    voxelEnergyvResolved[pixelCoord[0]][pixelCoord[1]][pixelCoord[2]][doseTime] += shellBindingEnergy - augerEnergy;
+    // What the electron and the two vacancies left do not carry.
+    double left = MC.augerLeft(ionisedElement, shellBindingEnergy, augerEnergy,
+        (int) exitIndexes[transitionIndex], (int) dropIndexes[transitionIndex]);
+    gosElectronDosevResolved[doseTime] += left;
+    voxelEnergyvResolved[pixelCoord[0]][pixelCoord[1]][pixelCoord[2]][doseTime] += left;
     
     double augerLinewidth = linewidths[transitionIndex];
     double augerLifetime = 1E15*((h/(2*Math.PI)) / ((augerLinewidth/1000)*Beam.KEVTOJOULES));
@@ -1428,9 +1430,11 @@ public class XFEL {
     int transitionIndex = getTransitionIndex(Z, shell, false);
     //could actually get a proper energy from this... Also get a linewidth and therefore lifetime 
     double flEnergy = energies[transitionIndex];
-    //can add the energy difference to the dose here
-    gosElectronDosevResolved[doseTime] += shellBindingEnergy - flEnergy; 
-    voxelEnergyvResolved[pixelCoord[0]][pixelCoord[1]][pixelCoord[2]][doseTime] += shellBindingEnergy - flEnergy;
+    // What the photon and the vacancy left do not carry.
+    double left = MC.fluorescenceLeft(ionisedElement, shellBindingEnergy,
+        flEnergy, (int) dropIndexes[transitionIndex]);
+    gosElectronDosevResolved[doseTime] += left;
+    voxelEnergyvResolved[pixelCoord[0]][pixelCoord[1]][pixelCoord[2]][doseTime] += left;
     
     double flLinewidth = linewidths[transitionIndex];
     double flLifetime = 1E15*((h/(2*Math.PI)) / ((flLinewidth/1000)*Beam.KEVTOJOULES));
@@ -1713,6 +1717,12 @@ public class XFEL {
       //    voxelEnergy[pixelCoord[0]][pixelCoord[1]][pixelCoord[2]][doseTime] += startingEnergy;
           voxelEnergyvResolved[pixelCoord[0]][pixelCoord[1]][pixelCoord[2]][doseTime] += startingEnergy;
           
+        }
+        else if (simpleMC == false) {
+          // An Auger electron of under 0.05 keV is not followed: its energy
+          // is left where it was freed, as a primary's is. It was lost.
+          gosElectronDosevResolved[doseTime] += startingEnergy;
+          voxelEnergyvResolved[pixelCoord[0]][pixelCoord[1]][pixelCoord[2]][doseTime] += startingEnergy;
         }
           
         //get avg energy and add on ionisation
