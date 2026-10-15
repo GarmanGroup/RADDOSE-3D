@@ -2717,7 +2717,11 @@ public double getExposedArea(Beam beam) { // returns area in nm^2
     }
     
     else if(beam.getIsCircular() == true) { // elliptical collimation
-      area = Math.PI*(xCollimation*1000)*(yCollimation*1000);
+      // The ellipse's area from its full widths: pi times the half-widths.
+      // It took pi times the full widths, four times the area, so the
+      // exposed region of a crystal in a circular beam was too big and its
+      // dose too low.
+      area = Math.PI*(xCollimation*1000/2)*(yCollimation*1000/2);
       }
   }
   
@@ -2735,7 +2739,7 @@ public double getExposedArea(Beam beam) { // returns area in nm^2
     }
     
     else if(beam.getIsCircular() == true) {
-      area = Math.PI*(xCollimation*1000)*(yCollimation*1000);
+      area = Math.PI*(xCollimation*1000/2)*(yCollimation*1000/2);
     }
   }
   
@@ -2824,25 +2828,33 @@ private boolean testIfInsideExposedArea(double xPos, double yPos, Beam beam) { /
    */
   private NormalDistribution beamProfileX, beamProfileY;
 
+  /**
+   * Whether a point, in nm, is within an elliptical aperture of the given
+   * full widths, in um.
+   */
+  static boolean insideEllipse(final double[] xyPos, final double xCollimation,
+      final double yCollimation) {
+    return (Math.pow(xyPos[0]/1000, 2)/Math.pow(xCollimation/2, 2))
+        + (Math.pow(xyPos[1]/1000, 2)/Math.pow(yCollimation/2, 2)) <= 1;
+  }
+
   private double[] getPhotonBeamXYPos(Beam beam, Wedge wedge) { //TODO need to change some more here; getPhotonBeamXYPos method
     double[] xyPos = new double[2];
     
     if(beam.getType() == "Tophat") {
-    
-      double RND1 = RandomSource.nextDouble();
-      double RND2 = RandomSource.nextDouble();
-      
       double xCollimation = beam.getBeamX(); // fetch x collimation in um
-      xyPos[0] = 1000*xCollimation*(RND1 - 0.5); // x position in nm
-    
       double yCollimation = beam.getBeamY();
-      if (beam.getIsCircular()) {   //reduce Y limits so you can't put it out of the circle / ellipse
-        xyPos[1] = 1000*RND2*Math.sqrt(Math.pow(yCollimation/2, 2)*(Math.pow((xyPos[0]/1000), 2)/Math.pow(xCollimation/2, 2)));
-        xyPos[1] *= PosOrNeg();
-      }
-      else {
+      // Uniform within the aperture: within an ellipse, by drawing within
+      // the rectangle around it until the point falls inside. A circular
+      // top-hat bounded y by the line from the centre to the rectangle's
+      // corner, and so filled a bow tie.
+      do {
+        double RND1 = RandomSource.nextDouble();
+        double RND2 = RandomSource.nextDouble();
+        xyPos[0] = 1000*xCollimation*(RND1 - 0.5); // x position in nm
         xyPos[1] = 1000*((RND2 * yCollimation) - (yCollimation/2));
-      }
+      } while (beam.getIsCircular()
+          && insideEllipse(xyPos, xCollimation, yCollimation) == false);
     }
     
     else if(beam.getType() == "Gaussian") {
@@ -2854,76 +2866,35 @@ private boolean testIfInsideExposedArea(double xPos, double yPos, Beam beam) { /
         if(xCollimation == null) {xCollimation = beam.getSx()*SIGMA_TO_FWHM*3;} // default collimation at three FWHM; TODO check if it would be better to move this bit into the beam classes
         if(yCollimation == null) {yCollimation = beam.getSy()*SIGMA_TO_FWHM*3;}
       
-        if(beam.getIsCircular() == false) { // square 2D Gaussian
-          
-      //    double sx = beam.getSx()*1000; // beam.getSx() is in um, we want the positions in nanometers
-      //    double sy = beam.getSy()*1000;
-          double sx = beam.getSx(); // beam.getSx() is in um - same as collimation
-          double sy = beam.getSy();
-          if (beamProfileX == null) {
-            beamProfileX = new NormalDistribution(0, sx); // have assumed no offset so do not need to use wedge.getOffAxisUm(); units are nm
-            beamProfileY = new NormalDistribution(0, sy);
-          }
-          NormalDistribution gx = beamProfileX;
-          NormalDistribution gy = beamProfileY;
-          
-          // Find cumulative probabilities at collimation limits
-          double lowerCumulativeProbX = gx.cumulativeProbability(-xCollimation/2);
-          double upperCumulativeProbX = gx.cumulativeProbability(xCollimation/2);
-          double lowerCumulativeProbY = gy.cumulativeProbability(-yCollimation/2);
-          double upperCumulativeProbY = gy.cumulativeProbability(yCollimation/2);
-          
+        // Two independent normals, each truncated to the aperture's extent
+        // by drawing from its cumulative distribution between the limits;
+        // within an ellipse, drawn again until the point falls inside. A
+        // circular beam of equal widths drew its radius from a
+        // one-dimensional normal limited by the x aperture alone: the wrong
+        // radial distribution, which overran an ellipse narrower in y.
+        double sx = beam.getSx(); // beam.getSx() is in um - same as collimation
+        double sy = beam.getSy();
+        if (beamProfileX == null) {
+          beamProfileX = new NormalDistribution(0, sx);
+          beamProfileY = new NormalDistribution(0, sy);
+        }
+        NormalDistribution gx = beamProfileX;
+        NormalDistribution gy = beamProfileY;
+
+        // Find cumulative probabilities at collimation limits
+        double lowerCumulativeProbX = gx.cumulativeProbability(-xCollimation/2);
+        double upperCumulativeProbX = gx.cumulativeProbability(xCollimation/2);
+        double lowerCumulativeProbY = gy.cumulativeProbability(-yCollimation/2);
+        double upperCumulativeProbY = gy.cumulativeProbability(yCollimation/2);
+        do {
           // Randomly select cumulative probabilities between those limits
           double RCPx = lowerCumulativeProbX + RandomSource.nextDouble()*(upperCumulativeProbX - lowerCumulativeProbX); // gets a random cumulative probability
           double RCPy = lowerCumulativeProbY + RandomSource.nextDouble()*(upperCumulativeProbY - lowerCumulativeProbY);
-          
           // Generate the coordinates, units nm
           xyPos[0] = gx.inverseCumulativeProbability(RCPx)*1000;
           xyPos[1] = gy.inverseCumulativeProbability(RCPy)*1000;
-        }
-        
-        else if(beam.getIsCircular() == true) { // elliptical 2D Gaussian
-          
-          double RND1 = RandomSource.nextDouble();
-          double RND2 = RandomSource.nextDouble();  
- 
-// First test if can use circular Gaussian because it is quicker to run (do not have to keep placing until you get a photon within the exposed area, as always places in exposed area)
-          if(beam.getSx() == beam.getSy()) {
-            double[] rtPos = new double[2]; //Polar coordinates
-         //   double sr = beam.getSx()*1000; // noting sx == sy
-            double sr = beam.getSx(); // noting sx == sy
-            if (beamProfileX == null) {
-              beamProfileX = new NormalDistribution(0, sr); //units of nm
-            }
-            NormalDistribution gr = beamProfileX;
-          
-            double lowerCumulativeProbR = gr.cumulativeProbability(-xCollimation/2);
-            double upperCumulativeProbR = gr.cumulativeProbability(xCollimation/2);
-            double RCPr = lowerCumulativeProbR + RandomSource.nextDouble()*(upperCumulativeProbR - lowerCumulativeProbR); // gets a random cumulative probability
-          
-            rtPos[0] = gr.inverseCumulativeProbability(RCPr)*1000; // value of r
-            rtPos[1] = 2*(Math.PI)*RND2; // angle anticlockwise from x-axis, using convention 0 <= theta < 2*pi, in radians
-          
-            xyPos[0] = rtPos[0]*Math.cos(rtPos[1]);
-            xyPos[1] = rtPos[0]*Math.sin(rtPos[1]);
-          }
-
-// Else use full equation for bivariate Gaussian in Cartesian coordinates (slow to run if FWHMs >> collimations)
-          else if(beam.getSx() != beam.getSy()) {
-       //     double sx = beam.getSx()*1000;
-       //     double sy = beam.getSy()*1000;
-            double sx = beam.getSx();
-            double sy = beam.getSy();
-            // With no correlation the bivariate normal is two independent
-            // normals. They are drawn from RandomSource, so --seed reaches
-            // them: MultivariateNormalDistribution seeded a generator of its
-            // own from the clock, so no two runs were alike.
-            do {
-              xyPos[0] = RandomSource.nextGaussian() * sx * 1000;
-              xyPos[1] = RandomSource.nextGaussian() * sy * 1000;
-            } while(((Math.pow((xyPos[0]/1000), 2)/Math.pow(xCollimation/2, 2)) + (Math.pow((xyPos[1]/1000), 2)/Math.pow(yCollimation/2, 2))) > 1);
-          }
-        }
+        } while (beam.getIsCircular()
+            && insideEllipse(xyPos, xCollimation, yCollimation) == false);
     }
     else {System.out.println("Beam type not supported");}
     
