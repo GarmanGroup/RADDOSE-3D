@@ -4718,13 +4718,18 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     double Wdis = 3*Wak - 2*Uk; //need to check Wbins...
     Wdis = (Wdis/1000)*Beam.KEVTOJOULES;
     double step = Wdis/(Wbins);
+    // The ends of getpDisW's distribution, which do not depend on W. They
+    // were found again at every step, each time summing over the
+    // composition twice, in getWkMolecule and getPlasmaEnergyAll: nearly
+    // all of the GOS model's time.
+    double[] ends = distantEnds(E, a, e, i, surrounding);
     
     while (W <= Wdis) {
       if (W == 0) {
         thisY = 0;
       }
       else {
-      thisY = Math.pow(W, n-1)*getpDisW(E, W, a, e, i, surrounding);
+      thisY = Math.pow(W, n-1)*distantDensity(W, ends[0], ends[1]);
       }
       if (count > 0) {
         sumIntegral += step*((thisY+previousY)/2);
@@ -4738,6 +4743,17 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
   }
   
   public double getpDisW(double E, double W, double a, Element e, int i, boolean surrounding) {
+    double[] ends = distantEnds(E, a, e, i, surrounding);
+    return distantDensity(W, ends[0], ends[1]);
+  }
+
+  /**
+   * The ends of a distant collision's energy-loss distribution, getpDisW's:
+   * the subshell's binding energy and the energy it falls to zero at.
+   *
+   * @return Uk and Wdis, in J
+   */
+  private double[] distantEnds(double E, double a, Element e, int i, boolean surrounding) {
     // Subshell i, for the reason given in integrateDist.
     double Uk = getShellBindingSubshell(i, e)*1000;
     //get Wk
@@ -4746,9 +4762,13 @@ stoppingPower = stoppingPower * 1000 * density /1E7;
     double Wak = getWak(E, Wk, Uk);
     double Wdis = 3*Wak - 2*Uk; //need to check Wbins...
     //change values to J here
-    Uk = (Uk/1000)*Beam.KEVTOJOULES;
-    Wdis = (Wdis/1000)*Beam.KEVTOJOULES;
-   // double W = (Win/1000)*Beam.KEVTOJOULES;
+    return new double[] {(Uk/1000)*Beam.KEVTOJOULES, (Wdis/1000)*Beam.KEVTOJOULES};
+  }
+
+  /**
+   * The distribution itself: falling linearly from Uk to zero at Wdis.
+   */
+  private static double distantDensity(double W, double Uk, double Wdis) {
     if (W >= Uk && W < Wdis) {
       return (2/Math.pow(Wdis-Uk, 2)) * (Wdis-W);
     }
