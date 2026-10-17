@@ -291,13 +291,54 @@ public class MC {
   }
 
   /**
+   * Every photon's energy, in the order the photons are simulated.
+   * <p>
+   * A pink beam's are sampled systematically from its normal distribution,
+   * which gives them in ascending order. In XFEL a photon's place in the run
+   * is its time in the pulse, so they are shuffled: in order, the softest
+   * photons came first, a chirp that no input asked for. The Monte Carlo
+   * keeps the order, which ties energy to the rotation instead.
+   *
+   * @return each photon's energy, keV
+   */
+  double[] photonEnergies() {
+    double[] energies = new double[(int) NUM_PHOTONS];
+    if (energyFWHM == null) {
+      Arrays.fill(energies, meanEnergy);
+      return energies;
+    }
+    //eventually need to not reply on assumption it is normal
+    energies = new SampleNormalEnergyDistribution(meanEnergy, energyFWHM,
+        NUM_PHOTONS).getSampledEnergies();
+    if (doXFEL) {
+      shuffle(energies);
+    }
+    return energies;
+  }
+
+  /**
+   * Puts values in a random order, every order equally likely (Fisher and
+   * Yates), drawing from RandomSource.
+   *
+   * @param values the values, reordered in place
+   */
+  static void shuffle(final double[] values) {
+    for (int i = values.length - 1; i > 0; i--) {
+      int j = (int) (RandomSource.nextDouble() * (i + 1));
+      double swap = values[i];
+      values[i] = values[j];
+      values[j] = swap;
+    }
+  }
+
+  /**
    * The surrounding's thickness on each axis: as asked, but no more than a
    * photoelectron of the most energetic photon could travel in it -- E over
    * the surrounding's stopping power at E, a little more than its range --
    * and that where none is asked. It was capped photon by photon, by
    * overwriting the thickness, so it ended at the least energetic photon's
-   * reach so far: under a pink beam, whose photons come in order of energy,
-   * the first photon's.
+   * reach so far: under a pink beam, whose photons the Monte Carlo takes in
+   * order of energy, the first photon's.
    *
    * @param coefCalc the coefficients, with the surrounding's
    * @param energies every photon's energy, keV
@@ -354,10 +395,7 @@ public class MC {
     
     meanEnergy = beam.getPhotonEnergy();
     energyFWHM = beam.getEnergyFWHM();
-    if(energyFWHM == null) {double[] array = new double[(int)NUM_PHOTONS]; Arrays.fill(array, meanEnergy); photonEnergyArray = array;}
-    else {
-    SampleNormalEnergyDistribution SamplePhotonEnergies = new SampleNormalEnergyDistribution(meanEnergy, energyFWHM, (NUM_PHOTONS)); //eventually need to not reply on assumption it is normal   
-    photonEnergyArray = SamplePhotonEnergies.getSampledEnergies();}                     
+    photonEnergyArray = photonEnergies();
     SubprogramInputs.check(doXFEL ? "XFEL" : "Monte Carlo", beam, coefCalc, photonEnergyArray);
     
     // for testing

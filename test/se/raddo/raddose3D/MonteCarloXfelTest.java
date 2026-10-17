@@ -675,6 +675,61 @@ public class MonteCarloXfelTest {
   // ------------------------------------------------------------- geometry
 
   /** An MC run's geometry, for a 4 x 6 x 8 um cuboid at 2 voxels per um. */
+  /**
+   * An XFEL pulse's pink photons come in no order of energy: a photon's
+   * place in the run is its time in the pulse, and in ascending order the
+   * softest came first. The Monte Carlo keeps the ascending order. Both
+   * have the sampler's energies.
+   */
+  @Test
+  public void anXfelPulsesPinkPhotonsComeInNoOrderOfEnergy() throws Exception {
+    double[][] energies = new double[2][];
+    for (int k = 0; k < 2; k++) {
+      boolean xfel = k == 1;
+      Crystal cuboid = cuboid("MONTECARLO", insulin(100), 4, 6, 8, 2);
+      CrystalPolyhedron c = (CrystalPolyhedron) cuboid;
+      MC mc = new MC(c.vertices, c.indices,
+          (double[][][][]) field(c, "crystCoord"), c.crystalPixPerUM,
+          (int[]) field(c, "crystSizeVoxels"), c.crystOcc, 1, false, xfel,
+          xfel, new double[3], false);
+      setMcField(mc, "meanEnergy", 12.1);
+      setMcField(mc, "energyFWHM", 0.5);
+      setMcField(mc, "NUM_PHOTONS", 100000L);
+      RandomSource.setSeed(5);
+      energies[k] = (double[]) call(mc, "photonEnergies", new Class<?>[0]);
+    }
+    double[] sorted = energies[1].clone();
+    Arrays.sort(sorted);
+    assertArrayEquals(energies[0], sorted, 0.0);
+    for (int i = 1; i < energies[0].length; i++) {
+      assertTrue(energies[0][i] >= energies[0][i - 1]);
+    }
+    assertEquals(0, rankCorrelationWithIndex(energies[1]), 0.01);
+  }
+
+  /** Spearman's correlation between values and their places. */
+  private static double rankCorrelationWithIndex(final double[] values) {
+    int n = values.length;
+    Integer[] order = new Integer[n];
+    for (int i = 0; i < n; i++) {
+      order[i] = i;
+    }
+    Arrays.sort(order, (a, b) -> Double.compare(values[a], values[b]));
+    double sum = 0;
+    for (int rank = 0; rank < n; rank++) {
+      double d = rank - order[rank];
+      sum += d * d;
+    }
+    return 1 - 6 * sum / ((double) n * ((double) n * n - 1));
+  }
+
+  private static void setMcField(final MC mc, final String name,
+      final Object value) throws Exception {
+    Field f = MC.class.getDeclaredField(name);
+    f.setAccessible(true);
+    f.set(mc, value);
+  }
+
   private static MC cuboidMC() throws Exception {
     Crystal cuboid = cuboid("MONTECARLO", insulin(100), 4, 6, 8, 2);
     CrystalPolyhedron c = (CrystalPolyhedron) cuboid;
