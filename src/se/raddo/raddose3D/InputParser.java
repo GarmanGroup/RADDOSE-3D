@@ -3,6 +3,7 @@ package se.raddo.raddose3D;
 import se.raddo.raddose3D.parser.InputfileLexer;
 import se.raddo.raddose3D.parser.InputfileParser;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.antlr.runtime.CharStream;
@@ -20,6 +21,8 @@ import org.antlr.runtime.RecognitionException;
 public class InputParser implements Input {
   /** The ANTLR CommonTokenStream that the InputParser works on. */
   private final CommonTokenStream tokens;
+  /** The lexer, which keeps what it could not read. */
+  private final InputfileLexer lexer;
 
   /** A class to create Crystal type objects. */
   private CrystalFactory          cf         = new CrystalFactory();
@@ -39,8 +42,8 @@ public class InputParser implements Input {
    *          ANTLR CharStream object
    */
   public InputParser(final CharStream stream) {
-    InputfileLexer lex = new InputfileLexer(stream);
-    tokens = new CommonTokenStream(lex);
+    lexer = new InputfileLexer(stream);
+    tokens = new CommonTokenStream(lexer);
   }
 
   /**
@@ -94,7 +97,10 @@ public class InputParser implements Input {
       throw new InputException(e.toString()); // NOPMD - discard stack trace
     }
 
-    List<String> errors = parser.getErrors();
+    // A character the lexer could not read is an error in the input too: it
+    // was skipped, with a message, and the input ran without it.
+    List<String> errors = new ArrayList<String>(lexer.getErrors());
+    errors.addAll(parser.getErrors());
     if (!errors.isEmpty()) {
       StringBuffer errorString = new StringBuffer("Parser found "
           + errors.size() + " errors in input:\n");
