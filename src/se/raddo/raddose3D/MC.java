@@ -1415,15 +1415,16 @@ public class MC {
           int transitionIndex = getTransitionIndex(Z, shell, true);
           //could actually get a proper energy from this... Also get a linewidth and therefore lifetime 
           double augerEnergy = energies[transitionIndex];
-          //can add the energy difference to the dose here
-          gosElectronDosevResolved += shellBindingEnergy - augerEnergy; 
-          voxelEnergyvResolved[pixelCoord[0]][pixelCoord[1]][pixelCoord[2]] += shellBindingEnergy - augerEnergy;
+          int exitIndex = (int) exitIndexes[transitionIndex];
+          int dropIndex = (int) dropIndexes[transitionIndex];
+          double left = augerLeft(ionisedElement, shellBindingEnergy,
+              augerEnergy, exitIndex, dropIndex);
+          gosElectronDosevResolved += left;
+          voxelEnergyvResolved[pixelCoord[0]][pixelCoord[1]][pixelCoord[2]] += left;
           
           double augerLinewidth = linewidths[transitionIndex];
           double augerLifetime = 1E15*((h/(2*Math.PI)) / ((augerLinewidth/1000)*Beam.KEVTOJOULES));
           timeStamp += augerLifetime;
-          int exitIndex = (int) exitIndexes[transitionIndex];
-          int dropIndex = (int) dropIndexes[transitionIndex];
           //add a charge 
           
           //account for this transition so cross sections can be adjusted
@@ -1468,8 +1469,10 @@ public class MC {
           if (simpleMC == false) {
           double[] dropIndexes = flDropIndex.get(Z).get(shell);
           int dropIndex = (int) dropIndexes[transitionIndex];
-          gosElectronDosevResolved += shellBindingEnergy;
-          voxelEnergyvResolved[pixelCoord[0]][pixelCoord[1]][pixelCoord[2]] += shellBindingEnergy;
+          double left = fluorescenceLeft(ionisedElement, shellBindingEnergy,
+              flEnergy, dropIndex);
+          gosElectronDosevResolved += left;
+          voxelEnergyvResolved[pixelCoord[0]][pixelCoord[1]][pixelCoord[2]] += left;
           
           double flLinewidth = linewidths[transitionIndex];
           double flLifetime = 1E15*((h/(2*Math.PI)) / ((flLinewidth/1000)*Beam.KEVTOJOULES));
@@ -1771,6 +1774,12 @@ public class MC {
       //    voxelEnergy[pixelCoord[0]][pixelCoord[1]][pixelCoord[2]][doseTime] += startingEnergy;
           voxelEnergyvResolved[pixelCoord[0]][pixelCoord[1]][pixelCoord[2]]+= startingEnergy;
           
+        }
+        else if (simpleMC == false) {
+          // An Auger electron of under 0.05 keV is not followed: its energy
+          // is left where it was freed, as a primary's is. It was lost.
+          gosElectronDosevResolved += startingEnergy;
+          voxelEnergyvResolved[pixelCoord[0]][pixelCoord[1]][pixelCoord[2]] += startingEnergy;
         }
         //get avg energy and add on ionisation
         double avgEnergy = coefCalc.getAvgInelasticEnergy(startingEnergy);
@@ -3326,6 +3335,49 @@ private boolean testIfInsideExposedArea(double xPos, double yPos, Beam beam) { /
       return coefCalc.getShellBindingSubshell(shell, element);
     }
     return getShellBindingEnergy(element, shell);
+  }
+
+  /**
+   * What an Auger transition leaves at the atom, keV.
+   *
+   * The vacancy's binding energy goes to the Auger electron and to the two
+   * vacancies the transition leaves, the exit and the drop, which deposit
+   * theirs as they relax in turn. What remains, a few eV from the tables
+   * disagreeing, and a vacancy's whose shell the edges leave out, is left
+   * at the atom. The binding energy less the Auger electron's was left
+   * there, and the two vacancies then deposited theirs again: a sulfur K
+   * vacancy counted 13% of its energy twice, a selenium one 21%.
+   *
+   * @param element the atom
+   * @param binding the vacancy's binding energy, keV
+   * @param augerEnergy the Auger electron's energy, keV
+   * @param exit the shell the Auger electron leaves
+   * @param drop the shell the electron filling the vacancy comes from
+   * @return the energy left at the atom, keV
+   */
+  static double augerLeft(final Element element, final double binding,
+      final double augerEnergy, final int exit, final int drop) {
+    return binding - augerEnergy - getShellBindingEnergy(element, exit)
+        - getShellBindingEnergy(element, drop);
+  }
+
+  /**
+   * What a fluorescence transition leaves at the atom, keV: the vacancy's
+   * binding energy less the photon's, which escapes, as in simple mode and
+   * XFEL, and the binding energy of the vacancy it leaves, which deposits
+   * it as it relaxes. GOS mode left the whole binding energy, as though the
+   * photon were absorbed where it was emitted, and the vacancy then
+   * deposited its own again.
+   *
+   * @param element the atom
+   * @param binding the vacancy's binding energy, keV
+   * @param photonEnergy the photon's energy, keV
+   * @param drop the shell the electron filling the vacancy comes from
+   * @return the energy left at the atom, keV
+   */
+  static double fluorescenceLeft(final Element element, final double binding,
+      final double photonEnergy, final int drop) {
+    return binding - photonEnergy - getShellBindingEnergy(element, drop);
   }
 
   private static double getShellBindingEnergy(Element collidedElement, int collidedShell) {
