@@ -373,6 +373,21 @@ public class MonteCarloXfelTest {
   }
 
   /**
+   * The GOS model's inelastic mean free path is the outer subshells' and the
+   * inner shells' together, and where no inner shell is open, the outer
+   * subshells' alone: a length, where its inverse was taken. The chance an
+   * inelastic collision is with an inner shell is then 0, not what it was.
+   */
+  @Test
+  public void theGosInelasticMeanFreePathIsALength() {
+    double both = MC.gosInelasticLambda(3.0, 1000.0);
+    assertEquals(1 / (1 / 3.0 + 1 / 1000.0), both, 1e-15);
+    assertEquals(3.0, MC.gosInelasticLambda(3.0, 0), 0.0);
+    assertEquals(both / 1000.0, MC.innerShellChance(both, 1000.0), 0.0);
+    assertEquals(0.0, MC.innerShellChance(3.0, 0), 0.0);
+  }
+
+  /**
    * The stopping power's total charge was a long, into which each element's
    * Z times its atom count was truncated: a count one ulp below a whole
    * number lost a whole electron, and the stopping power moved by about
