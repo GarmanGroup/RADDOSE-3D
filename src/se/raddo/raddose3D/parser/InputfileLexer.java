@@ -1,4 +1,4 @@
-// $ANTLR 3.4 Inputfile.g 2026-10-17 10:43:28
+// $ANTLR 3.4 Inputfile.g 2026-10-17 12:51:40
 
 package se.raddo.raddose3D.parser;
 
@@ -115,6 +115,23 @@ public class InputfileLexer extends Lexer {
     public static final int WIREFRAMETYPE=105;
     public static final int WS=106;
 
+        private java.util.List<String> lexingErrors = new java.util.ArrayList<String>();
+
+        /**
+         * The characters the lexer could not read. ANTLR's lexer skips a
+         * character no token can begin with, prints a message and carries on,
+         * so the input ran as though the character were not there.
+         */
+        public java.util.List<String> getErrors() {
+            java.util.List<String> fetchedErrors = lexingErrors;
+            lexingErrors = new java.util.ArrayList<String>();
+            return fetchedErrors;
+        }
+        public void emitErrorMessage(String msg) {
+            lexingErrors.add(msg);
+        }
+
+
     // delegates
     // delegators
     public Lexer[] getDelegates() {
@@ -135,8 +152,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = CRYSTAL;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:294:9: ( ( 'C' | 'c' ) ( 'R' | 'r' ) ( 'Y' | 'y' ) ( 'S' | 's' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'L' | 'l' ) )
-            // Inputfile.g:294:11: ( 'C' | 'c' ) ( 'R' | 'r' ) ( 'Y' | 'y' ) ( 'S' | 's' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'L' | 'l' )
+            // Inputfile.g:312:9: ( ( 'C' | 'c' ) ( 'R' | 'r' ) ( 'Y' | 'y' ) ( 'S' | 's' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'L' | 'l' ) )
+            // Inputfile.g:312:11: ( 'C' | 'c' ) ( 'R' | 'r' ) ( 'Y' | 'y' ) ( 'S' | 's' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'L' | 'l' )
             {
             if ( input.LA(1)=='C'||input.LA(1)=='c' ) {
                 input.consume();
@@ -224,8 +241,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = TYPE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:366:6: ( ( 'T' | 't' ) ( 'Y' | 'y' ) ( 'P' | 'p' ) ( 'E' | 'e' ) )
-            // Inputfile.g:366:8: ( 'T' | 't' ) ( 'Y' | 'y' ) ( 'P' | 'p' ) ( 'E' | 'e' )
+            // Inputfile.g:384:6: ( ( 'T' | 't' ) ( 'Y' | 'y' ) ( 'P' | 'p' ) ( 'E' | 'e' ) )
+            // Inputfile.g:384:8: ( 'T' | 't' ) ( 'Y' | 'y' ) ( 'P' | 'p' ) ( 'E' | 'e' )
             {
             if ( input.LA(1)=='T'||input.LA(1)=='t' ) {
                 input.consume();
@@ -283,8 +300,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = DIFFRACTIONDECAYMODEL;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:370:23: ( ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'F' | 'f' ) ( 'F' | 'f' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'C' | 'c' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'Y' | 'y' ) ( 'M' | 'm' ) ( 'O' | 'o' ) ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'L' | 'l' ) )
-            // Inputfile.g:370:25: ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'F' | 'f' ) ( 'F' | 'f' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'C' | 'c' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'Y' | 'y' ) ( 'M' | 'm' ) ( 'O' | 'o' ) ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'L' | 'l' )
+            // Inputfile.g:388:23: ( ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'F' | 'f' ) ( 'F' | 'f' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'C' | 'c' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'Y' | 'y' ) ( 'M' | 'm' ) ( 'O' | 'o' ) ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'L' | 'l' ) )
+            // Inputfile.g:388:25: ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'F' | 'f' ) ( 'F' | 'f' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'C' | 'c' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'Y' | 'y' ) ( 'M' | 'm' ) ( 'O' | 'o' ) ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'L' | 'l' )
             {
             if ( input.LA(1)=='D'||input.LA(1)=='d' ) {
                 input.consume();
@@ -512,8 +529,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = DDM;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:371:5: ( ( 'D' | 'd' ) ( 'D' | 'd' ) ( 'M' | 'm' ) )
-            // Inputfile.g:371:7: ( 'D' | 'd' ) ( 'D' | 'd' ) ( 'M' | 'm' )
+            // Inputfile.g:389:5: ( ( 'D' | 'd' ) ( 'D' | 'd' ) ( 'M' | 'm' ) )
+            // Inputfile.g:389:7: ( 'D' | 'd' ) ( 'D' | 'd' ) ( 'M' | 'm' )
             {
             if ( input.LA(1)=='D'||input.LA(1)=='d' ) {
                 input.consume();
@@ -561,8 +578,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = SIMPLE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:378:8: ( ( 'S' | 's' ) ( 'I' | 'i' ) ( 'M' | 'm' ) ( 'P' | 'p' ) ( 'L' | 'l' ) ( 'E' | 'e' ) )
-            // Inputfile.g:378:10: ( 'S' | 's' ) ( 'I' | 'i' ) ( 'M' | 'm' ) ( 'P' | 'p' ) ( 'L' | 'l' ) ( 'E' | 'e' )
+            // Inputfile.g:396:8: ( ( 'S' | 's' ) ( 'I' | 'i' ) ( 'M' | 'm' ) ( 'P' | 'p' ) ( 'L' | 'l' ) ( 'E' | 'e' ) )
+            // Inputfile.g:396:10: ( 'S' | 's' ) ( 'I' | 'i' ) ( 'M' | 'm' ) ( 'P' | 'p' ) ( 'L' | 'l' ) ( 'E' | 'e' )
             {
             if ( input.LA(1)=='S'||input.LA(1)=='s' ) {
                 input.consume();
@@ -640,8 +657,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = LINEAR;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:379:8: ( ( 'L' | 'l' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'R' | 'r' ) )
-            // Inputfile.g:379:10: ( 'L' | 'l' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'R' | 'r' )
+            // Inputfile.g:397:8: ( ( 'L' | 'l' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'R' | 'r' ) )
+            // Inputfile.g:397:10: ( 'L' | 'l' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'R' | 'r' )
             {
             if ( input.LA(1)=='L'||input.LA(1)=='l' ) {
                 input.consume();
@@ -719,8 +736,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = LEAL;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:380:6: ( ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'L' | 'l' ) )
-            // Inputfile.g:380:8: ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'L' | 'l' )
+            // Inputfile.g:398:6: ( ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'L' | 'l' ) )
+            // Inputfile.g:398:8: ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'L' | 'l' )
             {
             if ( input.LA(1)=='L'||input.LA(1)=='l' ) {
                 input.consume();
@@ -778,8 +795,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = BFACTOR;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:381:9: ( ( 'B' | 'b' ) ( 'F' | 'f' ) ( 'A' | 'a' ) ( 'C' | 'c' ) ( 'T' | 't' ) ( 'O' | 'o' ) ( 'R' | 'r' ) )
-            // Inputfile.g:381:11: ( 'B' | 'b' ) ( 'F' | 'f' ) ( 'A' | 'a' ) ( 'C' | 'c' ) ( 'T' | 't' ) ( 'O' | 'o' ) ( 'R' | 'r' )
+            // Inputfile.g:399:9: ( ( 'B' | 'b' ) ( 'F' | 'f' ) ( 'A' | 'a' ) ( 'C' | 'c' ) ( 'T' | 't' ) ( 'O' | 'o' ) ( 'R' | 'r' ) )
+            // Inputfile.g:399:11: ( 'B' | 'b' ) ( 'F' | 'f' ) ( 'A' | 'a' ) ( 'C' | 'c' ) ( 'T' | 't' ) ( 'O' | 'o' ) ( 'R' | 'r' )
             {
             if ( input.LA(1)=='B'||input.LA(1)=='b' ) {
                 input.consume();
@@ -867,8 +884,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = DECAYPARAM;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:385:13: ( ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'Y' | 'y' ) ( 'P' | 'p' ) ( 'A' | 'a' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'M' | 'm' ) )
-            // Inputfile.g:385:15: ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'Y' | 'y' ) ( 'P' | 'p' ) ( 'A' | 'a' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'M' | 'm' )
+            // Inputfile.g:403:13: ( ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'Y' | 'y' ) ( 'P' | 'p' ) ( 'A' | 'a' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'M' | 'm' ) )
+            // Inputfile.g:403:15: ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'Y' | 'y' ) ( 'P' | 'p' ) ( 'A' | 'a' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'M' | 'm' )
             {
             if ( input.LA(1)=='D'||input.LA(1)=='d' ) {
                 input.consume();
@@ -986,10 +1003,10 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = ABSCOEFCALC;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:389:13: ( ( ( 'A' | 'a' ) ( 'B' | 'b' ) ( 'S' | 's' ) )? ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'E' | 'e' ) ( 'F' | 'f' ) ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'C' | 'c' ) )
-            // Inputfile.g:389:15: ( ( 'A' | 'a' ) ( 'B' | 'b' ) ( 'S' | 's' ) )? ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'E' | 'e' ) ( 'F' | 'f' ) ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'C' | 'c' )
+            // Inputfile.g:407:13: ( ( ( 'A' | 'a' ) ( 'B' | 'b' ) ( 'S' | 's' ) )? ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'E' | 'e' ) ( 'F' | 'f' ) ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'C' | 'c' ) )
+            // Inputfile.g:407:15: ( ( 'A' | 'a' ) ( 'B' | 'b' ) ( 'S' | 's' ) )? ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'E' | 'e' ) ( 'F' | 'f' ) ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'C' | 'c' )
             {
-            // Inputfile.g:389:15: ( ( 'A' | 'a' ) ( 'B' | 'b' ) ( 'S' | 's' ) )?
+            // Inputfile.g:407:15: ( ( 'A' | 'a' ) ( 'B' | 'b' ) ( 'S' | 's' ) )?
             int alt1=2;
             int LA1_0 = input.LA(1);
 
@@ -998,7 +1015,7 @@ public class InputfileLexer extends Lexer {
             }
             switch (alt1) {
                 case 1 :
-                    // Inputfile.g:389:16: ( 'A' | 'a' ) ( 'B' | 'b' ) ( 'S' | 's' )
+                    // Inputfile.g:407:16: ( 'A' | 'a' ) ( 'B' | 'b' ) ( 'S' | 's' )
                     {
                     if ( input.LA(1)=='A'||input.LA(1)=='a' ) {
                         input.consume();
@@ -1132,8 +1149,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = DUMMY;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:416:7: ( ( 'D' | 'd' ) ( 'U' | 'u' ) ( 'M' | 'm' ) ( 'M' | 'm' ) ( 'Y' | 'y' ) )
-            // Inputfile.g:416:9: ( 'D' | 'd' ) ( 'U' | 'u' ) ( 'M' | 'm' ) ( 'M' | 'm' ) ( 'Y' | 'y' )
+            // Inputfile.g:434:7: ( ( 'D' | 'd' ) ( 'U' | 'u' ) ( 'M' | 'm' ) ( 'M' | 'm' ) ( 'Y' | 'y' ) )
+            // Inputfile.g:434:9: ( 'D' | 'd' ) ( 'U' | 'u' ) ( 'M' | 'm' ) ( 'M' | 'm' ) ( 'Y' | 'y' )
             {
             if ( input.LA(1)=='D'||input.LA(1)=='d' ) {
                 input.consume();
@@ -1201,8 +1218,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = DEFAULT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:417:9: ( ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'F' | 'f' ) ( 'A' | 'a' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'T' | 't' ) )
-            // Inputfile.g:417:11: ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'F' | 'f' ) ( 'A' | 'a' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'T' | 't' )
+            // Inputfile.g:435:9: ( ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'F' | 'f' ) ( 'A' | 'a' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'T' | 't' ) )
+            // Inputfile.g:435:11: ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'F' | 'f' ) ( 'A' | 'a' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'T' | 't' )
             {
             if ( input.LA(1)=='D'||input.LA(1)=='d' ) {
                 input.consume();
@@ -1290,8 +1307,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = AVERAGE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:418:9: ( ( 'A' | 'a' ) ( 'V' | 'v' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'G' | 'g' ) ( 'E' | 'e' ) )
-            // Inputfile.g:418:11: ( 'A' | 'a' ) ( 'V' | 'v' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'G' | 'g' ) ( 'E' | 'e' )
+            // Inputfile.g:436:9: ( ( 'A' | 'a' ) ( 'V' | 'v' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'G' | 'g' ) ( 'E' | 'e' ) )
+            // Inputfile.g:436:11: ( 'A' | 'a' ) ( 'V' | 'v' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'G' | 'g' ) ( 'E' | 'e' )
             {
             if ( input.LA(1)=='A'||input.LA(1)=='a' ) {
                 input.consume();
@@ -1379,8 +1396,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = RDFORTAN;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:419:10: ( ( 'R' | 'r' ) ( 'D' | 'd' ) ( 'V' | 'v' ) ( '2' | '3' )? )
-            // Inputfile.g:419:12: ( 'R' | 'r' ) ( 'D' | 'd' ) ( 'V' | 'v' ) ( '2' | '3' )?
+            // Inputfile.g:437:10: ( ( 'R' | 'r' ) ( 'D' | 'd' ) ( 'V' | 'v' ) ( '2' | '3' )? )
+            // Inputfile.g:437:12: ( 'R' | 'r' ) ( 'D' | 'd' ) ( 'V' | 'v' ) ( '2' | '3' )?
             {
             if ( input.LA(1)=='R'||input.LA(1)=='r' ) {
                 input.consume();
@@ -1412,7 +1429,7 @@ public class InputfileLexer extends Lexer {
             }
 
 
-            // Inputfile.g:419:39: ( '2' | '3' )?
+            // Inputfile.g:437:39: ( '2' | '3' )?
             int alt2=2;
             int LA2_0 = input.LA(1);
 
@@ -1455,8 +1472,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = RDJAVA;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:420:8: ( ( 'R' | 'r' ) ( 'D' | 'd' ) ( '3' ) ( 'D' | 'd' )? )
-            // Inputfile.g:420:10: ( 'R' | 'r' ) ( 'D' | 'd' ) ( '3' ) ( 'D' | 'd' )?
+            // Inputfile.g:438:8: ( ( 'R' | 'r' ) ( 'D' | 'd' ) ( '3' ) ( 'D' | 'd' )? )
+            // Inputfile.g:438:10: ( 'R' | 'r' ) ( 'D' | 'd' ) ( '3' ) ( 'D' | 'd' )?
             {
             if ( input.LA(1)=='R'||input.LA(1)=='r' ) {
                 input.consume();
@@ -1478,15 +1495,15 @@ public class InputfileLexer extends Lexer {
             }
 
 
-            // Inputfile.g:420:28: ( '3' )
-            // Inputfile.g:420:29: '3'
+            // Inputfile.g:438:28: ( '3' )
+            // Inputfile.g:438:29: '3'
             {
             match('3'); 
 
             }
 
 
-            // Inputfile.g:420:33: ( 'D' | 'd' )?
+            // Inputfile.g:438:33: ( 'D' | 'd' )?
             int alt3=2;
             int LA3_0 = input.LA(1);
 
@@ -1529,8 +1546,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = PDB;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:421:5: ( ( 'E' | 'e' ) ( 'X' | 'x' ) ( 'P' | 'p' ) )
-            // Inputfile.g:421:7: ( 'E' | 'e' ) ( 'X' | 'x' ) ( 'P' | 'p' )
+            // Inputfile.g:439:5: ( ( 'E' | 'e' ) ( 'X' | 'x' ) ( 'P' | 'p' ) )
+            // Inputfile.g:439:7: ( 'E' | 'e' ) ( 'X' | 'x' ) ( 'P' | 'p' )
             {
             if ( input.LA(1)=='E'||input.LA(1)=='e' ) {
                 input.consume();
@@ -1578,8 +1595,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = SAXS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:422:6: ( ( 'S' | 's' ) ( 'A' | 'a' ) ( 'X' | 'x' ) ( 'S' | 's' ) )
-            // Inputfile.g:422:8: ( 'S' | 's' ) ( 'A' | 'a' ) ( 'X' | 'x' ) ( 'S' | 's' )
+            // Inputfile.g:440:6: ( ( 'S' | 's' ) ( 'A' | 'a' ) ( 'X' | 'x' ) ( 'S' | 's' ) )
+            // Inputfile.g:440:8: ( 'S' | 's' ) ( 'A' | 'a' ) ( 'X' | 'x' ) ( 'S' | 's' )
             {
             if ( input.LA(1)=='S'||input.LA(1)=='s' ) {
                 input.consume();
@@ -1637,8 +1654,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = SEQUENCE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:423:10: ( ( 'S' | 's' ) ( 'E' | 'e' ) ( 'Q' | 'q' ) ( 'U' | 'u' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'C' | 'c' ) ( 'E' | 'e' ) )
-            // Inputfile.g:423:12: ( 'S' | 's' ) ( 'E' | 'e' ) ( 'Q' | 'q' ) ( 'U' | 'u' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'C' | 'c' ) ( 'E' | 'e' )
+            // Inputfile.g:441:10: ( ( 'S' | 's' ) ( 'E' | 'e' ) ( 'Q' | 'q' ) ( 'U' | 'u' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'C' | 'c' ) ( 'E' | 'e' ) )
+            // Inputfile.g:441:12: ( 'S' | 's' ) ( 'E' | 'e' ) ( 'Q' | 'q' ) ( 'U' | 'u' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'C' | 'c' ) ( 'E' | 'e' )
             {
             if ( input.LA(1)=='S'||input.LA(1)=='s' ) {
                 input.consume();
@@ -1736,8 +1753,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = SAXSSEQ;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:424:9: ( ( 'S' | 's' ) ( 'A' | 'a' ) ( 'X' | 'x' ) ( 'S' | 's' ) ( 'S' | 's' ) ( 'E' | 'e' ) ( 'Q' | 'q' ) )
-            // Inputfile.g:424:11: ( 'S' | 's' ) ( 'A' | 'a' ) ( 'X' | 'x' ) ( 'S' | 's' ) ( 'S' | 's' ) ( 'E' | 'e' ) ( 'Q' | 'q' )
+            // Inputfile.g:442:9: ( ( 'S' | 's' ) ( 'A' | 'a' ) ( 'X' | 'x' ) ( 'S' | 's' ) ( 'S' | 's' ) ( 'E' | 'e' ) ( 'Q' | 'q' ) )
+            // Inputfile.g:442:11: ( 'S' | 's' ) ( 'A' | 'a' ) ( 'X' | 'x' ) ( 'S' | 's' ) ( 'S' | 's' ) ( 'E' | 'e' ) ( 'Q' | 'q' )
             {
             if ( input.LA(1)=='S'||input.LA(1)=='s' ) {
                 input.consume();
@@ -1825,8 +1842,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = SMALLMOLE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:425:11: ( ( 'S' | 's' ) ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'L' | 'l' ) ( 'M' | 'm' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'E' | 'e' ) )
-            // Inputfile.g:425:13: ( 'S' | 's' ) ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'L' | 'l' ) ( 'M' | 'm' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'E' | 'e' )
+            // Inputfile.g:443:11: ( ( 'S' | 's' ) ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'L' | 'l' ) ( 'M' | 'm' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'E' | 'e' ) )
+            // Inputfile.g:443:13: ( 'S' | 's' ) ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'L' | 'l' ) ( 'M' | 'm' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'E' | 'e' )
             {
             if ( input.LA(1)=='S'||input.LA(1)=='s' ) {
                 input.consume();
@@ -1934,8 +1951,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = CIF;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:426:5: ( ( 'E' | 'e' ) ( 'X' | 'x' ) ( 'P' | 'p' ) ( 'S' | 's' ) ( 'M' | 'm' ) )
-            // Inputfile.g:426:7: ( 'E' | 'e' ) ( 'X' | 'x' ) ( 'P' | 'p' ) ( 'S' | 's' ) ( 'M' | 'm' )
+            // Inputfile.g:444:5: ( ( 'E' | 'e' ) ( 'X' | 'x' ) ( 'P' | 'p' ) ( 'S' | 's' ) ( 'M' | 'm' ) )
+            // Inputfile.g:444:7: ( 'E' | 'e' ) ( 'X' | 'x' ) ( 'P' | 'p' ) ( 'S' | 's' ) ( 'M' | 'm' )
             {
             if ( input.LA(1)=='E'||input.LA(1)=='e' ) {
                 input.consume();
@@ -2003,8 +2020,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = DIMENSION;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:440:11: ( ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'S' | 's' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'S' | 's' )? )
-            // Inputfile.g:440:13: ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'S' | 's' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'S' | 's' )?
+            // Inputfile.g:458:11: ( ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'S' | 's' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'S' | 's' )? )
+            // Inputfile.g:458:13: ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'S' | 's' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'S' | 's' )?
             {
             if ( input.LA(1)=='D'||input.LA(1)=='d' ) {
                 input.consume();
@@ -2096,7 +2113,7 @@ public class InputfileLexer extends Lexer {
             }
 
 
-            // Inputfile.g:440:94: ( 'S' | 's' )?
+            // Inputfile.g:458:94: ( 'S' | 's' )?
             int alt4=2;
             int LA4_0 = input.LA(1);
 
@@ -2139,8 +2156,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = ANGLEP;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:445:8: ( ( 'A' | 'a' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'P' | 'p' ) )
-            // Inputfile.g:445:10: ( 'A' | 'a' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'P' | 'p' )
+            // Inputfile.g:463:8: ( ( 'A' | 'a' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'P' | 'p' ) )
+            // Inputfile.g:463:10: ( 'A' | 'a' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'P' | 'p' )
             {
             if ( input.LA(1)=='A'||input.LA(1)=='a' ) {
                 input.consume();
@@ -2218,8 +2235,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = ANGLEL;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:450:8: ( ( 'A' | 'a' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'L' | 'l' ) )
-            // Inputfile.g:450:10: ( 'A' | 'a' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'L' | 'l' )
+            // Inputfile.g:468:8: ( ( 'A' | 'a' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'L' | 'l' ) )
+            // Inputfile.g:468:10: ( 'A' | 'a' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'L' | 'l' )
             {
             if ( input.LA(1)=='A'||input.LA(1)=='a' ) {
                 input.consume();
@@ -2297,8 +2314,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = PIXELSPERMICRON;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:454:17: ( ( 'P' | 'p' ) ( 'I' | 'i' ) ( 'X' | 'x' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'S' | 's' ) ( 'P' | 'p' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'M' | 'm' ) ( 'I' | 'i' ) ( 'C' | 'c' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'N' | 'n' ) )
-            // Inputfile.g:454:19: ( 'P' | 'p' ) ( 'I' | 'i' ) ( 'X' | 'x' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'S' | 's' ) ( 'P' | 'p' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'M' | 'm' ) ( 'I' | 'i' ) ( 'C' | 'c' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'N' | 'n' )
+            // Inputfile.g:472:17: ( ( 'P' | 'p' ) ( 'I' | 'i' ) ( 'X' | 'x' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'S' | 's' ) ( 'P' | 'p' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'M' | 'm' ) ( 'I' | 'i' ) ( 'C' | 'c' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'N' | 'n' ) )
+            // Inputfile.g:472:19: ( 'P' | 'p' ) ( 'I' | 'i' ) ( 'X' | 'x' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'S' | 's' ) ( 'P' | 'p' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'M' | 'm' ) ( 'I' | 'i' ) ( 'C' | 'c' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'N' | 'n' )
             {
             if ( input.LA(1)=='P'||input.LA(1)=='p' ) {
                 input.consume();
@@ -2466,8 +2483,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = UNITCELL;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:467:10: ( ( 'U' | 'u' ) ( 'N' | 'n' ) ( 'I' | 'i' ) ( 'T' | 't' ) ( 'C' | 'c' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'L' | 'l' ) )
-            // Inputfile.g:467:12: ( 'U' | 'u' ) ( 'N' | 'n' ) ( 'I' | 'i' ) ( 'T' | 't' ) ( 'C' | 'c' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'L' | 'l' )
+            // Inputfile.g:485:10: ( ( 'U' | 'u' ) ( 'N' | 'n' ) ( 'I' | 'i' ) ( 'T' | 't' ) ( 'C' | 'c' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'L' | 'l' ) )
+            // Inputfile.g:485:12: ( 'U' | 'u' ) ( 'N' | 'n' ) ( 'I' | 'i' ) ( 'T' | 't' ) ( 'C' | 'c' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'L' | 'l' )
             {
             if ( input.LA(1)=='U'||input.LA(1)=='u' ) {
                 input.consume();
@@ -2565,8 +2582,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = SURROUNDINGTHICKNESS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:479:22: ( ( 'S' | 's' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'U' | 'u' ) ( 'N' | 'n' ) ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'T' | 't' ) ( 'H' | 'h' ) ( 'I' | 'i' ) ( 'C' | 'c' ) ( 'K' | 'k' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'S' | 's' ) )
-            // Inputfile.g:479:24: ( 'S' | 's' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'U' | 'u' ) ( 'N' | 'n' ) ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'T' | 't' ) ( 'H' | 'h' ) ( 'I' | 'i' ) ( 'C' | 'c' ) ( 'K' | 'k' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'S' | 's' )
+            // Inputfile.g:497:22: ( ( 'S' | 's' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'U' | 'u' ) ( 'N' | 'n' ) ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'T' | 't' ) ( 'H' | 'h' ) ( 'I' | 'i' ) ( 'C' | 'c' ) ( 'K' | 'k' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'S' | 's' ) )
+            // Inputfile.g:497:24: ( 'S' | 's' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'U' | 'u' ) ( 'N' | 'n' ) ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'T' | 't' ) ( 'H' | 'h' ) ( 'I' | 'i' ) ( 'C' | 'c' ) ( 'K' | 'k' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'S' | 's' )
             {
             if ( input.LA(1)=='S'||input.LA(1)=='s' ) {
                 input.consume();
@@ -2784,8 +2801,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = PROTEINCONC;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:484:12: ( ( 'P' | 'p' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'C' | 'c' ) )
-            // Inputfile.g:484:14: ( 'P' | 'p' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'C' | 'c' )
+            // Inputfile.g:502:12: ( ( 'P' | 'p' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'C' | 'c' ) )
+            // Inputfile.g:502:14: ( 'P' | 'p' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'C' | 'c' )
             {
             if ( input.LA(1)=='P'||input.LA(1)=='p' ) {
                 input.consume();
@@ -2913,8 +2930,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = PROTEINCONCENTRATION;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:485:21: ( ( 'P' | 'p' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'C' | 'c' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' ) )
-            // Inputfile.g:485:23: ( 'P' | 'p' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'C' | 'c' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' )
+            // Inputfile.g:503:21: ( ( 'P' | 'p' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'C' | 'c' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' ) )
+            // Inputfile.g:503:23: ( 'P' | 'p' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'C' | 'c' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' )
             {
             if ( input.LA(1)=='P'||input.LA(1)=='p' ) {
                 input.consume();
@@ -3132,8 +3149,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = NUMMONOMERS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:489:12: ( ( 'N' | 'n' ) ( 'U' | 'u' ) ( 'M' | 'm' ) ( 'M' | 'm' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'O' | 'o' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'S' | 's' ) )
-            // Inputfile.g:489:14: ( 'N' | 'n' ) ( 'U' | 'u' ) ( 'M' | 'm' ) ( 'M' | 'm' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'O' | 'o' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'S' | 's' )
+            // Inputfile.g:507:12: ( ( 'N' | 'n' ) ( 'U' | 'u' ) ( 'M' | 'm' ) ( 'M' | 'm' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'O' | 'o' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'S' | 's' ) )
+            // Inputfile.g:507:14: ( 'N' | 'n' ) ( 'U' | 'u' ) ( 'M' | 'm' ) ( 'M' | 'm' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'O' | 'o' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'S' | 's' )
             {
             if ( input.LA(1)=='N'||input.LA(1)=='n' ) {
                 input.consume();
@@ -3261,8 +3278,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = NUMRESIDUES;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:493:13: ( ( 'N' | 'n' ) ( 'U' | 'u' ) ( 'M' | 'm' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'I' | 'i' ) ( 'D' | 'd' ) ( 'U' | 'u' ) ( 'E' | 'e' ) ( 'S' | 's' ) )
-            // Inputfile.g:493:15: ( 'N' | 'n' ) ( 'U' | 'u' ) ( 'M' | 'm' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'I' | 'i' ) ( 'D' | 'd' ) ( 'U' | 'u' ) ( 'E' | 'e' ) ( 'S' | 's' )
+            // Inputfile.g:511:13: ( ( 'N' | 'n' ) ( 'U' | 'u' ) ( 'M' | 'm' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'I' | 'i' ) ( 'D' | 'd' ) ( 'U' | 'u' ) ( 'E' | 'e' ) ( 'S' | 's' ) )
+            // Inputfile.g:511:15: ( 'N' | 'n' ) ( 'U' | 'u' ) ( 'M' | 'm' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'I' | 'i' ) ( 'D' | 'd' ) ( 'U' | 'u' ) ( 'E' | 'e' ) ( 'S' | 's' )
             {
             if ( input.LA(1)=='N'||input.LA(1)=='n' ) {
                 input.consume();
@@ -3390,8 +3407,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = NUMRNA;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:497:8: ( ( 'N' | 'n' ) ( 'U' | 'u' ) ( 'M' | 'm' ) ( 'R' | 'r' ) ( 'N' | 'n' ) ( 'A' | 'a' ) )
-            // Inputfile.g:497:10: ( 'N' | 'n' ) ( 'U' | 'u' ) ( 'M' | 'm' ) ( 'R' | 'r' ) ( 'N' | 'n' ) ( 'A' | 'a' )
+            // Inputfile.g:515:8: ( ( 'N' | 'n' ) ( 'U' | 'u' ) ( 'M' | 'm' ) ( 'R' | 'r' ) ( 'N' | 'n' ) ( 'A' | 'a' ) )
+            // Inputfile.g:515:10: ( 'N' | 'n' ) ( 'U' | 'u' ) ( 'M' | 'm' ) ( 'R' | 'r' ) ( 'N' | 'n' ) ( 'A' | 'a' )
             {
             if ( input.LA(1)=='N'||input.LA(1)=='n' ) {
                 input.consume();
@@ -3469,8 +3486,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = NUMDNA;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:501:8: ( ( 'N' | 'n' ) ( 'U' | 'u' ) ( 'M' | 'm' ) ( 'D' | 'd' ) ( 'N' | 'n' ) ( 'A' | 'a' ) )
-            // Inputfile.g:501:10: ( 'N' | 'n' ) ( 'U' | 'u' ) ( 'M' | 'm' ) ( 'D' | 'd' ) ( 'N' | 'n' ) ( 'A' | 'a' )
+            // Inputfile.g:519:8: ( ( 'N' | 'n' ) ( 'U' | 'u' ) ( 'M' | 'm' ) ( 'D' | 'd' ) ( 'N' | 'n' ) ( 'A' | 'a' ) )
+            // Inputfile.g:519:10: ( 'N' | 'n' ) ( 'U' | 'u' ) ( 'M' | 'm' ) ( 'D' | 'd' ) ( 'N' | 'n' ) ( 'A' | 'a' )
             {
             if ( input.LA(1)=='N'||input.LA(1)=='n' ) {
                 input.consume();
@@ -3548,8 +3565,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = NUMCARB;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:505:9: ( ( 'N' | 'n' ) ( 'U' | 'u' ) ( 'M' | 'm' ) ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'R' | 'r' ) ( 'B' | 'b' ) )
-            // Inputfile.g:505:11: ( 'N' | 'n' ) ( 'U' | 'u' ) ( 'M' | 'm' ) ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'R' | 'r' ) ( 'B' | 'b' )
+            // Inputfile.g:523:9: ( ( 'N' | 'n' ) ( 'U' | 'u' ) ( 'M' | 'm' ) ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'R' | 'r' ) ( 'B' | 'b' ) )
+            // Inputfile.g:523:11: ( 'N' | 'n' ) ( 'U' | 'u' ) ( 'M' | 'm' ) ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'R' | 'r' ) ( 'B' | 'b' )
             {
             if ( input.LA(1)=='N'||input.LA(1)=='n' ) {
                 input.consume();
@@ -3637,8 +3654,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = PROTEINHEAVYATOMS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:513:19: ( ( 'P' | 'p' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'H' | 'h' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'V' | 'v' ) ( 'Y' | 'y' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'O' | 'o' ) ( 'M' | 'm' ) ( 'S' | 's' ) )
-            // Inputfile.g:513:21: ( 'P' | 'p' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'H' | 'h' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'V' | 'v' ) ( 'Y' | 'y' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'O' | 'o' ) ( 'M' | 'm' ) ( 'S' | 's' )
+            // Inputfile.g:531:19: ( ( 'P' | 'p' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'H' | 'h' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'V' | 'v' ) ( 'Y' | 'y' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'O' | 'o' ) ( 'M' | 'm' ) ( 'S' | 's' ) )
+            // Inputfile.g:531:21: ( 'P' | 'p' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'H' | 'h' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'V' | 'v' ) ( 'Y' | 'y' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'O' | 'o' ) ( 'M' | 'm' ) ( 'S' | 's' )
             {
             if ( input.LA(1)=='P'||input.LA(1)=='p' ) {
                 input.consume();
@@ -3826,8 +3843,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = ELEMENT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:514:9: ( ( 'A' .. 'Z' | 'a' .. 'z' ) ( 'A' .. 'Z' | 'a' .. 'z' )? )
-            // Inputfile.g:514:11: ( 'A' .. 'Z' | 'a' .. 'z' ) ( 'A' .. 'Z' | 'a' .. 'z' )?
+            // Inputfile.g:532:9: ( ( 'A' .. 'Z' | 'a' .. 'z' ) ( 'A' .. 'Z' | 'a' .. 'z' )? )
+            // Inputfile.g:532:11: ( 'A' .. 'Z' | 'a' .. 'z' ) ( 'A' .. 'Z' | 'a' .. 'z' )?
             {
             if ( (input.LA(1) >= 'A' && input.LA(1) <= 'Z')||(input.LA(1) >= 'a' && input.LA(1) <= 'z') ) {
                 input.consume();
@@ -3839,7 +3856,7 @@ public class InputfileLexer extends Lexer {
             }
 
 
-            // Inputfile.g:514:32: ( 'A' .. 'Z' | 'a' .. 'z' )?
+            // Inputfile.g:532:32: ( 'A' .. 'Z' | 'a' .. 'z' )?
             int alt5=2;
             int LA5_0 = input.LA(1);
 
@@ -3882,8 +3899,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = SMALLMOLEATOMS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:522:16: ( ( 'S' | 's' ) ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'L' | 'l' ) ( 'M' | 'm' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'O' | 'o' ) ( 'M' | 'm' ) ( 'S' | 's' ) )
-            // Inputfile.g:522:18: ( 'S' | 's' ) ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'L' | 'l' ) ( 'M' | 'm' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'O' | 'o' ) ( 'M' | 'm' ) ( 'S' | 's' )
+            // Inputfile.g:540:16: ( ( 'S' | 's' ) ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'L' | 'l' ) ( 'M' | 'm' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'O' | 'o' ) ( 'M' | 'm' ) ( 'S' | 's' ) )
+            // Inputfile.g:540:18: ( 'S' | 's' ) ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'L' | 'l' ) ( 'M' | 'm' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'O' | 'o' ) ( 'M' | 'm' ) ( 'S' | 's' )
             {
             if ( input.LA(1)=='S'||input.LA(1)=='s' ) {
                 input.consume();
@@ -4041,8 +4058,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = SOLVENTHEAVYCONC;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:530:18: ( ( 'S' | 's' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'V' | 'v' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'H' | 'h' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'V' | 'v' ) ( 'Y' | 'y' ) ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'C' | 'c' ) )
-            // Inputfile.g:530:20: ( 'S' | 's' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'V' | 'v' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'H' | 'h' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'V' | 'v' ) ( 'Y' | 'y' ) ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'C' | 'c' )
+            // Inputfile.g:548:18: ( ( 'S' | 's' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'V' | 'v' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'H' | 'h' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'V' | 'v' ) ( 'Y' | 'y' ) ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'C' | 'c' ) )
+            // Inputfile.g:548:20: ( 'S' | 's' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'V' | 'v' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'H' | 'h' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'V' | 'v' ) ( 'Y' | 'y' ) ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'C' | 'c' )
             {
             if ( input.LA(1)=='S'||input.LA(1)=='s' ) {
                 input.consume();
@@ -4220,8 +4237,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = SOLVENTFRACTION;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:534:17: ( ( 'S' | 's' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'V' | 'v' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'F' | 'f' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'C' | 'c' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' ) )
-            // Inputfile.g:534:19: ( 'S' | 's' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'V' | 'v' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'F' | 'f' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'C' | 'c' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' )
+            // Inputfile.g:552:17: ( ( 'S' | 's' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'V' | 'v' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'F' | 'f' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'C' | 'c' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' ) )
+            // Inputfile.g:552:19: ( 'S' | 's' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'V' | 'v' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'F' | 'f' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'C' | 'c' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' )
             {
             if ( input.LA(1)=='S'||input.LA(1)=='s' ) {
                 input.consume();
@@ -4389,8 +4406,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = PDBNAME;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:538:9: ( ( 'P' | 'p' ) ( 'D' | 'd' ) ( 'B' | 'b' ) )
-            // Inputfile.g:538:11: ( 'P' | 'p' ) ( 'D' | 'd' ) ( 'B' | 'b' )
+            // Inputfile.g:556:9: ( ( 'P' | 'p' ) ( 'D' | 'd' ) ( 'B' | 'b' ) )
+            // Inputfile.g:556:11: ( 'P' | 'p' ) ( 'D' | 'd' ) ( 'B' | 'b' )
             {
             if ( input.LA(1)=='P'||input.LA(1)=='p' ) {
                 input.consume();
@@ -4438,8 +4455,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = CIFNAME;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:542:9: ( ( 'C' | 'c' ) ( 'I' | 'i' ) ( 'F' | 'f' ) )
-            // Inputfile.g:542:11: ( 'C' | 'c' ) ( 'I' | 'i' ) ( 'F' | 'f' )
+            // Inputfile.g:560:9: ( ( 'C' | 'c' ) ( 'I' | 'i' ) ( 'F' | 'f' ) )
+            // Inputfile.g:560:11: ( 'C' | 'c' ) ( 'I' | 'i' ) ( 'F' | 'f' )
             {
             if ( input.LA(1)=='C'||input.LA(1)=='c' ) {
                 input.consume();
@@ -4487,8 +4504,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = WIREFRAMETYPE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:546:15: ( ( 'W' | 'w' ) ( 'I' | 'i' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'F' | 'f' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'T' | 't' ) ( 'Y' | 'y' |) ( 'P' | 'p' ) ( 'E' | 'e' ) )
-            // Inputfile.g:546:17: ( 'W' | 'w' ) ( 'I' | 'i' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'F' | 'f' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'T' | 't' ) ( 'Y' | 'y' |) ( 'P' | 'p' ) ( 'E' | 'e' )
+            // Inputfile.g:564:15: ( ( 'W' | 'w' ) ( 'I' | 'i' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'F' | 'f' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'T' | 't' ) ( 'Y' | 'y' |) ( 'P' | 'p' ) ( 'E' | 'e' ) )
+            // Inputfile.g:564:17: ( 'W' | 'w' ) ( 'I' | 'i' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'F' | 'f' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'T' | 't' ) ( 'Y' | 'y' |) ( 'P' | 'p' ) ( 'E' | 'e' )
             {
             if ( input.LA(1)=='W'||input.LA(1)=='w' ) {
                 input.consume();
@@ -4590,7 +4607,7 @@ public class InputfileLexer extends Lexer {
             }
 
 
-            // Inputfile.g:546:107: ( 'Y' | 'y' |)
+            // Inputfile.g:564:107: ( 'Y' | 'y' |)
             int alt6=3;
             switch ( input.LA(1) ) {
             case 'Y':
@@ -4619,21 +4636,21 @@ public class InputfileLexer extends Lexer {
 
             switch (alt6) {
                 case 1 :
-                    // Inputfile.g:546:108: 'Y'
+                    // Inputfile.g:564:108: 'Y'
                     {
                     match('Y'); 
 
                     }
                     break;
                 case 2 :
-                    // Inputfile.g:546:112: 'y'
+                    // Inputfile.g:564:112: 'y'
                     {
                     match('y'); 
 
                     }
                     break;
                 case 3 :
-                    // Inputfile.g:546:116: 
+                    // Inputfile.g:564:116: 
                     {
                     }
                     break;
@@ -4677,8 +4694,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = MODELFILE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:550:11: ( ( 'M' | 'm' ) ( 'O' | 'o' ) ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'F' | 'f' ) ( 'I' | 'i' ) ( 'L' | 'l' ) ( 'E' | 'e' ) )
-            // Inputfile.g:550:13: ( 'M' | 'm' ) ( 'O' | 'o' ) ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'F' | 'f' ) ( 'I' | 'i' ) ( 'L' | 'l' ) ( 'E' | 'e' )
+            // Inputfile.g:568:11: ( ( 'M' | 'm' ) ( 'O' | 'o' ) ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'F' | 'f' ) ( 'I' | 'i' ) ( 'L' | 'l' ) ( 'E' | 'e' ) )
+            // Inputfile.g:568:13: ( 'M' | 'm' ) ( 'O' | 'o' ) ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'F' | 'f' ) ( 'I' | 'i' ) ( 'L' | 'l' ) ( 'E' | 'e' )
             {
             if ( input.LA(1)=='M'||input.LA(1)=='m' ) {
                 input.consume();
@@ -4786,8 +4803,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = CALCULATEPEESCAPE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:555:2: ( ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'C' | 'c' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'P' | 'p' ) ( 'E' | 'e' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'P' | 'p' ) ( 'E' | 'e' ) )
-            // Inputfile.g:555:5: ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'C' | 'c' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'P' | 'p' ) ( 'E' | 'e' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'P' | 'p' ) ( 'E' | 'e' )
+            // Inputfile.g:573:2: ( ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'C' | 'c' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'P' | 'p' ) ( 'E' | 'e' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'P' | 'p' ) ( 'E' | 'e' ) )
+            // Inputfile.g:573:5: ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'C' | 'c' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'P' | 'p' ) ( 'E' | 'e' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'P' | 'p' ) ( 'E' | 'e' )
             {
             if ( input.LA(1)=='C'||input.LA(1)=='c' ) {
                 input.consume();
@@ -4975,8 +4992,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = GONIOMETERAXIS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:560:2: ( ( 'G' | 'g' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'X' | 'x' ) ( 'I' | 'i' ) ( 'S' | 's' ) )
-            // Inputfile.g:560:5: ( 'G' | 'g' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'X' | 'x' ) ( 'I' | 'i' ) ( 'S' | 's' )
+            // Inputfile.g:578:2: ( ( 'G' | 'g' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'X' | 'x' ) ( 'I' | 'i' ) ( 'S' | 's' ) )
+            // Inputfile.g:578:5: ( 'G' | 'g' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'X' | 'x' ) ( 'I' | 'i' ) ( 'S' | 's' )
             {
             if ( input.LA(1)=='G'||input.LA(1)=='g' ) {
                 input.consume();
@@ -5134,8 +5151,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = POLARISATIONDIRECTION;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:565:2: ( ( 'P' | 'p' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'A' | 'a' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'S' | 's' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'C' | 'c' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' ) )
-            // Inputfile.g:565:5: ( 'P' | 'p' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'A' | 'a' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'S' | 's' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'C' | 'c' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' )
+            // Inputfile.g:583:2: ( ( 'P' | 'p' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'A' | 'a' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'S' | 's' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'C' | 'c' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' ) )
+            // Inputfile.g:583:5: ( 'P' | 'p' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'A' | 'a' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'S' | 's' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'C' | 'c' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' )
             {
             if ( input.LA(1)=='P'||input.LA(1)=='p' ) {
                 input.consume();
@@ -5363,8 +5380,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = CONTAINERMATERIALTYPE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:569:23: ( ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'T' | 't' ) ( 'Y' | 'y' ) ( 'P' | 'p' ) ( 'E' | 'e' ) )
-            // Inputfile.g:569:25: ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'T' | 't' ) ( 'Y' | 'y' ) ( 'P' | 'p' ) ( 'E' | 'e' )
+            // Inputfile.g:587:23: ( ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'T' | 't' ) ( 'Y' | 'y' ) ( 'P' | 'p' ) ( 'E' | 'e' ) )
+            // Inputfile.g:587:25: ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'T' | 't' ) ( 'Y' | 'y' ) ( 'P' | 'p' ) ( 'E' | 'e' )
             {
             if ( input.LA(1)=='C'||input.LA(1)=='c' ) {
                 input.consume();
@@ -5592,8 +5609,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = MATERIALTYPE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:570:14: ( ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'T' | 't' ) ( 'Y' | 'y' ) ( 'P' | 'p' ) ( 'E' | 'e' ) )
-            // Inputfile.g:570:16: ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'T' | 't' ) ( 'Y' | 'y' ) ( 'P' | 'p' ) ( 'E' | 'e' )
+            // Inputfile.g:588:14: ( ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'T' | 't' ) ( 'Y' | 'y' ) ( 'P' | 'p' ) ( 'E' | 'e' ) )
+            // Inputfile.g:588:16: ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'T' | 't' ) ( 'Y' | 'y' ) ( 'P' | 'p' ) ( 'E' | 'e' )
             {
             if ( input.LA(1)=='M'||input.LA(1)=='m' ) {
                 input.consume();
@@ -5731,8 +5748,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = NONE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:576:7: ( ( 'N' | 'n' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'E' | 'e' ) )
-            // Inputfile.g:576:9: ( 'N' | 'n' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'E' | 'e' )
+            // Inputfile.g:594:7: ( ( 'N' | 'n' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'E' | 'e' ) )
+            // Inputfile.g:594:9: ( 'N' | 'n' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'E' | 'e' )
             {
             if ( input.LA(1)=='N'||input.LA(1)=='n' ) {
                 input.consume();
@@ -5790,8 +5807,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = MIXTURE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:577:9: ( ( 'M' | 'm' ) ( 'I' | 'i' ) ( 'X' | 'x' ) ( 'T' | 't' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'E' | 'e' ) )
-            // Inputfile.g:577:11: ( 'M' | 'm' ) ( 'I' | 'i' ) ( 'X' | 'x' ) ( 'T' | 't' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'E' | 'e' )
+            // Inputfile.g:595:9: ( ( 'M' | 'm' ) ( 'I' | 'i' ) ( 'X' | 'x' ) ( 'T' | 't' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'E' | 'e' ) )
+            // Inputfile.g:595:11: ( 'M' | 'm' ) ( 'I' | 'i' ) ( 'X' | 'x' ) ( 'T' | 't' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'E' | 'e' )
             {
             if ( input.LA(1)=='M'||input.LA(1)=='m' ) {
                 input.consume();
@@ -5879,8 +5896,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = ELEMENTAL;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:578:11: ( ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'L' | 'l' ) )
-            // Inputfile.g:578:13: ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'L' | 'l' )
+            // Inputfile.g:596:11: ( ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'L' | 'l' ) )
+            // Inputfile.g:596:13: ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'L' | 'l' )
             {
             if ( input.LA(1)=='E'||input.LA(1)=='e' ) {
                 input.consume();
@@ -5988,8 +6005,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = CONTAINERTHICKNESS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:582:19: ( ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'T' | 't' ) ( 'H' | 'h' ) ( 'I' | 'i' ) ( 'C' | 'c' ) ( 'K' | 'k' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'S' | 's' ) )
-            // Inputfile.g:582:21: ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'T' | 't' ) ( 'H' | 'h' ) ( 'I' | 'i' ) ( 'C' | 'c' ) ( 'K' | 'k' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'S' | 's' )
+            // Inputfile.g:600:19: ( ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'T' | 't' ) ( 'H' | 'h' ) ( 'I' | 'i' ) ( 'C' | 'c' ) ( 'K' | 'k' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'S' | 's' ) )
+            // Inputfile.g:600:21: ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'T' | 't' ) ( 'H' | 'h' ) ( 'I' | 'i' ) ( 'C' | 'c' ) ( 'K' | 'k' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'S' | 's' )
             {
             if ( input.LA(1)=='C'||input.LA(1)=='c' ) {
                 input.consume();
@@ -6187,8 +6204,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = CONTAINERMATERIALMIXTURE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:586:25: ( ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'M' | 'm' ) ( 'I' | 'i' ) ( 'X' | 'x' ) ( 'T' | 't' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'E' | 'e' ) )
-            // Inputfile.g:586:27: ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'M' | 'm' ) ( 'I' | 'i' ) ( 'X' | 'x' ) ( 'T' | 't' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'E' | 'e' )
+            // Inputfile.g:604:25: ( ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'M' | 'm' ) ( 'I' | 'i' ) ( 'X' | 'x' ) ( 'T' | 't' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'E' | 'e' ) )
+            // Inputfile.g:604:27: ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'M' | 'm' ) ( 'I' | 'i' ) ( 'X' | 'x' ) ( 'T' | 't' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'E' | 'e' )
             {
             if ( input.LA(1)=='C'||input.LA(1)=='c' ) {
                 input.consume();
@@ -6446,8 +6463,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = MATERIALMIXTURE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:587:16: ( ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'M' | 'm' ) ( 'I' | 'i' ) ( 'X' | 'x' ) ( 'T' | 't' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'E' | 'e' ) )
-            // Inputfile.g:587:18: ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'M' | 'm' ) ( 'I' | 'i' ) ( 'X' | 'x' ) ( 'T' | 't' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'E' | 'e' )
+            // Inputfile.g:605:16: ( ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'M' | 'm' ) ( 'I' | 'i' ) ( 'X' | 'x' ) ( 'T' | 't' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'E' | 'e' ) )
+            // Inputfile.g:605:18: ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'M' | 'm' ) ( 'I' | 'i' ) ( 'X' | 'x' ) ( 'T' | 't' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'E' | 'e' )
             {
             if ( input.LA(1)=='M'||input.LA(1)=='m' ) {
                 input.consume();
@@ -6615,8 +6632,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = CONTAINERMATERIALELEMENTS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:595:26: ( ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'S' | 's' ) )
-            // Inputfile.g:595:28: ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'S' | 's' )
+            // Inputfile.g:613:26: ( ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'S' | 's' ) )
+            // Inputfile.g:613:28: ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'S' | 's' )
             {
             if ( input.LA(1)=='C'||input.LA(1)=='c' ) {
                 input.consume();
@@ -6884,8 +6901,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = MATERIALELEMENTS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:596:17: ( ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'S' | 's' ) )
-            // Inputfile.g:596:19: ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'S' | 's' )
+            // Inputfile.g:614:17: ( ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'S' | 's' ) )
+            // Inputfile.g:614:19: ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'S' | 's' )
             {
             if ( input.LA(1)=='M'||input.LA(1)=='m' ) {
                 input.consume();
@@ -7063,8 +7080,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = CONTAINERDENSITY;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:600:17: ( ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'S' | 's' ) ( 'I' | 'i' ) ( 'T' | 't' ) ( 'Y' | 'y' ) )
-            // Inputfile.g:600:19: ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'S' | 's' ) ( 'I' | 'i' ) ( 'T' | 't' ) ( 'Y' | 'y' )
+            // Inputfile.g:618:17: ( ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'S' | 's' ) ( 'I' | 'i' ) ( 'T' | 't' ) ( 'Y' | 'y' ) )
+            // Inputfile.g:618:19: ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'S' | 's' ) ( 'I' | 'i' ) ( 'T' | 't' ) ( 'Y' | 'y' )
             {
             if ( input.LA(1)=='C'||input.LA(1)=='c' ) {
                 input.consume();
@@ -7242,8 +7259,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = SEQUENCEFILE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:604:14: ( ( 'S' | 's' ) ( 'E' | 'e' ) ( 'Q' | 'q' ) ( 'U' | 'u' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'C' | 'c' ) ( 'E' | 'e' ) ( 'F' | 'f' ) ( 'I' | 'i' ) ( 'L' | 'l' ) ( 'E' | 'e' ) )
-            // Inputfile.g:604:17: ( 'S' | 's' ) ( 'E' | 'e' ) ( 'Q' | 'q' ) ( 'U' | 'u' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'C' | 'c' ) ( 'E' | 'e' ) ( 'F' | 'f' ) ( 'I' | 'i' ) ( 'L' | 'l' ) ( 'E' | 'e' )
+            // Inputfile.g:622:14: ( ( 'S' | 's' ) ( 'E' | 'e' ) ( 'Q' | 'q' ) ( 'U' | 'u' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'C' | 'c' ) ( 'E' | 'e' ) ( 'F' | 'f' ) ( 'I' | 'i' ) ( 'L' | 'l' ) ( 'E' | 'e' ) )
+            // Inputfile.g:622:17: ( 'S' | 's' ) ( 'E' | 'e' ) ( 'Q' | 'q' ) ( 'U' | 'u' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'C' | 'c' ) ( 'E' | 'e' ) ( 'F' | 'f' ) ( 'I' | 'i' ) ( 'L' | 'l' ) ( 'E' | 'e' )
             {
             if ( input.LA(1)=='S'||input.LA(1)=='s' ) {
                 input.consume();
@@ -7381,8 +7398,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = SEQFILE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:605:9: ( ( 'S' | 's' ) ( 'E' | 'e' ) ( 'Q' | 'q' ) ( 'F' | 'f' ) ( 'I' | 'i' ) ( 'L' | 'l' ) ( 'E' | 'e' ) )
-            // Inputfile.g:605:11: ( 'S' | 's' ) ( 'E' | 'e' ) ( 'Q' | 'q' ) ( 'F' | 'f' ) ( 'I' | 'i' ) ( 'L' | 'l' ) ( 'E' | 'e' )
+            // Inputfile.g:623:9: ( ( 'S' | 's' ) ( 'E' | 'e' ) ( 'Q' | 'q' ) ( 'F' | 'f' ) ( 'I' | 'i' ) ( 'L' | 'l' ) ( 'E' | 'e' ) )
+            // Inputfile.g:623:11: ( 'S' | 's' ) ( 'E' | 'e' ) ( 'Q' | 'q' ) ( 'F' | 'f' ) ( 'I' | 'i' ) ( 'L' | 'l' ) ( 'E' | 'e' )
             {
             if ( input.LA(1)=='S'||input.LA(1)=='s' ) {
                 input.consume();
@@ -7470,8 +7487,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = CALCULATEFLESCAPE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:610:2: ( ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'C' | 'c' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'F' | 'f' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'P' | 'p' ) ( 'E' | 'e' ) )
-            // Inputfile.g:610:5: ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'C' | 'c' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'F' | 'f' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'P' | 'p' ) ( 'E' | 'e' )
+            // Inputfile.g:628:2: ( ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'C' | 'c' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'F' | 'f' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'P' | 'p' ) ( 'E' | 'e' ) )
+            // Inputfile.g:628:5: ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'C' | 'c' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'F' | 'f' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'P' | 'p' ) ( 'E' | 'e' )
             {
             if ( input.LA(1)=='C'||input.LA(1)=='c' ) {
                 input.consume();
@@ -7659,8 +7676,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = FLRESOLUTION;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:614:14: ( ( 'F' | 'f' ) ( 'L' | 'l' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'U' | 'u' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' ) )
-            // Inputfile.g:614:16: ( 'F' | 'f' ) ( 'L' | 'l' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'U' | 'u' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' )
+            // Inputfile.g:632:14: ( ( 'F' | 'f' ) ( 'L' | 'l' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'U' | 'u' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' ) )
+            // Inputfile.g:632:16: ( 'F' | 'f' ) ( 'L' | 'l' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'U' | 'u' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' )
             {
             if ( input.LA(1)=='F'||input.LA(1)=='f' ) {
                 input.consume();
@@ -7798,8 +7815,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = PERESOLUTION;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:618:14: ( ( 'P' | 'p' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'U' | 'u' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' ) )
-            // Inputfile.g:618:16: ( 'P' | 'p' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'U' | 'u' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' )
+            // Inputfile.g:636:14: ( ( 'P' | 'p' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'U' | 'u' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' ) )
+            // Inputfile.g:636:16: ( 'P' | 'p' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'U' | 'u' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' )
             {
             if ( input.LA(1)=='P'||input.LA(1)=='p' ) {
                 input.consume();
@@ -7937,8 +7954,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = SURROUNDINGHEAVYCONC;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:626:22: ( ( 'S' | 's' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'U' | 'u' ) ( 'N' | 'n' ) ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'H' | 'h' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'V' | 'v' ) ( 'Y' | 'y' ) ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'C' | 'c' ) )
-            // Inputfile.g:626:24: ( 'S' | 's' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'U' | 'u' ) ( 'N' | 'n' ) ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'H' | 'h' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'V' | 'v' ) ( 'Y' | 'y' ) ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'C' | 'c' )
+            // Inputfile.g:644:22: ( ( 'S' | 's' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'U' | 'u' ) ( 'N' | 'n' ) ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'H' | 'h' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'V' | 'v' ) ( 'Y' | 'y' ) ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'C' | 'c' ) )
+            // Inputfile.g:644:24: ( 'S' | 's' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'U' | 'u' ) ( 'N' | 'n' ) ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'H' | 'h' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'V' | 'v' ) ( 'Y' | 'y' ) ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'C' | 'c' )
             {
             if ( input.LA(1)=='S'||input.LA(1)=='s' ) {
                 input.consume();
@@ -8156,8 +8173,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = DENSITYBASED;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:630:14: ( ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'S' | 's' ) ( 'I' | 'i' ) ( 'T' | 't' ) ( 'Y' | 'y' ) ( 'B' | 'b' ) ( 'A' | 'a' ) ( 'S' | 's' ) ( 'E' | 'e' ) ( 'D' | 'd' ) )
-            // Inputfile.g:630:16: ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'S' | 's' ) ( 'I' | 'i' ) ( 'T' | 't' ) ( 'Y' | 'y' ) ( 'B' | 'b' ) ( 'A' | 'a' ) ( 'S' | 's' ) ( 'E' | 'e' ) ( 'D' | 'd' )
+            // Inputfile.g:648:14: ( ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'S' | 's' ) ( 'I' | 'i' ) ( 'T' | 't' ) ( 'Y' | 'y' ) ( 'B' | 'b' ) ( 'A' | 'a' ) ( 'S' | 's' ) ( 'E' | 'e' ) ( 'D' | 'd' ) )
+            // Inputfile.g:648:16: ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'S' | 's' ) ( 'I' | 'i' ) ( 'T' | 't' ) ( 'Y' | 'y' ) ( 'B' | 'b' ) ( 'A' | 'a' ) ( 'S' | 's' ) ( 'E' | 'e' ) ( 'D' | 'd' )
             {
             if ( input.LA(1)=='D'||input.LA(1)=='d' ) {
                 input.consume();
@@ -8295,8 +8312,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = CALCSURROUNDING;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:634:17: ( ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'C' | 'c' ) ( 'S' | 's' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'U' | 'u' ) ( 'N' | 'n' ) ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'G' | 'g' ) )
-            // Inputfile.g:634:19: ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'C' | 'c' ) ( 'S' | 's' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'U' | 'u' ) ( 'N' | 'n' ) ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'G' | 'g' )
+            // Inputfile.g:652:17: ( ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'C' | 'c' ) ( 'S' | 's' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'U' | 'u' ) ( 'N' | 'n' ) ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'G' | 'g' ) )
+            // Inputfile.g:652:19: ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'L' | 'l' ) ( 'C' | 'c' ) ( 'S' | 's' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'U' | 'u' ) ( 'N' | 'n' ) ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'G' | 'g' )
             {
             if ( input.LA(1)=='C'||input.LA(1)=='c' ) {
                 input.consume();
@@ -8464,8 +8481,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = SURROUNDINGELEMENTS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:643:21: ( ( 'S' | 's' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'U' | 'u' ) ( 'N' | 'n' ) ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'S' | 's' ) )
-            // Inputfile.g:643:23: ( 'S' | 's' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'U' | 'u' ) ( 'N' | 'n' ) ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'S' | 's' )
+            // Inputfile.g:661:21: ( ( 'S' | 's' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'U' | 'u' ) ( 'N' | 'n' ) ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'S' | 's' ) )
+            // Inputfile.g:661:23: ( 'S' | 's' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'U' | 'u' ) ( 'N' | 'n' ) ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'S' | 's' )
             {
             if ( input.LA(1)=='S'||input.LA(1)=='s' ) {
                 input.consume();
@@ -8673,8 +8690,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = SURROUNDINGDENSITY;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:647:20: ( ( 'S' | 's' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'U' | 'u' ) ( 'N' | 'n' ) ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'S' | 's' ) ( 'I' | 'i' ) ( 'T' | 't' ) ( 'Y' | 'y' ) )
-            // Inputfile.g:647:22: ( 'S' | 's' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'U' | 'u' ) ( 'N' | 'n' ) ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'S' | 's' ) ( 'I' | 'i' ) ( 'T' | 't' ) ( 'Y' | 'y' )
+            // Inputfile.g:665:20: ( ( 'S' | 's' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'U' | 'u' ) ( 'N' | 'n' ) ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'S' | 's' ) ( 'I' | 'i' ) ( 'T' | 't' ) ( 'Y' | 'y' ) )
+            // Inputfile.g:665:22: ( 'S' | 's' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'U' | 'u' ) ( 'N' | 'n' ) ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'S' | 's' ) ( 'I' | 'i' ) ( 'T' | 't' ) ( 'Y' | 'y' )
             {
             if ( input.LA(1)=='S'||input.LA(1)=='s' ) {
                 input.consume();
@@ -8872,8 +8889,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = SIMELECTRONS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:651:14: ( ( 'S' | 's' ) ( 'I' | 'i' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'C' | 'c' ) ( 'T' | 't' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'S' | 's' ) )
-            // Inputfile.g:651:16: ( 'S' | 's' ) ( 'I' | 'i' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'C' | 'c' ) ( 'T' | 't' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'S' | 's' )
+            // Inputfile.g:669:14: ( ( 'S' | 's' ) ( 'I' | 'i' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'C' | 'c' ) ( 'T' | 't' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'S' | 's' ) )
+            // Inputfile.g:669:16: ( 'S' | 's' ) ( 'I' | 'i' ) ( 'M' | 'm' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'E' | 'e' ) ( 'C' | 'c' ) ( 'T' | 't' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'S' | 's' )
             {
             if ( input.LA(1)=='S'||input.LA(1)=='s' ) {
                 input.consume();
@@ -9011,8 +9028,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = SIMPHOTONS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:652:14: ( ( 'S' | 's' ) ( 'I' | 'i' ) ( 'M' | 'm' ) ( 'P' | 'p' ) ( 'H' | 'h' ) ( 'O' | 'o' ) ( 'T' | 't' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'S' | 's' ) )
-            // Inputfile.g:652:16: ( 'S' | 's' ) ( 'I' | 'i' ) ( 'M' | 'm' ) ( 'P' | 'p' ) ( 'H' | 'h' ) ( 'O' | 'o' ) ( 'T' | 't' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'S' | 's' )
+            // Inputfile.g:670:14: ( ( 'S' | 's' ) ( 'I' | 'i' ) ( 'M' | 'm' ) ( 'P' | 'p' ) ( 'H' | 'h' ) ( 'O' | 'o' ) ( 'T' | 't' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'S' | 's' ) )
+            // Inputfile.g:670:16: ( 'S' | 's' ) ( 'I' | 'i' ) ( 'M' | 'm' ) ( 'P' | 'p' ) ( 'H' | 'h' ) ( 'O' | 'o' ) ( 'T' | 't' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'S' | 's' )
             {
             if ( input.LA(1)=='S'||input.LA(1)=='s' ) {
                 input.consume();
@@ -9130,8 +9147,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = SUBPROGRAM;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:657:2: ( ( 'S' | 's' ) ( 'U' | 'u' ) ( 'B' | 'b' ) ( 'P' | 'p' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'G' | 'g' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'M' | 'm' ) )
-            // Inputfile.g:657:5: ( 'S' | 's' ) ( 'U' | 'u' ) ( 'B' | 'b' ) ( 'P' | 'p' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'G' | 'g' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'M' | 'm' )
+            // Inputfile.g:675:2: ( ( 'S' | 's' ) ( 'U' | 'u' ) ( 'B' | 'b' ) ( 'P' | 'p' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'G' | 'g' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'M' | 'm' ) )
+            // Inputfile.g:675:5: ( 'S' | 's' ) ( 'U' | 'u' ) ( 'B' | 'b' ) ( 'P' | 'p' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'G' | 'g' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'M' | 'm' )
             {
             if ( input.LA(1)=='S'||input.LA(1)=='s' ) {
                 input.consume();
@@ -9249,8 +9266,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = RUNS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:662:2: ( ( 'R' | 'r' ) ( 'U' | 'u' ) ( 'N' | 'n' ) ( 'S' | 's' ) )
-            // Inputfile.g:662:5: ( 'R' | 'r' ) ( 'U' | 'u' ) ( 'N' | 'n' ) ( 'S' | 's' )
+            // Inputfile.g:680:2: ( ( 'R' | 'r' ) ( 'U' | 'u' ) ( 'N' | 'n' ) ( 'S' | 's' ) )
+            // Inputfile.g:680:5: ( 'R' | 'r' ) ( 'U' | 'u' ) ( 'N' | 'n' ) ( 'S' | 's' )
             {
             if ( input.LA(1)=='R'||input.LA(1)=='r' ) {
                 input.consume();
@@ -9308,8 +9325,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = BEAM;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:678:6: ( ( 'B' | 'b' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'M' | 'm' ) )
-            // Inputfile.g:678:8: ( 'B' | 'b' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'M' | 'm' )
+            // Inputfile.g:696:6: ( ( 'B' | 'b' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'M' | 'm' ) )
+            // Inputfile.g:696:8: ( 'B' | 'b' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'M' | 'm' )
             {
             if ( input.LA(1)=='B'||input.LA(1)=='b' ) {
                 input.consume();
@@ -9367,8 +9384,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = FLUX;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:706:6: ( ( 'F' | 'f' ) ( 'L' | 'l' ) ( 'U' | 'u' ) ( 'X' | 'x' ) )
-            // Inputfile.g:706:8: ( 'F' | 'f' ) ( 'L' | 'l' ) ( 'U' | 'u' ) ( 'X' | 'x' )
+            // Inputfile.g:724:6: ( ( 'F' | 'f' ) ( 'L' | 'l' ) ( 'U' | 'u' ) ( 'X' | 'x' ) )
+            // Inputfile.g:724:8: ( 'F' | 'f' ) ( 'L' | 'l' ) ( 'U' | 'u' ) ( 'X' | 'x' )
             {
             if ( input.LA(1)=='F'||input.LA(1)=='f' ) {
                 input.consume();
@@ -9426,8 +9443,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = EXPOSURE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:710:10: ( ( 'E' | 'e' ) ( 'X' | 'x' ) ( 'P' | 'p' ) ( 'O' | 'o' ) ( 'S' | 's' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'E' | 'e' ) )
-            // Inputfile.g:710:12: ( 'E' | 'e' ) ( 'X' | 'x' ) ( 'P' | 'p' ) ( 'O' | 'o' ) ( 'S' | 's' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'E' | 'e' )
+            // Inputfile.g:728:10: ( ( 'E' | 'e' ) ( 'X' | 'x' ) ( 'P' | 'p' ) ( 'O' | 'o' ) ( 'S' | 's' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'E' | 'e' ) )
+            // Inputfile.g:728:12: ( 'E' | 'e' ) ( 'X' | 'x' ) ( 'P' | 'p' ) ( 'O' | 'o' ) ( 'S' | 's' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'E' | 'e' )
             {
             if ( input.LA(1)=='E'||input.LA(1)=='e' ) {
                 input.consume();
@@ -9525,8 +9542,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = IMAGEDIM;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:715:2: ( ( 'I' | 'i' ) ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'G' | 'g' ) ( 'E' | 'e' ) ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'M' | 'm' ) )
-            // Inputfile.g:715:5: ( 'I' | 'i' ) ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'G' | 'g' ) ( 'E' | 'e' ) ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'M' | 'm' )
+            // Inputfile.g:733:2: ( ( 'I' | 'i' ) ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'G' | 'g' ) ( 'E' | 'e' ) ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'M' | 'm' ) )
+            // Inputfile.g:733:5: ( 'I' | 'i' ) ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'G' | 'g' ) ( 'E' | 'e' ) ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'M' | 'm' )
             {
             if ( input.LA(1)=='I'||input.LA(1)=='i' ) {
                 input.consume();
@@ -9624,8 +9641,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = FWHM;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:719:6: ( ( 'F' | 'f' ) ( 'W' | 'w' ) ( 'H' | 'h' ) ( 'M' | 'm' ) )
-            // Inputfile.g:719:8: ( 'F' | 'f' ) ( 'W' | 'w' ) ( 'H' | 'h' ) ( 'M' | 'm' )
+            // Inputfile.g:737:6: ( ( 'F' | 'f' ) ( 'W' | 'w' ) ( 'H' | 'h' ) ( 'M' | 'm' ) )
+            // Inputfile.g:737:8: ( 'F' | 'f' ) ( 'W' | 'w' ) ( 'H' | 'h' ) ( 'M' | 'm' )
             {
             if ( input.LA(1)=='F'||input.LA(1)=='f' ) {
                 input.consume();
@@ -9683,8 +9700,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = ENERGY;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:725:8: ( ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'G' | 'g' ) ( 'Y' | 'y' ) )
-            // Inputfile.g:725:10: ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'G' | 'g' ) ( 'Y' | 'y' )
+            // Inputfile.g:743:8: ( ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'G' | 'g' ) ( 'Y' | 'y' ) )
+            // Inputfile.g:743:10: ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'G' | 'g' ) ( 'Y' | 'y' )
             {
             if ( input.LA(1)=='E'||input.LA(1)=='e' ) {
                 input.consume();
@@ -9762,8 +9779,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = KEV;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:726:5: ( ( 'K' | 'k' ) ( 'E' | 'e' ) ( 'V' | 'v' ) )
-            // Inputfile.g:726:7: ( 'K' | 'k' ) ( 'E' | 'e' ) ( 'V' | 'v' )
+            // Inputfile.g:744:5: ( ( 'K' | 'k' ) ( 'E' | 'e' ) ( 'V' | 'v' ) )
+            // Inputfile.g:744:7: ( 'K' | 'k' ) ( 'E' | 'e' ) ( 'V' | 'v' )
             {
             if ( input.LA(1)=='K'||input.LA(1)=='k' ) {
                 input.consume();
@@ -9811,8 +9828,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = PULSEENERGY;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:730:13: ( ( 'P' | 'p' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'S' | 's' ) ( 'E' | 'e' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'G' | 'g' ) ( 'Y' | 'y' ) )
-            // Inputfile.g:730:15: ( 'P' | 'p' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'S' | 's' ) ( 'E' | 'e' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'G' | 'g' ) ( 'Y' | 'y' )
+            // Inputfile.g:748:13: ( ( 'P' | 'p' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'S' | 's' ) ( 'E' | 'e' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'G' | 'g' ) ( 'Y' | 'y' ) )
+            // Inputfile.g:748:15: ( 'P' | 'p' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'S' | 's' ) ( 'E' | 'e' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'G' | 'g' ) ( 'Y' | 'y' )
             {
             if ( input.LA(1)=='P'||input.LA(1)=='p' ) {
                 input.consume();
@@ -9940,8 +9957,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = PULSESHAPE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:736:12: ( ( 'P' | 'p' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'S' | 's' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'H' | 'h' ) ( 'A' | 'a' ) ( 'P' | 'p' ) ( 'E' | 'e' ) )
-            // Inputfile.g:736:14: ( 'P' | 'p' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'S' | 's' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'H' | 'h' ) ( 'A' | 'a' ) ( 'P' | 'p' ) ( 'E' | 'e' )
+            // Inputfile.g:754:12: ( ( 'P' | 'p' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'S' | 's' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'H' | 'h' ) ( 'A' | 'a' ) ( 'P' | 'p' ) ( 'E' | 'e' ) )
+            // Inputfile.g:754:14: ( 'P' | 'p' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'S' | 's' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'H' | 'h' ) ( 'A' | 'a' ) ( 'P' | 'p' ) ( 'E' | 'e' )
             {
             if ( input.LA(1)=='P'||input.LA(1)=='p' ) {
                 input.consume();
@@ -10059,8 +10076,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = PULSEWINDOW;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:741:13: ( ( 'P' | 'p' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'S' | 's' ) ( 'E' | 'e' ) ( 'W' | 'w' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'D' | 'd' ) ( 'O' | 'o' ) ( 'W' | 'w' ) )
-            // Inputfile.g:741:15: ( 'P' | 'p' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'S' | 's' ) ( 'E' | 'e' ) ( 'W' | 'w' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'D' | 'd' ) ( 'O' | 'o' ) ( 'W' | 'w' )
+            // Inputfile.g:759:13: ( ( 'P' | 'p' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'S' | 's' ) ( 'E' | 'e' ) ( 'W' | 'w' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'D' | 'd' ) ( 'O' | 'o' ) ( 'W' | 'w' ) )
+            // Inputfile.g:759:15: ( 'P' | 'p' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'S' | 's' ) ( 'E' | 'e' ) ( 'W' | 'w' ) ( 'I' | 'i' ) ( 'N' | 'n' ) ( 'D' | 'd' ) ( 'O' | 'o' ) ( 'W' | 'w' )
             {
             if ( input.LA(1)=='P'||input.LA(1)=='p' ) {
                 input.consume();
@@ -10188,8 +10205,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = SEMIANGLE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:747:2: ( ( 'S' | 's' ) ( 'E' | 'e' ) ( 'M' | 'm' ) ( 'I' | 'i' ) ( 'A' | 'a' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'L' | 'l' ) ( 'E' | 'e' ) )
-            // Inputfile.g:747:5: ( 'S' | 's' ) ( 'E' | 'e' ) ( 'M' | 'm' ) ( 'I' | 'i' ) ( 'A' | 'a' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'L' | 'l' ) ( 'E' | 'e' )
+            // Inputfile.g:765:2: ( ( 'S' | 's' ) ( 'E' | 'e' ) ( 'M' | 'm' ) ( 'I' | 'i' ) ( 'A' | 'a' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'L' | 'l' ) ( 'E' | 'e' ) )
+            // Inputfile.g:765:5: ( 'S' | 's' ) ( 'E' | 'e' ) ( 'M' | 'm' ) ( 'I' | 'i' ) ( 'A' | 'a' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'L' | 'l' ) ( 'E' | 'e' )
             {
             if ( input.LA(1)=='S'||input.LA(1)=='s' ) {
                 input.consume();
@@ -10297,8 +10314,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = APERTURERADIUS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:752:2: ( ( 'A' | 'a' ) ( 'P' | 'p' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'T' | 't' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'U' | 'u' ) ( 'S' | 's' ) )
-            // Inputfile.g:752:4: ( 'A' | 'a' ) ( 'P' | 'p' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'T' | 't' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'U' | 'u' ) ( 'S' | 's' )
+            // Inputfile.g:770:2: ( ( 'A' | 'a' ) ( 'P' | 'p' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'T' | 't' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'U' | 'u' ) ( 'S' | 's' ) )
+            // Inputfile.g:770:4: ( 'A' | 'a' ) ( 'P' | 'p' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'T' | 't' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'D' | 'd' ) ( 'I' | 'i' ) ( 'U' | 'u' ) ( 'S' | 's' )
             {
             if ( input.LA(1)=='A'||input.LA(1)=='a' ) {
                 input.consume();
@@ -10456,8 +10473,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = FILE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:757:6: ( ( 'F' | 'f' ) ( 'I' | 'i' ) ( 'L' | 'l' ) ( 'E' | 'e' ) )
-            // Inputfile.g:757:8: ( 'F' | 'f' ) ( 'I' | 'i' ) ( 'L' | 'l' ) ( 'E' | 'e' )
+            // Inputfile.g:775:6: ( ( 'F' | 'f' ) ( 'I' | 'i' ) ( 'L' | 'l' ) ( 'E' | 'e' ) )
+            // Inputfile.g:775:8: ( 'F' | 'f' ) ( 'I' | 'i' ) ( 'L' | 'l' ) ( 'E' | 'e' )
             {
             if ( input.LA(1)=='F'||input.LA(1)=='f' ) {
                 input.consume();
@@ -10515,8 +10532,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = PIXELSIZE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:765:2: ( ( 'P' | 'p' ) ( 'I' | 'i' ) ( 'X' | 'x' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'S' | 's' ) ( 'I' | 'i' ) ( 'Z' | 'z' ) ( 'E' | 'e' ) )
-            // Inputfile.g:765:5: ( 'P' | 'p' ) ( 'I' | 'i' ) ( 'X' | 'x' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'S' | 's' ) ( 'I' | 'i' ) ( 'Z' | 'z' ) ( 'E' | 'e' )
+            // Inputfile.g:783:2: ( ( 'P' | 'p' ) ( 'I' | 'i' ) ( 'X' | 'x' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'S' | 's' ) ( 'I' | 'i' ) ( 'Z' | 'z' ) ( 'E' | 'e' ) )
+            // Inputfile.g:783:5: ( 'P' | 'p' ) ( 'I' | 'i' ) ( 'X' | 'x' ) ( 'E' | 'e' ) ( 'L' | 'l' ) ( 'S' | 's' ) ( 'I' | 'i' ) ( 'Z' | 'z' ) ( 'E' | 'e' )
             {
             if ( input.LA(1)=='P'||input.LA(1)=='p' ) {
                 input.consume();
@@ -10624,8 +10641,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = ENERGYFWHM;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:770:2: ( ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'G' | 'g' ) ( 'Y' | 'y' ) ( 'F' | 'f' ) ( 'W' | 'w' ) ( 'H' | 'h' ) ( 'M' | 'm' ) )
-            // Inputfile.g:770:4: ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'G' | 'g' ) ( 'Y' | 'y' ) ( 'F' | 'f' ) ( 'W' | 'w' ) ( 'H' | 'h' ) ( 'M' | 'm' )
+            // Inputfile.g:788:2: ( ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'G' | 'g' ) ( 'Y' | 'y' ) ( 'F' | 'f' ) ( 'W' | 'w' ) ( 'H' | 'h' ) ( 'M' | 'm' ) )
+            // Inputfile.g:788:4: ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'G' | 'g' ) ( 'Y' | 'y' ) ( 'F' | 'f' ) ( 'W' | 'w' ) ( 'H' | 'h' ) ( 'M' | 'm' )
             {
             if ( input.LA(1)=='E'||input.LA(1)=='e' ) {
                 input.consume();
@@ -10743,8 +10760,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = COLLIMATION;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:786:13: ( ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'L' | 'l' ) ( 'I' | 'i' ) ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' ) )
-            // Inputfile.g:786:15: ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'L' | 'l' ) ( 'I' | 'i' ) ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' )
+            // Inputfile.g:804:13: ( ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'L' | 'l' ) ( 'I' | 'i' ) ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' ) )
+            // Inputfile.g:804:15: ( 'C' | 'c' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'L' | 'l' ) ( 'I' | 'i' ) ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' )
             {
             if ( input.LA(1)=='C'||input.LA(1)=='c' ) {
                 input.consume();
@@ -10872,8 +10889,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = RECTANGULAR;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:787:13: ( ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'C' | 'c' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'A' | 'a' ) ( 'R' | 'r' ) )
-            // Inputfile.g:787:15: ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'C' | 'c' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'A' | 'a' ) ( 'R' | 'r' )
+            // Inputfile.g:805:13: ( ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'C' | 'c' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'A' | 'a' ) ( 'R' | 'r' ) )
+            // Inputfile.g:805:15: ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'C' | 'c' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'A' | 'a' ) ( 'R' | 'r' )
             {
             if ( input.LA(1)=='R'||input.LA(1)=='r' ) {
                 input.consume();
@@ -11001,8 +11018,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = CIRCULAR;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:788:11: ( ( 'C' | 'c' ) ( 'I' | 'i' ) ( 'R' | 'r' ) ( 'C' | 'c' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'A' | 'a' ) ( 'R' | 'r' ) )
-            // Inputfile.g:788:13: ( 'C' | 'c' ) ( 'I' | 'i' ) ( 'R' | 'r' ) ( 'C' | 'c' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'A' | 'a' ) ( 'R' | 'r' )
+            // Inputfile.g:806:11: ( ( 'C' | 'c' ) ( 'I' | 'i' ) ( 'R' | 'r' ) ( 'C' | 'c' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'A' | 'a' ) ( 'R' | 'r' ) )
+            // Inputfile.g:806:13: ( 'C' | 'c' ) ( 'I' | 'i' ) ( 'R' | 'r' ) ( 'C' | 'c' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'A' | 'a' ) ( 'R' | 'r' )
             {
             if ( input.LA(1)=='C'||input.LA(1)=='c' ) {
                 input.consume();
@@ -11100,8 +11117,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = HORIZONTAL;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:789:13: ( ( 'H' | 'h' ) ( 'O' | 'o' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'Z' | 'z' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'L' | 'l' ) )
-            // Inputfile.g:789:15: ( 'H' | 'h' ) ( 'O' | 'o' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'Z' | 'z' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'L' | 'l' )
+            // Inputfile.g:807:13: ( ( 'H' | 'h' ) ( 'O' | 'o' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'Z' | 'z' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'L' | 'l' ) )
+            // Inputfile.g:807:15: ( 'H' | 'h' ) ( 'O' | 'o' ) ( 'R' | 'r' ) ( 'I' | 'i' ) ( 'Z' | 'z' ) ( 'O' | 'o' ) ( 'N' | 'n' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'L' | 'l' )
             {
             if ( input.LA(1)=='H'||input.LA(1)=='h' ) {
                 input.consume();
@@ -11219,8 +11236,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = VERTICAL;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:790:11: ( ( 'V' | 'v' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'L' | 'l' ) )
-            // Inputfile.g:790:13: ( 'V' | 'v' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'L' | 'l' )
+            // Inputfile.g:808:11: ( ( 'V' | 'v' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'L' | 'l' ) )
+            // Inputfile.g:808:13: ( 'V' | 'v' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'C' | 'c' ) ( 'A' | 'a' ) ( 'L' | 'l' )
             {
             if ( input.LA(1)=='V'||input.LA(1)=='v' ) {
                 input.consume();
@@ -11318,8 +11335,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = WEDGE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:817:7: ( ( 'W' | 'w' ) ( 'E' | 'e' ) ( 'D' | 'd' ) ( 'G' | 'g' ) ( 'E' | 'e' ) )
-            // Inputfile.g:817:9: ( 'W' | 'w' ) ( 'E' | 'e' ) ( 'D' | 'd' ) ( 'G' | 'g' ) ( 'E' | 'e' )
+            // Inputfile.g:835:7: ( ( 'W' | 'w' ) ( 'E' | 'e' ) ( 'D' | 'd' ) ( 'G' | 'g' ) ( 'E' | 'e' ) )
+            // Inputfile.g:835:9: ( 'W' | 'w' ) ( 'E' | 'e' ) ( 'D' | 'd' ) ( 'G' | 'g' ) ( 'E' | 'e' )
             {
             if ( input.LA(1)=='W'||input.LA(1)=='w' ) {
                 input.consume();
@@ -11387,8 +11404,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = EXPOSURETIME;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:834:14: ( ( 'E' | 'e' ) ( 'X' | 'x' ) ( 'P' | 'p' ) ( 'O' | 'o' ) ( 'S' | 's' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'M' | 'm' ) ( 'E' | 'e' ) )
-            // Inputfile.g:834:16: ( 'E' | 'e' ) ( 'X' | 'x' ) ( 'P' | 'p' ) ( 'O' | 'o' ) ( 'S' | 's' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'M' | 'm' ) ( 'E' | 'e' )
+            // Inputfile.g:852:14: ( ( 'E' | 'e' ) ( 'X' | 'x' ) ( 'P' | 'p' ) ( 'O' | 'o' ) ( 'S' | 's' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'M' | 'm' ) ( 'E' | 'e' ) )
+            // Inputfile.g:852:16: ( 'E' | 'e' ) ( 'X' | 'x' ) ( 'P' | 'p' ) ( 'O' | 'o' ) ( 'S' | 's' ) ( 'U' | 'u' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'M' | 'm' ) ( 'E' | 'e' )
             {
             if ( input.LA(1)=='E'||input.LA(1)=='e' ) {
                 input.consume();
@@ -11526,8 +11543,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = ANGULARRESOLUTION;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:838:19: ( ( 'A' | 'a' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'A' | 'a' ) ( 'R' | 'r' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'U' | 'u' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' ) )
-            // Inputfile.g:838:21: ( 'A' | 'a' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'A' | 'a' ) ( 'R' | 'r' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'U' | 'u' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' )
+            // Inputfile.g:856:19: ( ( 'A' | 'a' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'A' | 'a' ) ( 'R' | 'r' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'U' | 'u' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' ) )
+            // Inputfile.g:856:21: ( 'A' | 'a' ) ( 'N' | 'n' ) ( 'G' | 'g' ) ( 'U' | 'u' ) ( 'L' | 'l' ) ( 'A' | 'a' ) ( 'R' | 'r' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'U' | 'u' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' )
             {
             if ( input.LA(1)=='A'||input.LA(1)=='a' ) {
                 input.consume();
@@ -11715,8 +11732,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = STARTOFFSET;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:844:13: ( ( 'S' | 's' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'R' | 'r' ) ( 'T' | 't' ) ( 'O' | 'o' ) ( 'F' | 'f' ) ( 'F' | 'f' ) ( 'S' | 's' ) ( 'E' | 'e' ) ( 'T' | 't' ) )
-            // Inputfile.g:844:15: ( 'S' | 's' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'R' | 'r' ) ( 'T' | 't' ) ( 'O' | 'o' ) ( 'F' | 'f' ) ( 'F' | 'f' ) ( 'S' | 's' ) ( 'E' | 'e' ) ( 'T' | 't' )
+            // Inputfile.g:862:13: ( ( 'S' | 's' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'R' | 'r' ) ( 'T' | 't' ) ( 'O' | 'o' ) ( 'F' | 'f' ) ( 'F' | 'f' ) ( 'S' | 's' ) ( 'E' | 'e' ) ( 'T' | 't' ) )
+            // Inputfile.g:862:15: ( 'S' | 's' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'R' | 'r' ) ( 'T' | 't' ) ( 'O' | 'o' ) ( 'F' | 'f' ) ( 'F' | 'f' ) ( 'S' | 's' ) ( 'E' | 'e' ) ( 'T' | 't' )
             {
             if ( input.LA(1)=='S'||input.LA(1)=='s' ) {
                 input.consume();
@@ -11844,8 +11861,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = TRANSLATEPERDEGREE;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:850:20: ( ( 'T' | 't' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'N' | 'n' ) ( 'S' | 's' ) ( 'L' | 'l' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'P' | 'p' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'G' | 'g' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'E' | 'e' ) )
-            // Inputfile.g:850:22: ( 'T' | 't' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'N' | 'n' ) ( 'S' | 's' ) ( 'L' | 'l' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'P' | 'p' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'G' | 'g' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'E' | 'e' )
+            // Inputfile.g:868:20: ( ( 'T' | 't' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'N' | 'n' ) ( 'S' | 's' ) ( 'L' | 'l' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'P' | 'p' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'G' | 'g' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'E' | 'e' ) )
+            // Inputfile.g:868:22: ( 'T' | 't' ) ( 'R' | 'r' ) ( 'A' | 'a' ) ( 'N' | 'n' ) ( 'S' | 's' ) ( 'L' | 'l' ) ( 'A' | 'a' ) ( 'T' | 't' ) ( 'E' | 'e' ) ( 'P' | 'p' ) ( 'E' | 'e' ) ( 'R' | 'r' ) ( 'D' | 'd' ) ( 'E' | 'e' ) ( 'G' | 'g' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'E' | 'e' )
             {
             if ( input.LA(1)=='T'||input.LA(1)=='t' ) {
                 input.consume();
@@ -12043,8 +12060,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = ROTAXBEAMOFFSET;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:854:17: ( ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'X' | 'x' ) ( 'B' | 'b' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'M' | 'm' ) ( 'O' | 'o' ) ( 'F' | 'f' ) ( 'F' | 'f' ) ( 'S' | 's' ) ( 'E' | 'e' ) ( 'T' | 't' ) )
-            // Inputfile.g:854:19: ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'X' | 'x' ) ( 'B' | 'b' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'M' | 'm' ) ( 'O' | 'o' ) ( 'F' | 'f' ) ( 'F' | 'f' ) ( 'S' | 's' ) ( 'E' | 'e' ) ( 'T' | 't' )
+            // Inputfile.g:872:17: ( ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'X' | 'x' ) ( 'B' | 'b' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'M' | 'm' ) ( 'O' | 'o' ) ( 'F' | 'f' ) ( 'F' | 'f' ) ( 'S' | 's' ) ( 'E' | 'e' ) ( 'T' | 't' ) )
+            // Inputfile.g:872:19: ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'T' | 't' ) ( 'A' | 'a' ) ( 'X' | 'x' ) ( 'B' | 'b' ) ( 'E' | 'e' ) ( 'A' | 'a' ) ( 'M' | 'm' ) ( 'O' | 'o' ) ( 'F' | 'f' ) ( 'F' | 'f' ) ( 'S' | 's' ) ( 'E' | 'e' ) ( 'T' | 't' )
             {
             if ( input.LA(1)=='R'||input.LA(1)=='r' ) {
                 input.consume();
@@ -12212,8 +12229,8 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = MAXRESOLUTION;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:858:15: ( ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'X' | 'x' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'U' | 'u' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' ) )
-            // Inputfile.g:858:17: ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'X' | 'x' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'U' | 'u' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' )
+            // Inputfile.g:876:15: ( ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'X' | 'x' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'U' | 'u' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' ) )
+            // Inputfile.g:876:17: ( 'M' | 'm' ) ( 'A' | 'a' ) ( 'X' | 'x' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'S' | 's' ) ( 'O' | 'o' ) ( 'L' | 'l' ) ( 'U' | 'u' ) ( 'T' | 't' ) ( 'I' | 'i' ) ( 'O' | 'o' ) ( 'N' | 'n' )
             {
             if ( input.LA(1)=='M'||input.LA(1)=='m' ) {
                 input.consume();
@@ -12361,10 +12378,10 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = FLOAT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:863:5: ( ( '+' | '-' )? ( ( '0' .. '9' )+ | ( '0' .. '9' )+ '.' ( '0' .. '9' )* | '.' ( '0' .. '9' )+ ) ( EXPONENT )? )
-            // Inputfile.g:863:7: ( '+' | '-' )? ( ( '0' .. '9' )+ | ( '0' .. '9' )+ '.' ( '0' .. '9' )* | '.' ( '0' .. '9' )+ ) ( EXPONENT )?
+            // Inputfile.g:881:5: ( ( '+' | '-' )? ( ( '0' .. '9' )+ | ( '0' .. '9' )+ '.' ( '0' .. '9' )* | '.' ( '0' .. '9' )+ ) ( EXPONENT )? )
+            // Inputfile.g:881:7: ( '+' | '-' )? ( ( '0' .. '9' )+ | ( '0' .. '9' )+ '.' ( '0' .. '9' )* | '.' ( '0' .. '9' )+ ) ( EXPONENT )?
             {
-            // Inputfile.g:863:7: ( '+' | '-' )?
+            // Inputfile.g:881:7: ( '+' | '-' )?
             int alt7=2;
             int LA7_0 = input.LA(1);
 
@@ -12391,14 +12408,14 @@ public class InputfileLexer extends Lexer {
             }
 
 
-            // Inputfile.g:864:5: ( ( '0' .. '9' )+ | ( '0' .. '9' )+ '.' ( '0' .. '9' )* | '.' ( '0' .. '9' )+ )
+            // Inputfile.g:882:5: ( ( '0' .. '9' )+ | ( '0' .. '9' )+ '.' ( '0' .. '9' )* | '.' ( '0' .. '9' )+ )
             int alt12=3;
             alt12 = dfa12.predict(input);
             switch (alt12) {
                 case 1 :
-                    // Inputfile.g:864:7: ( '0' .. '9' )+
+                    // Inputfile.g:882:7: ( '0' .. '9' )+
                     {
-                    // Inputfile.g:864:7: ( '0' .. '9' )+
+                    // Inputfile.g:882:7: ( '0' .. '9' )+
                     int cnt8=0;
                     loop8:
                     do {
@@ -12440,9 +12457,9 @@ public class InputfileLexer extends Lexer {
                     }
                     break;
                 case 2 :
-                    // Inputfile.g:865:7: ( '0' .. '9' )+ '.' ( '0' .. '9' )*
+                    // Inputfile.g:883:7: ( '0' .. '9' )+ '.' ( '0' .. '9' )*
                     {
-                    // Inputfile.g:865:7: ( '0' .. '9' )+
+                    // Inputfile.g:883:7: ( '0' .. '9' )+
                     int cnt9=0;
                     loop9:
                     do {
@@ -12483,7 +12500,7 @@ public class InputfileLexer extends Lexer {
 
                     match('.'); 
 
-                    // Inputfile.g:865:23: ( '0' .. '9' )*
+                    // Inputfile.g:883:23: ( '0' .. '9' )*
                     loop10:
                     do {
                         int alt10=2;
@@ -12520,11 +12537,11 @@ public class InputfileLexer extends Lexer {
                     }
                     break;
                 case 3 :
-                    // Inputfile.g:866:19: '.' ( '0' .. '9' )+
+                    // Inputfile.g:884:19: '.' ( '0' .. '9' )+
                     {
                     match('.'); 
 
-                    // Inputfile.g:866:23: ( '0' .. '9' )+
+                    // Inputfile.g:884:23: ( '0' .. '9' )+
                     int cnt11=0;
                     loop11:
                     do {
@@ -12569,7 +12586,7 @@ public class InputfileLexer extends Lexer {
             }
 
 
-            // Inputfile.g:867:7: ( EXPONENT )?
+            // Inputfile.g:885:7: ( EXPONENT )?
             int alt13=2;
             int LA13_0 = input.LA(1);
 
@@ -12578,7 +12595,7 @@ public class InputfileLexer extends Lexer {
             }
             switch (alt13) {
                 case 1 :
-                    // Inputfile.g:867:7: EXPONENT
+                    // Inputfile.g:885:7: EXPONENT
                     {
                     mEXPONENT(); 
 
@@ -12603,8 +12620,8 @@ public class InputfileLexer extends Lexer {
     // $ANTLR start "EXPONENT"
     public final void mEXPONENT() throws RecognitionException {
         try {
-            // Inputfile.g:871:10: ( ( 'e' | 'E' ) ( '+' | '-' )? ( '0' .. '9' )+ )
-            // Inputfile.g:871:12: ( 'e' | 'E' ) ( '+' | '-' )? ( '0' .. '9' )+
+            // Inputfile.g:889:10: ( ( 'e' | 'E' ) ( '+' | '-' )? ( '0' .. '9' )+ )
+            // Inputfile.g:889:12: ( 'e' | 'E' ) ( '+' | '-' )? ( '0' .. '9' )+
             {
             if ( input.LA(1)=='E'||input.LA(1)=='e' ) {
                 input.consume();
@@ -12616,7 +12633,7 @@ public class InputfileLexer extends Lexer {
             }
 
 
-            // Inputfile.g:871:22: ( '+' | '-' )?
+            // Inputfile.g:889:22: ( '+' | '-' )?
             int alt14=2;
             int LA14_0 = input.LA(1);
 
@@ -12643,7 +12660,7 @@ public class InputfileLexer extends Lexer {
             }
 
 
-            // Inputfile.g:871:33: ( '0' .. '9' )+
+            // Inputfile.g:889:33: ( '0' .. '9' )+
             int cnt15=0;
             loop15:
             do {
@@ -12697,10 +12714,10 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = COMMENT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:873:5: ( ( '#' | '//' | '!' ) (~ ( '\\n' | '\\r' ) )* ( '\\r' )? '\\n' )
-            // Inputfile.g:873:9: ( '#' | '//' | '!' ) (~ ( '\\n' | '\\r' ) )* ( '\\r' )? '\\n'
+            // Inputfile.g:893:5: ( ( '#' | '//' | '!' ) (~ ( '\\n' | '\\r' ) )* ( ( '\\r' )? '\\n' )? )
+            // Inputfile.g:893:9: ( '#' | '//' | '!' ) (~ ( '\\n' | '\\r' ) )* ( ( '\\r' )? '\\n' )?
             {
-            // Inputfile.g:873:9: ( '#' | '//' | '!' )
+            // Inputfile.g:893:9: ( '#' | '//' | '!' )
             int alt16=3;
             switch ( input.LA(1) ) {
             case '#':
@@ -12728,14 +12745,14 @@ public class InputfileLexer extends Lexer {
 
             switch (alt16) {
                 case 1 :
-                    // Inputfile.g:873:10: '#'
+                    // Inputfile.g:893:10: '#'
                     {
                     match('#'); 
 
                     }
                     break;
                 case 2 :
-                    // Inputfile.g:873:16: '//'
+                    // Inputfile.g:893:16: '//'
                     {
                     match("//"); 
 
@@ -12744,7 +12761,7 @@ public class InputfileLexer extends Lexer {
                     }
                     break;
                 case 3 :
-                    // Inputfile.g:873:23: '!'
+                    // Inputfile.g:893:23: '!'
                     {
                     match('!'); 
 
@@ -12754,7 +12771,7 @@ public class InputfileLexer extends Lexer {
             }
 
 
-            // Inputfile.g:873:28: (~ ( '\\n' | '\\r' ) )*
+            // Inputfile.g:893:28: (~ ( '\\n' | '\\r' ) )*
             loop17:
             do {
                 int alt17=2;
@@ -12788,26 +12805,43 @@ public class InputfileLexer extends Lexer {
             } while (true);
 
 
-            // Inputfile.g:873:42: ( '\\r' )?
-            int alt18=2;
-            int LA18_0 = input.LA(1);
+            // Inputfile.g:893:42: ( ( '\\r' )? '\\n' )?
+            int alt19=2;
+            int LA19_0 = input.LA(1);
 
-            if ( (LA18_0=='\r') ) {
-                alt18=1;
+            if ( (LA19_0=='\n'||LA19_0=='\r') ) {
+                alt19=1;
             }
-            switch (alt18) {
+            switch (alt19) {
                 case 1 :
-                    // Inputfile.g:873:42: '\\r'
+                    // Inputfile.g:893:43: ( '\\r' )? '\\n'
                     {
-                    match('\r'); 
+                    // Inputfile.g:893:43: ( '\\r' )?
+                    int alt18=2;
+                    int LA18_0 = input.LA(1);
+
+                    if ( (LA18_0=='\r') ) {
+                        alt18=1;
+                    }
+                    switch (alt18) {
+                        case 1 :
+                            // Inputfile.g:893:43: '\\r'
+                            {
+                            match('\r'); 
+
+                            }
+                            break;
+
+                    }
+
+
+                    match('\n'); 
 
                     }
                     break;
 
             }
 
-
-            match('\n'); 
 
             _channel=HIDDEN;
 
@@ -12827,10 +12861,10 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = WS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:876:5: ( ( ' ' | '\\t' | '\\r' | '\\n' ) )
-            // Inputfile.g:876:9: ( ' ' | '\\t' | '\\r' | '\\n' )
+            // Inputfile.g:898:5: ( ( ' ' | '\\t' | '\\r' | '\\n' | '\\uFEFF' ) )
+            // Inputfile.g:898:9: ( ' ' | '\\t' | '\\r' | '\\n' | '\\uFEFF' )
             {
-            if ( (input.LA(1) >= '\t' && input.LA(1) <= '\n')||input.LA(1)=='\r'||input.LA(1)==' ' ) {
+            if ( (input.LA(1) >= '\t' && input.LA(1) <= '\n')||input.LA(1)=='\r'||input.LA(1)==' '||input.LA(1)=='\uFEFF' ) {
                 input.consume();
             }
             else {
@@ -12858,22 +12892,22 @@ public class InputfileLexer extends Lexer {
         try {
             int _type = STRING;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // Inputfile.g:891:2: ( ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '.' | '$' | '-' | '_' | ':' | '\\\\' | '/' )+ )
-            // Inputfile.g:891:4: ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '.' | '$' | '-' | '_' | ':' | '\\\\' | '/' )+
+            // Inputfile.g:914:2: ( ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '.' | '$' | '-' | '_' | ':' | '\\\\' | '/' )+ )
+            // Inputfile.g:914:4: ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '.' | '$' | '-' | '_' | ':' | '\\\\' | '/' )+
             {
-            // Inputfile.g:891:4: ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '.' | '$' | '-' | '_' | ':' | '\\\\' | '/' )+
-            int cnt19=0;
-            loop19:
+            // Inputfile.g:914:4: ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '.' | '$' | '-' | '_' | ':' | '\\\\' | '/' )+
+            int cnt20=0;
+            loop20:
             do {
-                int alt19=2;
-                int LA19_0 = input.LA(1);
+                int alt20=2;
+                int LA20_0 = input.LA(1);
 
-                if ( (LA19_0=='$'||(LA19_0 >= '-' && LA19_0 <= ':')||(LA19_0 >= 'A' && LA19_0 <= 'Z')||LA19_0=='\\'||LA19_0=='_'||(LA19_0 >= 'a' && LA19_0 <= 'z')) ) {
-                    alt19=1;
+                if ( (LA20_0=='$'||(LA20_0 >= '-' && LA20_0 <= ':')||(LA20_0 >= 'A' && LA20_0 <= 'Z')||LA20_0=='\\'||LA20_0=='_'||(LA20_0 >= 'a' && LA20_0 <= 'z')) ) {
+                    alt20=1;
                 }
 
 
-                switch (alt19) {
+                switch (alt20) {
             	case 1 :
             	    // Inputfile.g:
             	    {
@@ -12891,12 +12925,12 @@ public class InputfileLexer extends Lexer {
             	    break;
 
             	default :
-            	    if ( cnt19 >= 1 ) break loop19;
+            	    if ( cnt20 >= 1 ) break loop20;
                         EarlyExitException eee =
-                            new EarlyExitException(19, input);
+                            new EarlyExitException(20, input);
                         throw eee;
                 }
-                cnt19++;
+                cnt20++;
             } while (true);
 
 
@@ -12913,9 +12947,9 @@ public class InputfileLexer extends Lexer {
 
     public void mTokens() throws RecognitionException {
         // Inputfile.g:1:8: ( CRYSTAL | TYPE | DIFFRACTIONDECAYMODEL | DDM | SIMPLE | LINEAR | LEAL | BFACTOR | DECAYPARAM | ABSCOEFCALC | DUMMY | DEFAULT | AVERAGE | RDFORTAN | RDJAVA | PDB | SAXS | SEQUENCE | SAXSSEQ | SMALLMOLE | CIF | DIMENSION | ANGLEP | ANGLEL | PIXELSPERMICRON | UNITCELL | SURROUNDINGTHICKNESS | PROTEINCONC | PROTEINCONCENTRATION | NUMMONOMERS | NUMRESIDUES | NUMRNA | NUMDNA | NUMCARB | PROTEINHEAVYATOMS | ELEMENT | SMALLMOLEATOMS | SOLVENTHEAVYCONC | SOLVENTFRACTION | PDBNAME | CIFNAME | WIREFRAMETYPE | MODELFILE | CALCULATEPEESCAPE | GONIOMETERAXIS | POLARISATIONDIRECTION | CONTAINERMATERIALTYPE | MATERIALTYPE | NONE | MIXTURE | ELEMENTAL | CONTAINERTHICKNESS | CONTAINERMATERIALMIXTURE | MATERIALMIXTURE | CONTAINERMATERIALELEMENTS | MATERIALELEMENTS | CONTAINERDENSITY | SEQUENCEFILE | SEQFILE | CALCULATEFLESCAPE | FLRESOLUTION | PERESOLUTION | SURROUNDINGHEAVYCONC | DENSITYBASED | CALCSURROUNDING | SURROUNDINGELEMENTS | SURROUNDINGDENSITY | SIMELECTRONS | SIMPHOTONS | SUBPROGRAM | RUNS | BEAM | FLUX | EXPOSURE | IMAGEDIM | FWHM | ENERGY | KEV | PULSEENERGY | PULSESHAPE | PULSEWINDOW | SEMIANGLE | APERTURERADIUS | FILE | PIXELSIZE | ENERGYFWHM | COLLIMATION | RECTANGULAR | CIRCULAR | HORIZONTAL | VERTICAL | WEDGE | EXPOSURETIME | ANGULARRESOLUTION | STARTOFFSET | TRANSLATEPERDEGREE | ROTAXBEAMOFFSET | MAXRESOLUTION | FLOAT | COMMENT | WS | STRING )
-        int alt20=102;
-        alt20 = dfa20.predict(input);
-        switch (alt20) {
+        int alt21=102;
+        alt21 = dfa21.predict(input);
+        switch (alt21) {
             case 1 :
                 // Inputfile.g:1:10: CRYSTAL
                 {
@@ -13739,7 +13773,7 @@ public class InputfileLexer extends Lexer {
 
 
     protected DFA12 dfa12 = new DFA12(this);
-    protected DFA20 dfa20 = new DFA20(this);
+    protected DFA21 dfa21 = new DFA21(this);
     static final String DFA12_eotS =
         "\1\uffff\1\3\3\uffff";
     static final String DFA12_eofS =
@@ -13790,105 +13824,105 @@ public class InputfileLexer extends Lexer {
             this.transition = DFA12_transition;
         }
         public String getDescription() {
-            return "864:5: ( ( '0' .. '9' )+ | ( '0' .. '9' )+ '.' ( '0' .. '9' )* | '.' ( '0' .. '9' )+ )";
+            return "882:5: ( ( '0' .. '9' )+ | ( '0' .. '9' )+ '.' ( '0' .. '9' )* | '.' ( '0' .. '9' )+ )";
         }
     }
-    static final String DFA20_eotS =
+    static final String DFA21_eotS =
         "\1\uffff\25\43\1\35\1\34\1\35\1\uffff\1\35\3\uffff\5\43\1\uffff"+
-        "\62\43\1\35\2\34\5\35\1\u00a3\6\35\1\u00aa\25\35\1\u00c4\1\u00c6"+
-        "\3\35\1\u00cc\4\35\1\u00d1\22\35\1\u00e7\3\35\2\34\5\35\1\uffff"+
-        "\2\35\1\u00f1\3\35\1\uffff\6\35\1\u00fd\11\35\1\u0107\1\35\1\u0109"+
-        "\5\35\1\u00c4\1\uffff\1\u00c6\1\uffff\1\u010f\4\35\1\uffff\4\35"+
-        "\1\uffff\10\35\1\u0121\10\35\1\u012a\1\u012b\1\u012c\1\35\1\uffff"+
-        "\11\35\1\uffff\6\35\1\u013d\4\35\1\uffff\11\35\1\uffff\1\35\1\uffff"+
-        "\5\35\1\uffff\2\35\1\u0153\16\35\1\uffff\1\35\1\u0165\6\35\3\uffff"+
-        "\20\35\1\uffff\1\u017c\13\35\1\u0188\2\35\1\u018b\1\u018c\4\35\1"+
-        "\uffff\2\35\1\u0194\12\35\1\u01a0\1\u01a1\2\35\1\uffff\11\35\1\u01ad"+
-        "\12\35\1\u01b8\1\35\1\uffff\2\35\1\u01bc\1\35\1\u01be\6\35\1\uffff"+
-        "\1\u01c6\1\u01c7\2\uffff\7\35\1\uffff\13\35\2\uffff\1\u01db\4\35"+
-        "\1\u01e0\5\35\1\uffff\1\u01e6\2\35\1\u01e9\6\35\1\uffff\3\35\1\uffff"+
-        "\1\u01f4\1\uffff\7\35\2\uffff\4\35\1\u0201\13\35\1\u020d\2\35\1"+
-        "\uffff\4\35\1\uffff\2\35\1\u0218\1\35\1\u021a\1\uffff\2\35\1\uffff"+
-        "\4\35\1\u0225\5\35\1\uffff\1\u022b\1\u022d\12\35\1\uffff\1\u0238"+
-        "\2\35\1\u023b\7\35\1\uffff\3\35\1\u0246\6\35\1\uffff\1\35\1\uffff"+
-        "\11\35\1\u0225\1\uffff\1\u0257\1\35\1\u0259\2\35\1\uffff\1\35\1"+
-        "\uffff\1\35\1\u025e\10\35\1\uffff\1\u0267\1\35\1\uffff\5\35\1\u026e"+
-        "\4\35\1\uffff\6\35\1\u027b\3\35\1\u027f\5\35\1\uffff\1\35\1\uffff"+
-        "\4\35\1\uffff\2\35\1\u028f\2\35\1\u0292\2\35\1\uffff\1\35\1\u0297"+
-        "\3\35\1\u029b\1\uffff\1\u029c\1\u029d\1\u029e\11\35\1\uffff\3\35"+
-        "\1\uffff\5\35\1\u02ae\1\u02af\1\u02b0\7\35\1\uffff\2\35\1\uffff"+
-        "\1\35\1\u02bb\2\35\1\uffff\2\35\1\u02c0\4\uffff\1\u02c1\1\u02c2"+
-        "\4\35\1\u02c7\10\35\3\uffff\12\35\1\uffff\4\35\3\uffff\2\35\1\u02e0"+
-        "\1\35\1\uffff\10\35\1\u02ea\7\35\1\u02f2\7\35\1\uffff\1\u02fa\5"+
-        "\35\1\u0300\2\35\1\uffff\5\35\1\u0308\1\35\1\uffff\1\u030a\1\u030b"+
-        "\3\35\1\u030f\1\35\1\uffff\2\35\1\u0313\2\35\1\uffff\6\35\1\u031c"+
-        "\1\uffff\1\35\2\uffff\3\35\1\uffff\1\u0321\2\35\1\uffff\1\u0326"+
-        "\1\u0327\6\35\1\uffff\1\u032e\1\35\1\u0330\1\35\1\uffff\3\35\1\u0335"+
-        "\2\uffff\1\u0336\4\35\1\u033b\1\uffff\1\35\1\uffff\4\35\2\uffff"+
-        "\3\35\1\u0344\1\uffff\6\35\1\u034b\1\u034c\1\uffff\1\u034d\1\35"+
-        "\1\u034f\2\35\1\u0352\3\uffff\1\u0353\1\uffff\2\35\2\uffff\2\35"+
-        "\1\u0358\1\35\1\uffff\1\u035a\1\uffff";
-    static final String DFA20_eofS =
+        "\62\43\1\35\2\34\1\31\4\35\1\u00a3\6\35\1\u00aa\25\35\1\u00c4\1"+
+        "\u00c6\3\35\1\u00cc\4\35\1\u00d1\22\35\1\u00e7\3\35\2\34\1\31\4"+
+        "\35\1\uffff\2\35\1\u00f1\3\35\1\uffff\6\35\1\u00fd\11\35\1\u0107"+
+        "\1\35\1\u0109\5\35\1\u00c4\1\uffff\1\u00c6\1\uffff\1\u010f\4\35"+
+        "\1\uffff\4\35\1\uffff\10\35\1\u0121\10\35\1\u012a\1\u012b\1\u012c"+
+        "\1\35\1\uffff\11\35\1\uffff\6\35\1\u013d\4\35\1\uffff\11\35\1\uffff"+
+        "\1\35\1\uffff\5\35\1\uffff\2\35\1\u0153\16\35\1\uffff\1\35\1\u0165"+
+        "\6\35\3\uffff\20\35\1\uffff\1\u017c\13\35\1\u0188\2\35\1\u018b\1"+
+        "\u018c\4\35\1\uffff\2\35\1\u0194\12\35\1\u01a0\1\u01a1\2\35\1\uffff"+
+        "\11\35\1\u01ad\12\35\1\u01b8\1\35\1\uffff\2\35\1\u01bc\1\35\1\u01be"+
+        "\6\35\1\uffff\1\u01c6\1\u01c7\2\uffff\7\35\1\uffff\13\35\2\uffff"+
+        "\1\u01db\4\35\1\u01e0\5\35\1\uffff\1\u01e6\2\35\1\u01e9\6\35\1\uffff"+
+        "\3\35\1\uffff\1\u01f4\1\uffff\7\35\2\uffff\4\35\1\u0201\13\35\1"+
+        "\u020d\2\35\1\uffff\4\35\1\uffff\2\35\1\u0218\1\35\1\u021a\1\uffff"+
+        "\2\35\1\uffff\4\35\1\u0225\5\35\1\uffff\1\u022b\1\u022d\12\35\1"+
+        "\uffff\1\u0238\2\35\1\u023b\7\35\1\uffff\3\35\1\u0246\6\35\1\uffff"+
+        "\1\35\1\uffff\11\35\1\u0225\1\uffff\1\u0257\1\35\1\u0259\2\35\1"+
+        "\uffff\1\35\1\uffff\1\35\1\u025e\10\35\1\uffff\1\u0267\1\35\1\uffff"+
+        "\5\35\1\u026e\4\35\1\uffff\6\35\1\u027b\3\35\1\u027f\5\35\1\uffff"+
+        "\1\35\1\uffff\4\35\1\uffff\2\35\1\u028f\2\35\1\u0292\2\35\1\uffff"+
+        "\1\35\1\u0297\3\35\1\u029b\1\uffff\1\u029c\1\u029d\1\u029e\11\35"+
+        "\1\uffff\3\35\1\uffff\5\35\1\u02ae\1\u02af\1\u02b0\7\35\1\uffff"+
+        "\2\35\1\uffff\1\35\1\u02bb\2\35\1\uffff\2\35\1\u02c0\4\uffff\1\u02c1"+
+        "\1\u02c2\4\35\1\u02c7\10\35\3\uffff\12\35\1\uffff\4\35\3\uffff\2"+
+        "\35\1\u02e0\1\35\1\uffff\10\35\1\u02ea\7\35\1\u02f2\7\35\1\uffff"+
+        "\1\u02fa\5\35\1\u0300\2\35\1\uffff\5\35\1\u0308\1\35\1\uffff\1\u030a"+
+        "\1\u030b\3\35\1\u030f\1\35\1\uffff\2\35\1\u0313\2\35\1\uffff\6\35"+
+        "\1\u031c\1\uffff\1\35\2\uffff\3\35\1\uffff\1\u0321\2\35\1\uffff"+
+        "\1\u0326\1\u0327\6\35\1\uffff\1\u032e\1\35\1\u0330\1\35\1\uffff"+
+        "\3\35\1\u0335\2\uffff\1\u0336\4\35\1\u033b\1\uffff\1\35\1\uffff"+
+        "\4\35\2\uffff\3\35\1\u0344\1\uffff\6\35\1\u034b\1\u034c\1\uffff"+
+        "\1\u034d\1\35\1\u034f\2\35\1\u0352\3\uffff\1\u0353\1\uffff\2\35"+
+        "\2\uffff\2\35\1\u0358\1\35\1\uffff\1\u035a\1\uffff";
+    static final String DFA21_eofS =
         "\u035b\uffff";
-    static final String DFA20_minS =
+    static final String DFA21_minS =
         "\1\11\25\44\1\56\1\44\1\60\1\uffff\1\57\3\uffff\5\44\1\uffff\62"+
-        "\44\1\53\2\44\1\0\1\123\1\106\1\124\1\114\1\44\2\103\1\105\1\116"+
-        "\1\106\1\105\1\44\2\101\1\123\1\115\1\105\1\123\1\106\1\111\1\114"+
-        "\1\122\1\120\1\126\1\122\1\105\1\114\1\103\1\115\1\103\1\122\1\114"+
-        "\1\122\2\44\1\123\1\124\1\101\1\44\1\115\1\122\1\105\1\124\1\44"+
-        "\1\101\1\105\1\123\1\124\1\103\2\105\1\107\2\105\1\122\1\124\1\111"+
-        "\1\105\1\130\1\115\1\105\1\107\1\44\1\111\1\124\1\60\2\44\1\0\1"+
-        "\124\1\103\1\101\1\111\1\uffff\1\125\1\123\1\44\1\123\1\122\1\116"+
-        "\1\uffff\1\131\1\125\1\111\1\131\1\110\1\114\1\44\1\105\1\111\1"+
-        "\101\1\114\1\117\1\122\1\105\1\124\1\101\1\44\1\124\1\44\1\117\1"+
-        "\101\1\105\1\114\1\124\1\44\1\uffff\1\44\1\uffff\1\44\1\101\1\130"+
-        "\1\115\1\123\1\uffff\1\105\1\107\1\114\1\105\1\uffff\1\122\1\123"+
-        "\1\105\1\103\1\117\1\105\1\116\1\101\1\44\1\106\1\105\1\114\1\122"+
-        "\1\105\1\125\1\117\1\123\3\44\1\105\1\uffff\1\132\1\111\2\101\1"+
-        "\111\1\115\2\114\1\125\1\uffff\1\114\1\101\1\123\1\120\1\114\1\124"+
-        "\1\44\1\105\1\117\2\105\1\uffff\1\116\1\114\1\116\1\115\1\125\1"+
-        "\117\1\116\1\117\1\122\1\uffff\1\117\1\uffff\1\105\1\107\1\114\1"+
-        "\101\1\125\1\uffff\1\116\1\102\1\44\1\125\1\116\1\131\1\123\2\111"+
-        "\1\117\2\105\1\116\1\123\2\101\1\122\1\uffff\1\122\1\44\1\106\1"+
-        "\111\1\123\1\122\1\115\1\117\3\uffff\1\104\1\117\1\103\2\114\1\116"+
-        "\3\101\1\122\1\101\1\103\1\111\1\101\1\124\1\131\1\uffff\1\44\1"+
-        "\124\1\103\1\121\1\103\1\105\1\107\1\117\1\116\1\107\1\124\1\106"+
-        "\1\44\1\122\1\105\2\44\2\122\1\107\1\105\1\uffff\1\122\1\124\1\44"+
-        "\1\111\1\116\1\123\1\114\1\116\1\110\1\111\1\114\1\117\1\111\2\44"+
-        "\1\102\1\101\1\uffff\1\111\1\101\1\117\2\105\1\114\1\111\1\116\1"+
-        "\101\1\44\1\103\1\105\1\124\1\122\1\124\1\122\2\124\1\117\1\122"+
-        "\1\44\1\102\1\uffff\1\117\1\124\1\44\1\105\1\44\2\114\1\104\1\122"+
-        "\2\106\1\uffff\2\44\2\uffff\1\122\1\105\1\125\1\101\1\105\1\101"+
-        "\1\127\1\uffff\1\105\1\132\1\103\1\101\1\125\1\105\1\101\1\116\1"+
-        "\114\1\115\1\104\2\uffff\1\44\1\115\3\114\1\44\1\124\1\125\1\115"+
-        "\1\124\1\114\1\uffff\1\44\1\122\1\111\1\44\1\105\1\117\1\105\1\111"+
-        "\1\116\1\101\1\uffff\1\101\1\116\1\122\1\uffff\1\44\1\uffff\2\105"+
-        "\1\111\1\101\1\105\1\122\1\123\2\uffff\1\105\1\122\1\114\1\115\1"+
-        "\44\1\114\1\110\1\122\1\105\1\117\1\105\2\124\1\122\1\120\1\104"+
-        "\1\44\1\105\1\125\1\uffff\3\105\1\125\1\uffff\1\105\1\124\1\44\1"+
-        "\101\1\44\1\uffff\1\104\1\117\1\uffff\1\106\1\125\1\120\1\117\1"+
-        "\44\1\115\2\123\1\117\1\111\1\uffff\2\44\1\116\1\115\2\101\1\105"+
-        "\1\123\2\101\1\117\1\111\1\uffff\1\44\2\115\1\44\1\116\1\101\2\111"+
-        "\1\107\1\105\1\117\1\uffff\1\122\1\105\1\124\1\44\1\131\1\111\1"+
-        "\114\1\124\1\122\1\111\1\uffff\1\114\1\uffff\1\101\1\110\1\105\1"+
-        "\116\1\105\1\114\1\116\1\105\1\116\1\44\1\uffff\1\44\1\105\1\44"+
-        "\1\116\1\114\1\uffff\1\124\1\uffff\1\107\1\44\1\126\1\103\1\124"+
-        "\1\117\1\104\1\122\1\106\1\115\1\uffff\1\44\1\111\1\uffff\1\103"+
-        "\1\126\2\117\1\131\1\44\1\127\2\123\1\120\1\uffff\1\120\1\130\1"+
-        "\105\1\111\1\101\1\117\1\44\1\124\1\111\1\116\1\44\2\105\1\104\1"+
-        "\122\1\104\1\uffff\1\104\1\uffff\1\123\1\105\1\117\1\104\1\uffff"+
-        "\1\131\1\124\1\44\1\114\1\111\1\44\1\106\1\105\1\uffff\1\103\1\44"+
-        "\1\131\2\116\1\44\1\uffff\3\44\2\120\2\105\1\124\1\115\1\117\1\130"+
-        "\1\116\1\uffff\1\105\1\103\1\123\1\uffff\2\123\1\111\1\104\1\105"+
-        "\3\44\1\115\1\110\1\105\1\114\1\105\1\103\1\111\1\uffff\2\125\1"+
-        "\uffff\1\123\1\44\1\122\1\116\1\uffff\1\101\1\104\1\44\4\uffff\2"+
-        "\44\1\125\1\105\1\116\1\111\1\44\1\122\1\113\1\111\2\103\1\116\1"+
-        "\105\1\103\3\uffff\1\123\1\111\1\101\1\105\1\116\2\117\1\124\1\123"+
-        "\1\105\1\uffff\1\117\2\124\1\111\3\uffff\1\122\1\116\1\44\1\123"+
-        "\1\uffff\1\111\1\116\1\124\2\101\2\107\1\101\1\44\1\103\1\126\1"+
-        "\115\1\123\2\116\1\111\1\44\1\124\1\116\1\122\1\117\1\122\1\105"+
-        "\1\124\1\uffff\1\44\1\101\1\105\1\131\2\120\1\44\1\122\1\131\1\uffff"+
-        "\1\113\1\131\1\105\1\111\1\103\1\44\1\117\1\uffff\2\44\1\101\1\115"+
+        "\44\1\53\3\44\1\123\1\106\1\124\1\114\1\44\2\103\1\105\1\116\1\106"+
+        "\1\105\1\44\2\101\1\123\1\115\1\105\1\123\1\106\1\111\1\114\1\122"+
+        "\1\120\1\126\1\122\1\105\1\114\1\103\1\115\1\103\1\122\1\114\1\122"+
+        "\2\44\1\123\1\124\1\101\1\44\1\115\1\122\1\105\1\124\1\44\1\101"+
+        "\1\105\1\123\1\124\1\103\2\105\1\107\2\105\1\122\1\124\1\111\1\105"+
+        "\1\130\1\115\1\105\1\107\1\44\1\111\1\124\1\60\3\44\1\124\1\103"+
+        "\1\101\1\111\1\uffff\1\125\1\123\1\44\1\123\1\122\1\116\1\uffff"+
+        "\1\131\1\125\1\111\1\131\1\110\1\114\1\44\1\105\1\111\1\101\1\114"+
+        "\1\117\1\122\1\105\1\124\1\101\1\44\1\124\1\44\1\117\1\101\1\105"+
+        "\1\114\1\124\1\44\1\uffff\1\44\1\uffff\1\44\1\101\1\130\1\115\1"+
+        "\123\1\uffff\1\105\1\107\1\114\1\105\1\uffff\1\122\1\123\1\105\1"+
+        "\103\1\117\1\105\1\116\1\101\1\44\1\106\1\105\1\114\1\122\1\105"+
+        "\1\125\1\117\1\123\3\44\1\105\1\uffff\1\132\1\111\2\101\1\111\1"+
+        "\115\2\114\1\125\1\uffff\1\114\1\101\1\123\1\120\1\114\1\124\1\44"+
+        "\1\105\1\117\2\105\1\uffff\1\116\1\114\1\116\1\115\1\125\1\117\1"+
+        "\116\1\117\1\122\1\uffff\1\117\1\uffff\1\105\1\107\1\114\1\101\1"+
+        "\125\1\uffff\1\116\1\102\1\44\1\125\1\116\1\131\1\123\2\111\1\117"+
+        "\2\105\1\116\1\123\2\101\1\122\1\uffff\1\122\1\44\1\106\1\111\1"+
+        "\123\1\122\1\115\1\117\3\uffff\1\104\1\117\1\103\2\114\1\116\3\101"+
+        "\1\122\1\101\1\103\1\111\1\101\1\124\1\131\1\uffff\1\44\1\124\1"+
+        "\103\1\121\1\103\1\105\1\107\1\117\1\116\1\107\1\124\1\106\1\44"+
+        "\1\122\1\105\2\44\2\122\1\107\1\105\1\uffff\1\122\1\124\1\44\1\111"+
+        "\1\116\1\123\1\114\1\116\1\110\1\111\1\114\1\117\1\111\2\44\1\102"+
+        "\1\101\1\uffff\1\111\1\101\1\117\2\105\1\114\1\111\1\116\1\101\1"+
+        "\44\1\103\1\105\1\124\1\122\1\124\1\122\2\124\1\117\1\122\1\44\1"+
+        "\102\1\uffff\1\117\1\124\1\44\1\105\1\44\2\114\1\104\1\122\2\106"+
+        "\1\uffff\2\44\2\uffff\1\122\1\105\1\125\1\101\1\105\1\101\1\127"+
+        "\1\uffff\1\105\1\132\1\103\1\101\1\125\1\105\1\101\1\116\1\114\1"+
+        "\115\1\104\2\uffff\1\44\1\115\3\114\1\44\1\124\1\125\1\115\1\124"+
+        "\1\114\1\uffff\1\44\1\122\1\111\1\44\1\105\1\117\1\105\1\111\1\116"+
+        "\1\101\1\uffff\1\101\1\116\1\122\1\uffff\1\44\1\uffff\2\105\1\111"+
+        "\1\101\1\105\1\122\1\123\2\uffff\1\105\1\122\1\114\1\115\1\44\1"+
+        "\114\1\110\1\122\1\105\1\117\1\105\2\124\1\122\1\120\1\104\1\44"+
+        "\1\105\1\125\1\uffff\3\105\1\125\1\uffff\1\105\1\124\1\44\1\101"+
+        "\1\44\1\uffff\1\104\1\117\1\uffff\1\106\1\125\1\120\1\117\1\44\1"+
+        "\115\2\123\1\117\1\111\1\uffff\2\44\1\116\1\115\2\101\1\105\1\123"+
+        "\2\101\1\117\1\111\1\uffff\1\44\2\115\1\44\1\116\1\101\2\111\1\107"+
+        "\1\105\1\117\1\uffff\1\122\1\105\1\124\1\44\1\131\1\111\1\114\1"+
+        "\124\1\122\1\111\1\uffff\1\114\1\uffff\1\101\1\110\1\105\1\116\1"+
+        "\105\1\114\1\116\1\105\1\116\1\44\1\uffff\1\44\1\105\1\44\1\116"+
+        "\1\114\1\uffff\1\124\1\uffff\1\107\1\44\1\126\1\103\1\124\1\117"+
+        "\1\104\1\122\1\106\1\115\1\uffff\1\44\1\111\1\uffff\1\103\1\126"+
+        "\2\117\1\131\1\44\1\127\2\123\1\120\1\uffff\1\120\1\130\1\105\1"+
+        "\111\1\101\1\117\1\44\1\124\1\111\1\116\1\44\2\105\1\104\1\122\1"+
+        "\104\1\uffff\1\104\1\uffff\1\123\1\105\1\117\1\104\1\uffff\1\131"+
+        "\1\124\1\44\1\114\1\111\1\44\1\106\1\105\1\uffff\1\103\1\44\1\131"+
+        "\2\116\1\44\1\uffff\3\44\2\120\2\105\1\124\1\115\1\117\1\130\1\116"+
+        "\1\uffff\1\105\1\103\1\123\1\uffff\2\123\1\111\1\104\1\105\3\44"+
+        "\1\115\1\110\1\105\1\114\1\105\1\103\1\111\1\uffff\2\125\1\uffff"+
+        "\1\123\1\44\1\122\1\116\1\uffff\1\101\1\104\1\44\4\uffff\2\44\1"+
+        "\125\1\105\1\116\1\111\1\44\1\122\1\113\1\111\2\103\1\116\1\105"+
+        "\1\103\3\uffff\1\123\1\111\1\101\1\105\1\116\2\117\1\124\1\123\1"+
+        "\105\1\uffff\1\117\2\124\1\111\3\uffff\1\122\1\116\1\44\1\123\1"+
+        "\uffff\1\111\1\116\1\124\2\101\2\107\1\101\1\44\1\103\1\126\1\115"+
+        "\1\123\2\116\1\111\1\44\1\124\1\116\1\122\1\117\1\122\1\105\1\124"+
+        "\1\uffff\1\44\1\101\1\105\1\131\2\120\1\44\1\122\1\131\1\uffff\1"+
+        "\113\1\131\1\105\1\111\1\103\1\44\1\117\1\uffff\2\44\1\101\1\115"+
         "\1\105\1\44\1\123\1\uffff\1\114\1\123\1\44\2\105\1\uffff\1\105\1"+
         "\115\1\116\1\103\1\116\1\124\1\44\1\uffff\1\116\2\uffff\1\124\1"+
         "\123\1\103\1\uffff\1\44\1\105\1\123\1\uffff\2\44\1\105\1\117\1\105"+
@@ -13898,76 +13932,76 @@ public class InputfileLexer extends Lexer {
         "\1\44\1\uffff\1\116\1\117\1\105\1\124\1\115\1\114\2\44\1\uffff\1"+
         "\44\1\116\1\44\1\125\1\105\1\44\3\uffff\1\44\1\uffff\1\122\1\116"+
         "\2\uffff\1\105\1\124\1\44\1\123\1\uffff\1\44\1\uffff";
-    static final String DFA20_maxS =
-        "\26\172\1\71\1\172\1\71\1\uffff\1\57\3\uffff\5\172\1\uffff\62\172"+
-        "\1\71\2\172\1\uffff\1\163\1\146\1\164\1\154\1\172\2\143\1\145\1"+
-        "\156\1\146\1\145\1\172\2\141\1\163\1\155\1\160\1\163\1\165\1\151"+
-        "\1\154\1\162\1\160\1\166\1\162\1\145\1\154\1\143\1\155\1\143\1\162"+
-        "\1\165\1\162\2\172\1\163\1\164\1\141\1\172\1\155\1\162\1\145\1\164"+
-        "\1\172\1\141\1\145\1\163\1\164\1\162\2\145\1\147\2\145\1\162\1\164"+
-        "\1\151\1\145\1\170\1\155\1\145\1\147\1\172\1\151\1\164\1\71\2\172"+
-        "\1\uffff\1\164\1\143\1\141\1\151\1\uffff\2\165\1\172\1\163\1\162"+
-        "\1\156\1\uffff\1\171\1\165\1\151\1\171\2\154\1\172\1\145\1\151\1"+
-        "\141\1\154\1\157\1\162\1\145\1\164\1\141\1\172\1\164\1\172\1\157"+
-        "\1\141\1\145\1\154\1\164\1\172\1\uffff\1\172\1\uffff\1\172\1\141"+
-        "\1\170\1\155\1\163\1\uffff\1\145\1\147\1\154\1\145\1\uffff\1\162"+
-        "\1\163\1\145\1\143\1\157\2\156\1\141\1\172\1\146\1\145\1\154\1\162"+
-        "\1\145\1\165\1\157\1\163\3\172\1\145\1\uffff\1\172\1\151\2\141\1"+
-        "\151\1\155\2\154\1\165\1\uffff\1\154\1\141\1\163\1\160\1\154\1\164"+
-        "\1\172\1\145\1\157\2\145\1\uffff\1\156\1\154\1\156\1\155\1\165\1"+
-        "\157\1\156\1\157\1\162\1\uffff\1\157\1\uffff\1\145\1\147\1\160\1"+
-        "\141\1\165\1\uffff\1\156\1\142\1\172\1\165\1\156\1\171\1\163\2\151"+
-        "\1\157\1\167\1\145\1\156\1\163\2\141\1\162\1\uffff\1\162\1\172\1"+
-        "\146\1\151\1\163\1\162\1\155\1\157\3\uffff\1\144\1\157\1\143\2\154"+
-        "\1\156\3\141\1\162\1\141\1\143\1\151\1\141\1\164\1\171\1\uffff\1"+
-        "\172\1\164\1\143\1\161\1\143\1\145\1\147\1\157\1\156\1\147\1\164"+
-        "\1\146\1\172\1\162\1\145\2\172\2\162\1\147\1\145\1\uffff\1\162\1"+
-        "\164\1\172\1\160\1\156\1\163\1\154\1\156\1\150\1\151\1\154\1\157"+
-        "\1\151\2\172\1\142\1\141\1\uffff\1\151\1\141\1\157\2\145\1\154\1"+
-        "\151\1\156\1\141\1\172\1\143\1\145\1\164\1\162\1\164\1\162\2\164"+
-        "\1\157\1\162\1\172\1\142\1\uffff\1\157\1\164\1\172\1\145\1\172\2"+
-        "\154\1\144\1\162\1\150\1\146\1\uffff\2\172\2\uffff\1\162\1\145\1"+
-        "\165\1\141\1\145\1\141\1\167\1\uffff\1\145\1\172\1\150\1\141\1\165"+
-        "\1\145\1\141\1\156\1\154\1\155\1\144\2\uffff\1\172\1\155\3\154\1"+
-        "\172\1\164\1\165\1\155\1\164\1\154\1\uffff\1\172\1\162\1\151\1\172"+
-        "\1\145\1\157\1\145\1\151\1\156\1\141\1\uffff\1\141\1\156\1\162\1"+
-        "\uffff\1\172\1\uffff\2\145\1\151\1\141\1\145\1\162\1\163\2\uffff"+
-        "\1\145\1\162\1\154\1\155\1\172\1\154\1\150\1\162\1\145\1\157\1\145"+
-        "\2\164\1\162\1\160\1\144\1\172\1\145\1\165\1\uffff\2\145\1\164\1"+
-        "\165\1\uffff\1\145\1\164\1\172\1\141\1\172\1\uffff\1\164\1\157\1"+
-        "\uffff\1\160\1\165\1\160\1\157\1\172\1\155\2\163\1\157\1\151\1\uffff"+
-        "\2\172\1\156\1\155\2\141\1\145\1\163\2\141\1\157\1\151\1\uffff\1"+
-        "\172\2\155\1\172\1\156\1\141\2\151\1\147\1\145\1\157\1\uffff\1\162"+
-        "\1\145\1\164\1\172\1\171\1\151\1\154\1\164\1\162\1\151\1\uffff\1"+
-        "\154\1\uffff\1\141\1\150\1\145\1\156\1\145\1\154\1\156\1\145\1\156"+
-        "\1\172\1\uffff\1\172\1\145\1\172\1\156\1\154\1\uffff\1\164\1\uffff"+
-        "\1\147\1\172\1\166\1\143\1\164\1\157\1\144\1\162\1\146\1\155\1\uffff"+
-        "\1\172\1\151\1\uffff\1\143\1\166\2\157\1\171\1\172\1\167\2\163\1"+
-        "\171\1\uffff\1\160\1\170\1\145\1\151\1\141\1\157\1\172\1\164\1\151"+
-        "\1\156\1\172\2\145\1\144\1\162\1\144\1\uffff\1\144\1\uffff\1\163"+
-        "\1\145\1\157\1\164\1\uffff\1\171\1\164\1\172\1\154\1\151\1\172\1"+
-        "\146\1\145\1\uffff\1\143\1\172\1\171\2\156\1\172\1\uffff\3\172\2"+
-        "\160\2\145\1\164\1\155\1\157\1\170\1\156\1\uffff\1\145\1\143\1\163"+
-        "\1\uffff\2\163\1\151\1\144\1\145\3\172\1\155\1\150\1\145\1\154\1"+
-        "\145\1\143\1\151\1\uffff\2\165\1\uffff\1\163\1\172\1\162\1\156\1"+
-        "\uffff\1\141\1\144\1\172\4\uffff\2\172\1\165\1\145\1\156\1\151\1"+
-        "\172\1\162\1\153\1\151\2\143\1\156\1\145\1\143\3\uffff\1\163\1\151"+
-        "\1\141\1\145\1\156\2\157\1\164\1\163\1\145\1\uffff\1\157\2\164\1"+
-        "\151\3\uffff\1\162\1\156\1\172\1\163\1\uffff\1\151\1\156\1\164\2"+
-        "\141\2\147\1\141\1\172\1\143\1\166\1\155\1\163\2\156\1\151\1\172"+
-        "\1\164\1\156\1\162\1\157\1\162\1\145\1\164\1\uffff\1\172\1\141\1"+
-        "\145\1\171\2\160\1\172\1\162\1\171\1\uffff\1\153\1\171\1\145\1\151"+
-        "\1\143\1\172\1\157\1\uffff\2\172\1\141\1\155\1\145\1\172\1\163\1"+
-        "\uffff\1\154\1\163\1\172\2\145\1\uffff\1\145\1\155\1\156\1\143\1"+
-        "\156\1\164\1\172\1\uffff\1\156\2\uffff\1\164\1\163\1\143\1\uffff"+
-        "\1\172\1\164\1\163\1\uffff\2\172\1\145\1\157\1\145\1\157\1\164\1"+
-        "\171\1\uffff\1\172\1\151\1\172\1\164\1\uffff\1\171\1\151\1\154\1"+
-        "\172\2\uffff\1\172\1\144\1\163\1\156\1\163\1\172\1\uffff\1\157\1"+
-        "\uffff\1\151\1\160\1\170\1\145\2\uffff\1\145\1\163\1\143\1\172\1"+
-        "\uffff\1\156\1\157\1\145\1\164\1\155\1\154\2\172\1\uffff\1\172\1"+
-        "\156\1\172\1\165\1\145\1\172\3\uffff\1\172\1\uffff\1\162\1\156\2"+
-        "\uffff\1\145\1\164\1\172\1\163\1\uffff\1\172\1\uffff";
-    static final String DFA20_acceptS =
+    static final String DFA21_maxS =
+        "\1\ufeff\25\172\1\71\1\172\1\71\1\uffff\1\57\3\uffff\5\172\1\uffff"+
+        "\62\172\1\71\3\172\1\163\1\146\1\164\1\154\1\172\2\143\1\145\1\156"+
+        "\1\146\1\145\1\172\2\141\1\163\1\155\1\160\1\163\1\165\1\151\1\154"+
+        "\1\162\1\160\1\166\1\162\1\145\1\154\1\143\1\155\1\143\1\162\1\165"+
+        "\1\162\2\172\1\163\1\164\1\141\1\172\1\155\1\162\1\145\1\164\1\172"+
+        "\1\141\1\145\1\163\1\164\1\162\2\145\1\147\2\145\1\162\1\164\1\151"+
+        "\1\145\1\170\1\155\1\145\1\147\1\172\1\151\1\164\1\71\3\172\1\164"+
+        "\1\143\1\141\1\151\1\uffff\2\165\1\172\1\163\1\162\1\156\1\uffff"+
+        "\1\171\1\165\1\151\1\171\2\154\1\172\1\145\1\151\1\141\1\154\1\157"+
+        "\1\162\1\145\1\164\1\141\1\172\1\164\1\172\1\157\1\141\1\145\1\154"+
+        "\1\164\1\172\1\uffff\1\172\1\uffff\1\172\1\141\1\170\1\155\1\163"+
+        "\1\uffff\1\145\1\147\1\154\1\145\1\uffff\1\162\1\163\1\145\1\143"+
+        "\1\157\2\156\1\141\1\172\1\146\1\145\1\154\1\162\1\145\1\165\1\157"+
+        "\1\163\3\172\1\145\1\uffff\1\172\1\151\2\141\1\151\1\155\2\154\1"+
+        "\165\1\uffff\1\154\1\141\1\163\1\160\1\154\1\164\1\172\1\145\1\157"+
+        "\2\145\1\uffff\1\156\1\154\1\156\1\155\1\165\1\157\1\156\1\157\1"+
+        "\162\1\uffff\1\157\1\uffff\1\145\1\147\1\160\1\141\1\165\1\uffff"+
+        "\1\156\1\142\1\172\1\165\1\156\1\171\1\163\2\151\1\157\1\167\1\145"+
+        "\1\156\1\163\2\141\1\162\1\uffff\1\162\1\172\1\146\1\151\1\163\1"+
+        "\162\1\155\1\157\3\uffff\1\144\1\157\1\143\2\154\1\156\3\141\1\162"+
+        "\1\141\1\143\1\151\1\141\1\164\1\171\1\uffff\1\172\1\164\1\143\1"+
+        "\161\1\143\1\145\1\147\1\157\1\156\1\147\1\164\1\146\1\172\1\162"+
+        "\1\145\2\172\2\162\1\147\1\145\1\uffff\1\162\1\164\1\172\1\160\1"+
+        "\156\1\163\1\154\1\156\1\150\1\151\1\154\1\157\1\151\2\172\1\142"+
+        "\1\141\1\uffff\1\151\1\141\1\157\2\145\1\154\1\151\1\156\1\141\1"+
+        "\172\1\143\1\145\1\164\1\162\1\164\1\162\2\164\1\157\1\162\1\172"+
+        "\1\142\1\uffff\1\157\1\164\1\172\1\145\1\172\2\154\1\144\1\162\1"+
+        "\150\1\146\1\uffff\2\172\2\uffff\1\162\1\145\1\165\1\141\1\145\1"+
+        "\141\1\167\1\uffff\1\145\1\172\1\150\1\141\1\165\1\145\1\141\1\156"+
+        "\1\154\1\155\1\144\2\uffff\1\172\1\155\3\154\1\172\1\164\1\165\1"+
+        "\155\1\164\1\154\1\uffff\1\172\1\162\1\151\1\172\1\145\1\157\1\145"+
+        "\1\151\1\156\1\141\1\uffff\1\141\1\156\1\162\1\uffff\1\172\1\uffff"+
+        "\2\145\1\151\1\141\1\145\1\162\1\163\2\uffff\1\145\1\162\1\154\1"+
+        "\155\1\172\1\154\1\150\1\162\1\145\1\157\1\145\2\164\1\162\1\160"+
+        "\1\144\1\172\1\145\1\165\1\uffff\2\145\1\164\1\165\1\uffff\1\145"+
+        "\1\164\1\172\1\141\1\172\1\uffff\1\164\1\157\1\uffff\1\160\1\165"+
+        "\1\160\1\157\1\172\1\155\2\163\1\157\1\151\1\uffff\2\172\1\156\1"+
+        "\155\2\141\1\145\1\163\2\141\1\157\1\151\1\uffff\1\172\2\155\1\172"+
+        "\1\156\1\141\2\151\1\147\1\145\1\157\1\uffff\1\162\1\145\1\164\1"+
+        "\172\1\171\1\151\1\154\1\164\1\162\1\151\1\uffff\1\154\1\uffff\1"+
+        "\141\1\150\1\145\1\156\1\145\1\154\1\156\1\145\1\156\1\172\1\uffff"+
+        "\1\172\1\145\1\172\1\156\1\154\1\uffff\1\164\1\uffff\1\147\1\172"+
+        "\1\166\1\143\1\164\1\157\1\144\1\162\1\146\1\155\1\uffff\1\172\1"+
+        "\151\1\uffff\1\143\1\166\2\157\1\171\1\172\1\167\2\163\1\171\1\uffff"+
+        "\1\160\1\170\1\145\1\151\1\141\1\157\1\172\1\164\1\151\1\156\1\172"+
+        "\2\145\1\144\1\162\1\144\1\uffff\1\144\1\uffff\1\163\1\145\1\157"+
+        "\1\164\1\uffff\1\171\1\164\1\172\1\154\1\151\1\172\1\146\1\145\1"+
+        "\uffff\1\143\1\172\1\171\2\156\1\172\1\uffff\3\172\2\160\2\145\1"+
+        "\164\1\155\1\157\1\170\1\156\1\uffff\1\145\1\143\1\163\1\uffff\2"+
+        "\163\1\151\1\144\1\145\3\172\1\155\1\150\1\145\1\154\1\145\1\143"+
+        "\1\151\1\uffff\2\165\1\uffff\1\163\1\172\1\162\1\156\1\uffff\1\141"+
+        "\1\144\1\172\4\uffff\2\172\1\165\1\145\1\156\1\151\1\172\1\162\1"+
+        "\153\1\151\2\143\1\156\1\145\1\143\3\uffff\1\163\1\151\1\141\1\145"+
+        "\1\156\2\157\1\164\1\163\1\145\1\uffff\1\157\2\164\1\151\3\uffff"+
+        "\1\162\1\156\1\172\1\163\1\uffff\1\151\1\156\1\164\2\141\2\147\1"+
+        "\141\1\172\1\143\1\166\1\155\1\163\2\156\1\151\1\172\1\164\1\156"+
+        "\1\162\1\157\1\162\1\145\1\164\1\uffff\1\172\1\141\1\145\1\171\2"+
+        "\160\1\172\1\162\1\171\1\uffff\1\153\1\171\1\145\1\151\1\143\1\172"+
+        "\1\157\1\uffff\2\172\1\141\1\155\1\145\1\172\1\163\1\uffff\1\154"+
+        "\1\163\1\172\2\145\1\uffff\1\145\1\155\1\156\1\143\1\156\1\164\1"+
+        "\172\1\uffff\1\156\2\uffff\1\164\1\163\1\143\1\uffff\1\172\1\164"+
+        "\1\163\1\uffff\2\172\1\145\1\157\1\145\1\157\1\164\1\171\1\uffff"+
+        "\1\172\1\151\1\172\1\164\1\uffff\1\171\1\151\1\154\1\172\2\uffff"+
+        "\1\172\1\144\1\163\1\156\1\163\1\172\1\uffff\1\157\1\uffff\1\151"+
+        "\1\160\1\170\1\145\2\uffff\1\145\1\163\1\143\1\172\1\uffff\1\156"+
+        "\1\157\1\145\1\164\1\155\1\154\2\172\1\uffff\1\172\1\156\1\172\1"+
+        "\165\1\145\1\172\3\uffff\1\172\1\uffff\1\162\1\156\2\uffff\1\145"+
+        "\1\164\1\172\1\163\1\uffff\1\172\1\uffff";
+    static final String DFA21_acceptS =
         "\31\uffff\1\144\1\uffff\1\145\1\143\1\146\5\uffff\1\44\177\uffff"+
         "\1\51\6\uffff\1\4\31\uffff\1\16\1\uffff\1\17\5\uffff\1\20\4\uffff"+
         "\1\50\25\uffff\1\116\11\uffff\1\2\13\uffff\1\21\11\uffff\1\7\1\uffff"+
@@ -13988,16 +14022,16 @@ public class InputfileLexer extends Lexer {
         "\1\uffff\1\43\4\uffff\1\64\1\140\4\uffff\1\103\10\uffff\1\102\6"+
         "\uffff\1\33\1\77\1\35\1\uffff\1\57\2\uffff\1\3\1\56\4\uffff\1\65"+
         "\1\uffff\1\67";
-    static final String DFA20_specialS =
-        "\131\uffff\1\0\104\uffff\1\1\u02bc\uffff}>";
-    static final String[] DFA20_transitionS = {
+    static final String DFA21_specialS =
+        "\u035b\uffff}>";
+    static final String[] DFA21_transitionS = {
             "\2\33\2\uffff\1\33\22\uffff\1\33\1\31\1\uffff\1\31\1\35\6\uffff"+
             "\1\34\1\uffff\1\26\1\30\1\32\12\27\1\35\6\uffff\1\7\1\6\1\1"+
             "\1\3\1\11\1\20\1\17\1\23\1\21\1\25\1\22\1\5\1\16\1\14\1\25\1"+
             "\12\1\25\1\10\1\4\1\2\1\13\1\24\1\15\3\25\1\uffff\1\35\2\uffff"+
             "\1\35\1\uffff\1\7\1\6\1\1\1\3\1\11\1\20\1\17\1\23\1\21\1\25"+
             "\1\22\1\5\1\16\1\14\1\25\1\12\1\25\1\10\1\4\1\2\1\13\1\24\1"+
-            "\15\3\25",
+            "\15\3\25\ufe84\uffff\1\33",
             "\1\35\10\uffff\16\35\6\uffff\1\41\7\42\1\40\5\42\1\37\2\42"+
             "\1\36\10\42\1\uffff\1\35\2\uffff\1\35\1\uffff\1\41\7\42\1\40"+
             "\5\42\1\37\2\42\1\36\10\42",
@@ -14180,8 +14214,8 @@ public class InputfileLexer extends Lexer {
             "\1\uffff\1\35\2\uffff\1\35\1\uffff\4\35\1\126\25\35",
             "\1\35\10\uffff\3\35\12\130\1\35\6\uffff\4\35\1\126\25\35\1"+
             "\uffff\1\35\2\uffff\1\35\1\uffff\4\35\1\126\25\35",
-            "\44\31\1\u009e\10\31\16\u009e\6\31\32\u009e\1\31\1\u009e\2"+
-            "\31\1\u009e\1\31\32\u009e\uff85\31",
+            "\1\u009e\10\uffff\16\u009e\6\uffff\32\u009e\1\uffff\1\u009e"+
+            "\2\uffff\1\u009e\1\uffff\32\u009e",
             "\1\u009f\37\uffff\1\u009f",
             "\1\u00a0\37\uffff\1\u00a0",
             "\1\u00a1\37\uffff\1\u00a1",
@@ -14261,8 +14295,8 @@ public class InputfileLexer extends Lexer {
             "\2\uffff\1\35\1\uffff\32\35",
             "\1\35\10\uffff\3\35\12\u009d\1\35\6\uffff\4\35\1\126\25\35"+
             "\1\uffff\1\35\2\uffff\1\35\1\uffff\4\35\1\126\25\35",
-            "\44\31\1\u009e\10\31\16\u009e\6\31\32\u009e\1\31\1\u009e\2"+
-            "\31\1\u009e\1\31\32\u009e\uff85\31",
+            "\1\u009e\10\uffff\16\u009e\6\uffff\32\u009e\1\uffff\1\u009e"+
+            "\2\uffff\1\u009e\1\uffff\32\u009e",
             "\1\u00ea\37\uffff\1\u00ea",
             "\1\u00eb\37\uffff\1\u00eb",
             "\1\u00ec\37\uffff\1\u00ec",
@@ -15063,74 +15097,38 @@ public class InputfileLexer extends Lexer {
             ""
     };
 
-    static final short[] DFA20_eot = DFA.unpackEncodedString(DFA20_eotS);
-    static final short[] DFA20_eof = DFA.unpackEncodedString(DFA20_eofS);
-    static final char[] DFA20_min = DFA.unpackEncodedStringToUnsignedChars(DFA20_minS);
-    static final char[] DFA20_max = DFA.unpackEncodedStringToUnsignedChars(DFA20_maxS);
-    static final short[] DFA20_accept = DFA.unpackEncodedString(DFA20_acceptS);
-    static final short[] DFA20_special = DFA.unpackEncodedString(DFA20_specialS);
-    static final short[][] DFA20_transition;
+    static final short[] DFA21_eot = DFA.unpackEncodedString(DFA21_eotS);
+    static final short[] DFA21_eof = DFA.unpackEncodedString(DFA21_eofS);
+    static final char[] DFA21_min = DFA.unpackEncodedStringToUnsignedChars(DFA21_minS);
+    static final char[] DFA21_max = DFA.unpackEncodedStringToUnsignedChars(DFA21_maxS);
+    static final short[] DFA21_accept = DFA.unpackEncodedString(DFA21_acceptS);
+    static final short[] DFA21_special = DFA.unpackEncodedString(DFA21_specialS);
+    static final short[][] DFA21_transition;
 
     static {
-        int numStates = DFA20_transitionS.length;
-        DFA20_transition = new short[numStates][];
+        int numStates = DFA21_transitionS.length;
+        DFA21_transition = new short[numStates][];
         for (int i=0; i<numStates; i++) {
-            DFA20_transition[i] = DFA.unpackEncodedString(DFA20_transitionS[i]);
+            DFA21_transition[i] = DFA.unpackEncodedString(DFA21_transitionS[i]);
         }
     }
 
-    class DFA20 extends DFA {
+    class DFA21 extends DFA {
 
-        public DFA20(BaseRecognizer recognizer) {
+        public DFA21(BaseRecognizer recognizer) {
             this.recognizer = recognizer;
-            this.decisionNumber = 20;
-            this.eot = DFA20_eot;
-            this.eof = DFA20_eof;
-            this.min = DFA20_min;
-            this.max = DFA20_max;
-            this.accept = DFA20_accept;
-            this.special = DFA20_special;
-            this.transition = DFA20_transition;
+            this.decisionNumber = 21;
+            this.eot = DFA21_eot;
+            this.eof = DFA21_eof;
+            this.min = DFA21_min;
+            this.max = DFA21_max;
+            this.accept = DFA21_accept;
+            this.special = DFA21_special;
+            this.transition = DFA21_transition;
         }
         public String getDescription() {
             return "1:1: Tokens : ( CRYSTAL | TYPE | DIFFRACTIONDECAYMODEL | DDM | SIMPLE | LINEAR | LEAL | BFACTOR | DECAYPARAM | ABSCOEFCALC | DUMMY | DEFAULT | AVERAGE | RDFORTAN | RDJAVA | PDB | SAXS | SEQUENCE | SAXSSEQ | SMALLMOLE | CIF | DIMENSION | ANGLEP | ANGLEL | PIXELSPERMICRON | UNITCELL | SURROUNDINGTHICKNESS | PROTEINCONC | PROTEINCONCENTRATION | NUMMONOMERS | NUMRESIDUES | NUMRNA | NUMDNA | NUMCARB | PROTEINHEAVYATOMS | ELEMENT | SMALLMOLEATOMS | SOLVENTHEAVYCONC | SOLVENTFRACTION | PDBNAME | CIFNAME | WIREFRAMETYPE | MODELFILE | CALCULATEPEESCAPE | GONIOMETERAXIS | POLARISATIONDIRECTION | CONTAINERMATERIALTYPE | MATERIALTYPE | NONE | MIXTURE | ELEMENTAL | CONTAINERTHICKNESS | CONTAINERMATERIALMIXTURE | MATERIALMIXTURE | CONTAINERMATERIALELEMENTS | MATERIALELEMENTS | CONTAINERDENSITY | SEQUENCEFILE | SEQFILE | CALCULATEFLESCAPE | FLRESOLUTION | PERESOLUTION | SURROUNDINGHEAVYCONC | DENSITYBASED | CALCSURROUNDING | SURROUNDINGELEMENTS | SURROUNDINGDENSITY | SIMELECTRONS | SIMPHOTONS | SUBPROGRAM | RUNS | BEAM | FLUX | EXPOSURE | IMAGEDIM | FWHM | ENERGY | KEV | PULSEENERGY | PULSESHAPE | PULSEWINDOW | SEMIANGLE | APERTURERADIUS | FILE | PIXELSIZE | ENERGYFWHM | COLLIMATION | RECTANGULAR | CIRCULAR | HORIZONTAL | VERTICAL | WEDGE | EXPOSURETIME | ANGULARRESOLUTION | STARTOFFSET | TRANSLATEPERDEGREE | ROTAXBEAMOFFSET | MAXRESOLUTION | FLOAT | COMMENT | WS | STRING );";
         }
-        public int specialStateTransition(int s, IntStream _input) throws NoViableAltException {
-            IntStream input = _input;
-        	int _s = s;
-            switch ( s ) {
-                    case 0 : 
-                        int LA20_89 = input.LA(1);
-
-                        s = -1;
-                        if ( (LA20_89=='$'||(LA20_89 >= '-' && LA20_89 <= ':')||(LA20_89 >= 'A' && LA20_89 <= 'Z')||LA20_89=='\\'||LA20_89=='_'||(LA20_89 >= 'a' && LA20_89 <= 'z')) ) {s = 158;}
-
-                        else if ( ((LA20_89 >= '\u0000' && LA20_89 <= '#')||(LA20_89 >= '%' && LA20_89 <= ',')||(LA20_89 >= ';' && LA20_89 <= '@')||LA20_89=='['||(LA20_89 >= ']' && LA20_89 <= '^')||LA20_89=='`'||(LA20_89 >= '{' && LA20_89 <= '\uFFFF')) ) {s = 25;}
-
-                        else s = 29;
-
-                        if ( s>=0 ) return s;
-                        break;
-
-                    case 1 : 
-                        int LA20_158 = input.LA(1);
-
-                        s = -1;
-                        if ( ((LA20_158 >= '\u0000' && LA20_158 <= '#')||(LA20_158 >= '%' && LA20_158 <= ',')||(LA20_158 >= ';' && LA20_158 <= '@')||LA20_158=='['||(LA20_158 >= ']' && LA20_158 <= '^')||LA20_158=='`'||(LA20_158 >= '{' && LA20_158 <= '\uFFFF')) ) {s = 25;}
-
-                        else if ( (LA20_158=='$'||(LA20_158 >= '-' && LA20_158 <= ':')||(LA20_158 >= 'A' && LA20_158 <= 'Z')||LA20_158=='\\'||LA20_158=='_'||(LA20_158 >= 'a' && LA20_158 <= 'z')) ) {s = 158;}
-
-                        else s = 29;
-
-                        if ( s>=0 ) return s;
-                        break;
-            }
-            NoViableAltException nvae =
-                new NoViableAltException(getDescription(), 20, _s, input);
-            error(nvae);
-            throw nvae;
-        }
-
     }
  
 
