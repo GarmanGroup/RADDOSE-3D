@@ -2436,17 +2436,6 @@ public class CrystalPolyhedron extends Crystal {
     microED.CalculateEM(beam, wedge, coefCalc);
   }
   @Override
-  public void startXFEL(double XDim, double YDim, double ZDim, Beam beam,
-      Wedge wedge, CoefCalc coefCalc, int runNum, boolean verticalGoniometer, boolean xfelTrue, boolean gos, boolean verticalPolarisation) {
-    //also need indices, vertices, crystalCoords, numberVoxelsm, PPM (may not need all of these but just 
-    //to be safe for now
-    XFEL xfel = new XFEL(vertices, indices, crystCoord, 
-                                  crystalPixPerUM, crystSizeVoxels, crystOcc, runNum, verticalGoniometer, xfelTrue, gos, wedge, verticalPolarisation);
-    xfel.setOutputDirectory(subprogramOutputDirectory);
-    xfel.CalculateXFEL(beam, wedge, coefCalc);
-  }
-  
-  @Override
   public void startMC(double XDim, double YDim, double ZDim, Beam beam,
       Wedge wedge, CoefCalc coefCalc, int runNum, boolean verticalGoniometer, boolean xfelTrue, boolean gos, double[] surrThickness, boolean verticalPolarisation) {
     //also need indices, vertices, crystalCoords, numberVoxelsm, PPM (may not need all of these but just 

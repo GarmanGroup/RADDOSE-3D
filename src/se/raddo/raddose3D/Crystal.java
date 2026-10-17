@@ -518,7 +518,6 @@ public abstract class Crystal {
   public abstract void setCryoPEparamsForCurrentBeam(Beam beam, CoefCalc coefCalc, double[][] feFactors);
   
   public abstract void startMicroED(double XDim, double YDim, double ZDim, Beam beam, Wedge wedge, CoefCalc coefCalc, String crystalType);
-  public abstract void startXFEL(double XDim, double YDim, double ZDim, Beam beam, Wedge wedge, CoefCalc coefCalc, int runNum, boolean verticalGoniometer, boolean xfel, boolean gos, boolean verticalPolarisation);
   public abstract void startMC(double XDim, double YDim, double ZDim, Beam beam, Wedge wedge, CoefCalc coefCalc, int runNum, boolean verticalGoniometer, boolean xfel, boolean gos, double[] surrThickness, boolean verticalPolarisation);
   
   /**
@@ -808,7 +807,9 @@ public abstract class Crystal {
       gos = true;
       for (int i = 0; i < runs; i++) {
         int runNum = i+1;
-        startXFEL(XDim, YDim, ZDim, beam, wedge, coefCalc, runNum, verticalGoniometer, xfel, gos, verticalPolarisation);
+        // The Monte Carlo's GOS model, timed within the pulse. XFEL had a
+        // copy of it of its own, from before #44, which drifted.
+        startMC(XDim, YDim, ZDim, beam, wedge, coefCalc, runNum, verticalGoniometer, xfel, gos, surrThickness, verticalPolarisation);
       }
       // Return rather than System.exit: expose() is a library method, and
       // killing the JVM here skips Writer.close(), strands the server

@@ -406,12 +406,6 @@ public class ExperimentDummy extends Experiment {
         
       }
 
-      @Override
-      public void startXFEL(double XDim, double YDim, double ZDim, Beam beam,
-          Wedge wedge, CoefCalc coefCalc, int runNum, boolean verticalGoniometer, boolean xfelTrue, boolean gos, boolean verticalPolarisation) {
-        // TODO Auto-generated method stub
-        
-      }
 
 /*
       @Override
