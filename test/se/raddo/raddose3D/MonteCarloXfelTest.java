@@ -164,6 +164,35 @@ public class MonteCarloXfelTest {
     assertTrue(files.containsKey("outputMC.CSV"), files.keySet().toString());
   }
 
+  /**
+   * A simple Monte Carlo run's outputXFEL.CSV gives the Monte Carlo's own
+   * doses, as outputMC.CSV does: they held only the binding energies of
+   * atoms that do not relax and the energy of electrons freed with under
+   * 0.05 keV. And outputIonsPerAtom.CSV lists the elements by atomic
+   * number, not in hash order.
+   */
+  @Test
+  public void aMonteCarloRunWritesItsOwnDosesAndElementsInOrder(
+      @TempDir final Path dir) throws IOException {
+    Map<String, String> files = run(cuboid("MONTECARLO",
+        insulin(Arrays.asList("ZN", "S", "SE"), Arrays.asList(0.333, 6.0, 4.0),
+            20000)), gaussian(13.0, null, false), still(10), dir, 5);
+    String[] mc = files.get("outputMC.CSV").split("\\n")[1].split(",");
+    String[] xfel = files.get("outputXFEL.CSV").split("\\n")[1].split(",");
+    assertEquals(Double.parseDouble(mc[3]), Double.parseDouble(xfel[3]), 1e-6);
+    assertEquals(Double.parseDouble(mc[4]), Double.parseDouble(xfel[4]), 1e-6);
+    List<Integer> order = new ArrayList<Integer>();
+    for (String line : files.get("outputIonsPerAtom.CSV").split("\\n")) {
+      if (!line.startsWith("Atomic")) {
+        order.add(Integer.parseInt(line.split(",")[0].trim()));
+      }
+    }
+    List<Integer> sorted = new ArrayList<Integer>(order);
+    java.util.Collections.sort(sorted);
+    assertEquals(sorted, order);
+    assertTrue(order.size() >= 5, order.toString());
+  }
+
   @Test
   public void aGosRunIsReproducible(@TempDir final Path dir)
       throws IOException {
