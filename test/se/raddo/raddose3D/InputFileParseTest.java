@@ -14,6 +14,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -191,6 +192,8 @@ public class InputFileParseTest {
       "APERTURERADIUS 50\n",
       "PULSEENERGY 1.0\n",
       "ENERGYFWHM 0.1\n",
+      "PULSESHAPE Gaussian\n",
+      "PULSEWINDOW 3\n",
   })
   @Timeout(10)
   public void beamDirectivesParse(String directive) {
@@ -218,6 +221,22 @@ public class InputFileParseTest {
     assertFalse(init.beams.isEmpty(), "circular collimation produced no beam");
     assertTrue(init.beams.get(0).getIsCircular(),
         "Collimation Circular should produce a circular beam");
+  }
+
+  /** An XFEL pulse's shape and window reach the beam, as given. */
+  @Test
+  @Timeout(10)
+  public void aPulseShapeAndWindowReachTheBeam() {
+    InputParser parser = new InputParserString(
+        inputWith("", "PulseShape Gaussian\nPulseWindow 3\n"));
+    Collector init = new Collector();
+    try {
+      parser.sendData(init);
+    } catch (InputException e) {
+      fail("PulseShape and PulseWindow failed to parse: " + e.getMessage());
+    }
+    assertEquals("Gaussian", init.beams.get(0).getPulseShape());
+    assertEquals(3.0, init.beams.get(0).getPulseWindow(), 0.0);
   }
 
   /** The baseline input itself must parse, or the tests above prove nothing. */

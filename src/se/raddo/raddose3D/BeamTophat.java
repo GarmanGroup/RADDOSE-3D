@@ -23,6 +23,9 @@ public class BeamTophat implements Beam {
   
   /** Pulse energy. */
   private final Double pulseEnergy;
+  /** The XFEL pulse's shape in time and window, as given. */
+  private final String pulseShape;
+  private final Double pulseWindow;
   
   private Double energyFWHM;
   
@@ -80,6 +83,8 @@ public class BeamTophat implements Beam {
     energyFWHM = (Double) properties.get(Beam.ENERGY_FWHM);
 
     pulseEnergy = (Double) properties.get(Beam.PULSE_ENERGY);
+    pulseShape = (String) properties.get(Beam.PULSE_SHAPE);
+    pulseWindow = (Double) properties.get(Beam.PULSE_WINDOW);
     exposure = (Double) properties.get(Beam.BEAM_EXPOSURE);
     semiAngle = (Double) properties.get(Beam.BEAM_SEMIANGLE);
     apertureRadius = (Double) properties.get(Beam.BEAM_APERTURERADIUS);
@@ -159,6 +164,16 @@ public class BeamTophat implements Beam {
           + "which the XFEL subprogram needs, in mJ.");
     }
     return pulseEnergy;
+  }
+
+  @Override
+  public String getPulseShape() {
+    return pulseShape;
+  }
+
+  @Override
+  public Double getPulseWindow() {
+    return pulseWindow;
   }
   
   @Override

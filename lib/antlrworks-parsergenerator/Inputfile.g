@@ -696,6 +696,8 @@ beamLine
 	                           $beam::beamProperties.put(Beam.IMAGE_Y, $k.yImage); }
 	| l=pulseEnergy			 { $beam::beamProperties.put(Beam.PULSE_ENERGY, $l.pulse); }
 	| m=energyFWHM             { $beam::beamProperties.put(Beam.ENERGY_FWHM, $m.eFWHM); }
+	| n=pulseShape             { $beam::beamProperties.put(Beam.PULSE_SHAPE, $n.shape); }
+	| o=pulseWindow            { $beam::beamProperties.put(Beam.PULSE_WINDOW, $o.window); }
 
 	;
 
@@ -726,6 +728,17 @@ KEV : ('K'|'k')('E'|'e')('V'|'v') ;
 pulseEnergy returns [Double pulse]
 	: PULSEENERGY a=FLOAT {$pulse = Double.parseDouble($a.text);};
 PULSEENERGY : ('P'|'p')('U'|'u')('L'|'l')('S'|'s')('E'|'e')('E'|'e')('N'|'n')('E'|'e')('R'|'r')('G'|'g')('Y'|'y') ;
+
+// The XFEL pulse's shape in time, TopHat or Gaussian: a STRING, as a beam's
+// TYPE is, since tokens for the two would stop TYPE reading them.
+pulseShape returns [String shape]
+	: PULSESHAPE a=STRING {$shape = $a.text;};
+PULSESHAPE : ('P'|'p')('U'|'u')('L'|'l')('S'|'s')('E'|'e')('S'|'s')('H'|'h')('A'|'a')('P'|'p')('E'|'e') ;
+
+// The window a Gaussian XFEL pulse's photons arrive in, in FWHMs.
+pulseWindow returns [Double window]
+	: PULSEWINDOW a=FLOAT {$window = Double.parseDouble($a.text);};
+PULSEWINDOW : ('P'|'p')('U'|'u')('L'|'l')('S'|'s')('E'|'e')('W'|'w')('I'|'i')('N'|'n')('D'|'d')('O'|'o')('W'|'w') ;
 
 
 beamSemiAngle returns [Double semiAngle]

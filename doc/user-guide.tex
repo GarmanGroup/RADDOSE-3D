@@ -618,7 +618,7 @@ Specifies that RADDOSE-XFEL, which calcualtes the time-resolved dose absorbed by
 
 The pulse energy of the beam must be defined in the beam block with the \hyperref[pulseenergy]{\Keyword{PULSEENERGY} keyword} (\hyperref[pulseenergy]{section~\ref*{pulseenergy}}). 
 
-The pulse length is defined in the wedge block with the \hyperref[exposuretime]{\Keyword{EXPOSURETIME} keyword} (\hyperref[exposuretime]{section~\ref*{exposuretime}}). \SB
+The pulse length is defined in the wedge block with the \hyperref[exposuretime]{\Keyword{EXPOSURETIME} keyword} (\hyperref[exposuretime]{section~\ref*{exposuretime}}), in fs. For a Gaussian pulse (\hyperref[pulseshape]{\Keyword{PULSESHAPE GAUSSIAN}}, \hyperref[pulseshape]{section~\ref*{pulseshape}}) it is the pulse's FWHM. \SB
 
 
 
@@ -739,6 +739,22 @@ For an experimental beam (\Keyword{TYPE EXPERIMENTALPGM}) the aperture clips the
 \noindent \Keyword{PULSEENERGY \textit{F}}
 
 specifies the energy of the XFEL pulse in mJ. To be used instead of FLUX when  the SUBPROGRAM XFEL input is used. 
+
+\subsection{\Keyword{PULSESHAPE}}
+\label{pulseshape}
+
+\noindent \Keyword{PULSESHAPE TOPHAT}
+
+\noindent \Keyword{PULSESHAPE GAUSSIAN}
+
+specifies the XFEL pulse's shape in time. For \Keyword{SUBPROGRAM XFEL} only. A top-hat pulse, the default, spreads its photons evenly over the \Keyword{EXPOSURETIME}. A Gaussian pulse's FWHM is the \Keyword{EXPOSURETIME}, and its photons all arrive within a window centred on its peak (\hyperref[pulsewindow]{\Keyword{PULSEWINDOW}}), which holds the whole \Keyword{PULSEENERGY}.
+
+\subsection{\Keyword{PULSEWINDOW}}
+\label{pulsewindow}
+
+\noindent \Keyword{PULSEWINDOW \textit{F}}
+
+specifies the width of the window a Gaussian XFEL pulse's photons arrive in, in FWHMs of the pulse. Optional; the default is 2, a window from one FWHM before the peak to one after, which holds 98\% of a Gaussian. For \Keyword{PULSESHAPE GAUSSIAN} only.
 
 %\noindent \Keyword{COLLIMATION HORIZONTAL \textit{F}}
 %(not supported!)
