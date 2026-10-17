@@ -328,6 +328,23 @@ public abstract class Crystal {
         YDim = XDim;
       }
     }
+    // A cylinder or a sphere is one by its Type, whatever Dimensions holds.
+    // The shape was taken from how many values Dimensions had, so a
+    // cylinder given three, the third ignored, was a cuboid to MicroED,
+    // which takes 0.001 nm off a cylinder's thickness: one slice fewer when
+    // the thickness is a whole number of slices.
+    if (this instanceof CrystalCylinder) {
+      crystalType = "CYLINDER";
+      YDim = XDim;
+      ZDim = (double) properties.get(Crystal.CRYSTAL_DIM_Y);
+    }
+    else if (this instanceof CrystalSphericalNew
+        || this instanceof CrystalSpherical
+        || this instanceof CrystalSphericalOld) {
+      crystalType = "SPHERICAL";
+      YDim = XDim;
+      ZDim = XDim;
+    }
     
     //surrounding thickness of specified
     if (coefCalc.isCryo()) {
