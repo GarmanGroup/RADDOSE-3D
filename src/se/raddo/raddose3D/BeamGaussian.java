@@ -26,6 +26,9 @@ public class BeamGaussian implements Beam {
   
   /** Pulse energy. */
   private final Double        pulseEnergy;
+  /** The XFEL pulse's shape in time and window, as given. */
+  private final String pulseShape;
+  private final Double pulseWindow;
   
   private final Double        energyFWHM;
 
@@ -87,6 +90,8 @@ public class BeamGaussian implements Beam {
     photonsPerSec = (Double) properties.get(Beam.BEAM_FLUX);
     photonEnergy = (Double) properties.get(Beam.BEAM_ENERGY);
     pulseEnergy = (Double) properties.get(Beam.PULSE_ENERGY);
+    pulseShape = (String) properties.get(Beam.PULSE_SHAPE);
+    pulseWindow = (Double) properties.get(Beam.PULSE_WINDOW);
     energyFWHM = (Double) properties.get(Beam.ENERGY_FWHM);
     fwhmX = (Double) properties.get(Beam.BEAM_FWHM_X);
     fwhmY = (Double) properties.get(Beam.BEAM_FWHM_Y);
@@ -232,6 +237,16 @@ public class BeamGaussian implements Beam {
           + "which the XFEL subprogram needs, in mJ.");
     }
     return pulseEnergy;
+  }
+
+  @Override
+  public String getPulseShape() {
+    return pulseShape;
+  }
+
+  @Override
+  public Double getPulseWindow() {
+    return pulseWindow;
   }
 
   @Override

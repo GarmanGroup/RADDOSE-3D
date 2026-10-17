@@ -730,6 +730,145 @@ public class MonteCarloXfelTest {
     f.set(mc, value);
   }
 
+  /** A Gaussian beam carrying an XFEL pulse of the given shape and window. */
+  private static Beam pulse(final String shape, final Double window) {
+    Map<Object, Object> p = new HashMap<Object, Object>();
+    p.put(Beam.BEAM_FWHM_X, 20.0);
+    p.put(Beam.BEAM_FWHM_Y, 20.0);
+    p.put(Beam.BEAM_ENERGY, 12.1);
+    p.put(Beam.BEAM_COLL_H, 30.0);
+    p.put(Beam.BEAM_COLL_V, 30.0);
+    p.put(Beam.PULSE_ENERGY, 1.0);
+    if (shape != null) {
+      p.put(Beam.PULSE_SHAPE, shape);
+    }
+    if (window != null) {
+      p.put(Beam.PULSE_WINDOW, window);
+    }
+    return new BeamGaussian(p);
+  }
+
+  private static MC xfelMC() throws Exception {
+    Crystal cuboid = cuboid("XFEL", insulin(100), 4, 6, 8, 2);
+    CrystalPolyhedron c = (CrystalPolyhedron) cuboid;
+    return new MC(c.vertices, c.indices,
+        (double[][][][]) field(c, "crystCoord"), c.crystalPixPerUM,
+        (int[]) field(c, "crystSizeVoxels"), c.crystOcc, 1, false, true,
+        true, new double[3], false);
+  }
+
+  /** Every photon's time in a pulse: setUpPulse, then slotTime for each. */
+  private static double[] slotTimes(final double exposure, final Double window,
+      final long photons) throws Exception {
+    MC mc = xfelMC();
+    call(mc, "setUpPulse", new Class<?>[] {double.class, Double.class},
+        exposure, window);
+    setMcField(mc, "NUM_PHOTONS", photons);
+    double length = (Double) mcField(mc, "PULSE_LENGTH");
+    double bin = (Double) mcField(mc, "PULSE_BIN_LENGTH");
+    double divisions = photons / (length / bin);
+    double[] t = new double[(int) photons];
+    for (int i = 0; i < photons; i++) {
+      t[i] = (Double) call(mc, "slotTime",
+          new Class<?>[] {int.class, double.class}, i, divisions);
+    }
+    return t;
+  }
+
+  /**
+   * A Gaussian pulse's photons arrive within its window, two FWHMs wide by
+   * default, with the profile of a normal truncated to it, at the start of
+   * their 0.1 fs bins; in order, as a top-hat's do.
+   */
+  @Test
+  public void aGaussianPulsesPhotonsFollowItsProfileWithinItsWindow()
+      throws Exception {
+    double fwhm = 2.0;
+    double[] t = slotTimes(fwhm, 2.0, 100000);
+    double sigma = fwhm / (2 * Math.sqrt(2 * Math.log(2)));
+    double a = fwhm / sigma;
+    org.apache.commons.math3.distribution.NormalDistribution normal =
+        new org.apache.commons.math3.distribution.NormalDistribution(null, 0, 1);
+    double kept = 2 * normal.cumulativeProbability(a) - 1;
+    double sd = sigma * Math.sqrt(1 - 2 * a * normal.density(a) / kept);
+    double bin = 0.1;
+    double mean = 0;
+    double square = 0;
+    for (int i = 0; i < t.length; i++) {
+      assertTrue(t[i] >= 0 && t[i] < 2 * fwhm, "t = " + t[i]);
+      if (i > 0) {
+        assertTrue(t[i] >= t[i - 1]);
+      }
+      mean += t[i] / t.length;
+      square += t[i] * t[i] / t.length;
+    }
+    // Each time is its bin's start: on average half a bin early.
+    assertEquals(fwhm - bin / 2, mean, 0.005);
+    assertEquals(Math.sqrt(sd * sd + bin * bin / 12),
+        Math.sqrt(square - mean * mean), 0.01 * sd);
+  }
+
+  /** A top-hat pulse's photons arrive as they did. */
+  @Test
+  public void aTopHatPulsesPhotonsArriveAsTheyDid() throws Exception {
+    long photons = 10000;
+    double[] t = slotTimes(5.0, null, photons);
+    double divisions = photons / (5.0 / 0.1);
+    for (int i = 0; i < photons; i++) {
+      assertEquals(((int) (i / divisions)) * 0.1, t[i], 0.0);
+    }
+  }
+
+  /**
+   * A pulse's shape and window are checked before a run: TopHat by default,
+   * Gaussian with a window of two FWHMs unless given one; anything else,
+   * and either keyword outside XFEL, is refused.
+   */
+  @Test
+  public void aPulsesShapeAndWindowAreChecked(@TempDir final Path dir) {
+    assertEquals(null, SubprogramInputs.pulseWindow(pulse(null, null)));
+    assertEquals(null, SubprogramInputs.pulseWindow(pulse("tophat", null)));
+    assertEquals(2.0, SubprogramInputs.pulseWindow(pulse("Gaussian", null)),
+        0.0);
+    assertEquals(3.0, SubprogramInputs.pulseWindow(pulse("GAUSSIAN", 3.0)),
+        0.0);
+    assertThrows(IllegalArgumentException.class,
+        () -> SubprogramInputs.pulseWindow(pulse("Lorentzian", null)));
+    assertThrows(IllegalArgumentException.class,
+        () -> SubprogramInputs.pulseWindow(pulse("TopHat", 2.0)));
+    assertThrows(IllegalArgumentException.class,
+        () -> SubprogramInputs.pulseWindow(pulse(null, 2.0)));
+    assertThrows(IllegalArgumentException.class,
+        () -> SubprogramInputs.pulseWindow(pulse("Gaussian", 0.0)));
+    Map<Object, Object> p = new HashMap<Object, Object>();
+    p.put(Beam.BEAM_FWHM_X, 20.0);
+    p.put(Beam.BEAM_FWHM_Y, 20.0);
+    p.put(Beam.BEAM_ENERGY, 12.1);
+    p.put(Beam.BEAM_FLUX, 2e12);
+    p.put(Beam.PULSE_SHAPE, "Gaussian");
+    Crystal crystal = cuboid("MONTECARLO", insulin(100));
+    crystal.setSubprogramOutputDirectory(dir.toFile());
+    IllegalArgumentException refused = assertThrows(
+        IllegalArgumentException.class,
+        () -> crystal.expose(new BeamGaussian(p), still(10)));
+    assertTrue(refused.getMessage().contains("XFEL pulse"),
+        refused.getMessage());
+  }
+
+  /** A Gaussian pulse runs, and gives other doses than a top-hat. */
+  @Test
+  public void aGaussianPulseRuns(@TempDir final Path dir) throws IOException {
+    Map<String, String> gaussian = run(cuboid("XFEL", insulin(2000)),
+        pulse("Gaussian", null), still(2),
+        Files.createDirectory(dir.resolve("gaussian")), 3);
+    Map<String, String> tophat = run(cuboid("XFEL", insulin(2000)),
+        pulse(null, null), still(2),
+        Files.createDirectory(dir.resolve("tophat")), 3);
+    assertTrue(gaussian.containsKey("outputXFEL.CSV"));
+    assertFalse(gaussian.get("outputXFEL.CSV").equals(
+        tophat.get("outputXFEL.CSV")));
+  }
+
   private static MC cuboidMC() throws Exception {
     Crystal cuboid = cuboid("MONTECARLO", insulin(100), 4, 6, 8, 2);
     CrystalPolyhedron c = (CrystalPolyhedron) cuboid;

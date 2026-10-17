@@ -172,6 +172,15 @@ public class MC {
   protected long NUM_PHOTONS = 100000;
   protected  double PULSE_LENGTH = 30; //length in fs
   protected double PULSE_BIN_LENGTH = 0.1; //length in fs
+  /** A Gaussian pulse's window in FWHMs; null for a top-hat pulse. */
+  private Double pulseWindow;
+  /** A Gaussian pulse's standard deviation, fs. */
+  private double pulseSigma;
+  /** The share of a Gaussian pulse beyond each end of its window. */
+  private double pulseTail;
+  /** The standard normal, for a Gaussian pulse's quantiles. */
+  private static final NormalDistribution UNIT_NORMAL =
+      new NormalDistribution(null, 0, 1);
   protected double PULSE_ENERGY = 1.4E-3; //energy in J
   protected static final double c = 299792458; //m/s
   protected static final double m = 9.10938356E-31; // in Kg
@@ -332,6 +341,57 @@ public class MC {
   }
 
   /**
+   * The pulse in time. A top-hat pulse lasts the exposure time, as given: it
+   * was rounded to whole femtoseconds, so a pulse under 0.5 fs had none. A
+   * Gaussian pulse's FWHM is the exposure time, and its photons arrive
+   * within a window centred on its peak, so the pulse lasts the window. The
+   * time bins are a top-hat's as long as the FWHM, so as to resolve it.
+   *
+   * @param exposure the wedge's exposure time, fs
+   * @param window a Gaussian pulse's window in FWHMs; null for a top-hat
+   */
+  void setUpPulse(final double exposure, final Double window) {
+    pulseWindow = window;
+    PULSE_LENGTH = window == null ? exposure : window * exposure; //fs
+    if (exposure <= 1) {
+      PULSE_BIN_LENGTH = 0.01;
+    }
+    else if (exposure <= 50) {
+      PULSE_BIN_LENGTH = 0.1;
+    }
+    else {
+      PULSE_BIN_LENGTH = 1;
+    }
+    if (window != null) {
+      pulseSigma = exposure / (2 * Math.sqrt(2 * Math.log(2)));
+      pulseTail = UNIT_NORMAL.cumulativeProbability(
+          -PULSE_LENGTH / (2 * pulseSigma));
+    }
+  }
+
+  /**
+   * When a photon's part of the pulse meets the crystal's front, fs, at the
+   * start of its time bin. A top-hat pulse spreads the photons of a run
+   * evenly over it in order; a Gaussian one sends photon i at its quantile
+   * (i + 1/2) / N, truncated to the window and scaled up to fill it, so that
+   * the whole pulse energy arrives within the window.
+   *
+   * @param i the photon's place in the run
+   * @param photonDivisions a top-hat pulse's photons per time bin
+   * @return the time, fs
+   */
+  double slotTime(final int i, final double photonDivisions) {
+    if (pulseWindow == null) {
+      return ((int) (i / photonDivisions)) * PULSE_BIN_LENGTH;
+    }
+    double u = (i + 0.5) / NUM_PHOTONS;
+    double t = PULSE_LENGTH / 2 + pulseSigma
+        * UNIT_NORMAL.inverseCumulativeProbability(
+            pulseTail + u * (1 - 2 * pulseTail));
+    return ((int) (t / PULSE_BIN_LENGTH)) * PULSE_BIN_LENGTH;
+  }
+
+  /**
    * The surrounding's thickness on each axis: as asked, but no more than a
    * photoelectron of the most energetic photon could travel in it -- E over
    * the surrounding's stopping power at E, a little more than its range --
@@ -375,18 +435,8 @@ public class MC {
       PULSE_ENERGY = numPhotons * (beam.getPhotonEnergy()*Beam.KEVTOJOULES);
     }
      
-    // As given. It was rounded to whole femtoseconds, so a pulse under
-    // 0.5 fs had none.
-    PULSE_LENGTH = wedge.getTotSec(); //fs
-    if (PULSE_LENGTH <= 1) {
-      PULSE_BIN_LENGTH = 0.01;
-    }
-    else if (PULSE_LENGTH <= 50) {
-      PULSE_BIN_LENGTH = 0.1;
-    }
-    else {
-      PULSE_BIN_LENGTH = 1;
-    }
+    setUpPulse(wedge.getTotSec(),
+        doXFEL ? SubprogramInputs.pulseWindow(beam) : null);
     
     NUM_PHOTONS = coefCalc.getNumberSimulatedElectrons();
     if (NUM_PHOTONS == 0) {
@@ -536,7 +586,7 @@ public class MC {
       boolean exited = false;
       // The photon's place in the pulse; it reaches depth z when the pulse's
       // front, which meets the crystal's front at slotTime, does.
-      double slotTime = ((int) (i/ photonDivisions)) * PULSE_BIN_LENGTH;
+      double slotTime = slotTime(i, photonDivisions);
       double timeStamp = slotTime;
       //firstly I need to get a position of the beam on the sample. the direction will simply be 0 0 1
       

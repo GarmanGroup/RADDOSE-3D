@@ -15,6 +15,10 @@ public interface Beam {
   public static final String BEAM_ENERGY      = "ENERGY";
   /** Constant for data fields in Map constructors: Pulse energy. */
   public static final String PULSE_ENERGY      = "PULSE_ENERGY";
+  /** Constant for data fields in Map constructors: XFEL pulse shape. */
+  public static final String PULSE_SHAPE       = "PULSE_SHAPE";
+  /** Constant for data fields in Map constructors: XFEL pulse window. */
+  public static final String PULSE_WINDOW      = "PULSE_WINDOW";
   /** Constant for data fields in Map constructors: External filename. */
   public static final String BEAM_EXTFILE     = "EXTFILE";
   /** Constant for data fields in Map constructors: FWHM X. */
@@ -90,6 +94,27 @@ public interface Beam {
    *         pulse energy in mJ.
    */
   public double getPulseEnergy();
+
+  /**
+   * Returns the XFEL pulse's shape in time, as given: TopHat or Gaussian.
+   *
+   * @return
+   *         the shape, or null where none was given
+   */
+  default String getPulseShape() {
+    return null;
+  }
+
+  /**
+   * Returns the width of the window a Gaussian XFEL pulse's photons arrive
+   * in, in FWHMs, as given.
+   *
+   * @return
+   *         the width, or null where none was given
+   */
+  default Double getPulseWindow() {
+    return null;
+  }
   
   /**
    * Generates a beam array

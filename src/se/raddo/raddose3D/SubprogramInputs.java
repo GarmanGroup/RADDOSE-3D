@@ -14,7 +14,43 @@ final class SubprogramInputs {
   /** Above it, they stop at this atomic number. */
   static final int ANGULAR_TABLES_MAX_Z = 52;
 
+  /** A Gaussian XFEL pulse's window, in FWHMs, when none is given. */
+  static final double DEFAULT_PULSE_WINDOW = 2;
+
   private SubprogramInputs() {
+  }
+
+  /**
+   * The window an XFEL pulse's photons arrive in, in FWHMs of a Gaussian
+   * pulse, centred on its peak.
+   *
+   * @param beam the beam, with its PulseShape and PulseWindow
+   * @return the window; null for a top-hat pulse, the default
+   */
+  static Double pulseWindow(final Beam beam) {
+    String shape = beam.getPulseShape();
+    Double window = beam.getPulseWindow();
+    boolean gaussian = "Gaussian".equalsIgnoreCase(shape);
+    if (shape != null && !gaussian && !"TopHat".equalsIgnoreCase(shape)) {
+      throw new IllegalArgumentException("PulseShape is TopHat or Gaussian, "
+          + "not " + shape + ".");
+    }
+    if (!gaussian) {
+      if (window != null) {
+        throw new IllegalArgumentException("PulseWindow is the window a "
+            + "Gaussian pulse's photons arrive in, in FWHMs; a top-hat pulse "
+            + "lasts the exposure time.");
+      }
+      return null;
+    }
+    if (window == null) {
+      return DEFAULT_PULSE_WINDOW;
+    }
+    if (!(window > 0)) {
+      throw new IllegalArgumentException("PulseWindow, in FWHMs, must be more "
+          + "than 0, not " + window + ".");
+    }
+    return window;
   }
 
   /**
@@ -34,6 +70,12 @@ final class SubprogramInputs {
       throw new IllegalArgumentException("The " + subprogram
           + " subprogram needs a TopHat or Gaussian beam, and this beam is "
           + type + ".");
+    }
+    if (!"XFEL".equals(subprogram)
+        && (beam.getPulseShape() != null || beam.getPulseWindow() != null)) {
+      throw new IllegalArgumentException("PulseShape and PulseWindow "
+          + "describe an XFEL pulse, which the " + subprogram
+          + " subprogram does not have.");
     }
     if (!(coefCalc instanceof CoefCalcCompute)) {
       throw new IllegalArgumentException("The " + subprogram
