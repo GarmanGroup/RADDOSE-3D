@@ -77,6 +77,34 @@ public class CrystalCylinderTest {
     return count;
   }
 
+  /**
+   * A cylinder is a cylinder to the subprograms however many values
+   * Dimensions has, and a sphere a sphere. A cylinder given three, the
+   * third ignored, was a cuboid, so MicroED did not take the 0.001 nm off
+   * its thickness that it takes off a cylinder's.
+   */
+  @Test
+  public void aCrystalsShapeIsItsTypeWhateverItsDimensions() {
+    Crystal three = cylinder(40d, 20d);
+    assertEquals("CYLINDER", three.crystalType);
+    assertEquals(40d, three.YDim, 0d);
+    assertEquals(20d, three.ZDim, 0d);
+
+    Map<Object, Object> p = new HashMap<Object, Object>();
+    p.put(Crystal.CRYSTAL_DIM_X, 40d);
+    p.put(Crystal.CRYSTAL_DIM_Y, 20d);
+    p.put(Crystal.CRYSTAL_RESOLUTION, 1.0d);
+    p.put(Crystal.CRYSTAL_ANGLE_P, 0d);
+    p.put(Crystal.CRYSTAL_ANGLE_L, 0d);
+    assertEquals("CYLINDER", new CrystalCylinder(p).crystalType);
+
+    p.put(Crystal.CRYSTAL_DIM_Z, 40d);
+    p.put(Crystal.CRYSTAL_DIM_Y, 40d);
+    Crystal sphere = new CrystalSphericalNew(p);
+    assertEquals("SPHERICAL", sphere.crystalType);
+    assertEquals("CUBOID", new CrystalCuboid(p).crystalType);
+  }
+
   /** Volume of the 32-segment prism the mesh actually represents. */
   private static double prismVolume(double diameter, double height) {
     double r = diameter / 2;
