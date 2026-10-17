@@ -14,6 +14,24 @@ import java.math.BigDecimal;
 package se.raddo.raddose3D.parser;
 }
 
+@lexer::members {
+    private java.util.List<String> lexingErrors = new java.util.ArrayList<String>();
+
+    /**
+     * The characters the lexer could not read. ANTLR's lexer skips a
+     * character no token can begin with, prints a message and carries on,
+     * so the input ran as though the character were not there.
+     */
+    public java.util.List<String> getErrors() {
+        java.util.List<String> fetchedErrors = lexingErrors;
+        lexingErrors = new java.util.ArrayList<String>();
+        return fetchedErrors;
+    }
+    public void emitErrorMessage(String msg) {
+        lexingErrors.add(msg);
+    }
+}
+
 @members {
     private BeamFactory beamFactory = null;
     private CrystalFactory crystalFactory = null;
@@ -869,14 +887,19 @@ FLOAT
 fragment
 EXPONENT : ('e'|'E') ('+'|'-')? ('0'..'9')+ ;
 
+// A comment on a file's last line need not end in a newline. It had to,
+// and one that did not was a character the lexer could not read.
 COMMENT
-    :   ('#' | '//' | '!') ~('\n'|'\r')* '\r'? '\n' {$channel=HIDDEN;}
+    :   ('#' | '//' | '!') ~('\n'|'\r')* ('\r'? '\n')? {$channel=HIDDEN;}
     ;
 
+// A byte-order mark, which some editors put at the start of a file, is
+// read as whitespace.
 WS  :   ( ' '
         | '\t'
         | '\r'
         | '\n'
+        | '\uFEFF'
         ) {$channel=HIDDEN;}
     ;
 

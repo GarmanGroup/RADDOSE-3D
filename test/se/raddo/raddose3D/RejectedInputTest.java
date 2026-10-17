@@ -150,6 +150,33 @@ public class RejectedInputTest {
             + "beam: anything it reaches can print a dose");
   }
 
+  /**
+   * A character no keyword or value can contain is refused, with its line.
+   * The lexer skipped it with a message and the run went on, so
+   * "ExposureTime 50ß" ran as "ExposureTime 50".
+   */
+  @Test
+  public void anUnreadableCharacterIsRefused() {
+    String stray = VALID.replace("ExposureTime 50", "ExposureTime 50\u00df");
+    Collector collector = new Collector();
+    InputException e = assertThrows(InputException.class,
+        () -> new InputParserString(stray).sendData(collector));
+    assertTrue(e.toString().contains("line 14"), e.toString());
+    assertTrue(e.toString().contains("\u00df"), e.toString());
+    assertEquals(0, collector.total(), "nothing may reach the initializer");
+  }
+
+  /**
+   * What is not an error is not refused: a byte-order mark at the start,
+   * which some editors write, and a comment on the last line with no
+   * newline after it, which the lexer could not read before.
+   */
+  @Test
+  public void aByteOrderMarkAndAFinalCommentAreRead() throws InputException {
+    Collector collector = parse("\ufeff" + VALID + "# no newline after this");
+    assertEquals(3, collector.total());
+  }
+
   /** The error names the line at fault. */
   @Test
   public void theOffendingLineIsNamed() {
