@@ -186,8 +186,10 @@ public final class RD3D {
   private void parseCommandLineParameters(final String[] cmdLineParams) {
     // Printed once per run. This used to live at the top of Crystal.expose(),
     // which runs once per wedge, so it was repeated throughout the output.
+    // In full, as the jar's manifest has it: major and minor alone could not
+    // tell one release from the next.
     System.out.println("Current RADDOSE-3D version is: "
-        + Version.VERSION_MAJOR + "." + Version.VERSION_MINOR);
+        + Version.VERSION_STRING);
 
     OutputFactory of = new OutputFactory();
     String command;
