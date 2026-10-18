@@ -463,7 +463,7 @@ public class MC {
     */
     long start = System.nanoTime();
     startMonteCarloXFEL(beam, wedge, coefCalc);
-    processDose(beam, coefCalc);
+    processDose(beam, wedge, coefCalc);
     RD3Dcheck(beam, wedge, coefCalc);
     long runtime = System.nanoTime() - start;
     System.out.println(String.format(Locale.ROOT, (doXFEL ? "RADDOSE-XFEL" : "Monte Carlo") + " simulation complete, runtime in seconds was: %.8e", runtime/1E9));
@@ -819,7 +819,7 @@ public class MC {
 // END OF MONTE CARLO
 // processDose now does the work iterating through in 4D (no major changes needed)
   
-  private void processDose(Beam beam, CoefCalc coefCalc) {
+  private void processDose(Beam beam, Wedge wedge, CoefCalc coefCalc) {
    // double testVol = getSampleVolume();
     //just take the whole sample, assuming it is bathed totally
     //and also just take a whole cube for now
@@ -832,6 +832,14 @@ public class MC {
     double sampleMass = ((coefCalc.getDensity() * sampleVolume) / 1000);  //in Kg 
     double totalAtoms = coefCalc.getTotalAtomsInCrystal(sampleVolume);
     double exposedVolume = getExposedArea(beam) * ZDimension * 1E-21;
+    if (exposedVolume > sampleVolume) {
+      exposedVolume = sampleVolume;
+    }
+    // The aperture by the depth is the exposed volume of a crystal centred
+    // in the beam and unturned; scaled to where the wedge puts it.
+    double[] exposedAngles = exposedAngles(wedge);
+    boolean[][][] exposedVoxels = exposedVoxels(beam, wedge, exposedAngles);
+    exposedVolume *= exposedShare(beam, wedge, exposedAngles);
     if (exposedVolume > sampleVolume) {
       exposedVolume = sampleVolume;
     }
@@ -917,7 +925,7 @@ public class MC {
             double[] cartesian = convertToCartesianCoordinates(a,b,c);
             double flux = beam.beamIntensity(cartesian[0]/1000, cartesian[1]/1000, 0);
             sumMCDose += ((doseSimple[a][b][c] * (numberOfPhotons/NUM_PHOTONS) * Beam.KEVTOJOULES));
-            if (testIfInsideExposedArea(cartesian[0], cartesian[1], beam) == true) { 
+            if (exposedVoxels[a][b][c]) {
               sumDoseNoCutOffExposed += ((doseSimple[a][b][c] * (numberOfPhotons/NUM_PHOTONS) * Beam.KEVTOJOULES));
             }
             
@@ -956,7 +964,7 @@ public class MC {
                   DWDcoarse += (energySumResolved) * (xyElastic/totElastic);
                 }
               }
-              if(testIfInsideExposedArea(cartesian[0], cartesian[1], beam) == true) { 
+              if (exposedVoxels[a][b][c]) {
                 voxDoseExposed += kept;
                 totIonsvResolvedExposed += voxelIonisationsvResolved[a][b][c];
               }
@@ -976,7 +984,7 @@ public class MC {
                 DWDcoarseNoCutoff += (energySum) * (xyElastic/totElastic);
               }
             }
-            if (testIfInsideExposedArea(cartesian[0], cartesian[1], beam) == true) { 
+            if (exposedVoxels[a][b][c]) {
               voxDoseExposedNoCutoff += voxelEnergyvResolved[a][b][c];
             }
           }
@@ -2956,7 +2964,156 @@ public class MC {
     }
   }
 
-  
+
+  /**
+   * Each voxel is measured at the midpoints of this many slices along each
+   * axis, for the exposed volume: midpoints never fall on an aperture's edge
+   * aligned with the voxels, as the voxels' centres do.
+   */
+  static final int EXPOSED_SLICES = 4;
+
+  /**
+   * The angles the crystal stands at, for the exposed region: a still's, or
+   * a pulse's, start, or a rotation's start to end a step of its angular
+   * resolution apart, as photonAngle turns it.
+   *
+   * @param wedge the wedge
+   * @return the angles in radians
+   */
+  double[] exposedAngles(final Wedge wedge) {
+    double start = wedge.getStartAng();
+    double end = wedge.getEndAng();
+    if (doXFEL || Math.abs(start - end) < wedge.getAngRes()) {
+      return new double[] {start};
+    }
+    int steps = (int) Math.ceil(Math.abs(end - start) / wedge.getAngRes());
+    double[] angles = new double[steps + 1];
+    for (int j = 0; j <= steps; j++) {
+      angles[j] = start + (((double) j / steps) * (end - start));
+    }
+    return angles;
+  }
+
+  /**
+   * Whether a point of the crystal is within the aperture at any of the
+   * angles, with the crystal where the wedge puts it: offset, translated and
+   * turned, as setUpRotatedVertices puts it for each photon.
+   *
+   * @param x the point in the crystal's own frame, um
+   * @param y the point in the crystal's own frame, um
+   * @param z the point in the crystal's own frame, um
+   * @param angles from exposedAngles
+   * @param wedge the wedge
+   * @param beam the beam
+   * @return whether it is in the exposed region
+   */
+  private boolean inExposedRegion(final double x, final double y,
+      final double z, final double[] angles, final Wedge wedge,
+      final Beam beam) {
+    for (double angle : angles) {
+      // As each photon's: "convert to 0-2pi", then translate, then turn.
+      int timesOver = (int) (angle / (2 * Math.PI));
+      angle = angle - (timesOver * 2 * Math.PI);
+      double offsetX = wedge.getStartX() + wedge.getTransX(angle);
+      double offsetY = wedge.getStartY() + wedge.getTransY(angle);
+      double offsetZ = wedge.getStartZ() + wedge.getTransZ(angle);
+      double cos = Math.cos(angle);
+      double sin = Math.sin(angle);
+      double labX = ((x + offsetX) * cos) + ((z + offsetZ) * sin);
+      double labY = y + offsetY;
+      if (testIfInsideExposedArea(labX * 1000, labY * 1000, beam)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * The exposed region: the voxels whose centres are within the aperture,
+   * with the crystal where the wedge puts it, at any of its angles. The
+   * voxel's own position in the crystal was tested, as though the crystal
+   * stood centred in the beam and unturned, so a StartOffset, a translation
+   * or a rotation moved the beam but not the region (issue #17).
+   *
+   * @param beam the beam
+   * @param wedge the wedge
+   * @param angles from exposedAngles
+   * @return whether each voxel is in it
+   */
+  boolean[][][] exposedVoxels(final Beam beam, final Wedge wedge,
+      final double[] angles) {
+    int[] maxVoxel = getMaxPixelCoordinates();
+    double[][] centres = new double[3][];
+    for (int axis = 0; axis < 3; axis++) {
+      double low = minMaxVertices(axis, verticesXFEL)[0];
+      centres[axis] = new double[maxVoxel[axis]];
+      for (int i = 0; i < maxVoxel[axis]; i++) {
+        centres[axis][i] = (i / crystalPixPerUMXFEL) + low;
+      }
+    }
+    boolean[][][] exposed = new boolean[maxVoxel[0]][maxVoxel[1]][maxVoxel[2]];
+    for (int a = 0; a < maxVoxel[0]; a++) {
+      for (int b = 0; b < maxVoxel[1]; b++) {
+        for (int c = 0; c < maxVoxel[2]; c++) {
+          exposed[a][b][c] = inExposedRegion(centres[0][a], centres[1][b],
+              centres[2][c], angles, wedge, beam);
+        }
+      }
+    }
+    return exposed;
+  }
+
+  /**
+   * The share of the crystal's extent within the aperture where the wedge
+   * puts it, over its share centred and unturned, each measured at the
+   * midpoints of EXPOSED_SLICES slices of every voxel. It scales the exposed
+   * volume, the aperture's area by the crystal's depth, so that a beam
+   * hanging off an offset crystal's edge, or crossing a turned crystal's
+   * slant, is allowed for. Exactly one for a crystal centred and unturned.
+   *
+   * @param beam the beam
+   * @param wedge the wedge
+   * @param angles from exposedAngles
+   * @return the ratio
+   */
+  double exposedShare(final Beam beam, final Wedge wedge,
+      final double[] angles) {
+    int[] maxVoxel = getMaxPixelCoordinates();
+    double[][] midpoints = new double[3][];
+    for (int axis = 0; axis < 3; axis++) {
+      double[] lowHigh = minMaxVertices(axis, verticesXFEL);
+      List<Double> along = new ArrayList<Double>();
+      for (int i = 0; i < maxVoxel[axis]; i++) {
+        for (int s = 0; s < EXPOSED_SLICES; s++) {
+          double fraction = ((s + 0.5) / EXPOSED_SLICES) - 0.5;
+          double point = lowHigh[0] + ((i + fraction) / crystalPixPerUMXFEL);
+          if (point >= lowHigh[0] && point <= lowHigh[1]) {
+            along.add(point);
+          }
+        }
+      }
+      midpoints[axis] = new double[along.size()];
+      for (int i = 0; i < along.size(); i++) {
+        midpoints[axis][i] = along.get(i);
+      }
+    }
+    long centred = 0;
+    long placed = 0;
+    for (double x : midpoints[0]) {
+      for (double y : midpoints[1]) {
+        if (testIfInsideExposedArea(x * 1000, y * 1000, beam)) {
+          centred += midpoints[2].length;
+        }
+        for (double z : midpoints[2]) {
+          if (inExposedRegion(x, y, z, angles, wedge, beam)) {
+            placed += 1;
+          }
+        }
+      }
+    }
+    return centred > 0 ? (double) placed / centred : 1.0;
+  }
+
 public double getExposedArea(Beam beam) { // returns area in nm^2
   double area = 0.0;
   
