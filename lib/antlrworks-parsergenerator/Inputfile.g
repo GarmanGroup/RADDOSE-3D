@@ -294,11 +294,20 @@ if ($crystal::crystalContainerMaterial == 1)
 
 if ($crystal::crystalContainerMaterial == 2)
 {
+	// A material NIST has no table for is refused here, before any dose.
+	String containerProblem = ContainerMixture.problem($crystal::containerMixture);
+	if (containerProblem != null) {
+		emitErrorMessage(containerProblem);
+	}
 	$crystal::crystalContainerMaterialClass = new ContainerMixture($crystal::containerThickness, $crystal::containerDensity, $crystal::containerMixture);
 }
 
 if ($crystal::crystalContainerMaterial == 3)
 {
+	String containerProblem = ContainerElemental.problem($crystal::containerElementNames);
+	if (containerProblem != null) {
+		emitErrorMessage(containerProblem);
+	}
 	$crystal::crystalContainerMaterialClass = new ContainerElemental($crystal::containerThickness, $crystal::containerDensity, $crystal::containerElementNames,
 													$crystal::containerElementNums);
 }

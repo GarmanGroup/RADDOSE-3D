@@ -1,14 +1,6 @@
 package se.raddo.raddose3D;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * This class defines the absorption properties of the container
@@ -56,16 +48,12 @@ public class ContainerElemental extends ContainerSemiTransparent{
   }
   
   /**
-   * Uses the container atoms (explicitly it uses their atomic numbers) to
-   * generate the URL to the NIST table with the corresponding mass
-   * attenuation coefficients.
+   * The container's name: its elements, each followed by its count where
+   * that is more than one, as C22H10N2O5.
    *
-   * @param atomicNumber
-   *            The atomic number of the element.
-   *
-   * @return
-   *         String of the URL pointing to the location of the mass attenuation
-   *         coefficients.
+   * @param containerElementNames the elements' symbols
+   * @param containerElementNums how many of each
+   * @return the name
    */
   private static String determineContainerMaterial(List<String> containerElementNames,
       List<Double> containerElementNums) {
@@ -81,22 +69,30 @@ public class ContainerElemental extends ContainerSemiTransparent{
     }
     return material;
   }
-  
+
   /**
-   * Uses the container atoms (explicitly it uses their atomic numbers) to
-   * generate the URL to the NIST table with the corresponding mass
-   * attenuation coefficients.
+   * What is wrong with a container of these elements, if anything: an
+   * element NIST has no table for, or one RADDOSE-3D does not know. Read
+   * when the input is, so that such an input is refused before any dose.
    *
-   * @param atomicNumber
-   *            The atomic number of the element.
-   *
-   * @return
-   *         String of the URL pointing to the location of the mass attenuation
-   *         coefficients.
+   * @param containerElementNames the elements' symbols
+   * @return a message, or null if every element has a table
    */
-  private String getNISTURL(int atomicNumber) {
-    return String.format("https://physics.nist.gov/PhysRefData/XrayMassCoef"
-        + "/ElemTab/z%s.html", String.format("%02d", atomicNumber));
+  public static String problem(final List<String> containerElementNames) {
+    if (containerElementNames == null) {
+      return null;
+    }
+    for (String name : containerElementNames) {
+      Element element = ElementDatabase.getInstance().getElement(name);
+      if (element == null) {
+        return "ContainerMaterialElements: " + name + " is not an element";
+      }
+      if (NistTables.element(element.getAtomicNumber()) == null) {
+        return "ContainerMaterialElements: NIST's tables of mass attenuation"
+            + " coefficients have no " + name + "; they go up to uranium";
+      }
+    }
+    return null;
   }
 
   /**
@@ -106,155 +102,42 @@ public class ContainerElemental extends ContainerSemiTransparent{
     return elementDB;
   }
 
-
   /**
-   * This method downloads the mass attenuation coefficients from NIST table
-   * for the corresponding elements and uses the beam energy to interpolate the
-   * mass attenuation coefficient for each one.
-   * The weighted average of the mass attenuation coefficients is given as the
-   * overall mass attenuation coefficient. This approach is the exact approach
-   * used by NIST explained at the bottom of the following webpage:
-   * http://physics.nist.gov/PhysRefData/XrayMassCoef/chap2.html
+   * The container's mass attenuation coefficient: each element's,
+   * interpolated at the beam's energy from NIST's table, weighted by the
+   * share of the container's mass it is. This is NIST's own mixture rule,
+   * http://physics.nist.gov/PhysRefData/XrayMassCoef/chap2.html. The tables
+   * ship in constants/; they were downloaded on every run, which failed
+   * without the network and on Java 8.
    *
    * @param beam
    *          beam object describing the beam used.
    */
   @Override
   public void extractMassAttenuationCoef(Beam beam) {
-    
     if (this.material != null) {
-      //Define/Initialise the local variables
-      URL nistURL = null;
-      URLConnection nistConnection = null;
-      BufferedReader br = null;
-      String inputLine;
-      double nistBeamEnergyInMeV = 0;
-      double nistBeamEnergyInKeV = 0;
-      double massAttenCoeff = 0;
-      double nistBeamEnergyInKeVPrevious = 0;
-      double massAttenCoeffPrevious = 0;
       double totalWeight = 0;
-
-      //Create arrays to store the mass attenuation coefficients and the atomic weights
-      //of each element in the container material.
       double[] elementMassAttCoeffs = new double[this.elementNamesList.size()];
       double[] elementAtomicWeights = new double[this.elementNamesList.size()];
-      double[] relativeAtomicWeights = new double[this.elementNamesList.size()];
-
-      // Regular expressions used in parsing
-      Pattern openTag = Pattern.compile("<PRE>");
-      Pattern closeTag = Pattern.compile("</PRE>");
-      Pattern scientificNotation = Pattern.compile("[0-9]E[-+][0-9]");
-
       for (int i = 0; i < this.elementNamesList.size(); i++) {
-        boolean readLine = false;
-        int indexOfEnergyCol = -1;
-        //create an element object from the element name using information in the
-        //ElementDatabase.
-        Element containerAtom = getParser().getElement(this.elementNamesList.get(i));
-
-        //Get the URL string
-        String urlString = getNISTURL(containerAtom.getAtomicNumber());
-
-        //Create a URL object for the relevant NIST table
-        try {
-          nistURL = new URL(urlString);
-        } catch (MalformedURLException e) {
-          System.out.println("URL " + urlString + " is malformed");
-          e.printStackTrace();
-        }
-
-        //Open a URL connection
-        try {
-          nistConnection = nistURL.openConnection();
-        } catch (IOException e) {
-          System.out.print("Cannot read from URL: " + urlString);
-          e.printStackTrace();
-        }
-
-        //Read the data from the NIST table webpage into a buffered reader
-        try {
-          br = new BufferedReader(
-              new InputStreamReader(nistConnection.getInputStream()));
-        } catch (IOException e) {
-          System.out.println("Cannot read from URL: " + urlString);
-          e.printStackTrace();
-        }
-
-        //Read and parse the data from the buffered reader
-        try {
-          //While we haven't reached the end of the file read each line
-          while ((inputLine = br.readLine()) != null) {
-            //Check if the line contains the "<PRE>" and "<\PRE>" tags
-            Matcher openTagMatcher = openTag.matcher(inputLine);
-            Matcher closeTagMatcher = closeTag.matcher(inputLine);
-            if (openTagMatcher.find()) {
-              readLine = true;
-            } else if (closeTagMatcher.find()) {
-              readLine = false;
-            }
-
-            //If we are in inside the "<PRE>" tag block then check for
-            //mass coefficient table
-            if (readLine) {
-              //Look for scientific notation in the current line
-              Matcher scientificNotationotationMatcher =
-                  scientificNotation.matcher(inputLine);
-              if (scientificNotationotationMatcher.find()) {
-                //Split the string by whitespace
-                String[] splitLine = inputLine.split("\\s+");
-                for (int j = 0; j < splitLine.length; j++) {
-                  if(splitLine[j].indexOf("E") != -1) {
-                    indexOfEnergyCol = j;
-                    break;
-                  }
-                }
-                //Extract the beam energy and the mass attenuation coefficient from
-                //the current line.
-                nistBeamEnergyInMeV = Double.parseDouble(splitLine[indexOfEnergyCol]);
-                massAttenCoeff = Double.parseDouble(splitLine[indexOfEnergyCol + 1]);
-                //Convert the beam energy from MeV to KeV
-                nistBeamEnergyInKeV = nistBeamEnergyInMeV * MEV_TO_KEV;
-
-                //Check if the beam energy on this line of the NIST table
-                //is bigger than the beam energy of the input beam
-                if (nistBeamEnergyInKeV > beam.getPhotonEnergy()) {
-                  break;
-                } else {
-                  nistBeamEnergyInKeVPrevious = nistBeamEnergyInKeV;
-                  massAttenCoeffPrevious = massAttenCoeff;
-                }
-              }
-            }
-          }
-        } catch (IOException e) {
-          System.out.println("Cannot read from URL: " + urlString);
-          e.printStackTrace();
-        }
-
-        //Get the mass attenuation coefficient given by a linear interpolation
-        //between the values in the NIST table.
-        double elementMassAttenuationCoefficient = massAttenCoeffPrevious +
-            (massAttenCoeff - massAttenCoeffPrevious) *
-            ((beam.getPhotonEnergy() - nistBeamEnergyInKeVPrevious) /
-            (nistBeamEnergyInKeV - nistBeamEnergyInKeVPrevious));
-
-        //Store the interpolated value and the atomic weights.
-        elementMassAttCoeffs[i] = elementMassAttenuationCoefficient;
+        Element containerAtom =
+            getParser().getElement(this.elementNamesList.get(i));
+        elementMassAttCoeffs[i] = interpolate(
+            NistTables.element(containerAtom.getAtomicNumber()),
+            beam.getPhotonEnergy());
         elementAtomicWeights[i] = containerAtom.getAtomicWeight();
-        //Add this element's contribution to the total weight
-        totalWeight += containerAtom.getAtomicWeight() *
-            this.elementNumsList.get(i);
+        totalWeight += containerAtom.getAtomicWeight()
+            * this.elementNumsList.get(i);
       }
 
-      //Calculate the relative atomic weights and use the weighted average
-      //to give the overall mass attenuation coefficient.
+      // The weighted average of the elements' coefficients, each weighted by
+      // its share of the container's mass.
       this.massAttenuationCoefficient = 0;
       for (int k = 0; k < this.elementNamesList.size(); k++) {
-        relativeAtomicWeights[k] = (this.elementNumsList.get(k) *
-            elementAtomicWeights[k]) / totalWeight;
-        this.massAttenuationCoefficient += (relativeAtomicWeights[k] *
-            elementMassAttCoeffs[k]);
+        double relativeAtomicWeight = (this.elementNumsList.get(k)
+            * elementAtomicWeights[k]) / totalWeight;
+        this.massAttenuationCoefficient += (relativeAtomicWeight
+            * elementMassAttCoeffs[k]);
       }
     }
   }

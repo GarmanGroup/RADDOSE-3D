@@ -1,5 +1,7 @@
 package se.raddo.raddose3D;
 
+import java.util.List;
+
 public abstract class ContainerSemiTransparent implements Container{
   
   /**
@@ -78,6 +80,35 @@ public abstract class ContainerSemiTransparent implements Container{
    *          beam object describing the beam used.
    */
   abstract void extractMassAttenuationCoef(Beam beam);
+
+  /**
+   * A NIST table's mass attenuation coefficient at the beam's energy: the
+   * rows are walked in order to the first above it, and the coefficient
+   * interpolated linearly from the row before, as the containers walked the
+   * pages they downloaded.
+   *
+   * @param rows from {@link NistTables}
+   * @param beamEnergyKeV the beam's energy
+   * @return the coefficient, cm^2/g
+   */
+  static double interpolate(final List<double[]> rows,
+      final double beamEnergyKeV) {
+    double energy = 0;
+    double coefficient = 0;
+    double energyBefore = 0;
+    double coefficientBefore = 0;
+    for (double[] row : rows) {
+      energy = row[0] * MEV_TO_KEV;
+      coefficient = row[1];
+      if (energy > beamEnergyKeV) {
+        break;
+      }
+      energyBefore = energy;
+      coefficientBefore = coefficient;
+    }
+    return coefficientBefore + (coefficient - coefficientBefore)
+        * ((beamEnergyKeV - energyBefore) / (energy - energyBefore));
+  }
   
   /**
    * Calculate the mass thickness of the container. The mass thickness is

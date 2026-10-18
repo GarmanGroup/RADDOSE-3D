@@ -29,10 +29,9 @@ ant test-all                       # adds the slower geometry tests
 ```
 
 Tests live in `test/`, use JUnit 5 (one vendored jar, `lib/junit5/`), and are
-run by the `test` target via the JUnit console launcher. Two further targets
-exist: `ant test-network` for the tests that contact physics.nist.gov, and
-`ant test-pending` for tests parked pending a decision -- these are **expected
-to fail** and are documented in [TEST-TRIAGE.md](TEST-TRIAGE.md).
+run by the `test` target via the JUnit console launcher. A further target,
+`ant test-pending`, runs the tests parked pending a decision -- these are
+**expected to fail** and are documented in [TEST-TRIAGE.md](TEST-TRIAGE.md).
 
 Usage
 ------
