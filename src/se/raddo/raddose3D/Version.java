@@ -28,7 +28,7 @@ public final class Version {
   public static final long    VERSION_MAJOR  = 5;
 
   /** The minor version number. */
-  public static final long    VERSION_MINOR  = 0;
+  public static final long    VERSION_MINOR  = 1;
 
   /** The true build number (depending on REVISION). */
   @SuppressWarnings("unused")
