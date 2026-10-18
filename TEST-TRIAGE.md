@@ -24,7 +24,6 @@ reading diffs.
 | `ant build build-tests test` | the fast suite (162 tests, ~5 s from clean) |
 | `ant test-all` | adds the `slow` geometry tests (168) |
 | `ant test-pending` | only the parked tests below; **expected to fail** |
-| `ant test-network` | only the tests that contact physics.nist.gov |
 
 `JAVA_HOME` must point at a JDK (this machine has only Homebrew's JDK 25:
 `export JAVA_HOME=/opt/homebrew/opt/openjdk`).

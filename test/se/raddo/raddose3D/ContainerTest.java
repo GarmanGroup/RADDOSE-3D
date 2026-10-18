@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -27,8 +26,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * delegates only the table lookup to the abstract
  * {@code extractMassAttenuationCoef}.
  * <p>
- * The two tests that genuinely need NIST are kept, tagged {@code network} and
- * excluded from the default run.
+ * The two tests of real materials read NIST's tables, which ship in
+ * constants/.
  */
 public class ContainerTest {
 
@@ -146,10 +145,9 @@ public class ContainerTest {
 
   /**
    * The original intent of {@code testTransparency}: a real pyrex/elemental
-   * container of zero thickness attenuates nothing. Needs NIST.
+   * container of zero thickness attenuates nothing.
    */
   @Test
-  @Tag("network")
   public void zeroThicknessRealContainersAreTransparent() {
     ContainerMixture mix = new ContainerMixture(0.0, 2.23, "pyrex");
 
@@ -170,13 +168,12 @@ public class ContainerTest {
   /**
    * The original {@code testElementalMatchesMixture}: alanine's mass
    * attenuation coefficient should agree whether taken from the NIST compound
-   * table or summed from its elements. Needs NIST.
+   * table or summed from its elements.
    * <p>
    * Note the original comparison was one-sided ({@code a - b < 1e-2}, which
    * passes for any sufficiently negative difference); this uses Math.abs.
    */
   @Test
-  @Tag("network")
   public void elementalCompositionMatchesMixtureForAlanine() {
     ContainerMixture mix = new ContainerMixture(50.0, 1.424, "alanine");
 
@@ -191,5 +188,47 @@ public class ContainerTest {
     assertEquals(mix.getMassAttenuationCoefficient(),
         elem.getMassAttenuationCoefficient(), 1e-2,
         "mixture and elemental mass attenuation coefficients disagree");
+  }
+  /**
+   * The tables ship in the jar: every element NIST covers, hydrogen to
+   * uranium, and its compounds and mixtures by its names for them.
+   */
+  @Test
+  public void nistsTablesShipWithEveryElementToUranium() {
+    for (int z = 1; z <= 92; z++) {
+      assertTrue(NistTables.element(z).size() > 30, "Z = " + z);
+    }
+    assertNull(NistTables.element(93));
+    assertTrue(NistTables.mixtureNames().contains("pyrex"));
+    assertTrue(NistTables.mixtureNames().contains("water"));
+    assertEquals(NistTables.mixture("pyrex"), NistTables.mixture("PYREX"));
+    assertNull(NistTables.mixture("pyrexx"));
+  }
+
+  /**
+   * At a tabulated energy, the coefficient is the table's; between two, it
+   * is on the line joining them. Carbon at 10 keV is 2.373 cm^2/g and at
+   * 15 keV 0.8071.
+   */
+  @Test
+  public void aCoefficientIsInterpolatedFromTheTable() {
+    List<double[]> carbon = NistTables.element(6);
+    assertEquals(2.373, ContainerSemiTransparent.interpolate(carbon, 10.0),
+        1e-12);
+    assertEquals((2.373 + 0.8071) / 2,
+        ContainerSemiTransparent.interpolate(carbon, 12.5), 1e-12);
+  }
+
+  /**
+   * At an absorption edge NIST lists the energy twice, below the edge and
+   * above it: a beam just above the edge takes the coefficient above it.
+   * Selenium's K edge is at 12.66 keV.
+   */
+  @Test
+  public void aBeamAboveAnEdgeTakesTheCoefficientAboveIt() {
+    List<double[]> selenium = NistTables.element(34);
+    double below = ContainerSemiTransparent.interpolate(selenium, 12.6);
+    double above = ContainerSemiTransparent.interpolate(selenium, 12.7);
+    assertTrue(above > 4 * below, below + " then " + above);
   }
 }

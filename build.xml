@@ -150,6 +150,8 @@
     <include name="constants/EnergyCoefsMed.txt" />
     <include name="constants/EnergyCoefsHigh.txt" />
     <include name="constants/MuCalcConstants.txt" />
+    <include name="constants/nist_elements.tsv" />
+    <include name="constants/nist_mixtures.tsv" />
 	<include name="constants/low_overvoltage.csv" />
 	<include name="constants/high_overvoltage.csv" />
 	<include name="constants/fullelsepa.csv" />
@@ -182,6 +184,8 @@
     <include name="constants/EnergyCoefsLow.txt" />
     <include name="constants/EnergyCoefsMed.txt" />
     <include name="constants/EnergyCoefsHigh.txt" />
+    <include name="constants/nist_elements.tsv" />
+    <include name="constants/nist_mixtures.tsv" />
 	<include name="constants/low_overvoltage.csv" />
 	<include name="constants/high_overvoltage.csv" />
 	<include name="constants/fullelsepa.csv" />
@@ -224,6 +228,8 @@
     <include name="constants/EnergyCoefsLow.txt" />
     <include name="constants/EnergyCoefsMed.txt" />
     <include name="constants/EnergyCoefsHigh.txt" />
+    <include name="constants/nist_elements.tsv" />
+    <include name="constants/nist_mixtures.tsv" />
 	<include name="constants/low_overvoltage.csv" />
 	<include name="constants/high_overvoltage.csv" />
 	<include name="constants/fullelsepa.csv" />
@@ -337,21 +343,14 @@
       tests parked pending a decision in TEST-TRIAGE.md ("pending"). -->
  <target name="test">
   <property name="test.exclusions"
-            value="--exclude-tag slow --exclude-tag pending --exclude-tag network"/>
+            value="--exclude-tag slow --exclude-tag pending"/>
   <antcall target="-run-tests" inheritall="true"/>
  </target>
 
  <!-- Everything except the parked tests. -->
  <target name="test-all">
   <property name="test.exclusions"
-            value="--exclude-tag pending --exclude-tag network"/>
-  <antcall target="-run-tests" inheritall="true"/>
- </target>
-
- <!-- Tests that reach out to physics.nist.gov. Excluded everywhere else so
-      the suite stays hermetic and CI does not depend on a third party. -->
- <target name="test-network">
-  <property name="test.exclusions" value="--include-tag network"/>
+            value="--exclude-tag pending"/>
   <antcall target="-run-tests" inheritall="true"/>
  </target>
 
@@ -377,7 +376,6 @@
     <arg value="--scan-class-path"/>
     <arg value="${test.bin}"/>
     <arg value="--exclude-tag"/><arg value="pending"/>
-    <arg value="--exclude-tag"/><arg value="network"/>
     <arg value="--details=summary"/>
     <arg value="--disable-ansi-colors"/>
    </java>

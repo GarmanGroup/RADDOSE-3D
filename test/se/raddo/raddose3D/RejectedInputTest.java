@@ -177,6 +177,48 @@ public class RejectedInputTest {
     assertEquals(3, collector.total());
   }
 
+  /** The valid input, its crystal in a container of these lines. */
+  private static String inContainer(final String container) {
+    return VALID.replace("AbsCoefCalc Dummy\n",
+        "AbsCoefCalc Dummy\n" + container + "ContainerThickness 50\n"
+            + "ContainerDensity 2.23\n");
+  }
+
+  /**
+   * A mixture NIST has no table for is refused when the input is read, with
+   * the names it has. It was looked up on physics.nist.gov during the run,
+   * and failed there with a NullPointerException.
+   */
+  @Test
+  public void aContainerMixtureNistHasNoTableForIsRefused() {
+    Collector collector = new Collector();
+    InputException e = assertThrows(InputException.class,
+        () -> new InputParserString(inContainer(
+            "ContainerMaterialType Mixture\nContainerMaterialMixture pyrexx\n"))
+            .sendData(collector));
+    assertTrue(e.toString().contains("NIST has no table for pyrexx"),
+        e.toString());
+    assertTrue(e.toString().contains("pyrex, "), e.toString());
+    assertEquals(0, collector.total(), "nothing may reach the initializer");
+  }
+
+  /** A mixture's name is read in any case, as NIST's are all lower case. */
+  @Test
+  public void aContainerMixturesNameIsReadInAnyCase() throws InputException {
+    assertEquals(3, parse(inContainer(
+        "ContainerMaterialType Mixture\nContainerMaterialMixture Pyrex\n"))
+        .total());
+  }
+
+  /** NIST's tables stop at uranium: plutonium is refused. */
+  @Test
+  public void aContainerElementNistHasNoTableForIsRefused() {
+    InputException e = assertThrows(InputException.class,
+        () -> parse(inContainer("ContainerMaterialType Elemental\n"
+            + "ContainerMaterialElements Si 1 Pu 1\n")));
+    assertTrue(e.toString().contains("have no Pu"), e.toString());
+  }
+
   /** The error names the line at fault. */
   @Test
   public void theOffendingLineIsNamed() {
